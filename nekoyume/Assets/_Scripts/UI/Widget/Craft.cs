@@ -726,7 +726,7 @@ namespace Nekoyume.UI
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
-            loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase), isConsumable);
             loadingScreen.SetCloseAction(null);
             loadingScreen.OnDisappear = OnNPCDisappear;
             canvasGroup.interactable = false;
@@ -738,7 +738,12 @@ namespace Nekoyume.UI
             var quote = string.Format(format, blockIndex);
             var itemType = itemBase.ItemType != ItemType.Material
                 ? itemBase.ItemType : ItemType.Consumable;
-            loadingScreen.AnimateNPC(itemType, quote);
+            loadingScreen.AnimateNPC(itemType switch
+            {
+                ItemType.Equipment => CombinationLoadingScreen.SpeechBubbleItemType.Equipment,
+                ItemType.Consumable => CombinationLoadingScreen.SpeechBubbleItemType.Consumable,
+                _ => CombinationLoadingScreen.SpeechBubbleItemType.Equipment
+            }, quote);
         }
 
         private void OnNPCDisappear()
