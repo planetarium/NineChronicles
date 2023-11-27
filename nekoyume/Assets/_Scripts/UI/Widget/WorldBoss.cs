@@ -159,7 +159,7 @@ namespace Nekoyume.UI
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
             var loading = Find<LoadingScreen>();
-            loading.Show();
+            loading.Show(LoadingScreen.LoadingType.WorldBoss);
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
             loading.Close();
             AudioController.instance.PlayMusic(_bgmName);
