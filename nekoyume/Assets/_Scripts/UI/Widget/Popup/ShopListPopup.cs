@@ -58,13 +58,26 @@ namespace Nekoyume.UI
         
             closeButton.onClick.AddListener(() => {
                 Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku));
+
+                var evt = new AirbridgeEvent("IAP_ShopListPopup_Close");
+                evt.SetAction(_data.Sku);
+                evt.AddCustomAttribute("product-id", _data.Sku);
+                AirbridgeUnity.TrackEvent(evt);
+
                 Close();
             });
             CloseWidget = () => Close();
             buyButton.onClick.AddListener(() =>
             {
                 Debug.Log($"Purchase: {_data.Sku}");
+
                 Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click",("product-id", _data.Sku));
+
+                var evt = new AirbridgeEvent("IAP_ShopListPopup_PurchaseButton_Click");
+                evt.SetAction(_data.Sku);
+                evt.AddCustomAttribute("product-id", _data.Sku);
+                AirbridgeUnity.TrackEvent(evt);
+
                 Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
 
                 buyButton.interactable = false;

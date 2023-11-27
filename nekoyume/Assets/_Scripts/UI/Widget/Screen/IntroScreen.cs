@@ -33,149 +33,6 @@ namespace Nekoyume.UI
 
     public class IntroScreen : ScreenWidget
     {
-        [Serializable]
-        public struct AgentInfo
-        {
-            private const string AccountTextFormat =
-                "<color=#B38271>Lv. {0}</color> {1} <color=#A68F7E>#{2}</color>";
-
-            [NonSerialized]
-            public bool isAppliedL10n;
-
-            public TextMeshProUGUI title;
-            public GameObject noAccount;
-            public TextMeshProUGUI noAccountText;
-            public Button noAccountCreateButton;
-            public TextMeshProUGUI noAccountCreateButtonText;
-            public GameObject account;
-            public TextMeshProUGUI[] accountTexts;
-            public Button accountImportKeyButton;
-            public TextMeshProUGUI accountImportKeyButtonText;
-
-            public PlanetId? PlanetId { get; private set; }
-
-            public void ApplyL10n()
-            {
-                if (isAppliedL10n || !L10nManager.IsInitialized)
-                {
-                    return;
-                }
-
-                isAppliedL10n = true;
-                noAccountText.text = L10nManager.Localize("SDESC_NO_ACCOUNT");
-                noAccountCreateButtonText.text = L10nManager.Localize("BTN_CREATE_A_NEW_CHARACTER");
-                accountImportKeyButtonText.text = L10nManager.Localize("BTN_IMPORT_KEY");
-            }
-
-            public void Set(
-                PlanetContext planetContext,
-                PlanetAccountInfo planetAccountInfo,
-                bool needToImportKey)
-            {
-                ApplyL10n();
-
-                if (planetContext?.PlanetRegistry is null ||
-                    planetAccountInfo is null)
-                {
-                    Debug.LogError("[IntroScreen] AgentInfo.Set()... planetContext?PlanetRegistry" +
-                                   " or planetAccountInfo is null");
-                    return;
-                }
-
-                PlanetId = planetAccountInfo.PlanetId;
-                if (planetContext.PlanetRegistry.TryGetPlanetInfoById(PlanetId.Value, out var planetInfo))
-                {
-                    var textInfo = CultureInfo.InvariantCulture.TextInfo;
-                    title.text = textInfo.ToTitleCase(planetInfo.Name);
-                }
-                else
-                {
-                    Debug.LogError("[IntroScreen] AgentInfo.Set()... cannot find planetInfo" +
-                                   $" by planetId: {PlanetId}");
-                    title.text = PlanetId.ToString();
-                }
-
-                if (planetAccountInfo.AgentAddress is null)
-                {
-                    noAccount.SetActive(true);
-                    account.SetActive(false);
-
-                    // FIXME: Subscription does not disposed.
-                    noAccountCreateButton.OnClickAsObservable()
-                        .First()
-                        .Subscribe(_ =>
-                        {
-                            // FIXME: Handle planetContext.Error.
-                            PlanetSelector.SelectPlanetById(planetContext, planetInfo.ID);
-                            PlanetSelector.SelectPlanetAccountInfo(
-                                planetContext,
-                                planetAccountInfo.PlanetId);
-                        });
-                }
-                else
-                {
-                    var avatars = planetAccountInfo.AvatarGraphTypes.ToArray();
-                    if (avatars.Length == 0)
-                    {
-                        for (var i = 0; i < accountTexts.Length; ++i)
-                        {
-                            var text = accountTexts[i];
-                            if (i == 0)
-                            {
-                                text.text = L10nManager.IsInitialized
-                                    ? L10nManager.Localize("SDESC_NO_CHARACTER")
-                                    : "No character";
-                                text.gameObject.SetActive(true);
-                            }
-                            else
-                            {
-                                text.gameObject.SetActive(false);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (var i = 0; i < accountTexts.Length; ++i)
-                        {
-                            var text = accountTexts[i];
-                            if (avatars.Length > i)
-                            {
-                                var avatar = avatars[i];
-                                text.text = string.Format(
-                                    format: AccountTextFormat,
-                                    avatar.Level,
-                                    avatar.Name,
-                                    avatar.Address[..4]);
-                                text.gameObject.SetActive(true);
-                            }
-                            else
-                            {
-                                text.gameObject.SetActive(false);
-                            }
-                        }
-                    }
-
-                    accountImportKeyButtonText.text = needToImportKey
-                        ? L10nManager.Localize("BTN_IMPORT_KEY")
-                        : L10nManager.Localize("BTN_SELECT");
-                    noAccount.SetActive(false);
-                    account.SetActive(true);
-
-                    // FIXME: Subscription does not disposed.
-                    accountImportKeyButton.OnClickAsObservable()
-                        .First()
-                        .Subscribe(_ =>
-                        {
-                            // FIXME: Handle planetContext.Error.
-                            PlanetSelector.SelectPlanetById(planetContext, planetInfo.ID);
-                            PlanetSelector.SelectPlanetAccountInfo(
-                                planetContext,
-                                planetAccountInfo.PlanetId);
-                        });
-                }
-            }
-        }
-
         [SerializeField] private GameObject pcContainer;
 
         [Header("Mobile")]
@@ -215,15 +72,14 @@ namespace Nekoyume.UI
         [SerializeField] private Button videoSkipButton;
 
         [SerializeField] private GameObject selectPlanetPopup;
+        [SerializeField] private Button selectPlanetPopupBgButton;
         [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
-        [SerializeField] private ConditionalButton heimdallButton;
-        [SerializeField] private ConditionalButton odinButton;
+        [SerializeField] private SelectPlanetScroll selectPlanetScroll;
 
         [SerializeField] private GameObject planetAccountInfosPopup;
         [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
         [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
-        [SerializeField] private AgentInfo planetAccountInfoLeft;
-        [SerializeField] private AgentInfo planetAccountInfoRight;
+        [SerializeField] private PlanetAccountInfoScroll planetAccountInfoScroll;
 
         private int _guideIndex = 0;
         private const int GuideCount = 3;
@@ -254,6 +110,10 @@ namespace Nekoyume.UI
             {
                 Debug.Log("[IntroScreen] Click start button.");
                 Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
+
+                var evt = new AirbridgeEvent("Intro_StartButton_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 startButtonContainer.SetActive(false);
                 OnClickStart.OnNext(this);
             });
@@ -269,6 +129,10 @@ namespace Nekoyume.UI
 
                 Debug.Log("[IntroScreen] Click apple sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
+
+                var evt = new AirbridgeEvent("Intro_AppleSignIn_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 startButtonContainer.SetActive(false);
                 ProcessAppleSigning();
             });
@@ -276,24 +140,42 @@ namespace Nekoyume.UI
             {
                 Debug.Log("[IntroScreen] Click google sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Click");
+
+                var evt = new AirbridgeEvent("Intro_GoogleSignIn_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 startButtonContainer.SetActive(false);
                 ProcessGoogleSigning();
             });
             twitterSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click twitter sign in button.");
+
                 Analyzer.Instance.Track("Unity/Intro/TwitterSignIn/Click");
+
+                var evt = new AirbridgeEvent("Intro_TwitterSignIn_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 ShowPortalConnectGuidePopup(SigninContext.SocialType.Twitter);
             });
             discordSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click discord sign in button.");
+
                 Analyzer.Instance.Track("Unity/Intro/DiscordSignIn/Click");
+
+                var evt = new AirbridgeEvent("Intro_DiscordSignIn_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 ShowPortalConnectGuidePopup(SigninContext.SocialType.Discord);
             });
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
+
+                var evt = new AirbridgeEvent("Intro_SigninButton_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 qrCodeGuideBackground.Show();
                 qrCodeGuideContainer.SetActive(true);
                 foreach (var image in qrCodeGuideImages)
@@ -310,42 +192,31 @@ namespace Nekoyume.UI
                 ShowQrCodeGuide();
             });
             yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
-            heimdallButton.OnClickSubject
+            selectPlanetPopupBgButton.onClick.AddListener(() => selectPlanetPopup.SetActive(false));
+            selectPlanetScroll.OnChangeSelectedPlanetSubject
+                .Subscribe(tuple =>
+                {
+                    // NOTE: Do not handle the PlanetContext.Error now.
+                    _planetContext = PlanetSelector.SelectPlanetById(
+                        _planetContext,
+                        tuple.selectedPlanetId);
+                    selectPlanetPopup.SetActive(false);
+                })
+                .AddTo(gameObject);
+            selectPlanetScroll.OnClickSelectedPlanetSubject
                 .Subscribe(_ => selectPlanetPopup.SetActive(false))
                 .AddTo(gameObject);
-            heimdallButton.OnClickDisabledSubject.Subscribe(_ =>
+            planetAccountInfoScroll.OnSelectedPlanetSubject.Subscribe(tuple =>
             {
-                _planetContext = PlanetSelector.SelectPlanetByName(_planetContext, heimdallButton.Text);
-                selectPlanetPopup.SetActive(false);
+                // NOTE: Do not handle the PlanetContext.Error now.
+                _planetContext = PlanetSelector.SelectPlanetById(
+                    _planetContext,
+                    tuple.selectedPlanetId);
+                _planetContext = PlanetSelector.SelectPlanetAccountInfo(
+                    _planetContext,
+                    tuple.selectedPlanetId);
+                planetAccountInfosPopup.SetActive(false);
             }).AddTo(gameObject);
-            odinButton.OnClickSubject
-                .Subscribe(_ => selectPlanetPopup.SetActive(false))
-                .AddTo(gameObject);
-            odinButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                _planetContext = PlanetSelector.SelectPlanetByName(_planetContext, odinButton.Text);
-                selectPlanetPopup.SetActive(false);
-            }).AddTo(gameObject);
-            planetAccountInfoLeft.noAccountCreateButton.onClick.AddListener(() =>
-            {
-                Debug.Log("[IntroScreen] planetAccountInfoLeft.noAccountCreateButton.onClick invoked");
-                planetAccountInfosPopup.SetActive(false);
-            });
-            planetAccountInfoLeft.accountImportKeyButton.onClick.AddListener(() =>
-            {
-                Debug.Log("[IntroScreen] planetAccountInfoLeft.accountImportKeyButton.onClick invoked");
-                planetAccountInfosPopup.SetActive(false);
-            });
-            planetAccountInfoRight.noAccountCreateButton.onClick.AddListener(() =>
-            {
-                Debug.Log("[IntroScreen] planetAccountInfoRight.noAccountCreateButton.onClick invoked");
-                planetAccountInfosPopup.SetActive(false);
-            });
-            planetAccountInfoRight.accountImportKeyButton.onClick.AddListener(() =>
-            {
-                Debug.Log("[IntroScreen] planetAccountInfoRight.accountImportKeyButton.onClick invoked");
-                planetAccountInfosPopup.SetActive(false);
-            });
             PlanetSelector.SelectedPlanetInfoSubject
                 .Subscribe(tuple => ApplySelectedPlanetInfo(tuple.planetContext))
                 .AddTo(gameObject);
@@ -373,8 +244,8 @@ namespace Nekoyume.UI
             planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
             planetAccountInfosDescriptionText.text =
                 L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
-            planetAccountInfoLeft.ApplyL10n();
-            planetAccountInfoRight.ApplyL10n();
+            // planetAccountInfoLeft.ApplyL10n();
+            // planetAccountInfoRight.ApplyL10n();
         }
 
         public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
@@ -382,8 +253,20 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             _planetContext = planetContext;
-            ApplySelectedPlanetInfo(_planetContext);
-            ApplySelectedPlanetAccountInfo(_planetContext);
+            ApplyPlanetContext(_planetContext);
+
+            if (SigninContext.HasLatestSignedInSocialType)
+            {
+                Debug.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is true");
+                startButtonGO.SetActive(true);
+                socialButtonsGO.SetActive(false);
+            }
+            else
+            {
+                Debug.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is false");
+                startButtonGO.SetActive(false);
+                socialButtonsGO.SetActive(true);
+            }
         }
 
         public void ShowTabToStart()
@@ -399,8 +282,13 @@ namespace Nekoyume.UI
         public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
             Analyzer.Instance.Track("Unity/Intro/Show");
+
+            var evt = new AirbridgeEvent("Intro_Show");
+            AirbridgeUnity.TrackEvent(evt);
+
             SetData(keyStorePath, privateKey, planetContext);
 
+// #if !RUN_ON_MOBILE
 #if RUN_ON_MOBILE
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
@@ -435,6 +323,9 @@ namespace Nekoyume.UI
             ShowQrCodeGuide();
         }
 
+        /// <summary>
+        /// The only way to update the planetAccountInfoScroll state.
+        /// </summary>
         public void ShowPlanetAccountInfosPopup(PlanetContext planetContext, bool needToImportKey)
         {
             Debug.Log("[IntroScreen] ShowPlanetAccountInfosPopup invoked");
@@ -443,17 +334,9 @@ namespace Nekoyume.UI
                 Debug.LogError("[IntroScreen] planetContext.PlanetAccountInfos is null");
             }
 
-            planetAccountInfoLeft.Set(
-                planetContext,
-                planetContext.PlanetAccountInfos?.FirstOrDefault(info =>
-                    info.PlanetId.Equals(PlanetId.Odin) ||
-                    info.PlanetId.Equals(PlanetId.OdinInternal)),
-                needToImportKey);
-            planetAccountInfoRight.Set(
-                planetContext,
-                planetContext.PlanetAccountInfos?.FirstOrDefault(info =>
-                    info.PlanetId.Equals(PlanetId.Heimdall) ||
-                    info.PlanetId.Equals(PlanetId.HeimdallInternal)),
+            planetAccountInfoScroll.SetData(
+                planetContext.PlanetRegistry,
+                planetContext.PlanetAccountInfos,
                 needToImportKey);
             planetAccountInfosPopup.SetActive(true);
             startButtonContainer.SetActive(false);
@@ -462,6 +345,10 @@ namespace Nekoyume.UI
         private void OnVideoEnd()
         {
             Analyzer.Instance.Track("Unity/Intro/Video/End");
+
+            var evt = new AirbridgeEvent("Intro_Video_End");
+            AirbridgeUnity.TrackEvent(evt);
+
             videoImage.gameObject.SetActive(false);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
@@ -495,11 +382,19 @@ namespace Nekoyume.UI
                     startButtonContainer.SetActive(false);
                     loginSystem.Show(_keyStorePath, string.Empty);
                     Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
+
+                    var evt = new AirbridgeEvent("Intro_QRCodeImported");
+                    AirbridgeUnity.TrackEvent(evt);
                 });
             }
             else
             {
                 Analyzer.Instance.Track($"Unity/Intro/GuideDMX/{_guideIndex + 1}");
+
+                var evt = new AirbridgeEvent("Intro_GuideDMX");
+                evt.SetValue(_guideIndex + 1);
+                AirbridgeUnity.TrackEvent(evt);
+
                 qrCodeGuideImages[_guideIndex].SetActive(true);
                 qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
             }
@@ -525,6 +420,10 @@ namespace Nekoyume.UI
             guestButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/Guest/Click");
+
+                var evt = new AirbridgeEvent("Intro_Guest_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, pk);
             });
@@ -540,76 +439,52 @@ namespace Nekoyume.UI
         }
 #endif
 
+        private void ApplyPlanetContext(PlanetContext planetContext)
+        {
+            Debug.Log("[IntroScreen] ApplyPlanetRegistry invoked.");
+            selectPlanetScroll.SetData(
+                planetContext?.PlanetRegistry,
+                planetContext?.SelectedPlanetInfo?.ID);
+
+            ApplySelectedPlanetInfo(planetContext);
+            ApplySelectedPlanetAccountInfo(planetContext);
+        }
+
         private void ApplySelectedPlanetInfo(PlanetContext planetContext)
         {
             Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked.");
-            var planetRegistry = planetContext?.PlanetRegistry;
             var planetInfo = planetContext?.SelectedPlanetInfo;
-            if (planetRegistry is null ||
-                planetInfo is null)
+            if (planetInfo is null)
             {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetRegistry or planetInfo is null");
+                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetInfo is null");
                 yourPlanetButtonText.text = "Null";
                 planetAccountInfoText.text = string.Empty;
-                heimdallButton.Interactable = false;
-                heimdallButton.Text = "Heimdall (Null)";
-                odinButton.Interactable = false;
-                odinButton.Text = "Odin (Null)";
                 return;
             }
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
-
-            if (planetContext.HasPledgedAccount)
-            {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is true");
-                startButtonGO.SetActive(true);
-                socialButtonsGO.SetActive(false);
-            }
-            else
-            {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is false");
-                startButtonGO.SetActive(false);
-                socialButtonsGO.SetActive(true);
-            }
-
-            if (planetRegistry.TryGetPlanetInfoById(PlanetId.Heimdall, out var heimdallInfo) ||
-                planetRegistry.TryGetPlanetInfoById(PlanetId.HeimdallInternal, out heimdallInfo))
-            {
-                heimdallButton.Text = textInfo.ToTitleCase(heimdallInfo.Name);
-            }
-
-            if (planetRegistry.TryGetPlanetInfoById(PlanetId.Odin, out var odinInfo) ||
-                planetRegistry.TryGetPlanetInfoById(PlanetId.OdinInternal, out odinInfo))
-            {
-                odinButton.Text = textInfo.ToTitleCase(odinInfo.Name);
-            }
-
-            if (planetInfo.ID.Equals(PlanetId.Odin) ||
-                planetInfo.ID.Equals(PlanetId.OdinInternal))
-            {
-                heimdallButton.Interactable = false;
-                odinButton.Interactable = true;
-            }
-            else
-            {
-                heimdallButton.Interactable = true;
-                odinButton.Interactable = false;
-            }
         }
 
         private void ApplySelectedPlanetAccountInfo(PlanetContext planetContext)
         {
-            Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo invoked." +
-                      $" planetContext({planetContext})" +
-                      $", planetContext.SelectedPlanetAccountInfo({planetContext?.SelectedPlanetAccountInfo})");
+            Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo invoked.");
             var planetAccountInfo = planetContext?.SelectedPlanetAccountInfo;
-            if (planetAccountInfo?.AgentAddress is null ||
-                (planetAccountInfo.IsAgentPledged.HasValue &&
-                planetAccountInfo.IsAgentPledged.Value))
+            if (planetAccountInfo?.AgentAddress is null)
             {
-                planetAccountInfoText.text = string.Empty;
+                Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo?.AgentAddress is null.");
+                planetAccountInfoText.text = SigninContext.HasLatestSignedInSocialType
+                    ? L10nManager.Localize("SDESC_THERE_IS_NO_ACCOUNT")
+                    : string.Empty;
+
+                return;
+            }
+
+            if (!(planetAccountInfo.IsAgentPledged.HasValue &&
+                  planetAccountInfo.IsAgentPledged.Value))
+            {
+                Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo.IsAgentPledged is false.");
+                planetAccountInfoText.text = L10nManager.Localize("SDESC_THERE_IS_NO_CHARACTER");
                 return;
             }
 

@@ -426,12 +426,19 @@ namespace Nekoyume.UI
             }
 
             Game.Game.instance.ActionManager.ReRegisterProduct(avatarAddress, reRegisterInfos, chargeAp).Subscribe();
+
             Analyzer.Instance.Track("Unity/ReRegisterProductAll", new Dictionary<string, Value>()
             {
                 ["Quantity"] = reRegisterInfos.Count,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
+
+            var evt = new AirbridgeEvent("ReRegisterProduct_All");
+            evt.SetValue(reRegisterInfos.Count);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
 
             string message;
             if (reRegisterInfos.Count() > 1)
@@ -697,11 +704,17 @@ namespace Nekoyume.UI
 
             Game.Game.instance.ActionManager
                 .ReRegisterProduct(avatarAddress, reRegisterInfos, data.ChargeAp.Value).Subscribe();
+
             Analyzer.Instance.Track("Unity/ReRegisterProduct", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = avatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var evt = new AirbridgeEvent("ReRegisterProduct");
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
         }
 
         private static (IProductInfo, IRegisterInfo) GetReRegisterInfo(Guid productId, int newPrice)

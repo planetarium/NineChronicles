@@ -514,6 +514,8 @@ namespace Nekoyume.UI.Module
                 }
                 _cachedNotificationCostumes.Add(item);
             }
+
+            costumeButton.HasNotification.SetValueAndForceNotify(_cachedNotificationCostumes.Any());
         }
 
         private void UpdateRuneNotification(IEnumerable<InventoryItem> bestItems)
@@ -578,6 +580,7 @@ namespace Nekoyume.UI.Module
                 var (_, slotCount) = availableSlots.FirstOrDefault(x => x.Item1.Equals(pair.Key));
                 var item = pair.Value.Where(x => Util.IsUsableItem(x.ItemBase))
                     .OrderByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
+                    .ThenByDescending(x => x.Equipped.Value ? 1 : 0)
                     .Take(slotCount);
                 bestItems.AddRange(item);
             }

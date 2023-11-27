@@ -115,6 +115,9 @@ namespace Nekoyume.UI
             clientSecret = GetClientSecret();
             Application.OpenURL(url);
             Analyzer.Instance.Track("Unity/Portal/1");
+
+            var evt = new AirbridgeEvent("Portal_1");
+            AirbridgeUnity.TrackEvent(evt);
         }
 
         public void OpenPortalRewardUrl()
@@ -141,6 +144,9 @@ namespace Nekoyume.UI
             }
 
             Analyzer.Instance.Track("Unity/Portal/2");
+
+            var evt = new AirbridgeEvent("Portal_2");
+            AirbridgeUnity.TrackEvent(evt);
 
             var param = deeplinkURL.Split('?')[1].Split('&')
                 .ToDictionary(str => str.Split('=')[0], str => str.Split('=')[1]);
@@ -203,6 +209,9 @@ namespace Nekoyume.UI
         private async void RequestCode(System.Action onSuccess)
         {
             Analyzer.Instance.Track("Unity/Portal/3");
+
+            var evt = new AirbridgeEvent("Portal_3");
+            AirbridgeUnity.TrackEvent(evt);
 
             var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
             Debug.Log($"[{nameof(PortalConnect)}] {nameof(RequestCode)} invoked: url({url})");
@@ -289,25 +298,26 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
             if (data.resultCode is 3003 or 3004)
             {
-                return await GetTokensSilentlyAsync();
+                var (_, _, address) = await GetTokensSilentlyAsync();
+                return address is not null;
             }
 
             return false;
         }
 
-        public async Task<bool> GetTokensSilentlyAsync()
+        public async Task<(
+            string email,
+            string idToken,
+            Address? address)> GetTokensSilentlyAsync()
         {
             switch (SigninContext.LatestSignedInSocialType)
             {
                 case SigninContext.SocialType.Google:
-                    await ProcessGoogleSigningSilently();
-                    return true;
+                    return await ProcessGoogleSigningSilently();
                 case SigninContext.SocialType.Apple:
-                    await ProcessAppleSigningSilently();
-                    return true;
+                    return await ProcessAppleSigningSilently();
                 default:
-                    await ProcessGoogleSigningSilently();
-                    return true;
+                    return await ProcessGoogleSigningSilently();
                 // case null:
                 //     Debug.LogError(
                 //         $"[{nameof(PortalConnect)}] {nameof(GetTokensSilentlyAsync)}... " +
@@ -318,7 +328,10 @@ namespace Nekoyume.UI
             }
         }
 
-        private async Task ProcessGoogleSigningSilently()
+        private async Task<(
+            string email,
+            string idToken,
+            Address? address)> ProcessGoogleSigningSilently()
         {
             if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
             {
@@ -333,11 +346,16 @@ namespace Nekoyume.UI
                 case GoogleSigninBehaviour.SignInState.Signed:
                     Debug.Log($"{logTitle}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
                     SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Google);
-                    await SendGoogleIdTokenAsync(google.IdToken);
-                    return;
+                    return (
+                        email: google.Email,
+                        idToken: google.IdToken,
+                        address: await SendGoogleIdTokenAsync(google.IdToken));
                 case GoogleSigninBehaviour.SignInState.Waiting:
                     Debug.Log($"{logTitle}... Already waiting for google sign in.");
-                    return;
+                    return (
+                        email: google.Email,
+                        idToken: google.IdToken,
+                        address: null);
                 case GoogleSigninBehaviour.SignInState.Undefined:
                 case GoogleSigninBehaviour.SignInState.Canceled:
                     break;
@@ -352,19 +370,32 @@ namespace Nekoyume.UI
             {
                 case GoogleSigninBehaviour.SignInState.Undefined:
                 case GoogleSigninBehaviour.SignInState.Waiting:
-                    return;
+                    return (
+                        email: google.Email,
+                        idToken: google.IdToken,
+                        address: null);
                 case GoogleSigninBehaviour.SignInState.Canceled:
                     break;
                 case GoogleSigninBehaviour.SignInState.Signed:
                     SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Google);
-                    await SendGoogleIdTokenAsync(google.IdToken);
-                    break;
+                    return (
+                        email: google.Email,
+                        idToken: google.IdToken,
+                        address: await SendGoogleIdTokenAsync(google.IdToken));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+
+            return (
+                email: google.Email,
+                idToken: google.IdToken,
+                address: null);
         }
 
-        private async Task ProcessAppleSigningSilently()
+        private async Task<(
+            string email,
+            string idToken,
+            Address? address)> ProcessAppleSigningSilently()
         {
             // Todo: Apple Signin (currently, not invoke signin)
 
@@ -382,11 +413,16 @@ namespace Nekoyume.UI
                 case AppleSigninBehaviour.SignInState.Signed:
                     SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Apple);
                     Debug.Log($"{logTitle}... Already signed in apple. Anyway, invoke SendAppleIdToken.");
-                    await SendAppleIdTokenAsync(apple.IdToken);
-                    return;
+                    return (
+                        email: apple.Email,
+                        idToken: apple.IdToken,
+                        address: await SendAppleIdTokenAsync(apple.IdToken));
                 case AppleSigninBehaviour.SignInState.Waiting:
                     Debug.Log($"{logTitle}... Already waiting for apple sign in.");
-                    return;
+                    return (
+                        email: apple.Email,
+                        idToken: apple.IdToken,
+                        address: null);
                 case AppleSigninBehaviour.SignInState.Undefined:
                 case AppleSigninBehaviour.SignInState.Canceled:
                     break;
@@ -401,16 +437,26 @@ namespace Nekoyume.UI
             {
                 case AppleSigninBehaviour.SignInState.Undefined:
                 case AppleSigninBehaviour.SignInState.Waiting:
-                    return;
+                    return (
+                        email: apple.Email,
+                        idToken: apple.IdToken,
+                        address: null);
                 case AppleSigninBehaviour.SignInState.Canceled:
                     break;
                 case AppleSigninBehaviour.SignInState.Signed:
                     SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Apple);
-                    await SendAppleIdTokenAsync(apple.IdToken);
-                    break;
+                    return (
+                        email: apple.Email,
+                        idToken: apple.IdToken,
+                        address: await SendAppleIdTokenAsync(apple.IdToken));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+
+            return (
+                email: apple.Email,
+                idToken: apple.IdToken,
+                address: null);
         }
 
         private bool GetRefreshTokenFromPlayerPrefs(string address)
@@ -444,6 +490,9 @@ namespace Nekoyume.UI
             Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
 
+            var evt = new AirbridgeEvent("Intro_GoogleSignIn_ConnectToPortal");
+            AirbridgeUnity.TrackEvent(evt);
+
             var body = new JsonObject {{"idToken", idToken}};
             var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
             var request = new UnityWebRequest($"{PortalUrl}{GoogleAuthEndpoint}", "POST");
@@ -459,8 +508,10 @@ namespace Nekoyume.UI
             if (HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
-                AirbridgeEvent @event = new AirbridgeEvent("Login");
-                AirbridgeUnity.TrackEvent(@event);
+
+                var loginEvt = new AirbridgeEvent("Login");
+                AirbridgeUnity.TrackEvent(loginEvt);
+
                 var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
                 {
@@ -482,6 +533,9 @@ namespace Nekoyume.UI
             Debug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");
 
+            var evt = new AirbridgeEvent("Intro_AppleSignIn_ConnectToPortal");
+            AirbridgeUnity.TrackEvent(evt);
+
             var body = new JsonObject {{"idToken", idToken}};
             var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
             var request = new UnityWebRequest($"{PortalUrl}{AppleAuthEndpoint}", "POST");
@@ -497,8 +551,10 @@ namespace Nekoyume.UI
             if (HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectedToPortal");
-                AirbridgeEvent @event = new AirbridgeEvent("Login");
-                AirbridgeUnity.TrackEvent(@event);
+
+                var loginEvt = new AirbridgeEvent("Login");
+                AirbridgeUnity.TrackEvent(loginEvt);
+
                 var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
                 {
@@ -530,8 +586,16 @@ namespace Nekoyume.UI
                 return true;
             }
 
-            if (await GetTokensSilentlyAsync())
+            var (_, _, addressInPortal) = await GetTokensSilentlyAsync();
+            if (addressInPortal is not null)
             {
+                if (addressInPortal != address)
+                {
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(CheckTokensAsync)}... " +
+                                   $"addressInPortal({addressInPortal}) != address({address})");
+                    return false;
+                }
+
                 SetRefreshTokenToPlayerPrefs(address.ToString());
                 return true;
             }
@@ -771,6 +835,9 @@ namespace Nekoyume.UI
 #endif
             };
             Analyzer.Instance.Track("Unity/Portal/0");
+
+            var evt = new AirbridgeEvent("Portal_0");
+            AirbridgeUnity.TrackEvent(evt);
         }
     }
 }

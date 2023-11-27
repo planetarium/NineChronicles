@@ -61,7 +61,9 @@ namespace Nekoyume.Game.LiveAsset
             _endpoint = Resources.Load<LiveAssetEndpointScriptableObject>("ScriptableObject/LiveAssetEndpoint");
             var noticeUrl = L10nManager.CurrentLanguage switch
             {
-                LanguageType.Korean => _endpoint.NoticeJsonKoreanUrl,
+                LanguageType.Korean => Platform.IsMobilePlatform()
+                    ? _endpoint.NoticeJsonKoreanUrl
+                    : _endpoint.NoticeJsonUrl,
                 LanguageType.Japanese => _endpoint.NoticeJsonJapaneseUrl,
                 _ => _endpoint.NoticeJsonUrl
             };
@@ -197,7 +199,9 @@ namespace Nekoyume.Game.LiveAsset
         {
             var postfix = L10nManager.CurrentLanguage switch
             {
-                LanguageType.Korean => KoreanImagePostfix,
+                LanguageType.Korean => Platform.IsMobilePlatform()
+                    ? KoreanImagePostfix
+                    : string.Empty,
                 LanguageType.Japanese => JapaneseImagePostfix,
                 _ => string.Empty
             };

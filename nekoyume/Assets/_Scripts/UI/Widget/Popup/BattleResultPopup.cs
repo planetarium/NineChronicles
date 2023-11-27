@@ -792,6 +792,11 @@ namespace Nekoyume.UI
             var eventName = $"Unity/Stage Exit {eventKey}";
             Analyzer.Instance.Track(eventName, props);
 
+            var category = $"Stage_Exit_{eventKey}";
+            var evt = new AirbridgeEvent(category);
+            evt.SetValue(SharedModel.StageID);
+            AirbridgeUnity.TrackEvent(evt);
+
             yield return StartCoroutine(SendBattleActionAsync(0, buyTicketIfNeeded));
         }
 
@@ -890,6 +895,11 @@ namespace Nekoyume.UI
             var eventKey = Game.Game.instance.Stage.IsExitReserved ? "Quit" : "Main";
             var eventName = $"Unity/Stage Exit {eventKey}";
             Analyzer.Instance.Track(eventName, props);
+
+            var category = $"Stage_Exit_{eventKey}";
+            var evt = new AirbridgeEvent(category);
+            evt.SetValue(Game.Game.instance.Stage.stageId);
+            AirbridgeUnity.TrackEvent(evt);
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.DestroyBackground();
