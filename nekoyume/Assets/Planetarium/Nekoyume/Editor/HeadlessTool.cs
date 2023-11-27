@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using Libplanet.Common;
+using Nekoyume;
 using Nekoyume.Blockchain;
 using UnityEditor;
 using UnityEngine;
@@ -195,7 +196,7 @@ namespace Planetarium.Nekoyume.Editor
                     $"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path {Path.Combine(_genesisPath, "genesis-block")} --store-path {Path.Combine(_docsRoot, "planetarium", _storeName)} --store-type memory",
             };
 
-            var pkHex = ByteUtil.Hex(Agent.ProposerKey.ByteArray);
+            var pkHex = Agent.ProposerKey.ToHexWithZeroPaddings();
             startInfo.Arguments +=
                 $" --miner-private-key {pkHex} --consensus-private-key {pkHex} --consensus-seed {Agent.ProposerKey.PublicKey},localhost,60000";
 

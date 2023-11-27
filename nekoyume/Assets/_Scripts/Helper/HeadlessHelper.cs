@@ -49,7 +49,7 @@ namespace Nekoyume.Helper
 
         public static void RunLocalHeadless()
         {
-            var pkHex = ByteUtil.Hex(Agent.ProposerKey.ByteArray);
+            var pkHex = Agent.ProposerKey.ToHexWithZeroPaddings();
             try
             {
                 Debug.Log(Path.Combine(_genesisPath, "genesis-block"));
