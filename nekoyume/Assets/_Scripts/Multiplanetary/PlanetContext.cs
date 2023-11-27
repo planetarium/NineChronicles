@@ -23,7 +23,7 @@ namespace Nekoyume.Multiplanetary
             PlanetNotSelected,
             UnsupportedCase01,
         }
-        
+
         public readonly CommandLineOptions CommandLineOptions;
         public bool IsSkipped;
         public PlanetRegistry? PlanetRegistry;
@@ -78,6 +78,12 @@ namespace Nekoyume.Multiplanetary
                     L10nManager.Localize("EDESC_UNSUPPORTED_CASE_01"),
                 _ => throw new ArgumentOutOfRangeException(nameof(errorType), errorType, null)
             };
+        }
+
+        public void SetNetworkConnectionError(ErrorType errorType, params object[] args)
+        {
+            SetError(errorType, args);
+            Error = $"{Error}\n{L10nManager.Localize("EDESC_NETWORK_CONNECTION_ERROR")}";
         }
     }
 }

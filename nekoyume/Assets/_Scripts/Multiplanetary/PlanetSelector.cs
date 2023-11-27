@@ -91,7 +91,7 @@ namespace Nekoyume.Multiplanetary
             if (!context.PlanetRegistry.IsInitialized)
             {
                 Debug.LogError("[PlanetSelector] Failed to initialize PlanetRegistry.");
-                context.SetError(PlanetContext.ErrorType.InitializePlanetRegistryFailed);
+                context.SetNetworkConnectionError(PlanetContext.ErrorType.InitializePlanetRegistryFailed);
                 return context;
             }
 
@@ -366,7 +366,7 @@ namespace Nekoyume.Multiplanetary
                     Debug.LogException(ex);
                     Debug.LogError("[PlanetSelector] Querying agent and pledge canceled." +
                                    " Check the network connection.");
-                    context.SetError(
+                    context.SetNetworkConnectionError(
                         PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
                         planetInfo.ID.ToLocalizedPlanetName(containsPlanetId: false),
                         agentAddress.ToString());
@@ -377,7 +377,7 @@ namespace Nekoyume.Multiplanetary
                     Debug.LogException(ex);
                     Debug.LogError("[PlanetSelector] Querying agent and avatars failed." +
                                    " Check the endpoint url.");
-                    context.SetError(
+                    context.SetNetworkConnectionError(
                         PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
                         planetInfo.ID.ToLocalizedPlanetName(containsPlanetId: false),
                         agentAddress.ToString());
