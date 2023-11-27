@@ -297,6 +297,25 @@ namespace Nekoyume.Game
             OnLoadCommandlineOptions();
 #endif
 
+#if UNITY_EDITOR
+            if (useSystemLanguage)
+            {
+                yield return L10nManager.Initialize().ToYieldInstruction();
+            }
+            else
+            {
+                yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
+                languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
+            }
+#else
+            yield return L10nManager
+                .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
+                    ? L10nManager.CurrentLanguage
+                    : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                .ToYieldInstruction();
+#endif
+            Debug.Log("[Game] Start()... L10nManager initialized");
+
 #if RUN_ON_MOBILE
             // NOTE: Initialize planet registry.
             //       It should do after load CommandLineOptions.
@@ -357,26 +376,6 @@ namespace Nekoyume.Game
 #endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
-
-#if UNITY_EDITOR
-            if (useSystemLanguage)
-            {
-                yield return L10nManager.Initialize().ToYieldInstruction();
-            }
-            else
-            {
-                yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
-
-                languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
-            }
-#else
-            yield return L10nManager
-                .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
-                    ? L10nManager.CurrentLanguage
-                    : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
-                .ToYieldInstruction();
-#endif
-            Debug.Log("[Game] Start()... L10nManager initialized");
 
             if (_commandLineOptions.RequiredUpdate)
             {
