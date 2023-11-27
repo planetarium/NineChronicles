@@ -413,7 +413,7 @@ namespace Nekoyume.Game
                 {
                     Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
                               " Set local private key instead.");
-                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
+                    _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
                 }
             }
 #endif
@@ -1508,7 +1508,7 @@ namespace Nekoyume.Game
                     Debug.Log("[Game] CoLogin()... WaitUntil LoginPopup.Login. Done.");
 
                     // NOTE: Update CommandlineOptions.PrivateKey finally.
-                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
+                    _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
                     Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                               $" to ({loginSystem.GetPrivateKey().ToAddress()}).");
                 }
@@ -1547,7 +1547,7 @@ namespace Nekoyume.Game
                 var pk = loginSystem.GetPrivateKey();
 
                 // NOTE: Update CommandlineOptions.PrivateKey.
-                _commandLineOptions.PrivateKey = ByteUtil.Hex(pk.ByteArray);
+                _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
                 Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey updated" +
                           $" to ({pk.ToAddress()}).");
 
@@ -1571,7 +1571,7 @@ namespace Nekoyume.Game
 
                 introScreen.SetData(
                     _commandLineOptions.KeyStorePath,
-                    ByteUtil.Hex(pk.ByteArray),
+                    pk.ToHexWithZeroPaddings(),
                     planetContext);
             }
             else
@@ -1592,7 +1592,7 @@ namespace Nekoyume.Game
                 var pk = loginSystem.GetPrivateKey();
                 introScreen.Show(
                     _commandLineOptions.KeyStorePath,
-                    ByteUtil.Hex(pk.ByteArray),
+                    pk.ToHexWithZeroPaddings(),
                     planetContext);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
@@ -1600,7 +1600,7 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
 
                 // NOTE: Update CommandlineOptions.PrivateKey finally.
-                _commandLineOptions.PrivateKey = ByteUtil.Hex(pk.ByteArray);
+                _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
                 Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                           $" to ({pk.ToAddress()}).");
 
@@ -1809,7 +1809,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login. Done.");
 
             // NOTE: Update CommandlineOptions.PrivateKey finally.
-            _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
+            _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
             Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                       $" to ({loginSystem.GetPrivateKey().ToAddress()}).");
 
