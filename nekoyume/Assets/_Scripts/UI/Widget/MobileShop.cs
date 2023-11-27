@@ -55,11 +55,6 @@ namespace Nekoyume.UI
         {
             await ShowAsync();
 
-            if (!product.Buyable)
-            {
-                return;
-            }
-
             Analyzer.Instance.Track("Unity/Shop/IAP/LobbyPopup/Click", ("product-id", product.Sku));
 
             var evt = new AirbridgeEvent("IAP_LobbyPopup_Click");
