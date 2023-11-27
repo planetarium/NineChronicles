@@ -99,7 +99,6 @@ namespace Nekoyume.UI
 
         private void BackToRanking()
         {
-
             Close();
             _onClose?.Invoke();
         }

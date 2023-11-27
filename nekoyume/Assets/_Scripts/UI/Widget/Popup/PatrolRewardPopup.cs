@@ -99,6 +99,10 @@ namespace Nekoyume.UI
                 ["PatrolTime"] = PatrolReward.PatrolTime.Value
             });
 
+            var evt = new AirbridgeEvent("PatrolReward_Show_Popup");
+            evt.AddCustomAttribute("patrol-time", PatrolReward.PatrolTime.Value.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             if (!_initialized)
             {
                 Init();
@@ -233,6 +237,9 @@ namespace Nekoyume.UI
         private async void ClaimRewardAsync()
         {
             Analyzer.Instance.Track("Unity/PatrolReward/Request Claim Reward");
+
+            var evt = new AirbridgeEvent("PatrolReward_Request_Claim_Reward");
+            AirbridgeUnity.TrackEvent(evt);
 
             Claiming.Value = true;
             Close();

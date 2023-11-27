@@ -48,6 +48,7 @@ namespace Nekoyume.UI
         private bool isLastCellShow;
         private bool isPageEffectComplete;
         public const int SeasonPassMaxLevel = 30;
+        private int popupViewDelay = 1200;
 
         private const string SeasonPassCouragePopupViewd = "SeasonPassCouragePopupViewd";
         protected override void Awake()
@@ -94,20 +95,31 @@ namespace Nekoyume.UI
 
             seasonPassManager.SeasonEndDate.Subscribe((endTime) =>
             {
-                for (int i = 0; i < rewardCells.Length; i++)
-                {
-                    if (i < seasonPassManager.CurrentSeasonPassData.RewardList.Count)
-                    {
-                        rewardCells[i].gameObject.SetActive(true);
-                        rewardCells[i].SetData(seasonPassManager.CurrentSeasonPassData.RewardList[i]);
-                    }
-                    else
-                    {
-                        rewardCells[i].gameObject.SetActive(false);
-                    }
-                }
+                RefreshRewardCells(seasonPassManager);
             }).AddTo(gameObject);
             rewardCellScrollbar.value = 0;
+        }
+
+        private void RefreshRewardCells(SeasonPassServiceManager seasonPassManager)
+        {
+            if (seasonPassManager.CurrentSeasonPassData == null)
+            {
+                Debug.LogError("[RefreshRewardCells] RefreshFailed");
+                return;
+            }
+
+            for (int i = 0; i < rewardCells.Length; i++)
+            {
+                if (i < seasonPassManager.CurrentSeasonPassData.RewardList.Count)
+                {
+                    rewardCells[i].gameObject.SetActive(true);
+                    rewardCells[i].SetData(seasonPassManager.CurrentSeasonPassData.RewardList[i]);
+                }
+                else
+                {
+                    rewardCells[i].gameObject.SetActive(false);
+                }
+            }
         }
 
         public void ShowSeasonPassPremiumPopup()
@@ -141,16 +153,18 @@ namespace Nekoyume.UI
             var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
             seasonPassManager.AvatarStateRefreshAsync().AsUniTask().Forget();
 
+            RefreshRewardCells(seasonPassManager);
+
             if(!ignoreShowAnimation)
                 PageEffect();
 
-            if (!PlayerPrefs.HasKey(SeasonPassCouragePopupViewd))
+            if (!PlayerPrefs.HasKey(SeasonPassCouragePopupViewd + Game.Game.instance.States.CurrentAvatarState.address.ToHex()))
             {
                 async UniTaskVoid ShowCellEffect()
                 {
-                    await UniTask.Delay(miniumDurationCount);
+                    await UniTask.Delay(popupViewDelay);
                     Find<SeasonPassCouragePopup>().Show();
-                    PlayerPrefs.SetInt(SeasonPassCouragePopupViewd, 1);
+                    PlayerPrefs.SetInt(SeasonPassCouragePopupViewd + Game.Game.instance.States.CurrentAvatarState.address.ToHex(), 1);
                 }
                 ShowCellEffect().Forget();
             }

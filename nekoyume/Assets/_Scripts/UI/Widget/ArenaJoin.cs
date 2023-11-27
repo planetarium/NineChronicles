@@ -75,9 +75,6 @@ namespace Nekoyume.UI
         private Button _backButton;
 
         [SerializeField]
-        private GrandFinaleJoin grandFinaleJoin;
-
-        [SerializeField]
         private GameObject baseArenaJoinObject;
 
         private InnerState _innerState = InnerState.Idle;
@@ -111,9 +108,7 @@ namespace Nekoyume.UI
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Arena);
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(),
-                States.Instance.GrandFinaleStates
-                    .UpdateGrandFinaleParticipantsOrderedWithScoreAsync());
+                RxProps.ArenaInformationOrderedWithScore.UpdateAsync());
             loading.Close();
             sw.Stop();
             Debug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
@@ -131,16 +126,7 @@ namespace Nekoyume.UI
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
                 .AddTo(_disposablesForShow);
-            if (TableSheets.Instance.GrandFinaleScheduleSheet?.GetRowByBlockIndex(Game.Game.instance.Agent.BlockIndex) is not null)
-            {
-                baseArenaJoinObject.SetActive(false);
-                grandFinaleJoin.gameObject.SetActive(true);
-            }
-            else
-            {
-                baseArenaJoinObject.SetActive(true);
-                grandFinaleJoin.gameObject.SetActive(false);
-            }
+            baseArenaJoinObject.SetActive(true);
 
             base.Show(ignoreShowAnimation);
         }
@@ -316,7 +302,6 @@ namespace Nekoyume.UI
                 selectedRoundData.TryGetMedalItemResourceId(out var medalItemId)
                     ? medalItemId
                     : (int?)null);
-            grandFinaleJoin.UpdateInformation();
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
@@ -376,8 +361,6 @@ namespace Nekoyume.UI
                         selectedRoundData.Round)
                     .Subscribe();
             }
-
-            grandFinaleJoin.Set(OnClickJoinButton);
 
             _joinButton.SetState(ConditionalButton.State.Normal);
             _joinButton.OnClickSubject.Subscribe(_ => OnClickJoinButton()).AddTo(gameObject);

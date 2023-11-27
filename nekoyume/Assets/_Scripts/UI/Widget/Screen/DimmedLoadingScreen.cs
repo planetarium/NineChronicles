@@ -15,6 +15,7 @@ namespace Nekoyume.UI
             WaitingForSocialAuthenticating,
             WaitingForPortalAuthenticating,
             WaitingForPlanetAccountInfoSyncing,
+            WaitingForConnectingToPlanet,
         }
 
         public override WidgetType WidgetType => WidgetType.System;
@@ -59,6 +60,9 @@ namespace Nekoyume.UI
                     break;
                 case ContentType.WaitingForPlanetAccountInfoSyncing:
                     titleText.text = L10nManager.Localize("LOADING_TO_SYNCHRONIZE_PLANET_ACCOUNT_INFORMATION");
+                    break;
+                case ContentType.WaitingForConnectingToPlanet:
+                    titleText.text = L10nManager.Localize("LOADING_TO_CONNECT_TO_PLANET");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(contentType), contentType, null);

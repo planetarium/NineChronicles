@@ -8,7 +8,7 @@ using CommandLine;
 using Nekoyume.Multiplanetary;
 using UnityEngine;
 
-#if !UNITY_ANDROID
+#if UNITY_EDITOR || !UNITY_ANDROID
 using System.IO;
 #endif
 
@@ -606,7 +606,7 @@ namespace Nekoyume.Helper
                 return options;
             }
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // error: current no clo.json
             UnityEngine.WWW www = new UnityEngine.WWW(Platform.GetStreamingAssetsPath("clo.json"));
             while (!www.isDone)

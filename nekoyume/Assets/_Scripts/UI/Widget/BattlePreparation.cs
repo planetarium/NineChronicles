@@ -184,11 +184,17 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             _trackGuideQuest = showByGuideQuest;
+
             Analyzer.Instance.Track("Unity/Click Stage", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
+
+            var evt = new AirbridgeEvent("Click_Stage");
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
 
             repeatToggle.isOn = false;
             repeatToggle.interactable = true;

@@ -567,16 +567,24 @@ namespace Nekoyume.UI
                             itemUsable: equipment);
                         Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
+                        var materialCount = insufficientMaterials.Sum(x => x.Value);
+
                         Analyzer.Instance.Track(
-                            "Unity/Replace Combination Material",
+                            "Unity/Replace_Combination_Material",
                             new Dictionary<string, Value>()
                             {
-                                ["MaterialCount"] = insufficientMaterials
-                                    .Sum(x => x.Value),
+                                ["MaterialCount"] = materialCount,
                                 ["BurntCrystal"] = (long)recipeInfo.CostCrystal.MajorUnit,
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });
+
+                        var evt = new AirbridgeEvent("Replace_Combination_Material");
+                        evt.SetValue((double)recipeInfo.CostCrystal.MajorUnit);
+                        evt.AddCustomAttribute("material-count", materialCount);
+                        evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+                        evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+                        AirbridgeUnity.TrackEvent(evt);
 
                         ActionManager.Instance
                             .CombinationEquipment(

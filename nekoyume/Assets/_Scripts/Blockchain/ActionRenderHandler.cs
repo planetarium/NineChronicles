@@ -106,15 +106,23 @@ namespace Nekoyume.Blockchain
                     var currentAvatarState = States.Instance.CurrentAvatarState;
                     if (currentAvatarState is not null)
                     {
+                        var type = actionType.TypeIdentifier.Inspect(false);
                         Analyzer.Instance.Track(
                             "Unity/ActionRender",
                             new Dictionary<string, Value>
                             {
-                                ["ActionType"] = actionType.TypeIdentifier.Inspect(false),
+                                ["ActionType"] = type,
                                 ["Elapsed"] = elapsed,
                                 ["AvatarAddress"] = currentAvatarState.address.ToString(),
                                 ["AgentAddress"] = agentState.address.ToString(),
                             });
+
+                        var category = $"ActionRender_{type}";
+                        var evt = new AirbridgeEvent(category);
+                        evt.SetValue(elapsed);
+                        evt.AddCustomAttribute("agent-address", agentState.address.ToString());
+                        evt.AddCustomAttribute("avatar-address", currentAvatarState.address.ToString());
+                        AirbridgeUnity.TrackEvent(evt);
                     }
 
                     var actionTypeName = actionType.TypeIdentifier.Inspect(false);
@@ -1831,14 +1839,31 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private ActionEvaluation<HackAndSlash> PrepareHackAndSlash(
+        private (ActionEvaluation<HackAndSlash> eval, AvatarState avatarState, CrystalRandomSkillState randomSkillState) PrepareHackAndSlash(
             ActionEvaluation<HackAndSlash> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
-                return eval;
+                return (eval, null, null);
             }
 
+            var avatarState =
+                StateGetter.GetAvatarState(eval.Action.AvatarAddress, eval.OutputState);
+            var randomSkillState = GetCrystalRandomSkillState(eval);
+            return (eval, avatarState, randomSkillState);
+        }
+
+        private async void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState) prepared)
+        {
+            await Task.WhenAll(
+                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
+                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
+
+            var (eval, newAvatarState, newRandomSkillState) = prepared;
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return;
+            }
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -1846,35 +1871,24 @@ namespace Nekoyume.Blockchain
                     .First()
                     .Subscribe(_ =>
                     {
-                        var task = UniTask.RunOnThreadPool(async () =>
+                        UniTask.Void(async () =>
                         {
-                            await UpdateCurrentAvatarStateAsync(eval);
-                            UpdateCrystalRandomSkillState(eval);
-                            var avatarState = States.Instance.CurrentAvatarState;
-                            RenderQuest(
-                                eval.Action.AvatarAddress,
-                                avatarState.questList.completedQuestIds);
-                            _disposableForBattleEnd = null;
-                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            try
+                            {
+                                await UpdateCurrentAvatarStateAsync(newAvatarState);
+                                States.Instance.SetCrystalRandomSkillState(newRandomSkillState);
+                                RenderQuest(
+                                    eval.Action.AvatarAddress,
+                                    newAvatarState.questList.completedQuestIds);
+                                _disposableForBattleEnd = null;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogException(e);
+                            }
                         });
-                        task.ToObservable()
-                            .First()
-                            // ReSharper disable once ConvertClosureToMethodGroup
-                            .DoOnError(e => Debug.LogException(e));
                     });
-            return eval;
-        }
-
-        private async void ResponseHackAndSlashAsync(ActionEvaluation<HackAndSlash> eval)
-        {
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
-
-            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
-            {
-                return;
-            }
 
             var tableSheets = TableSheets.Instance;
             var skillsOnWaveStart = new List<Skill>();
@@ -1919,12 +1933,19 @@ namespace Nekoyume.Blockchain
                 Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill",
                     new Dictionary<string, Value>
                     {
-                        ["RandomSkillId"] = eval.Action.StageBuffId,
+                        ["RandomSkillId"] = eval.Action.StageBuffId.Value,
                         ["IsCleared"] = simulator.Log.IsClear,
                         ["AvatarAddress"] =
                             States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                     });
+
+                var evt = new AirbridgeEvent("Use_Crystal_Bonus_Skill");
+                evt.SetValue(eval.Action.StageBuffId.Value);
+                evt.AddCustomAttribute("is-clear", simulator.Log.IsClear);
+                evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
+                evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
+                AirbridgeUnity.TrackEvent(evt);
             }
 
             if (Widget.Find<LoadingScreen>().IsActive())

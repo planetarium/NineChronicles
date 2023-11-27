@@ -215,20 +215,21 @@ namespace Nekoyume.UI
             if (!(_privateKey is null))
             {
                 addressContentInputField.text = _privateKey.ToAddress().ToString();
-                privateKeyContentInputField.text = ByteUtil.Hex(_privateKey.ByteArray);
+                privateKeyContentInputField.text = _privateKey.ToHexWithZeroPaddings();
             }
             else
             {
-                if (Game.Game.instance.Agent.PrivateKey is null)
+                var agent = Game.Game.instance.Agent;
+                if (agent?.PrivateKey is null)
                 {
                     addressContentInputField.text = string.Empty;
                     privateKeyContentInputField.text = string.Empty;
                 }
                 else
                 {
-                    addressContentInputField.text = Game.Game.instance.Agent.Address.ToString();
-                    privateKeyContentInputField.text =
-                        ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
+                    
+                    addressContentInputField.text = agent.Address.ToString();
+                    privateKeyContentInputField.text = agent.PrivateKey.ToHexWithZeroPaddings();
                 }
             }
 
@@ -326,7 +327,7 @@ namespace Nekoyume.UI
         {
             var settings = Nekoyume.Settings.Instance;
             settings.volumeMaster = value;
-            AudioListener.volume = settings.isVolumeMasterMuted ? 0f : settings.volumeMaster;
+            AudioListener.volume = settings.MasterVolume;
             UpdateVolumeMasterText();
         }
 

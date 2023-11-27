@@ -6,7 +6,6 @@ using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
-using Nekoyume.TableData.GrandFinale;
 using Nekoyume.TableData.Pet;
 using Nekoyume.TableData.Summon;
 using Debug = UnityEngine.Debug;
@@ -214,10 +213,6 @@ namespace Nekoyume.Game
         public SkillActionBuffSheet SkillActionBuffSheet { get; private set; }
 
         public ActionBuffSheet ActionBuffSheet { get; private set; }
-
-        public GrandFinaleScheduleSheet GrandFinaleScheduleSheet { get; private set; }
-
-        public GrandFinaleParticipantsSheet GrandFinaleParticipantsSheet { get; private set; }
         public RuneListSheet RuneListSheet { get; private set; }
         public RuneCostSheet RuneCostSheet { get; private set; }
         public RuneOptionSheet RuneOptionSheet { get; private set; }

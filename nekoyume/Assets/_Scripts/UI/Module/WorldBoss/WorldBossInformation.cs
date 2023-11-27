@@ -160,7 +160,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
 
             bossImage.sprite = bossData.illustration;
-            bossName.text = bossData.name;
+            bossName.text = L10nManager.LocalizeCharacterName(bossData.id);
 
             title.text = _status == WorldBossStatus.Season
                 ? L10nManager.Localize("UI_BOSS_INFORMATION")
