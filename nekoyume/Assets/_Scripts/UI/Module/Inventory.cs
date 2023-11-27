@@ -647,13 +647,32 @@ namespace Nekoyume.UI.Module
 
         public bool HasNotification()
         {
+            var clearedStageId = States.Instance.CurrentAvatarState
+                .worldInformation.TryGetLastClearedStageId(out var id) ? id : 1;
             var equipments = GetBestEquipments();
             foreach (var guid in equipments)
             {
                 var slots = States.Instance.CurrentItemSlotStates.Values;
-                if (slots.Any(x => !x.Equipments.Exists(x => x == guid)))
+                foreach (var slotState in slots.Where(x => !x.Equipments.Exists(x => x == guid)))
                 {
-                    return true;
+                    if (slotState.BattleType == BattleType.Arena)
+                    {
+                        if (clearedStageId >= Game.LiveAsset.GameConfig.RequiredStage.Arena)
+                        {
+                            return true;
+                        }
+                    }
+                    else if (slotState.BattleType == BattleType.Raid)
+                    {
+                        if (clearedStageId >= Game.LiveAsset.GameConfig.RequiredStage.Arena)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -666,7 +685,24 @@ namespace Nekoyume.UI.Module
                     var slots = States.Instance.CurrentRuneSlotStates[battleType].GetRuneSlot();
                     if (!slots.Exists(x => x.RuneId == inventoryItem.RuneState.RuneId))
                     {
-                        return true;
+                        if (battleType == BattleType.Arena)
+                        {
+                            if (clearedStageId >= Game.LiveAsset.GameConfig.RequiredStage.Arena)
+                            {
+                                return true;
+                            }
+                        }
+                        else if (battleType == BattleType.Raid)
+                        {
+                            if (clearedStageId >= Game.LiveAsset.GameConfig.RequiredStage.Arena)
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            return true;
+                        }
                     }
                 }
             }
