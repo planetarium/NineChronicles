@@ -28,7 +28,6 @@ using MagicOnion.Unity;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
-using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -41,9 +40,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
-using Channel = Grpc.Core.Channel;
 using Debug = UnityEngine.Debug;
-using Logger = Serilog.Core.Logger;
 using NCTx = Libplanet.Types.Tx.Transaction;
 
 namespace Nekoyume.Blockchain
@@ -189,7 +186,6 @@ namespace Nekoyume.Blockchain
                 var getTipTaskResult = await _service.GetTip();
                 OnRenderBlock(null, getTipTaskResult);
             });
-            getTipTask.Forget();
 
             if (_genesis == null)
             {
@@ -220,7 +216,7 @@ namespace Nekoyume.Blockchain
                 Debug.Log($"[RPCAgent] genesis block imported in {sw.ElapsedMilliseconds}ms.(elapsed)");
             }
 
-            yield return getTipTask;
+            yield return getTipTask.ToCoroutine();
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
