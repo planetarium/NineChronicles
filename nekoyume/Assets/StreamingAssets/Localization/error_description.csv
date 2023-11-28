@@ -1,0 +1,49 @@
+Key,English,Korean,Portuguese,Japanese,Spanish,Thai,Indonesian,Russian,ChineseSimplified,ChineseTraditional,Tagalog,Vietnam
+EDESC_CHECK_YOUR_NETWORK_CONNECTION,Please check your network connection.,네트워크 연결을 확인하세요.,Verifique sua conexão de rede.,ネットワーク接続を確認してください。,Verifique sua conexão de rede.,โปรดตรวจสอบการเชื่อมต่อเครือข่ายของคุณ.,Silakan periksa koneksi jaringan Anda.,Пожалуйста, проверьте ваше сетевое подключение.,请检查您的网络连接。,請檢查您的網路連線。,Mangyaring suriin ang iyong koneksyon sa network.,โปรดตรวจสอบการเชื่อมต่อเครือข่ายของคุณ
+EDESC_PLANET_REGISTRY_URL_IS_EMPTY,Planet registry URL is empty.,행성 레지스트리 URL이 비어 있습니다.,O URL do registro do planeta está vazio.,プラネットレジストリのURLが空です。,O URL do registro do planeta está vazio.,URL ทะเบียนดาวเคราะห์ว่างเปล่า,URL Planet Registry kosong.,URL реестра планеты пуст.,行星注册表URL为空。,行星註冊表URL為空。,Walang laman ang URL ng Planet Registry.,URL ทะเบียนดาวเคราะห์ว่างเปล่า
+EDESC_INITIALIZE_PLANET_REGISTRY_FAILED,Failed to initialize planet registry.,행성 레지스트리 초기화에 실패했습니다.,Falha ao inicializar o registro do planeta.,プラネットレジストリの初期化に失敗しました。,Falha ao inicializar o registro do planeta.,การเริ่มต้นทะเบียนดาวเคราะห์ล้มเหลว,Inisialisasi Planet Registry gagal.,Не удалось инициализировать реестр планеты.,初始化行星注册表失败。,初始化行星註冊表失敗。,Nabigo ang pag-initialize ng Planet Registry.,การเริ่มต้นทะเบียนดาวเคราะห์ล้มเหลว
+EDESC_PLANET_REGISTRY_NOT_INITIALIZED,Planet registry is not initialized.,행성 레지스트리가 초기화되지 않았습니다.,O registro do planeta não está inicializado.,プラネットレジストリが初期化されていません。,O registro do planeta não está inicializado.,ทะเบียนดาวเคราะห์ไม่ได้รับการเริ่มต้น,Planet Registry tidak diinisialisasi.,Реестр планеты не инициализирован.,行星注册表未初始化。,行星註冊表未初始化。,Hindi inisyalisado ang Planet Registry.,ทะเบียนดาวเคราะห์ไม่ได้รับการเริ่มต้น
+EDESC_NO_PLANET_IN_PLANET_REGISTRY,There is no planet in planet registry.,행성 레지스트리에 행성이 없습니다.,Não há planeta no registro do planeta.,プラネットレジストリには惑星がありません。,Não há planeta no registro do planeta.,ไม่มีดาวเคราะห์ในทะเบียนดาวเคราะห์,Tidak ada planet di Planet Registry.,В реестре планет нет планеты.,行星注册表中没有行星。,行星註冊表中沒有行星。,Walang planeta sa Planet Registry.,ไม่มีดาวเคราะห์ในทะเบียนดาวเคราะห์
+EDESC_PLANET_NOT_FOUND_IN_PLANET_REGISTRY_FORMAT,Planet {0} is not found in planet registry.,행성 레지스트리에서 {0} 행성을 찾을 수 없습니다.,O planeta {0} não foi encontrado no registro do planeta.,プラネットレジストリで{0}プラネットを見つけることができません。,O planeta {0} não foi encontrado no registro do planeta.,ไม่พบดาวเคราะห์ {0} ในทะเบียนดาวเคราะห์,Planet {0} tidak ditemukan di Planet Registry.,Планета {0} не найдена в реестре планет.,在行星注册表中找不到行星{0}。,在行星註冊表中找不到行星{0}。,Hindi mahanap ang planeta {0} sa Planet Registry.,ไม่พบดาวเคราะห์ {0} ในทะเบียนดาวเคราะห์
+EDESC_NO_HEADLESS_GQL_ENDPOINT_IN_PLANET_FORMAT,There is no headless GQL endpoint in planet {0}.,행성 {0}에 헤드리스 GQL 엔드포인트가 없습니다.,Não há ponto de extremidade GQL sem cabeça no planeta {0}.,プラネット{0}にヘッドレスGQLエンドポイントがありません。,Não há ponto de extremidade GQL sem cabeça no planeta {0}.,ไม่มีจุดปลาย GQL ที่ไม่มีหัวในดาวเคราะห์ {0},Tidak ada ujung GQL tanpa kepala di planet {0}.,В планете {0} нет безголового конечной точки GQL.,行星{0}中没有无头GQL端点。,行星{0}中沒有無頭GQL端點。,Walang headless GQL endpoint sa planeta {0}.,ไม่มี headless GQL endpoint ในดาวเคราะห์ {0}
+EDESC_PLANET_HEADLESS_GQL_ENDPOINT_IS_EMPTY_FORMAT,Headless GQL endpoint of index {1} in planet {0} is empty.,행성 {0}의 인덱스 {1}의 헤드리스 GQL 엔드포인트가 비어 있습니다.,O ponto de extremidade GQL sem cabeça do índice {1} no planeta {0} está vazio.,プラネット{0}のインデックス{1}のヘッドレスGQLエンドポイントが空です。,O ponto de extremidade GQL sem cabeça do índice {1} no planeta {0} está vazio.,จุดปลาย GQL ที่ไม่มีหัวของดัชนี {1} ในดาวเคราะห์ {0} ว่างเปล่า,Headless GQL endpoint dari indeks {1} di planet {0} kosong.,Безголовый конечный точка GQL индекса {1} в планете {0} пуст.,行星{0}中索引{1}的无头GQL端点为空。,行星{0}中索引{1}的無頭GQL端點為空。,Walang laman ang headless GQL endpoint ng index {1} sa planeta {0}.,ไม่มี headless GQL endpoint ของ index {1} ในดาวเคราะห์ {0}
+EDESC_QUERY_PLANET_ACCOUNT_INFO_FAILED_FORMAT,Failed to query account info for {0} in planet {1}.,행성 {1}의 {0} 계정 정보를 쿼리하지 못했습니다.,Falha ao consultar as informações da conta para {0} no planeta {1}.,プラネット{1}の{0}アカウント情報をクエリできませんでした。,Falha ao consultar as informações da conta para {0} no planeta {1}.,การค้นหาข้อมูลบัญชีสำหรับ {0} ในดาวเคราะห์ {1} ล้มเหลว,Tidak dapat meminta info akun untuk {0} di planet {1}.,Не удалось запросить информацию об учетной записи для {0} в планете {1}.,无法查询行星{1}中{0}的帐户信息。,無法查詢行星{1}中{0}的帳戶資訊。,Nabigo ang pagkuha ng account info para sa {0} sa planeta {1}.,ไม่สามารถ query account info สำหรับ {0} ในดาวเคราะห์ {1}
+EDESC_PLANET_ACCOUNT_INFOS_NOT_INITIALIZED,Planet account information is not initialized.,행성 계정 정보가 초기화되지 않았습니다.,As informações da conta do planeta não estão inicializadas.,プラネットアカウント情報が初期化されていません。,As informações da conta do planeta não estão inicializadas.,ข้อมูลบัญชีดาวเคราะห์ไม่ได้รับการเริ่มต้น,Informasi akun planet tidak diinisialisasi.,Информация об учетной записи планеты не инициализирована.,行星帐户信息未初始化。,行星帳戶資訊未初始化。,Hindi inisyalisado ang planet account information.,ข้อมูลบัญชีดาวเคราะห์ไม่ได้รับการเริ่มต้น
+EDESC_PLANET_NOT_SELECTED,Planet is not selected.,행성이 선택되지 않았습니다.,O planeta não está selecionado.,プラネットが選択されていません。,O planeta não está selecionado.,ไม่ได้เลือกดาวเคราะห์,Planet tidak dipilih.,Планета не выбрана.,行星未选择。,行星未選擇。,Hindi napili ang planeta.,ดาวเคราะห์ไม่ได้รับการเลือก
+EDESC_UNSUPPORTED_CASE_01,"Portal has agent address which connected with social email. But no agent states in the all planets.
+Portal URL: {0}
+Social Email: {1}
+Agent Address in portal: {2}","포털에는 소셜 계정과 연결된 에이전트 주소가 있습니다. 그러나 모든 행성에는 에이전트 상태가 없습니다.
+포털 URL: {0}
+소셜 이메일: {1}
+포털의 에이전트 주소: {2}","O portal possui um endereço de agente conectado ao e-mail social. Mas não há estados de agente em todos os planetas.
+URL do portal: {0}
+E-mail social: {1}
+Endereço do agente no portal: {2}","ポータルには、ソーシャルメールに接続されたエージェントアドレスがあります。ただし、すべての惑星にエージェントの状態はありません。
+ポータルURL：{0}
+ソーシャルメール：{1}
+ポータルのエージェントアドレス：{2}","O portal possui um endereço de agente conectado ao e-mail social. Mas não há estados de agente em todos os planetas.
+URL do portal: {0}
+E-mail social: {1}
+Endereço do agente no portal: {2}","พอร์ทัลมีที่อยู่ของตัวแทนที่เชื่อมต่อกับอีเมลโซเชียล แต่ไม่มีสถานะตัวแทนในดาวเคราะห์ทั้งหมด
+URL ของพอร์ทัล: {0}
+อีเมลโซเชียล: {1}
+ที่อยู่ตัวแทนในพอร์ทัล: {2}","Portal memiliki alamat agen yang terhubung dengan email sosial. Tetapi tidak ada status agen di semua planet.
+URL portal: {0}
+Email sosial: {1}
+Alamat agen di portal: {2}","Портал имеет адрес агента, подключенный к социальной электронной почте. Но нет состояний агента во всех планетах.
+URL портала: {0}
+Социальная электронная почта: {1}
+Адрес агента в портале: {2}","门户具有与社交电子邮件连接的代理地址。但是，所有行星上都没有代理状态。
+门户网址：{0}
+社交电子邮件：{1}
+门户中的代理地址：{2}","門戶具有與社交電子郵件連接的代理地址。但是，所有行星上都沒有代理狀態。
+門戶網址：{0}
+社交電子郵件：{1}
+門戶中的代理地址：{2}","Ang portal ay may agent address na nakakonekta sa social email. Ngunit walang mga estado ng ahente sa lahat ng mga planeta.
+Portal URL: {0}
+Social Email: {1}
+Agent Address sa portal: {2}","พอร์ทัลมีที่อยู่ของตัวแทนที่เชื่อมต่อกับอีเมลโซเชียล แต่ไม่มีสถานะตัวแทนในดาวเคราะห์ทั้งหมด
+URL ของพอร์ทัล: {0}
+อีเมลโซเชียล: {1}
+ที่อยู่ตัวแทนในพอร์ทัล: {2}"

@@ -6941,7 +6941,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 5}
-  m_SizeDelta: {x: 0, y: 28}
+  m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &132950836163934161
 CanvasRenderer:
@@ -8219,7 +8219,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -5}
-  m_SizeDelta: {x: 0, y: 28}
+  m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1760109840651783127
 CanvasRenderer:
@@ -13701,15 +13701,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce21e9388887497b99c8a9364d537321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -0.2580645
-  scrollOffset: -0.2580645
+  cellInterval: -0.23417722
+  scrollOffset: -0.23417722
   loop: 0
   cellContainer: {fileID: 7200235518746124115}
   reuseCellMarginCount: 0
   paddingHead: 15
   paddingTail: 10
-  spacing: 16
-  cellSize: 64
+  spacing: 0
+  cellSize: 74
   cellPrefab: {fileID: 9153680746801359511, guid: 36ae6d37c0aea47cfa0025d18dfae81d,
     type: 3}
 --- !u!1 &7308964520275054077

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Libplanet.Common;
 using Libplanet.Crypto;
+using Nekoyume;
 using Nekoyume.Blockchain;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
@@ -15,7 +16,7 @@ namespace Planetarium.Nekoyume.Editor
         private static PublicKey GetOrCreateInitialValidator()
         {
             var pk = Agent.ProposerKey;
-            Debug.Log($"Private Key of initialValidator: {ByteUtil.Hex(pk.ByteArray)}");
+            Debug.Log($"Private Key of initialValidator: {pk.ToHexWithZeroPaddings()}");
             Debug.Log($"Public Key of initialValidator: {pk.PublicKey}");
             return pk.PublicKey;
         }
