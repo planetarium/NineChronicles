@@ -184,12 +184,14 @@ namespace Nekoyume.Blockchain
                 new ClientFilter()
             });
 
-            var getTipTask = UniTask.RunOnThreadPool(async () =>
+            IEnumerator GetTip()
             {
-                var getTipTaskResult = await _service.GetTip();
-                OnRenderBlock(null, getTipTaskResult);
-            });
-            getTipTask.Forget();
+                var getTipTask = Task.Run(async () => await _service.GetTip());
+                yield return new WaitUntil(() => getTipTask.IsCompleted);
+                OnRenderBlock(null, getTipTask.Result);
+            }
+
+            var getTipCoroutine = StartCoroutine(GetTip());
 
             if (_genesis == null)
             {
@@ -220,7 +222,7 @@ namespace Nekoyume.Blockchain
                 Debug.Log($"[RPCAgent] genesis block imported in {sw.ElapsedMilliseconds}ms.(elapsed)");
             }
 
-            yield return getTipTask;
+            yield return getTipCoroutine;
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
@@ -790,24 +792,19 @@ namespace Nekoyume.Blockchain
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
-            UniTask.RunOnThreadPool<(long, BlockHash)>(() =>
-            {
-                var dict = (Dictionary) _codec.Decode(newTip);
-                var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
-                return (newTipBlock.Index, new BlockHash(newTipBlock.Hash.ToByteArray()));
-            }).ToObservable().ObserveOnMainThread().Subscribe(tuple =>
-            {
-                _blockHashCache.Add(tuple.Item1, tuple.Item2);
-                BlockIndex = tuple.Item1;
-                BlockIndexSubject.OnNext(BlockIndex);
-                BlockTipHash = tuple.Item2;
-                BlockTipHashSubject.OnNext(BlockTipHash);
-                _lastTipChangedAt = DateTimeOffset.UtcNow;
+            var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
+            var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
+            var blockIndex = newTipBlock.Index;
+            var blockHash = new BlockHash(newTipBlock.Hash.ToByteArray());
+            _blockHashCache.Add(blockIndex, blockHash);
+            BlockIndex = blockIndex;
+            BlockIndexSubject.OnNext(BlockIndex);
+            BlockTipHash = blockHash;
+            BlockTipHashSubject.OnNext(BlockTipHash);
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
 
-                Debug.Log(
-                    $"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}");
-                BlockRenderer.RenderBlock(null, null);
-            });
+            Debug.Log($"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}");
+            BlockRenderer.RenderBlock(null, null);
         }
 
         private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
