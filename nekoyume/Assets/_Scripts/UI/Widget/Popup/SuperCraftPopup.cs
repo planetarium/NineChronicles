@@ -226,14 +226,14 @@ namespace Nekoyume.UI
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
-            loadingScreen.SetItemMaterial(new Item(itemBase));
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase), false);
             loadingScreen.SetCloseAction(null);
             loadingScreen.OnDisappear = () => Close();
             yield return new WaitForSeconds(.5f);
 
             var format = L10nManager.Localize("UI_COST_BLOCK");
             var quote = string.Format(format, SuperCraftIndex);
-            loadingScreen.AnimateNPC(itemBase.ItemType, quote);
+            loadingScreen.AnimateNPC(CombinationLoadingScreen.SpeechBubbleItemType.Equipment, quote);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

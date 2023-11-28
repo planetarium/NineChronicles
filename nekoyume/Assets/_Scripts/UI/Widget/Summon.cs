@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Lib9c.Renderers;
@@ -6,6 +7,7 @@ using Libplanet.Action;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -13,6 +15,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Summon;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -133,6 +136,7 @@ namespace Nekoyume.UI
             ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
             SetMaterialAssets();
+            StartCoroutine(CoShowLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
@@ -187,6 +191,35 @@ namespace Nekoyume.UI
                 var material = (CostType)_summonRows[i].CostMaterial;
                 headerMenu.SetMaterial(i, material);
             }
+        }
+
+        private IEnumerator CoShowLoadingScreen(List<int> recipes)
+        {
+            var loadingScreen = Find<CombinationLoadingScreen>();
+            IEnumerator CoChangeItem()
+            {
+                while (isActiveAndEnabled)
+                {
+                    foreach (var recipe in recipes)
+                    {
+                        loadingScreen.SpeechBubbleWithItem.SetItemMaterial(
+                            new Item(ItemFactory.CreateItem(
+                                TableSheets.Instance.EquipmentItemRecipeSheet[recipe]
+                                    .GetResultEquipmentItemRow(),
+                                new ActionRenderHandler.LocalRandom(0))), false);
+                        yield return new WaitForSeconds(.1f);
+                    }
+                }
+            }
+
+            loadingScreen.Show();
+            loadingScreen.SetCloseAction(null);
+            StartCoroutine(CoChangeItem());
+            yield return new WaitForSeconds(.5f);
+
+            var format = L10nManager.Localize("UI_COST_BLOCK");
+            var quote = string.Format(format, 1);
+            loadingScreen.AnimateNPC(CombinationLoadingScreen.SpeechBubbleItemType.Aura, quote);
         }
 
         public static void ButtonSubscribe(SimpleCostButton[] buttons, GameObject gameObject)

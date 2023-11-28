@@ -18,6 +18,14 @@ namespace Nekoyume.UI
 {
     public class CombinationLoadingScreen : ScreenWidget
     {
+        public enum SpeechBubbleItemType
+        {
+            Equipment,
+            Consumable,
+            Rune,
+            Aura,
+        }
+
         [SerializeField] private Button button = null;
 
         [SerializeField] private CanvasGroup _buttonCanvasGroup = null;
@@ -40,6 +48,7 @@ namespace Nekoyume.UI
         private CombinationSparkVFX _sparkVFX = null;
 
         public System.Action OnDisappear { get; set; }
+        public SpeechBubbleWithItem SpeechBubbleWithItem => speechBubble;
 
         private const int ContinueTime = 5;
         private System.Action _closeAction;
@@ -88,19 +97,9 @@ namespace Nekoyume.UI
             _bgAlphaTweener.PlayReverse();
         }
 
-        public void AnimateNPC(Nekoyume.Model.Item.ItemType itemType, string quote)
+        public void AnimateNPC(SpeechBubbleItemType itemType, string quote)
         {
             _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType, quote));
-        }
-
-        public void SetItemMaterial(Item item, bool isConsumable = false)
-        {
-            speechBubble.SetItemMaterial(item, isConsumable);
-        }
-
-        public void SetCurrency(long ncg, long crystal)
-        {
-            speechBubble.SetCurrency(ncg, crystal);
         }
 
         public void SetCloseAction(System.Action closeAction)
@@ -108,25 +107,39 @@ namespace Nekoyume.UI
             _closeAction = closeAction;
         }
 
-        private IEnumerator CoAnimateNPC(Nekoyume.Model.Item.ItemType itemType, string quote = null)
+        private IEnumerator CoAnimateNPC(SpeechBubbleItemType itemType, string quote = null)
         {
             var pos = ActionCamera.instance.Cam.transform.position;
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             npcSkeletonGraphic.gameObject.SetActive(true);
             switch (itemType)
             {
-                case ItemType.Equipment:
+                case SpeechBubbleItemType.Equipment:
                     npcSkeletonGraphic.AnimationState.SetAnimation(0,
                         NPCAnimation.Type.Appear_02.ToString(), false);
                     npcSkeletonGraphic.AnimationState.AddAnimation(0,
                         NPCAnimation.Type.Loop.ToString(), true, 0f);
                     break;
 
-                case ItemType.Consumable:
+                case SpeechBubbleItemType.Consumable:
                     npcSkeletonGraphic.AnimationState.SetAnimation(0,
                         NPCAnimation.Type.Appear_03.ToString(), false);
                     npcSkeletonGraphic.AnimationState.AddAnimation(0,
                         NPCAnimation.Type.Loop_02.ToString(), true, 0f);
+                    break;
+
+                case SpeechBubbleItemType.Rune:
+                    npcSkeletonGraphic.AnimationState.SetAnimation(0,
+                        NPCAnimation.Type.Appear_02.ToString(), false);
+                    npcSkeletonGraphic.AnimationState.AddAnimation(0,
+                        NPCAnimation.Type.Loop_Rune.ToString(), true, 0f);
+                    break;
+
+                case SpeechBubbleItemType.Aura:
+                    npcSkeletonGraphic.AnimationState.SetAnimation(0,
+                        NPCAnimation.Type.Appear_02.ToString(), false);
+                    npcSkeletonGraphic.AnimationState.AddAnimation(0,
+                        NPCAnimation.Type.Loop_Aura.ToString(), true, 0f);
                     break;
             }
 

@@ -325,14 +325,14 @@ namespace Nekoyume.UI
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
-            loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase), isConsumable);
             loadingScreen.SetCloseAction(action);
             Push();
             yield return new WaitForSeconds(.5f);
 
             var format = L10nManager.Localize("UI_COST_BLOCK");
             var quote = string.Format(format, blockIndex);
-            loadingScreen.AnimateNPC(itemBase.ItemType, quote);
+            loadingScreen.AnimateNPC(CombinationLoadingScreen.SpeechBubbleItemType.Equipment, quote);
         }
 
         private void SliderGageEffect(Equipment equipment, long targetExp, int targetLevel)
