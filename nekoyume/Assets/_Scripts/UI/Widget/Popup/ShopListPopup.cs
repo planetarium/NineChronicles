@@ -305,7 +305,7 @@ namespace Nekoyume.UI
                 .Where(c => c.Active && c.Name != "NoShow")
                 .OrderBy(c => c.Order).First();
             var product = category.ProductList
-                .Where(p => p.Active)
+                .Where(p => p.Active && p.Buyable)
                 .OrderBy(p => p.Order).First();
             var purchasingProduct = Game.Game.instance.IAPStoreManager.IAPProducts
                 .FirstOrDefault(p => p.definition.id == product.Sku);
