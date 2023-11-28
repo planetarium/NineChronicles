@@ -1667,7 +1667,7 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn.");
                 yield return new WaitUntil(() => idToken is not null);
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
-                
+
                 // NOTE: Portal login flow.
                 dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
                 Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
@@ -1681,7 +1681,7 @@ namespace Nekoyume.Game
                 Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
                 dimmedLoadingScreen.Close();
-                
+
                 agentAddrInPortal = portalSigninTask.Result;
             }
 
@@ -2000,7 +2000,8 @@ namespace Nekoyume.Game
                 {
                     var responseData = DccAvatars.FromJson(json);
                     Dcc.instance.Init(responseData.Avatars);
-                });
+                },
+                timeOut: Dcc.TimeOut);
             sw.Stop();
             Debug.Log($"[Game] CoInitDccAvatar()... DCC Avatar initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }

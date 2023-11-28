@@ -1,6 +1,4 @@
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -18,7 +16,13 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI productName;
 
         [SerializeField]
+        private GameObject tagObj;
+
+        [SerializeField]
         private TextMeshProUGUI discount;
+
+        [SerializeField]
+        private TextMeshProUGUI timeLimitText;
 
         [SerializeField]
         private TextMeshProUGUI[] preDiscountPrice;
@@ -37,16 +41,19 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Button buyButton;
+
         [SerializeField]
         private GameObject disabledBuyButton;
 
         [SerializeField]
         private Image backgroundImage;
+
         [SerializeField]
         private Image productImage;
 
         [SerializeField]
         private VerticalLayoutGroup bottomLayout;
+
         [SerializeField]
         private LayoutElement bottomButtonLayoutElement;
 
@@ -55,16 +62,17 @@ namespace Nekoyume.UI.Module
 
         private RectTransform _rect;
         private ProductSchema _data;
-        private UnityEngine.Purchasing.Product _puchasingData;
+        private UnityEngine.Purchasing.Product _purchasingData;
 
         private void Awake()
         {
             buyButton.onClick.AddListener(() =>
             {
                 if (_data == null || !_data.Buyable)
+                {
                     return;
+                }
 
-                Widget.Find<MobileShop>().SetLoadingDataScreen(true);
                 Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.Sku));
 
                 var evt = new AirbridgeEvent("IAP_GridCell_Click");
@@ -72,13 +80,12 @@ namespace Nekoyume.UI.Module
                 evt.AddCustomAttribute("product-id", _data.Sku);
                 AirbridgeUnity.TrackEvent(evt);
 
-                Widget.Find<ShopListPopup>().Show(_data, _puchasingData).Forget();
+                Widget.Find<ShopListPopup>().Show(_data, _purchasingData).Forget();
             });
 
-            L10nManager.OnLanguageChange.Subscribe(_ =>
-            {
-                RefreshLocalized().Forget();
-            }).AddTo(gameObject);
+            L10nManager.OnLanguageChange
+                .Subscribe(_ => RefreshLocalized().Forget())
+                .AddTo(gameObject);
         }
 
         public async UniTask RefreshLocalized()
@@ -89,18 +96,25 @@ namespace Nekoyume.UI.Module
             if (_data.AccountLimit != null)
             {
                 buyLimitDescription.gameObject.SetActive(true);
-                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_AccountLimit", _data.AccountLimit.Value) + $" ({_data.AccountLimit.Value - _data.PurchaseCount}/{_data.AccountLimit.Value})"; ;
+                buyLimitDescription.text =
+                    L10nManager.Localize("MOBILE_SHOP_PRODUCT_AccountLimit", _data.AccountLimit.Value) +
+                    $" ({_data.AccountLimit.Value - _data.PurchaseCount}/{_data.AccountLimit.Value})";
             }
 
             if (_data.WeeklyLimit != null)
             {
                 buyLimitDescription.gameObject.SetActive(true);
-                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_WeeklyLimit", _data.WeeklyLimit.Value) + $" ({_data.WeeklyLimit.Value - _data.PurchaseCount}/{_data.WeeklyLimit.Value})"; ;
+                buyLimitDescription.text =
+                    L10nManager.Localize("MOBILE_SHOP_PRODUCT_WeeklyLimit", _data.WeeklyLimit.Value) +
+                    $" ({_data.WeeklyLimit.Value - _data.PurchaseCount}/{_data.WeeklyLimit.Value})";
             }
+
             if (_data.DailyLimit != null)
             {
                 buyLimitDescription.gameObject.SetActive(true);
-                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit.Value) + $" ({_data.DailyLimit.Value - _data.PurchaseCount}/{_data.DailyLimit.Value})"; ;
+                buyLimitDescription.text =
+                    L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit.Value) +
+                    $" ({_data.DailyLimit.Value - _data.PurchaseCount}/{_data.DailyLimit.Value})";
             }
 
             await DownLoadImage();
@@ -108,10 +122,8 @@ namespace Nekoyume.UI.Module
 
         private async UniTask DownLoadImage()
         {
-            var bgImage = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.BgPath}");
-            var iconImage = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.Path}");
-            backgroundImage.sprite = bgImage;
-            productImage.sprite = iconImage;
+            backgroundImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.BgPath}");
+            productImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.Path}");
         }
 
         public void SetData(ProductSchema data, bool isRecommended)
@@ -124,9 +136,8 @@ namespace Nekoyume.UI.Module
 
         private void Refresh()
         {
-            var isDiscount = _data.Discount > 0;
-            _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku);
-            if(_puchasingData == null)
+            _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku);
+            if (_purchasingData == null)
             {
                 gameObject.SetActive(false);
                 return;
@@ -140,96 +151,86 @@ namespace Nekoyume.UI.Module
                     bottomLayout.spacing = 0;
                     break;
                 case "1x2":
-                    _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 467);// add spacing size
+                    _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 467); // add spacing size
                     bottomButtonLayoutElement.minHeight = 75;
                     bottomLayout.spacing = 3;
                     break;
-                default:
-                    break;
             }
+
+            var metadata = _purchasingData.metadata;
+            Debug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
 
             foreach (var item in price)
             {
-                item.text = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, _puchasingData.metadata.localizedPrice);
+                item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
             }
-            Debug.Log($"{_puchasingData.metadata.localizedTitle} : {_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPriceString} {_puchasingData.metadata.localizedPrice}");
 
+            var isDiscount = _data.Discount > 0;
             foreach (var item in discountObjs)
             {
                 item.SetActive(isDiscount);
             }
 
+            tagObj.SetActive(false);
+            discount.gameObject.SetActive(false);
+            timeLimitText.gameObject.SetActive(false);
             if (isDiscount)
             {
+                discount.text = $"{_data.Discount}%";
                 foreach (var item in preDiscountPrice)
                 {
-                    var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100 - _data.Discount)));
-                    var origin = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, originPrice);
+                    var originPrice = metadata.localizedPrice * ((decimal)100 / (100 - _data.Discount));
+                    var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
                     item.text = origin;
                 }
-                discount.text = $"{_data.Discount}%";
+                discount.gameObject.SetActive(true);
+                tagObj.SetActive(true);
+            }
+            else if (_data.DailyLimit != null)
+            {
+                timeLimitText.text = MobileShop.RemainTimeForDailyLimit;
+                timeLimitText.gameObject.SetActive(true);
+                tagObj.SetActive(true);
+            }
+            else if (_data.WeeklyLimit != null)
+            {
+                timeLimitText.text = MobileShop.RemainTimeForWeeklyLimit;
+                timeLimitText.gameObject.SetActive(true);
+                tagObj.SetActive(true);
             }
 
             buyButton.interactable = _data.Buyable;
             RefreshDim();
         }
 
-        public void LocalPurchaseSucces()
+        private void RefreshDim()
+        {
+            var dim = false;
+            if (_data.DailyLimit != null)
+            {
+                dim = _data.PurchaseCount >= _data.DailyLimit.Value;
+            }
+            else if (_data.WeeklyLimit != null)
+            {
+                dim = _data.PurchaseCount >= _data.WeeklyLimit.Value;
+            }
+
+            dimObj.SetActive(dim);
+            disabledBuyButton.SetActive(dim);
+        }
+
+        public void LocalPurchaseSuccess()
         {
             _data.PurchaseCount++;
             Refresh();
             RefreshLocalized().Forget();
         }
 
-        private void RefreshDim()
-        {
-            if (_data.DailyLimit != null)
-            {
-                if (_data.PurchaseCount < _data.DailyLimit.Value)
-                {
-                    dimObj.SetActive(false);
-                    disabledBuyButton.SetActive(false);
-                    return;
-                }
-                else
-                {
-                    dimObj.SetActive(true);
-                    disabledBuyButton.SetActive(true);
-                    return;
-                }
-            }
-
-            if (_data.WeeklyLimit != null)
-            {
-                if (_data.PurchaseCount < _data.WeeklyLimit.Value)
-                {
-                    dimObj.SetActive(false);
-                    disabledBuyButton.SetActive(false);
-                    return;
-                }
-                else
-                {
-                    dimObj.SetActive(true);
-                    disabledBuyButton.SetActive(true);
-                    return;
-                }
-            }
-            disabledBuyButton.SetActive(false);
-            dimObj.SetActive(false);
-        }
-
         public bool IsBuyable()
         {
             if (_data.AccountLimit != null)
             {
-                if (_data.PurchaseCount < _data.AccountLimit.Value)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return _data.PurchaseCount < _data.AccountLimit.Value;
             }
 
             return true;
