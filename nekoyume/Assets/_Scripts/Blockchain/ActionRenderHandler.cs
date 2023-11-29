@@ -160,6 +160,7 @@ namespace Nekoyume.Blockchain
             EventConsumableItemCrafts();
             EventMaterialItemCrafts();
             AuraSummon();
+            RuneSummon();
 
             // Market
             RegisterProduct();
@@ -691,6 +692,18 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
+                .AddTo(_disposables);
+        }
+
+        private void RuneSummon()
+        {
+            _actionRenderer.EveryRender<RuneSummon>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrePareRuneSummon)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRuneSummon)
                 .AddTo(_disposables);
         }
 
@@ -1430,6 +1443,37 @@ namespace Nekoyume.Blockchain
             LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
 
             Widget.Find<Summon>().OnActionRender(eval);
+        }
+
+        private ActionEvaluation<RuneSummon> PrePareRuneSummon(ActionEvaluation<RuneSummon> eval)
+        {
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            return eval;
+        }
+
+        private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = eval.Action;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.SummonSheet[action.GroupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            var count = summonRow.CostMaterialCount * action.SummonCount;
+            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+
+            var summonCount = eval.Action.SummonCount;
+            var random = new LocalRandom(eval.RandomSeed);
+            var gainedRunes = new List<FungibleAssetValue>();
+            var simulateResult = Action.RuneSummon.SimulateSummon(Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random);
+            foreach (var pair in simulateResult)
+            {
+                gainedRunes.Add(pair.Key * pair.Value);
+            }
+
+            var result = string.Join(",", gainedRunes.Select(r => r.ToString()));
+            Debug.Log($"[RuneSummon]{result}");
         }
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
