@@ -851,56 +851,19 @@ namespace Nekoyume.UI
                 return;
             }
 
-
-            if(unloadFromMyGaragesRecipientMail.Memo != null && unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
-            {
-                var rewards = new List<MailReward>();
-                if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
-                {
-                    rewards.AddRange(
-                        unloadFromMyGaragesRecipientMail.FungibleAssetValues.Select(fav =>
-                            new MailReward(fav.value, (int)fav.value.MajorUnit)));
-                }
-
-                if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
-                {
-                    var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                    foreach (var (fungibleId, count) in
-                             unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
-                    {
-                        var row = materialSheet.OrderedList!
-                            .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
-                        if (row is null)
-                        {
-                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
-                            continue;
-                        }
-
-                        var material = ItemFactory.CreateMaterial(row);
-                        rewards.Add(new MailReward(material, count));
-                    }
-                }
-                UpdateTabs();
-                Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
-                return;
-            }
-
-            var showQueue = new Queue<System.Action>();
+            var rewards = new List<MailReward>();
             if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
             {
-                foreach (var (balanceAddr, value) in
-                         unloadFromMyGaragesRecipientMail.FungibleAssetValues)
-                {
-                    // TODO: Enqueue functions.
-                }
+                rewards.AddRange(
+                    unloadFromMyGaragesRecipientMail.FungibleAssetValues.Select(fav =>
+                        new MailReward(fav.value, (int)fav.value.MajorUnit)));
             }
 
             if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
             {
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                var itemTooltip = ItemTooltip.Find(ItemType.Material);
                 foreach (var (fungibleId, count) in
-                         unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                            unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
                 {
                     var row = materialSheet.OrderedList!
                         .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
@@ -911,19 +874,12 @@ namespace Nekoyume.UI
                     }
 
                     var material = ItemFactory.CreateMaterial(row);
-                    showQueue.Enqueue(() => itemTooltip.Show(
-                        material,
-                        L10nManager.Localize("UI_OK"),
-                        true,
-                        () => UniTask.WaitWhile(itemTooltip.IsActive)
-                            .ToObservable()
-                            .Subscribe(_ => showQueue.Dequeue()?.Invoke()),
-                        itemCount: count)
-                    );
+                    rewards.Add(new MailReward(material, count));
                 }
             }
-
-            showQueue.Dequeue()?.Invoke();
+            UpdateTabs();
+            Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+            return;
         }
 
         public void Read(ClaimItemsMail claimItemsMail)
