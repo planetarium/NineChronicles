@@ -234,7 +234,7 @@ UI_ADDITIONAL_ABILITIES_WHEN_COMBINED,The following effects are granted when cra
 NPC_01_NAME,Freya's Cat,프레이야의 하수인,Gato de Freya,フレイヤの猫,El Gato de Freya,แมวของเฟรย่า,Kucing Freya,,芙蕾雅的猫,弗雷亞的貓,Pusa ni Freya,Con mèo của Freya
 NPC_02_NAME,Fox Wizard,여우부족 마도사,Fox Wizard,フォックス・ウィザード,Mago de la Tribu Zorro,นักเวทย์เผ่าจิ้งจอก,Rubah Penyihir,,狐狸巫师,狐族巫師,Salamangkerong Soro,Phù thủy Hồ ly
 NPC_03_NAME,Fox Chief,여우부족 대장,Fox Thief,フォックス・チーフ,Jefe de la Tribu Zorro,โจรเผ่าจิ้งจอก,Kepala suku Rubah,,狐狸酋长,狐族领袖,Pinuno ng Soro,Thị trưởng Hồ ly
-NPC_04_NAME,Saehrimnir ,제림니르,Saehrimnir ,セーフリームニル,Saehrimnir ,Saehrimnir ,Gerimnir,,格里姆尼尔,傑里姆尼爾,Saehrimnir ,Gerimnir
+NPC_04_NAME,Saehrimnir,제림니르,Saehrimnir,セーフリームニル,Saehrimnir,Saehrimnir,Gerimnir,,格里姆尼尔,傑里姆尼爾,Saehrimnir,Gerimnir
 NPC_05_NAME,Dvergr,드베르그,Dvergr,ドヴェルグ,Dvergr,Dvergr,Dvergr,,德伯格,德維爾格,Dvergr,Dvergr
 NPC_06_NAME,Jade,제이드,Jade,ジェイド,Jade,Jade,Jade,,杰德,傑德,Jade,Jade
 NPC_07_NAME,Freya,여신 프레이야,Freya,フレイヤ,Freya,Freya,Freya,,弗雷亚,弗雷亞,Freya,Freya
@@ -275,7 +275,7 @@ UI_MENU,MENU,메뉴,CARDÁPIO,メニュー,MENÚ,เมนู,MENU,,菜单,菜�
 UI_NOTICE,Notice,공지,Perceber,お知らせ,Aviso,สังเกต,Melihat,,注意,注意,PAUNAWA,Thông báo
 UI_GO_BACK,Back,뒤로,Voltar,戻る,Regresar,กลับไป,Kembali,,返回,後退,Balik,Quay lại
 UI_GO_MAIN,Main,메인,Principal,メイン,Principal,หน้าหลัก,Utama,,主菜单,主界面,Main,Trang chính
-UI_QUIT,Quit,종료,Quit,終了,Salir,เลิกเล่น,Berhenti,,退出,退出,Umayaw,Thoát 
+UI_QUIT,Quit,종료,Quit,終了,Salir,เลิกเล่น,Berhenti,,退出,退出,Umayaw,Thoát
 UI_EXIT,Exit,나가기,Sair,出る,Salir,ออก,Keluar,,退出,退出,Labas,Rời khỏi trò chơi
 UI_ERROR,Error,에러,Erro,エラー,Error,ข้อผิดพลาด,Error,,错误,錯誤,Kamalian,Lỗi
 UI_NICKNAME_CONDITION,"Nickname must be between 2-20 characters
@@ -1022,7 +1022,7 @@ UI_ALL_BENEFITS,All Benefits,레벨별 혜택,Todos os benefícios,レベル別�
 UI_STAKING_BENEFITS_DESCRIPTION,"As the amount of storage increases, the buff & interest benefits increase.",스테이킹 NCG를 늘릴 수록 버프&이자 혜택이 증가합니다.,,ステーキングしたNCGが増えるほどバフ&リワードの特典が増加します。,A medida que aumenta la cantidad de NCG almacenado se incrementan los beneficios y recompensas.,เมื่อปริมาณเก็บเพิ่มขึ้น บัฟและผลประโยชน์เพิ่มขึ้น,"Ketika jumlah penyimpanan meningkat, manfaat buff & bunga meningkat.",,随着存储量的增加，增益和利息收益也会增加。,隨著存儲量的增加，增益和利息收益也會增加。,"Habang tumataas ang dami ng imbakan, lumalaki rin ang mga benepisyo ng buff at interes.","Khi lượng đặt cược NCG tăng lên, buff & lãi suất tăng."
 UI_CLAIMABLE_BENEFITS,Claimable Benefits,오늘까지 쌓인 이자,Benefícios reivindicáveis,獲得できる特典,Beneficios reclamables,ผลประโยชน์ที่เรียกร้องได้,Manfaat yang dapat diklaim,,可声称的好处,可認領的好處,Makukuhang benepisyo.,Lợi tức có thể lấy được
 UI_REMAINING_TIME_TO_CLAIM,Remaining Time to Claim,다음 수령까지 남은 시간,Tempo restante para reivindicar,次回の受け取りまでの残り時間,Tiempo restante para reclamar,เวลาที่เหลือในการเรียกร้อง,Sisa waktu untuk mengklaim,,剩余的索赔时间,剩餘的認領時間,Nalalabing Panahon para Magclaim,Thời gian còn lại để thu
-UI_RECEIVABLE,Receivable,수령 가능,A receber,受け取り可能,Recibible,ที่สามารถรับได้,Piutang,,应收,應收,Mga Matatanggap,Có thể thu 
+UI_RECEIVABLE,Receivable,수령 가능,A receber,受け取り可能,Recibible,ที่สามารถรับได้,Piutang,,应收,應收,Mga Matatanggap,Có thể thu
 UI_NO_BENEFITS,No Benefits,혜택 없음,Sem benefícios,特典なし,Sin beneficios,ไม่มีประโยชน์,Tidak ada manfaat,,没有好处,沒有好處,Walang Benepisyo,Không có lợi tức
 ARENA_REWARD_BONUS,Arena Reward Bonus,아레나 보상 보너스,Bônus de recompensa na arena,アリーナリワードボーナス,Bono de recompensa de arena,โบนัสรางวัลอารีน่า,Bonus hadiah arena,,竞技场奖励奖金,競技場獎勵紅利,Bonus Reward mula sa Arena,Phần thưởng thêm Đấu trường
 GRINDING_CRYSTAL_BONUS,Grinding Crystal Bonus,크리스탈 분해 보너스,Bonus de cristal de moagem,クリスタルグラインドボーナス,Bono de cristales por desmantelar,โบนัสการบดคริสตัล,Menggiling bonus kristal,,研磨水晶奖金,研磨水晶紅利,Kristal Bonus mula sa Pag-giling,Tinh thể phân tách nhận thêm
@@ -1802,3 +1802,18 @@ Perbarui sekarang dan nikmati Nine Chronicles M.</size>",,"<size=16>新版本已
 立即更新，享受 Nine Chronicles M。</size>","<size=16>Ang bagong bersyon ay na -update!
 I-update ngayon at tamasahin ang Nine Chronicles M.</size>","<size=16>Phiên bản mới đã được cập nhật!
 Cập nhật ngay bây giờ và trải nghiệm Nine Chronicles M.</size=16>"
+UI_FORGOT_PRIVATE_KEY,Forgot Private Key,키를 잃어버렸습니다.,Esqueceu a chave privada,秘密鍵を忘れました,Olvidé la clave privada,ลืมรหัสส่วนตัว,Lupa Kunci Pribadi,Забыл личный ключ,忘记了私钥,忘記了私鑰,Nakalimutan ang pribadong susi,Quên chìa khóa riêng
+UI_FORGOT_PRIVATE_KEY_POPUP_INFORMATION,"If you do not enter the key, the existing account will be deleted.
+Would you really initialize it?","키를 입력하지 않으면 기존의 계정이 삭제됩니다. 
+정말 초기화 하시겠습니까?","Se você não entrar na chave, a conta existente será excluída.
+Você realmente inicializaria?","キーを入力しないと、既存のアカウントが削除されます。
+本当に初期化しますか？","Si no ingresa la clave, la cuenta existente se eliminará.
+¿Realmente lo inicializarías?","หากคุณไม่ป้อนคีย์บัญชีที่มีอยู่จะถูกลบ
+คุณจะเริ่มต้นจริงๆหรือไม่?","Jika Anda tidak memasukkan kunci, akun yang ada akan dihapus.
+Apakah Anda benar -benar menginisialisasi itu?","Если вы не введете ключ, существующая учетная запись будет удалена.
+Вы бы действительно инициализировали это?","如果您不输入密钥，则将删除现有帐户。
+您真的会初始化吗？","如果您不輸入密鑰，則將刪除現有帳戶。
+您真的會初始化嗎？","Kung hindi ka pumasok sa susi, tatanggalin ang umiiral na account.
+Sinisimulan mo ba talaga ito?","Nếu bạn không nhập khóa, tài khoản hiện tại sẽ bị xóa.
+Bạn có thực sự khởi tạo nó không?"
+UI_FORGOT_PRIVATE_KEY_POPUP_BUTTON,Reset,초기화,Reiniciar,リセット,Reiniciar,รีเซ็ต,Mengatur ulang,Перезагрузить,重置,重置,I -reset,Cài lại
