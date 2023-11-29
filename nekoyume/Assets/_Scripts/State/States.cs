@@ -447,9 +447,8 @@ namespace Nekoyume.State
 
         public void UpdateCurrentAvatarBalance(FungibleAssetValue fav)
         {
-            var preFav = CurrentAvatarBalances[fav.Currency.Ticker];
-            var major = preFav.MajorUnit + fav.MajorUnit;
-            var miner = preFav.MinorUnit + fav.MinorUnit;
+            var major = fav.MajorUnit;
+            var miner = fav.MinorUnit;
             CurrentAvatarBalances[fav.Currency.Ticker] =
                 new FungibleAssetValue(fav.Currency, major, miner);
         }
