@@ -812,7 +812,7 @@ namespace Nekoyume.UI
                             }
                             foreach (var item in findKey.Value.FavList)
                             {
-                                var currency = Currency.Legacy(item.Ticker.ToString(), 0, null);
+                                var currency = Currency.Legacy(item.Ticker, 0, null);
                                 var fav = new FungibleAssetValue(currency, (int)item.Amount, 0);
                                 mailRewards.Add(new MailReward(fav, (int)item.Amount, true));
                             }

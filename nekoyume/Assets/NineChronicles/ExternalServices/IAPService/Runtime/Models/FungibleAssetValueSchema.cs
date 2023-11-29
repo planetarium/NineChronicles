@@ -5,7 +5,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
     public class FungibleAssetValueSchema
     {
         [JsonPropertyName("ticker")]
-        public Currency Ticker { get; set; }
+        public string Ticker { get; set; }
 
         [JsonPropertyName("amount")]
         public decimal Amount { get; set; }
