@@ -80,7 +80,7 @@ namespace Nekoyume.UI
                 int index = 0;
                 for (int i = 0; i < premiumProduct.FavList.Length && index < premiumRewards.Length; i++,index++)
                 {
-                    ItemViewSetCurrencyData(premiumRewards[index], premiumProduct.FavList[i].Ticker.ToString(), premiumProduct.FavList[i].Amount);
+                    ItemViewSetCurrencyData(premiumRewards[index], premiumProduct.FavList[i].Ticker, premiumProduct.FavList[i].Amount);
                 }
                 for (int i = 0; i < premiumProduct.FungibleItemList.Length && index < premiumRewards.Length; i++, index++)
                 {
@@ -107,7 +107,7 @@ namespace Nekoyume.UI
                 int index = 0;
                 for (int i = 0; i < premiumPlusProduct.FavList.Length && index < premiumPlusRewards.Length; i++, index++)
                 {
-                    ItemViewSetCurrencyData(premiumPlusRewards[index], premiumPlusProduct.FavList[i].Ticker.ToString(), premiumPlusProduct.FavList[i].Amount);
+                    ItemViewSetCurrencyData(premiumPlusRewards[index], premiumPlusProduct.FavList[i].Ticker, premiumPlusProduct.FavList[i].Amount);
                 }
                 for (int i = 0; i < premiumPlusProduct.FungibleItemList.Length && index < premiumPlusRewards.Length; i++, index++)
                 {
