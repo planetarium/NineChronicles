@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GoldenRune@Loop
+  m_Name: SummonObj@GoldenRune_Loop
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -49,7 +49,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
   m_FloatCurves:
   - curve:
       serializedVersion: 2
@@ -76,7 +76,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: BackCanvas/Contents/CenterUI/Obj/SummonObj/GoldenRuneObj
+    path: SummonObj/GoldenRuneObj
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -113,7 +113,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: BackCanvas/Contents/CenterUI/Obj/SummonObj/GoldenRuneObj
+    path: SummonObj/GoldenRuneObj
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -141,7 +141,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.r
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -169,7 +169,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.g
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -197,7 +197,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.b
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -234,7 +234,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_PPtrCurves: []
@@ -341,7 +341,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: BackCanvas/Contents/CenterUI/Obj/SummonObj/GoldenRuneObj
+    path: SummonObj/GoldenRuneObj
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -378,7 +378,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: BackCanvas/Contents/CenterUI/Obj/SummonObj/GoldenRuneObj
+    path: SummonObj/GoldenRuneObj
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -415,7 +415,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.x
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -452,7 +452,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.y
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -480,7 +480,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.z
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -508,7 +508,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.r
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -536,7 +536,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.g
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -564,7 +564,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.b
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -601,7 +601,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: BackCanvas/Contents/CenterUI/Obj/Shadow
+    path: Bottom/Shadow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_EulerEditorCurves: []

@@ -36,7 +36,7 @@ namespace Nekoyume.UI
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
 
-        private int _normalSummonId;
+        private const int NormalSummonId = 10001;
         private bool _isGreat;
         private Coroutine _coroutine;
         private string _previousMusicName;
@@ -75,7 +75,8 @@ namespace Nekoyume.UI
                 StartCoroutine(PlayResultAnimation(_isGreat));
             });
 
-            Summon.ButtonSubscribe(new[] { normalDrawButton, goldenDrawButton }, gameObject);
+            Summon.ButtonSubscribe(normalDrawButton, gameObject);
+            Summon.ButtonSubscribe(goldenDrawButton, gameObject);
         }
 
         public void Show(
@@ -90,12 +91,7 @@ namespace Nekoyume.UI
 
             animator.SetTrigger(AnimatorHashHide);
 
-            if (_normalSummonId == default)
-            {
-                _normalSummonId = Find<Summon>().normalSummonId;
-            }
-
-            var normal = summonRow.GroupId == _normalSummonId;
+            var normal = summonRow.GroupId == NormalSummonId;
             var bonus = summonCount == 10 ? 1 : 0;
             var great = resultList.First().Grade == 5;
 
