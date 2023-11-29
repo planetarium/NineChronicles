@@ -79,7 +79,7 @@ namespace Nekoyume.Blockchain
 
         public PrivateKey PrivateKey { get; private set; }
 
-        public Address Address => PrivateKey.PublicKey.ToAddress();
+        public Address Address => PrivateKey.PublicKey.Address;
 
         public bool Connected { get; private set; }
 
@@ -726,7 +726,6 @@ namespace Nekoyume.Blockchain
                 privateKey: PrivateKey,
                 genesisHash: _genesis?.Hash,
                 actions: actions.Select(action => action.PlainValue),
-                updatedAddresses: ImmutableHashSet<Address>.Empty,
                 maxGasPrice: Currencies.Mead * 1,
                 gasLimit: gasLimit
             );
@@ -743,7 +742,7 @@ namespace Nekoyume.Blockchain
             }));
             Debug.Log("[RPCAgent] MakeTransaction()... w/" +
                       $" nonce={nonce}" +
-                      $" PrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                      $" PrivateKeyAddr={PrivateKey.Address.ToString()}" +
                       $" GenesisBlockHash={_genesis?.Hash}" +
                       $" TxId={tx.Id}" +
                       $" Actions=[{actionsText}]");

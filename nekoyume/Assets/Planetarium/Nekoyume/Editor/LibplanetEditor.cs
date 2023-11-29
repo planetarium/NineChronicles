@@ -86,7 +86,7 @@ namespace Planetarium.Nekoyume.Editor
             for (int i = 0; i < countOfKeys; i++)
             {
                 var pendingKey = new PrivateKey();
-                var nonce = pendingKey.PublicKey.ToAddress().ToByteArray();
+                var nonce = pendingKey.PublicKey.Address.ToByteArray();
                 (ActivationKey ak, PendingActivationState s) =
                     ActivationKey.Create(pendingKey, nonce);
                 pendingActivationStates.Add(s);

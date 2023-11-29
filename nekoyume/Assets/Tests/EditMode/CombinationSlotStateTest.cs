@@ -25,7 +25,7 @@ namespace Tests.EditMode
         [Test]
         public void CombinationSlotState()
         {
-            var address = new PrivateKey().PublicKey.ToAddress();
+            var address = new PrivateKey().PublicKey.Address;
             var state = new CombinationSlotState(address, 1);
             Assert.AreEqual(address, state.address);
             Assert.AreEqual(1, state.UnlockStage);
@@ -35,7 +35,7 @@ namespace Tests.EditMode
         [Test]
         public void SerializeCombinationSlotStateWithOutResult()
         {
-            var address = new PrivateKey().PublicKey.ToAddress();
+            var address = new PrivateKey().PublicKey.Address;
             var state = new CombinationSlotState(address, 1);
             var serialized = (Dictionary) state.Serialize();
             Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "address"));
@@ -51,7 +51,7 @@ namespace Tests.EditMode
         [Test]
         public void CombinationSlotStateUpdate()
         {
-            var address = new PrivateKey().PublicKey.ToAddress();
+            var address = new PrivateKey().PublicKey.Address;
             var state = new CombinationSlotState(address, 1);
             var result = new CombinationConsumable5.ResultModel();
             state.Update(result,1, 10);
@@ -63,7 +63,7 @@ namespace Tests.EditMode
         [Test]
         public void SerializeCombinationSlotStateWithResult()
         {
-            var address = new PrivateKey().PublicKey.ToAddress();
+            var address = new PrivateKey().PublicKey.Address;
             var state = new CombinationSlotState(address, 1);
             var item = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.Values.First(), Guid.Empty,
                 default);
