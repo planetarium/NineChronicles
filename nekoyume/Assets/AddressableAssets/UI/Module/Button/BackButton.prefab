@@ -60,7 +60,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 3
-  m_Spacing: 0
+  m_Spacing: 5
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -734,6 +734,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: HelpButtonS
       objectReference: {fileID: 0}
+    - target: {fileID: 432179639104244028, guid: d51c47110019c477f8b064ebd28712f1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2092428802851178608, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
       propertyPath: m_Pivot.x
@@ -916,9 +921,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 40
+  m_MinWidth: 32
   m_MinHeight: -1
-  m_PreferredWidth: 40
+  m_PreferredWidth: 32
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
