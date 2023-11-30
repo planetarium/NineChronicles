@@ -114,12 +114,12 @@ namespace Nekoyume.UI
 
             var summonRow = _summonRows[index];
             skillInfoButton.onClick.RemoveAllListeners();
-            skillInfoButton.onClick.AddListener(() => { });
+            skillInfoButton.onClick.AddListener(() => Find<SummonSkillsPopup>().Show(summonRow));
 
             _disposables.DisposeAllAndClear();
 
             summonItem.infoButton.OnClickAsObservable()
-                .Subscribe(_ => { })
+                .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
                 .AddTo(_disposables);
             summonItem.nameText.text = summonRow.GetLocalizedName();
 

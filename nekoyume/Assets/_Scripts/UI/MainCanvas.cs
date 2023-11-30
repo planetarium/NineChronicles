@@ -211,10 +211,10 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Menu>());
             yield return null;
-            
+
             _secondWidgets.Add(Widget.Create<MobileShop>());
             yield return null;
-            
+
             _secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
 
@@ -242,7 +242,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<QuitSystem>());
             _secondWidgets.Add(Widget.Create<BuffBonusPopup>());
             yield return null;
-            
+
             _secondWidgets.Add(Widget.Create<SweepPopup>());
             yield return null;
 
@@ -440,6 +440,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<SummonResultPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SummonSkillsPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopListPopup>());
             yield return null;
