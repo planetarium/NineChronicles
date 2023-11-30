@@ -97,7 +97,7 @@ namespace Nekoyume
                 baseItemView.EnhancementText.gameObject.SetActive(false);
                 baseItemView.EnhancementImage.gameObject.SetActive(false);
                 baseItemView.OptionTag.gameObject.SetActive(false);
-                baseItemView.CountText.text = mailReward.FavFungibleAssetValue.GetQuantityString();
+                baseItemView.CountText.text = mailReward.FavFungibleAssetValue.ToCurrencyNotation();
             }
 
             effect.SetActive(false);
