@@ -247,6 +247,12 @@ namespace Nekoyume.State
             catch (Exception e)
             {
                 Debug.LogException(e);
+                // TODO: this is temporary code for local testing.
+                arenaInfo.AddRange(_states.AvatarStates.Values.Select(avatar => new ArenaParticipantModel
+                {
+                    AvatarAddr = avatar.address,
+                    NameWithHash = avatar.NameWithHash,
+                }));
             }
 
             var portraitId = Util.GetPortraitId(BattleType.Arena);
