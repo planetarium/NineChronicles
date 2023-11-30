@@ -340,6 +340,10 @@ namespace Nekoyume.Game
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
+                if (e is Tick)
+                {
+                    yield return StartCoroutine(CoTick(e.Character));
+                }
             }
 
             yield return StartCoroutine(CoStageEnd(log));
@@ -906,7 +910,6 @@ namespace Nekoyume.Game
             Debug.Log($"[{nameof(Stage)}] {nameof(CoTickDamage)}() enter. affectedCharacter: {affectedCharacter.Id}, skillId: {skillId}");
 #endif
             var character = GetCharacter(affectedCharacter);
-
             foreach (var info in skillInfos)
             {
                 var characters = GetComponentsInChildren<Character.CharacterBase>();
@@ -1177,6 +1180,16 @@ namespace Nekoyume.Game
             var character = GetCharacter(model);
             _playerPosition = SelectedPlayer.transform.position;
             character.Dead();
+        }
+
+        public IEnumerator CoTick(CharacterBase affectedCharacter)
+        {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoTick)}() enter. affectedCharacter: {affectedCharacter.Id}");
+#endif
+            var character = GetCharacter(affectedCharacter);
+            character.Animator.Hit();
+            yield return new WaitForSeconds(SkillDelay);
         }
 
         public Player GetPlayer()

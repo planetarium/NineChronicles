@@ -128,6 +128,10 @@ namespace Nekoyume.Game
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
+                if (e is ArenaTick)
+                {
+                    yield return StartCoroutine(CoTick(e.Character));
+                }
             }
 
             yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
@@ -315,6 +319,13 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => enemy.Actions.Any());
             _turnNumber = turnNumber + 1;
             yield return null;
+        }
+
+        private IEnumerator CoTick(ArenaCharacter affectedCharacter)
+        {
+            Character.ArenaCharacter target = affectedCharacter.Id == me.Id ? me : enemy;
+            target.Animator.Hit();
+            yield return SkillDelay;
         }
     }
 }
