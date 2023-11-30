@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Crypto;
@@ -34,6 +35,7 @@ namespace Nekoyume.UI
             public int summonSheetId;
             public Toggle tabToggle;
             public GameObject[] enableObj;
+            public float backgroundPositionY;
 
             public SummonSheet.Row SummonSheetRow;
         }
@@ -45,6 +47,7 @@ namespace Nekoyume.UI
             public TextMeshProUGUI nameText;
             public SimpleCostButton draw1Button;
             public SimpleCostButton draw10Button;
+            public RectTransform backgroundRect;
         }
 
         [SerializeField] private Button closeButton;
@@ -121,6 +124,10 @@ namespace Nekoyume.UI
             {
                 obj.SetActive(true);
             }
+
+            summonItem.backgroundRect
+                .DOAnchorPosY(currentInfo.backgroundPositionY, .5f)
+                .SetEase(Ease.InOutCubic);
 
             var summonRow = currentInfo.SummonSheetRow;
             skillInfoButton.onClick.RemoveAllListeners();

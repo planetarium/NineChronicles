@@ -873,6 +873,7 @@ MonoBehaviour:
     - {fileID: 3917762921654706892}
     - {fileID: 8250399033876441476}
     - {fileID: 8941224004311707540}
+    backgroundPositionY: -690
   - summonSheetId: 0
     tabToggle: {fileID: 7694223387165152743}
     enableObj:
@@ -880,17 +881,20 @@ MonoBehaviour:
     - {fileID: 4420197024892280354}
     - {fileID: 8250399033876441476}
     - {fileID: 8941224004311707540}
+    backgroundPositionY: 0
   - summonSheetId: 10001
     tabToggle: {fileID: 2845889457511383640}
     enableObj:
     - {fileID: 3435501159365475478}
     - {fileID: 3797436776349989978}
     - {fileID: 8941224004311707540}
+    backgroundPositionY: 690
   summonItem:
     infoButton: {fileID: 8231604600151179750}
     nameText: {fileID: 5011644342503672705}
     draw1Button: {fileID: 9024073568917330937}
     draw10Button: {fileID: 473016979423463902}
+    backgroundRect: {fileID: 1513654427148664911}
   skillInfoButton: {fileID: 7998362494925497879}
 --- !u!1 &1881116084576504194
 GameObject:
