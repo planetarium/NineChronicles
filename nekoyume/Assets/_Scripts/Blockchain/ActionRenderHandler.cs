@@ -3298,11 +3298,22 @@ namespace Nekoyume.Blockchain
                     }
                     else if (balanceAddr.Equals(avatarAddr))
                     {
-                        var balance = StateGetter.GetBalance(
-                            balanceAddr,
-                            value.Currency,
-                            states);
-                        gameStates.SetCurrentAvatarBalance(balance);
+                        if (Currencies.IsRuneTicker(value.Currency.Ticker) || Currencies.IsSoulstoneTicker(value.Currency.Ticker))
+                        {
+                            var balance = StateGetter.GetBalance(
+                                balanceAddr,
+                                value.Currency,
+                                states);
+                            gameStates.UpdateCurrentAvatarBalance(balance);
+                        }
+                        else
+                        {
+                            var balance = StateGetter.GetBalance(
+                                balanceAddr,
+                                value.Currency,
+                                states);
+                            gameStates.SetCurrentAvatarBalance(balance);
+                        }
                     }
                 }
             }
@@ -3351,6 +3362,11 @@ namespace Nekoyume.Blockchain
                 }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
+                if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+                {
+                    Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                }
+
                 if (avatarValue is not Dictionary avatarDict)
                 {
                     Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
@@ -3437,7 +3453,14 @@ namespace Nekoyume.Blockchain
                                 }
                                 else
                                 {
-                                    gameStates.SetCurrentAvatarBalance(balance);
+                                    if (Currencies.IsRuneTicker(currency.Ticker) || Currencies.IsSoulstoneTicker(currency.Ticker))
+                                    {
+                                        gameStates.UpdateCurrentAvatarBalance(balance);
+                                    }
+                                    else
+                                    {
+                                        gameStates.SetCurrentAvatarBalance(balance);
+                                    }
                                 }
                             }
                         }
@@ -3462,7 +3485,6 @@ namespace Nekoyume.Blockchain
             var states = eval.OutputState;
             MailBox mailBox;
             ClaimItemsMail mail;
-
             IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
             {
@@ -3482,6 +3504,11 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarInventory(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
+                if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+                {
+                    Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                }
+
                 if (avatarValue is not Dictionary avatarDict)
                 {
                     Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
@@ -3565,7 +3592,14 @@ namespace Nekoyume.Blockchain
                             }
                             else
                             {
-                                gameStates.SetCurrentAvatarBalance(balance);
+                                if (Currencies.IsRuneTicker(tokenCurrency.Ticker) || Currencies.IsSoulstoneTicker(tokenCurrency.Ticker))
+                                {
+                                    gameStates.UpdateCurrentAvatarBalance(balance);
+                                }
+                                else
+                                {
+                                    gameStates.SetCurrentAvatarBalance(balance);
+                                }
                             }
                         }
                     }
@@ -3600,6 +3634,10 @@ namespace Nekoyume.Blockchain
                 mail.New = true;
                 gameStates.CurrentAvatarState.mailBox = mailBox;
                 LocalLayerModifier.AddNewMail(avatar.address, mail.id);
+            }
+            if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+            {
+                Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             }
         }
     }

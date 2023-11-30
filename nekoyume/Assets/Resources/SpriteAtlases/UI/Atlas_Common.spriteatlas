@@ -113,6 +113,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 78d1bb025c01346e8b2f00141c0c43d6, type: 3}
   - {fileID: 21300000, guid: 33e1be0265aaa4040bc75c9f744c1794, type: 3}
   - {fileID: 21300000, guid: e4bdeb12a083e427db97fde94fe27529, type: 3}
+  - {fileID: 21300000, guid: b8dd0032e3845854f889bf5ab93644d1, type: 3}
   - {fileID: 21300000, guid: f0b38232b61014adfa66c545872360e1, type: 3}
   - {fileID: 21300000, guid: 2ca4e332521dd4678a899db56f0e581e, type: 3}
   - {fileID: 21300000, guid: 80648c32993e048ee9518f2def412f33, type: 3}
@@ -515,6 +516,7 @@ SpriteAtlas:
   - item_bg_Color
   - Common_Gradiant_bg_02
   - Rank_bg_08
+  - EventMark
   - UI_Common_Slot
   - Common_gradiant_64
   - UI_bg_frame_08

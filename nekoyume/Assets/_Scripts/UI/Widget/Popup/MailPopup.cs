@@ -131,6 +131,7 @@ namespace Nekoyume.UI
                     case ProductSellerMail:
                     case ProductCancelMail:
                     case UnloadFromMyGaragesRecipientMail:
+                    case ClaimItemsMail:
                         LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
                         break;
                     case ItemEnhanceMail:
@@ -429,7 +430,8 @@ namespace Nekoyume.UI
                        CancelOrderMail or
                        CombinationMail or
                        ItemEnhanceMail or
-                       UnloadFromMyGaragesRecipientMail;
+                       UnloadFromMyGaragesRecipientMail or
+                       ClaimItemsMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -761,6 +763,7 @@ namespace Nekoyume.UI
         public void Read(RaidRewardMail raidRewardMail)
         {
             raidRewardMail.New = false;
+            Debug.Log($"[MailRead] MailPopupReadRaidRewardMail mailid : {raidRewardMail.id}");
         }
 
         public void Read(UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail)
@@ -777,6 +780,7 @@ namespace Nekoyume.UI
                 game.States.CurrentAvatarState.address,
                 unloadFromMyGaragesRecipientMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+            Debug.Log($"[MailRead] MailPopupReadUnloadFromMyGaragesRecipientMail mailid : {unloadFromMyGaragesRecipientMail.id} Memo : {unloadFromMyGaragesRecipientMail.Memo}");
 
             if (unloadFromMyGaragesRecipientMail.Memo != null && unloadFromMyGaragesRecipientMail.Memo.Contains("season_pass"))
             {
@@ -936,6 +940,7 @@ namespace Nekoyume.UI
                 game.States.CurrentAvatarState.address,
                 claimItemsMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+            Debug.Log($"[MailRead] MailPopupReadClaimItemsMail mailid : {claimItemsMail.id} Memo : {claimItemsMail.Memo}");
 
             var rewards = new List<MailReward>();
             if (claimItemsMail.FungibleAssetValues is not null)
