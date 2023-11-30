@@ -34,6 +34,8 @@ namespace Nekoyume.UI
             public int summonSheetId;
             public Toggle tabToggle;
             public GameObject[] enableObj;
+
+            public SummonSheet.Row SummonSheetRow;
         }
 
         [Serializable]
@@ -50,7 +52,6 @@ namespace Nekoyume.UI
         [SerializeField] private SummonItem summonItem;
         [SerializeField] private Button skillInfoButton;
 
-        private SummonSheet.Row[] _summonRows;
         private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new();
 
@@ -66,10 +67,16 @@ namespace Nekoyume.UI
             });
             CloseWidget = closeButton.onClick.Invoke;
 
-            for (var i = 0; i < summonInfos.Length; i++)
+            foreach (var summonInfo in summonInfos)
             {
-                var index = i;
-                summonInfos[i].tabToggle.onClickToggle.AddListener(() => SetSummonInfo(index));
+                summonInfo.tabToggle.onClickToggle.AddListener(() => SetSummonInfo(summonInfo));
+                summonInfo.tabToggle.onClickObsoletedToggle.AddListener(() =>
+                {
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("NOTIFICATION_COMING_SOON"),
+                        NotificationCell.NotificationType.Information);
+                });
             }
 
             ButtonSubscribe(summonItem.draw1Button, gameObject);
@@ -86,17 +93,21 @@ namespace Nekoyume.UI
                 _isInitialized = true;
 
                 var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
-                _summonRows = summonInfos.Select(obj => summonSheet[obj.summonSheetId]).ToArray();
+                foreach (var summonInfo in summonInfos)
+                {
+                    summonInfo.SummonSheetRow =
+                        summonSheet.TryGetValue(summonInfo.summonSheetId, out var row) ? row : null;
+                }
             }
 
             summonInfos[0].tabToggle.isOn = true;
-            SetSummonInfo(0);
+            SetSummonInfo(summonInfos[0]);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
             SetMaterialAssets();
         }
 
-        private void SetSummonInfo(int index)
+        private void SetSummonInfo(SummonInfo currentInfo)
         {
             foreach (var info in summonInfos)
             {
@@ -106,13 +117,12 @@ namespace Nekoyume.UI
                 }
             }
 
-            var currentInfo = summonInfos[index];
             foreach (var obj in currentInfo.enableObj)
             {
                 obj.SetActive(true);
             }
 
-            var summonRow = _summonRows[index];
+            var summonRow = currentInfo.SummonSheetRow;
             skillInfoButton.onClick.RemoveAllListeners();
             skillInfoButton.onClick.AddListener(() => Find<SummonSkillsPopup>().Show(summonRow));
 
@@ -202,8 +212,9 @@ namespace Nekoyume.UI
             }
 
             var headerMenu = Find<HeaderMenuStatic>();
-            var materials = _summonRows
-                .Select(row => (CostType)row.CostMaterial)
+            var materials = summonInfos
+                .Where(info => info.SummonSheetRow != null)
+                .Select(info => (CostType)info.SummonSheetRow.CostMaterial)
                 .Distinct().ToArray();
 
             for (int i = 0; i < materials.Length; i++)

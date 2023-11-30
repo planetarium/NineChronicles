@@ -873,7 +873,7 @@ MonoBehaviour:
     - {fileID: 3917762921654706892}
     - {fileID: 8250399033876441476}
     - {fileID: 8941224004311707540}
-  - summonSheetId: 20001
+  - summonSheetId: 0
     tabToggle: {fileID: 7694223387165152743}
     enableObj:
     - {fileID: 5597247345816316038}
@@ -3757,6 +3757,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
 --- !u!1 &4876578097937976178
 GameObject:
   m_ObjectHideFlags: 0
@@ -4068,6 +4069,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
 --- !u!1 &5046158957726712208
 GameObject:
   m_ObjectHideFlags: 0
@@ -4227,6 +4229,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 1
 --- !u!1 &5188040766335079989
 GameObject:
   m_ObjectHideFlags: 0
