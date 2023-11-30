@@ -445,6 +445,14 @@ namespace Nekoyume.State
                 new FungibleAssetValue(fav.Currency, major, miner);
         }
 
+        public void UpdateCurrentAvatarBalance(FungibleAssetValue fav)
+        {
+            var major = fav.MajorUnit;
+            var miner = fav.MinorUnit;
+            CurrentAvatarBalances[fav.Currency.Ticker] =
+                new FungibleAssetValue(fav.Currency, major, miner);
+        }
+
         public void SetStakeState(
             StakeStateV2? stakeStateV2,
             GoldBalanceState stakedBalanceState,

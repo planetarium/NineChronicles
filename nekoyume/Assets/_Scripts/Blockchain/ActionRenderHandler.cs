@@ -3298,11 +3298,22 @@ namespace Nekoyume.Blockchain
                     }
                     else if (balanceAddr.Equals(avatarAddr))
                     {
-                        var balance = StateGetter.GetBalance(
-                            balanceAddr,
-                            value.Currency,
-                            states);
-                        gameStates.SetCurrentAvatarBalance(balance);
+                        if (Currencies.IsRuneTicker(value.Currency.Ticker) || Currencies.IsSoulstoneTicker(value.Currency.Ticker))
+                        {
+                            var balance = StateGetter.GetBalance(
+                                balanceAddr,
+                                value.Currency,
+                                states);
+                            gameStates.UpdateCurrentAvatarBalance(balance);
+                        }
+                        else
+                        {
+                            var balance = StateGetter.GetBalance(
+                                balanceAddr,
+                                value.Currency,
+                                states);
+                            gameStates.SetCurrentAvatarBalance(balance);
+                        }
                     }
                 }
             }
@@ -3442,7 +3453,14 @@ namespace Nekoyume.Blockchain
                                 }
                                 else
                                 {
-                                    gameStates.SetCurrentAvatarBalance(balance);
+                                    if (Currencies.IsRuneTicker(currency.Ticker) || Currencies.IsSoulstoneTicker(currency.Ticker))
+                                    {
+                                        gameStates.UpdateCurrentAvatarBalance(balance);
+                                    }
+                                    else
+                                    {
+                                        gameStates.SetCurrentAvatarBalance(balance);
+                                    }
                                 }
                             }
                         }
@@ -3574,7 +3592,14 @@ namespace Nekoyume.Blockchain
                             }
                             else
                             {
-                                gameStates.SetCurrentAvatarBalance(balance);
+                                if (Currencies.IsRuneTicker(tokenCurrency.Ticker) || Currencies.IsSoulstoneTicker(tokenCurrency.Ticker))
+                                {
+                                    gameStates.UpdateCurrentAvatarBalance(balance);
+                                }
+                                else
+                                {
+                                    gameStates.SetCurrentAvatarBalance(balance);
+                                }
                             }
                         }
                     }
