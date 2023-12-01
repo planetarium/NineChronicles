@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module
             Set(selectedData.bannerSprite, _ =>
             {
                 var eventPopup = Widget.Find<EventPopup>();
-                eventPopup.EventView.Set(selectedData.popupSprite, selectedData.url, false);
+                eventPopup.Set(selectedData.popupSprite, selectedData.url, false);
                 eventPopup.Show();
             });
         }

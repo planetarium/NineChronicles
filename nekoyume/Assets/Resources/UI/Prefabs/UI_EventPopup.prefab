@@ -205,7 +205,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  <EventView>k__BackingField: {fileID: 3048712803750973748}
+  eventImage: {fileID: 3419549275866677382}
+  eventDetailButton: {fileID: 1231389820136279452}
 --- !u!1 &6525847173624209797
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +365,6 @@ GameObject:
   - component: {fileID: 1421016139035430029}
   - component: {fileID: 582431681480732196}
   - component: {fileID: 7875790567826237207}
-  - component: {fileID: 3048712803750973748}
   m_Layer: 5
   m_Name: Modal
   m_TagString: Untagged
@@ -432,20 +432,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3048712803750973748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8051092963933685475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe3e25078772482c8f67f7ff1b8e58ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  eventImage: {fileID: 3419549275866677382}
-  eventDetailButton: {fileID: 1231389820136279452}
 --- !u!1001 &1577191467673156043
 PrefabInstance:
   m_ObjectHideFlags: 0
