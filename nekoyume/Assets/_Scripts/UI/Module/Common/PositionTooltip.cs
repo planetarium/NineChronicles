@@ -1,14 +1,13 @@
-using Nekoyume.Game.Character;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.Common
 {
-    using UniRx;
     public class PositionTooltip : MonoBehaviour
     {
         [SerializeField]
-        private TouchHandler touchHandler;
+        private bool disableWhenTouchScreen = true;
 
         [SerializeField]
         protected TextMeshProUGUI titleText;
@@ -16,20 +15,33 @@ namespace Nekoyume.UI.Module.Common
         [SerializeField]
         protected TextMeshProUGUI contentText;
 
-        public void Update()
+        private void Awake()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (disableWhenTouchScreen)
             {
-                gameObject.SetActive(false);
+                StartCoroutine(CoUpdate());
+            }
+        }
+
+        private IEnumerator CoUpdate()
+        {
+            while (true)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    gameObject.SetActive(false);
+                }
+
+                yield return null;
             }
         }
 
         public void Set(string title, string content)
         {
-            if(titleText != null)
+            if (titleText != null)
                 titleText.text = title;
 
-            if(content != null)
+            if (content != null)
                 contentText.text = content;
         }
     }

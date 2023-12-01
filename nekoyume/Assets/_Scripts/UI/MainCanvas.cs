@@ -441,6 +441,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SummonSkillsPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<ShopListPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SeasonPassPremiumPopup>());

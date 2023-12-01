@@ -519,6 +519,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68e3d5a901604291b9a96472285be307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  touchHandler: {fileID: 2074335582978858380}
+  disableWhenTouchScreen: 1
   titleText: {fileID: 0}
   contentText: {fileID: 2184870233825423634}

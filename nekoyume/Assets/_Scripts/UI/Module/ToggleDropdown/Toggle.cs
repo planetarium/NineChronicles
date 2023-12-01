@@ -11,6 +11,8 @@ namespace Nekoyume.UI.Module
         public GameObject onObject;
         public UnityEngine.Events.UnityEvent onClickToggle;
         public bool allowSwitchOffWhenIsOn = true;
+        public bool obsolete = false;
+        public UnityEngine.Events.UnityEvent onClickObsoletedToggle;
 
         protected Toggle()
         {
@@ -47,6 +49,12 @@ namespace Nekoyume.UI.Module
         {
             if (!allowSwitchOffWhenIsOn && isOn)
             {
+                return;
+            }
+
+            if (obsolete)
+            {
+                onClickObsoletedToggle?.Invoke();
                 return;
             }
 
