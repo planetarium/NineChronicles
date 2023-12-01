@@ -35,12 +35,14 @@ namespace Nekoyume.UI
 
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
+        [SerializeField] private RectTransform background;
 
         private const int NormalSummonId = 10001;
         private bool _isGreat;
         private Coroutine _coroutine;
         private string _previousMusicName;
         private System.Action _completeCallback;
+        private const float DefaultBackgroundPosY = 690;
 
         private readonly List<IDisposable> _disposables = new();
         private static readonly WaitForSeconds ItemViewAnimInterval = new(0.1f);
@@ -138,6 +140,8 @@ namespace Nekoyume.UI
 
             closeButton.interactable = true;
             skipButton.interactable = true;
+            background.anchoredPosition =
+                (normal ? Vector2.up : Vector2.down) * DefaultBackgroundPosY;
         }
 
         private IEnumerator PlayVideo(bool normal, bool great)
