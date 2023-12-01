@@ -1408,8 +1408,6 @@ UI_DRAW_10,Summon 11,소환 11,Invocar 11,11回召喚,Invocar 11,เรียก
 UI_DRAW_AGAIN_FORMAT,Summon {0},소환 {0},Invocar {0},{0}回召喚,Invocar {0},เรียก {0},Summon {0},Призыв {0},召唤{0},召喚{0},Tawag {0},Triệu hồi {0}
 UI_SUMMON_DETAIL_DESC,Select a list to see a preview.,미리보기를 보려면 목록을 선택하세요.,Selecione uma lista para ver uma visualização.,リストから選択するとプレビューが見られます。,Seleccione una lista para ver una vista previa.,เลือกรายการเพื่อดูตัวอย่าง,Pilih daftar untuk melihat pratinjau.,"Выберите список, чтобы увидеть предварительный просмотр.",选择一个列表以查看预览。,選擇一個列表以查看預覽。,Pumili ng isang listahan upang makita ang isang preview.,Chọn Mục lục để xem bản xem trước.
 UI_SUMMON_DETAIL_LIST_TITLE,Probability of appearance,출현 확률,Probabilidade de aparência,出現確率,Probabilidad de apariencia,ความน่าจะเป็นของลักษณะที่ปรากฏ,Probabilitas penampilan,Вероятность внешнего вида,外观的概率,外觀的概率,Posibilidad ng hitsura,Xác suất xuất hiện
-SUMMON_NAME_10001,Normal Aura,노멀 아우라,Aura ágil,ノマールオーラ,Aura ágil,ออร่าว่องไว,Aura normal,Протекающая аура,灵活的光环,靈活的光環,Nimble aura,Hào quang thường
-SUMMON_NAME_10002,Golden Aura,골든 아우라,Aura de besta,ゴールデンオーラ,Aura de bestia,รัศมีสัตว์ร้าย,Aura emas,Зверь Аура,野兽光环,野獸光環,Hayop aura,Hào quang Kim tinh
 UI_ACCEL_UNLOCK_CONDITION,Clear stage 3 first.,스테이지 3 클리어 시 오픈됩니다.,Estágio 3 claro primeiro.,まずステージ3をクリアして下さい。,Etapa transparente 3 primero.,Clear Stage 3 ก่อน,Selesaikan tahap 3 terlebih dahulu.,Четкая стадия 3 первой.,首先清除阶段3。,首先清除階段3。,I -clear ang Stage 3.,Cần vượt màn 3 trước
 UI_SUMMON_MATERIAL_NOT_ENOUGH,Insufficient dust. Would you like to purchase it from the market?,소환에 필요한 재료가 부족합니다. 마켓에서 구매 가능합니다.,Você não tem o material necessário para convocar. Você gostaria de prosseguir para comprar o material necessário?,ダストが不足しています。マーケットで購入しに行きましょうか？,Te falta el material requerido para la invocación. ¿Le gustaría proceder a comprar el material requerido?,คุณขาดวัสดุที่จำเป็นสำหรับการอัญเชิญ คุณต้องการดำเนินการซื้อวัสดุที่จำเป็นต่อไปหรือไม่?,Anda tidak memiliki materi yang diperlukan untuk dipanggil. Apakah Anda ingin melanjutkan untuk membeli materi yang diperlukan?,Вам не хватает необходимого материала для вызова. Хотите приступить к покупке необходимого материала?,您缺少召唤所需的材料。您想继续购买所需的材料吗？,您缺少召喚所需的材料。您想繼續購買所需的材料嗎？,Kulang ka ng kinakailangang materyal para sa pagtawag. Nais mo bang magpatuloy upang bilhin ang kinakailangang materyal?,Không đủ nguyên liệu triệu hồi. Bạn có muốn mua nó từ Chợ không?
 UI_OBSOLETE_DESC,It won't take too long.,너무 오래 걸리지 않을거야.,Não vai demorar muito.,あまり長くかからないと思う。,No tomará demasiado tiempo.,,Ini tidak akan memakan waktu terlalu lama.,,,不會花太久。,Hindi ito masyadong mahaba.,Sẽ không mất quá nhiều thời gian.
@@ -1802,6 +1800,14 @@ Perbarui sekarang dan nikmati Nine Chronicles M.</size>",,"<size=16>新版本已
 立即更新，享受 Nine Chronicles M。</size>","<size=16>Ang bagong bersyon ay na -update!
 I-update ngayon at tamasahin ang Nine Chronicles M.</size>","<size=16>Phiên bản mới đã được cập nhật!
 Cập nhật ngay bây giờ và trải nghiệm Nine Chronicles M.</size=16>"
+UI_SUMMON_PHRASE_1,<size=22><color=#FFEF0F>NCG Vouchers</color></size> Instantly Upon Grinding,,,,,,,,,,,
+UI_SUMMON_PHRASE_2,100% Chance to Grant <size=22><color=#FF7200>NCG Vouchers</color></size>,,,,,,,,,,,
+UI_SUMMON_SKILLS_POPUP_TITLE,Skill Information,스킬 정보,,,,,,,,,,
+UI_SUMMON_PROBABILITY_POPUP_TITLE,Probability Information,소환 확률,,,,,,,,,,
+UI_DESCRIPTION_UPGRADE_EVENT,Go to the Aura Upgrade Event Details Site.,아우라 강화 이벤트 상세 내용 사이트로 이동합니다.,Vá para o site de detalhes do evento Aura Upgrade.,Auraアップグレードイベントの詳細サイトに移動します。,Vaya al sitio de detalles del evento de actualización de Aura.,ไปที่ไซต์รายละเอียดการอัพเกรด Aura,Pergi ke situs detail acara AURA Upgrade.,Перейдите на сайт сведений об обновлении AURA.,转到AURA升级活动详细信息网站。,轉到AURA升級活動詳細信息網站。,Pumunta sa site ng Mga Detalye ng Mga Detalye ng Pag -upgrade ng Aura.,Truy cập trang web chi tiết sự kiện nâng cấp AURA.
+UI_TITLE_UPGRADE_EVENT,Aura Upgrade Event,아우라 강화 이벤트,Evento de atualização da aura,オーラアップグレードイベント,Evento de actualización de aura,งานอัพเกรดออร่า,Acara Upgrade Aura,Аура обновление события,Aura升级活动,Aura升級活動,Kaganapan sa pag -upgrade ng aura,Sự kiện nâng cấp Aura
+UI_SUMMON_CATEGORY_NORMAL,NORMAL,일반,NORMAL,普通,NORMAL,ปกติ,NORMAL,НОРМАЛЬНЫЙ,普通的,普通的,NORMAL,BÌNH THƯỜNG
+UI_SUMMON_CATEGORY_ADVANCED,ADVANCED,고급,Avançado,高度な,AVANZADO,ขั้นสูง,CANGGIH,ПЕРЕДОВОЙ,先进的,先進的,Advanced,TRÌNH ĐỘ CAO
 UI_FORGOT_PRIVATE_KEY,Forgot Private Key,키를 잃어버렸습니다.,Esqueceu a chave privada,秘密鍵を忘れました,Olvidé la clave privada,ลืมรหัสส่วนตัว,Lupa Kunci Pribadi,Забыл личный ключ,忘记了私钥,忘記了私鑰,Nakalimutan ang pribadong susi,Quên chìa khóa riêng
 UI_FORGOT_PRIVATE_KEY_POPUP_INFORMATION,"If you do not enter the key, the existing account will be deleted.
 Would you really initialize it?","키를 입력하지 않으면 기존의 계정이 삭제됩니다. 
@@ -1816,4 +1822,3 @@ Apakah Anda benar -benar menginisialisasi itu?","Если вы не введет
 您真的會初始化嗎？","Kung hindi ka pumasok sa susi, tatanggalin ang umiiral na account.
 Sinisimulan mo ba talaga ito?","Nếu bạn không nhập khóa, tài khoản hiện tại sẽ bị xóa.
 Bạn có thực sự khởi tạo nó không?"
-UI_FORGOT_PRIVATE_KEY_POPUP_BUTTON,Reset,초기화,Reiniciar,リセット,Reiniciar,รีเซ็ต,Mengatur ulang,Перезагрузить,重置,重置,I -reset,Cài lại
