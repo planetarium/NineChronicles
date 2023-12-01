@@ -267,22 +267,44 @@ namespace Nekoyume.UI
                     }
                     break;
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
+                    if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
+                    {
+                        mailRewards.AddRange(
+                            unloadFromMyGaragesRecipientMail.FungibleAssetValues.Select(fav =>
+                                new MailReward(fav.value, (int)fav.value.MajorUnit)));
+                    }
+
                     if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
                     {
                         var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                        var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                         foreach (var (fungibleId, fungibleCount) in
                                  unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
                         {
-                            var row = materialSheet.OrderedList!
-                                .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
-                            if (row is null)
+                            var row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                            if (row != null)
                             {
-                                Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, fungibleCount));
                                 continue;
                             }
 
-                            var material = ItemFactory.CreateMaterial(row);
-                            mailRewards.Add(new MailReward(material, fungibleCount));
+                            row = materialSheet.OrderedList!.FirstOrDefault(row => row.Id.Equals(fungibleId));
+                            if (row != null)
+                            {
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, fungibleCount));
+                                continue;
+                            }
+
+                            var itemRow = itemSheet.OrderedList!.FirstOrDefault(row => row.Equals(fungibleId));
+                            if (itemRow != null)
+                            {
+                                var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                                mailRewards.Add(new MailReward(item, fungibleCount));
+                                continue;
+                            }
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
                         }
                     }
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
@@ -311,6 +333,13 @@ namespace Nekoyume.UI
                                 continue;
                             }
 
+                            row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                            if (row != null)
+                            {
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, itemCount));
+                                continue;
+                            }
 
                             if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
                             {
@@ -862,19 +891,33 @@ namespace Nekoyume.UI
             if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
             {
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                 foreach (var (fungibleId, count) in
                             unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
                 {
-                    var row = materialSheet.OrderedList!
-                        .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
-                    if (row is null)
+                    var row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row != null)
                     {
-                        Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
                         continue;
                     }
 
-                    var material = ItemFactory.CreateMaterial(row);
-                    rewards.Add(new MailReward(material, count));
+                    row = materialSheet.OrderedList!.FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    var itemRow = itemSheet.OrderedList!.FirstOrDefault(row => row.Equals(fungibleId));
+                    if (itemRow != null)
+                    {
+                        var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                        rewards.Add(new MailReward(item, count));
+                        continue;
+                    }
                 }
             }
             UpdateTabs();
@@ -922,8 +965,15 @@ namespace Nekoyume.UI
                         continue;
                     }
 
-                    
-                    if(itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                    row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
                     {
                         var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
                         rewards.Add(new MailReward(item, 1));
