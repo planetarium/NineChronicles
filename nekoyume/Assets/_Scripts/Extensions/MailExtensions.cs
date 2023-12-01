@@ -111,12 +111,35 @@ namespace Nekoyume
                         continue;
                     }
                     Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+
+                    row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        continue;
+                    }
+
+                    var itemRow = itemSheet.OrderedList!.FirstOrDefault(row => row.Equals(fungibleId));
+                    if(itemRow != null)
+                    {
+                        var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                        itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
+                        continue;
+                    }
                 }
+            }
+
+            string stringToRemove = ", ";
+            if (itemNames.EndsWith(stringToRemove))
+            {
+                itemNames = itemNames.Substring(0, itemNames.Length - stringToRemove.Length);
             }
 
             var exceptionFormat = L10nManager.Localize(
                 "UI_RECEIVED");
-            itemNames += exceptionFormat;
+            itemNames += " "+ exceptionFormat;
 
             return itemNames;
         }
@@ -213,6 +236,15 @@ namespace Nekoyume
                         continue;
                     }
 
+                    row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        continue;
+                    }
+
                     if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
                     {
                         var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
@@ -223,9 +255,16 @@ namespace Nekoyume
                 }
             }
 
+            string stringToRemove = ", ";
+            if (itemNames.EndsWith(stringToRemove))
+            {
+                itemNames = itemNames.Substring(0, itemNames.Length - stringToRemove.Length);
+            }
+
             var exceptionFormat = L10nManager.Localize(
                 "UI_RECEIVED");
-            itemNames += exceptionFormat;
+
+            itemNames += " " + exceptionFormat;
 
             return itemNames;
         }

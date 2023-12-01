@@ -180,9 +180,9 @@ namespace Nekoyume.UI
                 if (iapRewardIndex < iapRewards.Length)
                 {
                     iapRewards[iapRewardIndex].gameObject.SetActive(true);
-                    iapRewards[iapRewardIndex].RewardImage.sprite = SpriteHelper.GetFavIcon(item.Ticker.ToString());
+                    iapRewards[iapRewardIndex].RewardImage.sprite = SpriteHelper.GetFavIcon(item.Ticker);
                     iapRewards[iapRewardIndex].RewardCount.text = ((BigInteger)item.Amount).ToCurrencyNotation();
-                    iapRewards[iapRewardIndex].RewardGrade.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(item.Ticker.ToString()));
+                    iapRewards[iapRewardIndex].RewardGrade.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(item.Ticker));
                     iapRewards[iapRewardIndex].SetItemBase(null);
                     iapRewardIndex++;
                 }

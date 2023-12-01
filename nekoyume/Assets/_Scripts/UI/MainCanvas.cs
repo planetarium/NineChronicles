@@ -449,6 +449,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<InviteFriendsPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<EventPopup>());
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
