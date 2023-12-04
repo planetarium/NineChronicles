@@ -502,7 +502,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
                     break;
                 case AssetVisibleState.Summon:
-                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: Summon.SummonGroup);
+                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 2);
                     break;
             }
         }

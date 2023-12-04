@@ -37,6 +37,16 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void Set(Sprite sprite, System.Action<EventBannerItem> onClick)
+        {
+            image.texture = sprite.texture;
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() =>
+            {
+                onClick.Invoke(this);
+            });
+        }
+
         public void Select()
         {
             selectObject.SetActive(true);

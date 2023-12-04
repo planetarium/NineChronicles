@@ -3362,6 +3362,11 @@ namespace Nekoyume.Blockchain
                 }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
+                if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+                {
+                    Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                }
+
                 if (avatarValue is not Dictionary avatarDict)
                 {
                     Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
@@ -3480,7 +3485,6 @@ namespace Nekoyume.Blockchain
             var states = eval.OutputState;
             MailBox mailBox;
             ClaimItemsMail mail;
-
             IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
             {
@@ -3500,6 +3504,11 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarInventory(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
+                if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+                {
+                    Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                }
+
                 if (avatarValue is not Dictionary avatarDict)
                 {
                     Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
@@ -3625,6 +3634,10 @@ namespace Nekoyume.Blockchain
                 mail.New = true;
                 gameStates.CurrentAvatarState.mailBox = mailBox;
                 LocalLayerModifier.AddNewMail(avatar.address, mail.id);
+            }
+            if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+            {
+                Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             }
         }
     }
