@@ -19,7 +19,7 @@ namespace Tests.EditMode
         {
             _tableSheets = TableSheetsHelper.MakeTableSheets();
             _avatarAddress = new PublicKey(
-                ByteUtil.ParseHex("02eb997c654da6486d6e3e777caeba4b6880d57835b62f03b80df4c60431cdf412")).ToAddress();
+                ByteUtil.ParseHex("02eb997c654da6486d6e3e777caeba4b6880d57835b62f03b80df4c60431cdf412")).Address;
         }
 
         [OneTimeTearDown]

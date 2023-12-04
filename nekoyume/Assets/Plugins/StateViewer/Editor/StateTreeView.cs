@@ -417,9 +417,10 @@ namespace StateViewer.Editor
                             child.IndexOrKeyContent == "itemId")?.ValueContent ?? null;
                         var nonFungibleItemId = nonFungibleItemIdContent is null
                             ? Guid.NewGuid()
-                            : new Guid((Binary)StateTreeViewItemModel.ParseToValue(
-                                nonFungibleItemIdContent,
-                                ValueKind.Binary));
+                            : new Guid(
+                                ((Binary)StateTreeViewItemModel.ParseToValue(
+                                    nonFungibleItemIdContent, ValueKind.Binary)).ToByteArray()
+                            );
                         var levelContent = viewModel.Siblings!.FirstOrDefault(child =>
                             child.IndexOrKeyContent == "level")?.ValueContent ?? "0";
                         var level = int.TryParse(levelContent, out var l) ? l : 0;
@@ -458,9 +459,11 @@ namespace StateViewer.Editor
                         child.IndexOrKeyContent == "itemId")?.ValueContent ?? null;
                     var nonFungibleItemId = nonFungibleItemIdContent is null
                         ? Guid.NewGuid()
-                        : new Guid((Binary)StateTreeViewItemModel.ParseToValue(
-                            nonFungibleItemIdContent,
-                            ValueKind.Binary));
+                        : new Guid(
+                            ((Binary) StateTreeViewItemModel.ParseToValue(
+                                nonFungibleItemIdContent,
+                                ValueKind.Binary)).ToByteArray()
+                            );
                     var level = int.TryParse(viewModel.ValueContent, out var l) ? l : 0;
                     var equipment = BlacksmithMaster.CraftEquipment(
                         itemId,

@@ -63,10 +63,10 @@ namespace Nekoyume.Helper
         public static void ResetPassword(PrivateKey pk, string newPassword)
         {
             var store = GetKeystore();
-            var tuple = store.List().FirstOrDefault(tuple => tuple.Item2.Address == pk.PublicKey.ToAddress());
+            var tuple = store.List().FirstOrDefault(tuple => tuple.Item2.Address == pk.PublicKey.Address);
             if (tuple is null)
             {
-                Debug.Log($"Keystore not has key. Address: {pk.PublicKey.ToAddress()}");
+                Debug.Log($"Keystore not has key. Address: {pk.PublicKey.Address}");
             }
             else
             {
@@ -74,7 +74,7 @@ namespace Nekoyume.Helper
             }
 
             store.Add(ProtectedPrivateKey.Protect(pk, newPassword));
-            Debug.Log($"{pk.PublicKey.ToAddress()} password reset success!");
+            Debug.Log($"{pk.PublicKey.Address} password reset success!");
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Tests.EditMode.State.Modifiers
             _currency = Currency.Legacy("NCG", 2, null);
 #pragma warning restore CS0618
             _goldBalanceState = new GoldBalanceState(
-                new PrivateKey().ToAddress(),
+                new PrivateKey().Address,
                 new FungibleAssetValue(_currency));
         }
 

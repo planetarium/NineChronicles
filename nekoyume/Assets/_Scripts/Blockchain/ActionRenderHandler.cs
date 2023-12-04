@@ -106,7 +106,7 @@ namespace Nekoyume.Blockchain
                     var currentAvatarState = States.Instance.CurrentAvatarState;
                     if (currentAvatarState is not null)
                     {
-                        var type = actionType.TypeIdentifier.Inspect(false);
+                        var type = actionType.TypeIdentifier.Inspect();
                         Analyzer.Instance.Track(
                             "Unity/ActionRender",
                             new Dictionary<string, Value>
@@ -125,7 +125,7 @@ namespace Nekoyume.Blockchain
                         AirbridgeUnity.TrackEvent(evt);
                     }
 
-                    var actionTypeName = actionType.TypeIdentifier.Inspect(false);
+                    var actionTypeName = actionType.TypeIdentifier.Inspect();
                     if (actionTypeName.Contains("transfer_"))
                         return;
 
