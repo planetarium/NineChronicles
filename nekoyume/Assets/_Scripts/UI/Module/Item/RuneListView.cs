@@ -22,7 +22,7 @@ namespace Nekoyume.UI.Module
                 item.gameObject.SetActive(false);
             }
 
-            for (var i = 0; i < model.Runes.Count; i++)
+            for (var i = 0; i < model.Runes.Count && i < items.Count; i++)
             {
                 items[i].gameObject.SetActive(true);
                 items[i].Set(model.Runes[i], context);
