@@ -30,13 +30,15 @@ namespace Nekoyume.Game.Character
             Loop,
             Loop_02,
             Loop_03,
+            Loop_Aura,
+            Loop_Rune,
             Disappear,
             Disappear_02,
             Disappear_03,
             Over,
             Click,
         }
-        
+
         public static readonly List<Type> List = new List<Type>();
 
         static NPCAnimation()
@@ -46,9 +48,9 @@ namespace Nekoyume.Game.Character
             {
                 List.Add((Type) value);
             }
-        } 
+        }
     }
-    
+
     public class InvalidNPCAnimationTypeException : Exception
     {
         public InvalidNPCAnimationTypeException(string message) : base(message)

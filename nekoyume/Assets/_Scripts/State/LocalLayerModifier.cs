@@ -265,6 +265,7 @@ namespace Nekoyume.State
 
         public static void AddNewMail(Address avatarAddress, Guid mailId)
         {
+            UnityEngine.Debug.Log($"[MailRead] AddNewMail mailid : {mailId}");
             var modifier = new AvatarMailNewSetter(mailId);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
@@ -275,6 +276,7 @@ namespace Nekoyume.State
                 out var isCurrentAvatarState)
             )
             {
+                UnityEngine.Debug.LogError($"[MailRead] AddNewMail TryGetLoadedAvatarState fail mailid : {mailId}");
                 return;
             }
 
@@ -282,6 +284,7 @@ namespace Nekoyume.State
 
             if (!isCurrentAvatarState)
             {
+                UnityEngine.Debug.LogError($"[MailRead] AddNewMail isCurrentAvatarState fail mailid : {mailId}");
                 return;
             }
 
@@ -328,6 +331,7 @@ namespace Nekoyume.State
             Guid mailId,
             bool resetState = true)
         {
+            UnityEngine.Debug.Log($"[MailRead] RemoveNewAttachmentMail mailid : {mailId}");
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 
@@ -344,6 +348,7 @@ namespace Nekoyume.State
             Guid mailId,
             bool resetState = true)
         {
+            UnityEngine.Debug.Log($"[MailRead] RemoveNewMail mailid : {mailId}");
             var modifier = new AvatarMailNewSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 

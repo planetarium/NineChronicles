@@ -100,6 +100,7 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 211de300eb65747f2839b63b4b1a7bae, type: 3}
+  - {fileID: 21300000, guid: 7cee4f8029dab1645bba5660f933b258, type: 3}
   - {fileID: 21300000, guid: 4f8ea1012696e4ecdb3dacc8f40e1cc8, type: 3}
   - {fileID: 21300000, guid: 8519aa2174e0a4887b4b1ebdf69e37d7, type: 3}
   - {fileID: 21300000, guid: 85d043426b90d45438391a3a543a75fa, type: 3}
@@ -122,6 +123,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 69ad895f41d5c4098ad1f13d5d186a73, type: 3}
   m_PackedSpriteNamesToIndex:
   - Tutorial_Target_square
+  - Tutorial_txt_bg_04
   - Tutorial_Target_Arrow_bg
   - Tutorial_ch_eye_02
   - Tutorial_ch_01
