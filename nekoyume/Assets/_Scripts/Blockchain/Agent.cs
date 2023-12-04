@@ -159,7 +159,7 @@ namespace Nekoyume.Blockchain
             try
             {
                 string keyPath = path + "/states";
-                IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(keyPath);
+                IKeyValueStore stateKeyValueStore = new DefaultKeyValueStore(keyPath);
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 var actionLoader = new NCActionLoader();
                 var blockChainStates = new BlockChainStates(store, _stateStore);

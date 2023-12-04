@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.Blockchain;

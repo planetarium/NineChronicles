@@ -54,7 +54,7 @@ namespace Nekoyume.Helper
 
         private string storagePath;
 
-        private string storageType = "rocksdb";
+        private string storageType;
 
         private bool rpcClient;
 
