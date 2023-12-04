@@ -48,6 +48,7 @@ namespace Nekoyume.UI
         private bool isLastCellShow;
         private bool isPageEffectComplete;
         public const int SeasonPassMaxLevel = 30;
+        private int popupViewDelay = 1200;
 
         private const string SeasonPassCouragePopupViewd = "SeasonPassCouragePopupViewd";
         protected override void Awake()
@@ -157,13 +158,13 @@ namespace Nekoyume.UI
             if(!ignoreShowAnimation)
                 PageEffect();
 
-            if (!PlayerPrefs.HasKey(SeasonPassCouragePopupViewd))
+            if (!PlayerPrefs.HasKey(SeasonPassCouragePopupViewd + Game.Game.instance.States.CurrentAvatarState.address.ToHex()))
             {
                 async UniTaskVoid ShowCellEffect()
                 {
-                    await UniTask.Delay(miniumDurationCount);
+                    await UniTask.Delay(popupViewDelay);
                     Find<SeasonPassCouragePopup>().Show();
-                    PlayerPrefs.SetInt(SeasonPassCouragePopupViewd, 1);
+                    PlayerPrefs.SetInt(SeasonPassCouragePopupViewd + Game.Game.instance.States.CurrentAvatarState.address.ToHex(), 1);
                 }
                 ShowCellEffect().Forget();
             }

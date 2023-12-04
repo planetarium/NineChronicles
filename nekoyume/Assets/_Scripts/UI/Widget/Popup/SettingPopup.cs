@@ -327,7 +327,7 @@ namespace Nekoyume.UI
         {
             var settings = Nekoyume.Settings.Instance;
             settings.volumeMaster = value;
-            AudioListener.volume = settings.isVolumeMasterMuted ? 0f : settings.volumeMaster;
+            AudioListener.volume = settings.MasterVolume;
             UpdateVolumeMasterText();
         }
 

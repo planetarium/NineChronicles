@@ -15,6 +15,7 @@ namespace Nekoyume.Game
     public class Dcc : MonoSingleton<Dcc>
     {
         public static string DccVisible = "dcc_visible";
+        public const int TimeOut = 10;
 
         public Dictionary<string, int> Avatars { get; private set; } = new();
         public bool IsConnected { get; set; }
@@ -55,9 +56,9 @@ namespace Nekoyume.Game
 
         public async Task<Dictionary<DccPartsType, int>> GetParts(int dccId)
         {
-            if (_parts.ContainsKey(dccId))
+            if (_parts.TryGetValue(dccId, out var parts))
             {
-                return _parts[dccId];
+                return parts;
             }
 
             await StartCoroutine(RequestParts(dccId));
@@ -75,21 +76,23 @@ namespace Nekoyume.Game
                 headerName,
                 headerValue,
                 (json) =>
-            {
-                var result = JsonSerializer.Deserialize<DccMetadata>(json);
-                dccParts.Add(DccPartsType.background, result.traits[0]);
-                dccParts.Add(DccPartsType.skin, result.traits[1]);
-                dccParts.Add(DccPartsType.face, result.traits[2]);
-                dccParts.Add(DccPartsType.ear_tail, result.traits[3]);
-                dccParts.Add(DccPartsType.ac_face, result.traits[4]);
-                dccParts.Add(DccPartsType.hair, result.traits[5]);
-                dccParts.Add(DccPartsType.ac_eye, result.traits[6]);
-                dccParts.Add(DccPartsType.ac_head, result.traits[7]);
-                if (!_parts.ContainsKey(dccId))
                 {
-                    _parts.Add(dccId, dccParts);
-                }
-            }));
+                    var result = JsonSerializer.Deserialize<DccMetadata>(json);
+                    dccParts.Add(DccPartsType.background, result.traits[0]);
+                    dccParts.Add(DccPartsType.skin, result.traits[1]);
+                    dccParts.Add(DccPartsType.face, result.traits[2]);
+                    dccParts.Add(DccPartsType.ear_tail, result.traits[3]);
+                    dccParts.Add(DccPartsType.ac_face, result.traits[4]);
+                    dccParts.Add(DccPartsType.hair, result.traits[5]);
+                    dccParts.Add(DccPartsType.ac_eye, result.traits[6]);
+                    dccParts.Add(DccPartsType.ac_head, result.traits[7]);
+                    _parts.TryAdd(dccId, dccParts);
+                },
+                _ =>
+                {
+                    _parts.TryAdd(dccId, null);
+                },
+                TimeOut));
         }
     }
 }

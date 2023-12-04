@@ -562,7 +562,7 @@ namespace Nekoyume.L10n
         public static async UniTask AdditionalL10nTableDownload(string url)
         {
             var client = new HttpClient();
-            if(_initializedURLs.TryGetValue(url, out bool initialized))
+            if (_initializedURLs.TryGetValue(url, out var initialized))
             {
                 return;
             }
@@ -579,19 +579,21 @@ namespace Nekoyume.L10n
             var records = csvReader.GetRecords<L10nCsvModel>();
             foreach (var item in records)
             {
-                Dictionary<LanguageType, string> l10nKeyValue = new Dictionary<LanguageType, string>();
+                var l10nKeyValue = new Dictionary<LanguageType, string>();
                 foreach (var lang in (LanguageType[])Enum.GetValues(typeof(LanguageType)))
                 {
                     var value = (string)typeof(L10nCsvModel)
-                                .GetProperty(lang.ToString())?
-                                .GetValue(item);
+                        .GetProperty(lang.ToString())?
+                        .GetValue(item);
 
                     if (string.IsNullOrEmpty(value))
                     {
                         value = item.English;
                     }
+
                     l10nKeyValue.Add(lang, value);
                 }
+
                 _additionalDic.TryAdd(item.Key, l10nKeyValue);
             }
 
@@ -600,9 +602,9 @@ namespace Nekoyume.L10n
 
         private static bool GetAdditionalLocalizedString(string key, out string text)
         {
-            if(_additionalDic.TryGetValue(key, out var L10n))
+            if (_additionalDic.TryGetValue(key, out var l10N))
             {
-                if(L10n.TryGetValue(CurrentLanguage, out var localized))
+                if (l10N.TryGetValue(CurrentLanguage, out var localized))
                 {
                     text = localized;
                     return true;
@@ -614,6 +616,7 @@ namespace Nekoyume.L10n
                     return false;
                 }
             }
+
             text = string.Empty;
             Debug.LogError($"_additionalDic can't find key: {key}");
             return false;

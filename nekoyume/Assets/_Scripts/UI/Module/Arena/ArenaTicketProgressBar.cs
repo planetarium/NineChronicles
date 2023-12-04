@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using TMPro;

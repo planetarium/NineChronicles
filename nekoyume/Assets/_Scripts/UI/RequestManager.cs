@@ -39,10 +39,11 @@ namespace Nekoyume.UI
             string headerName,
             string headerValue,
             Action<string> onSuccess,
-            Action<UnityWebRequest> onFailed = null)
+            Action<UnityWebRequest> onFailed = null,
+            int timeOut = 0)
         {
             Debug.Log($"[RequestManager] GetJson: {url}, {headerName}, {headerValue}");
-            using var request = MakeRequestWithTimeout(url);
+            using var request = MakeRequestWithTimeout(url, timeOut);
             request.SetRequestHeader(headerName, headerValue);
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success)
@@ -57,10 +58,10 @@ namespace Nekoyume.UI
             }
         }
 
-        private static UnityWebRequest MakeRequestWithTimeout(string url)
+        private static UnityWebRequest MakeRequestWithTimeout(string url, int timeOut = 0)
         {
             var request = UnityWebRequest.Get(url);
-            request.timeout = Timeout;
+            request.timeout = timeOut == 0 ? Timeout : timeOut;
             return request;
         }
     }

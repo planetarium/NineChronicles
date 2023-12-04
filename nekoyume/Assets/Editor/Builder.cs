@@ -501,6 +501,7 @@ namespace Editor
                         {
                             "com.googleusercontent.apps.449111430622-14152cpabg35n1squ7bq180rjptnmcvs",
                             "ninechroniclesmobile",
+                            "ninechronicles-launcher",
                         }
                     }
                 }

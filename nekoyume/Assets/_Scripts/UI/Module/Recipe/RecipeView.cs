@@ -33,6 +33,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI countText = null;
 
+        private const string LevelTextFormat = "<size=70%>{0}</size>\n{1}";
+        private const string CountTextFormat = "<size=70%>x</size>{0}";
+
         public void Show(RecipeViewData.Data viewData, ItemSheet.Row itemRow, int count = 0)
         {
             if (itemRow is null)
@@ -47,21 +50,25 @@ namespace Nekoyume.UI.Module
             iconImage.overrideSprite = itemSprite;
 
             levelBg.gameObject.SetActive(true);
-            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
-            var currentAvatarLevel = States.Instance.CurrentAvatarState.level;
-            var requirementLevel = sheet.TryGetValue(itemRow.Id, out var row) ? row.Level : 1;
 
-            if (currentAvatarLevel >= requirementLevel)
+            lockedLevelText.gameObject.SetActive(false);
+            switch (itemRow)
             {
-                normalLevelText.text = requirementLevel.ToString();
-                normalLevelText.gameObject.SetActive(true);
-                lockedLevelText.gameObject.SetActive(false);
-            }
-            else
-            {
-                lockedLevelText.text = requirementLevel.ToString();
-                lockedLevelText.gameObject.SetActive(true);
-                normalLevelText.gameObject.SetActive(false);
+                case EquipmentItemSheet.Row equipmentRow:
+                    var equipmentStat = equipmentRow.GetUniqueStat();
+                    normalLevelText.text = string.Format(
+                        LevelTextFormat, equipmentStat.StatType, equipmentStat.TotalValue);
+                    normalLevelText.gameObject.SetActive(true);
+                    break;
+                case ConsumableItemSheet.Row consumableRow:
+                    var consumableStat = consumableRow.GetUniqueStat();
+                    normalLevelText.text = string.Format(
+                        LevelTextFormat, consumableStat.StatType, consumableStat.TotalValue);
+                    normalLevelText.gameObject.SetActive(true);
+                    break;
+                case MaterialItemSheet.Row:
+                    normalLevelText.gameObject.SetActive(false);
+                    break;
             }
 
             levelBg.targetColor = viewData.LevelBgHsvTargetColor;
@@ -84,7 +91,7 @@ namespace Nekoyume.UI.Module
             {
                 if (count > 0)
                 {
-                    countText.text = $"<size=70%>x</size>{count}";
+                    countText.text = string.Format(CountTextFormat, count);
                     countText.gameObject.SetActive(true);
                 }
                 else

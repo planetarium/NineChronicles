@@ -75,8 +75,6 @@ namespace Nekoyume.State
         public Dictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
         public Dictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
 
-        public GrandFinaleStates GrandFinaleStates { get; } = new();
-
         private class Workshop
         {
             public Dictionary<int, CombinationSlotState> States { get; } = new();
@@ -443,6 +441,14 @@ namespace Nekoyume.State
             var preFav = CurrentAvatarBalances[fav.Currency.Ticker];
             var major = preFav.MajorUnit - fav.MajorUnit;
             var miner = preFav.MinorUnit - fav.MinorUnit;
+            CurrentAvatarBalances[fav.Currency.Ticker] =
+                new FungibleAssetValue(fav.Currency, major, miner);
+        }
+
+        public void UpdateCurrentAvatarBalance(FungibleAssetValue fav)
+        {
+            var major = fav.MajorUnit;
+            var miner = fav.MinorUnit;
             CurrentAvatarBalances[fav.Currency.Ticker] =
                 new FungibleAssetValue(fav.Currency, major, miner);
         }
