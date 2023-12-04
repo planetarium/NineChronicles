@@ -41,7 +41,7 @@ namespace Nekoyume.UI
                     EquipmentRow = equipmentItemSheet[recipeRow.ResultEquipmentId],
                     Ratio = ratio / ratioSum,
                 };
-            }).OrderBy(model => model.Ratio);
+            }).Where(model => model != null).OrderBy(model => model.Ratio);
 
             scroll.UpdateData(models, true);
 

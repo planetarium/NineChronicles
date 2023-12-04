@@ -549,6 +549,14 @@ namespace Nekoyume
             return $"<color=#{GetColorHexByGrade(equipment.Grade)}>{grade}  |  {subType}</color>";
         }
 
+        public static string GetLocalizedInformation(this FungibleAssetValue fav)
+        {
+            var grade = Util.GetTickerGrade(fav.Currency.Ticker);
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subType = L10nManager.Localize("UI_STONES");
+            return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subType}</color>";
+        }
+
         public static Color GetElementalTypeColor(this ItemBase item)
         {
             return item.ElementalType switch

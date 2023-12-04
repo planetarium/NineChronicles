@@ -6,6 +6,7 @@ using DG.Tweening;
 using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
@@ -172,6 +173,32 @@ namespace Nekoyume.UI
             StartCoroutine(CoShowLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
         }
 
+        private void RuneSummonAction(int groupId, int summonCount)
+        {
+            // Check material enough
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.SummonSheet[groupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+
+            var totalCost = summonRow.CostMaterialCount * summonCount;
+            var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
+                ? items.Sum(x => x.count)
+                : 0;
+
+            if (count < totalCost)
+            {
+                // Not enough
+                Debug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
+                return;
+            }
+
+            ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
+            LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
+            SetMaterialAssets();
+            StartCoroutine(CoShowLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
+        }
+
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
@@ -184,6 +211,21 @@ namespace Nekoyume.UI
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
+            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
+        }
+
+        public void OnActionRender(ActionEvaluation<RuneSummon> eval)
+        {
+            LoadingHelper.Summon.Value = null;
+            SetMaterialAssets();
+
+            summonItem.draw1Button.UpdateObjects();
+            summonItem.draw10Button.UpdateObjects();
+
+            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
+            var summonCount = eval.Action.SummonCount;
+            var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
+            var resultList = SimulateRune(summonRow, summonCount, random);
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
@@ -206,6 +248,17 @@ namespace Nekoyume.UI
                     summonRow, summonCount, random, blockIndex)
                 .Select(tuple => tuple.Item2)
                 .OrderByDescending(row => row.Grade)
+                .ToList();
+        }
+
+        private static List<FungibleAssetValue> SimulateRune(
+            SummonSheet.Row summonRow,
+            int summonCount,
+            IRandom random)
+        {
+            var tableSheets = Game.Game.instance.TableSheets;
+            return RuneSummon.SimulateSummon(tableSheets.RuneSheet, summonRow, summonCount, random)
+                .Select(pair => new FungibleAssetValue(pair.Key, pair.Value, 0))
                 .ToList();
         }
 

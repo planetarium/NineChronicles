@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -96,6 +97,68 @@ namespace Nekoyume.UI
             var normal = summonRow.GroupId == NormalSummonId;
             var bonus = summonCount == 10 ? 1 : 0;
             var great = resultList.First().Grade == 5;
+
+            var single = summonCount == 1;
+            if (single)
+            {
+                singleSummonItemView.SetData(resultList.First(), true, true);
+                singleSummonItemView.Show();
+            }
+            else
+            {
+                singleSummonItemView.Hide();
+            }
+
+            for (var i = 0; i < summonItemViews.Length; i++)
+            {
+                var view = summonItemViews[i];
+                if (!single && i < resultList.Count)
+                {
+                    view.SetData(resultList[i], true);
+                    view.Show();
+                }
+                else
+                {
+                    view.Hide();
+                }
+            }
+
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+                _coroutine = null;
+            }
+
+            _coroutine = StartCoroutine(PlayVideo(normal, great));
+
+            _disposables.DisposeAllAndClear();
+            var drawButton = normal ? normalDrawButton : goldenDrawButton;
+            drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
+            Summon.ButtonSubscribe(drawButton, summonRow, summonCount, _disposables);
+
+            normalDrawButton.gameObject.SetActive(normal);
+            goldenDrawButton.gameObject.SetActive(!normal);
+
+            closeButton.interactable = true;
+            skipButton.interactable = true;
+            background.anchoredPosition =
+                (normal ? Vector2.up : Vector2.down) * DefaultBackgroundPosY;
+        }
+
+        public void Show(SummonSheet.Row summonRow,
+            int summonCount,
+            List<FungibleAssetValue> resultList,
+            System.Action completeCallback = null,
+            bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            _completeCallback = completeCallback;
+
+            animator.SetTrigger(AnimatorHashHide);
+
+            var normal = summonRow.GroupId == NormalSummonId;
+            var bonus = summonCount == 10 ? 1 : 0;
+            var great = false;
 
             var single = summonCount == 1;
             if (single)
