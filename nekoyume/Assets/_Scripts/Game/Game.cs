@@ -211,31 +211,6 @@ namespace Nekoyume.Game
                 AppTrackingTransparency.RequestTrackingAuthorization();
             }
 #endif
-
-#if !UNITY_EDITOR && UNITY_IOS && !UNITY_IOS_SIMULATOR
-            // DevCra - iOS Build
-            //string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
-            ////Load dynamic library of rocksdb
-            //string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
-            //Native.LoadLibrary(RocksdbLibPath);
-
-            ////Set the path of secp256k1's dynamic library
-            //string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
-            //Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
-#elif !UNITY_EDITOR && UNITY_IOS_SIMULATOR
-            string rocksdbLibPath = Platform.GetStreamingAssetsPath("librocksdb.dylib");
-            Native.LoadLibrary(rocksdbLibPath);
-
-            string secp256LibPath = Platform.GetStreamingAssetsPath("libsecp256k1.dylib");
-            Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256LibPath);
-#elif UNITY_ANDROID
-            // string loadPath = Application.dataPath.Split("/base.apk")[0];
-            // loadPath = Path.Combine(loadPath, "lib");
-            // loadPath = Path.Combine(loadPath, Environment.Is64BitOperatingSystem ? "arm64" : "arm");
-            // loadPath = Path.Combine(loadPath, "librocksdb.so");
-            // Debug.LogWarning($"native load path = {loadPath}");
-            // RocksDbSharp.Native.LoadLibrary(loadPath);
-#endif
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.ScriptOnly);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
