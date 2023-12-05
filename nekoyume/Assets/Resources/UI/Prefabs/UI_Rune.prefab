@@ -6871,7 +6871,7 @@ MonoBehaviour:
   - {fileID: 7432564310329674287}
   maxLevel: {fileID: 194161607266629242}
   sliderContainer: {fileID: 1036098219747755859}
-  scroll: {fileID: 3832024585454071186}
+  scroll: {fileID: 760942376991844909}
   animator: {fileID: 5146677639958581202}
 --- !u!95 &5146677639958581202
 Animator:
@@ -12220,7 +12220,7 @@ GameObject:
   - component: {fileID: 1862035577529741177}
   - component: {fileID: 7406428356398922761}
   - component: {fileID: 5100022501393638327}
-  - component: {fileID: 3832024585454071186}
+  - component: {fileID: 760942376991844909}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -12315,7 +12315,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 2130456538331074397}
---- !u!114 &3832024585454071186
+--- !u!114 &760942376991844909
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12324,11 +12324,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2786892300375123153}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e22aa40965b549d992370b769e83d2a3, type: 3}
+  m_Script: {fileID: 11500000, guid: 85dff66faed177347ad2198d536e6a33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: 14
-  scrollOffset: 14
+  cellInterval: -1.3214285
+  scrollOffset: -1.3214285
   loop: 0
   cellContainer: {fileID: 2642608342339477375}
   reuseCellMarginCount: 0
@@ -12336,13 +12336,13 @@ MonoBehaviour:
   paddingTail: 0
   spacing: 0
   startAxisSpacing: 0
-  startAxisCellCount: 1
-  cellSize: {x: 320, y: 140}
+  startAxisCellCount: 4
+  cellSize: {x: 74, y: 74}
   forcedScrollSensitivity: 20
-  fillWithNullToEmptyViewport: 0
+  fillWithNullToEmptyViewport: 1
   fillWithNullToEmptyCellGroup: 0
   fillWithNullToMinimumCount: 0
-  cellTemplate: {fileID: 6406110039037078131, guid: 8a6a536249b2f430b8c26076b52ed442,
+  cellTemplate: {fileID: 4568986996828977384, guid: a1f2d1480143ad14fa77b7d1788c65ea,
     type: 3}
 --- !u!1 &2808666856778803016
 GameObject:
