@@ -890,7 +890,7 @@ MonoBehaviour:
     - {fileID: 8250399033876441476}
     - {fileID: 8941224004311707540}
     backgroundPositionY: -690
-  - summonSheetId: 0
+  - summonSheetId: 20001
     tabToggle: {fileID: 7694223387165152743}
     enableObj:
     - {fileID: 5597247345816316038}
@@ -4597,7 +4597,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
-  obsolete: 1
+  obsolete: 0
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
