@@ -22,6 +22,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject grade4Effect;
         [SerializeField] private GameObject gradeEffect;
 
+        [SerializeField] private TextMeshProUGUI countText;
         [SerializeField] private ItemOptionTag optionTag;
 
         [SerializeField] private TextMeshProUGUI nameText;
@@ -57,7 +58,9 @@ namespace Nekoyume.UI.Module
             grade4Effect.SetActive(equipment.Grade == 4);
             gradeEffect.SetActive(false);
 
+            countText.gameObject.SetActive(false);
             optionTag.Set(equipment);
+            optionTag.gameObject.SetActive(true);
 
             nameText.gameObject.SetActive(showDetail);
             if (showDetail)
@@ -89,7 +92,9 @@ namespace Nekoyume.UI.Module
             grade4Effect.SetActive(grade == 4);
             gradeEffect.SetActive(false);
 
-            optionTag.Set(grade);
+            countText.text = fav.GetQuantityString();
+            countText.gameObject.SetActive(true);
+            optionTag.gameObject.SetActive(false);
 
             nameText.gameObject.SetActive(showDetail);
             if (showDetail)

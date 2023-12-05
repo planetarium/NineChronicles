@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Lib9c;
 using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Crypto;
@@ -170,7 +171,7 @@ namespace Nekoyume.UI
             ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
             SetMaterialAssets();
-            StartCoroutine(CoShowLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
+            StartCoroutine(CoShowAuraSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
         }
 
         private void RuneSummonAction(int groupId, int summonCount)
@@ -196,7 +197,7 @@ namespace Nekoyume.UI
             ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
             SetMaterialAssets();
-            StartCoroutine(CoShowLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
+            StartCoroutine(CoShowRuneSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
@@ -259,6 +260,7 @@ namespace Nekoyume.UI
             var tableSheets = Game.Game.instance.TableSheets;
             return RuneSummon.SimulateSummon(tableSheets.RuneSheet, summonRow, summonCount, random)
                 .Select(pair => new FungibleAssetValue(pair.Key, pair.Value, 0))
+                .OrderByDescending(rune => Util.GetTickerGrade(rune.Currency.Ticker))
                 .ToList();
         }
 
@@ -284,7 +286,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoShowLoadingScreen(List<int> recipes)
+        private IEnumerator CoShowAuraSummonLoadingScreen(List<int> recipes)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             IEnumerator CoChangeItem()
@@ -310,6 +312,36 @@ namespace Nekoyume.UI
 
             loadingScreen.AnimateNPC(
                 CombinationLoadingScreen.SpeechBubbleItemType.Aura,
+                L10nManager.Localize("UI_COST_BLOCK", 1));
+        }
+
+        private IEnumerator CoShowRuneSummonLoadingScreen(List<int> recipes)
+        {
+            var loadingScreen = Find<CombinationLoadingScreen>();
+            IEnumerator CoChangeItem()
+            {
+                while (isActiveAndEnabled)
+                {
+                    foreach (var recipe in recipes)
+                    {
+                        if (!RuneFrontHelper.TryGetRuneIcon(recipe, out var fav))
+                        {
+                            continue;
+                        }
+
+                        loadingScreen.SpeechBubbleWithItem.SetRune(fav);
+                        yield return new WaitForSeconds(.1f);
+                    }
+                }
+            }
+
+            loadingScreen.Show();
+            loadingScreen.SetCloseAction(null);
+            StartCoroutine(CoChangeItem());
+            yield return new WaitForSeconds(.5f);
+
+            loadingScreen.AnimateNPC(
+                CombinationLoadingScreen.SpeechBubbleItemType.Rune,
                 L10nManager.Localize("UI_COST_BLOCK", 1));
         }
 

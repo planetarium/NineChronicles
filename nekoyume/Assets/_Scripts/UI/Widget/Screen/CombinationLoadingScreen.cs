@@ -173,9 +173,12 @@ namespace Nekoyume.UI
             var target = Find<HeaderMenuStatic>()
                 .GetToggle(HeaderMenuStatic.ToggleType.CombinationSlots);
             var targetPosition = target ? target.position : Vector3.zero;
+            var itemSprite = item.ItemBase is not null
+                ? item.ItemBase.Value.GetIconSprite()
+                : item.FungibleAssetValue.Value.GetIconSprite();
 
             ItemMoveAnimation.Show(
-                item.ItemBase.Value.GetIconSprite(),
+                itemSprite,
                 speechBubble.ItemView.transform.position,
                 targetPosition,
                 Vector2.one * 1.5f,
