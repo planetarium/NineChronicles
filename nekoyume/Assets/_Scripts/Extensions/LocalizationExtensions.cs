@@ -469,9 +469,13 @@ namespace Nekoyume
 
         public static string GetLocalizedName(this FungibleAssetValue fav)
         {
+            return GetLocalizedFavName(fav.Currency.Ticker);
+        }
+
+        public static string GetLocalizedFavName(string ticker)
+        {
             var isRune = false;
             var id = 0;
-            var ticker = fav.Currency.Ticker;
             var grade = 1;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
             {
@@ -619,7 +623,7 @@ namespace Nekoyume
             return L10nManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
         }
 
-        private static string GetColorHexByGrade(int grade)
+        public static string GetColorHexByGrade(int grade)
         {
             var color = GetItemGradeColor(grade);
             return color.ColorToHex();
