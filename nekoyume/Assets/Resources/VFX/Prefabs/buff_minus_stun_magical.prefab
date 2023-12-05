@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6902735921743583346}
   - component: {fileID: 9206956200346924575}
   - component: {fileID: 2377669858775944261}
-  - component: {fileID: 3477190998535925526}
   m_Layer: 0
   m_Name: buff_minus_stun_magical
   m_TagString: Untagged
@@ -4813,21 +4812,6 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &3477190998535925526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1746063197591651840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d53e835703c4da7a96bde021b439ae3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _initializeSortingProbsOfChildren: 0
-  <Target>k__BackingField: {fileID: 0}
-  <IsPersisting>k__BackingField: 1
 --- !u!1 &1934924195729125956
 GameObject:
   m_ObjectHideFlags: 0
