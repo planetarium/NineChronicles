@@ -110,6 +110,12 @@ namespace Nekoyume
         [SerializeField]
         private TMP_Text grindingCountText;
 
+        [SerializeField]
+        private GameObject runeNotificationObj;
+
+        [SerializeField]
+        private GameObject runeSelectMove;
+
         public GameObject Container => container;
         public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
@@ -142,6 +148,9 @@ namespace Nekoyume
         public GameObject GrindingCountObject => grindingCountObject;
         public TMP_Text GrindingCountText => grindingCountText;
         public GameObject RewardReceived;
+
+        public GameObject RuneNotificationObj => runeNotificationObj;
+        public GameObject RuneSelectMove => runeSelectMove;
 
         public static Sprite GetItemIcon(ItemBase itemBase)
         {
