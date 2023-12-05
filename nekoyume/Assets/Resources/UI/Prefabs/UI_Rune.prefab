@@ -12327,14 +12327,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85dff66faed177347ad2198d536e6a33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -1.3214285
-  scrollOffset: -1.3214285
+  cellInterval: -1.826087
+  scrollOffset: -1.826087
   loop: 0
   cellContainer: {fileID: 2642608342339477375}
   reuseCellMarginCount: 0
   paddingHead: 0
   paddingTail: 0
-  spacing: 0
+  spacing: 10
   startAxisSpacing: 0
   startAxisCellCount: 4
   cellSize: {x: 74, y: 74}

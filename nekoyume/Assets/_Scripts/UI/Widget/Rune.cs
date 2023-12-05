@@ -115,7 +115,7 @@ namespace Nekoyume.UI
         private static readonly int HashToMaterialUse =
             Animator.StringToHash("MaterialUse");
 
-        private readonly Dictionary<int, List<RuneItem>> _runeItems = new();
+        private readonly List<RuneItem> _runeItems = new();
         private readonly List<IDisposable> _disposables = new();
 
         private RuneItem _selectedRuneItem;
@@ -269,6 +269,7 @@ namespace Nekoyume.UI
                         _selectedRuneItem = runeItem;
                     }
                 }
+                _runeItems.Add(runeItem);
                 items.Add(new RuneStoneEnhancementInventoryItem(state, value, runeItem));
             }
             scroll.UpdateData(items);
@@ -333,13 +334,7 @@ namespace Nekoyume.UI
 
             runeImage.sprite = runeIcon;
 
-            var items = new List<RuneItem>();
-            foreach (var list in _runeItems.Values)
-            {
-                items.AddRange(list);
-            }
-
-            foreach (var runeItem in items)
+            foreach (var runeItem in _runeItems)
             {
                 runeItem.IsSelected.Value = runeItem.Row.Id == item.Row.Id;
             }
