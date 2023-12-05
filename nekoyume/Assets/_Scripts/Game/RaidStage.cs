@@ -118,6 +118,10 @@ namespace Nekoyume.Game
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
+                if (e is Tick)
+                {
+                    yield return StartCoroutine(CoTick(e.Character));
+                }
 
                 while (_actionQueue.TryDequeue(out var param))
                 {
@@ -488,6 +492,17 @@ namespace Nekoyume.Game
 
                 ++_wave;
             }
+        }
+
+        public IEnumerator CoTick(CharacterBase affectedCharacter)
+        {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoTick)}() enter. affectedCharacter: {affectedCharacter.Id}");
+#endif
+            Character.RaidCharacter raidCharacter =
+                affectedCharacter.Id == _player.Id ? _player : _boss;
+            raidCharacter.Animator.Hit();
+            yield return new WaitForSeconds(skillDelay);
         }
 
         public void AddScore(int score)
