@@ -327,7 +327,7 @@
             <returns>The next <see cref="P:Libplanet.Types.Tx.Transaction.Nonce"/> value of the
             <paramref name="address"/>.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{Libplanet.Action.IAction},System.Nullable{Libplanet.Types.Assets.FungibleAssetValue},System.Nullable{System.Int64},System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.Address},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Blockchain.BlockChain.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{Libplanet.Action.IAction},System.Nullable{Libplanet.Types.Assets.FungibleAssetValue},System.Nullable{System.Int64},System.Nullable{System.DateTimeOffset})">
             <summary>
             Creates a new <see cref="T:Libplanet.Types.Tx.Transaction"/> with custom actions and stage it.
             It's available only if the genesis block exists.
@@ -339,8 +339,6 @@
             <param name="maxGasPrice"> The maximum gas price this transaction can pay fee. </param>
             <param name="gasLimit"> The maximum amount of gas this transaction can consume.
             </param>
-            <param name="updatedAddresses"><see cref="T:Libplanet.Crypto.Address"/>es whose states affected by
-            <paramref name="actions"/>.</param>
             <param name="timestamp">The time this <see cref="T:Libplanet.Types.Tx.Transaction"/> is created and
             signed.</param>
             <returns>A created new <see cref="T:Libplanet.Types.Tx.Transaction"/> signed by the given
@@ -455,7 +453,7 @@
             <exception cref="T:System.InvalidOperationException">Thrown when <see cref="P:Libplanet.Blockchain.BlockChain.IsCanonical"/> is
             <see langword="false"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.DetermineGenesisStateRootHash(Libplanet.Action.IActionEvaluator,Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.IActionEvaluation}@)">
+        <member name="M:Libplanet.Blockchain.BlockChain.DetermineGenesisStateRootHash(Libplanet.Action.IActionEvaluator,Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)">
             <summary>
             Determines the state root hash of <paramref name="preEvaluationBlock"/>
             by evaluating on top of empty states.
@@ -482,7 +480,7 @@
             evaluate the proposed <see cref="T:Libplanet.Types.Blocks.Block"/>.</param>
             <param name="preEvaluationBlock">The <see cref="T:Libplanet.Types.Blocks.IPreEvaluationBlock"/> to
             evaluate.</param>
-            <returns>An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <see cref="T:Libplanet.Action.IActionEvaluation"/>s
+            <returns>An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <see cref="T:Libplanet.Action.ICommittedActionEvaluation"/>s
             resulting from evaluating <paramref name="preEvaluationBlock"/> using
             <paramref name="actionEvaluator"/>.</returns>
             <exception cref="T:System.ArgumentException">Thrown if <paramref name="preEvaluationBlock"/>s
@@ -517,8 +515,8 @@
             Evaluates the <see cref="T:Libplanet.Action.IAction"/>s in given <paramref name="block"/>.
             </summary>
             <param name="block">The <see cref="T:Libplanet.Types.Blocks.IPreEvaluationBlock"/> to execute.</param>
-            <returns>An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <ses cref="T:Libplanet.Action.IActionEvaluation"/>s for
-            given <paramref name="block"/>.</returns>
+            <returns>An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <ses cref="T:Libplanet.Action.ICommittedActionEvaluation"/>s
+            for given <paramref name="block"/>.</returns>
             <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when given <paramref name="block"/>
             contains an action that cannot be loaded with <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.</exception>
             <seealso cref="M:Libplanet.Blockchain.BlockChain.ValidateBlockStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>

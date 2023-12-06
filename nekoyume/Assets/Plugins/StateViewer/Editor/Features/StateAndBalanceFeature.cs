@@ -212,7 +212,7 @@ namespace StateViewer.Editor.Features
                     SourceFrom.GetStateFromPlayModeAgent or _ =>
                         throw new ArgumentOutOfRangeException(),
                 };
-                var value = Codec.Decode(binary);
+                var value = Codec.Decode(binary.ToByteArray());
                 stateTreeView.SetData(null, value);
             }
 

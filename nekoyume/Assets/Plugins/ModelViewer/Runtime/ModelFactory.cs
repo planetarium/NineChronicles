@@ -118,7 +118,7 @@ namespace ModelViewer.Runtime
 
             if (type == typeof(Address))
             {
-                return new PrivateKey().ToAddress();
+                return new PrivateKey().Address;
             }
 
             if (type == typeof(Currency))
