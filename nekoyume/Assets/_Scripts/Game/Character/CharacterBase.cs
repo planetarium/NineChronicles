@@ -924,6 +924,21 @@ namespace Nekoyume.Game.Character
             Animator.Idle();
         }
 
+        public IEnumerator CoHealWithoutAnimation(IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
+        {
+            if (skillInfos is null ||
+                skillInfos.Count == 0)
+                yield break;
+
+            foreach (var info in skillInfos)
+            {
+                var target = Game.instance.Stage.GetCharacter(info.Target);
+                ProcessHeal(target, info);
+            }
+
+            Animator.Idle();
+        }
+
         public IEnumerator CoBuff(IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
         {
             if (skillInfos is null ||

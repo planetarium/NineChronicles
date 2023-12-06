@@ -11,9 +11,11 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.UI;
 using UnityEngine;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game
 {
@@ -128,10 +130,6 @@ namespace Nekoyume.Game
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
-                if (e is ArenaTick)
-                {
-                    yield return StartCoroutine(CoTick(e.Character));
-                }
             }
 
             yield return StartCoroutine(CoEnd(log, rewards, winDefeatCount));
@@ -321,11 +319,33 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        private IEnumerator CoTick(ArenaCharacter affectedCharacter)
+        public IEnumerator CoCustomEvent(ArenaCharacter caster, ArenaEventBase eventBase)
         {
-            Character.ArenaCharacter target = affectedCharacter.Id == me.Id ? me : enemy;
-            target.Animator.Hit();
-            yield return SkillDelay;
+            if (eventBase is ArenaTick tick)
+            {
+                var affectedCharacter = caster.Id == me.Id ? me : enemy;
+                // This Tick from 'Stun'
+                if (!tick.SkillInfos.Any())
+                {
+                    IEnumerator StunTick(IReadOnlyList<ArenaSkill.ArenaSkillInfo> readOnlyList)
+                    {
+                        affectedCharacter.Animator.Hit();
+                        yield return new WaitForSeconds(SkillDelay);
+                    }
+
+                    var actionParams = new ArenaActionParams(affectedCharacter, null, null, StunTick);
+                    affectedCharacter.Actions.Add(actionParams);
+                    yield return null;
+                }
+                // This Tick from 'Vampiric'
+                else if (tick.SkillInfos.Any(info => info.SkillCategory == SkillCategory.Heal))
+                {
+                    var actionParams = new ArenaActionParams(affectedCharacter, null, null,
+                        affectedCharacter.CoHealWithoutAnimation);
+                    affectedCharacter.Actions.Add(actionParams);
+                    yield return null;
+                }
+            }
         }
     }
 }
