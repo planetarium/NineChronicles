@@ -249,9 +249,30 @@ namespace Nekoyume.UI
             int summonCount,
             IRandom random)
         {
-            var tableSheets = Game.Game.instance.TableSheets;
-            return RuneSummon.SimulateSummon(tableSheets.RuneSheet, summonRow, summonCount, random)
-                .Select(pair => new FungibleAssetValue(pair.Key, pair.Value, 0))
+            const int unit = RuneSummon.RuneQuantity;
+            var simulateResult = RuneSummon.SimulateSummon(
+                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random);
+
+            var result = new List<FungibleAssetValue>();
+            foreach (var pair in simulateResult)
+            {
+                var quantity = pair.Value;
+                while (quantity > 0)
+                {
+                    if (quantity >= unit)
+                    {
+                        result.Add(new FungibleAssetValue(pair.Key, unit, 0));
+                        quantity -= unit;
+                    }
+                    else
+                    {
+                        result.Add(new FungibleAssetValue(pair.Key, quantity, 0));
+                        quantity = 0;
+                    }
+                }
+            }
+
+            return result
                 .OrderByDescending(rune => Util.GetTickerGrade(rune.Currency.Ticker))
                 .ToList();
         }
