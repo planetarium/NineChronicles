@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Model.Skill;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -34,6 +35,7 @@ using Enemy = Nekoyume.Model.Enemy;
 using EnemyPlayer = Nekoyume.Model.EnemyPlayer;
 using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game
 {
@@ -340,10 +342,6 @@ namespace Nekoyume.Game
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
-                if (e is Tick)
-                {
-                    yield return StartCoroutine(CoTick(e.Character));
-                }
             }
 
             yield return StartCoroutine(CoStageEnd(log));
@@ -1182,14 +1180,43 @@ namespace Nekoyume.Game
             character.Dead();
         }
 
-        public IEnumerator CoTick(CharacterBase affectedCharacter)
+        public IEnumerator CoCustomEvent(CharacterBase character, EventBase eventBase)
         {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoTick)}() enter. affectedCharacter: {affectedCharacter.Id}");
-#endif
-            var character = GetCharacter(affectedCharacter);
-            character.Animator.Hit();
-            yield return new WaitForSeconds(SkillDelay);
+            if (eventBase is Tick tick)
+            {
+                var affectedCharacter = GetCharacter(character);
+                // This Tick from 'Stun'
+                if (tick.SkillId == 0)
+                {
+                    IEnumerator StunTick(IEnumerable<Skill.SkillInfo> _)
+                    {
+                        affectedCharacter.Animator.Hit();
+                        yield return new WaitForSeconds(SkillDelay);
+                    }
+
+                    affectedCharacter.actions.Add(
+                        new ActionParams(affectedCharacter,
+                            null,
+                            null,
+                            StunTick
+                        ));
+                    yield return null;
+                }
+                // This Tick from 'Vampiric'
+                else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(tick.SkillId,
+                             out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
+                {
+                    if (affectedCharacter)
+                    {
+                        affectedCharacter.actions.Add(
+                            new ActionParams(affectedCharacter,
+                                tick.SkillInfos,
+                                null,
+                                affectedCharacter.CoHealWithoutAnimation));
+                        yield return null;
+                    }
+                }
+            }
         }
 
         public Player GetPlayer()

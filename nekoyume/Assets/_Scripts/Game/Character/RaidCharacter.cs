@@ -390,6 +390,24 @@ namespace Nekoyume.Game.Character
             Animator.Idle();
         }
 
+        public IEnumerator CoHealWithoutAnimation(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        {
+            if (skillInfos is null || skillInfos.Count == 0)
+                yield break;
+
+            foreach (var info in skillInfos)
+            {
+                if (info.Target?.Id != Id)
+                {
+                    Debug.LogWarning($"[{nameof(RaidCharacter)}] Heal target is different from expected.");
+                }
+
+                ProcessHeal(info);
+            }
+
+            Animator.Idle();
+        }
+
         protected virtual void ShowCutscene()
         {
         }
