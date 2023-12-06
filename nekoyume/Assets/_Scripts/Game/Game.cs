@@ -165,6 +165,8 @@ namespace Nekoyume.Game
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
 
+        public string CurrentSocialEmail { get; private set; }
+
         private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
@@ -199,6 +201,8 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
+            CurrentSocialEmail = string.Empty;
+
             Debug.Log("[Game] Awake() invoked");
             GL.Clear(true, true, Color.black);
             Application.runInBackground = true;
@@ -1821,6 +1825,8 @@ namespace Nekoyume.Game
                 planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos!.First(e =>
                     e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
             }
+
+            CurrentSocialEmail = email == null ? string.Empty : email;
 
             Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login.");
             yield return new WaitUntil(() => loginSystem.Login);
