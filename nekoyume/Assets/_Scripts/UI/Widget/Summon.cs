@@ -58,6 +58,23 @@ namespace Nekoyume.UI
         private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new();
 
+        public static bool HasNotification
+        {
+            get
+            {
+                var result = false;
+                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
+                foreach (var summonRow in summonSheet)
+                {
+                    var costType = (CostType)summonRow.CostMaterial;
+                    var cost = summonRow.CostMaterialCount;
+                    result |= SimpleCostButton.CheckCostOfType(costType, cost);
+                }
+
+                return result;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -324,16 +341,6 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_COST_BLOCK", 1));
         }
 
-        // Do not use with Aura summon tutorial. this logic is fake.
-        public void SetCostUIForTutorial()
-        {
-            var costButton = summonItem.draw1Button;
-            if (costButton != null)
-            {
-                costButton.SetFakeUI(CostType.SilverDust, 0);
-            }
-        }
-
         private static void GoToMarket()
         {
             Find<Summon>().Close(true);
@@ -342,20 +349,13 @@ namespace Nekoyume.UI
             Find<MobileShop>().Show();
         }
 
-        public static bool HasNotification
+        // Do not use with Aura summon tutorial. this logic is fake.
+        public void SetCostUIForTutorial()
         {
-            get
+            var costButton = summonItem.draw1Button;
+            if (costButton != null)
             {
-                var result = false;
-                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
-                foreach (var summonRow in summonSheet)
-                {
-                    var costType = (CostType)summonRow.CostMaterial;
-                    var cost = summonRow.CostMaterialCount;
-                    result |= SimpleCostButton.CheckCostOfType(costType, cost);
-                }
-
-                return result;
+                costButton.SetFakeUI(CostType.SilverDust, 0);
             }
         }
 
