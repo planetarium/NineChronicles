@@ -17,6 +17,7 @@ namespace Nekoyume
             public int id;
             public string ticker;
             public Sprite icon;
+            public int sortingOrder;
         }
     }
 }

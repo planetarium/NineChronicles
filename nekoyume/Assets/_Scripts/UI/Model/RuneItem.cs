@@ -1,5 +1,6 @@
-﻿using System.Linq;
+using System.Linq;
 using Libplanet.Types.Assets;
+using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using UniRx;
@@ -19,6 +20,7 @@ namespace Nekoyume.UI.Model
         public bool EnoughCrystal { get; }
         public bool EnoughNcg { get; }
         public bool HasNotification => EnoughRuneStone && EnoughCrystal && EnoughNcg;
+        public int SortingOrder { get; }
 
         public readonly ReactiveProperty<bool> IsSelected = new();
 
@@ -41,6 +43,11 @@ namespace Nekoyume.UI.Model
             if (!States.Instance.CurrentAvatarBalances.ContainsKey(runeRow.Ticker))
             {
                 return;
+            }
+
+            if (RuneFrontHelper.TryGetRuneData(runeRow.Ticker, out var runeData))
+            {
+                SortingOrder = runeData.sortingOrder;
             }
 
             RuneStone = States.Instance.CurrentAvatarBalances[runeRow.Ticker];

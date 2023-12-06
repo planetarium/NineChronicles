@@ -272,7 +272,8 @@ namespace Nekoyume.UI
                 _runeItems.Add(runeItem);
                 items.Add(new RuneStoneEnhancementInventoryItem(state, value, runeItem));
             }
-            scroll.UpdateData(items);
+
+            scroll.UpdateData(items.OrderBy(x => x.item.SortingOrder));
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
         }
 
