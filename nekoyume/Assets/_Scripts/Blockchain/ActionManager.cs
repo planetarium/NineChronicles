@@ -1616,15 +1616,20 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<AuraSummon>> AuraSummon(int groupId, int summonCount)
         {
-            // analytics
-            var sentryTx = Analyzer.Instance.Track(
-                "",
-                new Dictionary<string, Value>()
-                {
-                }, true);
-
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
+
+            // analytics
+            var sentryTrace = Analyzer.Instance.Track(
+                "Unity/AuraSummon",
+                new Dictionary<string, Value>()
+                {
+                    ["AvatarAddress"] = avatarAddress.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    ["GroupId"] = groupId,
+                    ["SummonCount"] = summonCount,
+                }, true);
+
 
             // check material enough
             var tableSheets = Game.Game.instance.TableSheets;
@@ -1649,20 +1654,25 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                })
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionEvaluation<RuneSummon>> RuneSummon(int groupId, int summonCount)
         {
-            // analytics
-            var sentryTx = Analyzer.Instance.Track(
-                "",
-                new Dictionary<string, Value>()
-                {
-                }, true);
-
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
+
+            // analytics
+            var sentryTrace = Analyzer.Instance.Track(
+                "Unity/RuneSummon",
+                new Dictionary<string, Value>()
+                {
+                    ["AvatarAddress"] = avatarAddress.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    ["GroupId"] = groupId,
+                    ["SummonCount"] = summonCount,
+                }, true);
 
             // check material enough
             var tableSheets = Game.Game.instance.TableSheets;
@@ -1687,7 +1697,8 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                })
+                .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionEvaluation<ClaimItems>> ClaimItems(
