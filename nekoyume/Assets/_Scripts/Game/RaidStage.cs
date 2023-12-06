@@ -501,15 +501,24 @@ namespace Nekoyume.Game
                 // This Tick from 'Stun'
                 if (tick.SkillId == 0)
                 {
-                    raidCharacter.Animator.Hit();
-                    yield return new WaitForSeconds(skillDelay);
+                    IEnumerator StunTick(IEnumerable<Skill.SkillInfo> _)
+                    {
+                        raidCharacter.Animator.Hit();
+                        yield return new WaitForSeconds(skillDelay);
+                    }
+
+                    _actionQueue.Enqueue(
+                        new Character.RaidActionParams(raidCharacter, 0, null, null, StunTick));
                 }
                 // This Tick from 'Vampiric'
                 else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(tick.SkillId,
                              out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
                 {
-                    yield return raidCharacter.CoHealWithoutAnimation(tick.SkillInfos.ToList());
+                    _actionQueue.Enqueue(
+                        new Character.RaidActionParams(raidCharacter, 0, null, null, raidCharacter.CoHealWithoutAnimation));
                 }
+
+                yield break;
             }
         }
 

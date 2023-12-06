@@ -15,6 +15,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.UI;
 using UnityEngine;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game
 {
@@ -326,13 +327,23 @@ namespace Nekoyume.Game
                 // This Tick from 'Stun'
                 if (!tick.SkillInfos.Any())
                 {
-                    affectedCharacter.Animator.Hit();
-                    yield return new WaitForSeconds(SkillDelay);
+                    IEnumerator StunTick(IReadOnlyList<ArenaSkill.ArenaSkillInfo> readOnlyList)
+                    {
+                        affectedCharacter.Animator.Hit();
+                        yield return new WaitForSeconds(SkillDelay);
+                    }
+
+                    var actionParams = new ArenaActionParams(affectedCharacter, null, null, StunTick);
+                    affectedCharacter.Actions.Add(actionParams);
+                    yield return null;
                 }
                 // This Tick from 'Vampiric'
                 else if (tick.SkillInfos.Any(info => info.SkillCategory == SkillCategory.Heal))
                 {
-                    yield return affectedCharacter.CoHealWithoutAnimation(tick.SkillInfos.ToList());
+                    var actionParams = new ArenaActionParams(affectedCharacter, null, null,
+                        affectedCharacter.CoHealWithoutAnimation);
+                    affectedCharacter.Actions.Add(actionParams);
+                    yield return null;
                 }
             }
         }
