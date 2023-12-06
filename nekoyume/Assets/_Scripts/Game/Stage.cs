@@ -1188,14 +1188,33 @@ namespace Nekoyume.Game
                 // This Tick from 'Stun'
                 if (tick.SkillId == 0)
                 {
-                    affectedCharacter.Animator.Hit();
-                    yield return new WaitForSeconds(SkillDelay);
+                    IEnumerator StunTick(IEnumerable<Skill.SkillInfo> _)
+                    {
+                        affectedCharacter.Animator.Hit();
+                        yield return new WaitForSeconds(SkillDelay);
+                    }
+
+                    affectedCharacter.actions.Add(
+                        new ActionParams(affectedCharacter,
+                            null,
+                            null,
+                            StunTick
+                        ));
+                    yield return null;
                 }
                 // This Tick from 'Vampiric'
                 else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(tick.SkillId,
-                              out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
+                             out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
                 {
-                    yield return affectedCharacter.CoHealWithoutAnimation(tick.SkillInfos.ToList());
+                    if (affectedCharacter)
+                    {
+                        affectedCharacter.actions.Add(
+                            new ActionParams(affectedCharacter,
+                                tick.SkillInfos,
+                                null,
+                                affectedCharacter.CoHealWithoutAnimation));
+                        yield return null;
+                    }
                 }
             }
         }
