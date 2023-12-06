@@ -104,6 +104,9 @@ namespace Nekoyume.UI
         private Button addressShareButton;
 
         [SerializeField]
+        private Button deleteAccountButton;
+
+        [SerializeField]
         private List<GameObject> mobileDisabledMenus;
 
         [SerializeField]
@@ -151,6 +154,28 @@ namespace Nekoyume.UI
                     SharePrivateKeyToQRCode();
                 }
             }).AddTo(addressShareButton);
+
+            deleteAccountButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                var confirm = Widget.Find<ConfirmPopup>();
+                confirm.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.No)
+                    {
+                        return;
+                    }
+
+                    StoreUtils.ResetStore(storagePath);
+
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+                };
+                confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
+
+            }).AddTo(deleteAccountButton);
 
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
                 .AddTo(privateKeyCopyButton);
