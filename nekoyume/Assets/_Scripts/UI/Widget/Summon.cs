@@ -373,6 +373,9 @@ namespace Nekoyume.UI
         // Do not use with Aura summon tutorial. this logic is fake.
         public void SetCostUIForTutorial()
         {
+            summonInfos[2].tabToggle.isOn = true;
+            SetSummonInfo(summonInfos[2]);
+
             var costButton = summonItem.draw1Button;
             if (costButton != null)
             {
