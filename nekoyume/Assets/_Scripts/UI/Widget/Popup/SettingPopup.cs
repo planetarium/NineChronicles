@@ -12,7 +12,8 @@ using Nekoyume.Model.Mail;
 using UniRx;
 using TimeSpan = System.TimeSpan;
 using Nekoyume.UI.Scroller;
-
+using mixpanel;
+using Nekoyume.State;
 
 namespace Nekoyume.UI
 {
@@ -165,16 +166,19 @@ namespace Nekoyume.UI
                         return;
                     }
 
-                    StoreUtils.ResetStore(storagePath);
-
+                    Analyzer.Instance.Track("Unity/DeleteAccount", new Dictionary<string, Value>()
+                    {
+                        ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                        ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                        ["SocialEmail"] = Game.Game.instance.CurrentSocialEmail
+                    });
 #if UNITY_EDITOR
                     UnityEditor.EditorApplication.ExitPlaymode();
 #else
-                Application.Quit();
+                    Application.Quit();
 #endif
                 };
-                confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
-
+                confirm.Show("UI_SETTINGS_DELETE_ACCOUNT_TITLE", "UI_SETTINGS_DELETE_ACCOUNT_DESCRIPTION", "UI_SETTINGS_DELETE_ACCOUNT_BUTTON", "UI_SETTINGS_DELETE_ACCOUNT_CANCEL_BUTTON");
             }).AddTo(deleteAccountButton);
 
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
