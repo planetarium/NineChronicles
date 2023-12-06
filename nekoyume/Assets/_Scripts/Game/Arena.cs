@@ -347,12 +347,5 @@ namespace Nekoyume.Game
                 }
             }
         }
-
-        private IEnumerator CoTick(ArenaCharacter affectedCharacter)
-        {
-            Character.ArenaCharacter target = affectedCharacter.Id == me.Id ? me : enemy;
-            target.Animator.Hit();
-            yield return SkillDelay;
-        }
     }
 }
