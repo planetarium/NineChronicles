@@ -13,7 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Model.Skill;
 using UnityEngine;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game
 {
@@ -118,10 +120,6 @@ namespace Nekoyume.Game
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
-                if (e is Tick)
-                {
-                    yield return StartCoroutine(CoTick(e.Character));
-                }
 
                 while (_actionQueue.TryDequeue(out var param))
                 {
@@ -494,15 +492,25 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoTick(CharacterBase affectedCharacter)
+        public IEnumerator CoCustomEvent(CharacterBase character, EventBase eventBase)
         {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoTick)}() enter. affectedCharacter: {affectedCharacter.Id}");
-#endif
-            Character.RaidCharacter raidCharacter =
-                affectedCharacter.Id == _player.Id ? _player : _boss;
-            raidCharacter.Animator.Hit();
-            yield return new WaitForSeconds(skillDelay);
+            if (eventBase is Tick tick)
+            {
+                Character.RaidCharacter raidCharacter =
+                    character.Id == _player.Id ? _player : _boss;
+                // This Tick from 'Stun'
+                if (tick.SkillId == 0)
+                {
+                    raidCharacter.Animator.Hit();
+                    yield return new WaitForSeconds(skillDelay);
+                }
+                // This Tick from 'Vampiric'
+                else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(tick.SkillId,
+                             out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
+                {
+                    yield return raidCharacter.CoHealWithoutAnimation(tick.SkillInfos.ToList());
+                }
+            }
         }
 
         public void AddScore(int score)

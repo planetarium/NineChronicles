@@ -623,6 +623,20 @@ namespace Nekoyume.Game.Character
             Animator.Idle();
         }
 
+        public IEnumerator CoHealWithoutAnimation(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+        {
+            if (skillInfos is null || skillInfos.Count == 0)
+                yield break;
+
+            foreach (var info in skillInfos)
+            {
+                var target = info.Target.Id == Id ? this : _target;
+                target.ProcessHeal(info);
+            }
+
+            Animator.Idle();
+        }
+
         public IEnumerator CoBuff(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null ||
