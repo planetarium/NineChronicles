@@ -94,7 +94,7 @@ namespace Nekoyume.UI
 
             animator.SetTrigger(AnimatorHashHide);
 
-            var normal = summonRow.GroupId == NormalSummonId;
+            var normal = summonRow.CostMaterial == (int)CostType.SilverDust;
             var bonus = summonCount == 10 ? 1 : 0;
             var great = resultList.First().Grade == 5;
 
@@ -156,9 +156,8 @@ namespace Nekoyume.UI
 
             animator.SetTrigger(AnimatorHashHide);
 
-            var normal = summonRow.GroupId == NormalSummonId;
+            var normal = summonRow.CostMaterial == (int)CostType.SilverDust;
             var bonus = summonCount == 10 ? 1 : 0;
-            var great = false;
 
             var single = summonCount == 1;
             if (single)
@@ -191,7 +190,7 @@ namespace Nekoyume.UI
                 _coroutine = null;
             }
 
-            _coroutine = StartCoroutine(PlayVideo(normal, great));
+            _coroutine = StartCoroutine(PlayVideo(normal, true));
 
             _disposables.DisposeAllAndClear();
             var drawButton = normal ? normalDrawButton : goldenDrawButton;

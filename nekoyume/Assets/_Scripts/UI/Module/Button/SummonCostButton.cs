@@ -38,6 +38,10 @@ namespace Nekoyume.UI.Module
                     var cost = GetCostParam;
                     loading = material == (int)cost.type && totalCost == cost.cost;
                 }
+                else
+                {
+                    UpdateObjects();
+                }
 
                 Loading = loading;
             }).AddTo(addTo);

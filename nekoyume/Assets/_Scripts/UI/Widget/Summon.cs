@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Lib9c;
 using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
-using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -84,6 +82,8 @@ namespace Nekoyume.UI
                 });
             }
 
+            LoadingHelper.Summon.Subscribe(_ => SetMaterialAssets()).AddTo(gameObject);
+
             summonItem.draw1Button.Subscribe(gameObject);
             summonItem.draw10Button.Subscribe(gameObject);
         }
@@ -150,82 +150,42 @@ namespace Nekoyume.UI
 
         public void SummonAction(int groupId, int summonCount)
         {
+            // Check material enough
+            var inventory = States.Instance.CurrentAvatarState.inventory;
             var tableSheets = Game.Game.instance.TableSheets;
             var summonRow = tableSheets.SummonSheet[groupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+
+            var totalCost = summonRow.CostMaterialCount * summonCount;
+            var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
+                ? items.Sum(x => x.count)
+                : 0;
+
+            if (count < totalCost)
+            {
+                // Not enough
+                Debug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
+                return;
+            }
 
             var firstRecipeId = summonRow.Recipes.First().Item1;
             if (tableSheets.EquipmentItemRecipeSheet.TryGetValue(firstRecipeId, out _))
             {
-                AuraSummonAction(groupId, summonCount);
-                return;
+                ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
+                StartCoroutine(CoShowAuraSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
             }
-
-            if (tableSheets.RuneSheet.TryGetValue(firstRecipeId, out _))
+            else if (tableSheets.RuneSheet.TryGetValue(firstRecipeId, out _))
             {
-                RuneSummonAction(groupId, summonCount);
-                return;
-            }
-        }
-
-        private void AuraSummonAction(int groupId, int summonCount)
-        {
-            // Check material enough
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[groupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-
-            var totalCost = summonRow.CostMaterialCount * summonCount;
-            var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
-                ? items.Sum(x => x.count)
-                : 0;
-
-            if (count < totalCost)
-            {
-                // Not enough
-                Debug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
-                return;
+                ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
+                StartCoroutine(CoShowRuneSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
             }
 
-            ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
-            SetMaterialAssets();
-            StartCoroutine(CoShowAuraSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
-        }
-
-        private void RuneSummonAction(int groupId, int summonCount)
-        {
-            // Check material enough
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[groupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-
-            var totalCost = summonRow.CostMaterialCount * summonCount;
-            var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
-                ? items.Sum(x => x.count)
-                : 0;
-
-            if (count < totalCost)
-            {
-                // Not enough
-                Debug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
-                return;
-            }
-
-            ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
-            LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
-            SetMaterialAssets();
-            StartCoroutine(CoShowRuneSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-            SetMaterialAssets();
-
-            summonItem.draw1Button.UpdateObjects();
-            summonItem.draw10Button.UpdateObjects();
 
             var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
@@ -237,10 +197,6 @@ namespace Nekoyume.UI
         public void OnActionRender(ActionEvaluation<RuneSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-            SetMaterialAssets();
-
-            summonItem.draw1Button.UpdateObjects();
-            summonItem.draw10Button.UpdateObjects();
 
             var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
@@ -292,7 +248,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var headerMenu = Find<HeaderMenuStatic>();
+            if (!TryFind<HeaderMenuStatic>(out var headerMenu))
+            {
+                return;
+            }
+
             var materials = summonInfos
                 .Where(info => info.SummonSheetRow != null)
                 .Select(info => (CostType)info.SummonSheetRow.CostMaterial)
@@ -310,13 +270,13 @@ namespace Nekoyume.UI
             var loadingScreen = Find<CombinationLoadingScreen>();
             IEnumerator CoChangeItem()
             {
-                while (isActiveAndEnabled)
+                while (loadingScreen.isActiveAndEnabled)
                 {
                     foreach (var recipe in recipes)
                     {
                         loadingScreen.SpeechBubbleWithItem.SetItemMaterial(
                             new Item(ItemFactory.CreateItem(
-                                TableSheets.Instance.EquipmentItemRecipeSheet[recipe]
+                                Game.Game.instance.TableSheets.EquipmentItemRecipeSheet[recipe]
                                     .GetResultEquipmentItemRow(),
                                 new ActionRenderHandler.LocalRandom(0))), false);
                         yield return new WaitForSeconds(.1f);
@@ -339,7 +299,7 @@ namespace Nekoyume.UI
             var loadingScreen = Find<CombinationLoadingScreen>();
             IEnumerator CoChangeItem()
             {
-                while (isActiveAndEnabled)
+                while (loadingScreen.isActiveAndEnabled)
                 {
                     foreach (var recipe in recipes)
                     {
