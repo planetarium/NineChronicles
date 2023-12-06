@@ -908,8 +908,8 @@ MonoBehaviour:
   summonItem:
     infoButton: {fileID: 8231604600151179750}
     nameText: {fileID: 5011644342503672705}
-    draw1Button: {fileID: 9024073568917330937}
-    draw10Button: {fileID: 473016979423463902}
+    draw1Button: {fileID: 3752462645003134316}
+    draw10Button: {fileID: 5744589343056017227}
     backgroundRect: {fileID: 1513654427148664911}
   skillInfoButton: {fileID: 7998362494925497879}
 --- !u!1 &1881116084576504194
@@ -9040,16 +9040,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c87f25173d5ad5848984d2772972e6fa, type: 3}
---- !u!114 &473016979423463902 stripped
+--- !u!114 &5744589343056017227 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2408168389107633910, guid: c87f25173d5ad5848984d2772972e6fa,
+  m_CorrespondingSourceObject: {fileID: 7512874551732039779, guid: c87f25173d5ad5848984d2772972e6fa,
     type: 3}
   m_PrefabInstance: {fileID: 2881166917351393064}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa8f3295e054794a36543dd709ba59f, type: 3}
+  m_Script: {fileID: 11500000, guid: 51fb0778038643c68201a534d35634d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &5792222837024058548 stripped
@@ -9763,16 +9763,16 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6651952428547233039}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9024073568917330937 stripped
+--- !u!114 &3752462645003134316 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2408168389107633910, guid: c87f25173d5ad5848984d2772972e6fa,
+  m_CorrespondingSourceObject: {fileID: 7512874551732039779, guid: c87f25173d5ad5848984d2772972e6fa,
     type: 3}
   m_PrefabInstance: {fileID: 6651952428547233039}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa8f3295e054794a36543dd709ba59f, type: 3}
+  m_Script: {fileID: 11500000, guid: 51fb0778038643c68201a534d35634d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &7574302171995043935

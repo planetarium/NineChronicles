@@ -47,8 +47,8 @@ namespace Nekoyume.UI
         {
             public Button infoButton;
             public TextMeshProUGUI nameText;
-            public SimpleCostButton draw1Button;
-            public SimpleCostButton draw10Button;
+            public SummonCostButton draw1Button;
+            public SummonCostButton draw10Button;
             public RectTransform backgroundRect;
         }
 
@@ -84,8 +84,8 @@ namespace Nekoyume.UI
                 });
             }
 
-            ButtonSubscribe(summonItem.draw1Button, gameObject);
-            ButtonSubscribe(summonItem.draw10Button, gameObject);
+            summonItem.draw1Button.Subscribe(gameObject);
+            summonItem.draw10Button.Subscribe(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -142,11 +142,30 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
             summonItem.nameText.text = summonRow.GetLocalizedName();
 
-            ButtonSubscribe(summonItem.draw1Button, summonRow, 1, _disposables);
-            ButtonSubscribe(summonItem.draw10Button, summonRow, 10, _disposables);
+            summonItem.draw1Button.Subscribe(summonRow, 1, GoToMarket, _disposables);
+            summonItem.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
         }
 
         #region Action
+
+        public void SummonAction(int groupId, int summonCount)
+        {
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.SummonSheet[groupId];
+
+            var firstRecipeId = summonRow.Recipes.First().Item1;
+            if (tableSheets.EquipmentItemRecipeSheet.TryGetValue(firstRecipeId, out _))
+            {
+                AuraSummonAction(groupId, summonCount);
+                return;
+            }
+
+            if (tableSheets.RuneSheet.TryGetValue(firstRecipeId, out _))
+            {
+                RuneSummonAction(groupId, summonCount);
+                return;
+            }
+        }
 
         private void AuraSummonAction(int groupId, int summonCount)
         {
@@ -345,71 +364,6 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_COST_BLOCK", 1));
         }
 
-        public static void ButtonSubscribe(SimpleCostButton button, GameObject gameObject)
-        {
-            button.OnClickDisabledSubject.Subscribe(_ =>
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("NOTIFICATION_SUMMONING"),
-                    NotificationCell.NotificationType.Information)
-            ).AddTo(gameObject);
-
-            LoadingHelper.Summon.Subscribe(tuple =>
-            {
-                var summoning = tuple != null;
-                var state = summoning
-                    ? ConditionalButton.State.Disabled
-                    : ConditionalButton.State.Normal;
-
-                button.SetState(state);
-                var loading = false;
-                if (summoning)
-                {
-                    // it will have to fix - rune has same material with aura
-                    var (material, totalCost) = tuple;
-                    var cost = button.GetCostParam;
-                    loading = material == (int)cost.type && totalCost == cost.cost;
-                }
-
-                button.Loading = loading;
-            }).AddTo(gameObject);
-        }
-
-        public static void ButtonSubscribe(
-            SimpleCostButton button, SummonSheet.Row summonRow, int summonCount,
-            List<IDisposable> disposables)
-        {
-            var costType = (CostType)summonRow.CostMaterial;
-            var cost = summonRow.CostMaterialCount * summonCount;
-
-            button.SetCost(costType, cost);
-            button.OnClickSubject.Subscribe(state =>
-            {
-                switch (state)
-                {
-                    case ConditionalButton.State.Normal:
-                        //  it will have to fix - summoning rune need another action
-                        Find<Summon>().AuraSummonAction(summonRow.GroupId, summonCount);
-                        break;
-                    case ConditionalButton.State.Conditional:
-#if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
-                        Find<PaymentPopup>().ShowAttract(
-                            costType,
-                            cost.ToString(),
-                            L10nManager.Localize("UI_SUMMON_MATERIAL_NOT_ENOUGH"),
-                            L10nManager.Localize("UI_SHOP"),
-                            GoToMarket);
-#else
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("NOTIFICATION_MATERIAL_NOT_ENOUGH"),
-                            NotificationCell.NotificationType.Information);
-#endif
-                        break;
-                }
-            }).AddTo(disposables);
-        }
-
         // Do not use with Aura summon tutorial. this logic is fake.
         public void SetCostUIForTutorial()
         {
@@ -423,7 +377,6 @@ namespace Nekoyume.UI
         private static void GoToMarket()
         {
             Find<Summon>().Close(true);
-            Find<SummonResultPopup>().Close(true);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             Find<MobileShop>().Show();

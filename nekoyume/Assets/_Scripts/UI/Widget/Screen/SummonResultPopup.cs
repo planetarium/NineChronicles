@@ -26,8 +26,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private Button closeButton;
         [SerializeField] private Animator animator;
-        [SerializeField] private SimpleCostButton normalDrawButton;
-        [SerializeField] private SimpleCostButton goldenDrawButton;
+        [SerializeField] private SummonCostButton normalDrawButton;
+        [SerializeField] private SummonCostButton goldenDrawButton;
 
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button skipButton;
@@ -78,8 +78,8 @@ namespace Nekoyume.UI
                 StartCoroutine(PlayResultAnimation(_isGreat));
             });
 
-            Summon.ButtonSubscribe(normalDrawButton, gameObject);
-            Summon.ButtonSubscribe(goldenDrawButton, gameObject);
+            normalDrawButton.Subscribe(gameObject);
+            goldenDrawButton.Subscribe(gameObject);
         }
 
         public void Show(
@@ -134,7 +134,7 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
-            Summon.ButtonSubscribe(drawButton, summonRow, summonCount, _disposables);
+            drawButton.Subscribe(summonRow, summonCount, GoToMarket,_disposables);
 
             normalDrawButton.gameObject.SetActive(normal);
             goldenDrawButton.gameObject.SetActive(!normal);
@@ -196,7 +196,7 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
-            Summon.ButtonSubscribe(drawButton, summonRow, summonCount, _disposables);
+            drawButton.Subscribe(summonRow, summonCount, GoToMarket, _disposables);
 
             normalDrawButton.gameObject.SetActive(normal);
             goldenDrawButton.gameObject.SetActive(!normal);
@@ -278,6 +278,14 @@ namespace Nekoyume.UI
 
             _completeCallback?.Invoke();
             _completeCallback = null;
+        }
+
+        private static void GoToMarket()
+        {
+            Find<SummonResultPopup>().Close(true);
+
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            Find<MobileShop>().Show();
         }
     }
 }
