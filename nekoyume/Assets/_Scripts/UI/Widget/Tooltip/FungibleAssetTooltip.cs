@@ -95,6 +95,19 @@ namespace Nekoyume.UI
         }
 
         public virtual void Show(
+            FungibleAssetValue fav,
+            System.Action onClose)
+        {
+            registerButton.gameObject.SetActive(false);
+            sell.gameObject.SetActive(false);
+            buy.gameObject.SetActive(false);
+
+            UpdateInformation(fav, onClose);
+            base.Show();
+            StartCoroutine(CoUpdate(panel.gameObject));
+        }
+
+        public virtual void Show(
             InventoryItem item,
             System.Action onClose)
         {

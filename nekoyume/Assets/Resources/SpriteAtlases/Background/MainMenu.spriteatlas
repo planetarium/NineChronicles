@@ -102,10 +102,12 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 96a414a3a7d324f1dbff365c91b9be5f, type: 3}
   - {fileID: 21300000, guid: 1bbd24c311b454144a73714aaaa3e408, type: 3}
   - {fileID: 21300000, guid: 9f4e6d242059b7d4abbec04b282d36da, type: 3}
+  - {fileID: 21300000, guid: 622b4c4427d62c84cbe1f5c233a4d7ac, type: 3}
   - {fileID: 21300000, guid: 8c6b00647a83b4fdc9e8e2f7cdb12144, type: 3}
   - {fileID: 21300000, guid: 0d99f29445ede4027a706d52ef2b79b3, type: 3}
   - {fileID: 21300000, guid: b51f6a94aa08edf4fb10140fb9518f6b, type: 3}
   - {fileID: 21300000, guid: b3cc3e943519b486da5d49bb2aeb78b9, type: 3}
+  - {fileID: 21300000, guid: c5cb57c45f2c8b7458a5241f26e70b99, type: 3}
   - {fileID: 21300000, guid: 1607b2d4d21b243a4a553cb1dfd30540, type: 3}
   - {fileID: 21300000, guid: 6f5519d4a79507c49953651cfc1c022e, type: 3}
   - {fileID: 21300000, guid: ceed9bd4d743bc146860d4b64925eedd, type: 3}
@@ -175,6 +177,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: dc3c04b92bbfa3243a68325c1e10cf59, type: 3}
   - {fileID: 21300000, guid: 98643db945dfd4bbb8892a22fa24f946, type: 3}
   - {fileID: 21300000, guid: f1309fd9b72ec464ba2c265c5d8c411e, type: 3}
+  - {fileID: 21300000, guid: 9f36daf9a31f3cc41994d461a36468db, type: 3}
+  - {fileID: 21300000, guid: e7ed0c0a7935e254d911a15f13d3f529, type: 3}
   - {fileID: 21300000, guid: 001e252a3c854354b941a4745381f383, type: 3}
   - {fileID: 21300000, guid: 9b87562abef3acb4caa1fd440c5b56e9, type: 3}
   - {fileID: 21300000, guid: b0f0d13a905e14ae2b9d05c821ebb219, type: 3}
@@ -298,10 +302,12 @@ SpriteAtlas:
   - Main_Leaf_01
   - Main_tower_04
   - Main_Cloud_03
+  - bg_promotion_bg_02_JP
   - Main_info_00
   - Main_tower_05
   - Main_tower_03
   - Main_mimisbrunnr_05
+  - bg_promotion_bg_02_EN
   - Main_Leaf_10
   - bg_xmas_lamp_01
   - worldboss_03_Bg
@@ -371,6 +377,8 @@ SpriteAtlas:
   - bg_xmas_tree_01_01
   - Menu_Season_bg
   - Main_tower_06
+  - bg_promotion_bg_02_KR
+  - bg_promotion_bg_01_JP
   - Main_Patrol_01
   - worldboss_02
   - Main_rock_03
