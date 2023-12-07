@@ -160,6 +160,7 @@ namespace Nekoyume.Blockchain
             EventConsumableItemCrafts();
             EventMaterialItemCrafts();
             AuraSummon();
+            RuneSummon();
 
             // Market
             RegisterProduct();
@@ -691,6 +692,18 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
+                .AddTo(_disposables);
+        }
+
+        private void RuneSummon()
+        {
+            _actionRenderer.EveryRender<RuneSummon>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareRuneSummon)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRuneSummon)
                 .AddTo(_disposables);
         }
 
@@ -1418,8 +1431,31 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
+        private ActionEvaluation<RuneSummon> PrepareRuneSummon(ActionEvaluation<RuneSummon> eval)
+        {
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            return eval;
+        }
+
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = eval.Action;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.SummonSheet[action.GroupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            var count = summonRow.CostMaterialCount * action.SummonCount;
+            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+
+            Widget.Find<Summon>().OnActionRender(eval);
+        }
+
+        private async void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
+        {
+            await States.Instance.InitRuneStoneBalance();
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = eval.Action;
 

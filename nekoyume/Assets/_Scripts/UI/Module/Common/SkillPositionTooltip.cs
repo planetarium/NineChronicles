@@ -95,6 +95,17 @@ namespace Nekoyume.UI.Module.Common
             gameObject.SetActive(true);
         }
 
+        public void Show(SkillSheet.Row skillRow, RuneOptionSheet.Row.RuneOptionInfo optionInfo)
+        {
+            titleText.text = skillRow.GetLocalizedName();
+            var currentValueString = RuneFrontHelper.GetRuneValueString(optionInfo);
+            contentText.text = L10nManager.Localize($"SKILL_DESCRIPTION_{skillRow.Id}",
+                optionInfo.SkillChance, optionInfo.BuffDuration, currentValueString);
+            cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")} : {optionInfo.SkillCooldown}";
+            buffObject.SetActive(false);
+            debuffObject.SetActive(false);
+        }
+
         private void SetSkillDescription(string key, SkillSheet.Row skillRow, int skillValue, int skillChance)
         {
             var sheets = TableSheets.Instance;
