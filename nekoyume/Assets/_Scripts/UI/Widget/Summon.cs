@@ -36,6 +36,7 @@ namespace Nekoyume.UI
             public Toggle tabToggle;
             public GameObject[] enableObj;
             public float backgroundPositionY;
+            public string nameEng;
 
             public SummonSheet.Row SummonSheetRow;
         }
@@ -157,7 +158,7 @@ namespace Nekoyume.UI
             summonItem.infoButton.OnClickAsObservable()
                 .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
                 .AddTo(_disposables);
-            summonItem.nameText.text = summonRow.GetLocalizedName();
+            summonItem.nameText.text = currentInfo.nameEng;
 
             summonItem.draw1Button.Subscribe(summonRow, 1, GoToMarket, _disposables);
             summonItem.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
