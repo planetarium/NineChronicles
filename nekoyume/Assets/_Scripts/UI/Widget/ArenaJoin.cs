@@ -142,7 +142,7 @@ namespace Nekoyume.UI
             if (eval.Exception is { })
             {
                 _innerState = InnerState.Idle;
-                Find<LoadingScreen>().Close();
+                LoadingHelper.JoinArena.Value = false;
                 return;
             }
 
@@ -329,11 +329,12 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     _innerState = InnerState.EarlyRegistration;
-                    Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Arena);
+                    LoadingHelper.JoinArena.Value = true;
                 })
                 .AddTo(gameObject);
 
-            void OnClickJoinButton()
+            _joinButton.SetState(ConditionalButton.State.Normal);
+            _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 if (RxProps.ArenaInfoTuple.HasValue &&
@@ -347,23 +348,8 @@ namespace Nekoyume.UI
                 }
 
                 _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
-                Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Arena);
-                var selectedRoundData = _scroll.SelectedItemData.RoundData;
-                var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
-                var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
-                    .GetEquippedRuneSlotInfos();
-                ActionManager.Instance
-                    .JoinArena(
-                        itemSlotState.Costumes,
-                        itemSlotState.Equipments,
-                        runeInfos,
-                        selectedRoundData.ChampionshipId,
-                        selectedRoundData.Round)
-                    .Subscribe();
-            }
-
-            _joinButton.SetState(ConditionalButton.State.Normal);
-            _joinButton.OnClickSubject.Subscribe(_ => OnClickJoinButton()).AddTo(gameObject);
+                JoinArenaAction();
+            }).AddTo(gameObject);
 
             _paymentButton.SetState(ConditionalButton.State.Conditional);
             _paymentButton.SetCondition(() => CheckChampionshipConditions(true));
@@ -645,7 +631,7 @@ namespace Nekoyume.UI
 
         private void JoinArenaAction()
         {
-            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Arena);
+            LoadingHelper.JoinArena.Value = true;
             var selectedRoundData = _scroll.SelectedItemData.RoundData;
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
             var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
