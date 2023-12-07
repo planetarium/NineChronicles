@@ -890,6 +890,7 @@ MonoBehaviour:
     - {fileID: 8250399033876441476}
     - {fileID: 8941224004311707540}
     backgroundPositionY: -690
+    nameEng: Golden Aura
   - summonSheetId: 20001
     tabToggle: {fileID: 7694223387165152743}
     enableObj:
@@ -898,6 +899,7 @@ MonoBehaviour:
     - {fileID: 8250399033876441476}
     - {fileID: 8941224004311707540}
     backgroundPositionY: 0
+    nameEng: Golden Rune
   - summonSheetId: 10001
     tabToggle: {fileID: 2845889457511383640}
     enableObj:
@@ -905,6 +907,7 @@ MonoBehaviour:
     - {fileID: 3797436776349989978}
     - {fileID: 8941224004311707540}
     backgroundPositionY: 690
+    nameEng: Normal Aura
   summonItem:
     infoButton: {fileID: 8231604600151179750}
     nameText: {fileID: 5011644342503672705}
