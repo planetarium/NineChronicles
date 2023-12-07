@@ -81,8 +81,9 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
         [SerializeField] private PlanetAccountInfoScroll planetAccountInfoScroll;
 
-        private int _guideIndex = 0;
         private const int GuideCount = 3;
+        private const int GuideStartIndex = 1;
+        private int _guideIndex = GuideStartIndex;
 
         private string _keyStorePath;
         private string _privateKey;
@@ -183,7 +184,7 @@ namespace Nekoyume.UI
                     image.SetActive(false);
                 }
 
-                _guideIndex = 0;
+                _guideIndex = GuideStartIndex;
                 ShowQrCodeGuide();
             });
             qrCodeGuideNextButton.onClick.AddListener(() =>
@@ -319,7 +320,7 @@ namespace Nekoyume.UI
                 image.SetActive(false);
             }
 
-            _guideIndex = 0;
+            _guideIndex = GuideStartIndex;
             ShowQrCodeGuide();
         }
 
@@ -357,7 +358,7 @@ namespace Nekoyume.UI
         {
             if (_guideIndex >= GuideCount)
             {
-                _guideIndex = 0;
+                _guideIndex = GuideStartIndex;
                 qrCodeGuideContainer.SetActive(false);
 
                 codeReaderView.Show(res =>
@@ -394,6 +395,11 @@ namespace Nekoyume.UI
                 var evt = new AirbridgeEvent("Intro_GuideDMX");
                 evt.SetValue(_guideIndex + 1);
                 AirbridgeUnity.TrackEvent(evt);
+
+                foreach (var qrCodeGuideImage in qrCodeGuideImages)
+                {
+                    qrCodeGuideImage.SetActive(false);
+                }
 
                 qrCodeGuideImages[_guideIndex].SetActive(true);
                 qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
