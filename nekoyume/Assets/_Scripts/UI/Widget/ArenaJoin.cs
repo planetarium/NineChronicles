@@ -151,7 +151,7 @@ namespace Nekoyume.UI
                 case InnerState.EarlyRegistration:
                     _innerState = InnerState.Idle;
                     UpdateBottomButtons();
-                    Find<LoadingScreen>().Close();
+                    LoadingHelper.JoinArena.Value = false;
                     Find<HeaderMenuStatic>()
                         .Show(HeaderMenuStatic.AssetVisibleState.Arena);
                     return;
@@ -162,7 +162,7 @@ namespace Nekoyume.UI
                         eval.Action.round != selectedRound.Round)
                     {
                         UpdateBottomButtons();
-                        Find<LoadingScreen>().Close();
+                        LoadingHelper.JoinArena.Value = false;
                         Find<HeaderMenuStatic>()
                             .Show(HeaderMenuStatic.AssetVisibleState.Arena);
 
@@ -174,7 +174,7 @@ namespace Nekoyume.UI
                     }
 
                     Close();
-                    Find<LoadingScreen>().Close();
+                    LoadingHelper.JoinArena.Value = false;
                     Find<ArenaBoard>().Show(
                         _scroll.SelectedItemData.RoundData,
                         RxProps.ArenaInformationOrderedWithScore.Value);
