@@ -64924,7 +64924,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: acb7aa67b54263448afd8be88ed954b4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c5cb57c45f2c8b7458a5241f26e70b99, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -64968,11 +64968,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spritePairs:
   - languageType: 0
-    sprite: {fileID: 21300000, guid: acb7aa67b54263448afd8be88ed954b4, type: 3}
+    sprite: {fileID: 21300000, guid: c5cb57c45f2c8b7458a5241f26e70b99, type: 3}
   - languageType: 1
-    sprite: {fileID: 21300000, guid: 1682bc2f57a63684aa69f0018015dbf0, type: 3}
+    sprite: {fileID: 21300000, guid: 9f36daf9a31f3cc41994d461a36468db, type: 3}
   - languageType: 3
-    sprite: {fileID: 21300000, guid: e7ed0c0a7935e254d911a15f13d3f529, type: 3}
+    sprite: {fileID: 21300000, guid: 622b4c4427d62c84cbe1f5c233a4d7ac, type: 3}
+  season: 2
 --- !u!1 &6878589271596072809
 GameObject:
   m_ObjectHideFlags: 0
