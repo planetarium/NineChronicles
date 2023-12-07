@@ -20,6 +20,7 @@ namespace Nekoyume.UI
             Workshop,
             WorldBoss,
             JustModule,
+            WorldUnlock,
         }
 
         [Serializable]
