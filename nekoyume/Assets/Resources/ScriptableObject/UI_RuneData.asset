@@ -16,65 +16,65 @@ MonoBehaviour:
   - id: 30001
     ticker: RUNE_ADVENTURER
     icon: {fileID: 21300000, guid: 1cb46b66b7dab8947a0e3a0425d707d0, type: 3}
-    sortingOrder: 0
+    sortingOrder: 100
   - id: 20001
     ticker: RUNE_GOLDENLEAF
     icon: {fileID: 21300000, guid: 9ab11e6491b814cf6ab1b509d180e8de, type: 3}
-    sortingOrder: 10
+    sortingOrder: 0
   - id: 10001
     ticker: RUNESTONE_FENRIR1
     icon: {fileID: 21300000, guid: d6667769127c0ce46bbc124fcaa6252c, type: 3}
-    sortingOrder: 1000
+    sortingOrder: 13
   - id: 10002
     ticker: RUNESTONE_FENRIR2
     icon: {fileID: 21300000, guid: 88c80e541a31e0b4ba550de7e7f5cf5d, type: 3}
-    sortingOrder: 1010
+    sortingOrder: 11
   - id: 10003
     ticker: RUNESTONE_FENRIR3
     icon: {fileID: 21300000, guid: 000b7b5b45f709f4782b1ec62f9f9f56, type: 3}
-    sortingOrder: 1020
+    sortingOrder: 5
   - id: 10011
     ticker: RUNESTONE_SAEHRIMNIR1
     icon: {fileID: 21300000, guid: 08c5c16491d019c4b9855c73648f4054, type: 3}
-    sortingOrder: 1030
+    sortingOrder: 14
   - id: 10012
     ticker: RUNESTONE_SAEHRIMNIR2
     icon: {fileID: 21300000, guid: 3d08304794b882b4887cac13c56bd287, type: 3}
-    sortingOrder: 1040
+    sortingOrder: 12
   - id: 10013
     ticker: RUNESTONE_SAEHRIMNIR3
     icon: {fileID: 21300000, guid: d81052ddf736a394f83b9155f2004a1d, type: 3}
-    sortingOrder: 1050
+    sortingOrder: 6
   - id: 10021
     ticker: RUNESTONE_STUN_ADVENTURE
     icon: {fileID: 21300000, guid: 8e76d0aef9b6034488b56906651bd6a1, type: 3}
-    sortingOrder: 20
+    sortingOrder: 1
   - id: 10022
     ticker: RUNESTONE_STUN_ARENA
     icon: {fileID: 21300000, guid: 8e76d0aef9b6034488b56906651bd6a1, type: 3}
-    sortingOrder: 30
+    sortingOrder: 2
   - id: 10023
     ticker: RUNESTONE_VAMPIRIC_ADVENTURE
     icon: {fileID: 21300000, guid: d1df71715655f374d8ab51156a564a61, type: 3}
-    sortingOrder: 40
+    sortingOrder: 3
   - id: 10024
     ticker: RUNESTONE_VAMPIRIC_WORLDBOSS
     icon: {fileID: 21300000, guid: d1df71715655f374d8ab51156a564a61, type: 3}
-    sortingOrder: 50
+    sortingOrder: 4
   - id: 10025
     ticker: RUNESTONE_STAMINA_ADVENTURE
     icon: {fileID: 21300000, guid: da35349785bb5594d8558a37db613576, type: 3}
-    sortingOrder: 60
+    sortingOrder: 7
   - id: 10026
     ticker: RUNESTONE_STAMINA_ARENA
     icon: {fileID: 21300000, guid: da35349785bb5594d8558a37db613576, type: 3}
-    sortingOrder: 70
+    sortingOrder: 8
   - id: 10027
     ticker: RUNESTONE_QUICK_ARENA
     icon: {fileID: 21300000, guid: c8ec884ec8bb91540bc494e45b6dd9da, type: 3}
-    sortingOrder: 80
+    sortingOrder: 9
   - id: 10028
     ticker: RUNESTONE_QUICK_WORLDBOSS
     icon: {fileID: 21300000, guid: c8ec884ec8bb91540bc494e45b6dd9da, type: 3}
-    sortingOrder: 90
+    sortingOrder: 10
   DefaultRuneIcon: {fileID: 21300000, guid: 474642c630309ed45a9942c6fa07ebb5, type: 3}
