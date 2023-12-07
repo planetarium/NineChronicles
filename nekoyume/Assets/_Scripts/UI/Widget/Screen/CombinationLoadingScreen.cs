@@ -97,9 +97,10 @@ namespace Nekoyume.UI
             _bgAlphaTweener.PlayReverse();
         }
 
-        public void AnimateNPC(SpeechBubbleItemType itemType, string quote)
+        public void AnimateNPC(
+            SpeechBubbleItemType itemType, string quote, bool itemMoveAnimation = true)
         {
-            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType, quote));
+            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType, quote, itemMoveAnimation));
         }
 
         public void SetCloseAction(System.Action closeAction)
@@ -107,7 +108,8 @@ namespace Nekoyume.UI
             _closeAction = closeAction;
         }
 
-        private IEnumerator CoAnimateNPC(SpeechBubbleItemType itemType, string quote = null)
+        private IEnumerator CoAnimateNPC(
+            SpeechBubbleItemType itemType, string quote = null, bool itemMoveAnimation = true)
         {
             var pos = ActionCamera.instance.Cam.transform.position;
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
@@ -164,7 +166,7 @@ namespace Nekoyume.UI
                 yield return _waitForOneSec;
             }
 
-            DisappearNpc();
+            DisappearNpc(itemMoveAnimation);
         }
 
         private IEnumerator CoWorkshopItemMove()
@@ -191,13 +193,13 @@ namespace Nekoyume.UI
             yield return null;
         }
 
-        private void DisappearNpc()
+        private void DisappearNpc(bool itemMoveAnimation = true)
         {
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
                 NPCAnimation.Type.Disappear_02.ToString(), false);
             npcSkeletonGraphic.AnimationState.Complete += OnComplete;
             HideButton();
-            if (speechBubble.Item != null)
+            if (speechBubble.Item != null && itemMoveAnimation)
             {
                 StartCoroutine(CoWorkshopItemMove());
             }

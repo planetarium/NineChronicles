@@ -329,7 +329,8 @@ namespace Nekoyume.UI
 
             loadingScreen.AnimateNPC(
                 CombinationLoadingScreen.SpeechBubbleItemType.Aura,
-                L10nManager.Localize("UI_COST_BLOCK", 1));
+                L10nManager.Localize("UI_COST_BLOCK", 1),
+                false);
         }
 
         private IEnumerator CoShowRuneSummonLoadingScreen(List<int> recipes)
@@ -359,7 +360,8 @@ namespace Nekoyume.UI
 
             loadingScreen.AnimateNPC(
                 CombinationLoadingScreen.SpeechBubbleItemType.Rune,
-                L10nManager.Localize("UI_COST_BLOCK", 1));
+                L10nManager.Localize("UI_COST_BLOCK", 1),
+                false);
         }
 
         private static void GoToMarket()
