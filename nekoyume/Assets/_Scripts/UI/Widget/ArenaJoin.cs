@@ -60,6 +60,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI _bottomButtonText;
 
         [SerializeField]
+        private GameObject _indicator;
+
+        [SerializeField]
         private ConditionalButton _joinButton;
 
         [SerializeField]
@@ -406,10 +409,8 @@ namespace Nekoyume.UI
             {
                 case ArenaType.OffSeason:
                 {
-                    if (isOpened &&
-                        TableSheets.Instance.ArenaSheet.TryGetNextRound(
-                            blockIndex,
-                            out var next))
+                    if (!LoadingHelper.JoinArena.Value && isOpened &&
+                        TableSheets.Instance.ArenaSheet.TryGetNextRound(blockIndex, out var next))
                     {
                         var cost = (long)ArenaHelper.GetEntranceFee(
                             next,
@@ -511,7 +512,6 @@ namespace Nekoyume.UI
                                 Game.Game.instance.Agent.BlockIndex,
                                 States.Instance.CurrentAvatarState.level).MajorUnit;
                             _paymentButton.SetCost(CostType.Crystal, cost);
-                            _paymentButton.UpdateObjects();
                             _paymentButton.Interactable = true;
                             _paymentButton.gameObject.SetActive(true);
 
