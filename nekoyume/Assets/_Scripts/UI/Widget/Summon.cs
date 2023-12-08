@@ -37,6 +37,8 @@ namespace Nekoyume.UI
             public GameObject[] enableObj;
             public float backgroundPositionY;
             public string nameEng;
+            public string phrase1;
+            public string phrase2;
 
             public SummonSheet.Row SummonSheetRow;
         }
@@ -49,6 +51,10 @@ namespace Nekoyume.UI
             public SummonCostButton draw1Button;
             public SummonCostButton draw10Button;
             public RectTransform backgroundRect;
+            public TextMeshProUGUI phrase1Text;
+            public GameObject phrase1Obj;
+            public TextMeshProUGUI phrase2Text;
+            public GameObject phrase2Obj;
         }
 
         [SerializeField] private Button closeButton;
@@ -148,6 +154,18 @@ namespace Nekoyume.UI
             summonItem.backgroundRect
                 .DOAnchorPosY(currentInfo.backgroundPositionY, .5f)
                 .SetEase(Ease.InOutCubic);
+
+            var enablePhrase1 = !string.IsNullOrEmpty(currentInfo.phrase1);
+            summonItem.phrase1Obj.SetActive(enablePhrase1);
+            summonItem.phrase1Text.text = enablePhrase1
+                ? L10nManager.Localize(currentInfo.phrase1)
+                : string.Empty;
+
+            var enablePhrase2 = !string.IsNullOrEmpty(currentInfo.phrase2);
+            summonItem.phrase2Obj.SetActive(enablePhrase2);
+            summonItem.phrase2Text.text = enablePhrase2
+                ? L10nManager.Localize(currentInfo.phrase2)
+                : string.Empty;
 
             var summonRow = currentInfo.SummonSheetRow;
             skillInfoButton.onClick.RemoveAllListeners();

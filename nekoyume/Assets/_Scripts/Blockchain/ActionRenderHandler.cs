@@ -3370,7 +3370,7 @@ namespace Nekoyume.Blockchain
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
             MailBox mailBox;
-            UnloadFromMyGaragesRecipientMail mail;
+            UnloadFromMyGaragesRecipientMail mail = null;
 
             IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
@@ -3388,14 +3388,24 @@ namespace Nekoyume.Blockchain
                     return;
                 }
                 mailBox = new MailBox(mailBoxList);
-                mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
-                if (eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
-                    eval.Action.FungibleIdAndCounts is not null &&
-                    !(mail.Memo != null && mail.Memo.Contains("season_pass")))
+                var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                    .Where(m => m.blockIndex == eval.BlockIndex);
+                if (sameBlockIndexMailList.Any())
                 {
-                    UpdateCurrentAvatarInventory(eval);
+                    var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
                 }
+
+                if (mail is not null)
+                {
+                    if (eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
+                        eval.Action.FungibleIdAndCounts is not null &&
+                        !(mail.Memo != null && mail.Memo.Contains("season_pass")))
+                    {
+                        UpdateCurrentAvatarInventory(eval);
+                    }
+                }
+
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
                 if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
@@ -3417,8 +3427,12 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailBox = new MailBox(mailBoxList);
-                mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>().Where(m => m.blockIndex == eval.BlockIndex);
+                if (sameBlockIndexMailList.Any())
+                {
+                    var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
+                }
 
                 if (mail is not null)
                 {
@@ -3520,7 +3534,7 @@ namespace Nekoyume.Blockchain
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
             MailBox mailBox;
-            ClaimItemsMail mail;
+            ClaimItemsMail mail = null;
             IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
             {
@@ -3559,8 +3573,12 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailBox = new MailBox(mailBoxList);
-                mail = mailBox.OfType<ClaimItemsMail>()
-                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                var sameBlockIndexMailList = mailBox.OfType<ClaimItemsMail>().Where(m => m.blockIndex == eval.BlockIndex);
+                if (sameBlockIndexMailList.Any())
+                {
+                    var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
+                }
                 if (mail is not null)
                 {
                     mail.New = true;
@@ -3663,8 +3681,14 @@ namespace Nekoyume.Blockchain
             var gameStates = Game.Game.instance.States;
             var avatar = gameStates.CurrentAvatarState;
             var mailBox = avatar.mailBox;
-            var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+            UnloadFromMyGaragesRecipientMail mail = null;
+            var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>().Where(m => m.blockIndex == eval.BlockIndex);
+            if (sameBlockIndexMailList.Any())
+            {
+                var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                mail = memoCheckedMail ?? sameBlockIndexMailList.First();
+            }
+
             if (mail is not null)
             {
                 mail.New = true;

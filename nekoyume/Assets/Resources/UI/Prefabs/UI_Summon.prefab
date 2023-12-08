@@ -887,33 +887,38 @@ MonoBehaviour:
     enableObj:
     - {fileID: 5923611380794271153}
     - {fileID: 3917762921654706892}
-    - {fileID: 8250399033876441476}
-    - {fileID: 8941224004311707540}
     backgroundPositionY: -690
     nameEng: Golden Aura
+    phrase1: UI_SUMMON_GOLDEN_AURA_PHRASE_1
+    phrase2: UI_SUMMON_GOLDEN_AURA_PHRASE_2
   - summonSheetId: 20001
     tabToggle: {fileID: 7694223387165152743}
     enableObj:
     - {fileID: 5597247345816316038}
     - {fileID: 4420197024892280354}
-    - {fileID: 8250399033876441476}
-    - {fileID: 8941224004311707540}
     backgroundPositionY: 0
     nameEng: Golden Rune
+    phrase1: UI_SUMMON_GOLDEN_RUNE_PHRASE_1
+    phrase2: UI_SUMMON_GOLDEN_RUNE_PHRASE_2
   - summonSheetId: 10001
     tabToggle: {fileID: 2845889457511383640}
     enableObj:
     - {fileID: 3435501159365475478}
     - {fileID: 3797436776349989978}
-    - {fileID: 8941224004311707540}
     backgroundPositionY: 690
     nameEng: Normal Aura
+    phrase1: 
+    phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
   summonItem:
     infoButton: {fileID: 8231604600151179750}
     nameText: {fileID: 5011644342503672705}
     draw1Button: {fileID: 3752462645003134316}
     draw10Button: {fileID: 5744589343056017227}
     backgroundRect: {fileID: 1513654427148664911}
+    phrase1Text: {fileID: 2629237838614072490}
+    phrase1Obj: {fileID: 8250399033876441476}
+    phrase2Text: {fileID: 2172093485092627098}
+    phrase2Obj: {fileID: 8941224004311707540}
   skillInfoButton: {fileID: 7998362494925497879}
 --- !u!1 &1881116084576504194
 GameObject:
@@ -3629,7 +3634,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_SUMMON_PHRASE_1
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -6578,7 +6583,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_SUMMON_PHRASE_2
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
