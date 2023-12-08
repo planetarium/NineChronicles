@@ -333,14 +333,28 @@ namespace Nekoyume.Game
                         yield return new WaitForSeconds(SkillDelay);
                     }
 
-                    var actionParams = new ArenaActionParams(affectedCharacter, null, null, StunTick);
+                    var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
+                        caster,
+                        0,
+                        false,
+                        SkillCategory.TickDamage,
+                        _turnNumber
+                    );
+                    var actionParams = new ArenaActionParams(
+                        affectedCharacter,
+                        tick.SkillInfos.Append(tickSkillInfo),
+                        tick.BuffInfos,
+                        StunTick);
                     affectedCharacter.Actions.Add(actionParams);
                     yield return null;
                 }
                 // This Tick from 'Vampiric'
                 else if (tick.SkillInfos.Any(info => info.SkillCategory == SkillCategory.Heal))
                 {
-                    var actionParams = new ArenaActionParams(affectedCharacter, null, null,
+                    var actionParams = new ArenaActionParams(
+                        affectedCharacter,
+                        tick.SkillInfos,
+                        tick.BuffInfos,
                         affectedCharacter.CoHealWithoutAnimation);
                     affectedCharacter.Actions.Add(actionParams);
                     yield return null;
