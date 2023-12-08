@@ -429,9 +429,9 @@ namespace StateViewer.Runtime
                 case ValueKind.Null:
                     return "null";
                 case ValueKind.Boolean:
-                    return ((Boolean)value).Inspect(false);
+                    return ((Boolean)value).Inspect();
                 case ValueKind.Integer:
-                    return ((Integer)value).Inspect(false);
+                    return ((Integer)value).Inspect();
                 case ValueKind.Binary:
                     return $"0x{((Binary)value).ToHex()}";
                 case ValueKind.Text:

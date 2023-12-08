@@ -10,7 +10,8 @@ namespace Nekoyume.UI.Scroller
         {
             public SummonDetailCell.Model SummonDetailCellModel;
             public SkillSheet.Row SkillRow;
-            public EquipmentItemOptionSheet.Row OptionRow;
+            public EquipmentItemOptionSheet.Row EquipmentOptionRow;
+            public RuneOptionSheet.Row.RuneOptionInfo RuneOptionInfo;
         }
 
         [SerializeField]
@@ -23,7 +24,15 @@ namespace Nekoyume.UI.Scroller
         {
             summonDetailCell.UpdateContent(itemData.SummonDetailCellModel);
 
-            skillView.Show(itemData.SkillRow, itemData.OptionRow);
+            if (itemData.EquipmentOptionRow is not null)
+            {
+                skillView.Show(itemData.SkillRow, itemData.EquipmentOptionRow);
+            }
+
+            if (itemData.RuneOptionInfo is not null)
+            {
+                skillView.Show(itemData.SkillRow, itemData.RuneOptionInfo);
+            }
         }
     }
 }

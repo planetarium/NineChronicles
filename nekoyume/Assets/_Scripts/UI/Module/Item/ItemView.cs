@@ -155,7 +155,6 @@ namespace Nekoyume.UI.Module
 
             base.SetData(model.ItemBase.Value);
 
-            var viewData = GetItemViewData(model.ItemBase.Value);
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);

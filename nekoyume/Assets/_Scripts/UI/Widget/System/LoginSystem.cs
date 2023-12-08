@@ -345,7 +345,7 @@ namespace Nekoyume.UI
                 {
                     Debug.Log($"[LoginSystem] CheckLogin... set pass phrase because platform is mobile" +
                               $" {loginField.text}");
-                    SetPassPhrase(_privateKey.ToAddress().ToString(), loginField.text);
+                    SetPassPhrase(_privateKey.Address.ToString(), loginField.text);
                 }
 
                 success?.Invoke();
@@ -377,7 +377,7 @@ namespace Nekoyume.UI
                 case States.Show:
                     SetState(States.CreateAccount);
                     _privateKey = new PrivateKey();
-                    SetImage(_privateKey.PublicKey.ToAddress());
+                    SetImage(_privateKey.PublicKey.Address);
                     break;
                 case States.CreateAccount:
                     CreateProtectedPrivateKey(_privateKey);
@@ -386,7 +386,7 @@ namespace Nekoyume.UI
                     break;
                 case States.SetPassword:
                     KeyStoreHelper.ResetPassword(_privateKey, passPhraseField.text);
-                    SetPassPhrase(_privateKey.ToAddress().ToString(), passPhraseField.text);
+                    SetPassPhrase(_privateKey.Address.ToString(), passPhraseField.text);
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
                     Analyzer.Instance.Track("Unity/SetPassword/Complete");
 
@@ -578,7 +578,7 @@ namespace Nekoyume.UI
                 Debug.LogWarningFormat(
                     "As --private-key option is used, keystore files are ignored.\n" +
                     "Loaded key (address): {0}",
-                    privateKey.PublicKey.ToAddress()
+                    privateKey.PublicKey.Address
                 );
             }
 
@@ -689,7 +689,7 @@ namespace Nekoyume.UI
             try
             {
                 var pk = new PrivateKey(ByteUtil.ParseHex(hex));
-                Address address = pk.ToAddress();
+                Address address = pk.Address;
                 return KeyStore.List().Any(pair => pair.Item2.Address == address);
             }
             catch (Exception)
@@ -708,7 +708,7 @@ namespace Nekoyume.UI
 
             // 가져온 비밀키를 키스토어에 넣기 전에, 혹시 같은 주소에 대한 키를 지운다.  (아무튼 기능명이 "reset"이라...)
             // 참고로 본 함수 호출되기 전에 CheckPassphrase()에서 먼저 같은 키의 비밀키가 있는지 확인한다. "찾기"가 아니라 "추가"니까, 없으면 오류가 먼저 나게 되어 있음.
-            Address address = pk.ToAddress();
+            Address address = pk.Address;
             Guid[] keyIdsToRemove = KeyStore.List()
                 .Where(pair => pair.Item2.Address.Equals(address))
                 .Select(pair => pair.Item1).ToArray();

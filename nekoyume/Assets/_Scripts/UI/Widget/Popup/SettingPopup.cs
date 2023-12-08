@@ -243,7 +243,7 @@ namespace Nekoyume.UI
         {
             if (!(_privateKey is null))
             {
-                addressContentInputField.text = _privateKey.ToAddress().ToString();
+                addressContentInputField.text = _privateKey.Address.ToString();
                 privateKeyContentInputField.text = _privateKey.ToHexWithZeroPaddings();
             }
             else
@@ -256,7 +256,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    
+
                     addressContentInputField.text = agent.Address.ToString();
                     privateKeyContentInputField.text = agent.PrivateKey.ToHexWithZeroPaddings();
                 }

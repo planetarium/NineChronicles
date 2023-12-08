@@ -20,12 +20,12 @@ namespace Tests.EditMode.State.Modifiers
         {
             _tableSheets = TableSheetsHelper.MakeTableSheets();
             _avatarState = new AvatarState(
-                new PrivateKey().ToAddress(),
-                new PrivateKey().ToAddress(),
+                new PrivateKey().Address,
+                new PrivateKey().Address,
                 0,
                 _tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
-                new PrivateKey().ToAddress());
+                new PrivateKey().Address);
         }
 
         [TearDown]
