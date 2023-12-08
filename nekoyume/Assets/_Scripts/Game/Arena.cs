@@ -11,9 +11,11 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.UI;
 using UnityEngine;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game
 {
@@ -315,6 +317,35 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => enemy.Actions.Any());
             _turnNumber = turnNumber + 1;
             yield return null;
+        }
+
+        public IEnumerator CoCustomEvent(ArenaCharacter caster, ArenaEventBase eventBase)
+        {
+            if (eventBase is ArenaTick tick)
+            {
+                var affectedCharacter = caster.Id == me.Id ? me : enemy;
+                // This Tick from 'Stun'
+                if (!tick.SkillInfos.Any())
+                {
+                    IEnumerator StunTick(IReadOnlyList<ArenaSkill.ArenaSkillInfo> readOnlyList)
+                    {
+                        affectedCharacter.Animator.Hit();
+                        yield return new WaitForSeconds(SkillDelay);
+                    }
+
+                    var actionParams = new ArenaActionParams(affectedCharacter, null, null, StunTick);
+                    affectedCharacter.Actions.Add(actionParams);
+                    yield return null;
+                }
+                // This Tick from 'Vampiric'
+                else if (tick.SkillInfos.Any(info => info.SkillCategory == SkillCategory.Heal))
+                {
+                    var actionParams = new ArenaActionParams(affectedCharacter, null, null,
+                        affectedCharacter.CoHealWithoutAnimation);
+                    affectedCharacter.Actions.Add(actionParams);
+                    yield return null;
+                }
+            }
         }
     }
 }

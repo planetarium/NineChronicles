@@ -165,6 +165,8 @@ namespace Nekoyume.Game
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
 
+        public string CurrentSocialEmail { get; private set; }
+
         private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
@@ -199,6 +201,8 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
+            CurrentSocialEmail = string.Empty;
+
             Debug.Log("[Game] Awake() invoked");
             GL.Clear(true, true, Color.black);
             Application.runInBackground = true;
@@ -210,31 +214,6 @@ namespace Nekoyume.Game
             {
                 AppTrackingTransparency.RequestTrackingAuthorization();
             }
-#endif
-
-#if !UNITY_EDITOR && UNITY_IOS && !UNITY_IOS_SIMULATOR
-            // DevCra - iOS Build
-            //string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
-            ////Load dynamic library of rocksdb
-            //string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
-            //Native.LoadLibrary(RocksdbLibPath);
-
-            ////Set the path of secp256k1's dynamic library
-            //string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
-            //Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
-#elif !UNITY_EDITOR && UNITY_IOS_SIMULATOR
-            string rocksdbLibPath = Platform.GetStreamingAssetsPath("librocksdb.dylib");
-            Native.LoadLibrary(rocksdbLibPath);
-
-            string secp256LibPath = Platform.GetStreamingAssetsPath("libsecp256k1.dylib");
-            Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256LibPath);
-#elif UNITY_ANDROID
-            // string loadPath = Application.dataPath.Split("/base.apk")[0];
-            // loadPath = Path.Combine(loadPath, "lib");
-            // loadPath = Path.Combine(loadPath, Environment.Is64BitOperatingSystem ? "arm64" : "arm");
-            // loadPath = Path.Combine(loadPath, "librocksdb.so");
-            // Debug.LogWarning($"native load path = {loadPath}");
-            // RocksDbSharp.Native.LoadLibrary(loadPath);
 #endif
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.ScriptOnly);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -354,7 +333,7 @@ namespace Nekoyume.Game
             InitializeAnalyzer(
                 agentAddr: _commandLineOptions.PrivateKey is null
                     ? null
-                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).Address,
                 planetId: null,
                 rpcServerHost: _commandLineOptions.RpcServerHost);
             Analyzer.Track("Unity/Started");
@@ -1509,7 +1488,7 @@ namespace Nekoyume.Game
                     // NOTE: Update CommandlineOptions.PrivateKey finally.
                     _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
                     Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                              $" to ({loginSystem.GetPrivateKey().ToAddress()}).");
+                              $" to ({loginSystem.GetPrivateKey().Address}).");
                 }
 
                 dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
@@ -1548,7 +1527,7 @@ namespace Nekoyume.Game
                 // NOTE: Update CommandlineOptions.PrivateKey.
                 _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
                 Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey updated" +
-                          $" to ({pk.ToAddress()}).");
+                          $" to ({pk.Address}).");
 
                 // NOTE: Check PlanetContext.CanSkipPlanetSelection.
                 //       If true, then update planet account infos for IntroScreen.
@@ -1558,7 +1537,7 @@ namespace Nekoyume.Game
                     dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                     yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                         planetContext,
-                        pk.ToAddress(),
+                        pk.Address,
                         updateSelectedPlanetAccountInfo: true).ToCoroutine();
                     dimmedLoadingScreen.Close();
                     if (planetContext.HasError)
@@ -1601,7 +1580,7 @@ namespace Nekoyume.Game
                 // NOTE: Update CommandlineOptions.PrivateKey finally.
                 _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
                 Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                          $" to ({pk.ToAddress()}).");
+                          $" to ({pk.Address}).");
 
                 dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
                 sw.Reset();
@@ -1694,7 +1673,7 @@ namespace Nekoyume.Game
                     Debug.Log("[Game] CoLogin()... LoginSystem.Login is false");
                     loginSystem.Show(connectedAddress: null);
                     // NOTE: Don't set the autoGeneratedAgentAddress to agentAddr.
-                    var autoGeneratedAgentAddress = loginSystem.GetPrivateKey().ToAddress();
+                    var autoGeneratedAgentAddress = loginSystem.GetPrivateKey().Address;
                     Debug.Log($"[Game] CoLogin()... auto generated agent address: {autoGeneratedAgentAddress}." +
                               " And Update planet account infos w/ empty agent address.");
                 }
@@ -1822,6 +1801,8 @@ namespace Nekoyume.Game
                     e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
             }
 
+            CurrentSocialEmail = email == null ? string.Empty : email;
+
             Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login.");
             yield return new WaitUntil(() => loginSystem.Login);
             Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login. Done.");
@@ -1829,7 +1810,7 @@ namespace Nekoyume.Game
             // NOTE: Update CommandlineOptions.PrivateKey finally.
             _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
             Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                      $" to ({loginSystem.GetPrivateKey().ToAddress()}).");
+                      $" to ({loginSystem.GetPrivateKey().Address}).");
 
             dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
             sw.Reset();

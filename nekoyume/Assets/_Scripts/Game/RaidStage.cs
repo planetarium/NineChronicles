@@ -13,7 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Model.Skill;
 using UnityEngine;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game
 {
@@ -487,6 +489,36 @@ namespace Nekoyume.Game
                 }
 
                 ++_wave;
+            }
+        }
+
+        public IEnumerator CoCustomEvent(CharacterBase character, EventBase eventBase)
+        {
+            if (eventBase is Tick tick)
+            {
+                Character.RaidCharacter raidCharacter =
+                    character.Id == _player.Id ? _player : _boss;
+                // This Tick from 'Stun'
+                if (tick.SkillId == 0)
+                {
+                    IEnumerator StunTick(IEnumerable<Skill.SkillInfo> _)
+                    {
+                        raidCharacter.Animator.Hit();
+                        yield return new WaitForSeconds(skillDelay);
+                    }
+
+                    _actionQueue.Enqueue(
+                        new Character.RaidActionParams(raidCharacter, 0, null, null, StunTick));
+                }
+                // This Tick from 'Vampiric'
+                else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(tick.SkillId,
+                             out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
+                {
+                    _actionQueue.Enqueue(
+                        new Character.RaidActionParams(raidCharacter, 0, null, null, raidCharacter.CoHealWithoutAnimation));
+                }
+
+                yield break;
             }
         }
 

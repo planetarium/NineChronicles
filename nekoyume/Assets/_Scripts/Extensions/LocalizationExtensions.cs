@@ -469,9 +469,13 @@ namespace Nekoyume
 
         public static string GetLocalizedName(this FungibleAssetValue fav)
         {
+            return GetLocalizedFavName(fav.Currency.Ticker);
+        }
+
+        public static string GetLocalizedFavName(string ticker)
+        {
             var isRune = false;
             var id = 0;
-            var ticker = fav.Currency.Ticker;
             var grade = 1;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
             {
@@ -549,6 +553,14 @@ namespace Nekoyume
             return $"<color=#{GetColorHexByGrade(equipment.Grade)}>{grade}  |  {subType}</color>";
         }
 
+        public static string GetLocalizedInformation(this FungibleAssetValue fav)
+        {
+            var grade = Util.GetTickerGrade(fav.Currency.Ticker);
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subType = L10nManager.Localize("UI_STONES");
+            return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subType}</color>";
+        }
+
         public static Color GetElementalTypeColor(this ItemBase item)
         {
             return item.ElementalType switch
@@ -611,7 +623,7 @@ namespace Nekoyume
             return L10nManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
         }
 
-        private static string GetColorHexByGrade(int grade)
+        public static string GetColorHexByGrade(int grade)
         {
             var color = GetItemGradeColor(grade);
             return color.ColorToHex();

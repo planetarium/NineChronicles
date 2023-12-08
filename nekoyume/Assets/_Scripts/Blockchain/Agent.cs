@@ -90,7 +90,7 @@ namespace Nekoyume.Blockchain
 
         public long BlockIndex => blocks?.Tip?.Index ?? 0;
         public PrivateKey PrivateKey { get; private set; }
-        public Address Address => PrivateKey.PublicKey.ToAddress();
+        public Address Address => PrivateKey.PublicKey.Address;
 
         public BlockRenderer BlockRenderer { get; } = new BlockRenderer();
 
@@ -159,7 +159,7 @@ namespace Nekoyume.Blockchain
             try
             {
                 string keyPath = path + "/states";
-                IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(keyPath);
+                IKeyValueStore stateKeyValueStore = new DefaultKeyValueStore(keyPath);
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 var actionLoader = new NCActionLoader();
                 var blockChainStates = new BlockChainStates(store, _stateStore);
@@ -205,7 +205,7 @@ namespace Nekoyume.Blockchain
 #endif
             lastTenBlocks = new ConcurrentQueue<(Block, DateTimeOffset)>();
 
-            if (!consoleSink) InitializeTelemetryClient(privateKey.ToAddress());
+            if (!consoleSink) InitializeTelemetryClient(privateKey.Address);
 
             // Init SyncSucceed
             SyncSucceed = true;
@@ -845,8 +845,7 @@ namespace Nekoyume.Blockchain
                 string.Join(",", actions));
             Transaction tx = blocks.MakeTransaction(
                 privateKey: PrivateKey,
-                actions: actions,
-                updatedAddresses: ImmutableHashSet<Address>.Empty
+                actions: actions
             );
             _onMakeTransactionSubject.OnNext((tx, actions));
 

@@ -187,7 +187,7 @@ namespace ModelViewer.Editor
             EditorGUILayout.Space();
             GUILayout.Label("Objects", EditorStyles.boldLabel);
             GUILayout.Label(selectedVm.Object?.ToString() ?? "null");
-            GUILayout.Label(selectedVm.SerializedObject.Inspect(true));
+            GUILayout.Label(selectedVm.SerializedObject.Inspect());
 
             EditorGUILayout.EndScrollView();
             EditorStyles.label.richText = false;

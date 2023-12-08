@@ -101,7 +101,7 @@ namespace Nekoyume.UI
         private GameObject sliderContainer;
 
         [SerializeField]
-        private RuneListScroll scroll;
+        private RuneStoneEnhancementInventoryScroll scroll;
 
         [SerializeField]
         private Animator animator;
@@ -115,7 +115,7 @@ namespace Nekoyume.UI
         private static readonly int HashToMaterialUse =
             Animator.StringToHash("MaterialUse");
 
-        private readonly Dictionary<int, List<RuneItem>> _runeItems = new();
+        private readonly List<RuneItem> _runeItems = new();
         private readonly List<IDisposable> _disposables = new();
 
         private RuneItem _selectedRuneItem;
@@ -250,14 +250,9 @@ namespace Nekoyume.UI
 
             var runeStates = States.Instance.RuneStates;
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+            List<RuneStoneEnhancementInventoryItem> items = new List<RuneStoneEnhancementInventoryItem>();
             foreach (var value in sheet.Values)
             {
-                var groupId = RuneFrontHelper.GetGroupId(value.Id);
-                if (!_runeItems.ContainsKey(groupId))
-                {
-                    _runeItems.Add(groupId, new List<RuneItem>());
-                }
-
                 var state = runeStates.FirstOrDefault(x => x.RuneId == value.Id);
                 var runeItem = new RuneItem(value, state?.Level ?? 0);
                 if (_selectedRuneItem == null)
@@ -274,21 +269,18 @@ namespace Nekoyume.UI
                         _selectedRuneItem = runeItem;
                     }
                 }
-
-                _runeItems[groupId].Add(runeItem);
+                _runeItems.Add(runeItem);
+                items.Add(new RuneStoneEnhancementInventoryItem(state, value, runeItem));
             }
 
-            var items = _runeItems.Select(p
-                => new RuneListItem(RuneFrontHelper.GetGroupName(p.Key), p.Value)).ToList();
-
-            scroll.UpdateData(items);
+            scroll.UpdateData(items.OrderBy(x => x.item.SortingOrder));
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
         }
 
-        private void OnClickItem(RuneItem item)
+        private void OnClickItem(RuneStoneEnhancementInventoryItem item)
         {
             _selectedRuneItem = null;
-            Set(item);
+            Set(item.item);
         }
 
         private void Enhancement()
@@ -343,13 +335,7 @@ namespace Nekoyume.UI
 
             runeImage.sprite = runeIcon;
 
-            var items = new List<RuneItem>();
-            foreach (var list in _runeItems.Values)
-            {
-                items.AddRange(list);
-            }
-
-            foreach (var runeItem in items)
+            foreach (var runeItem in _runeItems)
             {
                 runeItem.IsSelected.Value = runeItem.Row.Id == item.Row.Id;
             }

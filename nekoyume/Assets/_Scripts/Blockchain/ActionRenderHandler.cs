@@ -106,7 +106,7 @@ namespace Nekoyume.Blockchain
                     var currentAvatarState = States.Instance.CurrentAvatarState;
                     if (currentAvatarState is not null)
                     {
-                        var type = actionType.TypeIdentifier.Inspect(false);
+                        var type = actionType.TypeIdentifier.Inspect();
                         Analyzer.Instance.Track(
                             "Unity/ActionRender",
                             new Dictionary<string, Value>
@@ -125,7 +125,7 @@ namespace Nekoyume.Blockchain
                         AirbridgeUnity.TrackEvent(evt);
                     }
 
-                    var actionTypeName = actionType.TypeIdentifier.Inspect(false);
+                    var actionTypeName = actionType.TypeIdentifier.Inspect();
                     if (actionTypeName.Contains("transfer_"))
                         return;
 
@@ -160,6 +160,7 @@ namespace Nekoyume.Blockchain
             EventConsumableItemCrafts();
             EventMaterialItemCrafts();
             AuraSummon();
+            RuneSummon();
 
             // Market
             RegisterProduct();
@@ -691,6 +692,18 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
+                .AddTo(_disposables);
+        }
+
+        private void RuneSummon()
+        {
+            _actionRenderer.EveryRender<RuneSummon>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareRuneSummon)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRuneSummon)
                 .AddTo(_disposables);
         }
 
@@ -1418,8 +1431,31 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
+        private ActionEvaluation<RuneSummon> PrepareRuneSummon(ActionEvaluation<RuneSummon> eval)
+        {
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            return eval;
+        }
+
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = eval.Action;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.SummonSheet[action.GroupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            var count = summonRow.CostMaterialCount * action.SummonCount;
+            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+
+            Widget.Find<Summon>().OnActionRender(eval);
+        }
+
+        private async void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
+        {
+            await States.Instance.InitRuneStoneBalance();
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = eval.Action;
 
@@ -3334,7 +3370,7 @@ namespace Nekoyume.Blockchain
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
             MailBox mailBox;
-            UnloadFromMyGaragesRecipientMail mail;
+            UnloadFromMyGaragesRecipientMail mail = null;
 
             IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
@@ -3352,14 +3388,24 @@ namespace Nekoyume.Blockchain
                     return;
                 }
                 mailBox = new MailBox(mailBoxList);
-                mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
-                if (eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
-                    eval.Action.FungibleIdAndCounts is not null &&
-                    !(mail.Memo != null && mail.Memo.Contains("season_pass")))
+                var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                    .Where(m => m.blockIndex == eval.BlockIndex);
+                if (sameBlockIndexMailList.Any())
                 {
-                    UpdateCurrentAvatarInventory(eval);
+                    var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
                 }
+
+                if (mail is not null)
+                {
+                    if (eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
+                        eval.Action.FungibleIdAndCounts is not null &&
+                        !(mail.Memo != null && mail.Memo.Contains("season_pass")))
+                    {
+                        UpdateCurrentAvatarInventory(eval);
+                    }
+                }
+
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
                 if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
@@ -3381,8 +3427,12 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailBox = new MailBox(mailBoxList);
-                mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>().Where(m => m.blockIndex == eval.BlockIndex);
+                if (sameBlockIndexMailList.Any())
+                {
+                    var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
+                }
 
                 if (mail is not null)
                 {
@@ -3484,7 +3534,7 @@ namespace Nekoyume.Blockchain
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
             MailBox mailBox;
-            ClaimItemsMail mail;
+            ClaimItemsMail mail = null;
             IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
             {
@@ -3523,8 +3573,12 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailBox = new MailBox(mailBoxList);
-                mail = mailBox.OfType<ClaimItemsMail>()
-                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                var sameBlockIndexMailList = mailBox.OfType<ClaimItemsMail>().Where(m => m.blockIndex == eval.BlockIndex);
+                if (sameBlockIndexMailList.Any())
+                {
+                    var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
+                }
                 if (mail is not null)
                 {
                     mail.New = true;
@@ -3627,8 +3681,14 @@ namespace Nekoyume.Blockchain
             var gameStates = Game.Game.instance.States;
             var avatar = gameStates.CurrentAvatarState;
             var mailBox = avatar.mailBox;
-            var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+            UnloadFromMyGaragesRecipientMail mail = null;
+            var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>().Where(m => m.blockIndex == eval.BlockIndex);
+            if (sameBlockIndexMailList.Any())
+            {
+                var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
+                mail = memoCheckedMail ?? sameBlockIndexMailList.First();
+            }
+
             if (mail is not null)
             {
                 mail.New = true;
