@@ -46,6 +46,7 @@ namespace Nekoyume.UI
         private readonly WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
 
         private CombinationSparkVFX _sparkVFX = null;
+        private bool _itemMoveAnimation = true;
 
         public System.Action OnDisappear { get; set; }
         public SpeechBubbleWithItem SpeechBubbleWithItem => speechBubble;
@@ -100,7 +101,8 @@ namespace Nekoyume.UI
         public void AnimateNPC(
             SpeechBubbleItemType itemType, string quote, bool itemMoveAnimation = true)
         {
-            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType, quote, itemMoveAnimation));
+            _itemMoveAnimation = itemMoveAnimation;
+            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType, quote));
         }
 
         public void SetCloseAction(System.Action closeAction)
@@ -109,7 +111,7 @@ namespace Nekoyume.UI
         }
 
         private IEnumerator CoAnimateNPC(
-            SpeechBubbleItemType itemType, string quote = null, bool itemMoveAnimation = true)
+            SpeechBubbleItemType itemType, string quote = null)
         {
             var pos = ActionCamera.instance.Cam.transform.position;
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
@@ -166,7 +168,7 @@ namespace Nekoyume.UI
                 yield return _waitForOneSec;
             }
 
-            DisappearNpc(itemMoveAnimation);
+            DisappearNpc();
         }
 
         private IEnumerator CoWorkshopItemMove()
@@ -193,13 +195,13 @@ namespace Nekoyume.UI
             yield return null;
         }
 
-        private void DisappearNpc(bool itemMoveAnimation = true)
+        private void DisappearNpc()
         {
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
                 NPCAnimation.Type.Disappear_02.ToString(), false);
             npcSkeletonGraphic.AnimationState.Complete += OnComplete;
             HideButton();
-            if (speechBubble.Item != null && itemMoveAnimation)
+            if (speechBubble.Item != null && _itemMoveAnimation)
             {
                 StartCoroutine(CoWorkshopItemMove());
             }
