@@ -284,6 +284,7 @@ namespace Nekoyume.IAPStore
                 if (e.purchasedProduct.availableToPurchase)
                 {
                     OnPurchaseRequestAsync(e);
+                    return PurchaseProcessingResult.Pending;
                 }
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
@@ -304,7 +305,7 @@ namespace Nekoyume.IAPStore
         /// </summary>
         void IStoreListener.OnPurchaseFailed(Product i, PurchaseFailureReason p)
         {
-            Debug.LogError($"PurchaseFail. reason: {p}, Product: {i}");
+            Debug.LogError($"[IStoreListener PurchaseFail] reason: {p}, Product: {i.metadata.localizedTitle}");
             if (p == PurchaseFailureReason.PurchasingUnavailable)
             {
                 // IAP may be disabled in device settings.
@@ -316,7 +317,7 @@ namespace Nekoyume.IAPStore
         /// </summary>
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
-            Debug.LogError($"PurchaseFail. reason: {p.reason}, Product: {i}");
+            Debug.LogError($"[IDetailedStoreListener PurchaseFail] reason: {p.reason}, Product: {i.metadata.localizedTitle}");
             Analyzer.Instance.Track(
                 "Unity/Shop/IAP/PurchaseResult",
                 ("product-id", p.productId),

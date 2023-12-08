@@ -6,9 +6,9 @@ using DG.Tweening;
 using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
-using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -36,6 +36,7 @@ namespace Nekoyume.UI
             public Toggle tabToggle;
             public GameObject[] enableObj;
             public float backgroundPositionY;
+            public string nameEng;
 
             public SummonSheet.Row SummonSheetRow;
         }
@@ -45,8 +46,8 @@ namespace Nekoyume.UI
         {
             public Button infoButton;
             public TextMeshProUGUI nameText;
-            public SimpleCostButton draw1Button;
-            public SimpleCostButton draw10Button;
+            public SummonCostButton draw1Button;
+            public SummonCostButton draw10Button;
             public RectTransform backgroundRect;
         }
 
@@ -57,6 +58,23 @@ namespace Nekoyume.UI
 
         private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new();
+
+        public static bool HasNotification
+        {
+            get
+            {
+                var result = false;
+                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
+                foreach (var summonRow in summonSheet)
+                {
+                    var costType = (CostType)summonRow.CostMaterial;
+                    var cost = summonRow.CostMaterialCount;
+                    result |= SimpleCostButton.CheckCostOfType(costType, cost);
+                }
+
+                return result;
+            }
+        }
 
         protected override void Awake()
         {
@@ -82,8 +100,10 @@ namespace Nekoyume.UI
                 });
             }
 
-            ButtonSubscribe(summonItem.draw1Button, gameObject);
-            ButtonSubscribe(summonItem.draw10Button, gameObject);
+            LoadingHelper.Summon.Subscribe(_ => SetMaterialAssets()).AddTo(gameObject);
+
+            summonItem.draw1Button.Subscribe(gameObject);
+            summonItem.draw10Button.Subscribe(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -138,15 +158,15 @@ namespace Nekoyume.UI
             summonItem.infoButton.OnClickAsObservable()
                 .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
                 .AddTo(_disposables);
-            summonItem.nameText.text = summonRow.GetLocalizedName();
+            summonItem.nameText.text = currentInfo.nameEng;
 
-            ButtonSubscribe(summonItem.draw1Button, summonRow, 1, _disposables);
-            ButtonSubscribe(summonItem.draw10Button, summonRow, 10, _disposables);
+            summonItem.draw1Button.Subscribe(summonRow, 1, GoToMarket, _disposables);
+            summonItem.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
         }
 
         #region Action
 
-        private void AuraSummonAction(int groupId, int summonCount)
+        public void SummonAction(int groupId, int summonCount)
         {
             // Check material enough
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -166,24 +186,40 @@ namespace Nekoyume.UI
                 return;
             }
 
-            ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
+            var firstRecipeId = summonRow.Recipes.First().Item1;
+            if (tableSheets.EquipmentItemRecipeSheet.TryGetValue(firstRecipeId, out _))
+            {
+                ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
+                StartCoroutine(CoShowAuraSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
+            }
+            else if (tableSheets.RuneSheet.TryGetValue(firstRecipeId, out _))
+            {
+                ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
+                StartCoroutine(CoShowRuneSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
+            }
+
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
-            SetMaterialAssets();
-            StartCoroutine(CoShowLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-            SetMaterialAssets();
-
-            summonItem.draw1Button.UpdateObjects();
-            summonItem.draw10Button.UpdateObjects();
 
             var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
+            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
+        }
+
+        public void OnActionRender(ActionEvaluation<RuneSummon> eval)
+        {
+            LoadingHelper.Summon.Value = null;
+
+            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
+            var summonCount = eval.Action.SummonCount;
+            var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
+            var resultList = SimulateRune(summonRow, summonCount, random);
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
@@ -209,6 +245,39 @@ namespace Nekoyume.UI
                 .ToList();
         }
 
+        private static List<FungibleAssetValue> SimulateRune(
+            SummonSheet.Row summonRow,
+            int summonCount,
+            IRandom random)
+        {
+            const int unit = RuneSummon.RuneQuantity;
+            var simulateResult = RuneSummon.SimulateSummon(
+                Game.Game.instance.TableSheets.RuneSheet, summonRow, summonCount, random);
+
+            var result = new List<FungibleAssetValue>();
+            foreach (var pair in simulateResult)
+            {
+                var quantity = pair.Value;
+                while (quantity > 0)
+                {
+                    if (quantity >= unit)
+                    {
+                        result.Add(new FungibleAssetValue(pair.Key, unit, 0));
+                        quantity -= unit;
+                    }
+                    else
+                    {
+                        result.Add(new FungibleAssetValue(pair.Key, quantity, 0));
+                        quantity = 0;
+                    }
+                }
+            }
+
+            return result
+                .OrderByDescending(rune => Util.GetTickerGrade(rune.Currency.Ticker))
+                .ToList();
+        }
+
         #endregion
 
         private void SetMaterialAssets()
@@ -218,7 +287,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var headerMenu = Find<HeaderMenuStatic>();
+            if (!TryFind<HeaderMenuStatic>(out var headerMenu))
+            {
+                return;
+            }
+
             var materials = summonInfos
                 .Where(info => info.SummonSheetRow != null)
                 .Select(info => (CostType)info.SummonSheetRow.CostMaterial)
@@ -231,18 +304,18 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoShowLoadingScreen(List<int> recipes)
+        private IEnumerator CoShowAuraSummonLoadingScreen(List<int> recipes)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             IEnumerator CoChangeItem()
             {
-                while (isActiveAndEnabled)
+                while (loadingScreen.isActiveAndEnabled)
                 {
                     foreach (var recipe in recipes)
                     {
                         loadingScreen.SpeechBubbleWithItem.SetItemMaterial(
                             new Item(ItemFactory.CreateItem(
-                                TableSheets.Instance.EquipmentItemRecipeSheet[recipe]
+                                Game.Game.instance.TableSheets.EquipmentItemRecipeSheet[recipe]
                                     .GetResultEquipmentItemRow(),
                                 new ActionRenderHandler.LocalRandom(0))), false);
                         yield return new WaitForSeconds(.1f);
@@ -257,107 +330,59 @@ namespace Nekoyume.UI
 
             loadingScreen.AnimateNPC(
                 CombinationLoadingScreen.SpeechBubbleItemType.Aura,
-                L10nManager.Localize("UI_COST_BLOCK", 1));
+                L10nManager.Localize("UI_COST_BLOCK", 1),
+                false);
         }
 
-        public static void ButtonSubscribe(SimpleCostButton button, GameObject gameObject)
+        private IEnumerator CoShowRuneSummonLoadingScreen(List<int> recipes)
         {
-            button.OnClickDisabledSubject.Subscribe(_ =>
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("NOTIFICATION_SUMMONING"),
-                    NotificationCell.NotificationType.Information)
-            ).AddTo(gameObject);
-
-            LoadingHelper.Summon.Subscribe(tuple =>
+            var loadingScreen = Find<CombinationLoadingScreen>();
+            IEnumerator CoChangeItem()
             {
-                var summoning = tuple != null;
-                var state = summoning
-                    ? ConditionalButton.State.Disabled
-                    : ConditionalButton.State.Normal;
-
-                button.SetState(state);
-                var loading = false;
-                if (summoning)
+                while (loadingScreen.isActiveAndEnabled)
                 {
-                    // it will have to fix - rune has same material with aura
-                    var (material, totalCost) = tuple;
-                    var cost = button.GetCostParam;
-                    loading = material == (int)cost.type && totalCost == cost.cost;
+                    foreach (var recipe in recipes)
+                    {
+                        if (!RuneFrontHelper.TryGetRuneIcon(recipe, out var fav))
+                        {
+                            continue;
+                        }
+
+                        loadingScreen.SpeechBubbleWithItem.SetRune(fav);
+                        yield return new WaitForSeconds(.1f);
+                    }
                 }
-
-                button.Loading = loading;
-            }).AddTo(gameObject);
-        }
-
-        public static void ButtonSubscribe(
-            SimpleCostButton button, SummonSheet.Row summonRow, int summonCount,
-            List<IDisposable> disposables)
-        {
-            var costType = (CostType)summonRow.CostMaterial;
-            var cost = summonRow.CostMaterialCount * summonCount;
-
-            button.SetCost(costType, cost);
-            button.OnClickSubject.Subscribe(state =>
-            {
-                switch (state)
-                {
-                    case ConditionalButton.State.Normal:
-                        //  it will have to fix - summoning rune need another action
-                        Find<Summon>().AuraSummonAction(summonRow.GroupId, summonCount);
-                        break;
-                    case ConditionalButton.State.Conditional:
-#if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
-                        Find<PaymentPopup>().ShowAttract(
-                            costType,
-                            cost.ToString(),
-                            L10nManager.Localize("UI_SUMMON_MATERIAL_NOT_ENOUGH"),
-                            L10nManager.Localize("UI_SHOP"),
-                            GoToMarket);
-#else
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("NOTIFICATION_MATERIAL_NOT_ENOUGH"),
-                            NotificationCell.NotificationType.Information);
-#endif
-                        break;
-                }
-            }).AddTo(disposables);
-        }
-
-        // Do not use with Aura summon tutorial. this logic is fake.
-        public void SetCostUIForTutorial()
-        {
-            var costButton = summonItem.draw1Button;
-            if (costButton != null)
-            {
-                costButton.SetFakeUI(CostType.SilverDust, 0);
             }
+
+            loadingScreen.Show();
+            loadingScreen.SetCloseAction(null);
+            StartCoroutine(CoChangeItem());
+            yield return new WaitForSeconds(.5f);
+
+            loadingScreen.AnimateNPC(
+                CombinationLoadingScreen.SpeechBubbleItemType.Rune,
+                L10nManager.Localize("UI_COST_BLOCK", 1),
+                false);
         }
 
         private static void GoToMarket()
         {
             Find<Summon>().Close(true);
-            Find<SummonResultPopup>().Close(true);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             Find<MobileShop>().Show();
         }
 
-        public static bool HasNotification
+        // Do not use with Aura summon tutorial. this logic is fake.
+        public void SetCostUIForTutorial()
         {
-            get
-            {
-                var result = false;
-                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
-                foreach (var summonRow in summonSheet)
-                {
-                    var costType = (CostType)summonRow.CostMaterial;
-                    var cost = summonRow.CostMaterialCount;
-                    result |= SimpleCostButton.CheckCostOfType(costType, cost);
-                }
+            summonInfos[2].tabToggle.isOn = true;
+            SetSummonInfo(summonInfos[2]);
 
-                return result;
+            var costButton = summonItem.draw1Button;
+            if (costButton != null)
+            {
+                costButton.SetFakeUI(CostType.SilverDust, 0);
             }
         }
 

@@ -31,19 +31,6 @@ namespace Nekoyume.Helper
         public const int DefaultRuneId = 30001;
         public static Sprite DefaultRuneIcon => RuneData.DefaultRuneIcon;
 
-        public static int GetGroupId(int id)
-        {
-            var result = RuneData.Runes.FirstOrDefault(x => x.id == id);
-            return result?.groupdId ?? 0;
-        }
-
-        public static string GetGroupName(int id)
-        {
-            return id < RuneData.GroupNames.Count
-                ? L10nManager.Localize(RuneData.GroupNames[id])
-                : string.Empty;
-        }
-
         public static bool TryGetRuneIcon(int id, out Sprite icon)
         {
             var result = RuneData.Runes.FirstOrDefault(x => x.id == id);
