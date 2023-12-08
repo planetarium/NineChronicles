@@ -324,6 +324,7 @@ namespace Nekoyume.UI
 
             successContainer.SetActive(!item.IsMaxLevel);
             costContainer.SetActive(!item.IsMaxLevel);
+            TryCount.SetValueAndForceNotify(TryCount.Value);
         }
 
         private void UpdateRuneItems(RuneItem item)
