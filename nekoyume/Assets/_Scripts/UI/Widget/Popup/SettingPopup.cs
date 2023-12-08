@@ -12,7 +12,8 @@ using Nekoyume.Model.Mail;
 using UniRx;
 using TimeSpan = System.TimeSpan;
 using Nekoyume.UI.Scroller;
-
+using mixpanel;
+using Nekoyume.State;
 
 namespace Nekoyume.UI
 {
@@ -104,6 +105,9 @@ namespace Nekoyume.UI
         private Button addressShareButton;
 
         [SerializeField]
+        private Button deleteAccountButton;
+
+        [SerializeField]
         private List<GameObject> mobileDisabledMenus;
 
         [SerializeField]
@@ -151,6 +155,31 @@ namespace Nekoyume.UI
                     SharePrivateKeyToQRCode();
                 }
             }).AddTo(addressShareButton);
+
+            deleteAccountButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                var confirm = Widget.Find<ConfirmPopup>();
+                confirm.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.No)
+                    {
+                        return;
+                    }
+
+                    Analyzer.Instance.Track("Unity/DeleteAccount", new Dictionary<string, Value>()
+                    {
+                        ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                        ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                        ["SocialEmail"] = Game.Game.instance.CurrentSocialEmail
+                    });
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                confirm.Show("UI_SETTINGS_DELETE_ACCOUNT_TITLE", "UI_SETTINGS_DELETE_ACCOUNT_DESCRIPTION", "UI_SETTINGS_DELETE_ACCOUNT_BUTTON", "UI_SETTINGS_DELETE_ACCOUNT_CANCEL_BUTTON");
+            }).AddTo(deleteAccountButton);
 
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
                 .AddTo(privateKeyCopyButton);
