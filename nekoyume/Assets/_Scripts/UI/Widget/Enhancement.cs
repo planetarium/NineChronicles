@@ -318,14 +318,14 @@ namespace Nekoyume.UI
             return true;
         }
 
-        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase,
+        private IEnumerator CoCombineNPCAnimation(
+            ItemBase itemBase,
             long blockIndex,
-            System.Action action,
-            bool isConsumable = false)
+            System.Action action)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
-            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
             loadingScreen.SetCloseAction(action);
             Push();
             yield return new WaitForSeconds(.5f);
