@@ -121,6 +121,7 @@ MonoBehaviour:
   mobileEnabledMenus:
   - {fileID: 4135752086046613942}
   - {fileID: 7868347252884664485}
+  - {fileID: 5462405601411438091}
 --- !u!1 &91925049523724212
 GameObject:
   m_ObjectHideFlags: 0
@@ -14166,7 +14167,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 8.5, y: -0.000019073486}
+  m_AnchoredPosition: {x: 8.5, y: -0.0000038146973}
   m_SizeDelta: {x: 16.99997, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8396652038054457953
@@ -14386,7 +14387,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 4514510073181407524}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.8994975
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
