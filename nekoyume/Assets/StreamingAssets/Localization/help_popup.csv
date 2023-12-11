@@ -669,7 +669,7 @@ HELP_POPUP_100008_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Crafting Time<
 - Há uma baixa chance de criar um enorme sucesso, o que estende o tempo de criação.
 - Os itens concluídos podem ser recebidos por correio.
 
-<color=#c17636><size=20><b>◆ Hourglass</b></size></color></size></ro Color>
+<color=#c17636><size=20><b>◆ Hourglass</b></size></color>
 - Use ampulheses para reduzir o tempo de criação de itens.
 - As ampulhetas podem ser obtidas por meio de recompensas da missão e várias ofertas de pacotes.","<color=#c17636><size=20><b>◆ クラフト時間</b></size></color>
 - クラフトアイテムには時間がかかります。高級アイテムにはもっと時間がかかります。
@@ -735,7 +735,7 @@ HELP_POPUP_100009_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Action Power</
 - You can obtain AP potions through quest rewards, premium season pass, and monster collections (NCG stacking).","<color=#c17636><size=20><b>◆ 행동력</b></size></color>
 - 행동력(Action Power)은 게임 내 전투와 제작과 같은 다양한 활동을 위한 필수 에너지입니다.
 - 행동력은 일정 간격으로 충전할 수 있으며 AP 포션을 사용하여 즉시 충전할 수도 있습니다.
-- AP 포션은 퀘스트 보상, 프리미엄 시즌 패스 및 몬스터 컬렉션(NCG 스테이킹)을 통해 획득할 수 있습니다.","<color=#c17636><size=20><b>◆ 
+- AP 포션은 퀘스트 보상, 프리미엄 시즌 패스 및 몬스터 컬렉션(NCG 스테이킹)을 통해 획득할 수 있습니다.","<color=#c17636><size=20><b>◆ </b></size></color> 
 - O poder de ação (AP) é energia essencial para várias ações no jogo, como batalha e artesanato.
 - Ele recarrega em intervalos regulares e também pode ser recarregado instantaneamente usando poções AP.
 - Você pode obter poções AP através de recompensas de miss, passe de temporada premium e coleções de monstros (empilhamento de NCG).","<color=#c17636><size=20><b>◆ アクションパワー</b></size></color>
@@ -853,13 +853,13 @@ HELP_POPUP_100013_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Inventory</b><
 
 <color=#c17636><size=20><b>◆ 장비 장착</b></size></color>
 - 모험, 아레나, 월드보스 별로 장비 장착 상태를 설정할 수 있습니다.
-- 각 콘텐츠 전용 스킬이 부여된 장비가 있습니다. 신중하게 장비를 장착하세요.","<color=#c17636><size=20><b>◆ Inventário</b></size></color></Sizer></ro Color>
+- 각 콘텐츠 전용 스킬이 부여된 장비가 있습니다. 신중하게 장비를 장착하세요.","<color=#c17636><size=20><b>◆ Inventário</b></size></color>
 - Você pode visualizar todos os itens de propriedade.
 - O inventário não possui limite de slot separado.
 - Use a opção Grind para moer itens instantaneamente.
 - Verifique rapidamente as fontes do item nos detalhes do item do material.
 
-<color=#c17636><size=20><b>◆ CP (potência de combate)</b></size></color></Sizer></color>
+<color=#c17636><size=20><b>◆ CP (potência de combate)</b></size></color>
 - CP representa sua força total de combate.
 - CP total é a soma do CP de caracteres e do equipamento cp.
 - O CP do caractere é calculado multiplicando cada STAT por um fator fixo.
@@ -1026,7 +1026,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - Gather a certain amount of medals to enter the championship with greater rewards.
 
 <color=#c17636><size=20><b>◆ Battle Mechanics</b></size></color>
-- HP increases tenfold in Arena battles.
+- HP increases fivefold in Arena battles.
 - You can check the opponent's CP and choose to challenge.
 - Opponents are cached periodically and can be refreshed within limited attempts.","<color=#c17636><size=20><b>◆ 아레나 시즌</b></size></color>
 - 아레나 시즌과 챔피언십을 통해 NCG와 코스튬 등 특별한 보상을 얻으세요.
@@ -1038,19 +1038,19 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - 일정 수량 이상의 메달을 모아야 더 큰 보상이 있는 챔피언십에 입장할 수 있습니다.
 
 <color=#c17636><size=20><b>◆ 전투 방식</b></size></color>
-- 아레나 전투에서는 기본 체력이 10배 증가합니다.
+- 아레나 전투에서는 기본 체력이 5배 증가합니다.
 - 상대의 CP를 체크하고 도전을 선택할 수 있습니다.
 - 대전 상대는 일정한 주기로 캐싱되며, 한정된 횟수 내에서 새로고침 할 수 있습니다.","<color=#c17636><size=20><b>◆ Temporada da arena</b></size></color>
 - Ganhe recompensas especiais como NCG e figurinos através da Arena Battle.
 - Obtenha materiais alimentares úteis em várias batalhas.
 - Os ingressos são reabastecidos periodicamente; Ingressos adicionais podem ser adquiridos com o NCG.
 
-<color=#c17636><size=20><b>◆ Campeonato da arena</b></size></color></Sizer></ro Color>
+<color=#c17636><size=20><b>◆ Campeonato da arena</b></size></color>
 - Colete medalhas de arena durante a temporada.
 - Reúna uma certa quantidade de medalhas para entrar no campeonato com maiores recompensas.
 
-<color=#c17636><size=20><b>◆ Mecânica de batalha</b></size></color></size></ro Color>
-- A HP aumenta dez vezes em batalhas na arena.
+<color=#c17636><size=20><b>◆ Mecânica de batalha</b></size></color>
+- A HP aumenta cinco vezes em batalhas na arena.
 - Você pode verificar o CP do oponente e optar por desafiar.
 - Os oponentes são armazenados em cache periodicamente e podem ser atualizados em tentativas limitadas.","<color=#c17636><size=20><b>◆ アリーナシーズン</b></size></color>
 - アリーナバトルを通じてNCGやコスチュームなどの特別な報酬を獲得します。
@@ -1062,7 +1062,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - 一定量のメダルを集めて、より大きな報酬をもってチャンピオンシップに参入します。
 
 <color=#c17636><size=20><b>◆ バトルメカニッ ク</b></size></color>
--HPはアリーナの戦いで10倍増加します。
+-HPはアリーナの戦いで5倍に増加します。
 - 相手のCPを確認して、挑戦することを選択できます。
 - 対戦相手は定期的にキャッシュされ、限られた試みの中でリフレッシュできます。","<color=#c17636><size=20><b>◆ temporada de arena</b></size></color>
 - Gane recompensas especiales como NCG y disfraces a través de Arena Battle.
@@ -1074,7 +1074,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - Reúna una cierta cantidad de medallas para ingresar al campeonato con mayores recompensas.
 
 <color=#c17636><size=20><b>◆ Mecánica de batalla</b></size></color>
-- HP aumenta diez veces en las batallas de la arena.
+- HP aumenta cinco veces en las batallas de la arena.
 - Puede consultar el CP del oponente y elegir desafiar.
 - Los opositores se almacenan en caché periódicamente y pueden actualizarse dentro de intentos limitados.","<color=#C17636><size=20><b>◆ ฤดูกาลที่สนาม</b></size></color>
 - รับรางวัลพิเศษเช่น NCG และเครื่องแต่งกายผ่านการต่อสู้ของ Arena
@@ -1086,7 +1086,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - รวบรวมเหรียญจำนวนหนึ่งเพื่อเข้าสู่การแข่งขันชิงแชมป์ด้วยรางวัลที่มากขึ้น
 
 <color=#C17636><size=20><b>◆ กลไกการต่อสู้</b></size></color>
-- HP เพิ่มขึ้นเป็นสิบเท่าในการต่อสู้ที่เกิดเหตุ
+- HP เพิ่มห้าเท่าในการต่อสู้ที่เกิดเหตุ
 - คุณสามารถตรวจสอบ CP ของคู่ต่อสู้และเลือกที่จะท้าทาย
 - ฝ่ายตรงข้ามถูกแคชเป็นระยะและสามารถรีเฟรชภายในความพยายามที่ จำกัด","<color=#c17636><size=20><b>◆ Musim arena</b></size></color>
 - Dapatkan hadiah khusus seperti NCG dan kostum melalui pertempuran arena.
@@ -1098,7 +1098,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - Kumpulkan sejumlah medali untuk memasuki kejuaraan dengan hadiah yang lebih besar.
 
 <color=#c17636><size=20><b>◆ Mekanika pertempuran</b></size></color>
-- HP meningkat sepuluh kali lipat dalam pertempuran arena.
+- HP meningkat lima kali lipat dalam pertempuran arena.
 - Anda dapat memeriksa CP lawan dan memilih untuk menantang.
 - Lawan di -cache secara berkala dan dapat disegarkan dalam upaya terbatas.",,"<color=#c17636><size=20><b>◆ 竞技场季节</b></size></color>
 - 通过Arena Battle赚取特殊的奖励和服装。
@@ -1110,7 +1110,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - 收集一定数量的奖牌，获得更大的回报。
 
 <color=#c17636><size=20><b>◆ 战斗机制</b></size></color>
--HP在竞技场战斗中增加了十倍。
+-HP在竞技场战斗中增加了五倍。
 - 您可以检查对手的CP并选择挑战。
 - 对手是定期缓存的，可以在有限的尝试中刷新。","<color=#c17636><size=20><b>◆ 競技場季節</b></size></color>
 - 通過Arena Battle賺取特殊的獎勵和服裝。
@@ -1122,7 +1122,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - 收集一定數量的獎牌，獲得更大的回報。
 
 <color=#c17636><size=20><b>◆ 戰鬥機制</b></size></color>
--HP在競技場戰鬥中增加了十倍。
+-HP在競技場戰鬥中增加了五倍。
 - 您可以檢查對手的CP並選擇挑戰。
 - 對手是定期緩存的，可以在有限的嘗試中刷新。","<color=#c17636><size=20><b>◆ arena season</b></size></color>
 - Kumita ng mga espesyal na gantimpala tulad ng NCG at costume sa pamamagitan ng arena battle.
@@ -1134,7 +1134,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - Magtipon ng isang tiyak na halaga ng mga medalya upang makapasok sa kampeonato na may higit na mga gantimpala.
 
 <color=#c17636><size=20><b>◆ Mekanika ng labanan</b></size></color>
-- Ang HP ay nagdaragdag ng sampung beses sa mga laban sa arena.
+- Ang HP ay nagdaragdag ng limang beses sa mga laban sa arena.
 - Maaari mong suriin ang CP ng kalaban at piliing hamunin.
 - Ang mga kalaban ay naka -cache pana -panahon at maaaring mai -refresh sa loob ng limitadong mga pagtatangka.","<color=#C17636><size=20><b>◆ Mùa đấu trường</b></size></color>
 - Kiếm phần thưởng đặc biệt như NCG và trang phục thông qua đấu trường.
@@ -1146,7 +1146,7 @@ HELP_POPUP_100015_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Arena Season</
 - Thu thập một lượng huy chương nhất định để vào chức vô địch với phần thưởng lớn hơn.
 
 <color=#C17636><size=20><b>◆ Cơ học chiến đấu</b></size></color>
-- HP tăng gấp mười lần trong các trận chiến đấu trường.
+- HP tăng gấp năm lần trong các trận chiến đấu trường.
 - Bạn có thể kiểm tra CP của đối thủ và chọn thách thức.
 - Đối thủ được lưu trữ định kỳ và có thể được làm mới trong những nỗ lực hạn chế."
 HELP_POPUP_100016_PAGE_00_TITLE,HELP,도움말,AJUDA,ヘルプ,AYUDA,ช่วย,MEMBANTU,,帮助,幫助,Tulong,GIÚP ĐỠ
@@ -1174,12 +1174,12 @@ HELP_POPUP_100016_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Equipment Reci
 
 <color=#c17636><size=20><b>◆ 펫 효과</b></size></color>
 - 나인 크로니클의 첫 번째 NFT 프로젝트인 D:CC를 스테이킹 하면 영혼석을 얻을 수 있습니다.
-- 영혼석을 통해 제작한 펫으로 제작 효율을 극대화 할 수 있습니다.","<color=#c17636><size=20><b>◆ Receitas de equipamentos</b></size></color></Sizer></ro Color>
+- 영혼석을 통해 제작한 펫으로 제작 효율을 극대화 할 수 있습니다.","<color=#c17636><size=20><b>◆ Receitas de equipamentos</b></size></color>
 - Estágios claros para desbloquear receitas de equipamentos.
 - Receitas básicas: equipamentos artesanais de qualidade decente.
 - Receitas premium: crie equipamentos superiores com melhores estatísticas e habilidades poderosas, exigindo mais materiais. Se falta os materiais, eles podem ser substituídos por cristais.
 
-<color=#c17636><size=20><b>◆ Super Craft</b></size></color></size></ro Color>
+<color=#c17636><size=20><b>◆ Super Craft</b></size></color>
 - A criação do mesmo equipamento várias vezes ganha pontos.
 - Depois de criar o mesmo equipamento com um certo número de vezes, você pode executar super artesanato.
 - O Super Craft garante efeitos específicos, atingindo uma chance de 100% após a elaboração de um certo número de vezes.
@@ -1298,12 +1298,12 @@ HELP_POPUP_100017_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Upgrade Materi
 
 <color=#c17636><size=20><b>◆ 강화 효과</b></size></color>
 - 장비 강화에 성공하면 강화 레벨이 1 오르고, 전체 능력치가 8-12% 증가합니다.
-- 특정 강화 레벨에서는 스킬도 함께 강화됩니다.","<color=#c17636><size=20><b>◆ Atualizar materiais</b></size></color></size></ro Color>
+- 특정 강화 레벨에서는 스킬도 함께 강화됩니다.","<color=#c17636><size=20><b>◆ Atualizar materiais</b></size></color>
 - O equipamento não utilizado pode ser usado para atualizar outros itens.
 - Quanto maior o nível de grau e atualização, mais pontos de atualização você ganha.
 - Até 50 materiais de atualização podem ser inseridos de uma só vez.
 
-<color=#c17636><size=20><b>◆ Efeitos de aprimoramento</b></size></color></size></ro Color>
+<color=#c17636><size=20><b>◆ Efeitos de aprimoramento</b></size></color>
 - O aprimoramento bem-sucedido aumenta o nível de aprimoramento em 1 e as estatísticas gerais aumentam em 8 a 12%.
 - Em níveis específicos de atualização, as habilidades também são aprimoradas.","<color=#c17636><size=20><b>◆ アップグレード素材</b></size></color>
 - 未使用の機器は、他のアイテムをアップグレードするために使用できます。
@@ -1386,7 +1386,7 @@ HELP_POPUP_100022_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Grinding Logic
 
 <color=#c17636><size=20><b>◆ 보너스 효과</b></size></color>
 - 아우라를 그라인딩 하면, NCG 바우처를 얻을 수 있습니다.
-- 몬스터 콜렉션 레벨이 높으면 그라인딩 시 배수 보너스를 얻습니다.","<color=#c17636><size=20><b>◆ Lógica de moagem</b></size></color></size></ro Color>
+- 몬스터 콜렉션 레벨이 높으면 그라인딩 시 배수 보너스를 얻습니다.","<color=#c17636><size=20><b>◆ Lógica de moagem</b></size></color>
 - Moa equipamentos não utilizados para obter cristais.
 - O nível mais alto de grau e atualização produz mais cristais.
 
@@ -1466,16 +1466,16 @@ HELP_POPUP_100023_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ World Boss Int
 <color=#c17636><size=20><b>◆ 전투 로직</b></size></color>
 - 월드 보스는 총 5개의 웨이브로 구성됩니다. 
 - 각 웨이브를 클리어 할 때마다 전투 등급이 상승합니다.
-- 월드 보스는 일정 턴이 지날 때 마다 광폭화 상태가 되어, 더욱 더 강해집니다. 분노한 월드 보스의 공격을 버티며, 계속 전투를 이어나가 보세요.","<color=#c17636><size=20><b>◆ Introdução ao chefe mundial</b></size></color></size></ro Color>
+- 월드 보스는 일정 턴이 지날 때 마다 광폭화 상태가 되어, 더욱 더 강해집니다. 분노한 월드 보스의 공격을 버티며, 계속 전투를 이어나가 보세요.","<color=#c17636><size=20><b>◆ Introdução ao chefe mundial</b></size></color>
 - O chefe do mundo, revivido com poder misterioso do abismo abissal, carece de consciência e propósito, parecidos com cadáveres vivos. Eles nunca podem encontrar descanso eterno devido ao poder injetado do abismo.
 - Unite sua força para afastar os chefes atacando o mundo através de portões interdimensionais.
 
-<color=#c17636><size=20><b>◆ Recompensas</b></size></color></Sizer></ro Color>
+<color=#c17636><size=20><b>◆ Recompensas</b></size></color>
 - Derrotar o chefe mundial produz cristais e fragmentos de runa.
 - A quantidade de fragmentos de runas obtidos varia com base nos resultados e classificações de batalha individuais.
 - As batalhas do World Boss são conteúdo cooperativo. Se você derrotar coletivamente o chefe do mundo, são concedidas recompensas adicionais. Derrotar o chefe mundial várias vezes durante a temporada permite que você receba recompensas várias vezes.
 
-<color=#c17636><size=20><b>◆ Mecânica de batalha</b></size></color></size></ro Color>
+<color=#c17636><size=20><b>◆ Mecânica de batalha</b></size></color>
 - O chefe do mundo consiste em 5 ondas.
 - A limpeza de cada onda aumenta a nota de batalha.
 - O chefe do mundo entra em um estado de frenesi a cada poucas voltas, tornando -se mais forte. Suportar os ataques do chefe do mundo enfurecido e continue a batalha.","<color=#c17636><size=20><b>◆ ワールドボスの紹介</b></size></color>
@@ -1592,12 +1592,12 @@ HELP_POPUP_100025_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Runes</b></siz
 
 <color=#c17636><size=20><b>◆ 룬 강화 및 활용</b></size></color>
 - 룬 강화는 한 번에 1레벨씩 성장 가능합니다. (일괄 강화 업데이트 예정)
-- 아레나, 월드보스 등 각 콘텐츠 전용 룬 슬롯과, 각 컨텐츠 특화 룬이 있으므로 전략적인 성장이 필요합니다.","<color=#c17636><size=20><b>◆ 
+- 아레나, 월드보스 등 각 콘텐츠 전용 룬 슬롯과, 각 컨텐츠 특화 룬이 있으므로 전략적인 성장이 필요합니다.","<color=#c17636><size=20><b>◆ </b></size></color>
 - Runas são equipamentos valiosos que permitem obter estatísticas especiais e habilidades dedicadas.
 - Para criar e aprimorar runas, você precisa de fragmentos de runas.
 - Obtenha fragmentos de Rune através da recarga da AP, Boss World, empilhamento de NCG e convocação com poeira dourada.
 
-<color=#c17636><size=20><b>◆ Melhoramento e aplicação do run
+<color=#c17636><size=20><b>◆ Melhoramento e aplicação do run </b></size></color>
 - O aprimoramento da runa permite o crescimento em 1 nível por vez. (Atualização de aprimoramento em massa programada)
 -O crescimento estratégico é essencial, considerando os slots de runas específicos de conteúdo para arena, chefe mundial etc. e runas especiais de conteúdo.","<color=#c17636><size=20><b>◆ ルーン</b></size></color>
 - ルーンは、特別な統計と専用のスキルを獲得できる貴重な機器です。
@@ -1682,12 +1682,12 @@ HELP_POPUP_100028_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Summoning Logi
 <color=#c17636><size=20><b>◆ 보상</b></size></color>
 - 실버 더스트로 뽑은 님블 아우라는 보급형 장비이며, 소량의 전투 효과가 있습니다.
 - 골든 더스트로 뽑을 수 있는 골든 아우라와 골든 룬을 통해 100% 스페셜 스킬을 획득할 수 있습니다.
-- 골든 아우라를 그라인딩 하면 NCG 바우처를 획득할 수 있습니다.","<color=#c17636><size=20><b>◆ Summo a lógica de convocação</b></size></color></Sizer></ro Color>
+- 골든 아우라를 그라인딩 하면 NCG 바우처를 획득할 수 있습니다.","<color=#c17636><size=20><b>◆ Summo a lógica de convocação </b></size></color>
 - Dverg finalmente permitiu a criação de novos equipamentos imbuídos de poder misterioso: aura dourada e a runa dourada.
 - Para desenhar aura e runa, você precisa de poeira dourada ou poeira prateada.
 - Você pode verificar os efeitos e probabilidades de cada aura e runa na página detalhada.
 
-<color=#c17636><size=20><b>◆ Recompensas</b></size></color></Sizer></ro Color>
+<color=#c17636><size=20><b>◆ Recompensas </b></size></color>
 - Aura ágil, desenhada com poeira de prata, é um equipamento de grau básico com pequenos efeitos de combate.
 - Usar poeira dourada para desenhar aura dourada e a runa dourada permite obter uma habilidade 100% especial.
 - A moagem de aura dourada concede cupochers NCG.","<color=#c17636><size=20><b>◆ 召喚論理</b></size></color>
@@ -1774,15 +1774,15 @@ HELP_POPUP_100029_PAGE_00_TEXT_00,"<color=#c17636><size=20><b>◆ Season Pass In
 - 보상을 수령하면 메일로 도착합니다.
 
 <color=#c17636><size=20><b>◆ 프리미엄 시즌패스</b></size></color>
-- 시즌패스 프리미엄 구매 시 프리미엄 보상을 즉시 획득할 수 있습니다.","<color=#c17636><size=20><b>◆ Passo da estação Introdução</b></size></color></size></ro Color>
+- 시즌패스 프리미엄 구매 시 프리미엄 보상을 즉시 획득할 수 있습니다.","<color=#c17636><size=20><b>◆ Passo da estação Introdução </b></size></color>
 - 'As aventuras de um gato corajoso' é um sistema de passe de temporada, onde você pode receber consistentemente recompensas por um período específico.
 
-<color=#c17636><size=20><b>◆ Experiência de coragem</b></size></color>
+<color=#c17636><size=20><b>◆ Experiência de coragem </b></size></color>
 - Aumente o nível da temporada com a coragem EXP e reivindique as recompensas com base no seu nível.
 - Pode levar tempo para que o exp ganhou, dependendo da velocidade de propagação da transação da blockchain.
 - As recompensas serão entregues ao seu e -mail depois de reivindicado.
 
-<color=#c17636><size=20><b>◆ PASSO DE ESTAURA DE PREMIUM</b></size></color></SIME></ro Color>
+<color=#c17636><size=20><b>◆ PASSO DE ESTAURA DE PREMIUM </b></size></color>
 - Ao comprar o passe da temporada premium, as recompensas premium são obtidas instantaneamente.","<color=#c17636><size=20><b>◆ シーズンパスはじめに</b></size></color>
 - 「勇敢な猫の冒険」は、特定の期間にわたって一貫して報酬を受け取ることができるシーズンパスシステムです。
 
