@@ -83,7 +83,6 @@ namespace Nekoyume
             }
 
             var valueText = power.ToString();
-
             if (statPowerRatio > 0)
             {
                 if (referencedStatType != StatType.NONE)
