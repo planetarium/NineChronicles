@@ -507,15 +507,37 @@ namespace Nekoyume.Game
                         yield return new WaitForSeconds(skillDelay);
                     }
 
+                    var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
+                        raidCharacter.IsDead,
+                        0,
+                        0,
+                        false,
+                        SkillCategory.TickDamage,
+                        _waveTurn,
+                        target: character
+                    );
                     _actionQueue.Enqueue(
-                        new Character.RaidActionParams(raidCharacter, 0, null, null, StunTick));
+                        new Character.RaidActionParams(
+                            raidCharacter,
+                            tick.SkillId,
+                            tick.SkillInfos.Append(tickSkillInfo),
+                            tick.BuffInfos,
+                            StunTick)
+                    );
                 }
                 // This Tick from 'Vampiric'
-                else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(tick.SkillId,
-                             out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
+                else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(
+                             tick.SkillId,
+                             out var row)
+                         && row.ActionBuffType == ActionBuffType.Vampiric)
                 {
                     _actionQueue.Enqueue(
-                        new Character.RaidActionParams(raidCharacter, 0, null, null, raidCharacter.CoHealWithoutAnimation));
+                        new Character.RaidActionParams(
+                            raidCharacter,
+                            tick.SkillId,
+                            tick.SkillInfos,
+                            tick.BuffInfos,
+                            raidCharacter.CoHealWithoutAnimation));
                 }
 
                 yield break;

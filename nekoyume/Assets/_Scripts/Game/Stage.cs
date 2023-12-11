@@ -1194,10 +1194,19 @@ namespace Nekoyume.Game
                         yield return new WaitForSeconds(SkillDelay);
                     }
 
+                    var tickSkillInfo = new Skill.SkillInfo(affectedCharacter.Id,
+                        !affectedCharacter.IsAlive,
+                        0,
+                        0,
+                        false,
+                        SkillCategory.TickDamage,
+                        waveTurn,
+                        target: character
+                    );
                     affectedCharacter.actions.Add(
                         new ActionParams(affectedCharacter,
-                            null,
-                            null,
+                            tick.SkillInfos.Append(tickSkillInfo),
+                            tick.BuffInfos,
                             StunTick
                         ));
                     yield return null;
@@ -1211,7 +1220,7 @@ namespace Nekoyume.Game
                         affectedCharacter.actions.Add(
                             new ActionParams(affectedCharacter,
                                 tick.SkillInfos,
-                                null,
+                                tick.BuffInfos,
                                 affectedCharacter.CoHealWithoutAnimation));
                         yield return null;
                     }
