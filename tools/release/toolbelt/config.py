@@ -9,16 +9,6 @@ load_dotenv(".env")
 
 
 class Config(NamedTuple):
-    # Github token (commit, read)
-    github_token: str
-    # Runtime API Url
-    runtime_url: str
-    # Runtime API Token
-    runtime_token: str
-    # signer key passphrase
-    key_passphrase: Optional[str] = None
-    # signer key address
-    key_address: Optional[str] = None
     # Slack Bot API Token
     slack_token: Optional[str] = None
     # esigner path
@@ -30,8 +20,6 @@ class Config(NamedTuple):
     @classmethod
     def init(self):
         _env = os.environ["ENV"]
-        self.runtime_url = os.environ["ACTIONS_RUNTIME_URL"]
-        self.runtime_token = os.environ["ACTIONS_RUNTIME_TOKEN"]
 
         env_map = {v: v for v in get_args(Env)}
         try:
@@ -39,17 +27,8 @@ class Config(NamedTuple):
         except KeyError:
             raise ValueError(f"Env should in {get_args(Env)}")
 
-        github_token = os.environ["GITHUB_TOKEN"]
-
-        if not github_token:
-            raise ValueError(f"github_token is required")
-
-        self.github_token = github_token
-
         for v in [
             "SLACK_TOKEN",
-            "KEY_PASSPHRASE",
-            "KEY_ADDRESS",
             "ESIGNER_PATH",
         ]:
             try:

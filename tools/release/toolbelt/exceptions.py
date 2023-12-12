@@ -16,13 +16,5 @@ class CliError(Exception):
         return f"Command: {self.cmd}, Message: {super().__str__()}"
 
 
-class PlanetError(CliError):
-    pass
-
-
 class EsignerError(CliError):
-    pass
-
-
-class TagNotFoundError(Exception):
     pass
