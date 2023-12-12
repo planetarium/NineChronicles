@@ -1,0 +1,12 @@
+K8S_REPO = "9c-k8s-config"
+INFRA_REPO = "9c-infra"
+LAUNCHER_REPO = "9c-launcher"
+PLAYER_REPO = "NineChronicles"
+HEADLESS_REPO = "NineChronicles.Headless"
+DP_REPO = "NineChronicles.DataProvider"
+SEED_REPO = "libplanet-seed"
+LIBPLANET_REPO = "libplanet"
+WORLD_BOSS_REPO = "world-boss-service"
+MARKET_SERVICE_REPO = "market-service"
+
+GITHUB_ORG = "planetarium"

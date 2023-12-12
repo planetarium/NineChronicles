@@ -1,0 +1,44 @@
+{
+  "creator": 8041252,
+  "id": 324925838,
+  "images": [
+    {
+      "architecture": "amd64",
+      "features": "",
+      "variant": null,
+      "digest": "sha256:c96baae258b82088f6e3d3dcb667fa92dbd0c8ac226a7cfc067e06ba0892e634",
+      "os": "linux",
+      "os_features": "",
+      "os_version": null,
+      "size": 179798209,
+      "status": "active",
+      "last_pulled": "2022-11-07T09:04:12.078802Z",
+      "last_pushed": "2022-11-07T10:16:02.181542Z"
+    },
+    {
+      "architecture": "arm64",
+      "features": "",
+      "variant": "v8",
+      "digest": "sha256:4c8a1012c02e6b0e87d54f837780ec42e74919c4bf50b0bfd7d4157069ea401a",
+      "os": "linux",
+      "os_features": "",
+      "os_version": null,
+      "size": 171707523,
+      "status": "active",
+      "last_pulled": "2022-11-07T10:15:59.11359Z",
+      "last_pushed": "2022-11-07T10:16:11.97965Z"
+    }
+  ],
+  "last_updated": "2022-11-07T10:16:14.594443Z",
+  "last_updater": 8041252,
+  "last_updater_username": "planetariumbot",
+  "name": "v100320",
+  "repository": 10068231,
+  "full_size": 179798209,
+  "v2": true,
+  "tag_status": "active",
+  "tag_last_pulled": "2022-11-07T10:15:59.11359Z",
+  "tag_last_pushed": "2022-11-07T10:16:14.594443Z",
+  "media_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+  "digest": "sha256:d6078671858dd40d04614491b32f3beb05c7809edeb844f8f4fcafddb2e3fbb2"
+}
