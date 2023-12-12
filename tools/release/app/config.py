@@ -3,7 +3,7 @@ from typing import NamedTuple, Optional, get_args
 
 from dotenv import load_dotenv
 
-from toolbelt.types import Env
+from app.types import Env
 
 load_dotenv(".env")
 

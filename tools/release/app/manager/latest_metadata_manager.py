@@ -1,7 +1,7 @@
 import json
 import structlog
 
-from toolbelt.types import Network
+from app.types import Network
 
 from .cf_hosted_file_manager import CFHostedFileManager
 from .constants import LATEST_METADATA_FILE_NAME

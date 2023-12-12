@@ -1,7 +1,7 @@
 from tests.path import GET_REF_RESPONSE_PATH, TAGS_RESPONSE_PATH
 from tests.testdata import read_file_as_json
-from toolbelt.client import GithubClient
-from toolbelt.github.commit import (
+from app.client import GithubClient
+from app.github.commit import (
     get_latest_commit_hash_from_branch,
     get_latest_commit_hash_from_tag,
 )

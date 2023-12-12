@@ -1,4 +1,4 @@
-from toolbelt.config import config
+from app.config import config
 
 
 def test_config():

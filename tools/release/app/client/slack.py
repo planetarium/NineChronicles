@@ -1,6 +1,6 @@
 from typing import List
 
-from toolbelt.exceptions import ResponseError
+from app.exceptions import ResponseError
 
 from .session import BaseUrlSession
 

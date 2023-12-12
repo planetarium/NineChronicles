@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from toolbelt.tools.planet import generate_extra
+from app.tools.planet import generate_extra
 
 timestamp = datetime.utcnow().strftime("%Y-%m-%d")
 

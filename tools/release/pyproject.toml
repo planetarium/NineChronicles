@@ -4,18 +4,16 @@ build-backend = "flit_core.buildapi"
 
 [project]
 authors = [{ name = "Planetarium", email = "engineering@planetariumhq.com" }]
-name = "toolbelt"
+name = "app"
 requires-python = ">=3.9"
 readme = "README.md"
 dependencies = [
     "py7zr ~=0.20.0",
     "structlog >=16.1,<22.1",
     "boto3 ~=1.24",
-    "PyYAML ==6.0",
     "requests ==2.26.0",
     "typer[all] ~=0.6.1",
     "python-dotenv ~=0.19",
-    "ruamel.yaml ~=0.17.21"
 ]
 dynamic = ["version", "description"]
 
@@ -39,7 +37,7 @@ include = ["toolbelt/*"]
 exclude = [".env.sample", ".vscode/*", "tests/*", "scripts/*"]
 
 [tool.flit.module]
-name = "toolbelt"
+name = "app"
 
 [tool.black]
 line-length = 88

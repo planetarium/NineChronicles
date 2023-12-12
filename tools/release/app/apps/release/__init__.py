@@ -2,7 +2,7 @@ from typing import Optional
 
 import typer
 
-from toolbelt.utils.typer import network_arg, platforms_arg
+from app.utils.typer import network_arg, platforms_arg
 
 from .release_player import release as release_player
 from .update_latest_metadata import update as update_latest_metadata
@@ -19,11 +19,11 @@ def convert_version(version):
 def player(
     commit_hash: str,
     version: str,
+    binary_path: str,
     network: str = network_arg,
     platform: str = platforms_arg,
     signing: bool = False,
     slack_channel: Optional[str] = None,
-    run_id: Optional[str] = None,
 ):
     converted_version = convert_version(version)
 
@@ -33,8 +33,8 @@ def player(
         converted_version,
         network,  # type:ignore
         signing,
+        binary_path,
         slack_channel,
-        run_id,
     )
 
 

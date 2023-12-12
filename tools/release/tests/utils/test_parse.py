@@ -2,8 +2,8 @@ from random import random
 
 import pytest
 
-from toolbelt.exceptions import TagNotFoundError
-from toolbelt.utils.parse import latest_tag
+from app.exceptions import TagNotFoundError
+from app.utils.parse import latest_tag
 
 
 def create_tag(name: str):

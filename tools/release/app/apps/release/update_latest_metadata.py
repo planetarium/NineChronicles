@@ -1,10 +1,10 @@
 from typing import Optional
 
 import structlog
-from toolbelt.client import SlackClient
-from toolbelt.config import config
+from app.client import SlackClient
+from app.config import config
 
-from toolbelt.manager.latest_metadata_manager import LatestMetadataManager
+from app.manager.latest_metadata_manager import LatestMetadataManager
 
 logger = structlog.get_logger(__name__)
 

@@ -3,7 +3,7 @@ from datetime import datetime
 
 import structlog
 
-from toolbelt.types import Network
+from app.types import Network
 
 from .cf_hosted_file_manager import CFHostedFileManager
 from .constants import PLAYER_VERSION_FILE_NAME

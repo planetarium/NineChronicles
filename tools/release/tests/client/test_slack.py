@@ -2,8 +2,8 @@ import pytest
 
 from tests.path import *
 from tests.testdata import read_file_as_json
-from toolbelt.client import SlackClient
-from toolbelt.exceptions import ResponseError
+from app.client import SlackClient
+from app.exceptions import ResponseError
 
 
 def test_send_msg_success(requests_mock):

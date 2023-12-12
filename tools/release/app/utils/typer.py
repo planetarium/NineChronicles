@@ -2,7 +2,7 @@ from typing import get_args
 
 import typer
 
-from toolbelt.types import Network, Platforms
+from app.types import Network, Platforms
 
 
 def version_validation(ctx: typer.Context, p: typer.CallbackParam, v: str):

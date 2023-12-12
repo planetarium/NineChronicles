@@ -6,13 +6,13 @@ import requests
 import structlog
 from botocore.exceptions import ClientError
 
-from toolbelt.client.new_aws import (
+from app.client.new_aws import (
     DOWNLOAD_DISTRIBUTION_ID,
     RELEASE_DISTRIBUTION_ID,
     CFClient,
     S3Client,
 )
-from toolbelt.constants import RELEASE_BASE_URL, RELEASE_BUCKET
+from app.constants import RELEASE_BASE_URL, RELEASE_BUCKET
 
 logger = structlog.get_logger(__name__)
 

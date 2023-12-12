@@ -4,8 +4,8 @@ from typing import Any, Iterator, Literal, Optional, Tuple
 
 import requests
 
-from toolbelt.client.session import BaseUrlSession
-from toolbelt.config import config
+from app.client.session import BaseUrlSession
+from app.config import config
 
 GITHUB_BASE_URL = "https://api.github.com"
 WORKFLOW_STATUS = Literal[
