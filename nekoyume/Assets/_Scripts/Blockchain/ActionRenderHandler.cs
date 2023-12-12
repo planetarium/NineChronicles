@@ -1881,18 +1881,16 @@ namespace Nekoyume.Blockchain
                 return (eval, null, null);
             }
 
-            var avatarState =
-                StateGetter.GetAvatarState(eval.Action.AvatarAddress, eval.OutputState);
+            var avatarState = StateGetter.GetAvatarState(eval.Action.AvatarAddress, eval.OutputState);
             var randomSkillState = GetCrystalRandomSkillState(eval);
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+
             return (eval, avatarState, randomSkillState);
         }
 
-        private async void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState) prepared)
+        private void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState) prepared)
         {
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
-
             var (eval, newAvatarState, newRandomSkillState) = prepared;
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
@@ -2024,6 +2022,8 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = StateGetter.GetAvatarState(avatarAddress, eval.OutputState);
             UpdateCurrentAvatarStateAsync(avatarState).Forget();
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
             return eval;
         }
 
@@ -2042,9 +2042,6 @@ namespace Nekoyume.Blockchain
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
             }
 
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
             Widget.Find<BattlePreparation>().UpdateInventoryView();
         }
 
@@ -2061,6 +2058,9 @@ namespace Nekoyume.Blockchain
             {
                 return eval;
             }
+
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -2086,7 +2086,7 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
-        private async void ResponseMimisbrunnrAsync(
+        private void ResponseMimisbrunnrAsync(
             ActionEvaluation<MimisbrunnrBattle> eval)
         {
 
@@ -2094,10 +2094,6 @@ namespace Nekoyume.Blockchain
             {
                 return;
             }
-
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
 
             var sheets = TableSheets.Instance;
             var stageRow = sheets.StageSheet[eval.Action.StageId];
@@ -2179,6 +2175,9 @@ namespace Nekoyume.Blockchain
                 UpdateAgentStateAsync(eval).Forget();
             }
 
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.Stage.onEnterToStageEnd
@@ -2200,17 +2199,13 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
-        private async void ResponseEventDungeonBattleAsync(
+        private void ResponseEventDungeonBattleAsync(
             ActionEvaluation<EventDungeonBattle> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
                 return;
             }
-
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
 
             var playCount = Action.EventDungeonBattle.PlayCount;
             // NOTE: This is a temporary solution. The formula is not yet decided.
@@ -2686,6 +2681,8 @@ namespace Nekoyume.Blockchain
             ActionEvaluation<JoinArena> eval)
         {
             UpdateCrystalBalance(eval);
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Arena);
             return eval;
         }
 
@@ -2705,10 +2702,6 @@ namespace Nekoyume.Blockchain
                     arenaJoin.OnRenderJoinArena(eval);
                 }
             }
-
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Arena),
-                States.Instance.UpdateRuneSlotStates(BattleType.Arena));
 
             var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(
                 Game.Game.instance.Agent.BlockIndex);
@@ -2976,6 +2969,8 @@ namespace Nekoyume.Blockchain
             }
 
             UpdateCrystalBalance(eval);
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Raid);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -3007,10 +3002,6 @@ namespace Nekoyume.Blockchain
                 Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
                 return;
             }
-
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Raid),
-                States.Instance.UpdateRuneSlotStates(BattleType.Raid));
 
             var worldBoss = Widget.Find<WorldBoss>();
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;

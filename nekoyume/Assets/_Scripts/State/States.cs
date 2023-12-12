@@ -264,21 +264,6 @@ namespace Nekoyume.State
             Event.OnUpdateRuneState.Invoke();
         }
 
-        public async Task UpdateRuneSlotStates(BattleType battleType)
-        {
-            var avatarAddress = CurrentAvatarState.address;
-            var address = RuneSlotState.DeriveAddress(avatarAddress, battleType);
-            var value = await Game.Game.instance.Agent.GetStateAsync(address);
-            if (value is List list)
-            {
-                var slotState = new RuneSlotState(list);
-                CurrentRuneSlotStates[slotState.BattleType] = slotState;
-                var slotIndex = AvatarStates.FirstOrDefault(x =>
-                    x.Value.address == avatarAddress).Key;
-                RuneSlotStates[slotIndex][battleType] = slotState;
-            }
-        }
-
         public void UpdateRuneSlotState(RuneSlotState slotState)
         {
             var slotIndex = AvatarStates
@@ -374,22 +359,6 @@ namespace Nekoyume.State
                     var checkedState = GetVerifiedItemSlotState(slotState, avatarState);
                     ItemSlotStates[slotIndex][checkedState.BattleType] = checkedState;
                 }
-            }
-        }
-
-        public async Task UpdateItemSlotStates(BattleType battleType)
-        {
-            var avatarAddress = CurrentAvatarState.address;
-            var address = ItemSlotState.DeriveAddress(avatarAddress, battleType);
-            var value = await Game.Game.instance.Agent.GetStateAsync(address);
-            if (value is List list)
-            {
-                var slotState = new ItemSlotState(list);
-                var checkedState = GetVerifiedItemSlotState(slotState, CurrentAvatarState);
-                CurrentItemSlotStates[checkedState.BattleType] = checkedState;
-                var slotIndex = AvatarStates.FirstOrDefault(x =>
-                    x.Value.address == avatarAddress).Key;
-                ItemSlotStates[slotIndex][battleType] = checkedState;
             }
         }
 
