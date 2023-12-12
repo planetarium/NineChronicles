@@ -198,6 +198,12 @@ namespace Nekoyume.State
             }
         }
 
+        public void UpdateRuneStates(RuneState runeState)
+        {
+            RuneStates.RemoveAll(rune => rune.RuneId == runeState.RuneId);
+            RuneStates.Add(runeState);
+        }
+
         public async UniTask InitRuneSlotStates()
         {
             CurrentRuneSlotStates.Clear();
@@ -408,7 +414,7 @@ namespace Nekoyume.State
             return itemSlotState;
         }
 
-        public async Task<FungibleAssetValue?> SetRuneStoneBalance(int runeId)
+        public async Task<FungibleAssetValue?> UpdateRuneStoneBalance(int runeId)
         {
             var avatarAddress = CurrentAvatarState.address;
             var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;

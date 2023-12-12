@@ -228,10 +228,9 @@ namespace Nekoyume.UI
                     random);
             }
 
-            await States.Instance.InitRuneStates();
             States.Instance.UpdateRuneSlotState();
 
-            var fav = await States.Instance.SetRuneStoneBalance(_selectedRuneItem.Row.Id);
+            var fav = await States.Instance.UpdateRuneStoneBalance(_selectedRuneItem.Row.Id);
             if (fav != null)
             {
                 _selectedRuneItem.RuneStone = (FungibleAssetValue)fav;
