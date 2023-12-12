@@ -18,17 +18,22 @@ namespace Nekoyume.UI.Module
             var rectTrans = GetComponent<RectTransform>();
             rectTrans.pivot = new Vector2(0, 1);
 
-            var children = new List<RectTransform>();
+            var sortbyProductOrderList = new List<IAPShopProductCellView>();
 
             for (int i = 0; i < transform.childCount; i++)
             {
                 if (transform.GetChild(i).gameObject.activeSelf)
                 {
-                    children.Add(transform.GetChild(i).GetComponent<RectTransform>());
+                    sortbyProductOrderList.Add(transform.GetChild(i).GetComponent<IAPShopProductCellView>());
                 }
             }
+            sortbyProductOrderList.Sort(Compare);
 
-            children.Sort(Compare);
+            var children = new List<RectTransform>();
+            foreach (var item in sortbyProductOrderList)
+            {
+                children.Add(item.GetComponent<RectTransform>());
+            }
 
             var lastPos = new Vector2(space, -space);
             var minHeight = 0f;
@@ -67,15 +72,11 @@ namespace Nekoyume.UI.Module
             rectTrans.sizeDelta = new Vector2(rectTrans.sizeDelta.x, Mathf.Abs(minHeight) + space);
         }
 
-        private static int Compare(RectTransform lhs, RectTransform rhs)
+        private static int Compare(IAPShopProductCellView lhs, IAPShopProductCellView rhs)
         {
             if (lhs == rhs) return 0;
-
-            var rectLhs = lhs.rect;
-            var rectRhs = rhs.rect;
-
-            if (rectLhs.height < rectRhs.height) return 1;
-            if (rectLhs.height > rectRhs.height) return -1;
+            if (lhs.GetOrder() > rhs.GetOrder()) return 1;
+            if (lhs.GetOrder() < rhs.GetOrder()) return -1;
             return 0;
         }
     }
