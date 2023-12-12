@@ -294,6 +294,10 @@ namespace Nekoyume.UI
 
             return result
                 .OrderByDescending(rune => Util.GetTickerGrade(rune.Currency.Ticker))
+                .ThenBy(rune =>
+                    RuneFrontHelper.TryGetRuneData(rune.Currency.Ticker, out var runeData)
+                        ? runeData.sortingOrder
+                        : 0)
                 .ToList();
         }
 
