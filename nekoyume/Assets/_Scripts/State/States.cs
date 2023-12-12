@@ -279,6 +279,14 @@ namespace Nekoyume.State
             }
         }
 
+        public void UpdateRuneSlotState(RuneSlotState slotState)
+        {
+            var slotIndex = AvatarStates
+                .FirstOrDefault(x => x.Value.address == CurrentAvatarState.address).Key;
+            CurrentRuneSlotStates[slotState.BattleType] = slotState;
+            RuneSlotStates[slotIndex][slotState.BattleType] = slotState;
+        }
+
         public async UniTask InitItemSlotStates()
         {
             CurrentItemSlotStates.Clear();
@@ -383,6 +391,15 @@ namespace Nekoyume.State
                     x.Value.address == avatarAddress).Key;
                 ItemSlotStates[slotIndex][battleType] = checkedState;
             }
+        }
+
+        public void UpdateItemSlotState(ItemSlotState slotState)
+        {
+            var slotIndex = AvatarStates
+                .FirstOrDefault(x => x.Value.address == CurrentAvatarState.address).Key;
+            var checkedState = GetVerifiedItemSlotState(slotState, CurrentAvatarState);
+            CurrentItemSlotStates[checkedState.BattleType] = checkedState;
+            ItemSlotStates[slotIndex][checkedState.BattleType] = checkedState;
         }
 
         private static ItemSlotState GetVerifiedItemSlotState(

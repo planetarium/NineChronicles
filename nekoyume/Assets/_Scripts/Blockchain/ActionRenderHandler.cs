@@ -23,7 +23,6 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Lib9c;
 using Lib9c.Renderers;
-using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
@@ -554,6 +553,8 @@ namespace Nekoyume.Blockchain
 
             _actionRenderer.EveryRender<BattleArena>()
                 .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOn(Scheduler.ThreadPool)
+                .Select(PrepareBattleArena)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBattleArenaAsync)
                 .AddTo(_disposables);
@@ -2729,6 +2730,14 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        private static ActionEvaluation<BattleArena> PrepareBattleArena(
+            ActionEvaluation<BattleArena> eval)
+        {
+            UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Arena);
+            return eval;
+        }
+
         private async void ResponseBattleArenaAsync(ActionEvaluation<BattleArena> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
@@ -2750,9 +2759,6 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Arena),
-                States.Instance.UpdateRuneSlotStates(BattleType.Arena));
             // NOTE: Start cache some arena info which will be used after battle ends.
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             RxProps.ArenaInformationOrderedWithScore.UpdateAsync().Forget();
