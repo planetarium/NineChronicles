@@ -92,9 +92,9 @@ namespace Nekoyume.UI
             _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(quote));
         }
 
-        public void SetItemMaterial(Item item, bool isConsumable = false)
+        public void SetItemMaterial(Item item)
         {
-            speechBubble.SetItemMaterial(item, isConsumable);
+            speechBubble.SetItemMaterial(item);
         }
 
         public void SetCurrency(long ncg, long crystal)

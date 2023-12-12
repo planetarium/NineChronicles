@@ -235,5 +235,15 @@ namespace Nekoyume.UI.Module
 
             return true;
         }
+
+        public int GetOrder()
+        {
+            if(_data == null)
+            {
+                return 0;
+            }
+
+            return _data.Order;
+        }
     }
 }

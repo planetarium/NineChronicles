@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
-using Nekoyume.Model.Stat;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Common;

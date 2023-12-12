@@ -25,11 +25,8 @@ namespace Nekoyume.UI.Module
             LoadingHelper.Summon.Subscribe(tuple =>
             {
                 var summoning = tuple != null;
-                var state = summoning
-                    ? State.Disabled
-                    : State.Normal;
+                Interactable = !summoning;
 
-                SetState(state);
                 var loading = false;
                 if (summoning)
                 {
@@ -56,6 +53,7 @@ namespace Nekoyume.UI.Module
             var costType = (CostType)summonRow.CostMaterial;
             var cost = summonRow.CostMaterialCount * summonCount;
 
+            Interactable = LoadingHelper.Summon.Value == null;
             SetCost(costType, cost);
             OnClickSubject.Subscribe(state =>
             {
