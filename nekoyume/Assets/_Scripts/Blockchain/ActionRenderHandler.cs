@@ -2972,6 +2972,22 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
 
+            var avatarAddress = eval.Action.AvatarAddress;
+            var runeAddresses = Game.Game.instance.TableSheets.RuneListSheet.Values
+                .Select(x => RuneState.DeriveAddress(avatarAddress, x.Id)).ToList();
+            var values = StateGetter.GetStates(runeAddresses, eval.OutputState);
+
+            var runeStates = new List<RuneState>();
+            foreach (var value in values)
+            {
+                if (value is List list)
+                {
+                    runeStates.Add(new RuneState(list));
+                }
+            }
+
+            States.Instance.UpdateRuneStates(runeStates);
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.RaidStage.OnBattleEnded
@@ -3051,7 +3067,6 @@ namespace Nekoyume.Blockchain
 
             await WorldBossStates.Set(avatarAddress);
             await States.Instance.InitRuneStoneBalance();
-            await States.Instance.InitRuneStates();
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)
@@ -3124,10 +3139,11 @@ namespace Nekoyume.Blockchain
             var action = eval.Action;
             var runeAddr = RuneState.DeriveAddress(action.AvatarAddress, action.RuneId);
 
-            var rawRuneState = StateGetter.GetState(runeAddr, eval.OutputState);
-            if (rawRuneState is List list)
+            var value = StateGetter.GetState(runeAddr, eval.OutputState);
+            if (value is List list)
             {
-                States.Instance.UpdateRuneStates(new RuneState(list));
+                var runeState = new RuneState(list);
+                States.Instance.UpdateRuneState(runeState);
             }
 
             UpdateCrystalBalance(eval);

@@ -198,7 +198,13 @@ namespace Nekoyume.State
             }
         }
 
-        public void UpdateRuneStates(RuneState runeState)
+        public void UpdateRuneStates(List<RuneState> runeStates)
+        {
+            RuneStates.Clear();
+            RuneStates.AddRange(runeStates);
+        }
+
+        public void UpdateRuneState(RuneState runeState)
         {
             RuneStates.RemoveAll(rune => rune.RuneId == runeState.RuneId);
             RuneStates.Add(runeState);
