@@ -40,10 +40,10 @@ namespace Nekoyume.UI
         public SimpleItemView ItemView => itemView;
         public Image RuneImage => runeImage;
 
-        public void SetItemMaterial(Item item, bool isConsumable)
+        public void SetItemMaterial(Item item)
         {
             Item = item;
-            itemView.SetData(item, isConsumable);
+            itemView.SetData(item);
 
             _showItemView = true;
             _showNCGView = false;

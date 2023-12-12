@@ -648,7 +648,7 @@ namespace Nekoyume.UI
             consumableSubRecipeView.UpdateView();
             ActionManager.Instance.CombinationConsumable(recipeInfo, slotIndex).Subscribe();
 
-            StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
+            StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex));
         }
 
         private void EventConsumableItemCraftsAction(SubRecipeView.RecipeInfo recipeInfo)
@@ -690,8 +690,7 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoCombineNPCAnimation(
                 consumable,
-                requiredBlockIndex,
-                true));
+                requiredBlockIndex));
         }
 
         private void EventMaterialItemCraftsAction(SubRecipeView.RecipeInfo recipeInfo)
@@ -721,12 +720,11 @@ namespace Nekoyume.UI
 
         private IEnumerator CoCombineNPCAnimation(
             ItemBase itemBase,
-            long blockIndex,
-            bool isConsumable = false)
+            long blockIndex)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
-            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
             loadingScreen.SetCloseAction(null);
             loadingScreen.OnDisappear = OnNPCDisappear;
             canvasGroup.interactable = false;

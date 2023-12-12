@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Lib9c;
 using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Crypto;
@@ -293,6 +294,10 @@ namespace Nekoyume.UI
 
             return result
                 .OrderByDescending(rune => Util.GetTickerGrade(rune.Currency.Ticker))
+                .ThenBy(rune =>
+                    RuneFrontHelper.TryGetRuneData(rune.Currency.Ticker, out var runeData)
+                        ? runeData.sortingOrder
+                        : 0)
                 .ToList();
         }
 
@@ -327,15 +332,16 @@ namespace Nekoyume.UI
             var loadingScreen = Find<CombinationLoadingScreen>();
             IEnumerator CoChangeItem()
             {
+                var equipmentRecipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
                 while (loadingScreen.isActiveAndEnabled)
                 {
                     foreach (var recipe in recipes)
                     {
-                        loadingScreen.SpeechBubbleWithItem.SetItemMaterial(
-                            new Item(ItemFactory.CreateItem(
-                                Game.Game.instance.TableSheets.EquipmentItemRecipeSheet[recipe]
-                                    .GetResultEquipmentItemRow(),
-                                new ActionRenderHandler.LocalRandom(0))), false);
+                        var equipment = ItemFactory.CreateItem(
+                            equipmentRecipeSheet[recipe].GetResultEquipmentItemRow(),
+                            new ActionRenderHandler.LocalRandom(0));
+                        loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(equipment));
+
                         yield return new WaitForSeconds(.1f);
                     }
                 }
@@ -357,16 +363,14 @@ namespace Nekoyume.UI
             var loadingScreen = Find<CombinationLoadingScreen>();
             IEnumerator CoChangeItem()
             {
+                var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
                 while (loadingScreen.isActiveAndEnabled)
                 {
                     foreach (var recipe in recipes)
                     {
-                        if (!RuneFrontHelper.TryGetRuneIcon(recipe, out var fav))
-                        {
-                            continue;
-                        }
-
-                        loadingScreen.SpeechBubbleWithItem.SetRune(fav);
+                        var fav = new FungibleAssetValue(
+                            Currencies.GetRune(runeSheet[recipe].Ticker), 1, 0);
+                        loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(fav));
                         yield return new WaitForSeconds(.1f);
                     }
                 }

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.L10n;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -130,11 +132,33 @@ namespace Nekoyume.Helper
 
         public static string GetRuneValueString(RuneOptionSheet.Row.RuneOptionInfo option)
         {
+            var tableSheets = Game.Game.instance.TableSheets;
+            if (tableSheets.SkillActionBuffSheet.TryGetValue(option.SkillId,
+                    out var skillActionBuffRow))
+            {
+                var buffIds = skillActionBuffRow.BuffIds;
+                var isVampiric = tableSheets.ActionBuffSheet.Any(tuple =>
+                    buffIds.Contains(tuple.Key) &&
+                    tuple.Value.ActionBuffType == ActionBuffType.Vampiric);
+                if (isVampiric)
+                {
+                    // value = 3400 -> "34%", 3444 -> "34.44%"
+                    return $"{Math.Round(option.SkillValue / 100, 2)}%";
+                }
+
+                var isStun = tableSheets.ActionBuffSheet.Any(tuple =>
+                    buffIds.Contains(tuple.Key) &&
+                    tuple.Value.ActionBuffType == ActionBuffType.Stun);
+                if (isStun)
+                {
+                    return "100%";
+                }
+            }
+
             var isPercent = option.SkillValueType == StatModifier.OperationType.Percentage;
             var curPower = isPercent ? option.SkillValue * 100 : option.SkillValue;
             string valueString;
 
-            var tableSheets = Game.Game.instance.TableSheets;
             if (tableSheets.SkillSheet.TryGetValue(option.SkillId, out var skillRow) &&
                 tableSheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow) &&
                 tableSheets.StatBuffSheet.TryGetValue(skillBuffRow.BuffIds.First(), out var buffRow))
