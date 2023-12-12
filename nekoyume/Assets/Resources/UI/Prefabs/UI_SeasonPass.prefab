@@ -311,7 +311,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 13
-  l10nKey: 
+  l10nKey: UI_SEASONPASS_BONUS_REWARD_INFO
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -605,8 +605,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -7, y: 32.5}
-  m_SizeDelta: {x: -160, y: 10}
+  m_AnchoredPosition: {x: -81.1499, y: 32.5}
+  m_SizeDelta: {x: -308.2998, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &118768876928149600
 CanvasRenderer:
@@ -5942,8 +5942,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3896485022891584367}
   m_HandleRect: {fileID: 2405230519495336861}
   m_Direction: 0
-  m_Value: 0.66666675
-  m_Size: 0.27561414
+  m_Value: 1
+  m_Size: 0.26285714
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6224,7 +6224,6 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   receiveBtn: {fileID: 5686261164877829650}
-  lastRewardAnim: {fileID: 1898564775959435394}
   levelText: {fileID: 6960089235252828786}
   remainingText: {fileID: 5314810726745290908}
   expText: {fileID: 5110198259043094207}
@@ -6260,7 +6259,7 @@ MonoBehaviour:
   - {fileID: 2930441761252732061}
   - {fileID: 2076954090744584067}
   lineImage: {fileID: 1147658861157065791}
-  lastRewardCell: {fileID: 3096717548364766336}
+  lastRewardCell: {fileID: 6808539509234775430}
   rewardCellScrollbar: {fileID: 7662404699307306602}
   expLineImage: {fileID: 6084632217890695975}
   premiumIcon: {fileID: 5283041761355611675}
@@ -7774,7 +7773,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 13
-  l10nKey: 
+  l10nKey: UI_SEASONPASS_BONUS_REWARD
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -15425,8 +15424,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 56.999756, y: 0}
-  m_SizeDelta: {x: 3338, y: 360}
+  m_AnchoredPosition: {x: -830.0001, y: 0}
+  m_SizeDelta: {x: 3500, y: 360}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8029291072304469993
 GameObject:
@@ -15676,10 +15675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf259c37dc00e144bb0e8a22e4a7017f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levels:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  levels: []
   levelNormal: {fileID: 0}
   levelLast: {fileID: 0}
   levelReceived: {fileID: 0}
@@ -15688,15 +15684,7 @@ MonoBehaviour:
     Light: {fileID: 1279262739321118232}
     ItemView: {fileID: 6011114395089592734}
     TooltipButton: {fileID: 3796555209841619843}
-  premiums:
-  - Root: {fileID: 0}
-    Light: {fileID: 0}
-    ItemView: {fileID: 0}
-    TooltipButton: {fileID: 0}
-  - Root: {fileID: 0}
-    Light: {fileID: 0}
-    ItemView: {fileID: 0}
-    TooltipButton: {fileID: 0}
+  premiums: []
   Light: {fileID: 7187058944283325449}
   ReceiveBtn: {fileID: 5958896041618514020}
 --- !u!1 &8641997223032545585
@@ -17733,18 +17721,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0e42ee2c34e70f4d96fc2f58c308010, type: 3}
---- !u!114 &3096717548364766336 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3611812344208570427, guid: e0e42ee2c34e70f4d96fc2f58c308010,
-    type: 3}
-  m_PrefabInstance: {fileID: 1794257861865120955}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf259c37dc00e144bb0e8a22e4a7017f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &5506618918908341444 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6092539889223862399, guid: e0e42ee2c34e70f4d96fc2f58c308010,
