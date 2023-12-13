@@ -15,11 +15,19 @@ namespace Nekoyume.UI.Module.Common
         [SerializeField]
         protected TextMeshProUGUI contentText;
 
-        private void Awake()
+        private void OnEnable()
         {
             if (disableWhenTouchScreen)
             {
                 StartCoroutine(CoUpdate());
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (disableWhenTouchScreen)
+            {
+                StopCoroutine(CoUpdate());
             }
         }
 
