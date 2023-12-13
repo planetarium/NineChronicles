@@ -19,8 +19,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private ConditionalButton receiveBtn;
         [SerializeField]
-        private Animator lastRewardAnim;
-        [SerializeField]
         private TextMeshProUGUI levelText;
         [SerializeField]
         private TextMeshProUGUI remainingText;
@@ -48,6 +46,7 @@ namespace Nekoyume.UI
         private bool isLastCellShow;
         private bool isPageEffectComplete;
         public const int SeasonPassMaxLevel = 30;
+        public const string MaxLevelString = "30";
         private int popupViewDelay = 1200;
 
         private const string SeasonPassCouragePopupViewd = "SeasonPassCouragePopupViewd";
@@ -63,18 +62,17 @@ namespace Nekoyume.UI
 
                 if (seasonPassInfo.Level >= SeasonPassMaxLevel)
                 {
-                    levelText.text = "MAX";
+                    levelText.text = MaxLevelString;
                     expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
                     expLineImage.fillAmount = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
-                    lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList[SeasonPassMaxLevel]);
                 }
                 else
                 {
                     levelText.text = seasonPassInfo.Level.ToString();
                     expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
                     expLineImage.fillAmount = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
-                    lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList[SeasonPassMaxLevel-1]);
                 }
+                lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList[SeasonPassMaxLevel]);
                 receiveBtn.Interactable = seasonPassInfo.Level > seasonPassInfo.LastNormalClaim
                     || (seasonPassInfo.IsPremium && seasonPassInfo.Level > seasonPassInfo.LastPremiumClaim);
 
@@ -188,7 +186,6 @@ namespace Nekoyume.UI
         public void PageEffect()
         {
             isPageEffectComplete = false;
-            lastRewardAnim.Play("SeasonPassLastReward@Close", -1, 1);
             isLastCellShow = false;
             rewardCellScrollbar.value = 0;
 
@@ -226,7 +223,7 @@ namespace Nekoyume.UI
         public float CalculateScrollerStartPosition()
         {
             var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
-            float totalScrollbarLength = 3338f;
+            float totalScrollbarLength = 3500f;
             float paddingLeft = 20f;
             float viewSize = rewardCellScrollbar.GetComponent<RectTransform>().rect.width;
             int currentLevel = Mathf.Max(0, seasonPassManager.AvatarInfo.Value.Level - 1);
@@ -238,32 +235,6 @@ namespace Nekoyume.UI
             float value = currentPosition / usableLength;
 
             return Mathf.Min(value, 1);
-        }
-
-
-        protected override void Update()
-        {
-            base.Update();
-
-            if (!isPageEffectComplete)
-                return;
-
-            if(rewardCellScrollbar.value > 0.95f && Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.LastNormalClaim < SeasonPassMaxLevel)
-            {
-                if (isLastCellShow)
-                {
-                    isLastCellShow = false;
-                    lastRewardAnim.Play("SeasonPassLastReward@Close", -1);
-                }
-            }
-            else
-            {
-                if (!isLastCellShow)
-                {
-                    lastRewardAnim.Play("SeasonPassLastReward@Show", -1);
-                    isLastCellShow = true;
-                }
-            }
         }
 
         public void ReceiveAllBtn()
