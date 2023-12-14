@@ -73,11 +73,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button videoSkipButton;
 
         [SerializeField] private SelectPlanetPopup selectPlanetPopup;
-
-        [SerializeField] private GameObject planetAccountInfosPopup;
-        [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
-        [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
-        [SerializeField] private PlanetAccountInfoScroll planetAccountInfoScroll;
+        [SerializeField] private PlanetAccountInfosPopup planetAccountInfosPopup;
 
         private const int GuideCount = 3;
         private const int GuideStartIndex = 1;
@@ -200,7 +196,7 @@ namespace Nekoyume.UI
                         tuple.selectedPlanetId);
                 })
                 .AddTo(gameObject);
-            planetAccountInfoScroll.OnSelectedPlanetSubject.Subscribe(tuple =>
+            planetAccountInfosPopup.OnSelectedPlanetSubject.Subscribe(tuple =>
             {
                 // NOTE: Do not handle the PlanetContext.Error now.
                 _planetContext = PlanetSelector.SelectPlanetById(
@@ -209,7 +205,6 @@ namespace Nekoyume.UI
                 _planetContext = PlanetSelector.SelectPlanetAccountInfo(
                     _planetContext,
                     tuple.selectedPlanetId);
-                planetAccountInfosPopup.SetActive(false);
             }).AddTo(gameObject);
             PlanetSelector.SelectedPlanetInfoSubject
                 .Subscribe(tuple => ApplySelectedPlanetInfo(tuple.planetContext))
@@ -235,11 +230,7 @@ namespace Nekoyume.UI
             yourPlanetText.text = L10nManager.Localize("UI_YOUR_PLANET");
             // startButton
             selectPlanetPopup.ApplyL10n();
-            planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
-            planetAccountInfosDescriptionText.text =
-                L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
-            // planetAccountInfoLeft.ApplyL10n();
-            // planetAccountInfoRight.ApplyL10n();
+            planetAccountInfosPopup.ApplyL10n();
         }
 
         public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
@@ -328,11 +319,10 @@ namespace Nekoyume.UI
                 Debug.LogError("[IntroScreen] planetContext.PlanetAccountInfos is null");
             }
 
-            planetAccountInfoScroll.SetData(
+            planetAccountInfosPopup.Show(
                 planetContext.PlanetRegistry,
                 planetContext.PlanetAccountInfos,
                 needToImportKey);
-            planetAccountInfosPopup.SetActive(true);
             startButtonContainer.SetActive(false);
         }
 
