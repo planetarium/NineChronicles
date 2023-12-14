@@ -290,12 +290,12 @@ namespace Nekoyume.UI.Module
                             : L10nManager.Localize("UI_RUNE_SLOT_OPEN_SKILL");
                         if (!enough)
                         {
-                            content = L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                            content = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
                         }
 
                         attractMessage = enough
                             ? L10nManager.Localize("UI_YES")
-                            : L10nManager.Localize("UI_SHOP");
+                            : L10nManager.Localize("UI_GO_GRINDING");
                         Widget.Find<PaymentPopup>().ShowAttract(
                             CostType.Crystal,
                             cost,
@@ -309,7 +309,19 @@ namespace Nekoyume.UI.Module
                                 }
                                 else
                                 {
-                                    GoToMarket();
+
+                                    if (Game.Game.instance.IsInWorld)
+                                    {
+                                        return;
+                                    }
+
+                                    Widget.Find<AvatarInfoPopup>().CloseWithOtherWidgets();
+                                    Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                                    Widget.Find<Menu>().Close();
+                                    Widget.Find<WorldMap>().Close();
+                                    Widget.Find<StageInformation>().Close();
+                                    Widget.Find<BattlePreparation>().Close();
+                                    Widget.Find<Grind>().Show();
                                 }
                             });
                         break;
