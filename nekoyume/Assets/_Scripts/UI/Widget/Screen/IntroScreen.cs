@@ -19,6 +19,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Multiplanetary;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Multiplanetary;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
@@ -71,10 +72,7 @@ namespace Nekoyume.UI
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
 
-        [SerializeField] private GameObject selectPlanetPopup;
-        [SerializeField] private Button selectPlanetPopupBgButton;
-        [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
-        [SerializeField] private SelectPlanetScroll selectPlanetScroll;
+        [SerializeField] private SelectPlanetPopup selectPlanetPopup;
 
         [SerializeField] private GameObject planetAccountInfosPopup;
         [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
@@ -192,20 +190,15 @@ namespace Nekoyume.UI
                 _guideIndex++;
                 ShowQrCodeGuide();
             });
-            yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
-            selectPlanetPopupBgButton.onClick.AddListener(() => selectPlanetPopup.SetActive(false));
-            selectPlanetScroll.OnChangeSelectedPlanetSubject
+            yourPlanetButton.onClick.AddListener(selectPlanetPopup.Show);
+            selectPlanetPopup.OnChangeSelectedPlanetSubject
                 .Subscribe(tuple =>
                 {
                     // NOTE: Do not handle the PlanetContext.Error now.
                     _planetContext = PlanetSelector.SelectPlanetById(
                         _planetContext,
                         tuple.selectedPlanetId);
-                    selectPlanetPopup.SetActive(false);
                 })
-                .AddTo(gameObject);
-            selectPlanetScroll.OnClickSelectedPlanetSubject
-                .Subscribe(_ => selectPlanetPopup.SetActive(false))
                 .AddTo(gameObject);
             planetAccountInfoScroll.OnSelectedPlanetSubject.Subscribe(tuple =>
             {
@@ -241,7 +234,7 @@ namespace Nekoyume.UI
         {
             yourPlanetText.text = L10nManager.Localize("UI_YOUR_PLANET");
             // startButton
-            selectPlanetPopupTitleText.text = L10nManager.Localize("UI_SELECT_YOUR_PLANET");
+            selectPlanetPopup.ApplyL10n();
             planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
             planetAccountInfosDescriptionText.text =
                 L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
@@ -448,7 +441,7 @@ namespace Nekoyume.UI
         private void ApplyPlanetContext(PlanetContext planetContext)
         {
             Debug.Log("[IntroScreen] ApplyPlanetRegistry invoked.");
-            selectPlanetScroll.SetData(
+            selectPlanetPopup.SetData(
                 planetContext?.PlanetRegistry,
                 planetContext?.SelectedPlanetInfo?.ID);
 
