@@ -57,6 +57,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI lockPrice;
 
+        [SerializeField]
+        private Image priceIconImage;
+
         private Action<RuneSlotView> _onClick;
         private Action<RuneSlotView> _onDoubleClick;
         private EventTrigger _eventTrigger;
@@ -132,12 +135,25 @@ namespace Nekoyume.UI.Module
         private void UpdateLockState(RuneSlot runeSlot)
         {
             lockObject.SetActive(runeSlot.IsLock);
-            if(runeSlot.IsLock && runeSlot.RuneSlotType == RuneSlotType.Ncg)
+            if (runeSlot.IsLock && runeSlot.RuneSlotType == RuneSlotType.Ncg)
             {
                 var cost = runeSlot.RuneType == RuneType.Stat
                     ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
                     : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
                 lockPrice.text = $"{cost}";
+                priceIconImage.sprite = SpriteHelper.GetFavIcon("NCG");
+                if (lockPriceObject != null)
+                {
+                    lockPriceObject.SetActive(true);
+                }
+            }
+            else if (runeSlot.IsLock && runeSlot.RuneSlotType == RuneSlotType.Crystal)
+            {
+                var cost = runeSlot.RuneType == RuneType.Stat
+                    ? States.Instance.GameConfigState.RuneStatSlotCrystalUnlockCost
+                    : States.Instance.GameConfigState.RuneSkillSlotCrystalUnlockCost;
+                lockPrice.text = $"{cost}";
+                priceIconImage.sprite = SpriteHelper.GetFavIcon("CRYSTAL");
                 if (lockPriceObject != null)
                 {
                     lockPriceObject.SetActive(true);

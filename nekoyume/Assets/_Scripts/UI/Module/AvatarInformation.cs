@@ -279,6 +279,40 @@ namespace Nekoyume.UI.Module
                                 }
                             });
                         break;
+                    case RuneSlotType.Crystal:
+                        cost = slot.RuneType == RuneType.Stat
+                            ? States.Instance.GameConfigState.RuneStatSlotCrystalUnlockCost
+                            : States.Instance.GameConfigState.RuneSkillSlotCrystalUnlockCost;
+                        var balance = States.Instance.CrystalBalance;
+                        enough = balance.MajorUnit >= cost;
+                        content = slot.RuneType == RuneType.Stat
+                            ? L10nManager.Localize("UI_RUNE_SLOT_OPEN_STAT")
+                            : L10nManager.Localize("UI_RUNE_SLOT_OPEN_SKILL");
+                        if (!enough)
+                        {
+                            content = L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                        }
+
+                        attractMessage = enough
+                            ? L10nManager.Localize("UI_YES")
+                            : L10nManager.Localize("UI_SHOP");
+                        Widget.Find<PaymentPopup>().ShowAttract(
+                            CostType.Crystal,
+                            cost,
+                            content,
+                            attractMessage,
+                            () =>
+                            {
+                                if (enough)
+                                {
+                                    ActionManager.Instance.UnlockRuneSlot(slot.RuneSlot.Index);
+                                }
+                                else
+                                {
+                                    GoToMarket();
+                                }
+                            });
+                        break;
                     case RuneSlotType.Stake:
                         OneLineSystem.Push(
                             MailType.System,

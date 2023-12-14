@@ -6244,13 +6244,11 @@ MonoBehaviour:
   itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
   gradeImage: {fileID: 5705560442767631031}
   gradeHsv: {fileID: 8065059413991145591}
-  wearableImage: {fileID: 4454662732196197783}
-  upNotification: {fileID: 0}
-  downNotification: {fileID: 0}
   lockObject: {fileID: 8087711036609605456}
   lockPriceObject: {fileID: 223281762726544092}
   loadingObject: {fileID: 7078802442845004219}
   lockPrice: {fileID: 7636199112699473830}
+  priceIconImage: {fileID: 6713215919070396344}
 --- !u!1 &4744570138266086925
 GameObject:
   m_ObjectHideFlags: 0
