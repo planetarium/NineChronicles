@@ -229,7 +229,6 @@ namespace Nekoyume
         public string GetSeassonPassPopupViewKey()
         {
             var result = "SeasonPassCouragePopupViewd" + Game.Game.instance.States.CurrentAvatarState.address.ToHex() + "SeassonPassID" + CurrentSeasonPassData.Id;
-            Debug.Log($"GetSeassonPassPopupViewKey {result}");
             return result;
         }
 
