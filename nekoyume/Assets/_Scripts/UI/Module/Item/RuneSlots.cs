@@ -17,11 +17,7 @@ namespace Nekoyume.UI.Module
             System.Action<RuneSlotView> onClick,
             System.Action<RuneSlotView> onDoubleClick)
         {
-            var orderedSlotStates = runeSlotStates
-                .Where(runeSlot => runeSlot.RuneSlotType != RuneSlotType.Stake)
-                .OrderBy(slot => slot.RuneType)
-                .ThenBy(slot => slot.RuneSlotType);
-            foreach (var (view, slot) in slots.Zip(orderedSlotStates, (view, slot) => (view, slot)))
+            foreach (var (view, slot) in GetZippedRuneSlotViewsWithRuneSlotStates(slots, runeSlotStates))
             {
                 view.Set(slot, onClick, onDoubleClick);
             }
@@ -32,14 +28,7 @@ namespace Nekoyume.UI.Module
             List<RuneState> runeStates,
             System.Action<RuneSlotView> onClick)
         {
-            var orderedSlotStates = runeSlotStates
-                .Where(runeSlot => runeSlot.RuneSlotType != RuneSlotType.Stake)
-                .OrderBy(slot => slot.RuneType)
-                .ThenBy(slot => slot.RuneSlotType);
-            foreach (var (view, slot) in slots.Zip(
-                         orderedSlotStates,
-                         (view, slot) => (view, slot))
-                    )
+            foreach (var (view, slot) in GetZippedRuneSlotViewsWithRuneSlotStates(slots, runeSlotStates))
             {
                 RuneState runeState = null;
                 if (slot.RuneId.HasValue)
@@ -49,6 +38,17 @@ namespace Nekoyume.UI.Module
 
                 view.Set(slot, runeState, onClick);
             }
+        }
+
+        private static List<(RuneSlotView, RuneSlot)> GetZippedRuneSlotViewsWithRuneSlotStates(
+            IEnumerable<RuneSlotView> slotViews,
+            IEnumerable<RuneSlot> runeSlotStates)
+        {
+            var orderedSlotStates = runeSlotStates
+                .Where(runeSlot => runeSlot.RuneSlotType != RuneSlotType.Stake)
+                .OrderBy(slot => slot.RuneType)
+                .ThenBy(slot => slot.RuneSlotType);
+            return slotViews.Zip(orderedSlotStates, (view, slot) => (view, slot)).ToList();
         }
     }
 }
