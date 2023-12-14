@@ -263,7 +263,8 @@ namespace Nekoyume.UI.Module
                         cost = isStatSlot
                             ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
                             : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
-                        notEnoughContent = L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                        notEnoughContent =
+                            L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
                         attractMessage = L10nManager.Localize("UI_SHOP");
                         onAttractWhenNotEnough = GoToMarket;
                         break;
@@ -288,11 +289,12 @@ namespace Nekoyume.UI.Module
                     costType,
                     cost,
                     enough ? enoughContent : notEnoughContent,
-                    L10nManager.Localize(enough ? "UI_YES" : attractMessage),
+                    enough ? L10nManager.Localize("UI_YES") : attractMessage,
                     enough
                         ? () =>
                         {
                             ActionManager.Instance.UnlockRuneSlot(slot.RuneSlot.Index);
+
                         }
                         : onAttractWhenNotEnough);
             }
