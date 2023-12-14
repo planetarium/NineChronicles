@@ -1666,6 +1666,7 @@ GameObject:
   - component: {fileID: 4473497534420736925}
   - component: {fileID: 2206376061323519399}
   - component: {fileID: 3332983043404061758}
+  - component: {fileID: 4265153306511441051}
   m_Layer: 5
   m_Name: Promotion
   m_TagString: Untagged
@@ -1770,7 +1771,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 1682bc2f57a63684aa69f0018015dbf0, type: 3}
   - languageType: 3
     sprite: {fileID: 21300000, guid: e7ed0c0a7935e254d911a15f13d3f529, type: 3}
+--- !u!114 &4265153306511441051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2963474701431197763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   season: 1
+  times: []
 --- !u!1 &3090404575607548929
 GameObject:
   m_ObjectHideFlags: 0
