@@ -57,6 +57,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI lockPrice;
 
+        [SerializeField]
+        private Image priceIconImage;
+
         private Action<RuneSlotView> _onClick;
         private Action<RuneSlotView> _onDoubleClick;
         private EventTrigger _eventTrigger;
@@ -131,24 +134,32 @@ namespace Nekoyume.UI.Module
 
         private void UpdateLockState(RuneSlot runeSlot)
         {
-            lockObject.SetActive(runeSlot.IsLock);
-            if(runeSlot.IsLock && runeSlot.RuneSlotType == RuneSlotType.Ncg)
+            var isLock = runeSlot.IsLock;
+            lockObject.SetActive(isLock);
+            if (isLock)
             {
-                var cost = runeSlot.RuneType == RuneType.Stat
-                    ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
-                    : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
+                var cost = 0;
+                if (runeSlot.RuneSlotType == RuneSlotType.Ncg)
+                {
+                    cost = runeSlot.RuneType == RuneType.Stat
+                        ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
+                        : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
+                    priceIconImage.sprite = SpriteHelper.GetFavIcon("NCG");
+                }
+                else if (runeSlot.RuneSlotType == RuneSlotType.Crystal)
+                {
+                    cost = runeSlot.RuneType == RuneType.Stat
+                        ? States.Instance.GameConfigState.RuneStatSlotCrystalUnlockCost
+                        : States.Instance.GameConfigState.RuneSkillSlotCrystalUnlockCost;
+                    priceIconImage.sprite = SpriteHelper.GetFavIcon("CRYSTAL");
+                }
+
                 lockPrice.text = $"{cost}";
-                if (lockPriceObject != null)
-                {
-                    lockPriceObject.SetActive(true);
-                }
             }
-            else
+
+            if (lockPriceObject != null)
             {
-                if (lockPriceObject != null)
-                {
-                    lockPriceObject.SetActive(false);
-                }
+                lockPriceObject.SetActive(isLock);
             }
         }
 
