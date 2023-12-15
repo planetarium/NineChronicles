@@ -3198,14 +3198,16 @@ namespace Nekoyume.Blockchain
         {
             LoadingHelper.PetEnhancement.Value = 0;
             var action = eval.Action;
+            var petId = action.PetId;
+            var targetLevel = action.TargetLevel;
 
-            if (States.Instance.PetStates.TryGetPetState(action.PetId, out _))
+            if (targetLevel > 1)
             {
-                Widget.Find<PetLevelUpResultScreen>().Show(action);
+                Widget.Find<PetLevelUpResultScreen>().Show(petId, targetLevel - 1, targetLevel);
             }
             else
             {
-                Widget.Find<PetSummonResultScreen>().Show(action.PetId);
+                Widget.Find<PetSummonResultScreen>().Show(petId);
             }
 
             Widget.Find<DccCollection>().UpdateView();
