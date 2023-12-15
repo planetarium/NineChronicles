@@ -127,12 +127,9 @@ namespace Nekoyume.UI
                     Debug.Log("[CodeReaderView] WebCamTexture is playing.");
                 }
 
-                if (_camTexture.videoVerticallyMirrored)
-                {
-                    var localScale = rawCamImage.rectTransform.localScale;
-                    localScale.y = -1;
-                    rawCamImage.rectTransform.localScale = localScale;
-                }
+                var localScale = rawCamImage.rectTransform.localScale;
+                localScale.y = _camTexture.videoVerticallyMirrored ? -1 : 1;
+                rawCamImage.rectTransform.localScale = localScale;
 
                 try
                 {
