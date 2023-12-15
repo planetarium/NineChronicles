@@ -66,13 +66,15 @@ namespace Nekoyume.UI
             base.Awake();
             CloseWidget = () =>
             {
-                Find<DccMain>().Show(true);
                 Close(true);
+
+#if UNITY_ANDROID || UNITY_IOS
+                Game.Event.OnRoomEnter.Invoke(true);
+#else
+                Find<DccMain>().Show(true);
+#endif
             };
-            backButton.onClick.AddListener(() =>
-            {
-                CloseWidget.Invoke();
-            });
+            backButton.onClick.AddListener(() => CloseWidget.Invoke());
             dccButton.onClick.AddListener(() =>
             {
                 Find<ConfirmConnectPopup>().ShowConnectDcc(true);
