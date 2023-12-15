@@ -11,6 +11,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
@@ -414,6 +415,40 @@ namespace Nekoyume.Blockchain
             {
                 Game.Game.instance.CachedStates[state.address] = state.Serialize();
             }
+        }
+
+        protected static void UpdateCurrentAvatarItemSlotState<T>(
+            ActionEvaluation<T> evaluation,
+            BattleType battleType) where T : ActionBase
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            var itemSlotState = StateGetter.GetItemSlotState(
+                avatarState.address,
+                battleType,
+                evaluation.OutputState);
+            States.Instance.UpdateItemSlotState(itemSlotState);
+        }
+
+        protected static void UpdateCurrentAvatarRuneSlotState<T>(
+            ActionEvaluation<T> evaluation,
+            BattleType battleType) where T : ActionBase
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            var runeSlotState = StateGetter.GetRuneSlotState(
+                avatarState.address,
+                battleType,
+                evaluation.OutputState);
+            States.Instance.UpdateRuneSlotState(runeSlotState);
         }
     }
 }

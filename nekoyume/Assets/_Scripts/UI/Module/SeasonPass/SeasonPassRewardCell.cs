@@ -206,12 +206,22 @@ namespace Nekoyume.UI.Module
                 return;
 
             bool isUnReceived = rewardSchema.Level > avatarInfo.LastNormalClaim && rewardSchema.Level <= avatarInfo.Level;
-            Light.SetActive(isUnReceived);
+            Light?.SetActive(isUnReceived);
             bool isUnReceivedPremium = (rewardSchema.Level > avatarInfo.LastPremiumClaim && avatarInfo.IsPremium && rewardSchema.Level <= avatarInfo.Level);
-            ReceiveBtn.gameObject.SetActive(isUnReceived || isUnReceivedPremium);
-            levelLast.SetActive(isUnReceived);
-            levelNormal.SetActive(rewardSchema.Level > avatarInfo.Level);
-            levelReceived.SetActive(rewardSchema.Level <= avatarInfo.LastNormalClaim);
+            ReceiveBtn?.gameObject.SetActive(isUnReceived || isUnReceivedPremium);
+
+            if(levelLast != null)
+            {
+                levelLast.SetActive(isUnReceived);
+            }
+            if(levelNormal != null)
+            {
+                levelNormal.SetActive(rewardSchema.Level > avatarInfo.Level);
+            }
+            if(levelReceived != null)
+            {
+                levelReceived.SetActive(rewardSchema.Level <= avatarInfo.LastNormalClaim);
+            }
         }
 
         public void SetData(SeasonPassServiceClient.RewardSchema reward)
@@ -220,7 +230,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var item in levels)
             {
-                item.text = rewardSchema.Level > SeasonPass.SeasonPassMaxLevel ? "MAX" : rewardSchema.Level.ToString();
+                item.text = rewardSchema.Level > SeasonPass.SeasonPassMaxLevel ? SeasonPass.MaxLevelString : rewardSchema.Level.ToString();
             }
 
             RefreshWithAvatarInfo(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);

@@ -318,14 +318,14 @@ namespace Nekoyume.UI
             return true;
         }
 
-        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase,
+        private IEnumerator CoCombineNPCAnimation(
+            ItemBase itemBase,
             long blockIndex,
-            System.Action action,
-            bool isConsumable = false)
+            System.Action action)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
-            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
             loadingScreen.SetCloseAction(action);
             Push();
             yield return new WaitForSeconds(.5f);
@@ -626,40 +626,29 @@ namespace Nekoyume.UI
                     var skillRow = itemOptionInfo.SkillOptions[skillIndex].skillRow;
                     var chanceText = $"<color=#FBF0B8>({itemOptionInfo.SkillOptions[skillIndex].chance}% > <color=#E3C32C>{skillChancesMin[skillIndex]}~{skillChancesMax[skillIndex]}%</color><sprite name=icon_Arrow>)</color>";
                     string valueText = string.Empty;
-                    switch (skillRow.SkillType)
-                    {
-                        case Nekoyume.Model.Skill.SkillType.Attack:
-                        case Nekoyume.Model.Skill.SkillType.Heal:
-                            valueText = $"<color=#FBF0B8>({itemOptionInfo.SkillOptions[skillIndex].power} > <color=#E3C32C>{skillPowersMin[skillIndex]}~{skillPowersMax[skillIndex]}</color><sprite name=icon_Arrow>)</color>";
-                            break;
-                        case Nekoyume.Model.Skill.SkillType.Buff:
-                        case Nekoyume.Model.Skill.SkillType.Debuff:
-                            var currentEffect = SkillExtensions.EffectToString(
-                                                            skillRow.Id,
-                                                            skillRow.SkillType,
-                                                            itemOptionInfo.SkillOptions[skillIndex].power,
-                                                            itemOptionInfo.SkillOptions[skillIndex].statPowerRatio,
-                                                            itemOptionInfo.SkillOptions[skillIndex].refStatType);
 
-                            var targetEffectMin = SkillExtensions.EffectToString(
-                                                            skillRow.Id,
-                                                            skillRow.SkillType,
-                                                            skillPowersMin[skillIndex],
-                                                            skillStatPowerRatioMin[skillIndex],
-                                                            itemOptionInfo.SkillOptions[skillIndex].refStatType);
+                    var currentEffect = SkillExtensions.EffectToString(
+                                skillRow.Id,
+                                skillRow.SkillType,
+                                itemOptionInfo.SkillOptions[skillIndex].power,
+                                itemOptionInfo.SkillOptions[skillIndex].statPowerRatio,
+                                itemOptionInfo.SkillOptions[skillIndex].refStatType);
 
-                            var targetEffectMax = SkillExtensions.EffectToString(
-                                                            skillRow.Id,
-                                                            skillRow.SkillType,
-                                                            skillPowersMax[skillIndex],
-                                                            skillStatPowerRatioMax[skillIndex],
-                                                            itemOptionInfo.SkillOptions[skillIndex].refStatType);
+                    var targetEffectMin = SkillExtensions.EffectToString(
+                                                    skillRow.Id,
+                                                    skillRow.SkillType,
+                                                    skillPowersMin[skillIndex],
+                                                    skillStatPowerRatioMin[skillIndex],
+                                                    itemOptionInfo.SkillOptions[skillIndex].refStatType);
 
-                            valueText = $"<color=#FBF0B8>({currentEffect} > <color=#E3C32C>{targetEffectMin.Replace("%", "")}~{targetEffectMax}</color><sprite name=icon_Arrow>)</color>";
-                            break;
-                        default:
-                            break;
-                    }
+                    var targetEffectMax = SkillExtensions.EffectToString(
+                                                    skillRow.Id,
+                                                    skillRow.SkillType,
+                                                    skillPowersMax[skillIndex],
+                                                    skillStatPowerRatioMax[skillIndex],
+                                                    itemOptionInfo.SkillOptions[skillIndex].refStatType);
+                    valueText = $"<color=#FBF0B8>({currentEffect} > <color=#E3C32C>{targetEffectMin.Replace("%", "")}~{targetEffectMax}</color><sprite name=icon_Arrow>)</color>";
+
                     skillViews[skillIndex].Set(skillRow.GetLocalizedName(), skillRow.SkillType, skillRow.Id, skillRow.Cooldown, chanceText, valueText);
                 }
             }

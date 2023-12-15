@@ -91,7 +91,7 @@ namespace Nekoyume.UI.Scroller
 
             if (fillWithNullToEmptyViewport)
             {
-                var cellCount = (int) (Scroller.ViewportSize / CellSize);
+                var cellCount = (int)(Scroller.ViewportSize / CellSize);
                 var addCount = math.max(0, cellCount - itemsSource.Count);
                 for (var i = 0; i < addCount; i++)
                 {
@@ -227,14 +227,6 @@ namespace Nekoyume.UI.Scroller
         {
             base.UpdateContents(items);
             Scroller.ScrollSensitivity = forcedScrollSensitivity;
-        }
-
-        // Polymorphic impletmentation of the base.AdjustCellIntervalAndScrollOffset() method.
-        protected void AdjustCellIntervalAndScrollOffset(float viewportSize)
-        {
-            var totalSize = viewportSize + (CellSize + spacing) * (1f + reuseCellMarginCount * 2f);
-            cellInterval = (CellSize + spacing) / totalSize;
-            scrollOffset = cellInterval * (1f + reuseCellMarginCount);
         }
 
         #endregion

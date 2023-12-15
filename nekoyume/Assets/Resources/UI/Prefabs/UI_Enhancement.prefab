@@ -5415,6 +5415,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1809601396883919381
 GameObject:
   m_ObjectHideFlags: 0
@@ -13879,6 +13883,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5135259199619505430
 GameObject:
   m_ObjectHideFlags: 0
@@ -14239,6 +14247,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5250069926294615964
 GameObject:
   m_ObjectHideFlags: 0
@@ -43739,6 +43751,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7628079640196123263
 GameObject:
   m_ObjectHideFlags: 0
@@ -44367,6 +44383,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7902607998580336042
 GameObject:
   m_ObjectHideFlags: 0
@@ -52947,3 +52967,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &3919546245534927445 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4709182046330643181, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 8592699407470438584}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3193903933376438127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3919546245534927445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  season: 0
+  times:
+  - beginDateTime: 2023-11-22T00:00:00
+    endDateTime: 2023-12-19T00:00:00

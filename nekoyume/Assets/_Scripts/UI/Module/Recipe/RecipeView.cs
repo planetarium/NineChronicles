@@ -57,13 +57,17 @@ namespace Nekoyume.UI.Module
                 case EquipmentItemSheet.Row equipmentRow:
                     var equipmentStat = equipmentRow.GetUniqueStat();
                     normalLevelText.text = string.Format(
-                        LevelTextFormat, equipmentStat.StatType, equipmentStat.TotalValue);
+                        LevelTextFormat,
+                        equipmentStat.StatType,
+                        equipmentStat.StatType.ValueToString((int)equipmentStat.TotalValue));
                     normalLevelText.gameObject.SetActive(true);
                     break;
                 case ConsumableItemSheet.Row consumableRow:
                     var consumableStat = consumableRow.GetUniqueStat();
                     normalLevelText.text = string.Format(
-                        LevelTextFormat, consumableStat.StatType, consumableStat.TotalValue);
+                        LevelTextFormat,
+                        consumableStat.StatType,
+                        consumableStat.StatType.ValueToString((int)consumableStat.TotalValue));
                     normalLevelText.gameObject.SetActive(true);
                     break;
                 case MaterialItemSheet.Row:

@@ -64869,6 +64869,7 @@ GameObject:
   - component: {fileID: 134801035865149620}
   - component: {fileID: 1081515367264110028}
   - component: {fileID: 7100399749330656870}
+  - component: {fileID: 6609180674501105850}
   m_Layer: 5
   m_Name: Promotion
   m_TagString: Untagged
@@ -64973,7 +64974,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 9f36daf9a31f3cc41994d461a36468db, type: 3}
   - languageType: 3
     sprite: {fileID: 21300000, guid: 622b4c4427d62c84cbe1f5c233a4d7ac, type: 3}
+--- !u!114 &6609180674501105850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6736566957761785786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   season: 2
+  times: []
 --- !u!1 &6878589271596072809
 GameObject:
   m_ObjectHideFlags: 0
@@ -65001,7 +65015,7 @@ RectTransform:
   m_GameObject: {fileID: 6878589271596072809}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 160, y: 160, z: 160}
+  m_LocalScale: {x: 160.2504, y: 160.2504, z: 160.2504}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 944186710236860783}
@@ -89820,7 +89834,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 35.5}
+  m_AnchoredPosition: {x: 0, y: 4.4}
   m_SizeDelta: {x: 160, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8925070694860963846

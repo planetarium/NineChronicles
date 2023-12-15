@@ -66,7 +66,7 @@ namespace Nekoyume.UI
         {
             get
             {
-                var hasUnreadContents = LiveAssetManager.instance.HasUnread;
+                // var hasUnreadContents = LiveAssetManager.instance.HasUnread;
                 var notReadAtToday = true;
                 if (PlayerPrefs.HasKey(LastReadingDayKey) &&
                     DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
@@ -75,7 +75,7 @@ namespace Nekoyume.UI
                     notReadAtToday = DateTime.Today != result.Date;
                 }
 
-                return hasUnreadContents || notReadAtToday;
+                return notReadAtToday;
             }
         }
 
