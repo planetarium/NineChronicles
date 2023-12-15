@@ -848,12 +848,12 @@ namespace Nekoyume.UI.Module
                         if (States.Instance.CurrentAvatarState.actionPoint > 0)
                         {
                             submit = () => ActionPoint.ShowRefillConfirmPopup(
-                                () => Game.Game.instance.ActionManager
-                                    .ChargeActionPoint(item as Material).Subscribe());
+                                () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe()
+                            );
                         }
                         else
                         {
-                            submit = () => Game.Game.instance.ActionManager.ChargeActionPoint(item as Material).Subscribe();
+                            submit = () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe();
                         }
 
                         if (Game.Game.instance.IsInWorld)
