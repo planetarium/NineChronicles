@@ -2320,11 +2320,8 @@ namespace Nekoyume.Blockchain
             if (eval.Exception is null)
             {
                 var avatarAddress = eval.Action.avatarAddress;
-                LocalLayerModifier.ModifyAvatarActionPoint(
-                    avatarAddress,
-                    -States.Instance.GameConfigState.ActionPointMax);
-                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
-                    r.ItemSubType == ItemSubType.ApStone);
+                var row = TableSheets.Instance.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
 
                 if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))

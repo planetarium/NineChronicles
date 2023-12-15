@@ -1246,11 +1246,12 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionEvaluation<ChargeActionPoint>> ChargeActionPoint(Material material)
+        public IObservable<ActionEvaluation<ChargeActionPoint>> ChargeActionPoint()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            LocalLayerModifier.RemoveItem(avatarAddress, material.ItemId);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
+            var row = TableSheets.Instance.MaterialItemSheet.Values
+                .First(r => r.ItemSubType == ItemSubType.ApStone);
+            LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
 
             var action = new ChargeActionPoint
             {
