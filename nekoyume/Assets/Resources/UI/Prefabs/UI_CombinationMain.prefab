@@ -960,7 +960,7 @@ MonoBehaviour:
   season: 0
   times:
   - beginDateTime: 2023-11-22T00:00:00
-    endDateTime: 2023-12-19T00:00:00
+    endDateTime: 2023-12-19T23:59:00
 --- !u!1 &1694452056110715942
 GameObject:
   m_ObjectHideFlags: 0
@@ -7724,7 +7724,7 @@ MonoBehaviour:
   season: 0
   times:
   - beginDateTime: 2023-11-22T00:00:00
-    endDateTime: 2023-12-19T00:00:00
+    endDateTime: 2023-12-19T23:59:00
 --- !u!114 &3174719986751943182 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7657312722897278047, guid: 29c5c99555c2b5f40a6f757cea5554b3,
