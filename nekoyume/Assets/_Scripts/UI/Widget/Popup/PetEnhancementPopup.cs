@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
@@ -19,7 +18,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Model.Pet;
     using TableData;
     using UniRx;
     public class PetEnhancementPopup : PopupWidget
@@ -78,9 +76,6 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
         private readonly ReactiveProperty<int> _enhancementCount = new();
 
-        private const string LevelUpText = "Levelup";
-        private const string SummonText = "Summon";
-
         private int _targetLevel;
         private int _sliderMax;
         private int _sliderCurrentValue;
@@ -113,7 +108,7 @@ namespace Nekoyume.UI
             maxLevelReachedText.gameObject.SetActive(false);
             costObject.SetActive(true);
             submitButton.gameObject.SetActive(true);
-            submitButton.Text = SummonText;
+            submitButton.Text = L10nManager.Localize("UI_SUMMON");
             petInfoView.Set(
                 _petRow.Id,
                 _petRow.Grade
@@ -134,7 +129,7 @@ namespace Nekoyume.UI
             costObject.SetActive(true);
             submitButton.gameObject.SetActive(true);
             maxLevelReachedText.gameObject.SetActive(false);
-            submitButton.Text = LevelUpText;
+            submitButton.Text = L10nManager.Localize("UI_LEVEL_UP");
             var option = TableSheets.Instance.PetOptionSheet[petState.PetId].LevelOptionMap[petState.Level];
             contentText.text =
                 PetFrontHelper.GetDefaultDescriptionText(option, States.Instance.GameConfigState);

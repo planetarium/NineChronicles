@@ -592,13 +592,9 @@ namespace Nekoyume.UI
             }
 
             AudioController.PlayClick();
-#if UNITY_ANDROID || UNITY_IOS
-            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-#else
+
             Close(true);
             Find<DccMain>().Show();
-#endif
         }
 
         public void PatrolRewardClick()

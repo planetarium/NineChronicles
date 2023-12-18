@@ -220,6 +220,43 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2123634540287859747}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4598093348429372844 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2501503117777142159, guid: 842c632f5ca56e3408834c2009f40abe,
+    type: 3}
+  m_PrefabInstance: {fileID: 2123634540287859747}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2809672280226955910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4598093348429372844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_SUMMONING_IN_PROGRESS
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!114 &5791379277958122429 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5559613029112027038, guid: 842c632f5ca56e3408834c2009f40abe,
@@ -232,3 +269,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4ec5abc95754b1c839ea6516e06acb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &7275186922856850119 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8758953345150402276, guid: 842c632f5ca56e3408834c2009f40abe,
+    type: 3}
+  m_PrefabInstance: {fileID: 2123634540287859747}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5497682694683890698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7275186922856850119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_SUMMONABLE
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0

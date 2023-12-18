@@ -27,19 +27,19 @@ namespace Nekoyume.UI
         [SerializeField]
         private SkeletonGraphic petSkeletonGraphic;
 
-        public void Show(PetEnhancement action)
+        public void Show(int petId, int prevLevel, int targetLevel)
         {
             base.Show();
-            var petRow = TableSheets.Instance.PetSheet[action.PetId];
-            States.Instance.PetStates.TryGetPetState(petRow.Id, out var prevPetState);
-            var currentOption = TableSheets.Instance.PetOptionSheet[action.PetId].LevelOptionMap[prevPetState.Level];
-            var targetOption = TableSheets.Instance.PetOptionSheet[action.PetId].LevelOptionMap[action.TargetLevel];
-            petInfoView.Set(petRow.Id, petRow.Grade);
+
+            var petRow = TableSheets.Instance.PetSheet[petId];
+            var optionMap = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap;
+
+            petInfoView.Set(petId, petRow.Grade);
             contentText.text = PetFrontHelper.GetComparisonDescriptionText(
-                currentOption, targetOption);
-            prevLevelText.text = $"<size=30>Lv.</size>{prevPetState.Level}";
-            newLevelText.text = $"{action.TargetLevel}";
-            petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(petRow.Id);
+                optionMap[prevLevel], optionMap[targetLevel]);
+            prevLevelText.text = $"<size=30>Lv.</size>{prevLevel}";
+            newLevelText.text = $"{targetLevel}";
+            petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(petId);
             petSkeletonGraphic.Initialize(true);
         }
     }

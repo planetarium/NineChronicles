@@ -2320,11 +2320,8 @@ namespace Nekoyume.Blockchain
             if (eval.Exception is null)
             {
                 var avatarAddress = eval.Action.avatarAddress;
-                LocalLayerModifier.ModifyAvatarActionPoint(
-                    avatarAddress,
-                    -States.Instance.GameConfigState.ActionPointMax);
-                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
-                    r.ItemSubType == ItemSubType.ApStone);
+                var row = TableSheets.Instance.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
 
                 if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
@@ -3198,14 +3195,16 @@ namespace Nekoyume.Blockchain
         {
             LoadingHelper.PetEnhancement.Value = 0;
             var action = eval.Action;
+            var petId = action.PetId;
+            var targetLevel = action.TargetLevel;
 
-            if (States.Instance.PetStates.TryGetPetState(action.PetId, out _))
+            if (targetLevel > 1)
             {
-                Widget.Find<PetLevelUpResultScreen>().Show(action);
+                Widget.Find<PetLevelUpResultScreen>().Show(petId, targetLevel - 1, targetLevel);
             }
             else
             {
-                Widget.Find<PetSummonResultScreen>().Show(action.PetId);
+                Widget.Find<PetSummonResultScreen>().Show(petId);
             }
 
             Widget.Find<DccCollection>().UpdateView();

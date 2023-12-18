@@ -39,11 +39,12 @@ namespace Nekoyume
             Initialize();
         }
 
-        public void Initialize() {
+        public void Initialize()
+        {
             Client.GetSeasonpassCurrentAsync((result) =>
             {
                 CurrentSeasonPassData = result;
-                DateTime.TryParse(CurrentSeasonPassData.EndDate, out var endDateTime);
+                DateTime.TryParse(CurrentSeasonPassData.EndTimestamp, out var endDateTime);
                 SeasonEndDate.SetValueAndForceNotify(endDateTime);
                 RefreshRemainingTime();
             }, (error) =>
@@ -56,12 +57,19 @@ namespace Nekoyume
                 RefreshRemainingTime();
             }).AddTo(Game.Game.instance);
 
+            RefreshSeassonpassExpAmount();
+
+            Game.Event.OnRoomEnter.AddListener(_ => AvatarStateRefreshAsync().AsUniTask().Forget());
+        }
+
+        private void RefreshSeassonpassExpAmount()
+        {
             Client.GetSeasonpassLevelAsync((result) =>
             {
                 LevelInfos = result.OrderBy(info => info.Level).ToList();
             }, (error) =>
             {
-                Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassLevelAsync] error: {error}");
+                Debug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassLevelAsync] error: {error}");
             }).AsUniTask().Forget();
 
             Client.GetSeasonpassExpAsync((result) =>
@@ -86,12 +94,10 @@ namespace Nekoyume
                             break;
                     }
                 }
-            },(error) =>
+            }, (error) =>
             {
-                Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassExpAsync] error: {error}");
+                Debug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassExpAsync] error: {error}");
             }).AsUniTask().Forget();
-
-            Game.Event.OnRoomEnter.AddListener(_ => AvatarStateRefreshAsync().AsUniTask().Forget());
         }
 
         private void RefreshRemainingTime()
@@ -101,7 +107,12 @@ namespace Nekoyume
             var hourExist = timeSpan.TotalHours >= 1;
             var dayText = dayExist ? $"{(int)timeSpan.TotalDays}d " : string.Empty;
             var hourText = hourExist ? $"{(int)timeSpan.Hours}h " : string.Empty;
-            RemainingDateTime.SetValueAndForceNotify($"{dayText}{hourText}");
+            var minText = string.Empty;
+            if(!hourExist && !dayExist)
+            {
+                minText = $"{(int)timeSpan.Minutes}m";
+            }
+            RemainingDateTime.SetValueAndForceNotify($"{dayText}{hourText}{minText}");
         }
 
         public async Task AvatarStateRefreshAsync()
@@ -134,6 +145,23 @@ namespace Nekoyume
                 Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Client is null");
                 return;
             }
+
+            await Client.GetSeasonpassCurrentAsync(
+                (result) =>
+                {
+                    if (CurrentSeasonPassData.Id == result.Id)
+                        return;
+
+                    CurrentSeasonPassData = result;
+                    DateTime.TryParse(CurrentSeasonPassData.EndTimestamp, out var endDateTime);
+                    SeasonEndDate.SetValueAndForceNotify(endDateTime);
+                    RefreshRemainingTime();
+                    RefreshSeassonpassExpAmount();
+                },
+                (error) =>
+                {
+                    Debug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [GetSeasonpassCurrentAsync] error: {error}");
+                });
             
             await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
                 (result) =>
@@ -196,6 +224,12 @@ namespace Nekoyume
             minExp = level - 1 >= 0 ? LevelInfos[level - 1].Exp : 0;
             maxExp = LevelInfos[level].Exp;
             return;
+        }
+
+        public string GetSeassonPassPopupViewKey()
+        {
+            var result = "SeasonPassCouragePopupViewd" + Game.Game.instance.States.CurrentAvatarState.address.ToHex() + "SeassonPassID" + CurrentSeasonPassData.Id;
+            return result;
         }
 
         public void Dispose()

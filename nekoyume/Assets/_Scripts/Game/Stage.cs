@@ -1,3 +1,10 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+#if !UNITY_EDITOR && UNITY_STANDALONE
+#define RUN_ON_STANDALONE
+#endif
 //#define TEST_LOG
 
 using Cysharp.Threading.Tasks;

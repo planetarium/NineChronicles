@@ -35,6 +35,9 @@ namespace Nekoyume.UI
         private PetInfoView infoView;
 
         [SerializeField]
+        private TextMeshProUGUI descriptionText;
+
+        [SerializeField]
         private Button lockedButton;
 
         [SerializeField]
@@ -58,21 +61,20 @@ namespace Nekoyume.UI
         private PetSlotViewModel _selectedViewModel;
         private readonly List<IDisposable> _disposables = new();
 
-        private const string LevelUpText = "Levelup";
-        private const string SummonText = "Summon";
-
         protected override void Awake()
         {
             base.Awake();
             CloseWidget = () =>
             {
-                Find<DccMain>().Show(true);
                 Close(true);
+
+#if UNITY_ANDROID || UNITY_IOS
+                Game.Event.OnRoomEnter.Invoke(true);
+#else
+                Find<DccMain>().Show(true);
+#endif
             };
-            backButton.onClick.AddListener(() =>
-            {
-                CloseWidget.Invoke();
-            });
+            backButton.onClick.AddListener(() => CloseWidget.Invoke());
             dccButton.onClick.AddListener(() =>
             {
                 Find<ConfirmConnectPopup>().ShowConnectDcc(true);
@@ -146,32 +148,52 @@ namespace Nekoyume.UI
             {
                 _selectedViewModel?.Selected.SetValueAndForceNotify(false);
                 _selectedViewModel = viewModel;
-                petSkeletonGraphic.skeletonDataAsset =
-                    PetFrontHelper.GetPetSkeletonData(row.Id);
-                petSkeletonGraphic.Initialize(true);
                 _selectedViewModel.Selected.SetValueAndForceNotify(true);
-                infoView.Set(row.Id, row.Grade);
 
-                var isOwn = States.Instance.PetStates.TryGetPetState(row.Id, out var petState);
-                var costSheet = TableSheets.Instance.PetCostSheet[row.Id];
-                var isMaxLevel = !costSheet.TryGetCost((isOwn ? petState.Level : 0) + 1, out _);
-                if (isOwn)
+                var petId = row.Id;
+                petSkeletonGraphic.skeletonDataAsset = PetFrontHelper.GetPetSkeletonData(petId);
+                petSkeletonGraphic.Initialize(true);
+                infoView.Set(petId, row.Grade);
+
+                var petOptionMap = TableSheets.Instance.PetOptionSheet[petId].LevelOptionMap;
+                if (States.Instance.PetStates.TryGetPetState(petId, out var petState))
                 {
+                    var currentLevel = petState.Level;
+                    var targetLevel = currentLevel + 1;
+
                     levelText.text = $"Lv.{petState.Level}";
-                    levelText.color = isMaxLevel
-                        ? PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText)
-                        : Color.white;
-                    levelUpButtonText.text = isMaxLevel
-                        ? "Info"
-                        : LevelUpText;
                     levelUpNotification.SetActive(viewModel.HasNotification.Value);
+
+                    if (TableSheets.Instance.PetCostSheet[petId].TryGetCost(targetLevel, out _))
+                    {
+                        levelText.color = Color.white;
+                        levelUpButtonText.text = L10nManager.Localize("UI_LEVEL_UP");
+
+                        var currentOption = petOptionMap[currentLevel];
+                        var targetOption = petOptionMap[targetLevel];
+                        descriptionText.text = PetFrontHelper.GetComparisonDescriptionText(
+                            currentOption, targetOption);
+                    }
+                    else
+                    {
+                        levelText.color = PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText);
+                        levelUpButtonText.text = L10nManager.Localize("UI_INFO");
+
+                        var currentOption = petOptionMap[currentLevel];
+                        descriptionText.text = PetFrontHelper.GetDefaultDescriptionText(
+                            currentOption, States.Instance.GameConfigState);
+                    }
                 }
                 else
                 {
                     levelText.text = "-";
                     levelText.color = Color.white;
-                    levelUpButtonText.text = SummonText;
+                    levelUpButtonText.text = L10nManager.Localize("UI_SUMMON");
                     levelUpNotification.SetActive(false);
+
+                    var targetOption = petOptionMap[1];
+                    descriptionText.text = PetFrontHelper.GetDefaultDescriptionText(
+                        targetOption, States.Instance.GameConfigState);
                 }
             }
         }

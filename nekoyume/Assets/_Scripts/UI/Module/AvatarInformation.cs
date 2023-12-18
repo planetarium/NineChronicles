@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Lib9c;
+using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
@@ -243,49 +245,58 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
+                FungibleAssetValue balance;
+                int cost;
+                CostType costType;
+                string notEnoughContent;
+                string attractMessage;
+                System.Action onAttractWhenNotEnough;
+                var isStatSlot = slot.RuneType == RuneType.Stat;
+                var enoughContent = isStatSlot
+                    ? L10nManager.Localize("UI_RUNE_SLOT_OPEN_STAT")
+                    : L10nManager.Localize("UI_RUNE_SLOT_OPEN_SKILL");
                 switch (slot.RuneSlot.RuneSlotType)
                 {
                     case RuneSlotType.Ncg:
-                        var cost = slot.RuneType == RuneType.Stat
+                        costType = CostType.NCG;
+                        balance = States.Instance.GoldBalanceState.Gold;
+                        cost = isStatSlot
                             ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
                             : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
-                        var ncgHas = States.Instance.GoldBalanceState.Gold;
-                        var enough = ncgHas.MajorUnit >= cost;
-                        var content = slot.RuneType == RuneType.Stat
-                                ? L10nManager.Localize("UI_RUNE_SLOT_OPEN_STAT")
-                                : L10nManager.Localize("UI_RUNE_SLOT_OPEN_SKILL");
-                        if (!enough)
-                        {
-                            content = L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
-                        }
-
-                        var attractMessage = enough
-                            ? L10nManager.Localize("UI_YES")
-                            : L10nManager.Localize("UI_SHOP");
-                        Widget.Find<PaymentPopup>().ShowAttract(
-                            CostType.NCG,
-                            cost,
-                            content,
-                            attractMessage,
-                            () =>
-                            {
-                                if (enough)
-                                {
-                                    ActionManager.Instance.UnlockRuneSlot(slot.RuneSlot.Index);
-                                }
-                                else
-                                {
-                                    GoToMarket();
-                                }
-                            });
+                        notEnoughContent =
+                            L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                        attractMessage = L10nManager.Localize("UI_SHOP");
+                        onAttractWhenNotEnough = GoToMarket;
                         break;
+                    case RuneSlotType.Crystal:
+                        costType = CostType.Crystal;
+                        balance = States.Instance.CrystalBalance;
+                        cost = isStatSlot
+                            ? States.Instance.GameConfigState.RuneStatSlotCrystalUnlockCost
+                            : States.Instance.GameConfigState.RuneSkillSlotCrystalUnlockCost;
+                        notEnoughContent = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
+                        attractMessage = L10nManager.Localize("UI_GO_GRINDING");
+                        onAttractWhenNotEnough = GoToGrinding;
+                        break;
+                    case RuneSlotType.Default:
                     case RuneSlotType.Stake:
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_MESSAGE_CAN_NOT_OPEN"),
-                            NotificationCell.NotificationType.Alert);
-                        break;
+                    default:
+                        return;
                 }
+
+                var enough = balance >= balance.Currency * cost;
+                Widget.Find<PaymentPopup>().ShowAttract(
+                    costType,
+                    cost,
+                    enough ? enoughContent : notEnoughContent,
+                    enough ? L10nManager.Localize("UI_YES") : attractMessage,
+                    enough
+                        ? () =>
+                        {
+                            ActionManager.Instance.UnlockRuneSlot(slot.RuneSlot.Index);
+
+                        }
+                        : onAttractWhenNotEnough);
             }
             else
             {
@@ -305,16 +316,23 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void GoToMarket()
+        private static void GoToMarket()
         {
-            if (Game.Game.instance.IsInWorld)
-            {
-                return;
-            }
-
             Widget.Find<AvatarInfoPopup>().CloseWithOtherWidgets();
             Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             Widget.Find<ShopSell>().Show(true);
+        }
+
+        private static void GoToGrinding()
+        {
+            Widget.Find<AvatarInfoPopup>().CloseWithOtherWidgets();
+            Widget.Find<HeaderMenuStatic>()
+                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+            Widget.Find<Menu>().Close();
+            Widget.Find<WorldMap>().Close();
+            Widget.Find<StageInformation>().Close();
+            Widget.Find<BattlePreparation>().Close();
+            Widget.Find<Grind>().Show();
         }
 
         private void OnDoubleClickRuneSlot(RuneSlotView slot)
@@ -830,12 +848,12 @@ namespace Nekoyume.UI.Module
                         if (States.Instance.CurrentAvatarState.actionPoint > 0)
                         {
                             submit = () => ActionPoint.ShowRefillConfirmPopup(
-                                () => Game.Game.instance.ActionManager
-                                    .ChargeActionPoint(item as Material).Subscribe());
+                                () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe()
+                            );
                         }
                         else
                         {
-                            submit = () => Game.Game.instance.ActionManager.ChargeActionPoint(item as Material).Subscribe();
+                            submit = () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe();
                         }
 
                         if (Game.Game.instance.IsInWorld)
