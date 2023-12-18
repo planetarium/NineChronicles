@@ -242,7 +242,10 @@ namespace Nekoyume.State
             try
             {
                 var response = await Game.Game.instance.RpcGraphQLClient.QueryArenaInfoAsync(currentAvatarAddr);
-                arenaInfo = response.StateQuery.ArenaParticipants;
+                arenaInfo = response.StateQuery.ArenaParticipants
+                    .OrderByDescending(participant => participant.Score)
+                    .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
+                    .ToList();
             }
             catch (Exception e)
             {
