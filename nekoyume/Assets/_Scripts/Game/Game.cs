@@ -69,6 +69,7 @@ namespace Nekoyume.Game
     using Nekoyume.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.TableData;
+    using Nekoyume.UI.Module.Multiplanetary;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -365,7 +366,7 @@ namespace Nekoyume.Game
                         "UI_OK",
                         true,
                         IconAndButtonSystem.SystemType.Information);
-                popup.ConfirmCallback = popup.CancelCallback =  () =>
+                popup.ConfirmCallback = popup.CancelCallback = () =>
                 {
 #if UNITY_ANDROID
                     Application.OpenURL(_commandLineOptions.GoogleMarketUrl);
@@ -1708,48 +1709,22 @@ namespace Nekoyume.Game
             // NOTE: Check if the planets have at least one agent.
             if (planetContext.HasPledgedAccount)
             {
-                Debug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
-                introScreen.ShowPlanetAccountInfosPopup(planetContext, !loginSystem.Login);
+                var submitState = loginSystem.Login
+                    ? PlanetAccountInfosPopup.SubmitState.Proceed
+                    : PlanetAccountInfosPopup.SubmitState.ImportKey;
+                Debug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup." +
+                          $" SubmitState: {submitState}");
+                introScreen.ShowPlanetAccountInfosPopup(planetContext, submitState);
 
-                Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
-                          " is not null.");
-                yield return new WaitUntil(() => planetContext.SelectedPlanetAccountInfo is not null);
-                Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
-                          $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnPlanetAccountInfosPopupSubmitSubject.");
+                yield return introScreen.OnPlanetAccountInfosPopupSubmit
+                    .AsObservable().First().StartAsCoroutine();
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnPlanetAccountInfosPopupSubmitSubject. Done."); ;
 
-                if (planetContext.IsSelectedPlanetAccountPledged)
+                if (submitState == PlanetAccountInfosPopup.SubmitState.ImportKey)
                 {
-                    // NOTE: Player selected the planet that has agent.
-                    Debug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
-                              " Player don't have to make a pledge.");
-
-                    // NOTE: Complex logic here...
-                    //       - LoginSystem.Login is false.
-                    //       - Portal has player's account.
-                    //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
-                    //         - Import the agent key.
-                    if (!loginSystem.Login)
-                    {
-                        // NOTE: QR code import sets loginSystem.Login to true.
-                        introScreen.ShowForQrCodeGuide();
-                    }
-                }
-                else
-                {
-                    // NOTE: Player selected the planet that has no agent.
-                    Debug.Log("[Game] CoLogin()... Try to create a new agent." +
-                              " Player may have to make a pledge.");
-
-                    // NOTE: Complex logic here...
-                    //       - LoginSystem.Login is false.
-                    //       - Portal has player's account.
-                    //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
-                    //         - Create a new agent in a new planet.
-                    if (!loginSystem.Login)
-                    {
-                        // NOTE: QR code import sets loginSystem.Login to true.
-                        introScreen.ShowForQrCodeGuide();
-                    }
+                    // NOTE: QR code import sets loginSystem.Login to true.
+                    introScreen.ShowForQrCodeGuide();
                 }
             }
             else

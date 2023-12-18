@@ -90,6 +90,10 @@ namespace Nekoyume.UI
         public Subject<IntroScreen> OnClickStart { get; } = new();
         public Subject<(SigninContext.SocialType socialType, string email, string idToken)> OnSocialSignedIn { get; } = new();
 
+        public Subject<PlanetAccountInfosPopup.SubmitState>
+            OnPlanetAccountInfosPopupSubmit
+        { get; } = new();
+
         protected override void Awake()
         {
             base.Awake();
@@ -196,16 +200,9 @@ namespace Nekoyume.UI
                         tuple.selectedPlanetId);
                 })
                 .AddTo(gameObject);
-            planetAccountInfosPopup.OnSelectedPlanetSubject.Subscribe(tuple =>
-            {
-                // NOTE: Do not handle the PlanetContext.Error now.
-                _planetContext = PlanetSelector.SelectPlanetById(
-                    _planetContext,
-                    tuple.selectedPlanetId);
-                _planetContext = PlanetSelector.SelectPlanetAccountInfo(
-                    _planetContext,
-                    tuple.selectedPlanetId);
-            }).AddTo(gameObject);
+            planetAccountInfosPopup.OnSubmitSubject
+                .Subscribe(OnPlanetAccountInfosPopupSubmit)
+                .AddTo(gameObject);
             PlanetSelector.SelectedPlanetInfoSubject
                 .Subscribe(tuple => ApplySelectedPlanetInfo(tuple.planetContext))
                 .AddTo(gameObject);
@@ -222,7 +219,10 @@ namespace Nekoyume.UI
         protected override void OnDestroy()
         {
             base.OnDestroy();
+            OnClickTabToStart.Dispose();
+            OnClickStart.Dispose();
             OnSocialSignedIn.Dispose();
+            OnPlanetAccountInfosPopupSubmit.Dispose();
         }
 
         public void ApplyL10n()
@@ -311,7 +311,9 @@ namespace Nekoyume.UI
         /// <summary>
         /// The only way to update the planetAccountInfoScroll state.
         /// </summary>
-        public void ShowPlanetAccountInfosPopup(PlanetContext planetContext, bool needToImportKey)
+        public void ShowPlanetAccountInfosPopup(
+            PlanetContext planetContext,
+            PlanetAccountInfosPopup.SubmitState submitState)
         {
             Debug.Log("[IntroScreen] ShowPlanetAccountInfosPopup invoked");
             if (planetContext.PlanetAccountInfos is null)
@@ -322,7 +324,7 @@ namespace Nekoyume.UI
             planetAccountInfosPopup.Show(
                 planetContext.PlanetRegistry,
                 planetContext.PlanetAccountInfos,
-                needToImportKey);
+                submitState);
             startButtonContainer.SetActive(false);
         }
 
