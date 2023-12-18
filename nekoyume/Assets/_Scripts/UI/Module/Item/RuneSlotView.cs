@@ -154,7 +154,7 @@ namespace Nekoyume.UI.Module
                     priceIconImage.sprite = SpriteHelper.GetFavIcon("CRYSTAL");
                 }
 
-                lockPrice.text = $"{cost}";
+                lockPrice.text = $"{cost.ToCurrencyNotation()}";
             }
 
             if (lockPriceObject != null)
