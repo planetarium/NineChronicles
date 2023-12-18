@@ -119,7 +119,11 @@ namespace Nekoyume.UI.Module
                     TooltipButton.onClick.AddListener(() =>
                     {
                         if (itemBaseForToolTip == null)
+                        {
+                            AudioController.PlayClick();
+                            Widget.Find<FungibleAssetTooltip>().Show(currencyInfo.Ticker, ((BigInteger)currencyInfo.Amount).ToCurrencyNotation(), null);
                             return;
+                        }
                         AudioController.PlayClick();
 
                         if(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium ||

@@ -474,6 +474,11 @@ namespace Nekoyume
 
         public static string GetLocalizedFavName(string ticker)
         {
+            if(ticker.ToLower() == "crystal" || ticker.ToLower() == "fav_crystal")
+            {
+                return L10nManager.Localize($"ITEM_NAME_9999998");
+            }
+
             var isRune = false;
             var id = 0;
             var grade = 1;
