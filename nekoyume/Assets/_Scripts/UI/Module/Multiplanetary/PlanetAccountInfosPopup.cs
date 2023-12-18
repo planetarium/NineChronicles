@@ -6,46 +6,99 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module.Multiplanetary
 {
+    using System;
     using UniRx;
+    using UnityEngine.UI;
 
     public class PlanetAccountInfosPopup : MonoBehaviour
     {
-        [SerializeField]
-        private TextMeshProUGUI planetAccountInfosTitleText;
+        public enum SubmitState
+        {
+            Proceed,
+            ImportKey,
+            ResetKey,
+        }
+
+        private SubmitState _submitState;
 
         [SerializeField]
-        private TextMeshProUGUI planetAccountInfosDescriptionText;
+        private TextMeshProUGUI titleText;
+
+        [SerializeField]
+        private GameObject importKeyDescriptionGO;
+
+        [SerializeField]
+        private TextMeshProUGUI importKeyDescriptionText;
+
+        [SerializeField]
+        private GameObject resetKeyDescriptionGO;
+
+        [SerializeField]
+        private TextMeshProUGUI resetKeyDescriptionText;
 
         [SerializeField]
         private PlanetAccountInfoScroll planetAccountInfoScroll;
 
-        public readonly Subject<(PlanetAccountInfoScroll scroll, PlanetId selectedPlanetId)>
-            OnSelectedPlanetSubject = new();
+        [SerializeField]
+        private Button submitButton;
+
+        [SerializeField]
+        private TextMeshProUGUI submitButtonText;
+
+        public readonly Subject<SubmitState> OnSubmitSubject = new();
 
         public bool IsVisible => gameObject.activeSelf;
 
         private void Awake()
         {
-            planetAccountInfoScroll.OnSelectedPlanetSubject.Subscribe(tuple =>
+            submitButton.onClick.AddListener(() =>
             {
-                OnSelectedPlanetSubject.OnNext(tuple);
+                OnSubmitSubject.OnNext(_submitState);
                 Hide();
-            }).AddTo(gameObject);
+            });
+        }
+
+        private void OnDestroy()
+        {
+            OnSubmitSubject.Dispose();
         }
 
         public void ApplyL10n()
         {
-            planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
-            planetAccountInfosDescriptionText.text =
+            titleText.text = L10nManager.Localize("WORD_NOTIFICATION");
+            importKeyDescriptionText.text =
                 L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
+            resetKeyDescriptionText.text =
+                L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_RESET_KEY");
         }
 
         public void SetData(
             PlanetRegistry planetRegistry,
             PlanetAccountInfo[] planetAccountInfos,
-            bool needToImportKey)
+            SubmitState submitState)
         {
-            planetAccountInfoScroll.SetData(planetRegistry, planetAccountInfos, needToImportKey);
+            planetAccountInfoScroll.SetData(planetRegistry, planetAccountInfos);
+            _submitState = submitState;
+            switch (_submitState)
+            {
+                case SubmitState.Proceed:
+                    submitButtonText.text = L10nManager.Localize("BTN_PROCEED");
+                    importKeyDescriptionGO.SetActive(true);
+                    resetKeyDescriptionGO.SetActive(false);
+                    break;
+                case SubmitState.ImportKey:
+                    submitButtonText.text = L10nManager.Localize("BTN_IMPORT_KEY");
+                    importKeyDescriptionGO.SetActive(true);
+                    resetKeyDescriptionGO.SetActive(false);
+                    break;
+                case SubmitState.ResetKey:
+                    submitButtonText.text = L10nManager.Localize("BTN_RESET_KEY");
+                    importKeyDescriptionGO.SetActive(false);
+                    resetKeyDescriptionGO.SetActive(true);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(submitState), submitState, null);
+            }
         }
 
         public void Show()
@@ -61,9 +114,9 @@ namespace Nekoyume.UI.Module.Multiplanetary
         public void Show(
             PlanetRegistry planetRegistry,
             PlanetAccountInfo[] planetAccountInfos,
-            bool needToImportKey)
+            SubmitState submitState)
         {
-            SetData(planetRegistry, planetAccountInfos, needToImportKey);
+            SetData(planetRegistry, planetAccountInfos, submitState);
             Show();
         }
 
