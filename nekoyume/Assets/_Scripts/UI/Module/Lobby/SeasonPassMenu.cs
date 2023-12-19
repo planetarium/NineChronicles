@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Module.Lobby
 
                 if (info.Level >= SeasonPass.SeasonPassMaxLevel)
                 {
-                    levelText.text = "MAX";
+                    levelText.text = SeasonPass.MaxLevelString;
                 }
                 else
                 {

@@ -570,6 +570,10 @@ MonoBehaviour:
     button: {fileID: 1397379092643248937}
     remainingTimeObject: {fileID: 2181221572979721501}
     remainingTimeText: {fileID: 3921520138423152270}
+  - eventId: 1009
+    button: {fileID: 1397379092643248937}
+    remainingTimeObject: {fileID: 2181221572979721501}
+    remainingTimeText: {fileID: 3921520138423152270}
   eventDungeonLockButton: {fileID: 7998614961290197777}
 --- !u!225 &8746604714732099169
 CanvasGroup:

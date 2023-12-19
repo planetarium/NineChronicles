@@ -65,6 +65,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: fa1409bd25e03a84aba704aa53863b52, type: 3}
   - {fileID: 21300000, guid: 6758f0cd55ef5aa409c4750386e24f1d, type: 3}
   - {fileID: 21300000, guid: 03c4befec3392944f98473ff712023d7, type: 3}
+  - {fileID: 21300000, guid: 5f853dbf6ffdd0c4dbaf83c9be980bcf, type: 3}
   m_PackedSpriteNamesToIndex:
   - loading_arena
   - UI_loading_cat
@@ -81,6 +82,7 @@ SpriteAtlas:
   - UI_loading_lens flare
   - UI_loading_catback
   - loading_adventure
+  - loading_worldopen
   m_RenderDataMap: {}
   m_Tag: Loading
   m_IsVariant: 0

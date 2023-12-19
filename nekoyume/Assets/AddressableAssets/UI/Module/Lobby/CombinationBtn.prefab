@@ -13529,6 +13529,7 @@ GameObject:
   - component: {fileID: 2173698212291999107}
   - component: {fileID: 5156693970995040206}
   - component: {fileID: 7153610960450749755}
+  - component: {fileID: 3323495404383716824}
   m_Layer: 5
   m_Name: EventMark
   m_TagString: Untagged
@@ -13640,6 +13641,22 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3323495404383716824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8583885938590308231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  season: 0
+  times:
+  - beginDateTime: 2023-11-22T00:00:00
+    endDateTime: 2023-12-19T23:59:00
 --- !u!1 &8677419603474196147
 GameObject:
   m_ObjectHideFlags: 0

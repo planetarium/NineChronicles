@@ -198,7 +198,13 @@ namespace Nekoyume.State
             }
         }
 
-        public void UpdateRuneStates(RuneState runeState)
+        public void UpdateRuneStates(List<RuneState> runeStates)
+        {
+            RuneStates.Clear();
+            RuneStates.AddRange(runeStates);
+        }
+
+        public void UpdateRuneState(RuneState runeState)
         {
             RuneStates.RemoveAll(rune => rune.RuneId == runeState.RuneId);
             RuneStates.Add(runeState);
@@ -264,19 +270,12 @@ namespace Nekoyume.State
             Event.OnUpdateRuneState.Invoke();
         }
 
-        public async Task UpdateRuneSlotStates(BattleType battleType)
+        public void UpdateRuneSlotState(RuneSlotState slotState)
         {
-            var avatarAddress = CurrentAvatarState.address;
-            var address = RuneSlotState.DeriveAddress(avatarAddress, battleType);
-            var value = await Game.Game.instance.Agent.GetStateAsync(address);
-            if (value is List list)
-            {
-                var slotState = new RuneSlotState(list);
-                CurrentRuneSlotStates[slotState.BattleType] = slotState;
-                var slotIndex = AvatarStates.FirstOrDefault(x =>
-                    x.Value.address == avatarAddress).Key;
-                RuneSlotStates[slotIndex][battleType] = slotState;
-            }
+            var slotIndex = AvatarStates
+                .FirstOrDefault(x => x.Value.address == CurrentAvatarState.address).Key;
+            CurrentRuneSlotStates[slotState.BattleType] = slotState;
+            RuneSlotStates[slotIndex][slotState.BattleType] = slotState;
         }
 
         public async UniTask InitItemSlotStates()
@@ -369,20 +368,13 @@ namespace Nekoyume.State
             }
         }
 
-        public async Task UpdateItemSlotStates(BattleType battleType)
+        public void UpdateItemSlotState(ItemSlotState slotState)
         {
-            var avatarAddress = CurrentAvatarState.address;
-            var address = ItemSlotState.DeriveAddress(avatarAddress, battleType);
-            var value = await Game.Game.instance.Agent.GetStateAsync(address);
-            if (value is List list)
-            {
-                var slotState = new ItemSlotState(list);
-                var checkedState = GetVerifiedItemSlotState(slotState, CurrentAvatarState);
-                CurrentItemSlotStates[checkedState.BattleType] = checkedState;
-                var slotIndex = AvatarStates.FirstOrDefault(x =>
-                    x.Value.address == avatarAddress).Key;
-                ItemSlotStates[slotIndex][battleType] = checkedState;
-            }
+            var slotIndex = AvatarStates
+                .FirstOrDefault(x => x.Value.address == CurrentAvatarState.address).Key;
+            var checkedState = GetVerifiedItemSlotState(slotState, CurrentAvatarState);
+            CurrentItemSlotStates[checkedState.BattleType] = checkedState;
+            ItemSlotStates[slotIndex][checkedState.BattleType] = checkedState;
         }
 
         private static ItemSlotState GetVerifiedItemSlotState(

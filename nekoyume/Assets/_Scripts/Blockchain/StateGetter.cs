@@ -10,6 +10,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Exceptions;
 using Nekoyume.Model.Arena;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
@@ -214,6 +215,36 @@ namespace Nekoyume.Blockchain
             }
 
             throw new StateNullException(arenaScoreAddress);
+        }
+
+        public static ItemSlotState GetItemSlotState(
+            Address avatarAddress,
+            BattleType battleType,
+            HashDigest<SHA256> hash)
+        {
+            var itemSlotAddress = ItemSlotState.DeriveAddress(avatarAddress, battleType);
+            var value = GetState(itemSlotAddress,hash);
+            if (value is List list)
+            {
+                return new ItemSlotState(list);
+            }
+
+            throw new StateNullException(itemSlotAddress);
+        }
+
+        public static RuneSlotState GetRuneSlotState(
+            Address avatarAddress,
+            BattleType battleType,
+            HashDigest<SHA256> hash)
+        {
+            var runeSlotAddress = RuneSlotState.DeriveAddress(avatarAddress, battleType);
+            var value = GetState(runeSlotAddress, hash);
+            if (value is List list)
+            {
+                return new RuneSlotState(list);
+            }
+
+            throw new StateNullException(runeSlotAddress);
         }
     }
 }

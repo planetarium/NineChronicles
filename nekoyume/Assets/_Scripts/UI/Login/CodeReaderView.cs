@@ -127,6 +127,10 @@ namespace Nekoyume.UI
                     Debug.Log("[CodeReaderView] WebCamTexture is playing.");
                 }
 
+                var localScale = rawCamImage.rectTransform.localScale;
+                localScale.y = _camTexture.videoVerticallyMirrored ? -1 : 1;
+                rawCamImage.rectTransform.localScale = localScale;
+
                 try
                 {
                     var result = barcodeReader.Decode(

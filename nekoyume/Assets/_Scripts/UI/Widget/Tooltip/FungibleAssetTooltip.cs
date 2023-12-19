@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Numerics;
 using Coffee.UIEffects;
@@ -92,6 +92,20 @@ namespace Nekoyume.UI
             _isPointerOnScrollArea = false;
             _isClickedButtonArea = false;
             base.Close(ignoreCloseAnimation);
+        }
+
+        public virtual void Show(
+            string ticker,
+            string amount,
+            System.Action onClose)
+        {
+            registerButton.gameObject.SetActive(false);
+            sell.gameObject.SetActive(false);
+            buy.gameObject.SetActive(false);
+
+            UpdateInformation(ticker, amount, onClose);
+            base.Show();
+            StartCoroutine(CoUpdate(panel.gameObject));
         }
 
         public virtual void Show(
@@ -218,8 +232,54 @@ namespace Nekoyume.UI
             scrollbar.value = 1f;
         }
 
+        private void UpdateInformation(string ticker, string amount, System.Action onClose)
+        {
+            var grade = 1;
+            var id = 0;
+            if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
+            {
+                var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+                if (sheet.TryGetValue(runeData.id, out var row))
+                {
+                    grade = row.Grade;
+                    id = runeData.id;
+                }
+            }
+
+            var petSheet = Game.Game.instance.TableSheets.PetSheet;
+            var petRow = petSheet.Values.FirstOrDefault(x => x.SoulStoneTicker == ticker);
+            if (petRow is not null)
+            {
+                grade = petRow.Grade;
+                id = petRow.Id;
+            }
+
+            fungibleAssetImage.sprite = SpriteHelper.GetFavIcon(ticker);
+            nameText.text = LocalizationExtensions.GetLocalizedFavName(ticker);
+
+            if (ticker.ToLower() == "crystal" || ticker.ToLower() == "fav_crystal")
+            {
+                contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_9999998");
+                gradeText.transform.parent.gameObject.SetActive(false);
+            }
+            else
+            {
+                contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{id}");
+                UpdateGrade(grade);
+            }
+
+            var countFormat = L10nManager.Localize("UI_COUNT_FORMAT");
+            countText.text = string.Format(countFormat, amount);
+            levelLimitText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", 1);
+
+            _onClose = onClose;
+            scrollbar.value = 1f;
+        }
+
         private void UpdateGrade(int grade)
         {
+            gradeText.transform.parent.gameObject.SetActive(true);
+
             var data = itemViewDataScriptableObject.GetItemViewData(grade);
             gradeImage.overrideSprite = data.GradeBackground;
             gradeHsv.range = data.GradeHsvRange;

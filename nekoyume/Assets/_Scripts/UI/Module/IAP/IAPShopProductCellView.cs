@@ -205,6 +205,13 @@ namespace Nekoyume.UI.Module
 
         private void RefreshDim()
         {
+            if (!_data.Buyable)
+            {
+                dimObj.SetActive(true);
+                disabledBuyButton.SetActive(true);
+                return;
+            }
+
             var dim = false;
             if (_data.DailyLimit != null)
             {
