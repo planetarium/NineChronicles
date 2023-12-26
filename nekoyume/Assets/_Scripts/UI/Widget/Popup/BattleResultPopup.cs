@@ -1088,7 +1088,14 @@ namespace Nekoyume.UI
                     Debug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
                 }
 
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                if (SharedModel.StageType == StageType.EventDungeon)
+                {
+                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.EventDungeonCourageAmount * playCount}";
+                }
+                else
+                {
+                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                }
             }
             else
             {
