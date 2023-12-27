@@ -24,8 +24,6 @@ using ToggleGroup = UnityEngine.UI.ToggleGroup;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.EnumType;
-    using Nekoyume.UI.Module.Common;
     using UniRx;
 
     public class SubRecipeView : MonoBehaviour
@@ -409,6 +407,7 @@ namespace Nekoyume.UI
         private void UpdateInformation(int index)
         {
             long blockIndex = 0;
+            long maxBlockIndex = 0;
             BigInteger costNCG = 0;
             int costAP = 0;
             int recipeId = 0;
@@ -441,6 +440,7 @@ namespace Nekoyume.UI
                     var options = subRecipe.Options;
 
                     blockIndex += subRecipe.RequiredBlockIndex;
+                    maxBlockIndex = blockIndex + options.Sum(o => o.RequiredBlockIndex);
 
                     var isEventEquipment = Util.IsEventEquipmentRecipe(recipeId);
                     if (!isEventEquipment)
@@ -557,7 +557,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            blockIndexText.text = blockIndex.ToString();
+            blockIndexText.text = blockIndex +
+                                  (maxBlockIndex > 0 ? $" ~ {maxBlockIndex}" : string.Empty);
 
             var recipeInfo = new RecipeInfo
             {

@@ -74,8 +74,10 @@ namespace Nekoyume.UI
             }
 
             var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
+
             string premiumProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premium";
-            if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
+            if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
             {
                 int index = 0;
                 for (int i = 0; i < premiumProduct.FavList.Length && index < premiumRewards.Length; i++,index++)
@@ -86,7 +88,7 @@ namespace Nekoyume.UI
                 {
                     ItemViewSetItemData(premiumRewards[index], premiumProduct.FungibleItemList[i].SheetItemId, premiumProduct.FungibleItemList[i].Amount);
                 }
-                var _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.Sku);
+                var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.Sku);
                 if(_puchasingData != null)
                 {
                     foreach (var item in premiumPrices)
@@ -102,7 +104,7 @@ namespace Nekoyume.UI
                 premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
             }
 
-            if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(premiumPlusProductKey, out var premiumPlusProduct))
+            if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumPlusProductKey, out var premiumPlusProduct))
             {
                 int index = 0;
                 for (int i = 0; i < premiumPlusProduct.FavList.Length && index < premiumPlusRewards.Length; i++, index++)
@@ -113,7 +115,7 @@ namespace Nekoyume.UI
                 {
                     ItemViewSetItemData(premiumPlusRewards[index], premiumPlusProduct.FungibleItemList[i].SheetItemId, premiumPlusProduct.FungibleItemList[i].Amount);
                 }
-                var _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.Sku);
+                var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.Sku);
                 if (_puchasingData != null)
                 {
                     foreach (var item in premiumPlusPrices)

@@ -802,7 +802,7 @@ namespace Nekoyume.Blockchain
             var avatarAddress = Address.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    CreateAvatar2.DeriveFormat,
+                    CreateAvatar.DeriveFormat,
                     avatarIndex
                 )
             );

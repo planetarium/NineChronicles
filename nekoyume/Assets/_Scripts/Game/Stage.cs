@@ -1,3 +1,10 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+#if !UNITY_EDITOR && UNITY_STANDALONE
+#define RUN_ON_STANDALONE
+#endif
 //#define TEST_LOG
 
 using Cysharp.Threading.Tasks;
@@ -1194,10 +1201,19 @@ namespace Nekoyume.Game
                         yield return new WaitForSeconds(SkillDelay);
                     }
 
+                    var tickSkillInfo = new Skill.SkillInfo(affectedCharacter.Id,
+                        !affectedCharacter.IsAlive,
+                        0,
+                        0,
+                        false,
+                        SkillCategory.TickDamage,
+                        waveTurn,
+                        target: character
+                    );
                     affectedCharacter.actions.Add(
                         new ActionParams(affectedCharacter,
-                            null,
-                            null,
+                            tick.SkillInfos.Append(tickSkillInfo),
+                            tick.BuffInfos,
                             StunTick
                         ));
                     yield return null;
@@ -1211,7 +1227,7 @@ namespace Nekoyume.Game
                         affectedCharacter.actions.Add(
                             new ActionParams(affectedCharacter,
                                 tick.SkillInfos,
-                                null,
+                                tick.BuffInfos,
                                 affectedCharacter.CoHealWithoutAnimation));
                         yield return null;
                     }

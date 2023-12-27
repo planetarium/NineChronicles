@@ -78,12 +78,26 @@ public class SeasonPassServiceClient
 
     public class ClaimResultSchema
     {
+        [JsonPropertyName("reward_list")]
+        public List<ClaimSchema> RewardList { get; set; }
+        [JsonPropertyName("user")]
+        public UserSeasonPassSchema User { get; set; }
         [JsonPropertyName("items")]
         public List<ItemInfoSchema> Items { get; set; }
         [JsonPropertyName("currencies")]
         public List<CurrencyInfoSchema> Currencies { get; set; }
-        [JsonPropertyName("user")]
-        public UserSeasonPassSchema User { get; set; }
+    }
+
+    public class ClaimSchema
+    {
+        [JsonPropertyName("ticker")]
+        public string Ticker { get; set; }
+        [JsonPropertyName("amount")]
+        public int Amount { get; set; }
+        [JsonPropertyName("decimal_places")]
+        public int DecimalPlaces { get; set; }
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
     }
 
     public class CurrencyInfoSchema
@@ -134,13 +148,41 @@ public class SeasonPassServiceClient
         public int? Exp { get; set; }
     }
 
+    public class NewRewardSchema
+    {
+        [JsonPropertyName("level")]
+        public int Level { get; set; }
+        [JsonPropertyName("normal")]
+        public List<ClaimSchema> Normal { get; set; }
+        [JsonPropertyName("premium")]
+        public List<ClaimSchema> Premium { get; set; }
+    }
+
+    public class NewSeasonPassSchema
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        [JsonPropertyName("start_date")]
+        public string StartDate { get; set; }
+        [JsonPropertyName("end_date")]
+        public string EndDate { get; set; }
+        [JsonPropertyName("start_timestamp")]
+        public string StartTimestamp { get; set; }
+        [JsonPropertyName("end_timestamp")]
+        public string EndTimestamp { get; set; }
+        [JsonPropertyName("reward_list")]
+        public List<NewRewardSchema> RewardList { get; set; }
+    }
+
     [JsonConverter(typeof(PlanetIDTypeConverter))]
     public enum PlanetID
     {
         _0x000000000000,
         _0x000000000001,
+        _0x000000000002,
         _0x100000000000,
         _0x100000000001,
+        _0x100000000002,
     }
 
     public class PlanetIDTypeConverter : JsonConverter<PlanetID>
@@ -205,6 +247,14 @@ public class SeasonPassServiceClient
         public RewardDetailSchema Premium { get; set; }
     }
 
+    public class SeasonChangeRequestSchema
+    {
+        [JsonPropertyName("season_id")]
+        public int SeasonId { get; set; }
+        [JsonPropertyName("timestamp")]
+        public string? Timestamp { get; set; }
+    }
+
     public class SeasonPassSchema
     {
         [JsonPropertyName("id")]
@@ -213,6 +263,10 @@ public class SeasonPassServiceClient
         public string StartDate { get; set; }
         [JsonPropertyName("end_date")]
         public string EndDate { get; set; }
+        [JsonPropertyName("start_timestamp")]
+        public string StartTimestamp { get; set; }
+        [JsonPropertyName("end_timestamp")]
+        public string EndTimestamp { get; set; }
         [JsonPropertyName("reward_list")]
         public List<RewardSchema> RewardList { get; set; }
     }
@@ -231,6 +285,12 @@ public class SeasonPassServiceClient
         public bool IsPremium { get; set; }
         [JsonPropertyName("is_premium_plus")]
         public bool IsPremiumPlus { get; set; }
+        [JsonPropertyName("g_sku")]
+        public string GSku { get; set; }
+        [JsonPropertyName("a_sku")]
+        public string ASku { get; set; }
+        [JsonPropertyName("reward_list")]
+        public List<ClaimSchema> RewardList { get; set; }
     }
 
     public class UserSeasonPassSchema
@@ -278,6 +338,26 @@ public class SeasonPassServiceClient
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
                 SeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<SeasonPassSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task GetSeasonpassCurrentNewAsync(Action<NewSeasonPassSchema> onSuccess, Action<string> onError)
+    {
+        string url = Url + "/api/season-pass/current/new";
+        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        {
+            try
+            {
+                var response = await _client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                NewSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<NewSeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
             catch (Exception ex)
@@ -448,6 +528,65 @@ public class SeasonPassServiceClient
                 var responseBody = await response.Content.ReadAsStringAsync();
                 UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostTmpChangeseasonAsync(SeasonChangeRequestSchema requestBody, Action<SeasonPassSchema> onSuccess, Action<string> onError)
+    {
+        string url = Url + "/api/tmp/change-season";
+        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        {
+            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            try
+            {
+                var response = await _client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                SeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<SeasonPassSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task GetBlockstatusAsync(Action<string> onSuccess, Action<string> onError)
+    {
+        string url = Url + "/api/block-status";
+        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        {
+            try
+            {
+                var response = await _client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                onSuccess?.Invoke(responseBody);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task GetInvalidclaimAsync(Action<string> onSuccess, Action<string> onError)
+    {
+        string url = Url + "/api/invalid-claim";
+        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        {
+            try
+            {
+                var response = await _client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                onSuccess?.Invoke(responseBody);
             }
             catch (Exception ex)
             {

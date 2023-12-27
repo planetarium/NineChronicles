@@ -14,14 +14,6 @@ namespace Nekoyume.L10n
     public class L10nImage : MonoBehaviour
     {
         [Serializable]
-        private enum Season
-        {
-            None,
-            Arena,
-            WorldBoss
-        }
-
-        [Serializable]
         private class SpritePair
         {
             public LanguageType languageType;
@@ -30,9 +22,6 @@ namespace Nekoyume.L10n
 
         [SerializeField]
         private SpritePair[] spritePairs;
-
-        [SerializeField]
-        private Season season;
 
         private Image _imageCache;
         private IDisposable _l10nManagerOnLanguageChangeDisposable;
@@ -57,23 +46,6 @@ namespace Nekoyume.L10n
         {
             _l10nManagerOnLanguageChangeDisposable?.Dispose();
             _l10nManagerOnLanguageChangeDisposable = null;
-        }
-
-        private void OnEnable()
-        {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            switch (season)
-            {
-                case Season.Arena:
-                    var arenaSheet = Game.Game.instance.TableSheets.ArenaSheet;
-                    var arenaRoundData = arenaSheet.GetRoundByBlockIndex(blockIndex);
-                    Image.enabled = arenaRoundData.ArenaType == ArenaType.Season;
-                    break;
-                case Season.WorldBoss:
-                    var worldBossStatus = WorldBossFrontHelper.GetStatus(blockIndex);
-                    Image.enabled = worldBossStatus == WorldBossStatus.Season;
-                    break;
-            }
         }
 
         private void SetLanguage(LanguageType languageType)

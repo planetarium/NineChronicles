@@ -53,6 +53,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c92fe3d095abff94c91406ab49eb834d, type: 3}
   - {fileID: 21300000, guid: d2d26ae070217b64080b83260e8cd73e, type: 3}
   - {fileID: 21300000, guid: 17d24e0127b8b9f4eb9ecfaad9e9065e, type: 3}
+  - {fileID: 21300000, guid: f85b246121d4c4941a48265fe92dd61d, type: 3}
+  - {fileID: 21300000, guid: c93efb61b3d03854ebba0a94f995fe91, type: 3}
   - {fileID: 21300000, guid: 92b1d562e03127b4b8ae1473bf7c0bcf, type: 3}
   - {fileID: 21300000, guid: 1b3f70b266c320e409043ea6db7019ff, type: 3}
   - {fileID: 21300000, guid: 25dd65d27bc687748967353c8b30022b, type: 3}
@@ -76,6 +78,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6ba4eff7fb2b2304090072f54e2ce945, type: 3}
   - {fileID: 21300000, guid: 4483cd287de278c408e4510498df7966, type: 3}
   - {fileID: 21300000, guid: 6c3b25a8fce430f43aa84c4fb85a1a55, type: 3}
+  - {fileID: 21300000, guid: 6b00c4293c563ce42979e5c1bf020f9e, type: 3}
   - {fileID: 21300000, guid: 42abb5898ce1c954bacb20420fbd0500, type: 3}
   - {fileID: 21300000, guid: f737d8b9a8688ab459791456f0a48b04, type: 3}
   - {fileID: 21300000, guid: c8ec3cb9ec9dd0643a69f37236872618, type: 3}
@@ -90,6 +93,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4eba0adb7c19356438e672d77ea45d22, type: 3}
   - {fileID: 21300000, guid: 0b3e9c6c744c65347a05569b714c9457, type: 3}
   - {fileID: 21300000, guid: 6c13927cbce3cf8468cb9d92ef9ff966, type: 3}
+  - {fileID: 21300000, guid: 42d265ecab69f2c47b6923e36bc6173a, type: 3}
   - {fileID: 21300000, guid: 4a0afafc05e44f943bded6501be44f8d, type: 3}
   - {fileID: 21300000, guid: 6906ed1dae15cc744b94ac018a39af2f, type: 3}
   - {fileID: 21300000, guid: bd88f33d9e3f1a84d9356bd6c24e350d, type: 3}
@@ -102,6 +106,8 @@ SpriteAtlas:
   - UI_PFP_Bg_Inside
   - Img_DCC_02
   - DccCollection_Character_floor_4
+  - PetInfo_Bg
+  - PetInfo_Bg_Arrow
   - Bg_NotConnected
   - EquipPet_bg_Empty
   - DccCollection_Character_floor
@@ -125,6 +131,7 @@ SpriteAtlas:
   - DccCollection_Type_Bg
   - Img_DCC_Name_Bg
   - Available
+  - Gradiant_bg
   - button_brown_eye_off
   - UI_PFP_Bg_2
   - PetCard_Light
@@ -139,6 +146,7 @@ SpriteAtlas:
   - Icon_NotConnected
   - button_Blue_01
   - Img_DCC_01
+  - DCC_BG
   - Bg_Connecting
   - UI_PFP_Bg_1
   - DccCollection_Character_floor_2

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
@@ -71,33 +71,6 @@ namespace Nekoyume.Helper
                     }));
                 }
             }
-            else if (itemBase.ItemSubType is ItemSubType.FoodMaterial)
-            {
-                var eventDungeonRows = RxProps
-                    .EventDungeonStageRows
-                    .GetStagesContainsReward(itemBase.Id)
-                    .OrderByDescending(s => s.Key)
-                    .ToList();
-                if (eventDungeonRows.Any())
-                {
-                    var scheduleRow = RxProps.EventScheduleRowForDungeon.Value;
-                    if (scheduleRow is not null)
-                    {
-                        var eventStages =
-                            SelectStagesByRecommendationPriority(eventDungeonRows, itemBase.Id, true);
-                        if (eventStages.Any())
-                        {
-                            acquisitionPlaceList.AddRange(eventStages.Select(stage =>
-                                MakeAcquisitionPlaceModelByPlaceType(
-                                    caller,
-                                    PlaceType.EventDungeonStage,
-                                    RxProps.EventDungeonRow.Id,
-                                    stage))
-                            );
-                        }
-                    }
-                }
-            }
             else if (itemBase.ItemSubType is ItemSubType.Hourglass
                      or ItemSubType.ApStone)
             {
@@ -120,6 +93,31 @@ namespace Nekoyume.Helper
                         MakeAcquisitionPlaceModelByPlaceType(caller,
                             PlaceType.Quest)
                     );
+                }
+            }
+
+            var eventDungeonRows = RxProps
+                                .EventDungeonStageRows
+                                .GetStagesContainsReward(itemBase.Id)
+                                .OrderByDescending(s => s.Key)
+                                .ToList();
+            if (eventDungeonRows.Any())
+            {
+                var scheduleRow = RxProps.EventScheduleRowForDungeon.Value;
+                if (scheduleRow is not null)
+                {
+                    var eventStages =
+                        SelectStagesByRecommendationPriority(eventDungeonRows, itemBase.Id, true);
+                    if (eventStages.Any())
+                    {
+                        acquisitionPlaceList.AddRange(eventStages.Select(stage =>
+                            MakeAcquisitionPlaceModelByPlaceType(
+                                caller,
+                                PlaceType.EventDungeonStage,
+                                RxProps.EventDungeonRow.Id,
+                                stage))
+                        );
+                    }
                 }
             }
 

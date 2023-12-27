@@ -281,10 +281,7 @@ namespace Nekoyume.UI.Module
 
         private static void ChargeAP()
         {
-            var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
-                .First(r => r.ItemSubType == ItemSubType.ApStone);
-            var apStone = new Nekoyume.Model.Item.Material(apStoneRow);
-            Game.Game.instance.ActionManager.ChargeActionPoint(apStone).Subscribe();
+            Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe();
         }
 
         private void GetDailyReward()

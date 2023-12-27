@@ -145,30 +145,6 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        public void SetData(TViewModel model, bool isConsumable)
-        {
-            if (model is null)
-            {
-                Clear();
-                return;
-            }
-
-            base.SetData(model.ItemBase.Value);
-
-            _disposablesAtSetData.DisposeAllAndClear();
-            Model = model;
-            Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
-            Model.Enhancement.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
-            Model.EnhancementEnabled.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
-            Model.EnhancementEffectEnabled
-                .Subscribe(x => enhancementImage.gameObject.SetActive(x))
-                .AddTo(_disposablesAtSetData);
-            Model.Selected.SubscribeTo(selection).AddTo(_disposablesAtSetData);
-
-            UpdateView();
-            SetOptionTag(Model.ItemBase.Value);
-        }
-
         public void SetDataExceptOptionTag(TViewModel model)
         {
             if (model is null)

@@ -226,7 +226,7 @@ namespace Nekoyume.UI
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
-            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase), false);
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
             loadingScreen.SetCloseAction(null);
             loadingScreen.OnDisappear = () => Close();
             yield return new WaitForSeconds(.5f);
