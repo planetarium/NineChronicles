@@ -9,11 +9,11 @@ ITEM_TYPE_Consumable,Food,음식,Comida,食料,Alimento,อาหาร,makanan,
 ITEM_TYPE_Equipment,Equipment,장비,Equipamento,装備,Equipamento,อุปกรณ์,perlengkapan,Снаряжение,装备,裝備,Kagamitan,Trang bị
 ITEM_TYPE_Material,Material,재료,Material,素材,Material,วัตถุดิบ,materi,Материалы,材料,材料,Materyal,Nguyên liệu
 ITEM_SUB_TYPE_Food,Food,음식,Comida,食料,Alimento,อาหาร,makanan,Еда,食品,食物,Pagkain,Thức ăn
-ITEM_SUB_TYPE_FullCostume,Full Costume,전신 코스튬,TrajeCompleto,全身コスチューム,Atuendo completo,เครื่องแต่งกายครบเซ็ต,kostum seluruh tubuh,Внеший облик,全套服装,完整的服裝,Buong Kasuotan,Trang phục đầy đủ
-ITEM_SUB_TYPE_HairCostume,Hair Costume,헤어 코스튬,TrajeCabelo,髪型,Cabello cosmético,เครื่องแต่งกายผม,kostum rambut,Волосы,发饰,頭髮服裝,Kasuotang Pambuhok,Trang phục tóc
-ITEM_SUB_TYPE_EarCostume,Ear Costume,귀 코스튬,TrajeOrelha,耳の型,Orejas cosméticas,เครื่องแต่งกายหู,kostum kuping,Уши,耳饰,耳服,Kasuotang Pangtainga,Trang phục tai
-ITEM_SUB_TYPE_EyeCostume,Eye Costume,눈 코스튬,TrajeOlho,目の型,Ojos cosméticos,เครื่องแต่งกายตา,kostum mata,Глаза,眼饰,眼睛服裝,Kasuotang Pangmata,Trang phục mắt
-ITEM_SUB_TYPE_TailCostume,Tail Costume,꼬리 코스튬,TrajeCauda,尻尾の型,Cola cosmética,เครื่องแต่งกายหาง,kostum buntut,Хвост,尾饰,尾衣,Kasuotang Pangbuntot,Trang phục đuôi
+ITEM_SUB_TYPE_FullCostume,Full Costume,전신 코스튬,TrajeCompleto,コスチューム,Atuendo completo,เครื่องแต่งกายครบเซ็ต,kostum seluruh tubuh,Внеший облик,全套服装,完整的服裝,Buong Kasuotan,Trang phục đầy đủ
+ITEM_SUB_TYPE_HairCostume,Hair Costume,헤어 코스튬,TrajeCabelo,髪,Cabello cosmético,เครื่องแต่งกายผม,kostum rambut,Волосы,发饰,頭髮服裝,Kasuotang Pambuhok,Trang phục tóc
+ITEM_SUB_TYPE_EarCostume,Ear Costume,귀 코스튬,TrajeOrelha,耳,Orejas cosméticas,เครื่องแต่งกายหู,kostum kuping,Уши,耳饰,耳服,Kasuotang Pangtainga,Trang phục tai
+ITEM_SUB_TYPE_EyeCostume,Eye Costume,눈 코스튬,TrajeOlho,目,Ojos cosméticos,เครื่องแต่งกายตา,kostum mata,Глаза,眼饰,眼睛服裝,Kasuotang Pangmata,Trang phục mắt
+ITEM_SUB_TYPE_TailCostume,Tail Costume,꼬리 코스튬,TrajeCauda,尻尾,Cola cosmética,เครื่องแต่งกายหาง,kostum buntut,Хвост,尾饰,尾衣,Kasuotang Pangbuntot,Trang phục đuôi
 ITEM_SUB_TYPE_Title,Title,칭호,Título,タイトル,Título,ยศ,Gelar,Оглавление,标题,標題,Titulo,Danh hiệu
 ITEM_SUB_TYPE_Weapon,Weapon,무기,Arma,武器,Arma,อาวุธ,Senjata,Оружие,武器,武器,Sandata,Vũ khí
 ITEM_SUB_TYPE_RangedWeapon,Ranged Weapon,원거리 무기,Arma de alcance,遠距離武器,Arma de rango,อาวุธระยะไกล,Senjata jarak jauh,Оружие дальнего боя,远程武器,遠程武器,May Saklaw na Sandata,Vũ khí xa
@@ -23,16 +23,16 @@ ITEM_SUB_TYPE_Necklace,Necklace,목걸이,Colar,ネックレス,Collar,สร้
 ITEM_SUB_TYPE_Ring,Ring,반지,Anel,リング,Anillo,แหวน,cincin,Кольцо,戒指,戒指,Singsing,Nhẫn
 ITEM_SUB_TYPE_Helm,Helmet,투구,Capacete,ヘルム,Casco,หมวก,helm,Шлем,头盔,頭盔,Helmet,Mũ bảo hiểm
 ITEM_SUB_TYPE_Aura,Aura,아우라,Aura,オーラ,Aura,ออร่า,Aura,Аура,光环,光環,Aura,Ánh sáng
-ITEM_SUB_TYPE_GRADE_1,Normal,노멀,Normal,正常,Normal,ปกติ,Normal,Обычный,普通的,普通的,Normal,Bình thường
+ITEM_SUB_TYPE_GRADE_1,Normal,노멀,Normal,ノーマル,Normal,ปกติ,Normal,Обычный,普通的,普通的,Normal,Bình thường
 ITEM_SUB_TYPE_GRADE_2,Rare,레어,Cru,レア,Raro,หายาก,Langka,Редкий,稀有的,稀有的,Bihira,Hiếm
-ITEM_SUB_TYPE_GRADE_3,Epic,에픽,Épico,大作,Épico,มหากาพย์,Epik,эпический,史诗,史詩,Epiko,Huyền bí
+ITEM_SUB_TYPE_GRADE_3,Epic,에픽,Épico,エピック,Épico,มหากาพย์,Epik,эпический,史诗,史詩,Epiko,Huyền bí
 ITEM_SUB_TYPE_GRADE_4,Unique,유니크,Único,ユニーク,Único,เป็นเอกลักษณ์,Unik,Уникальный,独特,獨特的,Natatangi,Độc đáo
-ITEM_SUB_TYPE_GRADE_5,Legend,레전드,Lenda,伝説,Legendario,ตำนาน,Legenda,легенда,传奇,傳奇,Maalamat,Huyền thoại
+ITEM_SUB_TYPE_GRADE_5,Legend,레전드,Lenda,レジェンド,Legendario,ตำนาน,Legenda,легенда,传奇,傳奇,Maalamat,Huyền thoại
 ITEM_SUB_TYPE_Set,Set Item,세트 아이템,Colocar itens,セットアイテム,Conjunto,เซ็ตไอเท็ม,item set,Комплект брони,套装,設置項目,Set na Gamit,Bộ mục
 ITEM_SUB_TYPE_Shoes,Shoes,신발,Sapatos,シューズ,Zapatos,รองเท้า,sepatu,Обувь,鞋子,鞋,Sapatos,Giày
 ITEM_SUB_TYPE_EquipmentMaterial,Equipment Material,장비 재료,Material para equipamento,装備素材,Material de equipamento,วัตถุุดิบของใช้,bahan perlengkapan,Материалы экипировки,装备材料,裝備材料,Materyal ng Kagamitan,Nguyên liệu trang bị
-ITEM_SUB_TYPE_FoodMaterial,Food Material,음식 재료,Material para comida,調理素材,Material de alimento,วัตถุดิบอาหาร,bahan makanan,Ингридиенты еды,食品材料,食物材料,Materyal ng Pagkain,Nguyên liệu thức ăn
-ITEM_SUB_TYPE_MonsterPart,Monster Part,몬스터 파츠,Pedaço de monstro,モンスターのパーツ,Parte de monstruo,ชิ้นส่วนมอนสเตอร์,bagian monster,Части монстров,怪物肢体,怪物部分,Piraso ng Halimaw,Bộ phận quái vật
+ITEM_SUB_TYPE_FoodMaterial,Food Material,음식 재료,Material para comida,食材,Material de alimento,วัตถุดิบอาหาร,bahan makanan,Ингридиенты еды,食品材料,食物材料,Materyal ng Pagkain,Nguyên liệu thức ăn
+ITEM_SUB_TYPE_MonsterPart,Monster Part,몬스터 파츠,Pedaço de monstro,モンスターパーツ,Parte de monstruo,ชิ้นส่วนมอนสเตอร์,bagian monster,Части монстров,怪物肢体,怪物部分,Piraso ng Halimaw,Bộ phận quái vật
 ITEM_SUB_TYPE_NormalMaterial,Normal Material,일반 재료,Material normal,ノーマル素材,Material normal,วัตถุดิบทั่วไป,materi umum,Обычные материалы,普通材料,正常材料,Normal na Materyal,Nguyên liệu bình thường
 TRADE_TYPE_Buy,Buy,구매,Compra,購入,Comprar,ซื้อ,beli,Купить,购买,買,Bilihin,Mua
 TRADE_TYPE_Sell,Sell,판매,Venda,売却,Comprar,ขาย,jual,Продать,出售,賣,Ibenta,Bán
