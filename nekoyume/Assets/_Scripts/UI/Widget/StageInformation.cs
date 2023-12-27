@@ -114,7 +114,7 @@ namespace Nekoyume.UI
             Close(true);
         }
 
-        private void RefreshSeasonPassCourageAmount()
+        private void RefreshSeasonPassCourageAmount(bool isEventDungeon = false)
         {
             if(Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
@@ -122,7 +122,15 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount}";
+
+                if (isEventDungeon)
+                {
+                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.EventDungeonCourageAmount}";
+                }
+                else
+                {
+                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount}";
+                }
             }
             else
             {
@@ -211,7 +219,7 @@ namespace Nekoyume.UI
             world.Set(eventDungeonRow);
             world.Set(openedStageId, nextStageId);
             world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, nextStageId);
-            RefreshSeasonPassCourageAmount();
+            RefreshSeasonPassCourageAmount(true);
             base.Show(true);
         }
 

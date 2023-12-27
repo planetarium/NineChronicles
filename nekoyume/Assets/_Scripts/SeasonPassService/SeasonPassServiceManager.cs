@@ -15,6 +15,7 @@ namespace Nekoyume
         public int AdventureSweepCourageAmount = 10;
         public int ArenaCourageAmount = 10;
         public int WorldBossCourageAmount = 10;
+        public int EventDungeonCourageAmount = 10;
 
         public SeasonPassServiceClient Client { get; private set; }
 
@@ -89,6 +90,9 @@ namespace Nekoyume
                             break;
                         case SeasonPassServiceClient.ActionType.raid:
                             WorldBossCourageAmount = item.Exp;
+                            break;
+                        case SeasonPassServiceClient.ActionType.event_dungeon:
+                            EventDungeonCourageAmount = item.Exp;
                             break;
                         default:
                             break;
