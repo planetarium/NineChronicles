@@ -234,6 +234,7 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(states), states, null);
             }
+
             UpdateSubmitButton();
         }
 
@@ -403,7 +404,6 @@ namespace Nekoyume.UI
                     });
                     break;
                 case States.FindPassphrase:
-                {
                     if (CheckPrivateKeyHex())
                     {
                         SetState(States.ResetPassphrase);
@@ -413,8 +413,8 @@ namespace Nekoyume.UI
                         findPrivateKeyWarning.SetActive(true);
                         findPassphraseField.text = null;
                     }
+
                     break;
-                }
                 case States.ResetPassphrase:
                     ResetPassphrase();
                     Login = _privateKey is not null;
@@ -492,19 +492,19 @@ namespace Nekoyume.UI
                 case States.CreateAccount:
                 case States.ResetPassphrase:
                 case States.SetPassword:
-                {
                     {
-                        if (passPhraseField.isFocused)
                         {
-                            retypeField.Select();
+                            if (passPhraseField.isFocused)
+                            {
+                                retypeField.Select();
+                            }
+                            else
+                            {
+                                passPhraseField.Select();
+                            }
                         }
-                        else
-                        {
-                            passPhraseField.Select();
-                        }
+                        break;
                     }
-                    break;
-                }
                 case States.Login:
                     loginField.Select();
                     break;
@@ -638,8 +638,8 @@ namespace Nekoyume.UI
                 States.Login => !string.IsNullOrEmpty(loginField.text),
                 States.FindPassphrase => !string.IsNullOrEmpty(findPassphraseField.text),
                 States.Login_Mobile => !string.IsNullOrEmpty(loginField.text),
-                States.ResetPassphrase =>  CheckPasswordValidInCreate(),
-                States.SetPassword =>  CheckPasswordValidInCreate(),
+                States.ResetPassphrase => CheckPasswordValidInCreate(),
+                States.SetPassword => CheckPasswordValidInCreate(),
                 _ => false
             };
         }
@@ -750,8 +750,8 @@ namespace Nekoyume.UI
             var ms = new MemoryStream();
             image.SaveAsPng(ms);
             var buffer = new byte[ms.Length];
-            ms.Read(buffer,0,buffer.Length);
-            var t = new Texture2D(8,8);
+            ms.Read(buffer, 0, buffer.Length);
+            var t = new Texture2D(8, 8);
             if (t.LoadImage(ms.ToArray()))
             {
                 var sprite = Sprite.Create(t, new Rect(0, 0, t.width, t.height), Vector2.zero);
