@@ -1,6 +1,115 @@
+keychain_name = "temporary_keychain"
+keychain_password = SecureRandom.base64
+
 platform :android do
     desc "Upload a new Android internal version to Google Play"
     lane :internal do
         upload_to_play_store(track: 'internal', release_status: 'completed', aab: "#{ENV['ANDROID_BUILD_FILE_PATH']}")
     end
 end
+
+platform :ios do
+    desc "Push a new release build to the App Store"
+    lane :release do
+      api_key = app_store_connect_api_key(
+        key_id: ENV['ASC_KEY_ID'], # your key id
+        issuer_id: ENV['ASC_ISSUER_ID'], # your issuer id
+        key_content: ENV['ASC_KEY_CONTENT'], # your secret key body
+      )
+      upload_to_app_store(
+        api_key: api_key, # pass api_key
+        force: true,
+        skip_screenshots: true,
+        skip_metadata: true,
+        precheck_include_in_app_purchases: false
+      )
+    end
+  
+    desc "Submit a new Beta Build to Apple TestFlight"
+    lane :beta do
+      api_key = app_store_connect_api_key(
+        key_id: ENV['ASC_KEY_ID'], # your key id
+        issuer_id: ENV['ASC_ISSUER_ID'], # your issuer id
+        key_content: ENV['ASC_KEY_CONTENT'], # your secret key body
+      )
+      upload_to_testflight(
+        api_key: api_key, # pass api_key
+        skip_waiting_for_build_processing: true
+      )
+    end
+  
+    desc "Create .ipa"
+    lane :build do
+      cocoapods(podfile: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Podfile")
+      disable_automatic_code_signing(path: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Unity-iPhone.xcodeproj")
+      certificates
+      update_project_provisioning(
+        xcodeproj: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Unity-iPhone.xcodeproj",
+        target_filter: "Unity-iPhone",
+        profile: ENV["sigh_#{ENV['IOS_APP_ID']}_appstore_profile-path"],
+        code_signing_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})"
+      )
+      api_key = app_store_connect_api_key(
+        key_id: ENV['ASC_KEY_ID'], # your key id
+        issuer_id: ENV['ASC_ISSUER_ID'], # your issuer id
+        key_content: ENV['ASC_KEY_CONTENT'], # your secret key body
+      )
+      previous_build_number = latest_testflight_build_number(
+        app_identifier: ENV['IOS_APP_ID'],
+        api_key: api_key,
+      )
+      current_build_number = previous_build_number + 1
+      increment_build_number(
+        xcodeproj: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Unity-iPhone.xcodeproj",
+        build_number: current_build_number
+      )
+      set_info_plist_value(path: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Info.plist", key: "ITSAppUsesNonExemptEncryption", value: false)
+      gym(
+        workspace: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Unity-iPhone.xcworkspace",
+        scheme: "Unity-iPhone",
+        clean: true,
+        #clean: false,
+        skip_profile_detection: true,
+        codesigning_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})",
+        export_method: "app-store",
+        export_options: {
+          method: "app-store",
+          provisioningProfiles: {
+            ENV["IOS_APP_ID"] => "match AppStore #{ENV['IOS_APP_ID']}"
+          }
+        },
+        xcargs: "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']}"
+      )
+    end
+  
+    desc "Synchronize certificates"
+    lane :certificates do
+      cleanup_keychain
+      create_keychain(
+        name: keychain_name,
+        password: keychain_password,
+        default_keychain: true,
+        lock_when_sleeps: true,
+        timeout: 3600,
+        unlock: true
+      )
+      match(
+        type: "appstore",
+        readonly: true,
+        keychain_name: keychain_name,
+        keychain_password: keychain_password
+      )
+    end
+  
+    lane :cleanup_keychain do
+      if File.exist?(File.expand_path("~/Library/Keychains/#{keychain_name}-db"))
+        delete_keychain(name: keychain_name)
+      end
+    end
+  
+    after_all do
+      if File.exist?(File.expand_path("~/Library/Keychains/#{keychain_name}-db"))
+        delete_keychain(name: keychain_name)
+      end
+    end
+  end
