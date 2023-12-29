@@ -38,6 +38,7 @@ public class SeasonPassServiceClient
         hack_and_slash_sweep,
         battle_arena,
         raid,
+        event_dungeon,
     }
 
     public class ActionTypeTypeConverter : JsonConverter<ActionType>

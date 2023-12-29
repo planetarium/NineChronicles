@@ -310,7 +310,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 1
   fixedSpacingOption: 1
   fixedMarginOption: 1
-  fontMaterialType: 13
+  fontMaterialType: 35
   l10nKey: UI_SEASONPASS_BONUS_REWARD_INFO
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -5942,7 +5942,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3896485022891584367}
   m_HandleRect: {fileID: 2405230519495336861}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 1.0000001
   m_Size: 0.26285714
   m_NumberOfSteps: 0
   m_OnValueChanged:

@@ -1,0 +1,244 @@
+clusterName: 9c-main-v2
+logLevel: debug
+appProtocolVersion: 100372/AB2da648b9154F2cCcAFBD85e0Bc3d51f97330Fc/MEQCIBhgbq3JyV4qbzuiikUXmiDVqdaQWQ25PDUVu1wU29XOAiBu7HN9KJKtIumOPsgmDCp46k02IZhulXodhkoQPaZwaw==/ZHU4OmxhdW5jaGVydTQyOjEvNTk1OTY0OWE3NTE5NWE3YTUzYzU2Nzk0NmU3ZTVhZWRiMjFhYTU3ZXU2OnBsYXllcnU0MjoxLzVlMDNkMDI4YTkzNjQzNzQ2MjYxMjRiMDM2NDU1YTY0Y2ZjYzUzODJ1OTp0aW1lc3RhbXB1MTA6MjAyMy0wMy0yMGU=
+genesisBlockPath: https://release.nine-chronicles.com/genesis-block-9c-main
+trustedAppProtocolVersionSigner: 030ffa9bd579ee1503ce008394f687c182279da913bfaec12baca34e79698a7cd1
+peerStrings:
+- 027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,9c-main-tcp-seed-1.planetarium.dev,31234
+- 02f164e3139e53eef2c17e52d99d343b8cbdb09eeed88af46c352b1c8be6329d71,9c-main-tcp-seed-2.planetarium.dev,31234
+- 0247e289aa332260b99dfd50e578f779df9e6702d67e50848bb68f3e0737d9b9a5,9c-main-tcp-seed-3.planetarium.dev,31234
+iceServers:
+- turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478
+- turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us2.planetarium.dev:3478
+- turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us3.planetarium.dev:3478
+- turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us4.planetarium.dev:3478
+- turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us5.planetarium.dev:3478
+networkType: Main
+consensusType: pow
+useExternalSecret: true
+slackToken: ''
+slackWebHookUrl: ''
+snapshot:
+  resetSnapshot: false
+  slackChannel: 9c-mainnet
+  image: planetariumhq/ninechronicles-snapshot:git-9af8f34a244a3c1ce1bcd16d12cf61807319b8d7
+  cfDistributionId: ''
+  aws_access_key_id: ''
+  aws_secret_access_key: ''
+volumeReclaimPolicy: Retain
+seed:
+  count: 3
+  useTurnServer: false
+  image:
+    repository: planetariumhq/libplanet-seed
+    pullPolicy: IfNotPresent
+    tag: git-c984fa6e98016527e95fe9b50c39a2bf247bcfb6
+  hosts:
+  - 9c-main-tcp-seed-1.planetarium.dev
+  - 9c-main-tcp-seed-2.planetarium.dev
+  - 9c-main-tcp-seed-3.planetarium.dev
+  ports:
+    node: 31234
+    gossip: 31235
+    graphql: 31237
+  workerCount: 1000
+  extraArgs: []
+  privateKeys: []
+  env: []
+  resources:
+    requests:
+      cpu: 1
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+miner:
+  count: 1
+  useTurnServer: false
+  image:
+    repository: planetariumhq/ninechronicles-headless
+    pullPolicy: IfNotPresent
+    tag: '123'
+  hosts: []
+  ports:
+    headless: 31234
+    graphql: 80
+  extraArgs: []
+  privateKeys: []
+  storage:
+    data: 1000Gi
+  env: []
+  resources:
+    requests:
+      cpu: 2
+      memory: 20Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+remoteHeadless:
+  count: 5
+  image:
+    repository: planetariumhq/ninechronicles-headless
+    pullPolicy: IfNotPresent
+    tag: '123'
+  extraArgs: []
+  useTurnServer: false
+  hosts:
+  - 9c-main-rpc-1.nine-chronicles.com
+  - 9c-main-rpc-2.nine-chronicles.com
+  - 9c-main-rpc-3.nine-chronicles.com
+  - 9c-main-rpc-4.nine-chronicles.com
+  - 9c-main-rpc-5.nine-chronicles.com
+  ports:
+    headless: 31234
+    graphql: 80
+    rpc: 31238
+  storage:
+    data: 1000Gi
+    log: 10Gi
+  resources:
+    requests:
+      cpu: 2
+      memory: 20Gi
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  tolerations: []
+  affinity: {}
+dataProvider:
+  enabled: true
+  render: true
+  storage:
+    data: 1000Gi
+    log: 10Gi
+  image:
+    repository: planetariumhq/ninechronicles-dataprovider
+    pullPolicy: IfNotPresent
+    tag: git-abd48b0c11da9daaaf3a3e7cf7f514100dc1ecc9
+  db:
+    database: ''
+    connectionString: ''
+    host: ''
+    port: 3306
+    user: user
+    password: ''
+explorer:
+  image:
+    repository: planetariumhq/ninechronicles-headless
+    pullPolicy: IfNotPresent
+    tag: '123'
+  extraArgs: []
+  useTurnServer: true
+  hosts: []
+  ports:
+    headless: 31234
+    graphql: 80
+  storage:
+    data: 1000Gi
+    log: 10Gi
+  resources:
+    requests:
+      cpu: 1
+      memory: 6Gi
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  tolerations: []
+  affinity: {}
+fullState:
+  image:
+    repository: planetariumhq/ninechronicles-headless
+    pullPolicy: IfNotPresent
+    tag: '123'
+  extraArgs: []
+  useTurnServer: true
+  hosts: []
+  ports:
+    headless: 31234
+    graphql: 80
+  storage:
+    data: 1000Gi
+  resources:
+    requests:
+      cpu: 2
+      memory: 20Gi
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  tolerations: []
+  affinity: {}
+onboardingHeadless:
+  enabled: true
+  image:
+    repository: planetariumhq/ninechronicles-headless
+    pullPolicy: IfNotPresent
+    tag: '123'
+  extraArgs: []
+  ports:
+    headless: 31234
+    graphql: 80
+  storage:
+    data: 1000Gi
+  resources:
+    requests:
+      cpu: 1
+      memory: 6Gi
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  tolerations: []
+  affinity: {}
+worldBoss:
+  enabled: true
+  ports:
+    targetPort: 5000
+  image:
+    repository: planetariumhq/world-boss-service
+    pullPolicy: IfNotPresent
+    tag: git-dcd45759354524135d6ef2029cee451be2081474
+  worldBossEnv:
+    databaseUrl: ''
+    redisHost: ''
+    redisPort: ''
+    kmsKeyId: ''
+    slackToken: ''
+    celeryBrokerUrl: ''
+    celeryResultBackend: ''
+    slackSigningSecret: ''
+bridge:
+  enabled: true
+  bridgeObserverImage:
+    repository: planetariumhq/nine-chronicles-bridge-observer
+    pullPolicy: IfNotPresent
+    tag: git-da9637c9ee56051a252f11ff639ed2f0d674afc6
+  bridgeStatusBotImage:
+    repository: moreal/bridge-status-bot-alpine
+    pullPolicy: IfNotPresent
+    tag: 20210913-01
+  bridgeEnv:
+    privateKey: ''
+    mnemonic: ''
+    slackBridgeObserverToken: ''
+    slackWebToken: ''
+    etherscanToken: ''
+testHeadless:
+  enabled: true
+  count: 1
+  image:
+    repository: planetariumhq/ninechronicles-headless
+    pullPolicy: IfNotPresent
+    tag: '123'
+  extraArgs: []
+  useTurnServer: true
+  hosts:
+  - 9c-main-test-1.nine-chronicles.com
+  - 9c-main-test-2.nine-chronicles.com
+  ports:
+    headless: 31234
+    graphql: 80
+    rpc: 31238
+  storage:
+    data: 1000Gi
+  resources:
+    requests:
+      cpu: 2
+      memory: 20Gi
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  tolerations: []
+  affinity: {}

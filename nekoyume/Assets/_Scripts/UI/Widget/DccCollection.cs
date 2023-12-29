@@ -41,13 +41,10 @@ namespace Nekoyume.UI
         private Button lockedButton;
 
         [SerializeField]
-        private Button levelUpButton;
+        private ConditionalButton levelUpButton;
 
         [SerializeField]
         private TextMeshProUGUI levelText;
-
-        [SerializeField]
-        private TextMeshProUGUI levelUpButtonText;
 
         [SerializeField]
         private GameObject levelUpNotification;
@@ -86,7 +83,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_INFO_NEW_MERCHANDISE_ADDED_SOON"),
                     NotificationCell.NotificationType.Information);
             });
-            levelUpButton.onClick.AddListener(() =>
+            levelUpButton.OnSubmitSubject.Subscribe(_ =>
             {
                 var row = _selectedViewModel.PetRow;
                 if (States.Instance.PetStates.TryGetPetState(row.Id, out var petState))
@@ -97,7 +94,18 @@ namespace Nekoyume.UI
                 {
                     Find<PetEnhancementPopup>().ShowForSummon(row);
                 }
-            });
+            }).AddTo(gameObject);
+            levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
+                    NotificationCell.NotificationType.Information);
+            }).AddTo(gameObject);
+            LoadingHelper.PetEnhancement.Subscribe(id =>
+            {
+                levelUpButton.Interactable = id == 0;
+            }).AddTo(gameObject);
         }
 
         protected override void OnDisable()
@@ -166,8 +174,8 @@ namespace Nekoyume.UI
 
                     if (TableSheets.Instance.PetCostSheet[petId].TryGetCost(targetLevel, out _))
                     {
-                        levelText.color = Color.white;
-                        levelUpButtonText.text = L10nManager.Localize("UI_LEVEL_UP");
+                        levelUpButton.SetConditionalState(true);
+                        levelUpButton.Text = L10nManager.Localize("UI_LEVEL_UP");
 
                         var currentOption = petOptionMap[currentLevel];
                         var targetOption = petOptionMap[targetLevel];
@@ -176,8 +184,8 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        levelText.color = PetFrontHelper.GetUIColor(PetFrontHelper.MaxLevelText);
-                        levelUpButtonText.text = L10nManager.Localize("UI_INFO");
+                        levelUpButton.SetConditionalState(false);
+                        levelUpButton.Text = L10nManager.Localize("UI_INFO");
 
                         var currentOption = petOptionMap[currentLevel];
                         descriptionText.text = PetFrontHelper.GetDefaultDescriptionText(
@@ -187,8 +195,8 @@ namespace Nekoyume.UI
                 else
                 {
                     levelText.text = "-";
-                    levelText.color = Color.white;
-                    levelUpButtonText.text = L10nManager.Localize("UI_SUMMON");
+                    levelUpButton.SetConditionalState(true);
+                    levelUpButton.Text = L10nManager.Localize("UI_SUMMON");
                     levelUpNotification.SetActive(false);
 
                     var targetOption = petOptionMap[1];
