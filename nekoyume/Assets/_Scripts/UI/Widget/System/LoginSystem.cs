@@ -475,7 +475,9 @@ namespace Nekoyume.UI
             // 해당 함수를 호출했을 때에 유효한 Keystore가 있는 것을 기대하고 있음
             SetState(States.Login_Mobile);
             SetImage(KeyStore.List().First().Item2.Address);
-#else
+            base.Show();
+            return;
+#endif
             var state = KeyStore.ListIds().Any() ? States.Login : States.Show;
             SetState(state);
             Login = false;
@@ -515,7 +517,7 @@ namespace Nekoyume.UI
                 case States.Failed:
                     break;
             }
-#endif
+
             base.Show();
         }
 

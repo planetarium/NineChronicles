@@ -110,7 +110,7 @@ namespace Nekoyume.UI
                     return tutorialMaskLayer;
                 case WidgetType.Screen:
                     return screenLayer;
-            // SystemUI
+                // SystemUI
                 case WidgetType.System:
                     return systemLayer;
                 case WidgetType.Development:
@@ -495,7 +495,7 @@ namespace Nekoyume.UI
         public void InitWidgetInMain()
         {
             var layer = widgetLayer.root.transform;
-            for(int i = 0; i < layer.childCount; ++i)
+            for (int i = 0; i < layer.childCount; ++i)
             {
                 var child = layer.GetChild(i);
                 var widget = child.GetComponent<Widget>();
