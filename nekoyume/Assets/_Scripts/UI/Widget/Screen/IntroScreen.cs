@@ -67,7 +67,6 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject[] qrCodeGuideImages;
         [SerializeField] private TextMeshProUGUI qrCodeGuideText;
         [SerializeField] private Button qrCodeGuideNextButton;
-        [SerializeField] private CodeReaderView codeReaderView;
 
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
@@ -345,7 +344,7 @@ namespace Nekoyume.UI
             {
                 _guideIndex = GuideStartIndex;
                 qrCodeGuideContainer.SetActive(false);
-
+                var codeReaderView = FindOrCreate<BarcodeReaderSystem>();
                 codeReaderView.Show(res =>
                 {
                     var resultPpk = ProtectedPrivateKey.FromJson(res.Text);
