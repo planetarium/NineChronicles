@@ -1490,7 +1490,7 @@ namespace Nekoyume.Game
 
                     // NOTE: Update CommandlineOptions.PrivateKey finally.
                     _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
-                    Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
+                    Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey updated" +
                               $" to ({loginSystem.GetPrivateKey().Address}).");
                 }
 
@@ -1520,73 +1520,69 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Check already logged in or local passphrase.
-            if (loginSystem.Login ||
-                loginSystem.TryLoginWithLocalPpk())
+            PrivateKey localPk = null;
+            if (loginSystem.Login)
             {
-                Debug.Log("[Game] CoLogin()... LocalSystem.Login is true or" +
-                          " LoginSystem.TryLoginWithLocalPpk() is true.");
-                var pk = loginSystem.GetPrivateKey();
-
-                // NOTE: Update CommandlineOptions.PrivateKey.
-                _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
+                Debug.Log("[Game] CoLogin()... LocalSystem.Login is true.");
+                localPk = loginSystem.GetPrivateKey();
+                _commandLineOptions.PrivateKey = localPk.ToHexWithZeroPaddings();
                 Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey updated" +
-                          $" to ({pk.Address}).");
-
-                // NOTE: Check PlanetContext.CanSkipPlanetSelection.
-                //       If true, then update planet account infos for IntroScreen.
-                if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
-                {
-                    Debug.Log("[Game] CoLogin()... PlanetContext.CanSkipPlanetSelection is true.");
-                    dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
-                    yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
-                        planetContext,
-                        pk.Address,
-                        updateSelectedPlanetAccountInfo: true).ToCoroutine();
-                    dimmedLoadingScreen.Close();
-                    if (planetContext.HasError)
-                    {
-                        callback?.Invoke(false);
-                        yield break;
-                    }
-                }
+                          $" to ({localPk.Address}).");
+            }
+            else if (loginSystem.TryLoginWithLocalPpk())
+            {
+                Debug.Log("[Game] CoLogin()... LoginSystem.TryLoginWithLocalPpk() is true.");
+                localPk = loginSystem.GetPrivateKey();
+                _commandLineOptions.PrivateKey = localPk.ToHexWithZeroPaddings();
+                Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey updated" +
+                          $" to ({localPk.Address}).");
             }
             else
             {
-                Debug.Log("[Game] CoLogin()... LocalSystem.Login is false.");
+                Debug.Log("[Game] CoLogin()... LoginSystem.Login and TryLoginWithLocalPpk() are false.");
                 // NOTE: If we need to cover the Multiplanetary context on non-mobile platform,
                 //       we need to reconsider the invoking the IntroScreen.Show(pkPath, pk, planetContext)
                 //       in here.
             }
 
-            introScreen.SetData(
-                _commandLineOptions.KeyStorePath,
-                _commandLineOptions.PrivateKey,
-                planetContext);
+            // NOTE: Try fetching the planet account infos from the chain if the localPk is not null.
+            //       If the PlanetContext.CanSkipPlanetSelection true, then update planet account infos for IntroScreen.
+            if (localPk is not null &&
+                planetContext.CanSkipPlanetSelection.HasValue &&
+                planetContext.CanSkipPlanetSelection.Value)
+            {
+                Debug.Log("[Game] CoLogin()... PlanetContext.CanSkipPlanetSelection is true.");
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
+                yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
+                    planetContext,
+                    localPk.Address,
+                    updateSelectedPlanetAccountInfo: true).ToCoroutine();
+                dimmedLoadingScreen.Close();
+                if (planetContext.HasError)
+                {
+                    callback?.Invoke(false);
+                    yield break;
+                }
+            }
 
             if (planetContext.HasPledgedAccount)
             {
                 Debug.Log("[Game] CoLogin()... Has pledged account.");
-                var pk = loginSystem.GetPrivateKey();
                 introScreen.Show(
                     _commandLineOptions.KeyStorePath,
-                    pk.ToHexWithZeroPaddings(),
+                    _commandLineOptions.PrivateKey,
                     planetContext);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
                 yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
 
-                // NOTE: Update CommandlineOptions.PrivateKey finally.
-                _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
-                Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                          $" to ({pk.Address}).");
-
                 dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
                 sw.Reset();
                 sw.Start();
                 yield return Agent.Initialize(
                     _commandLineOptions,
-                    pk,
+                    localPk,
                     callback);
                 sw.Stop();
                 dimmedLoadingScreen.Close();
@@ -1597,7 +1593,6 @@ namespace Nekoyume.Game
             // NOTE: Show IntroScreen's tab to start button.
             //       It should be called after the PlanetSelector.InitializeSelectedPlanetInfo().
             //       Because the IntroScreen uses the PlanetContext.SelectedPlanetInfo.
-            //       And it should be called after the IntroScreen.SetData().
             introScreen.ShowTabToStart(
                 _commandLineOptions.KeyStorePath,
                 _commandLineOptions.PrivateKey,
