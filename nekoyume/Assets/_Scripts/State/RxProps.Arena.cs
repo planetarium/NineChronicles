@@ -242,6 +242,7 @@ namespace Nekoyume.State
             try
             {
                 var response = await Game.Game.instance.RpcGraphQLClient.QueryArenaInfoAsync(currentAvatarAddr);
+                // Arrange my information so that it comes first when it's the same score.
                 arenaInfo = response.StateQuery.ArenaParticipants
                     .OrderByDescending(participant => participant.Score)
                     .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
