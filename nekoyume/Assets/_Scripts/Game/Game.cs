@@ -1598,7 +1598,10 @@ namespace Nekoyume.Game
             //       It should be called after the PlanetSelector.InitializeSelectedPlanetInfo().
             //       Because the IntroScreen uses the PlanetContext.SelectedPlanetInfo.
             //       And it should be called after the IntroScreen.SetData().
-            introScreen.ShowTabToStart();
+            introScreen.ShowTabToStart(
+                _commandLineOptions.KeyStorePath,
+                _commandLineOptions.PrivateKey,
+                planetContext);
             Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickTabToStart.");
             yield return introScreen.OnClickTabToStart.AsObservable().First().StartAsCoroutine();
             Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickTabToStart. Done.");

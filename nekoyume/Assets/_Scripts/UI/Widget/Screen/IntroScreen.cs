@@ -253,8 +253,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public void ShowTabToStart()
+        public void ShowTabToStart(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
+            SetData(keyStorePath, privateKey, planetContext);
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             logoAreaGO.SetActive(false);
