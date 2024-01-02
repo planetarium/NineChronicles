@@ -17292,6 +17292,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3254498054321608292
 GameObject:
   m_ObjectHideFlags: 0
@@ -23530,6 +23534,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5071743345598877976
 GameObject:
   m_ObjectHideFlags: 0
@@ -27642,6 +27650,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6133795662732839529
 GameObject:
   m_ObjectHideFlags: 0
@@ -27801,6 +27813,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6232376047243125103
 GameObject:
   m_ObjectHideFlags: 0
@@ -30506,6 +30522,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571178197699181
 GameObject:
   m_ObjectHideFlags: 0
@@ -30609,6 +30629,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571178256630806
 GameObject:
   m_ObjectHideFlags: 0
@@ -30712,6 +30736,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571178442816237
 GameObject:
   m_ObjectHideFlags: 0
@@ -30815,6 +30843,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571178651658243
 GameObject:
   m_ObjectHideFlags: 0
@@ -30918,6 +30950,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571178858988038
 GameObject:
   m_ObjectHideFlags: 0
@@ -31021,6 +31057,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571179387110019
 GameObject:
   m_ObjectHideFlags: 0
@@ -31124,6 +31164,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571179504996808
 GameObject:
   m_ObjectHideFlags: 0
@@ -31227,6 +31271,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571179720843143
 GameObject:
   m_ObjectHideFlags: 0
@@ -31330,6 +31378,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7245571179925550360
 GameObject:
   m_ObjectHideFlags: 0
@@ -31433,6 +31485,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7292789130754733236
 GameObject:
   m_ObjectHideFlags: 0
@@ -40612,6 +40668,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -27
       objectReference: {fileID: 0}
+    - target: {fileID: 2630403382097967546, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: m_Alpha
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2685476841557223253, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -41733,6 +41794,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: -71.59
+      objectReference: {fileID: 0}
+    - target: {fileID: 6739559922495522271, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: duration
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6739559922495522271, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: managedReferences[3630279093130887168].duration
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6739559922495522271, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: managedReferences[3630279093130887168].flowType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6739559922495522271, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: managedReferences[3630279093130887168].loopType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6739559922495522271, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: managedReferences[3630279093130887168].loopCount
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6739559922495522271, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: managedReferences[3630279093130887169].ease.ease
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6745056461707600175, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
