@@ -3448,8 +3448,6 @@ namespace Nekoyume.Blockchain
 
                 if (mail is not null)
                 {
-                    mail.New = true;
-                    gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
                     if (mail.Memo != null && mail.Memo.Contains("season_pass"))
                     {
@@ -3585,7 +3583,10 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailBox = new MailBox(mailBoxList);
-                var sameBlockIndexMailList = mailBox.OfType<ClaimItemsMail>().Where(m => m.blockIndex == eval.BlockIndex);
+                var sameBlockIndexMailList = mailBox
+                    .OfType<ClaimItemsMail>()
+                    .Where(m => m.blockIndex == eval.BlockIndex)
+                    .ToList();
                 if (sameBlockIndexMailList.Any())
                 {
                     var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
@@ -3593,8 +3594,6 @@ namespace Nekoyume.Blockchain
                 }
                 if (mail is not null)
                 {
-                    mail.New = true;
-                    gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
                     if (mail.Memo != null && mail.Memo.Contains("season_pass"))
                     {
@@ -3694,7 +3693,10 @@ namespace Nekoyume.Blockchain
             var avatar = gameStates.CurrentAvatarState;
             var mailBox = avatar.mailBox;
             UnloadFromMyGaragesRecipientMail mail = null;
-            var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>().Where(m => m.blockIndex == eval.BlockIndex);
+            var sameBlockIndexMailList = mailBox
+                .OfType<UnloadFromMyGaragesRecipientMail>()
+                .Where(m => m.blockIndex == eval.BlockIndex)
+                .ToList();
             if (sameBlockIndexMailList.Any())
             {
                 var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
@@ -3703,8 +3705,6 @@ namespace Nekoyume.Blockchain
 
             if (mail is not null)
             {
-                mail.New = true;
-                gameStates.CurrentAvatarState.mailBox = mailBox;
                 LocalLayerModifier.AddNewMail(avatar.address, mail.id);
             }
             if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
