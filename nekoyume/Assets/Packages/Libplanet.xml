@@ -195,65 +195,6 @@
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no
             <see cref="T:Libplanet.Types.Tx.Transaction"/> with a given <paramref name="txId"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetState(Libplanet.Crypto.Address)">
-            <summary>
-            Gets the current state of given <paramref name="address"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/>.
-            </summary>
-            <param name="address">An <see cref="T:Libplanet.Crypto.Address"/> to get the states of.</param>
-            <returns>The current state of given <paramref name="address"/>.  This can be
-            <see langword="null"/> if <paramref name="address"/> has no value.</returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetState(Libplanet.Crypto.Address,System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetState(Libplanet.Crypto.Address,System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Crypto.Address})">
-            <summary>
-            Gets multiple states associated to the specified <paramref name="addresses"/>.
-            </summary>
-            <param name="addresses">Addresses of states to query.</param>
-            <returns>The states associated to the specified <paramref name="addresses"/>.
-            Associated values are ordered in the same way to the corresponding
-            <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
-            </returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Crypto.Address},System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Crypto.Address},System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetBalance(Libplanet.Crypto.Address,Libplanet.Types.Assets.Currency)">
-            <summary>
-            Queries <paramref name="address"/>'s current balance of the <paramref name="currency"/>
-            in the <see cref="T:Libplanet.Blockchain.BlockChain"/>.
-            </summary>
-            <param name="address">The owner <see cref="T:Libplanet.Crypto.Address"/> to query.</param>
-            <param name="currency">The currency type to query.</param>
-            <returns>The <paramref name="address"/>'s current balance.
-            </returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetBalance(Libplanet.Crypto.Address,Libplanet.Types.Assets.Currency,System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetBalance(Libplanet.Crypto.Address,Libplanet.Types.Assets.Currency,System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetTotalSupply(Libplanet.Types.Assets.Currency)">
-            <summary>
-            Gets the current total supply of a <paramref name="currency"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/>.
-            </summary>
-            <param name="currency">The currency type to query.</param>
-            <returns>The total supply value of <paramref name="currency"/> at
-            <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/> in <see cref="T:Libplanet.Types.Assets.FungibleAssetValue"/>.</returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetTotalSupply(Libplanet.Types.Assets.Currency,System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetTotalSupply(Libplanet.Types.Assets.Currency,System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetAccountState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetAccountState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})" />
-        </member>
         <member name="M:Libplanet.Blockchain.BlockChain.GetTxExecution(Libplanet.Types.Blocks.BlockHash,Libplanet.Types.Tx.TxId)">
             <summary>
             Queries the recorded <see cref="T:Libplanet.Types.Tx.TxExecution"/> for a successful or failed
@@ -655,6 +596,18 @@
             <exception cref="T:System.InvalidOperationException">Thrown when not all policies
             can be satisfied.</exception>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetWorldState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})" />
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetWorldState">
+            <summary>
+            Gets the current world state in the <see cref="T:Libplanet.Blockchain.BlockChain"/>.
+            </summary>
+            <returns>The current world state.</returns>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain.RenderActions(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation},Libplanet.Types.Blocks.Block)">
             <summary>
             Render actions of the given <paramref name="block"/>.
@@ -758,26 +711,11 @@
             A default implementation of <see cref="T:Libplanet.Action.State.IBlockChainStates" /> interface.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetState(Libplanet.Crypto.Address,System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetState(Libplanet.Crypto.Address,System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetWorldState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Crypto.Address},System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Crypto.Address},System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetBalance(Libplanet.Crypto.Address,Libplanet.Types.Assets.Currency,System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetBalance(Libplanet.Crypto.Address,Libplanet.Types.Assets.Currency,System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetTotalSupply(Libplanet.Types.Assets.Currency,System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetTotalSupply(Libplanet.Types.Assets.Currency,System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetAccountState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetAccountState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChainStates.GetTrie(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
             <summary>
