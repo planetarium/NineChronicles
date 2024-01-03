@@ -199,6 +199,33 @@ namespace Nekoyume.Game
         }
 #endif
 
+#if !UNITY_EDITOR && UNITY_ANDROID
+        [RuntimeInitializeOnLoadMethod]
+        static void OnRuntimeMethodLoad()
+        {
+            Debug.Log("[OnRuntimeMethodLoad] After Scene is loaded and game is running");
+            AndroidKeyStorePathChange();
+        }
+
+        static void AndroidKeyStorePathChange()
+        {
+            CopyFolder("storage/emulated/0/Documents/NineChronicles", Platform.PersistentDataPath);
+        }
+
+        static void CopyFolder(string path, string target)
+        {
+            Debug.Log($"[CopyFolder] path:{path}    target:{target}");
+            foreach (string file in Directory.GetFiles(path))
+            {
+                File.Copy(file, Path.Combine(target, Path.GetFileName(file)));
+                Debug.Log($"[File.Copy] path:{Path.GetFileName(file)}    target:{target}");
+            }
+
+            foreach (string directory in Directory.GetDirectories(path))
+                CopyFolder(directory, Path.Combine(target, Path.GetFileName(directory)));
+        }
+#endif
+
         protected override void Awake()
         {
             CurrentSocialEmail = string.Empty;
@@ -1260,7 +1287,7 @@ namespace Nekoyume.Game
             Event.OnNestEnter.Invoke();
         }
 
-        #endregion
+#endregion
 
         protected override void OnApplicationQuit()
         {

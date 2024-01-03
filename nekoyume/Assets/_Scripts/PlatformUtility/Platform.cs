@@ -12,7 +12,7 @@ namespace Nekoyume
 #if UNITY_EDITOR
                 return Application.persistentDataPath;
 #elif UNITY_ANDROID
-                return "storage/emulated/0/Documents/NineChronicles";
+                return "data/data/com.planetariumlabs.ninechroniclesmobile";
 #else
                 return Application.persistentDataPath;
 #endif
@@ -21,6 +21,7 @@ namespace Nekoyume
 
         public static string GetPersistentDataPath(string fileName)
         {
+            Debug.Log($"[GetPersistentDataPath] {PersistentDataPath} , {fileName}");
             return Path.Combine(PersistentDataPath, fileName);
         }
 
