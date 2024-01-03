@@ -46,6 +46,12 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject loadingIndicator;
 
+        [SerializeField]
+        private RectTransform onSeasonOutlineRect;
+
+        [SerializeField]
+        private RectTransform offSeasonOutlineRect;
+
         private readonly List<IDisposable> _disposables = new();
         private bool _madeRaidMail;
 
@@ -198,6 +204,12 @@ namespace Nekoyume.UI.Module.Lobby
                     offSeason.SetActive(true);
                     timeContainer.SetActive(false);
                     ticketContainer.SetActive(false);
+                    // Set tutorial target to off-season object
+                    Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                    {
+                        type = TutorialTargetType.WorldBossButton,
+                        rectTransform = offSeasonOutlineRect
+                    });
                     break;
                 case WorldBossStatus.Season:
                     if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
@@ -213,6 +225,12 @@ namespace Nekoyume.UI.Module.Lobby
                     onSeason.SetActive(true);
                     offSeason.SetActive(false);
                     timeContainer.SetActive(true);
+                    // Set tutorial target to on-season object
+                    Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                    {
+                        type = TutorialTargetType.WorldBossButton,
+                        rectTransform = onSeasonOutlineRect
+                    });
                     var remainTime = row.EndedBlockIndex - currentBlockIndex;
                     timeBlock.SetTimeBlock($"{remainTime:#,0}", remainTime.BlockRangeToTimeSpanString());
 
