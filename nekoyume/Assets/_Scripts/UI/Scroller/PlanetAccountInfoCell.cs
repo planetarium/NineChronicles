@@ -53,6 +53,8 @@ namespace Nekoyume.UI.Scroller
             {
                 Debug.Log("[PlanetAccountInfoCell] UpdateContent()... viewModel is null.");
                 title.text = "null";
+                noAccount.SetActive(false);
+                account.SetActive(false);
                 return;
             }
 
@@ -62,11 +64,15 @@ namespace Nekoyume.UI.Scroller
             if (planetAccountInfo is null)
             {
                 Debug.LogError("[PlanetAccountInfoCell] UpdateContent()... planetAccountInfo is null.");
+                noAccount.SetActive(false);
+                account.SetActive(false);
                 return;
             }
 
             if (planetAccountInfo.AgentAddress is null)
             {
+                noAccount.SetActive(true);
+                account.SetActive(false);
                 return;
             }
 
@@ -110,6 +116,9 @@ namespace Nekoyume.UI.Scroller
                     }
                 }
             }
+
+            noAccount.SetActive(false);
+            account.SetActive(true);
         }
 
         private void ApplyL10nOnce()
