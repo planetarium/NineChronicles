@@ -135,7 +135,7 @@ namespace Nekoyume.UI.Module.Lobby
         private void AddSeasonRewardMail(int raidId)
         {
             const string success = "SUCCESS";
-            const string cachingKey = "SeasonRewards_{0}_{1}";
+            const string cachingKey = "SeasonRewards_{0}_{1}_{2}";
             if (States.Instance.CurrentAvatarState == null || _madeRaidMail)
             {
                 return;
@@ -143,7 +143,8 @@ namespace Nekoyume.UI.Module.Lobby
 
             _madeRaidMail = true;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var localRewardKey = string.Format(cachingKey, raidId, avatarAddress);
+            var currentPlanetId = Game.Game.instance.CurrentPlanetId;
+            var localRewardKey = string.Format(cachingKey, raidId, avatarAddress, currentPlanetId);
 
             var receivedRewardTxs = new List<string>();
             if (PlayerPrefs.HasKey(localRewardKey))
@@ -187,7 +188,7 @@ namespace Nekoyume.UI.Module.Lobby
                 }, null));
 
             // Delete old-cached data.
-            var oldSeasonCachingKey = string.Format(cachingKey, raidId - 1, avatarAddress);
+            var oldSeasonCachingKey = string.Format(cachingKey, raidId - 1, avatarAddress, currentPlanetId);
             if (PlayerPrefs.HasKey(oldSeasonCachingKey))
             {
                 PlayerPrefs.DeleteKey(oldSeasonCachingKey);
