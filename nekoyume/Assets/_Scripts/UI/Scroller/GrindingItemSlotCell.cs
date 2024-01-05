@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Button removeButton;
 
-        private InventoryItem item;
+        private InventoryItem _itemModel;
 
         private static readonly int Register = Animator.StringToHash("Register");
 
@@ -29,12 +29,12 @@ namespace Nekoyume.UI.Scroller
         {
             base.Initialize();
 
-            removeButton.onClick.AddListener(() => Context.OnClick.OnNext(item));
+            removeButton.onClick.AddListener(() => Context.OnClick.OnNext(_itemModel));
         }
 
         public override void UpdateContent(InventoryItem itemData)
         {
-            item = itemData;
+            _itemModel = itemData;
 
             var isRegister = itemData != null && itemData.ItemBase != null;
             if (isRegister)

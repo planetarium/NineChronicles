@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Scroller
         {
         }
 
-        [SerializeField] private GrindingItemSlotCell cellTemplate = null;
+        [SerializeField] private GrindingItemSlotCell cellTemplate;
 
         public IObservable<InventoryItem> OnClick => Context.OnClick;
 

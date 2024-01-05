@@ -142,7 +142,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 _selectedItemsForGrind.Clear();
-            });
+            }).AddTo(gameObject);
             stakingBonus.SetBonusTextFunc(level =>
             {
                 if (level > 0 &&
