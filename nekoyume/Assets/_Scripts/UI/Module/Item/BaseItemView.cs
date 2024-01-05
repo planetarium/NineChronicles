@@ -108,9 +108,6 @@ namespace Nekoyume
         private GameObject grindingCountObject;
 
         [SerializeField]
-        private TMP_Text grindingCountText;
-
-        [SerializeField]
         private GameObject runeNotificationObj;
 
         [SerializeField]
@@ -146,7 +143,6 @@ namespace Nekoyume
         public GameObject LoadingObject => loadingObject;
         public ParticleSystem ItemGradeParticle => itemGradeParticle;
         public GameObject GrindingCountObject => grindingCountObject;
-        public TMP_Text GrindingCountText => grindingCountText;
         public GameObject RewardReceived;
 
         public GameObject RuneNotificationObj => runeNotificationObj;
