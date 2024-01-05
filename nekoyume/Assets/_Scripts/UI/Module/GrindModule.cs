@@ -99,30 +99,22 @@ namespace Nekoyume.UI.Module
         private static readonly int FirstRegister = Animator.StringToHash("FirstRegister");
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
-        private static readonly int ShowAnimationHash = Animator.StringToHash("Show");
 
         private bool CanGrind => _selectedItemsForGrind.Any();
 
         public void Show(bool reverseInventoryOrder = false)
         {
             gameObject.SetActive(true);
-            if (animator)
-            {
-                animator.Play(ShowAnimationHash);
-            }
 
             Initialize();
             Subscribe();
 
             _selectedItemsForGrind.Clear();
-            UpdateScroll();
-
             grindInventory.SetGrinding(OnClickItem,
                 OnUpdateInventory,
                 DimConditionPredicateList,
                 reverseInventoryOrder);
-            grindButton.Interactable = false;
-            removeAllButton.Interactable = false;
+            UpdateScroll();
             UpdateStakingBonusObject(States.Instance.StakingLevel);
             crystalRewardText.text = string.Empty;
         }
@@ -130,6 +122,7 @@ namespace Nekoyume.UI.Module
         private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
+            _selectedItemsForGrind.Clear();
         }
 
         private void Initialize()
@@ -202,19 +195,15 @@ namespace Nekoyume.UI.Module
             _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
             {
                 item.Value.GrindingCountEnabled.SetValueAndForceNotify(false);
+            }).AddTo(gameObject);
 
+            _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
+            {
+                UpdateScroll();
                 if (_selectedItemsForGrind.Count == 0)
                 {
                     animator.SetTrigger(EmptySlot);
                 }
-            }).AddTo(gameObject);
-            _selectedItemsForGrind.ObserveReset().Subscribe(_ =>
-            {
-                animator.SetTrigger(EmptySlot);
-            }).AddTo(gameObject);
-            _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
-            {
-                UpdateScroll();
             }).AddTo(gameObject);
 
             scroll.OnClick
@@ -326,9 +315,13 @@ namespace Nekoyume.UI.Module
             var count = _selectedItemsForGrind.Count;
             grindButton.Interactable = CanGrind;
             removeAllButton.Interactable = count > 1;
-            UpdateCrystalReward();
             scroll.UpdateData(_selectedItemsForGrind);
             scroll.RawJumpTo(count - 1);
+
+            if (_selectedItemsForGrind.Any())
+            {
+                UpdateCrystalReward();
+            }
         }
 
         private void UpdateStakingBonusObject(int level)
