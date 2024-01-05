@@ -2,6 +2,8 @@ Nine Chronicles
 ===============
 
 [![CircleCI][ci-badge]][ci]
+[![Discourse posts](https://img.shields.io/discourse/posts?server=https%3A%2F%2Fdevforum.nine-chronicles.com%2F&logo=discourse&label=9c-devforum&color=00D1C2
+)](https://devforum.nine-chronicles.com)
 
 [ci-badge]: https://circleci.com/gh/planetarium/nekoyume-unity.svg?style=svg&circle-token=ca79d4f6281fe60cdde55d0f1c3d97d561106bda
 [ci]: https://circleci.com/gh/planetarium/nekoyume-unity
