@@ -97,11 +97,11 @@ namespace Nekoyume.UI
 
         public readonly ReactiveProperty<States> State = new ReactiveProperty<States>();
 
-        public bool Login { get; private set; }
         private PrivateKey _privateKey;
         private States _prevState;
 
         public override bool CanHandleInputEvent => false;
+        public bool Login => _privateKey is not null;
 
         protected override void Awake()
         {
@@ -285,7 +285,6 @@ namespace Nekoyume.UI
                         .FirstOrDefault());
                     if (KeyManager.Instance.TryUnprotectTheFirstKey(passphrase, out _privateKey))
                     {
-                        Login = true;
                         Debug.Log("[LoginSystem] TryLoginWithLocalPpk success");
                         return true;
                     }
@@ -331,8 +330,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var login = _privateKey is not null;
-            if (login)
+            if (Login)
             {
                 Debug.Log($"[LoginSystem] CheckLogin... success");
                 if (Platform.IsMobilePlatform())
@@ -375,7 +373,6 @@ namespace Nekoyume.UI
                     break;
                 case States.CreateAccount:
                     KeyManager.Instance.Register(_privateKey, passPhraseField.text);
-                    Login = _privateKey is not null;
                     Close();
                     break;
                 case States.SetPassword:
@@ -390,11 +387,7 @@ namespace Nekoyume.UI
                     Close();
                     break;
                 case States.Login:
-                    CheckLogin(() =>
-                    {
-                        Login = true;
-                        Close();
-                    });
+                    CheckLogin(() => Close());
                     break;
                 case States.FindPassphrase:
                     if (KeyManager.Instance.Has(findPassphraseField.text))
@@ -409,18 +402,13 @@ namespace Nekoyume.UI
                     break;
                 case States.ResetPassphrase:
                     ResetPassphrase();
-                    Login = _privateKey is not null;
                     Close();
                     break;
                 case States.Failed:
                     SetState(_prevState);
                     break;
                 case States.Login_Mobile:
-                    CheckLogin(() =>
-                    {
-                        Login = true;
-                        Close();
-                    });
+                    CheckLogin(() => Close());
                     break;
                 case States.ConnectedAddress_Mobile:
                     Find<IntroScreen>().ShowForQrCodeGuide();
@@ -454,22 +442,18 @@ namespace Nekoyume.UI
             if (!string.IsNullOrEmpty(privateKeyString) || Application.isBatchMode)
             {
                 CreatePrivateKey(privateKeyString);
-                Login = true;
                 Close();
 
                 return;
             }
 
 #if RUN_ON_MOBILE
-            Login = false;
-
             // 해당 함수를 호출했을 때에 유효한 Keystore가 있는 것을 기대하고 있음
             SetState(States.Login_Mobile);
             SetImage(KeyManager.Instance.GetList().First().Item2.Address);
 #else
             var state = KeyManager.Instance.GetList().Any() ? States.Login : States.Show;
             SetState(state);
-            Login = false;
 
             if (state == States.Login)
             {
@@ -535,7 +519,6 @@ namespace Nekoyume.UI
                 KeyManager.Instance.Initialize(null);
                 _privateKey = new PrivateKey();
                 KeyManager.Instance.Register(_privateKey, passPhraseField.text);
-                Login = _privateKey is not null;
                 Close();
                 return;
             }
