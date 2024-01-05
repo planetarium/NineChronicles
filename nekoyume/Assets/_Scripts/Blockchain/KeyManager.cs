@@ -285,12 +285,12 @@ namespace Nekoyume.Blockchain
                     continue;
                 }
 
-                // NOTE: Why not use UnregisterKey(Address)?
+                // NOTE: Why not use Unregister(Address)?
                 //       This is because "UnregisterKey(Address)" deletes all keys in _keyStore
                 //       that match the Address argument. Here we only delete keys that pass
                 //       "TryUnprotect(ProtectedPrivateKey, string, out PrivateKey)".
                 _keyStore.Remove(keyTuple.Item1);
-                // NOTE: Why not use RegisterKey(PrivateKey, string, bool)?
+                // NOTE: Why not use Register(PrivateKey, string, bool)?
                 //       This is because "RegisterKey(PrivateKey, string, bool)" will either
                 //       not register if there is a key equal to the PrivateKey argument
                 //       among the keys already registered in _keyStore, or will delete
