@@ -24,6 +24,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Blockchain;
     using UniRx;
 
     public class LoginSystem : SystemWidget
@@ -94,7 +95,6 @@ namespace Nekoyume.UI
         public Button backToLoginButton;
         public Button setPasswordLaterButton;
 
-        public IKeyStore KeyStore;
         public readonly ReactiveProperty<States> State = new ReactiveProperty<States>();
 
         public bool Login { get; private set; }
@@ -106,7 +106,7 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            InitializeKeyStore(null);
+            KeyManager.Instance.Initialize(null);
 
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
@@ -280,11 +280,11 @@ namespace Nekoyume.UI
                 Debug.Log("[LoginSystem] platform is mobile");
                 try
                 {
-                    var passPhrase = GetPassPhrase(KeyStore
-                        .List()
+                    var passPhrase = GetPassPhrase(KeyManager.Instance
+                        .GetList()
                         .Select(tuple => tuple.Item2.Address.ToString())
                         .FirstOrDefault());
-                    _privateKey = CheckPrivateKey(KeyStore, passPhrase);
+                    _privateKey = CheckPrivateKey(passPhrase);
                     if (_privateKey != null)
                     {
                         Login = true;
@@ -329,7 +329,7 @@ namespace Nekoyume.UI
             Debug.Log($"[LoginSystem] CheckLogin invoked");
             try
             {
-                _privateKey = CheckPrivateKey(KeyStore, loginField.text);
+                _privateKey = CheckPrivateKey(loginField.text);
             }
             catch (Exception)
             {
@@ -380,12 +380,12 @@ namespace Nekoyume.UI
                     SetImage(_privateKey.PublicKey.Address);
                     break;
                 case States.CreateAccount:
-                    CreateProtectedPrivateKey(_privateKey);
+                    KeyManager.Instance.Register(_privateKey, passPhraseField.text);
                     Login = _privateKey is not null;
                     Close();
                     break;
                 case States.SetPassword:
-                    KeyStoreHelper.ResetPassword(_privateKey, passPhraseField.text);
+                    KeyManager.Instance.Register(_privateKey, passPhraseField.text, replace: true);
                     SetPassPhrase(_privateKey.Address.ToString(), passPhraseField.text);
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
                     Analyzer.Instance.Track("Unity/SetPassword/Complete");
@@ -403,18 +403,18 @@ namespace Nekoyume.UI
                     });
                     break;
                 case States.FindPassphrase:
-                {
-                    if (CheckPrivateKeyHex())
                     {
-                        SetState(States.ResetPassphrase);
+                        if (CheckPrivateKeyHex())
+                        {
+                            SetState(States.ResetPassphrase);
+                        }
+                        else
+                        {
+                            findPrivateKeyWarning.SetActive(true);
+                            findPassphraseField.text = null;
+                        }
+                        break;
                     }
-                    else
-                    {
-                        findPrivateKeyWarning.SetActive(true);
-                        findPassphraseField.text = null;
-                    }
-                    break;
-                }
                 case States.ResetPassphrase:
                     ResetPassphrase();
                     Login = _privateKey is not null;
@@ -456,7 +456,7 @@ namespace Nekoyume.UI
                       $", privateKeyString is null or empty({string.IsNullOrEmpty(privateKeyString)})");
             AnalyzeCache.Reset();
 
-            InitializeKeyStore(path);
+            KeyManager.Instance.Initialize(path);
 
             _privateKeyString = privateKeyString;
             //Auto login for miner, seed, launcher
@@ -474,9 +474,9 @@ namespace Nekoyume.UI
 
             // 해당 함수를 호출했을 때에 유효한 Keystore가 있는 것을 기대하고 있음
             SetState(States.Login_Mobile);
-            SetImage(KeyStore.List().First().Item2.Address);
+            SetImage(KeyManager.Instance.GetList().First().Item2.Address);
 #else
-            var state = KeyStore.ListIds().Any() ? States.Login : States.Show;
+            var state = KeyManager.Instance.GetList().Any() ? States.Login : States.Show;
             SetState(state);
             Login = false;
 
@@ -484,7 +484,7 @@ namespace Nekoyume.UI
             {
                 // 키 고르는 게 따로 없으니 갖고 있는 키 중에서 아무거나 보여줘야 함...
                 // FIXME: 역시 키 고르는 단계가 있어야 할 것 같음
-                SetImage(KeyStore.List().First().Item2.Address);
+                SetImage(KeyManager.Instance.GetList().First().Item2.Address);
             }
 
             switch (State.Value)
@@ -492,19 +492,19 @@ namespace Nekoyume.UI
                 case States.CreateAccount:
                 case States.ResetPassphrase:
                 case States.SetPassword:
-                {
                     {
-                        if (passPhraseField.isFocused)
                         {
-                            retypeField.Select();
+                            if (passPhraseField.isFocused)
+                            {
+                                retypeField.Select();
+                            }
+                            else
+                            {
+                                passPhraseField.Select();
+                            }
                         }
-                        else
-                        {
-                            passPhraseField.Select();
-                        }
+                        break;
                     }
-                    break;
-                }
                 case States.Login:
                     loginField.Select();
                     break;
@@ -541,9 +541,9 @@ namespace Nekoyume.UI
                 var evt = new AirbridgeEvent("Login_2");
                 AirbridgeUnity.TrackEvent(evt);
 
-                InitializeKeyStore(null);
+                KeyManager.Instance.Initialize(null);
                 _privateKey = new PrivateKey();
-                CreateProtectedPrivateKey(_privateKey);
+                KeyManager.Instance.Register(_privateKey, passPhraseField.text);
                 Login = _privateKey is not null;
                 Close();
                 return;
@@ -570,7 +570,7 @@ namespace Nekoyume.UI
 
             if (string.IsNullOrEmpty(_privateKeyString))
             {
-                privateKey = CheckPrivateKey(KeyStore, passPhraseField.text);
+                privateKey = CheckPrivateKey(passPhraseField.text);
             }
             else
             {
@@ -585,13 +585,13 @@ namespace Nekoyume.UI
             if (privateKey is null)
             {
                 privateKey = new PrivateKey();
-                CreateProtectedPrivateKey(privateKey);
+                KeyManager.Instance.Register(privateKey, passPhraseField.text);
             }
 
             _privateKey = privateKey;
         }
 
-        private static PrivateKey CheckPrivateKey(IKeyStore keyStore, string passphrase)
+        private static PrivateKey CheckPrivateKey(string passphrase)
         {
             // 현재는 시스템에 키가 딱 하나만 있을 거라고 가정하고 있음.
             // UI에서도 여러 키 중 하나를 고르는 게 없기 때문에, 만약 여러 키가 있으면 입력 받은 패스프레이즈를
@@ -599,27 +599,12 @@ namespace Nekoyume.UI
             // 뭐가 선택될 지는 알 수 없음. 대부분의 사람들이 패스프레이즈로 같은 단어만 거듭 활용하는 경향이 있기 때문에
             // 그런 케이스에서 이용자에게는 버그처럼 여겨지는 동작일지도.
             // FIXME: 따라서 UI에서 키 여러 개 중 뭘 쓸지 선택하는 걸 두는 게 좋을 듯.
-            PrivateKey privateKey = null;
-            foreach (var pair in keyStore.List())
+            if (KeyManager.Instance.TryUnprotectTheFirstKey(passphrase, out var pk))
             {
-                pair.Deconstruct(out _, out var ppk);
-                try
-                {
-                    privateKey = ppk.Unprotect(passphrase: passphrase);
-                }
-                catch (IncorrectPassphraseException)
-                {
-                    Debug.LogWarningFormat(
-                        "[LoginSystem] The key {0} cannot unprotected with a passphrase; failed to load",
-                        ppk.Address
-                    );
-                }
-
-                Debug.LogFormat("[LoginSystem] The key {0} was successfully loaded", ppk.Address);
-                break;
+                return pk;
             }
 
-            return privateKey;
+            return null;
         }
 
         public PrivateKey GetPrivateKey()
@@ -638,8 +623,8 @@ namespace Nekoyume.UI
                 States.Login => !string.IsNullOrEmpty(loginField.text),
                 States.FindPassphrase => !string.IsNullOrEmpty(findPassphraseField.text),
                 States.Login_Mobile => !string.IsNullOrEmpty(loginField.text),
-                States.ResetPassphrase =>  CheckPasswordValidInCreate(),
-                States.SetPassword =>  CheckPasswordValidInCreate(),
+                States.ResetPassphrase => CheckPasswordValidInCreate(),
+                States.SetPassword => CheckPasswordValidInCreate(),
                 _ => false
             };
         }
@@ -686,16 +671,7 @@ namespace Nekoyume.UI
         private bool CheckPrivateKeyHex()
         {
             var hex = findPassphraseField.text;
-            try
-            {
-                var pk = new PrivateKey(ByteUtil.ParseHex(hex));
-                Address address = pk.Address;
-                return KeyStore.List().Any(pair => pair.Item2.Address == address);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return KeyManager.Instance.Has(hex);
         }
 
         private void ResetPassphrase()
@@ -705,35 +681,14 @@ namespace Nekoyume.UI
             // FIXME: 전부터 이름 바꿔야 한다는 얘기가 줄곧 나왔음... ("reset passphrase"가 아니라 "import private key"로)
             var hex = findPassphraseField.text;
             var pk = new PrivateKey(ByteUtil.ParseHex(hex));
+            var km = KeyManager.Instance;
 
             // 가져온 비밀키를 키스토어에 넣기 전에, 혹시 같은 주소에 대한 키를 지운다.  (아무튼 기능명이 "reset"이라...)
             // 참고로 본 함수 호출되기 전에 CheckPassphrase()에서 먼저 같은 키의 비밀키가 있는지 확인한다. "찾기"가 아니라 "추가"니까, 없으면 오류가 먼저 나게 되어 있음.
-            Address address = pk.Address;
-            Guid[] keyIdsToRemove = KeyStore.List()
-                .Where(pair => pair.Item2.Address.Equals(address))
-                .Select(pair => pair.Item1).ToArray();
-            foreach (Guid keyIdToRemove in keyIdsToRemove)
-            {
-                try
-                {
-                    KeyStore.Remove(keyIdToRemove);
-                }
-                catch (NoKeyException e)
-                {
-                    Debug.LogWarning(e);
-                }
-            }
-
+            km.Unregister(pk.Address);
             // 새로 가져온 비밀키 추가
-            CreateProtectedPrivateKey(pk);
-        }
-
-        // CreatePassword, ResetPassphrase
-        private void CreateProtectedPrivateKey(PrivateKey privateKey)
-        {
-            var ppk = ProtectedPrivateKey.Protect(privateKey, passPhraseField.text);
-            KeyStore.Add(ppk);
-            _privateKey = privateKey;
+            km.Register(pk, passPhraseField.text);
+            _privateKey = pk;
         }
 
         private void SetState(States states)
@@ -750,8 +705,8 @@ namespace Nekoyume.UI
             var ms = new MemoryStream();
             image.SaveAsPng(ms);
             var buffer = new byte[ms.Length];
-            ms.Read(buffer,0,buffer.Length);
-            var t = new Texture2D(8,8);
+            ms.Read(buffer, 0, buffer.Length);
+            var t = new Texture2D(8, 8);
             if (t.LoadImage(ms.ToArray()))
             {
                 var sprite = Sprite.Create(t, new Rect(0, 0, t.width, t.height), Vector2.zero);
@@ -759,30 +714,6 @@ namespace Nekoyume.UI
                 accountImage.SetNativeSize();
                 accountAddressText.text = address.ToString();
                 accountAddressText.gameObject.SetActive(true);
-            }
-        }
-
-        private void InitializeKeyStore(string path)
-        {
-            Debug.Log($"[LoginSystem] InitializeKeyStore invoked: path({path})");
-
-            if (KeyStore is not null)
-            {
-                Debug.Log("[LoginSystem] InitializeKeyStore: KeyStore is not null");
-                return;
-            }
-
-            if (Platform.IsMobilePlatform())
-            {
-                KeyStore = path is null
-                    ? new Web3KeyStore(Platform.GetPersistentDataPath("keystore"))
-                    : new Web3KeyStore(path);
-            }
-            else
-            {
-                KeyStore = path is null
-                    ? Web3KeyStore.DefaultKeyStore
-                    : new Web3KeyStore(path);
             }
         }
     }
