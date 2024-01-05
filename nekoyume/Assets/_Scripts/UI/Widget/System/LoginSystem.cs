@@ -98,7 +98,6 @@ namespace Nekoyume.UI
         public readonly ReactiveProperty<States> State = new ReactiveProperty<States>();
 
         public bool Login { get; private set; }
-        private string _privateKeyString;
         private PrivateKey _privateKey;
         private States _prevState;
 
@@ -458,11 +457,10 @@ namespace Nekoyume.UI
 
             KeyManager.Instance.Initialize(path);
 
-            _privateKeyString = privateKeyString;
             //Auto login for miner, seed, launcher
-            if (!string.IsNullOrEmpty(_privateKeyString) || Application.isBatchMode)
+            if (!string.IsNullOrEmpty(privateKeyString) || Application.isBatchMode)
             {
-                CreatePrivateKey();
+                CreatePrivateKey(privateKeyString);
                 Login = true;
                 Close();
 
@@ -564,17 +562,17 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        private void CreatePrivateKey()
+        private void CreatePrivateKey(string privateKeyString)
         {
             PrivateKey privateKey = null;
 
-            if (string.IsNullOrEmpty(_privateKeyString))
+            if (string.IsNullOrEmpty(privateKeyString))
             {
                 privateKey = CheckPrivateKey(passPhraseField.text);
             }
             else
             {
-                privateKey = new PrivateKey(ByteUtil.ParseHex(_privateKeyString));
+                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyString));
                 Debug.LogWarningFormat(
                     "As --private-key option is used, keystore files are ignored.\n" +
                     "Loaded key (address): {0}",
