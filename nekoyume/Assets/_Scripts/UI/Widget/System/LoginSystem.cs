@@ -279,12 +279,11 @@ namespace Nekoyume.UI
                 Debug.Log("[LoginSystem] platform is mobile");
                 try
                 {
-                    var passPhrase = GetPassPhrase(KeyManager.Instance
+                    var passphrase = GetPassPhrase(KeyManager.Instance
                         .GetList()
                         .Select(tuple => tuple.Item2.Address.ToString())
                         .FirstOrDefault());
-                    _privateKey = CheckPrivateKey(passPhrase);
-                    if (_privateKey != null)
+                    if (KeyManager.Instance.TryUnprotectTheFirstKey(passphrase, out _privateKey))
                     {
                         Login = true;
                         Debug.Log("[LoginSystem] TryLoginWithLocalPpk success");
@@ -326,11 +325,7 @@ namespace Nekoyume.UI
         private void CheckLogin(System.Action success)
         {
             Debug.Log($"[LoginSystem] CheckLogin invoked");
-            try
-            {
-                _privateKey = CheckPrivateKey(loginField.text);
-            }
-            catch (Exception)
+            if (!KeyManager.Instance.TryUnprotectTheFirstKey(loginField.text, out _privateKey))
             {
                 loginWarning.SetActive(true);
                 return;
@@ -402,18 +397,16 @@ namespace Nekoyume.UI
                     });
                     break;
                 case States.FindPassphrase:
+                    if (KeyManager.Instance.Has(findPassphraseField.text))
                     {
-                        if (CheckPrivateKeyHex())
-                        {
-                            SetState(States.ResetPassphrase);
-                        }
-                        else
-                        {
-                            findPrivateKeyWarning.SetActive(true);
-                            findPassphraseField.text = null;
-                        }
-                        break;
+                        SetState(States.ResetPassphrase);
                     }
+                    else
+                    {
+                        findPrivateKeyWarning.SetActive(true);
+                        findPassphraseField.text = null;
+                    }
+                    break;
                 case States.ResetPassphrase:
                     ResetPassphrase();
                     Login = _privateKey is not null;
@@ -565,10 +558,10 @@ namespace Nekoyume.UI
         private void CreatePrivateKey(string privateKeyString)
         {
             PrivateKey privateKey = null;
-
-            if (string.IsNullOrEmpty(privateKeyString))
+            if (string.IsNullOrEmpty(privateKeyString) &&
+                KeyManager.Instance.TryUnprotectTheFirstKey(passPhraseField.text, out var pk))
             {
-                privateKey = CheckPrivateKey(passPhraseField.text);
+                privateKey = pk;
             }
             else
             {
@@ -587,22 +580,6 @@ namespace Nekoyume.UI
             }
 
             _privateKey = privateKey;
-        }
-
-        private static PrivateKey CheckPrivateKey(string passphrase)
-        {
-            // 현재는 시스템에 키가 딱 하나만 있을 거라고 가정하고 있음.
-            // UI에서도 여러 키 중 하나를 고르는 게 없기 때문에, 만약 여러 키가 있으면 입력 받은 패스프레이즈를
-            // 가진 모든 키에 대해 시도함. 따라서 둘 이상의 다른 키를 같은 패스프레이즈로 잠궈둔 경우, 그 중에서
-            // 뭐가 선택될 지는 알 수 없음. 대부분의 사람들이 패스프레이즈로 같은 단어만 거듭 활용하는 경향이 있기 때문에
-            // 그런 케이스에서 이용자에게는 버그처럼 여겨지는 동작일지도.
-            // FIXME: 따라서 UI에서 키 여러 개 중 뭘 쓸지 선택하는 걸 두는 게 좋을 듯.
-            if (KeyManager.Instance.TryUnprotectTheFirstKey(passphrase, out var pk))
-            {
-                return pk;
-            }
-
-            return null;
         }
 
         public PrivateKey GetPrivateKey()
@@ -664,12 +641,6 @@ namespace Nekoyume.UI
             }
 
             UpdateSubmitButton();
-        }
-
-        private bool CheckPrivateKeyHex()
-        {
-            var hex = findPassphraseField.text;
-            return KeyManager.Instance.Has(hex);
         }
 
         private void ResetPassphrase()
