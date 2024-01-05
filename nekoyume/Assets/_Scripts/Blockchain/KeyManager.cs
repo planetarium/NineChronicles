@@ -11,9 +11,8 @@ namespace Nekoyume.Blockchain
     /// <summary>
     /// Manage a single key store.
     /// Use <see cref="Instance"/> to access the singleton instance.
-    /// Initialize the key store with <see cref="InitializeKeyStore"/> before using it.
+    /// Initialize the key store with <see cref="Initialize"/> before using it.
     /// </summary>
-    // Wallet ??
     public class KeyManager
     {
         private static class Singleton
