@@ -12,7 +12,6 @@ using System.Linq;
 using Jdenticon;
 using Libplanet.Common;
 using Libplanet.Crypto;
-using Libplanet.KeyStore;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -97,11 +96,10 @@ namespace Nekoyume.UI
 
         public readonly ReactiveProperty<States> State = new ReactiveProperty<States>();
 
-        private PrivateKey _privateKey;
         private States _prevState;
 
         public override bool CanHandleInputEvent => false;
-        public bool Login => _privateKey is not null;
+        public bool Login => KeyManager.Instance.IsSignedIn;
 
         protected override void Awake()
         {
@@ -283,7 +281,7 @@ namespace Nekoyume.UI
                         .GetList()
                         .Select(tuple => tuple.Item2.Address.ToString())
                         .FirstOrDefault());
-                    if (KeyManager.Instance.TryUnprotectTheFirstKey(passphrase, out _privateKey))
+                    if (KeyManager.Instance.TrySigninWithTheFirstRegisteredKey(passphrase))
                     {
                         Debug.Log("[LoginSystem] TryLoginWithLocalPpk success");
                         return true;
@@ -324,7 +322,7 @@ namespace Nekoyume.UI
         private void CheckLogin(System.Action success)
         {
             Debug.Log($"[LoginSystem] CheckLogin invoked");
-            if (!KeyManager.Instance.TryUnprotectTheFirstKey(loginField.text, out _privateKey))
+            if (!KeyManager.Instance.TrySigninWithTheFirstRegisteredKey(loginField.text))
             {
                 loginWarning.SetActive(true);
                 return;
@@ -337,7 +335,7 @@ namespace Nekoyume.UI
                 {
                     Debug.Log($"[LoginSystem] CheckLogin... set pass phrase because platform is mobile" +
                               $" {loginField.text}");
-                    SetPassPhrase(_privateKey.Address.ToString(), loginField.text);
+                    SetPassPhrase(KeyManager.Instance.SignedInAddress.ToString(), loginField.text);
                 }
 
                 success?.Invoke();
@@ -367,17 +365,22 @@ namespace Nekoyume.UI
             switch (State.Value)
             {
                 case States.Show:
+                    KeyManager.Instance.SignIn(new PrivateKey());
                     SetState(States.CreateAccount);
-                    _privateKey = new PrivateKey();
-                    SetImage(_privateKey.PublicKey.Address);
+                    SetImage(KeyManager.Instance.SignedInAddress);
                     break;
                 case States.CreateAccount:
-                    KeyManager.Instance.Register(_privateKey, passPhraseField.text);
+                    KeyManager.Instance.RegisterAndSignIn(
+                        KeyManager.Instance.SignedInPrivateKey,
+                        passPhraseField.text);
                     Close();
                     break;
                 case States.SetPassword:
-                    KeyManager.Instance.Register(_privateKey, passPhraseField.text, replace: true);
-                    SetPassPhrase(_privateKey.Address.ToString(), passPhraseField.text);
+                    KeyManager.Instance.RegisterAndSignIn(
+                        KeyManager.Instance.SignedInPrivateKey,
+                        passPhraseField.text,
+                        replaceWhenAlreadyRegistered: true);
+                    SetPassPhrase(KeyManager.Instance.SignedInAddress.ToString(), passPhraseField.text);
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
                     Analyzer.Instance.Track("Unity/SetPassword/Complete");
 
@@ -401,7 +404,10 @@ namespace Nekoyume.UI
                     }
                     break;
                 case States.ResetPassphrase:
-                    ResetPassphrase();
+                    KeyManager.Instance.RegisterAndSignIn(
+                        findPassphraseField.text,
+                        passPhraseField.text,
+                        replaceWhenAlreadyRegistered: true);
                     Close();
                     break;
                 case States.Failed:
@@ -517,8 +523,7 @@ namespace Nekoyume.UI
                 AirbridgeUnity.TrackEvent(evt);
 
                 KeyManager.Instance.Initialize(null);
-                _privateKey = new PrivateKey();
-                KeyManager.Instance.Register(_privateKey, passPhraseField.text);
+                KeyManager.Instance.RegisterAndSignIn(new PrivateKey(), passPhraseField.text);
                 Close();
                 return;
             }
@@ -540,34 +545,31 @@ namespace Nekoyume.UI
 
         private void CreatePrivateKey(string privateKeyString)
         {
-            PrivateKey privateKey = null;
-            if (string.IsNullOrEmpty(privateKeyString) &&
-                KeyManager.Instance.TryUnprotectTheFirstKey(passPhraseField.text, out var pk))
+            if (string.IsNullOrEmpty(privateKeyString))
             {
-                privateKey = pk;
+                if (KeyManager.Instance.TrySigninWithTheFirstRegisteredKey(passPhraseField.text))
+                {
+                    return;
+                }
+
+                KeyManager.Instance.RegisterAndSignIn(new PrivateKey(), passPhraseField.text);
             }
             else
             {
-                privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyString));
+                KeyManager.Instance.RegisterAndSignIn(
+                    new PrivateKey(ByteUtil.ParseHex(privateKeyString)),
+                    passPhraseField.text);
                 Debug.LogWarningFormat(
                     "As --private-key option is used, keystore files are ignored.\n" +
                     "Loaded key (address): {0}",
-                    privateKey.PublicKey.Address
+                    KeyManager.Instance.SignedInAddress
                 );
             }
-
-            if (privateKey is null)
-            {
-                privateKey = new PrivateKey();
-                KeyManager.Instance.Register(privateKey, passPhraseField.text);
-            }
-
-            _privateKey = privateKey;
         }
 
         public PrivateKey GetPrivateKey()
         {
-            return _privateKey;
+            return KeyManager.Instance.SignedInPrivateKey;
         }
 
         private void UpdateSubmitButton()
@@ -624,23 +626,6 @@ namespace Nekoyume.UI
             }
 
             UpdateSubmitButton();
-        }
-
-        private void ResetPassphrase()
-        {
-            Debug.Log($"[LoginSystem] ResetPassphrase invoked");
-            // 이름은 reset이라곤 하지만, 그냥 raw private key 가져오는 기능임.
-            // FIXME: 전부터 이름 바꿔야 한다는 얘기가 줄곧 나왔음... ("reset passphrase"가 아니라 "import private key"로)
-            var hex = findPassphraseField.text;
-            var pk = new PrivateKey(ByteUtil.ParseHex(hex));
-            var km = KeyManager.Instance;
-
-            // 가져온 비밀키를 키스토어에 넣기 전에, 혹시 같은 주소에 대한 키를 지운다.  (아무튼 기능명이 "reset"이라...)
-            // 참고로 본 함수 호출되기 전에 CheckPassphrase()에서 먼저 같은 키의 비밀키가 있는지 확인한다. "찾기"가 아니라 "추가"니까, 없으면 오류가 먼저 나게 되어 있음.
-            km.Unregister(pk.Address);
-            // 새로 가져온 비밀키 추가
-            km.Register(pk, passPhraseField.text);
-            _privateKey = pk;
         }
 
         private void SetState(States states)

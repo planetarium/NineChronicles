@@ -36,7 +36,12 @@ namespace Nekoyume.Blockchain
 
         private Web3KeyStore _keyStore;
 
+        private PrivateKey _signedInPrivateKey;
+
         public bool IsInitialized => _keyStore is not null;
+        public bool IsSignedIn => _signedInPrivateKey is not null;
+        public PrivateKey SignedInPrivateKey => _signedInPrivateKey;
+        public Address SignedInAddress => _signedInPrivateKey.Address;
 
         public void Initialize(string keyStorePath)
         {
@@ -51,6 +56,46 @@ namespace Nekoyume.Blockchain
             Debug.Log($"[KeyManager] Successfully initialize the key store: " +
                       $"{_keyStore.Path}");
         }
+
+        #region Sign in
+        /// <summary>
+        /// Just sign in with the given private key.
+        /// It does not register the key.
+        /// </summary>
+        public void SignIn(PrivateKey privateKey)
+        {
+            Debug.Log($"[KeyManager] SignIn(PrivateKey) invoked: {privateKey.Address}");
+            _signedInPrivateKey = privateKey;
+        }
+
+        /// <summary>
+        /// Try sign in with the first registered key in the key store with the given passphrase.
+        /// </summary>
+        public bool TrySigninWithTheFirstRegisteredKey(string passphrase)
+        {
+            Debug.Log($"[KeyManager] TrySigninWithTheFirstKey(string) invoked.");
+            if (_keyStore is null)
+            {
+                Debug.LogWarning("[KeyManager] KeyStore is not initialized.");
+                return false;
+            }
+
+            var firstKey = _keyStore.List().FirstOrDefault();
+            if (firstKey is null)
+            {
+                Debug.LogWarning("[KeyManager] KeyStore does not have any key.");
+                return false;
+            }
+
+            if (!TryUnprotect(firstKey.Item2, passphrase, out var privateKey))
+            {
+                return false;
+            }
+
+            _signedInPrivateKey = privateKey;
+            return true;
+        }
+        #endregion Sign in
 
         #region IKeyStore as readonly
         public IEnumerable<Guid> GetListIds()
@@ -102,9 +147,10 @@ namespace Nekoyume.Blockchain
         public void Register(
             string privateKeyHex,
             string passphrase,
-            bool replace = false)
+            bool replaceWhenAlreadyRegistered = false,
+            bool signIn = false)
         {
-            Debug.Log($"[KeyManager] Register(string, string, bool) invoked with privateKeyHex.");
+            Debug.Log($"[KeyManager] Register(string, string, bool, bool) invoked with privateKeyHex.");
             if (string.IsNullOrEmpty(privateKeyHex))
             {
                 Debug.LogError("[KeyManager] argument privateKeyHex is null or empty.");
@@ -118,15 +164,17 @@ namespace Nekoyume.Blockchain
             }
 
             var pk = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
-            Register(pk, passphrase, replace);
+            Register(pk, passphrase, replaceWhenAlreadyRegistered, signIn);
         }
 
         public void Register(
             PrivateKey privateKey,
             string passphrase,
-            bool replace = false)
+            bool replaceWhenAlreadyRegistered = false,
+            bool signIn = false)
         {
-            Debug.Log($"[KeyManager] Register(PrivateKey, string, bool) invoked.");
+            Debug.Log($"[KeyManager] Register(PrivateKey, string, bool, bool) invoked:" +
+                      $"signIn({signIn})");
             if (privateKey is null)
             {
                 Debug.LogError("[KeyManager] argument privateKey is null.");
@@ -145,16 +193,22 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
+            if (signIn)
+            {
+                SignIn(privateKey);
+            }
+
             var ppk = ProtectedPrivateKey.Protect(privateKey, passphrase);
-            Register(ppk, replace);
+            Register(ppk, replaceWhenAlreadyRegistered);
         }
 
         public void Register(
             ProtectedPrivateKey protectedPrivateKey,
-            bool replace = false)
+            bool replaceWhenAlreadyRegistered = false)
         {
             Debug.Log($"[KeyManager] Register(ProtectedPrivateKey, bool) invoked: " +
-                      $"{protectedPrivateKey.Address}, replace({replace})");
+                      $"{protectedPrivateKey.Address}, " +
+                      $"replaceWhenAlreadyRegistered({replaceWhenAlreadyRegistered})");
             if (protectedPrivateKey is null)
             {
                 Debug.LogError("[KeyManager] argument protectedPrivateKey is null.");
@@ -169,7 +223,7 @@ namespace Nekoyume.Blockchain
 
             if (Has(protectedPrivateKey.Address))
             {
-                if (!replace)
+                if (!replaceWhenAlreadyRegistered)
                 {
                     Debug.LogError("[KeyManager] KeyStore already has the key: " +
                                    $"{protectedPrivateKey.Address}");
@@ -186,6 +240,18 @@ namespace Nekoyume.Blockchain
             Debug.Log($"[KeyManager] Successfully register the key: " +
                       $"{protectedPrivateKey.Address}");
         }
+
+        public void RegisterAndSignIn(
+            string privateKeyHex,
+            string passphrase,
+            bool replaceWhenAlreadyRegistered = false) =>
+            Register(privateKeyHex, passphrase, replaceWhenAlreadyRegistered, signIn: true);
+
+        public void RegisterAndSignIn(
+            PrivateKey privateKey,
+            string passphrase,
+            bool replaceWhenAlreadyRegistered = false) =>
+            Register(privateKey, passphrase, replaceWhenAlreadyRegistered, signIn: true);
         #endregion Register
 
         #region Unregister
@@ -327,27 +393,6 @@ namespace Nekoyume.Blockchain
             return atLeastOneSuccess;
         }
 
-        public bool TryUnprotectTheFirstKey(string passphrase, out PrivateKey privateKey)
-        {
-            Debug.Log($"[KeyManager] TryUnprotectTheFirstKey(string, out PrivateKey) invoked.");
-            if (_keyStore is null)
-            {
-                Debug.LogWarning("[KeyManager] KeyStore is not initialized.");
-                privateKey = null;
-                return false;
-            }
-
-            var firstKey = _keyStore.List().FirstOrDefault();
-            if (firstKey is null)
-            {
-                Debug.LogWarning("[KeyManager] KeyStore does not have any key.");
-                privateKey = null;
-                return false;
-            }
-
-            return TryUnprotect(firstKey.Item2, passphrase, out privateKey);
-        }
-
         private bool TryUnprotect(
             ProtectedPrivateKey protectedPrivateKey,
             string passphrase,
@@ -355,13 +400,6 @@ namespace Nekoyume.Blockchain
         {
             Debug.Log($"[KeyManager] TryUnprotect(ProtectedPrivateKey, string, out PrivateKey) " +
                       $"invoked: {protectedPrivateKey.Address}");
-            if (_keyStore is null)
-            {
-                Debug.LogWarning("[KeyManager] KeyStore is not initialized.");
-                privateKey = null;
-                return false;
-            }
-
             try
             {
                 privateKey = protectedPrivateKey.Unprotect(passphrase);
@@ -384,13 +422,6 @@ namespace Nekoyume.Blockchain
         {
             Debug.Log($"[KeyManager] TryGetKeyTuple(Address, out IEnumerable<Tuple<Guid, ProtectedPrivateKey>>) " +
                       $"invoked: {address}");
-            if (_keyStore is null)
-            {
-                Debug.LogWarning("[KeyManager] KeyStore is not initialized.");
-                keyTuple = null;
-                return false;
-            }
-
             try
             {
                 keyTuple = _keyStore.List().Where(tuple =>
