@@ -245,6 +245,29 @@ namespace Nekoyume.Blockchain
         }
         #endregion Has key
 
+        #region Backup
+        public void BackupKey(Address address, string keyStorePathToBackup)
+        {
+            Debug.Log($"[KeyManager] BackupKey(Address, string) invoked: {address}, " +
+                      $"{keyStorePathToBackup}");
+            if (_keyStore is null)
+            {
+                Debug.LogError("[KeyManager] KeyStore is not initialized.");
+                return;
+            }
+
+            var targetKeyList = _keyStore.List()
+                .Where(tuple => !tuple.Item2.Address.Equals(address))
+                .ToList();
+            var backupKeyStore = GetKeyStore(keyStorePathToBackup, fileNameOnMobile: "backup_keystore");
+            foreach (var tuple in targetKeyList)
+            {
+                _keyStore.Remove(tuple.Item1);
+                backupKeyStore.Add(tuple.Item2);
+            }
+        }
+        #endregion Backup
+
         public bool TryChangePassphrase(
             Address address,
             string originPassphrase,
@@ -302,27 +325,6 @@ namespace Nekoyume.Blockchain
             Debug.Log($"[KeyManager] Successfully change all passphrases for the key: " +
                       $"{address}");
             return atLeastOneSuccess;
-        }
-
-        public void BackupKey(Address address, string keyStorePathToBackup)
-        {
-            Debug.Log($"[KeyManager] BackupKey(Address, string) invoked: {address}, " +
-                      $"{keyStorePathToBackup}");
-            if (_keyStore is null)
-            {
-                Debug.LogError("[KeyManager] KeyStore is not initialized.");
-                return;
-            }
-
-            var targetKeyList = _keyStore.List()
-                .Where(tuple => !tuple.Item2.Address.Equals(address))
-                .ToList();
-            var backupKeyStore = GetKeyStore(keyStorePathToBackup, fileNameOnMobile: "backup_keystore");
-            foreach (var tuple in targetKeyList)
-            {
-                _keyStore.Remove(tuple.Item1);
-                backupKeyStore.Add(tuple.Item2);
-            }
         }
 
         public bool TryUnprotectTheFirstKey(string passphrase, out PrivateKey privateKey)
