@@ -162,11 +162,6 @@ namespace Nekoyume.UI.Module
                 return "+0%";
             });
 
-            _isInitialized = true;
-        }
-
-        private void Subscribe()
-        {
             grindButton.OnClickDisabledSubject.Subscribe(_ =>
             {
                 var l10nkey = scroll.DataCount > 0
@@ -175,7 +170,7 @@ namespace Nekoyume.UI.Module
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize(l10nkey),
                     NotificationCell.NotificationType.Notification);
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
             grindButton.OnClickSubject.Subscribe(state =>
             {
                 switch (state)
@@ -193,7 +188,7 @@ namespace Nekoyume.UI.Module
                     default:
                         throw new ArgumentOutOfRangeException(nameof(state), state, null);
                 }
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
@@ -203,7 +198,7 @@ namespace Nekoyume.UI.Module
                 {
                     animator.SetTrigger(FirstRegister);
                 }
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
             _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
             {
                 item.Value.GrindingCountEnabled.SetValueAndForceNotify(false);
@@ -212,26 +207,31 @@ namespace Nekoyume.UI.Module
                 {
                     animator.SetTrigger(EmptySlot);
                 }
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
             _selectedItemsForGrind.ObserveReset().Subscribe(_ =>
             {
                 animator.SetTrigger(EmptySlot);
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
             {
                 UpdateScroll();
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
 
+            scroll.OnClick
+                .Subscribe(item => _selectedItemsForGrind.Remove(item))
+                .AddTo(gameObject);
+
+            _isInitialized = true;
+        }
+
+        private void Subscribe()
+        {
             ReactiveAvatarState.ActionPoint
                 .Subscribe(_ => grindButton.Interactable = CanGrind)
                 .AddTo(_disposables);
 
             StakingSubject.Level
                 .Subscribe(UpdateStakingBonusObject)
-                .AddTo(_disposables);
-
-            scroll.OnClick
-                .Subscribe(item => _selectedItemsForGrind.Remove(item))
                 .AddTo(_disposables);
         }
 
