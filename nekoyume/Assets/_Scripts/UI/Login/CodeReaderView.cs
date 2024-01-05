@@ -158,7 +158,6 @@ namespace Nekoyume.UI
                         _camTexture.Stop();
                     }
 
-                    Debug.LogError($"[CodeReaderView] Exception: {ex.Message}");
                     Debug.LogException(ex);
                     // Don't invoke onSuccess? with null. Just try again.
                 }
