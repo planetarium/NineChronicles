@@ -326,6 +326,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &685346340200097826
 GameObject:
   m_ObjectHideFlags: 0
@@ -1909,6 +1913,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5021964201151666584
 GameObject:
   m_ObjectHideFlags: 0
@@ -2789,6 +2797,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &9080506522377865273
 GameObject:
   m_ObjectHideFlags: 0
@@ -6721,6 +6733,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 173984959973118975}
     m_Modifications:
+    - target: {fileID: 2272024443980410210, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 46
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024443980410210, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 58
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272024443980410211, guid: 32a50ff4043fed34fb26e635e079cfe0,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a482e0a70db811043bf145f3bd8b814d,
+        type: 3}
     - target: {fileID: 2272024444835968328, guid: 32a50ff4043fed34fb26e635e079cfe0,
         type: 3}
       propertyPath: m_Name
