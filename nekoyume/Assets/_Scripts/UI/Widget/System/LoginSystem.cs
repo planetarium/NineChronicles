@@ -266,11 +266,6 @@ namespace Nekoyume.UI
             retypeText.gameObject.SetActive(!valid);
         }
 
-        public static string GetPassPhrase(string address)
-        {
-            return Util.AesDecrypt(PlayerPrefs.GetString($"LOCAL_PASSPHRASE_{address}", string.Empty));
-        }
-
         private bool CheckPasswordValidInCreate()
         {
             var passPhrase = passPhraseField.text;

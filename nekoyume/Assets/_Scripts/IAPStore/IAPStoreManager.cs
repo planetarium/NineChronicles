@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.Blockchain;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -63,7 +65,7 @@ namespace Nekoyume.IAPStore
                 {
                     _initailizedProductSchema.TryAdd(product.Sku, product);
                 }
-                if(category.Name == "NoShow")
+                if (category.Name == "NoShow")
                 {
                     foreach (var product in category.ProductList)
                     {
@@ -305,7 +307,7 @@ namespace Nekoyume.IAPStore
             {
                 var states = States.Instance;
                 existTxInfo = PlayerPrefs.HasKey("PURCHASE_TX_" + e.purchasedProduct.transactionID);
-                if(!existTxInfo)
+                if (!existTxInfo)
                 {
                     PurchaseReciept purchaseReciepe = new PurchaseReciept
                     {
@@ -314,7 +316,7 @@ namespace Nekoyume.IAPStore
                         AvatarAddressHex = states.CurrentAvatarState.address.ToHex(),
                         PlanetId = Game.Game.instance.CurrentPlanetId.ToString(),
                     };
-                    PlayerPrefs.SetString("PURCHASE_TX_"+e.purchasedProduct.transactionID, JsonUtility.ToJson(purchaseReciepe));
+                    PlayerPrefs.SetString("PURCHASE_TX_" + e.purchasedProduct.transactionID, JsonUtility.ToJson(purchaseReciepe));
                     AddLocalTransactions(e.purchasedProduct.transactionID);
                 }
             }
@@ -349,7 +351,7 @@ namespace Nekoyume.IAPStore
                 Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
                 return PurchaseProcessingResult.Pending;
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 Debug.LogError("[ProcessPurchase] " + error);
                 return PurchaseProcessingResult.Pending;
@@ -468,7 +470,11 @@ namespace Nekoyume.IAPStore
 
                     popup.ConfirmCallback = () =>
                     {
-                        if (LoginSystem.GetPassPhrase(states.AgentState.address.ToString()).Equals(string.Empty))
+                        var cachedPassphrase = KeyManager.GetCachedPassphrase(
+                            states.AgentState.address,
+                            Util.AesDecrypt,
+                            defaultValue: string.Empty);
+                        if (cachedPassphrase.Equals(string.Empty))
                         {
                             Widget.Find<LoginSystem>().ShowResetPassword();
                         }

@@ -14,6 +14,7 @@ using TimeSpan = System.TimeSpan;
 using Nekoyume.UI.Scroller;
 using mixpanel;
 using Nekoyume.State;
+using Nekoyume.Blockchain;
 
 namespace Nekoyume.UI
 {
@@ -146,7 +147,12 @@ namespace Nekoyume.UI
 
             addressShareButton.OnClickAsObservable().Subscribe(_ =>
             {
-                if (LoginSystem.GetPassPhrase(Game.Game.instance.Agent.Address.ToString()).Equals(string.Empty))
+                var agent = Game.Game.instance.Agent;
+                var cachedPassphrase = KeyManager.GetCachedPassphrase(
+                    agent.Address,
+                    Util.AesDecrypt,
+                    string.Empty);
+                if (cachedPassphrase.Equals(string.Empty))
                 {
                     Find<LoginSystem>().ShowResetPassword();
                 }

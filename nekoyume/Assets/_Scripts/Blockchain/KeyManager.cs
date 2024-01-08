@@ -46,6 +46,18 @@ namespace Nekoyume.Blockchain
         public Address SignedInAddress => _signedInPrivateKey.Address;
 
         /// <summary>
+        /// Get the cached passphrase for the key with the given address.
+        /// </summary>
+        public static string GetCachedPassphrase(
+            Address address,
+            Func<string, string> decryptPassphraseFunc,
+            string defaultValue = "")
+        {
+            var passphrase = PlayerPrefs.GetString($"LOCAL_PASSPHRASE_{address}", defaultValue);
+            return decryptPassphraseFunc(passphrase);
+        }
+
+        /// <summary>
         /// Initialize the key store with the given path.
         /// </summary>
         public void Initialize(
@@ -194,7 +206,7 @@ namespace Nekoyume.Blockchain
                 return false;
             }
 
-            var passphrase = GetCachedPassPhrase(firstKey.Item2.Address);
+            var passphrase = GetCachedPassphrase(firstKey.Item2.Address);
             return TrySigninWithTheFirstRegisteredKey(passphrase);
         }
         #endregion Sign in
@@ -593,21 +605,11 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            var key = GetPlayerPrefsKey(address);
             var encryptedPassphrase = _encryptPassphraseFunc(passphrase);
-            PlayerPrefs.SetString(key, encryptedPassphrase);
+            PlayerPrefs.SetString($"LOCAL_PASSPHRASE_{address}", encryptedPassphrase);
         }
 
-        private string GetCachedPassPhrase(Address address)
-        {
-            var key = GetPlayerPrefsKey(address);
-            var passphrase = PlayerPrefs.GetString(key, string.Empty);
-            return _decryptPassphraseFunc(passphrase);
-        }
-
-        private static string GetPlayerPrefsKey(Address address)
-        {
-            return $"LOCAL_PASSPHRASE_{address}";
-        }
+        private string GetCachedPassphrase(Address address, string defaultValue = "") =>
+            GetCachedPassphrase(address, _decryptPassphraseFunc, defaultValue);
     }
 }
