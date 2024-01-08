@@ -276,6 +276,15 @@ namespace Nekoyume.Game
             OnLoadCommandlineOptions();
 #endif
 
+            // NOTE: Initialize KeyManager after load CommandLineOptions.
+            if (!KeyManager.Instance.IsInitialized)
+            {
+                KeyManager.Instance.Initialize(
+                    keyStorePath: _commandLineOptions.KeyStorePath,
+                    encryptPassphraseFunc: Helper.Util.AesEncrypt,
+                    decryptPassphraseFunc: Helper.Util.AesDecrypt);
+            }
+
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -1453,7 +1462,7 @@ namespace Nekoyume.Game
             var sw = new Stopwatch();
             if (Application.isBatchMode)
             {
-                loginSystem.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
+                loginSystem.Show(privateKeyString: _commandLineOptions.PrivateKey);
                 sw.Reset();
                 sw.Start();
                 yield return Agent.Initialize(

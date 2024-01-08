@@ -45,6 +45,9 @@ namespace Nekoyume.Blockchain
         public PrivateKey SignedInPrivateKey => _signedInPrivateKey;
         public Address SignedInAddress => _signedInPrivateKey.Address;
 
+        /// <summary>
+        /// Initialize the key store with the given path.
+        /// </summary>
         public void Initialize(
             string keyStorePath,
             Func<string, string> encryptPassphraseFunc,

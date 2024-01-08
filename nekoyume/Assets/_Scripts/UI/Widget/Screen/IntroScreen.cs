@@ -298,7 +298,7 @@ namespace Nekoyume.UI
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
-            Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+            Find<LoginSystem>().Show(privateKeyString: _privateKey);
 #endif
         }
 
@@ -372,7 +372,7 @@ namespace Nekoyume.UI
                     km.Register(resultPpk);
                     codeReaderView.Close();
                     startButtonContainer.SetActive(false);
-                    Find<LoginSystem>().Show(_keyStorePath, string.Empty);
+                    Find<LoginSystem>().Show(privateKeyString: string.Empty);
                     Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
 
                     var evt = new AirbridgeEvent("Intro_QRCodeImported");
@@ -422,7 +422,7 @@ namespace Nekoyume.UI
                 AirbridgeUnity.TrackEvent(evt);
 
                 startButtonContainer.SetActive(false);
-                Find<LoginSystem>().Show(_keyStorePath, pk);
+                Find<LoginSystem>().Show(privateKeyString: pk);
             });
             guestButton.interactable = true;
         }
