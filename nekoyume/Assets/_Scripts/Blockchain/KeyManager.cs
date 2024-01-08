@@ -138,7 +138,7 @@ namespace Nekoyume.Blockchain
         /// </summary>
         public bool TrySigninWithTheFirstRegisteredKey(string passphrase)
         {
-            Debug.Log($"[KeyManager] TrySigninWithTheFirstKey(string) invoked.");
+            Debug.Log($"[KeyManager] TrySigninWithTheFirstKey(string) invoked with passphrase.");
             if (_keyStore is null)
             {
                 Debug.LogWarning("[KeyManager] KeyStore is not initialized.");
@@ -159,6 +159,40 @@ namespace Nekoyume.Blockchain
 
             _signedInPrivateKey = privateKey;
             return true;
+        }
+
+        /// <summary>
+        /// Try sign in with the first registered key in the key store.
+        /// </summary>
+        public bool TrySigninWithTheFirstRegisteredKey()
+        {
+            Debug.Log("[KeyManager] TrySigninWithTheFirstRegisteredKey(Func<string, string>) invoked " +
+                      "with decryptFunc.");
+            // FIXME: Can we remove this check? `if (!Platform.IsMobilePlatform())`
+            if (!Platform.IsMobilePlatform())
+            {
+                Debug.Log("[KeyManager] TrySignInWithLocalPpk(Func<string, string>) failed." +
+                          "platform is not mobile");
+                return false;
+            }
+
+            if (_keyStore is null)
+            {
+                Debug.Log("[KeyManager] TrySigninWithTheFirstRegisteredKey(Func<string, string>) failed." +
+                          "KeyStore is not initialized.");
+                return false;
+            }
+
+            var firstKey = _keyStore.List().FirstOrDefault();
+            if (firstKey is null)
+            {
+                Debug.Log("[KeyManager] TrySigninWithTheFirstRegisteredKey(Func<string, string>) failed." +
+                          "KeyStore does not have any key.");
+                return false;
+            }
+
+            var passphrase = GetCachedPassPhrase(firstKey.Item2.Address);
+            return TrySigninWithTheFirstRegisteredKey(passphrase);
         }
         #endregion Sign in
 

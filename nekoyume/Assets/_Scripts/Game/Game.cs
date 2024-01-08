@@ -1472,7 +1472,7 @@ namespace Nekoyume.Game
                 if (!KeyManager.Instance.IsSignedIn)
                 {
                     Debug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
-                    if (!loginSystem.TryLoginWithLocalPpk())
+                    if (!KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
                     {
                         Debug.Log("[Game] CoLogin()... LoginSystem.TryLoginWithLocalPpk() is false.");
                         introScreen.Show(
@@ -1518,7 +1518,7 @@ namespace Nekoyume.Game
 
             // NOTE: Check already logged in or local passphrase.
             if (KeyManager.Instance.IsSignedIn ||
-                loginSystem.TryLoginWithLocalPpk())
+                KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
             {
                 Debug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is true or" +
                           " LoginSystem.TryLoginWithLocalPpk() is true.");

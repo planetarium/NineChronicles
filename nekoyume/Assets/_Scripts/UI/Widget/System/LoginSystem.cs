@@ -271,38 +271,6 @@ namespace Nekoyume.UI
             retypeText.gameObject.SetActive(!valid);
         }
 
-        public bool TryLoginWithLocalPpk()
-        {
-            Debug.Log("[LoginSystem] TryLoginWithLocalPpk invoked");
-            if (Platform.IsMobilePlatform())
-            {
-                Debug.Log("[LoginSystem] platform is mobile");
-                try
-                {
-                    var passphrase = GetPassPhrase(KeyManager.Instance
-                        .GetList()
-                        .Select(tuple => tuple.Item2.Address.ToString())
-                        .FirstOrDefault());
-                    if (KeyManager.Instance.TrySigninWithTheFirstRegisteredKey(passphrase))
-                    {
-                        Debug.Log("[LoginSystem] TryLoginWithLocalPpk success");
-                        return true;
-                    }
-
-                    Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. _privateKey is null");
-                }
-                catch (Exception e)
-                {
-                    Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed with exception." +
-                              $" {e.GetType().FullName}: {e.Message}");
-                    return false;
-                }
-            }
-
-            Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. platform is not mobile");
-            return false;
-        }
-
         public static string GetPassPhrase(string address)
         {
             return Util.AesDecrypt(PlayerPrefs.GetString($"LOCAL_PASSPHRASE_{address}", string.Empty));
