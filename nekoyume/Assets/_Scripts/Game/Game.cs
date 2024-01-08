@@ -258,7 +258,7 @@ namespace Nekoyume.Game
         /// </summary>
         /// <param name="path">The source directory path to compare files from.</param>
         /// <param name="target">The target directory path where files will be checked and deleted if a match is found.</param>
-        static void DeleteSameFileName(string path, string target)
+        private static void DeleteSameFileName(string path, string target)
         {
             Debug.Log($"[DeleteCopiedFile] path:{path}    target:{target}");
             foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
