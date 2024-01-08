@@ -201,7 +201,7 @@ namespace Nekoyume.Game
 
 
         [RuntimeInitializeOnLoadMethod]
-        static void OnRuntimeMethodLoad()
+        private static void OnRuntimeMethodLoad()
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
             Debug.Log("[OnRuntimeMethodLoad] After Scene is loaded and game is running");
