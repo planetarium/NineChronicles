@@ -35,6 +35,8 @@ namespace Nekoyume.Blockchain
         public static KeyManager Instance => Singleton.Value;
 
         private Web3KeyStore _keyStore;
+        private Func<string, string> _encryptPassphraseFunc;
+        private Func<string, string> _decryptPassphraseFunc;
 
         private PrivateKey _signedInPrivateKey;
 
@@ -43,9 +45,25 @@ namespace Nekoyume.Blockchain
         public PrivateKey SignedInPrivateKey => _signedInPrivateKey;
         public Address SignedInAddress => _signedInPrivateKey.Address;
 
-        public void Initialize(string keyStorePath)
+        public void Initialize(
+            string keyStorePath,
+            Func<string, string> encryptPassphraseFunc,
+            Func<string, string> decryptPassphraseFunc)
         {
-            Debug.Log($"[KeyManager] Initialize(string) invoked: {keyStorePath}");
+            Debug.Log($"[KeyManager] Initialize(string, Func<string, string>, Func<string, string>) invoked: " +
+                      $"{keyStorePath}");
+            if (encryptPassphraseFunc is null)
+            {
+                Debug.LogError("[KeyManager] argument encryptPassphraseFunc is null.");
+                return;
+            }
+
+            if (decryptPassphraseFunc is null)
+            {
+                Debug.LogError("[KeyManager] argument decryptPassphraseFunc is null.");
+                return;
+            }
+
             if (_keyStore is not null)
             {
                 Debug.LogError("[KeyManager] KeyStore is already initialized.");
@@ -53,6 +71,8 @@ namespace Nekoyume.Blockchain
             }
 
             _keyStore = GetKeyStore(keyStorePath, fileNameOnMobile: "keystore");
+            _encryptPassphraseFunc = encryptPassphraseFunc;
+            _decryptPassphraseFunc = decryptPassphraseFunc;
             Debug.Log($"[KeyManager] Successfully initialize the key store: " +
                       $"{_keyStore.Path}");
         }
@@ -528,10 +548,7 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private static void CachePassPhrase(
-            Address address,
-            string passphrase,
-            Func<string, string> encryptFunc)
+        private void CachePassPhrase(Address address, string passphrase)
         {
             if (passphrase is null)
             {
@@ -539,28 +556,21 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            if (encryptFunc is null)
-            {
-                Debug.LogError("[KeyManager] argument encryptFunc is null.");
-                return;
-            }
-
-            var encryptedPassphrase = encryptFunc(passphrase);
-            PlayerPrefs.SetString($"LOCAL_PASSPHRASE_{address}", encryptedPassphrase);
+            var key = GetPlayerPrefsKey(address);
+            var encryptedPassphrase = _encryptPassphraseFunc(passphrase);
+            PlayerPrefs.SetString(key, encryptedPassphrase);
         }
 
-        private static string GetCachedPassPhrase(
-            Address address,
-            Func<string, string> decryptFunc)
+        private string GetCachedPassPhrase(Address address)
         {
-            if (decryptFunc is null)
-            {
-                Debug.LogError("[KeyManager] argument decryptFunc is null.");
-                return null;
-            }
+            var key = GetPlayerPrefsKey(address);
+            var passphrase = PlayerPrefs.GetString(key, string.Empty);
+            return _decryptPassphraseFunc(passphrase);
+        }
 
-            var passphrase = PlayerPrefs.GetString($"LOCAL_PASSPHRASE_{address}", string.Empty);
-            return decryptFunc(passphrase);
+        private static string GetPlayerPrefsKey(Address address)
+        {
+            return $"LOCAL_PASSPHRASE_{address}";
         }
     }
 }

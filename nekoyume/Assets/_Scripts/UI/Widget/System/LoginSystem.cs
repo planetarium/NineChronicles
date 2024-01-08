@@ -102,7 +102,10 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            KeyManager.Instance.Initialize(null);
+            KeyManager.Instance.Initialize(
+                keyStorePath: null,
+                encryptPassphraseFunc: Util.AesEncrypt,
+                decryptPassphraseFunc: Util.AesDecrypt);
 
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
@@ -441,7 +444,10 @@ namespace Nekoyume.UI
                       $", privateKeyString is null or empty({string.IsNullOrEmpty(privateKeyString)})");
             AnalyzeCache.Reset();
 
-            KeyManager.Instance.Initialize(path);
+            KeyManager.Instance.Initialize(
+                keyStorePath: path,
+                encryptPassphraseFunc: Util.AesEncrypt,
+                decryptPassphraseFunc: Util.AesDecrypt);
 
             //Auto login for miner, seed, launcher
             if (!string.IsNullOrEmpty(privateKeyString) || Application.isBatchMode)
@@ -521,7 +527,10 @@ namespace Nekoyume.UI
                 var evt = new AirbridgeEvent("Login_2");
                 AirbridgeUnity.TrackEvent(evt);
 
-                KeyManager.Instance.Initialize(null);
+                KeyManager.Instance.Initialize(
+                    keyStorePath: null,
+                    encryptPassphraseFunc: Util.AesEncrypt,
+                    decryptPassphraseFunc: Util.AesDecrypt);
                 KeyManager.Instance.SignInAndRegister(new PrivateKey(), passPhraseField.text);
                 Close();
                 return;

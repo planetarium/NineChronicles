@@ -1,5 +1,6 @@
 ﻿using Libplanet.Crypto;
 using Nekoyume.Blockchain;
+using Nekoyume.Helper;
 using UnityEditor;
 using UnityEngine;
 
@@ -32,7 +33,10 @@ namespace Editor
                 Debug.Log("Trying to reset password...");
                 if (!KeyManager.Instance.IsInitialized)
                 {
-                    KeyManager.Instance.Initialize(keyStorePath: null);
+                    KeyManager.Instance.Initialize(
+                        keyStorePath: null,
+                        encryptPassphraseFunc: Util.AesEncrypt,
+                        decryptPassphraseFunc: Util.AesDecrypt);
                 }
 
                 KeyManager.Instance.TryChangePassphrase(new Address(_addr), _originPw, _newPw);
