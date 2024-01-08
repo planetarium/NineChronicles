@@ -285,6 +285,18 @@ namespace Nekoyume.Game
                     decryptPassphraseFunc: Helper.Util.AesDecrypt);
             }
 
+            // NOTE: Try to sign in with the first registered key
+            //       if the CommandLineOptions.PrivateKey is empty in mobile.
+            if (Platform.IsMobilePlatform() &&
+                string.IsNullOrEmpty(_commandLineOptions.PrivateKey) &&
+                KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
+            {
+                Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty in mobile." +
+                                  " Set cached private key instead.");
+                _commandLineOptions.PrivateKey =
+                    KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
+            }
+
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -390,20 +402,7 @@ namespace Nekoyume.Game
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-#if RUN_ON_MOBILE
-            // NOTE: Invoke LoginSystem.TryLoginWithLocalPpk() after MainCanvas initialized.
-            //       Because the _commandLineOptions.PrivateKey is empty when run on mobile.
-            if (string.IsNullOrEmpty(_commandLineOptions.PrivateKey))
-            {
-                var loginSystem = Widget.Find<LoginSystem>();
-                if (loginSystem.TryLoginWithLocalPpk())
-                {
-                    Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
-                              " Set local private key instead.");
-                    _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
-                }
-            }
-#endif
+
             var settingPopup = Widget.Find<SettingPopup>();
             settingPopup.UpdateSoundSettings();
 
