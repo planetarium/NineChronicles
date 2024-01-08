@@ -217,11 +217,6 @@ PrefabInstance:
       propertyPath: grindingCountText
       value: 
       objectReference: {fileID: 4900267521228278359}
-    - target: {fileID: 7443097800403870906, guid: fd7a738610a297e41bd57e2eebf6fe64,
-        type: 3}
-      propertyPath: grindingCountObject
-      value: 
-      objectReference: {fileID: 6590309885094886477}
     - target: {fileID: 7583783280538585243, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_Enabled
@@ -427,9 +422,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &6590309885094886477 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 159627430590016752, guid: fd7a738610a297e41bd57e2eebf6fe64,
-    type: 3}
-  m_PrefabInstance: {fileID: 6431817159099977917}
-  m_PrefabAsset: {fileID: 0}

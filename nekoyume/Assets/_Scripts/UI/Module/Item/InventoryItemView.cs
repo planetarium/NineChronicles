@@ -108,14 +108,6 @@ namespace Nekoyume.UI.Module
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(_disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b))
                 .AddTo(_disposables);
-            model.GrindingCount.Subscribe(count =>
-            {
-                baseItemView.GrindingCountObject.SetActive(count > 0);
-                if (count > 0)
-                {
-                    baseItemView.GrindingCountText.text = count.ToString();
-                }
-            }).AddTo(_disposables);
             model.GrindingCountEnabled
                 .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
                 .AddTo(_disposables);

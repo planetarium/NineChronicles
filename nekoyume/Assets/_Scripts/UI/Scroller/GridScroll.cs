@@ -163,7 +163,7 @@ namespace Nekoyume.UI.Scroller
             JumpTo(itemIndex, alignment);
         }
 
-        public void RawJumpto(int itemIndex, float alignment)
+        public void RawJumpTo(int itemIndex, float alignment = 0.5f)
         {
             JumpTo(itemIndex, alignment);
         }
