@@ -50,6 +50,15 @@ namespace Nekoyume.UI.Model
         [SerializeField]
         private Image raid;
 
+        [SerializeField]
+        private GameObject cpArrow;
+
+        [SerializeField]
+        private TextMeshProUGUI currentCp;
+
+        [SerializeField]
+        private TextMeshProUGUI nextCp;
+
 
         public void Hide()
         {
@@ -134,6 +143,12 @@ namespace Nekoyume.UI.Model
                     tooltip.gameObject.SetActive(false);
                 }
             }
+
+            //cpSetting
+            cpArrow.SetActive(true);
+            currentCp.text = option.Cp.ToString();
+            nextCp.text = nextOption.Cp.ToString();
+            nextCp.gameObject.SetActive(true);
         }
 
         public void Set(int level, RuneOptionSheet.Row.RuneOptionInfo option, RuneUsePlace runeUsePlace)
@@ -189,6 +204,11 @@ namespace Nekoyume.UI.Model
                     tooltip.gameObject.SetActive(false);
                 }
             }
+
+            //cpSetting
+            cpArrow.SetActive(false);
+            currentCp.text = option.Cp.ToString();
+            nextCp.gameObject.SetActive(false);
         }
 
         private void UpdateAreaIcon(RuneUsePlace runeUsePlace)

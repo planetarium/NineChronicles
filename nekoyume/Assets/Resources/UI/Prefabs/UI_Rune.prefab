@@ -11930,6 +11930,9 @@ MonoBehaviour:
   adventure: {fileID: 8843962753274028976}
   arena: {fileID: 1541280283905581244}
   raid: {fileID: 4652428918871489962}
+  cpArrow: {fileID: 3301063941699021626}
+  currentCp: {fileID: 1387725119140651155}
+  nextCp: {fileID: 7487528616173330879}
 --- !u!1 &2652271764634249739
 GameObject:
   m_ObjectHideFlags: 0
