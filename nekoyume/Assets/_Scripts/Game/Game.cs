@@ -228,7 +228,7 @@ namespace Nekoyume.Game
         /// </summary>
         /// <param name="path">The source path of the folder to be copied.</param>
         /// <param name="target">The target path where the folder will be copied to.</param>
-        static void CopyFolder(string path, string target)
+        private static void CopyFolder(string path, string target)
         {
             Debug.Log($"[CopyFolder] path:{path}    target:{target}");
 
