@@ -215,7 +215,7 @@ namespace Nekoyume.Game
         /// After copying, it deletes any files in the new location that have the same names as those in the original path.
         /// This method is typically used for data migration or backup purposes in Android applications.
         /// </summary>
-        static void AndroidKeyStorePathChange()
+        private static void AndroidKeyStorePathChange()
         {
             CopyFolder("storage/emulated/0/Documents/NineChronicles", Platform.PersistentDataPath);
             DeleteSameFileName(Platform.PersistentDataPath, "storage/emulated/0/Documents/NineChronicles");
