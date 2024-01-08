@@ -99,7 +99,6 @@ namespace Nekoyume.UI
         private States _prevState;
 
         public override bool CanHandleInputEvent => false;
-        public bool Login => KeyManager.Instance.IsSignedIn;
 
         protected override void Awake()
         {
@@ -328,7 +327,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (Login)
+            if (KeyManager.Instance.IsSignedIn)
             {
                 Debug.Log($"[LoginSystem] CheckLogin... success");
                 if (Platform.IsMobilePlatform())
