@@ -524,11 +524,6 @@ namespace Nekoyume.UI
             }
         }
 
-        public PrivateKey GetPrivateKey()
-        {
-            return KeyManager.Instance.SignedInPrivateKey;
-        }
-
         private void UpdateSubmitButton()
         {
             submitButton.Interactable = State.Value switch
