@@ -46,6 +46,30 @@ namespace Nekoyume.Blockchain
         public Address SignedInAddress => _signedInPrivateKey.Address;
 
         /// <summary>
+        /// Cache the passphrase for the key with the given address.
+        /// </summary>
+        public static void CachePassphrase(
+            Address address,
+            string passphrase,
+            Func<string, string> encryptPassphraseFunc)
+        {
+            if (passphrase is null)
+            {
+                Debug.LogError("[KeyManager] argument passphrase is null.");
+                return;
+            }
+
+            if (encryptPassphraseFunc is null)
+            {
+                Debug.LogError("[KeyManager] argument encryptPassphraseFunc is null.");
+                return;
+            }
+
+            var encryptedPassphrase = encryptPassphraseFunc(passphrase);
+            PlayerPrefs.SetString($"LOCAL_PASSPHRASE_{address}", encryptedPassphrase);
+        }
+
+        /// <summary>
         /// Get the cached passphrase for the key with the given address.
         /// </summary>
         public static string GetCachedPassphrase(
@@ -53,6 +77,12 @@ namespace Nekoyume.Blockchain
             Func<string, string> decryptPassphraseFunc,
             string defaultValue = "")
         {
+            if (decryptPassphraseFunc is null)
+            {
+                Debug.LogError("[KeyManager] argument decryptPassphraseFunc is null.");
+                return defaultValue;
+            }
+
             var passphrase = PlayerPrefs.GetString($"LOCAL_PASSPHRASE_{address}", defaultValue);
             return decryptPassphraseFunc(passphrase);
         }
@@ -597,19 +627,24 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private void CachePassPhrase(Address address, string passphrase)
-        {
-            if (passphrase is null)
-            {
-                Debug.LogError("[KeyManager] argument passphrase is null.");
-                return;
-            }
+        #region Passphrase
+        /// <summary>
+        /// Cache the passphrase for the key with the given address.
+        /// It uses <see cref="_encryptPassphraseFunc"/> to encrypt the passphrase.
+        /// _encryptPassphraseFunc is set in <see cref="Initialize"/>.
+        /// </summary>
+        public void CachePassphrase(
+            Address address,
+            string passphrase) =>
+            CachePassphrase(address, passphrase, _encryptPassphraseFunc);
 
-            var encryptedPassphrase = _encryptPassphraseFunc(passphrase);
-            PlayerPrefs.SetString($"LOCAL_PASSPHRASE_{address}", encryptedPassphrase);
-        }
-
-        private string GetCachedPassphrase(Address address, string defaultValue = "") =>
+        /// <summary>
+        /// Get the cached passphrase for the key with the given address.
+        /// It uses <see cref="_decryptPassphraseFunc"/> to decrypt the passphrase.
+        /// _decryptPassphraseFunc is set in <see cref="Initialize"/>.
+        /// </summary>
+        public string GetCachedPassphrase(Address address, string defaultValue = "") =>
             GetCachedPassphrase(address, _decryptPassphraseFunc, defaultValue);
+        #endregion Passphrase
     }
 }

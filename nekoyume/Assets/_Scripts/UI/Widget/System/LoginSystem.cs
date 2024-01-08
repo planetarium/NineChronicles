@@ -274,11 +274,6 @@ namespace Nekoyume.UI
                    passPhrase == retyped;
         }
 
-        private static void SetPassPhrase(string address, string passPhrase)
-        {
-            PlayerPrefs.SetString($"LOCAL_PASSPHRASE_{address}", Util.AesEncrypt(passPhrase));
-        }
-
         private void CheckLogin(System.Action success)
         {
             Debug.Log($"[LoginSystem] CheckLogin invoked");
@@ -295,7 +290,10 @@ namespace Nekoyume.UI
                 {
                     Debug.Log($"[LoginSystem] CheckLogin... set pass phrase because platform is mobile" +
                               $" {loginField.text}");
-                    SetPassPhrase(KeyManager.Instance.SignedInAddress.ToString(), loginField.text);
+                    KeyManager.Instance.CachePassphrase(
+                        KeyManager.Instance.SignedInAddress,
+                        loginField.text);
+
                 }
 
                 success?.Invoke();
@@ -340,7 +338,9 @@ namespace Nekoyume.UI
                         KeyManager.Instance.SignedInPrivateKey,
                         passPhraseField.text,
                         replaceWhenAlreadyRegistered: true);
-                    SetPassPhrase(KeyManager.Instance.SignedInAddress.ToString(), passPhraseField.text);
+                    KeyManager.Instance.CachePassphrase(
+                        KeyManager.Instance.SignedInAddress,
+                        passPhraseField.text);
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
                     Analyzer.Instance.Track("Unity/SetPassword/Complete");
 
