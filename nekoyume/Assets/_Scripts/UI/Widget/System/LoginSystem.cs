@@ -416,9 +416,10 @@ namespace Nekoyume.UI
             SetState(States.Login_Mobile);
             SetImage(KeyManager.Instance.GetList().First().Item2.Address);
 #else
-            var state = KeyManager.Instance.GetList().Any() ? States.Login : States.Show;
+            var state = KeyManager.Instance.GetList().Any()
+                ? States.Login
+                : States.Show;
             SetState(state);
-
             if (state == States.Login)
             {
                 // 키 고르는 게 따로 없으니 갖고 있는 키 중에서 아무거나 보여줘야 함...

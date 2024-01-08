@@ -151,7 +151,7 @@ namespace Nekoyume.UI
                 var cachedPassphrase = KeyManager.GetCachedPassphrase(
                     agent.Address,
                     Util.AesDecrypt,
-                    string.Empty);
+                    defaultValue: string.Empty);
                 if (cachedPassphrase.Equals(string.Empty))
                 {
                     Find<LoginSystem>().ShowResetPassword();
