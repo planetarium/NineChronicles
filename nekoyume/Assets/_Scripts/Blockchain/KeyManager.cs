@@ -58,6 +58,10 @@ namespace Nekoyume.Blockchain
         }
 
         #region Sign in
+        /// <summary>
+        /// Just sign in with the given private key hex.
+        /// It does not register the key.
+        /// </summary>
         public void SignIn(string privateKeyHex)
         {
             Debug.Log($"[KeyManager] SignIn(string) invoked with privateKeyHex.");
@@ -81,6 +85,10 @@ namespace Nekoyume.Blockchain
             _signedInPrivateKey = privateKey;
         }
 
+        /// <summary>
+        /// Sign in with the given private key hex and register the key with the given passphrase.
+        /// Replace the key when there is already a key registered with the same address.
+        /// </summary>
         public void SignInAndRegister(
             string privateKeyHex,
             string passphrase,
@@ -91,6 +99,10 @@ namespace Nekoyume.Blockchain
             Register(privateKeyHex, passphrase, replaceWhenAlreadyRegistered);
         }
 
+        /// <summary>
+        /// Sign in with the given private key and register the key with the given passphrase.
+        /// Replace the key when there is already a key registered with the same address.
+        /// </summary>
         public void SignInAndRegister(
             PrivateKey privateKey,
             string passphrase,
@@ -129,6 +141,17 @@ namespace Nekoyume.Blockchain
             return true;
         }
         #endregion Sign in
+
+        #region Sign out
+        /// <summary>
+        /// Sign out.
+        /// </summary>
+        public void SignOut()
+        {
+            Debug.Log($"[KeyManager] SignOut() invoked.");
+            _signedInPrivateKey = null;
+        }
+        #endregion Sign out
 
         #region IKeyStore as readonly
         public IEnumerable<Guid> GetListIds()
@@ -177,6 +200,10 @@ namespace Nekoyume.Blockchain
         #endregion IKeyStore as readonly
 
         #region Register
+        /// <summary>
+        /// Register the key with the given private key hex and passphrase.
+        /// Replace the key when there is already a key registered with the same address.
+        /// </summary>
         public void Register(
             string privateKeyHex,
             string passphrase,
@@ -199,6 +226,10 @@ namespace Nekoyume.Blockchain
             Register(pk, passphrase, replaceWhenAlreadyRegistered);
         }
 
+        /// <summary>
+        /// Register the key with the given private key and passphrase.
+        /// Replace the key when there is already a key registered with the same address.
+        /// </summary>
         public void Register(
             PrivateKey privateKey,
             string passphrase,
@@ -227,6 +258,10 @@ namespace Nekoyume.Blockchain
             Register(ppk, replaceWhenAlreadyRegistered);
         }
 
+        /// <summary>
+        /// Register the key with the given protected private key.
+        /// Replace the key when there is already a key registered with the same address.
+        /// </summary>
         public void Register(
             ProtectedPrivateKey protectedPrivateKey,
             bool replaceWhenAlreadyRegistered = false)
@@ -268,6 +303,9 @@ namespace Nekoyume.Blockchain
         #endregion Register
 
         #region Unregister
+        /// <summary>
+        /// Unregister the key with the given address.
+        /// </summary>
         public void Unregister(Address address)
         {
             Debug.Log($"[KeyManager] Unregister(Address) invoked: {address}");
@@ -292,6 +330,9 @@ namespace Nekoyume.Blockchain
         #endregion Unregister
 
         #region Has
+        /// <summary>
+        /// Check if the key store has the key with the given private key hex.
+        /// </summary>
         public bool Has(string privateKeyHex)
         {
             Debug.Log($"[KeyManager] Has(string) invoked with privateKeyHex.");
@@ -311,6 +352,9 @@ namespace Nekoyume.Blockchain
             return Has(pk.Address);
         }
 
+        /// <summary>
+        /// Check if the key store has the key with the given address.
+        /// </summary>
         public bool Has(Address address)
         {
             Debug.Log($"[KeyManager] Has(Address) invoked with: {address}");
@@ -325,6 +369,9 @@ namespace Nekoyume.Blockchain
         #endregion Has key
 
         #region Backup
+        /// <summary>
+        /// Backup the key with the given address to the given key store path.
+        /// </summary>
         public void BackupKey(Address address, string keyStorePathToBackup)
         {
             Debug.Log($"[KeyManager] BackupKey(Address, string) invoked: {address}, " +
@@ -347,6 +394,11 @@ namespace Nekoyume.Blockchain
         }
         #endregion Backup
 
+        /// <summary>
+        /// Try change the passphrase for the key with the given address.
+        /// It will change the passphrase for all keys that match the address
+        /// and the origin passphrase to the new passphrase.
+        /// </summary>
         public bool TryChangePassphrase(
             Address address,
             string originPassphrase,
@@ -406,6 +458,9 @@ namespace Nekoyume.Blockchain
             return atLeastOneSuccess;
         }
 
+        /// <summary>
+        /// Try unprotect the key with the given protected private key and passphrase.
+        /// </summary>
         private bool TryUnprotect(
             ProtectedPrivateKey protectedPrivateKey,
             string passphrase,
@@ -429,6 +484,9 @@ namespace Nekoyume.Blockchain
             return privateKey is not null;
         }
 
+        /// <summary>
+        /// Try get the key tuple with the given address.
+        /// </summary>
         private bool TryGetKeyTuple(
             Address address,
             out IEnumerable<Tuple<Guid, ProtectedPrivateKey>> keyTuple)
@@ -449,6 +507,9 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        /// <summary>
+        /// Get the key store with the given path.
+        /// </summary>
         /// <param name="fileNameOnMobile">Used only on mobile platform when path is null.</param>
         private static Web3KeyStore GetKeyStore(string path, string fileNameOnMobile)
         {
