@@ -58,6 +58,19 @@ namespace Nekoyume.Blockchain
         }
 
         #region Sign in
+        public void SignIn(string privateKeyHex)
+        {
+            Debug.Log($"[KeyManager] SignIn(string) invoked with privateKeyHex.");
+            if (string.IsNullOrEmpty(privateKeyHex))
+            {
+                Debug.LogError("[KeyManager] argument privateKeyHex is null or empty.");
+                return;
+            }
+
+            var pk = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+            SignIn(pk);
+        }
+
         /// <summary>
         /// Just sign in with the given private key.
         /// It does not register the key.
@@ -66,6 +79,26 @@ namespace Nekoyume.Blockchain
         {
             Debug.Log($"[KeyManager] SignIn(PrivateKey) invoked: {privateKey.Address}");
             _signedInPrivateKey = privateKey;
+        }
+
+        public void SignInAndRegister(
+            string privateKeyHex,
+            string passphrase,
+            bool replaceWhenAlreadyRegistered = false)
+        {
+            Debug.Log($"[KeyManager] SignInAndRegister(string, string, bool) invoked.");
+            SignIn(privateKeyHex);
+            Register(privateKeyHex, passphrase, replaceWhenAlreadyRegistered);
+        }
+
+        public void SignInAndRegister(
+            PrivateKey privateKey,
+            string passphrase,
+            bool replaceWhenAlreadyRegistered = false)
+        {
+            Debug.Log($"[KeyManager] SignInAndRegister(PrivateKey, string, bool) invoked.");
+            SignIn(privateKey);
+            Register(privateKey, passphrase, replaceWhenAlreadyRegistered);
         }
 
         /// <summary>
@@ -147,10 +180,9 @@ namespace Nekoyume.Blockchain
         public void Register(
             string privateKeyHex,
             string passphrase,
-            bool replaceWhenAlreadyRegistered = false,
-            bool signIn = false)
+            bool replaceWhenAlreadyRegistered = false)
         {
-            Debug.Log($"[KeyManager] Register(string, string, bool, bool) invoked with privateKeyHex.");
+            Debug.Log($"[KeyManager] Register(string, string, bool) invoked with privateKeyHex.");
             if (string.IsNullOrEmpty(privateKeyHex))
             {
                 Debug.LogError("[KeyManager] argument privateKeyHex is null or empty.");
@@ -164,17 +196,15 @@ namespace Nekoyume.Blockchain
             }
 
             var pk = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
-            Register(pk, passphrase, replaceWhenAlreadyRegistered, signIn);
+            Register(pk, passphrase, replaceWhenAlreadyRegistered);
         }
 
         public void Register(
             PrivateKey privateKey,
             string passphrase,
-            bool replaceWhenAlreadyRegistered = false,
-            bool signIn = false)
+            bool replaceWhenAlreadyRegistered = false)
         {
-            Debug.Log($"[KeyManager] Register(PrivateKey, string, bool, bool) invoked:" +
-                      $"signIn({signIn})");
+            Debug.Log($"[KeyManager] Register(PrivateKey, string, bool) invoked");
             if (privateKey is null)
             {
                 Debug.LogError("[KeyManager] argument privateKey is null.");
@@ -191,11 +221,6 @@ namespace Nekoyume.Blockchain
             {
                 Debug.LogError("[KeyManager] KeyStore is not initialized.");
                 return;
-            }
-
-            if (signIn)
-            {
-                SignIn(privateKey);
             }
 
             var ppk = ProtectedPrivateKey.Protect(privateKey, passphrase);
@@ -240,18 +265,6 @@ namespace Nekoyume.Blockchain
             Debug.Log($"[KeyManager] Successfully register the key: " +
                       $"{protectedPrivateKey.Address}");
         }
-
-        public void RegisterAndSignIn(
-            string privateKeyHex,
-            string passphrase,
-            bool replaceWhenAlreadyRegistered = false) =>
-            Register(privateKeyHex, passphrase, replaceWhenAlreadyRegistered, signIn: true);
-
-        public void RegisterAndSignIn(
-            PrivateKey privateKey,
-            string passphrase,
-            bool replaceWhenAlreadyRegistered = false) =>
-            Register(privateKey, passphrase, replaceWhenAlreadyRegistered, signIn: true);
         #endregion Register
 
         #region Unregister

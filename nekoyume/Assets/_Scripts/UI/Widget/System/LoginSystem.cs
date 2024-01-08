@@ -370,13 +370,13 @@ namespace Nekoyume.UI
                     SetImage(KeyManager.Instance.SignedInAddress);
                     break;
                 case States.CreateAccount:
-                    KeyManager.Instance.RegisterAndSignIn(
+                    KeyManager.Instance.SignInAndRegister(
                         KeyManager.Instance.SignedInPrivateKey,
                         passPhraseField.text);
                     Close();
                     break;
                 case States.SetPassword:
-                    KeyManager.Instance.RegisterAndSignIn(
+                    KeyManager.Instance.SignInAndRegister(
                         KeyManager.Instance.SignedInPrivateKey,
                         passPhraseField.text,
                         replaceWhenAlreadyRegistered: true);
@@ -404,7 +404,7 @@ namespace Nekoyume.UI
                     }
                     break;
                 case States.ResetPassphrase:
-                    KeyManager.Instance.RegisterAndSignIn(
+                    KeyManager.Instance.SignInAndRegister(
                         findPassphraseField.text,
                         passPhraseField.text,
                         replaceWhenAlreadyRegistered: true);
@@ -523,7 +523,7 @@ namespace Nekoyume.UI
                 AirbridgeUnity.TrackEvent(evt);
 
                 KeyManager.Instance.Initialize(null);
-                KeyManager.Instance.RegisterAndSignIn(new PrivateKey(), passPhraseField.text);
+                KeyManager.Instance.SignInAndRegister(new PrivateKey(), passPhraseField.text);
                 Close();
                 return;
             }
@@ -552,11 +552,11 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                KeyManager.Instance.RegisterAndSignIn(new PrivateKey(), passPhraseField.text);
+                KeyManager.Instance.SignInAndRegister(new PrivateKey(), passPhraseField.text);
             }
             else
             {
-                KeyManager.Instance.RegisterAndSignIn(
+                KeyManager.Instance.SignInAndRegister(
                     new PrivateKey(ByteUtil.ParseHex(privateKeyString)),
                     passPhraseField.text);
                 Debug.LogWarningFormat(
