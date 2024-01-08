@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Nekoyume.AssetBundleHelper
 {
@@ -15,11 +16,7 @@ namespace Nekoyume.AssetBundleHelper
                     progress => { Debug.Log($"{bundleName} - {progress * 100}%"); });
             }
 
-            Instantiate(
-                AssetBundleLoader.LoadAssetBundle<GameObject>("vfx/skills", "areaattack_l_fire"));
-
-            Instantiate(
-                AssetBundleLoader.LoadAssetBundle<GameObject>("vfx/skills", "areaattack_l_water"));
+            SceneManager.LoadScene(1);
         }
     }
 }

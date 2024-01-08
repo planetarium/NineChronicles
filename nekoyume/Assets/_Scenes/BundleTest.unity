@@ -154,8 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5482176f7850e1c4080e636fbaaee57f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  assetBundleSettings: {fileID: 11400000, guid: 509c755222186a44f9b8bf48e1738870,
-    type: 2}
 --- !u!114 &834115573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,13 +161,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 834115571}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5482176f7850e1c4080e636fbaaee57f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  assetBundleSettings: {fileID: 11400000, guid: 509c755222186a44f9b8bf48e1738870,
-    type: 2}
 --- !u!4 &834115574
 Transform:
   m_ObjectHideFlags: 0

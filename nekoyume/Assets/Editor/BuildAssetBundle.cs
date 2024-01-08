@@ -54,6 +54,12 @@ namespace Editor
             BuildPipeline.BuildAssetBundles(path,
                 BuildAssetBundleOptions.None,
                 target);
+
+            AssetBundleBuild[] buildBundles = new AssetBundleBuild[1];
+            var bundleName = "video";
+            buildBundles[0].assetBundleName = bundleName;
+            buildBundles[0].assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(bundleName);
+            BuildPipeline.BuildAssetBundles(path, buildBundles, BuildAssetBundleOptions.UncompressedAssetBundle, target);
         }
     }
 }

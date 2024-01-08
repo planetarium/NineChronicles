@@ -46,7 +46,7 @@ namespace Nekoyume.AssetBundleHelper
                     Initialize();
                 }
 
-                return preloadNames;
+                return assetBundleNames;
             }
         }
 
