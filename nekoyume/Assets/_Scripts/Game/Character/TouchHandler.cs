@@ -64,6 +64,14 @@ namespace Nekoyume.Game.Character
 
         public static GameObject currentSelectedGameObject { get; private set; }
 
+        private void OnEnable()
+        {
+            if(currentSelectedGameObject == null)
+            {   
+                currentSelectedGameObject = gameObject;
+            }
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
             switch (eventData.button)
