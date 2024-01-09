@@ -360,8 +360,11 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Select(PreResponseDailyReward)
+                .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseDailyRewardAsync)
+                .Subscribe(ResponseDailyReward)
                 .AddTo(_disposables);
         }
 
@@ -1831,50 +1834,56 @@ namespace Nekoyume.Blockchain
             }).Forget();
         }
 
-        private async void ResponseDailyRewardAsync(ActionEvaluation<DailyReward> eval)
+        private ActionEvaluation<DailyReward> PreResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
                 GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
             }
 
-            if (eval.Exception is null &&
-                eval.Action.avatarAddress == States.Instance.CurrentAvatarState.address)
+            return eval;
+        }
+
+        private void ResponseDailyReward(ActionEvaluation<DailyReward> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
             {
-                await States.Instance.InitRuneStoneBalance();
-                LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
-                    eval.Action.avatarAddress);
-                UniTask.RunOnThreadPool(async () =>
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().SubscribeOnMainThread().Subscribe(_ =>
+            {
+                UniTask.Void(async () =>
                 {
-                    await UpdateCurrentAvatarStateAsync(eval);
-                }).Forget();
+                    await States.Instance.InitRuneStoneBalance();
+                    LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
+                        eval.Action.avatarAddress);
 
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
-                    NotificationCell.NotificationType.Notification);
-                var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                    States.Instance.GameConfigState.DailyRewardInterval));
-                var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
-                PushNotifier.Push(
-                    notificationText,
-                    expectedNotifiedTime,
-                    PushNotifier.PushType.Reward);
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
+                        NotificationCell.NotificationType.Notification);
+                    var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
+                        States.Instance.GameConfigState.DailyRewardInterval));
+                    var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
+                    PushNotifier.Push(
+                        notificationText,
+                        expectedNotifiedTime,
+                        PushNotifier.PushType.Reward);
 
-                if (!RuneFrontHelper.TryGetRuneData(
-                        RuneHelper.DailyRewardRune.Ticker,
-                        out var data))
-                {
-                    return;
-                }
+                    if (!RuneFrontHelper.TryGetRuneData(
+                            RuneHelper.DailyRewardRune.Ticker,
+                            out var data))
+                    {
+                        return;
+                    }
 
-                var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
-                var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
-                NotificationSystem.Push(
-                    MailType.System,
-                    $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
-                    NotificationCell.NotificationType.RuneAcquisition);
-            }
+                    var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
+                    var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
+                    NotificationSystem.Push(
+                        MailType.System,
+                        $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
+                        NotificationCell.NotificationType.RuneAcquisition);
+                });
+            });
         }
 
         private (ActionEvaluation<HackAndSlash> eval, AvatarState avatarState, CrystalRandomSkillState randomSkillState) PrepareHackAndSlash(
@@ -2323,20 +2332,21 @@ namespace Nekoyume.Blockchain
         {
             if (eval.Exception is null)
             {
-                var avatarAddress = eval.Action.avatarAddress;
-                var row = TableSheets.Instance.MaterialItemSheet.Values
-                    .First(r => r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
-
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
-                {
-                    GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
-                }
-
                 UniTask.RunOnThreadPool(async () =>
                 {
                     await UpdateCurrentAvatarStateAsync(eval);
-                }).Forget();
+                }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+                {
+                    var avatarAddress = eval.Action.avatarAddress;
+                    var row = TableSheets.Instance.MaterialItemSheet.Values
+                        .First(r => r.ItemSubType == ItemSubType.ApStone);
+                    LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
+
+                    if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+                    {
+                        GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
+                    }
+                });
             }
         }
 
