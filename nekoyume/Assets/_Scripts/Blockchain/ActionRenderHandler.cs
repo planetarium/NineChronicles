@@ -1834,6 +1834,12 @@ namespace Nekoyume.Blockchain
             }).Forget();
         }
 
+        /// <summary>
+        /// This method is used to preprocess a daily reward evaluation before returning it.
+        /// 액션 성공 여부와 관계없이 로딩 UI를 초기화 시키는 동작을 합니다.
+        /// </summary>
+        /// <param name="eval">The daily reward evaluation to preprocess.</param>
+        /// <returns>The preprocessed daily reward evaluation.</returns>
         private ActionEvaluation<DailyReward> PreResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
@@ -1844,6 +1850,11 @@ namespace Nekoyume.Blockchain
             return eval;
         }
 
+        /// <summary>
+        /// Method to handle the response for daily reward.
+        /// ThreadPool에서 아바타 상태를 업데이트 한 뒤, 메인 스레드에서 렌더에 관련된 동작을 처리합니다.
+        /// </summary>
+        /// <param name="eval">The action evaluation for daily reward.</param>
         private void ResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
             UniTask.RunOnThreadPool(async () =>
@@ -2328,8 +2339,17 @@ namespace Nekoyume.Blockchain
             });
         }
 
+        /// <summary>
+        /// Handles the response of charging action points.
+        /// </summary>
+        /// <param name="eval">The evaluation result of the action point charging operation.</param>
         private void ResponseChargeActionPoint(ActionEvaluation<ChargeActionPoint> eval)
         {
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
+            }
+
             if (eval.Exception is null)
             {
                 UniTask.RunOnThreadPool(async () =>
@@ -2341,11 +2361,6 @@ namespace Nekoyume.Blockchain
                     var row = TableSheets.Instance.MaterialItemSheet.Values
                         .First(r => r.ItemSubType == ItemSubType.ApStone);
                     LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
-
-                    if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
-                    {
-                        GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
-                    }
                 });
             }
         }
