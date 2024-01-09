@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - development
       - release/*
       - fast-track/*
     tags: ["*"]
@@ -39,7 +38,8 @@ env:
 jobs:
   build:
     name: Build for ${{ matrix.targetPlatform }}
-    runs-on: ubuntu-latest
+    runs-on: 
+      labels: ["linux", "8cores"]
     defaults:
         run:
           shell: bash
