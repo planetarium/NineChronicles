@@ -28,14 +28,6 @@ namespace Nekoyume
         public Sprite Intro { get; private set; }
 
         [field: SerializeField]
-        [Tooltip("The sprite used by WorldMapStage.prefab")]
-        public Sprite StageIcon { get; private set; }
-
-        [field: SerializeField]
-        [Tooltip("Value to modify step icon coordinates")]
-        public Vector2 StageIconOffset { get; private set; }
-
-        [field: SerializeField]
         [Tooltip(
             "Main lobby bgm. Reference only name of audio clip. Audio is managed by AudioController")]
         public AudioClip MainBGM { get; private set; }
