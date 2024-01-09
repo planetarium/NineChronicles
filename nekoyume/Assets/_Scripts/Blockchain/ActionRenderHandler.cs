@@ -1838,8 +1838,8 @@ namespace Nekoyume.Blockchain
         /// This method is used to preprocess a daily reward evaluation before returning it.
         /// 액션 성공 여부와 관계없이 로딩 UI를 초기화 시키는 동작을 합니다.
         /// </summary>
-        /// <param name="eval">The daily reward evaluation to preprocess.</param>
-        /// <returns>The preprocessed daily reward evaluation.</returns>
+        /// <param name="eval">The action evaluation for getting avatar address.</param>
+        /// <returns>the eval inputted by param.</returns>
         private ActionEvaluation<DailyReward> PreResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
@@ -1854,7 +1854,7 @@ namespace Nekoyume.Blockchain
         /// Method to handle the response for daily reward.
         /// ThreadPool에서 아바타 상태를 업데이트 한 뒤, 메인 스레드에서 렌더에 관련된 동작을 처리합니다.
         /// </summary>
-        /// <param name="eval">The action evaluation for daily reward.</param>
+        /// <param name="eval">The action evaluation for render daily reward.</param>
         private void ResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
             UniTask.RunOnThreadPool(async () =>
