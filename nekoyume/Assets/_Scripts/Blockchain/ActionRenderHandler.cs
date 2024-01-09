@@ -456,6 +456,8 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<ChargeActionPoint>()
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval =>
+                    eval.Action.avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint)
                 .AddTo(_disposables);
@@ -686,6 +688,7 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<AuraSummon>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
@@ -698,6 +701,7 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<RuneSummon>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareRuneSummon)
                 .ObserveOnMainThread()
