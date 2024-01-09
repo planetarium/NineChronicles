@@ -91,7 +91,7 @@ namespace Nekoyume
             {
                 foreach (var fav in mail.FungibleAssetValues)
                 {
-                    itemNames += fav.value.Currency.Ticker + ", ";
+                    itemNames += fav.value.GetLocalizedName() + ", ";
                 }
             }
 
@@ -216,7 +216,7 @@ namespace Nekoyume
             {
                 foreach (var fav in mail.FungibleAssetValues)
                 {
-                    itemNames += fav.Currency.Ticker + ", ";
+                    itemNames += fav.GetLocalizedName() + ", ";
                 }
             }
 
