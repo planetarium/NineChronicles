@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
+using Nekoyume.State;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
 
@@ -13,7 +14,8 @@ namespace Nekoyume.UI.Module
         {
             None,
             Arena,
-            WorldBoss
+            WorldBoss,
+            EventDungeon,
         }
 
         [Serializable]
@@ -43,6 +45,9 @@ namespace Nekoyume.UI.Module
                 case Season.WorldBoss:
                     var worldBossStatus = WorldBossFrontHelper.GetStatus(blockIndex);
                     inSeason = worldBossStatus == WorldBossStatus.Season;
+                    break;
+                case Season.EventDungeon:
+                    inSeason = RxProps.EventScheduleRowForDungeon.Value is not null;
                     break;
             }
 
