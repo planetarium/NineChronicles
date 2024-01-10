@@ -19361,6 +19361,12 @@ PrefabInstance:
       propertyPath: fixedFontSizeOffset
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4353892921200940848, guid: be19467fa93a543fbb2fc8545dbf82d2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9c118b2f0c5d5453da4cca84acd35acc,
+        type: 3}
     - target: {fileID: 4433298682750287595, guid: be19467fa93a543fbb2fc8545dbf82d2,
         type: 3}
       propertyPath: m_AnchorMax.y
