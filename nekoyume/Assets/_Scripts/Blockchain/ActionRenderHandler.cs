@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -762,8 +761,8 @@ namespace Nekoyume.Blockchain
                     await UpdateAvatarState(eval, eval.Action.index);
 
                     await States.Instance.SelectAvatarAsync(eval.Action.index);
-                    await States.Instance.InitRuneStoneBalance();
                     await States.Instance.InitSoulStoneBalance();
+                    UpdateCurrentAvatarRuneStoneBalance(eval);
                     States.Instance.SetRuneStates(TableSheets.Instance.RuneListSheet.Select(pair => new RuneState(pair.Value.Id)));
                     await States.Instance.InitItemSlotStates();
                     await States.Instance.InitRuneSlotStates();
@@ -1440,6 +1439,8 @@ namespace Nekoyume.Blockchain
         {
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateCurrentAvatarRuneStoneBalance(eval);
+
             return eval;
         }
 
@@ -1457,18 +1458,14 @@ namespace Nekoyume.Blockchain
             Widget.Find<Summon>().OnActionRender(eval);
         }
 
-        private async void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
+        private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
         {
-            await States.Instance.InitRuneStoneBalance();
-
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = eval.Action;
-
             var tableSheets = Game.Game.instance.TableSheets;
             var summonRow = tableSheets.SummonSheet[action.GroupId];
             var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
             var count = summonRow.CostMaterialCount * action.SummonCount;
-            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+            LocalLayerModifier.AddItem(eval.Action.AvatarAddress, materialRow.ItemId, count);
 
             Widget.Find<Summon>().OnActionRender(eval);
         }
@@ -1860,40 +1857,38 @@ namespace Nekoyume.Blockchain
             UniTask.RunOnThreadPool(async () =>
             {
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).ToObservable().SubscribeOnMainThread().Subscribe(_ =>
+                States.Instance.SetCurrentAvatarBalance(StateGetter.GetBalance(
+                    eval.Action.avatarAddress, RuneHelper.DailyRewardRune, eval.OutputState));
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                UniTask.Void(async () =>
+                LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
+                    eval.Action.avatarAddress);
+
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
+                    NotificationCell.NotificationType.Notification);
+                var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
+                    States.Instance.GameConfigState.DailyRewardInterval));
+                var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
+                PushNotifier.Push(
+                    notificationText,
+                    expectedNotifiedTime,
+                    PushNotifier.PushType.Reward);
+
+                if (!RuneFrontHelper.TryGetRuneData(
+                        RuneHelper.DailyRewardRune.Ticker,
+                        out var data))
                 {
-                    await States.Instance.InitRuneStoneBalance();
-                    LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
-                        eval.Action.avatarAddress);
+                    return;
+                }
 
-                    NotificationSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
-                        NotificationCell.NotificationType.Notification);
-                    var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                        States.Instance.GameConfigState.DailyRewardInterval));
-                    var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
-                    PushNotifier.Push(
-                        notificationText,
-                        expectedNotifiedTime,
-                        PushNotifier.PushType.Reward);
-
-                    if (!RuneFrontHelper.TryGetRuneData(
-                            RuneHelper.DailyRewardRune.Ticker,
-                            out var data))
-                    {
-                        return;
-                    }
-
-                    var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
-                    var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
-                    NotificationSystem.Push(
-                        MailType.System,
-                        $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
-                        NotificationCell.NotificationType.RuneAcquisition);
-                });
+                var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
+                var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
+                NotificationSystem.Push(
+                    MailType.System,
+                    $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
+                    NotificationCell.NotificationType.RuneAcquisition);
             });
         }
 
@@ -2997,22 +2992,7 @@ namespace Nekoyume.Blockchain
             UpdateCrystalBalance(eval);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
-
-            var avatarAddress = eval.Action.AvatarAddress;
-            var runeAddresses = Game.Game.instance.TableSheets.RuneListSheet.Values
-                .Select(x => RuneState.DeriveAddress(avatarAddress, x.Id)).ToList();
-            var values = StateGetter.GetStates(runeAddresses, eval.OutputState);
-
-            var runeStates = new List<RuneState>();
-            foreach (var value in values)
-            {
-                if (value is List list)
-                {
-                    runeStates.Add(new RuneState(list));
-                }
-            }
-
-            States.Instance.SetRuneStates(runeStates);
+            UpdateCurrentAvatarRuneStoneBalance(eval);
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -3052,7 +3032,7 @@ namespace Nekoyume.Blockchain
                 Widget.Find<LoadingScreen>().Close();
                 worldBoss.Close();
                 await WorldBossStates.Set(avatarAddress);
-                await States.Instance.InitRuneStoneBalance();
+
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
@@ -3092,7 +3072,8 @@ namespace Nekoyume.Blockchain
                 runeStates);
 
             await WorldBossStates.Set(avatarAddress);
-            await States.Instance.InitRuneStoneBalance();
+
+            Game.Event.OnRoomEnter.Invoke(true);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)
@@ -3145,10 +3126,9 @@ namespace Nekoyume.Blockchain
         private static ActionEvaluation<ClaimRaidReward> PrepareClaimRaidReward(
             ActionEvaluation<ClaimRaidReward> eval)
         {
-            States.Instance.InitRuneStoneBalance().ToObservable().Subscribe(_ =>
-            {
-                UpdateCrystalBalance(eval);
-            });
+            UpdateCurrentAvatarRuneStoneBalance(eval);
+            UpdateCrystalBalance(eval);
+
             return eval;
         }
 

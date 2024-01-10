@@ -162,22 +162,20 @@ namespace Nekoyume.State
         public async UniTask InitAvatarBalancesAsync()
         {
             await UniTask.WhenAll(
-                InitRuneStoneBalance(),
+                UniTask.Run(async () =>
+                {
+                    var agent = Game.Game.instance.Agent;
+                    var avatarAddress = CurrentAvatarState.address;
+                    var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                    await foreach (var row in runeSheet.Values)
+                    {
+                        CurrentAvatarBalances.Remove(row.Ticker);
+                        var rune = RuneHelper.ToCurrency(row);
+                        var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, rune);
+                        CurrentAvatarBalances.Add(row.Ticker, fungibleAsset);
+                    }
+                }),
                 InitSoulStoneBalance());
-        }
-
-        public async UniTask InitRuneStoneBalance()
-        {
-            var agent = Game.Game.instance.Agent;
-            var avatarAddress = CurrentAvatarState.address;
-            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-            await foreach (var row in runeSheet.Values)
-            {
-                CurrentAvatarBalances.Remove(row.Ticker);
-                var rune = RuneHelper.ToCurrency(row);
-                var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, rune);
-                CurrentAvatarBalances.Add(row.Ticker, fungibleAsset);
-            }
         }
 
         public void SetRuneStates(IEnumerable<RuneState> runeStates)

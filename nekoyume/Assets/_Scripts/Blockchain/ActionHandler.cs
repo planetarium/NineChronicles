@@ -441,5 +441,20 @@ namespace Nekoyume.Blockchain
                 evaluation.OutputState);
             States.Instance.UpdateRuneSlotState(runeSlotState);
         }
+
+        protected static void UpdateCurrentAvatarRuneStoneBalance<T>(
+            ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var runeSheet = TableSheets.Instance.RuneSheet;
+            foreach (var row in runeSheet.Values)
+            {
+                States.Instance.SetCurrentAvatarBalance(
+                    StateGetter.GetBalance(
+                        avatarAddress,
+                        RuneHelper.ToCurrency(row),
+                        evaluation.OutputState));
+            }
+        }
     }
 }
