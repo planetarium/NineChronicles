@@ -46,6 +46,12 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject loadingIndicator;
 
+        [SerializeField]
+        private RectTransform onSeasonOutlineRect;
+
+        [SerializeField]
+        private RectTransform offSeasonOutlineRect;
+
         private readonly List<IDisposable> _disposables = new();
         private bool _madeRaidMail;
 
@@ -129,7 +135,7 @@ namespace Nekoyume.UI.Module.Lobby
         private void AddSeasonRewardMail(int raidId)
         {
             const string success = "SUCCESS";
-            const string cachingKey = "SeasonRewards_{0}_{1}";
+            const string cachingKey = "SeasonRewards_{0}_{1}_{2}";
             if (States.Instance.CurrentAvatarState == null || _madeRaidMail)
             {
                 return;
@@ -137,7 +143,8 @@ namespace Nekoyume.UI.Module.Lobby
 
             _madeRaidMail = true;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var localRewardKey = string.Format(cachingKey, raidId, avatarAddress);
+            var currentPlanetId = Game.Game.instance.CurrentPlanetId;
+            var localRewardKey = string.Format(cachingKey, raidId, avatarAddress, currentPlanetId);
 
             var receivedRewardTxs = new List<string>();
             if (PlayerPrefs.HasKey(localRewardKey))
@@ -181,7 +188,7 @@ namespace Nekoyume.UI.Module.Lobby
                 }, null));
 
             // Delete old-cached data.
-            var oldSeasonCachingKey = string.Format(cachingKey, raidId - 1, avatarAddress);
+            var oldSeasonCachingKey = string.Format(cachingKey, raidId - 1, avatarAddress, currentPlanetId);
             if (PlayerPrefs.HasKey(oldSeasonCachingKey))
             {
                 PlayerPrefs.DeleteKey(oldSeasonCachingKey);
@@ -198,6 +205,12 @@ namespace Nekoyume.UI.Module.Lobby
                     offSeason.SetActive(true);
                     timeContainer.SetActive(false);
                     ticketContainer.SetActive(false);
+                    // Set tutorial target to off-season object
+                    Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                    {
+                        type = TutorialTargetType.WorldBossButton,
+                        rectTransform = offSeasonOutlineRect
+                    });
                     break;
                 case WorldBossStatus.Season:
                     if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
@@ -213,6 +226,12 @@ namespace Nekoyume.UI.Module.Lobby
                     onSeason.SetActive(true);
                     offSeason.SetActive(false);
                     timeContainer.SetActive(true);
+                    // Set tutorial target to on-season object
+                    Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                    {
+                        type = TutorialTargetType.WorldBossButton,
+                        rectTransform = onSeasonOutlineRect
+                    });
                     var remainTime = row.EndedBlockIndex - currentBlockIndex;
                     timeBlock.SetTimeBlock($"{remainTime:#,0}", remainTime.BlockRangeToTimeSpanString());
 

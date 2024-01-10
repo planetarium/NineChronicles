@@ -465,7 +465,7 @@ namespace Nekoyume.UI
                 else
                 {
                     if(_matarialsScroller?.Position != 0)
-                        enhancementSelectedMaterialItemScroll.RawJumpto(0, 0);
+                        enhancementSelectedMaterialItemScroll.RawJumpTo(0, 0);
 
                     noneContainer.SetActive(true);
                 }

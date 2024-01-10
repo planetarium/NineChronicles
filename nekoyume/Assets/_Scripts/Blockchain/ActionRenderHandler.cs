@@ -360,8 +360,11 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Select(PreResponseDailyReward)
+                .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseDailyRewardAsync)
+                .Subscribe(ResponseDailyReward)
                 .AddTo(_disposables);
         }
 
@@ -456,6 +459,8 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<ChargeActionPoint>()
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval =>
+                    eval.Action.avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint)
                 .AddTo(_disposables);
@@ -686,6 +691,7 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<AuraSummon>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
@@ -698,6 +704,7 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<RuneSummon>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareRuneSummon)
                 .ObserveOnMainThread()
@@ -1827,50 +1834,67 @@ namespace Nekoyume.Blockchain
             }).Forget();
         }
 
-        private async void ResponseDailyRewardAsync(ActionEvaluation<DailyReward> eval)
+        /// <summary>
+        /// This method is used to preprocess a daily reward evaluation before returning it.
+        /// 액션 성공 여부와 관계없이 로딩 UI를 초기화 시키는 동작을 합니다.
+        /// </summary>
+        /// <param name="eval">The action evaluation for getting avatar address.</param>
+        /// <returns>the eval inputted by param.</returns>
+        private ActionEvaluation<DailyReward> PreResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
                 GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
             }
 
-            if (eval.Exception is null &&
-                eval.Action.avatarAddress == States.Instance.CurrentAvatarState.address)
+            return eval;
+        }
+
+        /// <summary>
+        /// Method to handle the response for daily reward.
+        /// ThreadPool에서 아바타 상태를 업데이트 한 뒤, 메인 스레드에서 렌더에 관련된 동작을 처리합니다.
+        /// </summary>
+        /// <param name="eval">The action evaluation for render daily reward.</param>
+        private void ResponseDailyReward(ActionEvaluation<DailyReward> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
             {
-                await States.Instance.InitRuneStoneBalance();
-                LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
-                    eval.Action.avatarAddress);
-                UniTask.RunOnThreadPool(async () =>
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().SubscribeOnMainThread().Subscribe(_ =>
+            {
+                UniTask.Void(async () =>
                 {
-                    await UpdateCurrentAvatarStateAsync(eval);
-                }).Forget();
+                    await States.Instance.InitRuneStoneBalance();
+                    LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
+                        eval.Action.avatarAddress);
 
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
-                    NotificationCell.NotificationType.Notification);
-                var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                    States.Instance.GameConfigState.DailyRewardInterval));
-                var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
-                PushNotifier.Push(
-                    notificationText,
-                    expectedNotifiedTime,
-                    PushNotifier.PushType.Reward);
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
+                        NotificationCell.NotificationType.Notification);
+                    var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
+                        States.Instance.GameConfigState.DailyRewardInterval));
+                    var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
+                    PushNotifier.Push(
+                        notificationText,
+                        expectedNotifiedTime,
+                        PushNotifier.PushType.Reward);
 
-                if (!RuneFrontHelper.TryGetRuneData(
-                        RuneHelper.DailyRewardRune.Ticker,
-                        out var data))
-                {
-                    return;
-                }
+                    if (!RuneFrontHelper.TryGetRuneData(
+                            RuneHelper.DailyRewardRune.Ticker,
+                            out var data))
+                    {
+                        return;
+                    }
 
-                var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
-                var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
-                NotificationSystem.Push(
-                    MailType.System,
-                    $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
-                    NotificationCell.NotificationType.RuneAcquisition);
-            }
+                    var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
+                    var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
+                    NotificationSystem.Push(
+                        MailType.System,
+                        $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
+                        NotificationCell.NotificationType.RuneAcquisition);
+                });
+            });
         }
 
         private (ActionEvaluation<HackAndSlash> eval, AvatarState avatarState, CrystalRandomSkillState randomSkillState) PrepareHackAndSlash(
@@ -2315,24 +2339,29 @@ namespace Nekoyume.Blockchain
             });
         }
 
+        /// <summary>
+        /// Handles the response of charging action points.
+        /// </summary>
+        /// <param name="eval">The evaluation result of the action point charging operation.</param>
         private void ResponseChargeActionPoint(ActionEvaluation<ChargeActionPoint> eval)
         {
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
+            }
+
             if (eval.Exception is null)
             {
-                var avatarAddress = eval.Action.avatarAddress;
-                var row = TableSheets.Instance.MaterialItemSheet.Values
-                    .First(r => r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
-
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
-                {
-                    GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
-                }
-
                 UniTask.RunOnThreadPool(async () =>
                 {
                     await UpdateCurrentAvatarStateAsync(eval);
-                }).Forget();
+                }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+                {
+                    var avatarAddress = eval.Action.avatarAddress;
+                    var row = TableSheets.Instance.MaterialItemSheet.Values
+                        .First(r => r.ItemSubType == ItemSubType.ApStone);
+                    LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
+                });
             }
         }
 
@@ -3448,8 +3477,6 @@ namespace Nekoyume.Blockchain
 
                 if (mail is not null)
                 {
-                    mail.New = true;
-                    gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
                     if (mail.Memo != null && mail.Memo.Contains("season_pass"))
                     {
@@ -3585,7 +3612,10 @@ namespace Nekoyume.Blockchain
                 }
 
                 mailBox = new MailBox(mailBoxList);
-                var sameBlockIndexMailList = mailBox.OfType<ClaimItemsMail>().Where(m => m.blockIndex == eval.BlockIndex);
+                var sameBlockIndexMailList = mailBox
+                    .OfType<ClaimItemsMail>()
+                    .Where(m => m.blockIndex == eval.BlockIndex)
+                    .ToList();
                 if (sameBlockIndexMailList.Any())
                 {
                     var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
@@ -3593,8 +3623,6 @@ namespace Nekoyume.Blockchain
                 }
                 if (mail is not null)
                 {
-                    mail.New = true;
-                    gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
                     if (mail.Memo != null && mail.Memo.Contains("season_pass"))
                     {
@@ -3694,7 +3722,10 @@ namespace Nekoyume.Blockchain
             var avatar = gameStates.CurrentAvatarState;
             var mailBox = avatar.mailBox;
             UnloadFromMyGaragesRecipientMail mail = null;
-            var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>().Where(m => m.blockIndex == eval.BlockIndex);
+            var sameBlockIndexMailList = mailBox
+                .OfType<UnloadFromMyGaragesRecipientMail>()
+                .Where(m => m.blockIndex == eval.BlockIndex)
+                .ToList();
             if (sameBlockIndexMailList.Any())
             {
                 var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
@@ -3703,8 +3734,6 @@ namespace Nekoyume.Blockchain
 
             if (mail is not null)
             {
-                mail.New = true;
-                gameStates.CurrentAvatarState.mailBox = mailBox;
                 LocalLayerModifier.AddNewMail(avatar.address, mail.id);
             }
             if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())

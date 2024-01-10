@@ -153,6 +153,8 @@ namespace Nekoyume.UI.Module
             StageType stageType,
             List<(int stageId, bool hasBoss)> stageTuples)
         {
+            var eventType = EventManager.GetEventInfo().EventType;
+
             var stageWaveRowsCount = stageTuples.Count;
             var stageOffset = 0;
             var nextPageShouldHide = false;
@@ -190,7 +192,8 @@ namespace Nekoyume.UI.Module
                         var stageModel = new WorldMapStage.ViewModel(
                             SharedViewModel.StageType,
                             stageTuple.stageId,
-                            stageTuple.hasBoss,
+                            GetBossType(stageTuple.stageId, stageTuple.hasBoss),
+                            eventType,
                             WorldMapStage.State.Normal);
 
                         stageModels.Add(stageModel);
@@ -218,6 +221,18 @@ namespace Nekoyume.UI.Module
                 if (stageOffset >= stageWaveRowsCount)
                 {
                     nextPageShouldHide = true;
+                }
+
+                BossType GetBossType(int stageId, bool hasBoss)
+                {
+                    if (!hasBoss)
+                    {
+                        return BossType.None;
+                    }
+
+                    return stageId % 50 == 0
+                        ? BossType.LastBoss
+                        : BossType.MiddleBoss;
                 }
             }
 

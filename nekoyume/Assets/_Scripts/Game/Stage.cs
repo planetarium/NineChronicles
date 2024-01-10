@@ -1224,12 +1224,9 @@ namespace Nekoyume.Game
                 {
                     if (affectedCharacter)
                     {
-                        affectedCharacter.actions.Add(
-                            new ActionParams(affectedCharacter,
-                                tick.SkillInfos,
-                                tick.BuffInfos,
-                                affectedCharacter.CoHealWithoutAnimation));
-                        yield return null;
+                        yield return new WaitWhile(() => affectedCharacter.actions.Any());
+                        yield return affectedCharacter.CoHealWithoutAnimation(tick.SkillInfos.ToList());
+                        yield return new WaitForSeconds(.1f);
                     }
                 }
             }

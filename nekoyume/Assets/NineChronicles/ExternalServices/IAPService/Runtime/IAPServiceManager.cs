@@ -262,6 +262,59 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
         }
 
+        public async Task<string?> PurchaseLogAsync(
+            string agentAddr,
+            string avatarAddr,
+            string planetId,
+            string productId,
+            string orderId)
+        {
+            if (!IsInitialized)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+
+            var (code, error, mediaType, content) =
+                await _client.PurchaseLogAsync(
+                    agentAddr,
+                    avatarAddr,
+                    planetId,
+                    productId,
+                    orderId);
+            if (code != HttpStatusCode.OK ||
+                !string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(
+                    $"Purchase failed: {code}, {productId}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (mediaType != "application/json")
+            {
+                Debug.LogError(
+                    $"Unexpected media type: {code}, {productId}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                Debug.LogError(
+                    $"Content is empty: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            try
+            {
+                return content;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return null;
+            }
+        }
+
         public async Task<L10NSchema?> L10NAsync()
         {
             if (!IsInitialized)

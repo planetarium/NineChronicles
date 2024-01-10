@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: OutlineGrow
-  m_Shader: {fileID: 4800000, guid: c20308b0e23b78d4c85098af31f19cb4, type: 3}
+  m_Shader: {fileID: 4800000, guid: 830ca227905f4075b5cd2f5eef7138be, type: 3}
   m_ValidKeywords:
   - ETC1_EXTERNAL_ALPHA
   - PIXELSNAP_ON
@@ -79,7 +79,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineSize: 1.33
+    - _OutlineSize: 2.5
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1

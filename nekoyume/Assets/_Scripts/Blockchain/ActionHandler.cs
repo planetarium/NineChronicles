@@ -59,10 +59,6 @@ namespace Nekoyume.Blockchain
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
-            if (!evaluation.Signer.Equals(agentAddress))
-            {
-                return null;
-            }
 
             return StateGetter.GetGoldBalanceState(
                 agentAddress,
@@ -319,15 +315,10 @@ namespace Nekoyume.Blockchain
 
         protected static void UpdateCrystalBalance<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            if (!evaluation.Signer.Equals(States.Instance.AgentState.address))
-            {
-                return;
-            }
-
             try
             {
                 var crystal = StateGetter.GetBalance(
-                    evaluation.Signer,
+                    States.Instance.AgentState.address,
                     CrystalCalculator.CRYSTAL,
                     evaluation.OutputState);
                 States.Instance.SetCrystalBalance(crystal);

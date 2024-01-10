@@ -30,6 +30,7 @@ using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Blockchain;
     using UniRx;
 
     public class IntroScreen : ScreenWidget
@@ -273,7 +274,6 @@ namespace Nekoyume.UI
 
             SetData(keyStorePath, privateKey, planetContext);
 
-// #if !RUN_ON_MOBILE
 #if RUN_ON_MOBILE
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
@@ -284,7 +284,7 @@ namespace Nekoyume.UI
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
-            Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+            Find<LoginSystem>().Show(privateKeyString: _privateKey);
 #endif
         }
 
@@ -350,23 +350,16 @@ namespace Nekoyume.UI
                 {
                     var resultPpk = ProtectedPrivateKey.FromJson(res.Text);
                     var requiredAddress = resultPpk.Address;
-                    var loginSystem = Find<LoginSystem>();
-                    var legacyKeystore = loginSystem.KeyStore;
-                    var legacyKeyList = legacyKeystore.List()
-                        .Where(tuple => !tuple.Item2.Address.Equals(requiredAddress))
-                        .ToList();
-                    var backupKeystore = new Web3KeyStore(Platform.PersistentDataPath + "/backup_keystore");
-                    foreach (var tuple in legacyKeyList)
+                    var km = KeyManager.Instance;
+                    if (km.Has(requiredAddress))
                     {
-                        legacyKeystore.Remove(tuple.Item1);
-                        backupKeystore.Add(tuple.Item2);
+                        km.BackupKey(requiredAddress, keyStorePathToBackup: null);
                     }
 
-                    legacyKeystore.Add(resultPpk);
-                    loginSystem.KeyStore = legacyKeystore;
+                    km.Register(resultPpk);
                     codeReaderView.Close();
                     startButtonContainer.SetActive(false);
-                    loginSystem.Show(_keyStorePath, string.Empty);
+                    Find<LoginSystem>().Show(privateKeyString: string.Empty);
                     Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
 
                     var evt = new AirbridgeEvent("Intro_QRCodeImported");
@@ -416,7 +409,7 @@ namespace Nekoyume.UI
                 AirbridgeUnity.TrackEvent(evt);
 
                 startButtonContainer.SetActive(false);
-                Find<LoginSystem>().Show(_keyStorePath, pk);
+                Find<LoginSystem>().Show(privateKeyString: pk);
             });
             guestButton.interactable = true;
         }

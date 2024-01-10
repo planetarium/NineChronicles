@@ -935,8 +935,6 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessHeal(target, info);
             }
-
-            Animator.Idle();
         }
 
         public IEnumerator CoBuff(IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
