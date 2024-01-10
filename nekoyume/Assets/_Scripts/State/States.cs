@@ -180,31 +180,13 @@ namespace Nekoyume.State
             }
         }
 
-        public async UniTask InitRuneStates()
-        {
-            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-            var avatarAddress = CurrentAvatarState.address;
-            var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
-            var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id))
-                .ToList();
-            var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(runeAddresses);
-            RuneStates.Clear();
-            foreach (var value in stateBulk.Values)
-            {
-                if (value is List list)
-                {
-                    RuneStates.Add(new RuneState(list));
-                }
-            }
-        }
-
-        public void UpdateRuneStates(List<RuneState> runeStates)
+        public void SetRuneStates(IEnumerable<RuneState> runeStates)
         {
             RuneStates.Clear();
             RuneStates.AddRange(runeStates);
         }
 
-        public void UpdateRuneState(RuneState runeState)
+        public void SetRuneState(RuneState runeState)
         {
             RuneStates.RemoveAll(rune => rune.RuneId == runeState.RuneId);
             RuneStates.Add(runeState);

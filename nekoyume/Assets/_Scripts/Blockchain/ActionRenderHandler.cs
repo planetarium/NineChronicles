@@ -764,7 +764,7 @@ namespace Nekoyume.Blockchain
                     await States.Instance.SelectAvatarAsync(eval.Action.index);
                     await States.Instance.InitRuneStoneBalance();
                     await States.Instance.InitSoulStoneBalance();
-                    await States.Instance.InitRuneStates();
+                    States.Instance.SetRuneStates(TableSheets.Instance.RuneListSheet.Select(pair => new RuneState(pair.Value.Id)));
                     await States.Instance.InitItemSlotStates();
                     await States.Instance.InitRuneSlotStates();
                 }).ToObservable()
@@ -3012,7 +3012,7 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            States.Instance.UpdateRuneStates(runeStates);
+            States.Instance.SetRuneStates(runeStates);
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -3169,7 +3169,7 @@ namespace Nekoyume.Blockchain
             if (value is List list)
             {
                 var runeState = new RuneState(list);
-                States.Instance.UpdateRuneState(runeState);
+                States.Instance.SetRuneState(runeState);
             }
 
             UpdateCrystalBalance(eval);
