@@ -92,7 +92,9 @@ namespace Nekoyume.UI
             { RankCategory.EquipmentArmor, ("UI_CP", "UI_NAME") },
             { RankCategory.EquipmentBelt, ("UI_CP", "UI_NAME") },
             { RankCategory.EquipmentNecklace, ("UI_CP", "UI_NAME") },
-            { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") }
+            { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentAura, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentRune, ("UI_CP", "UI_NAME") },
         };
 
         public override void Initialize()
@@ -269,6 +271,12 @@ namespace Nekoyume.UI
                     break;
                 case RankCategory.EquipmentRing:
                     SetEquipmentScroll(ItemSubType.Ring);
+                    break;
+                case RankCategory.EquipmentAura:
+                    SetEquipmentScroll(ItemSubType.Aura);
+                    break;
+                case RankCategory.EquipmentRune:
+                    SetEquipmentScroll(ItemSubType.NormalMaterial);  // Rune isn't item type.
                     break;
                 default:
                     break;

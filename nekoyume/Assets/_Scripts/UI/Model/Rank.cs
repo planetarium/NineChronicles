@@ -308,7 +308,10 @@ namespace Nekoyume.UI.Model
         private async Task LoadEquipmentRankingInfos(NineChroniclesAPIClient apiClient, int displayCount)
         {
             var subTypes = new ItemSubType[]
-                { ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace, ItemSubType.Ring };
+            {
+                ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace,
+                ItemSubType.Ring, ItemSubType.Aura, ItemSubType.NormalMaterial // <- rune
+            };
             EquipmentRankingInfosMap = new Dictionary<ItemSubType, List<EquipmentRankingModel>>();
 
             foreach (var subType in subTypes)
