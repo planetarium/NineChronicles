@@ -413,24 +413,9 @@ namespace Nekoyume.State
             CurrentAvatarBalances[ticker] = fungibleAsset;
         }
 
-        /// <summary>
-        /// For caching
-        /// </summary>
         public void SetCurrentAvatarBalance(FungibleAssetValue fav)
         {
-            var preFav = CurrentAvatarBalances[fav.Currency.Ticker];
-            var major = preFav.MajorUnit - fav.MajorUnit;
-            var miner = preFav.MinorUnit - fav.MinorUnit;
-            CurrentAvatarBalances[fav.Currency.Ticker] =
-                new FungibleAssetValue(fav.Currency, major, miner);
-        }
-
-        public void UpdateCurrentAvatarBalance(FungibleAssetValue fav)
-        {
-            var major = fav.MajorUnit;
-            var miner = fav.MinorUnit;
-            CurrentAvatarBalances[fav.Currency.Ticker] =
-                new FungibleAssetValue(fav.Currency, major, miner);
+            CurrentAvatarBalances[fav.Currency.Ticker] = fav;
         }
 
         public void SetStakeState(
