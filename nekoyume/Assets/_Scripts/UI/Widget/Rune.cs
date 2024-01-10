@@ -206,7 +206,7 @@ namespace Nekoyume.UI
         }
 
 
-        public async UniTaskVoid OnActionRender(IRandom random)
+        public void OnActionRender(IRandom random, FungibleAssetValue fav)
         {
             if (_selectedRuneItem.Level == 0)
             {
@@ -229,13 +229,7 @@ namespace Nekoyume.UI
             }
 
             States.Instance.UpdateRuneSlotState();
-
-            var fav = await States.Instance.UpdateRuneStoneBalance(_selectedRuneItem.Row.Id);
-            if (fav != null)
-            {
-                _selectedRuneItem.RuneStone = (FungibleAssetValue)fav;
-            }
-
+            _selectedRuneItem.RuneStone = fav;
             SetInventory();
             Set(_selectedRuneItem);
             animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);

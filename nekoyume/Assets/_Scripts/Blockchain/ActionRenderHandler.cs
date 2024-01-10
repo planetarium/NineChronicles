@@ -3140,26 +3140,30 @@ namespace Nekoyume.Blockchain
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
         }
 
-        private ActionEvaluation<RuneEnhancement> PrepareRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
+        private (ActionEvaluation<RuneEnhancement>, FungibleAssetValue runeStone) PrepareRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
         {
             var action = eval.Action;
+            var runeRow = TableSheets.Instance.RuneSheet.Values
+                .First(r => r.Id == action.RuneId);
             var runeAddr = RuneState.DeriveAddress(action.AvatarAddress, action.RuneId);
 
-            var value = StateGetter.GetState(runeAddr, eval.OutputState);
-            if (value is List list)
-            {
-                var runeState = new RuneState(list);
-                States.Instance.SetRuneState(runeState);
-            }
+            var list = StateGetter.GetState(runeAddr, eval.OutputState) as List;
+            var runeState = new RuneState(list);
+            States.Instance.SetRuneState(runeState);
 
             UpdateCrystalBalance(eval);
             UpdateAgentStateAsync(eval).Forget();
-            return eval;
+            var runeStone = StateGetter.GetBalance(
+                action.AvatarAddress,
+                Currencies.GetRune(runeRow.Ticker),
+                eval.OutputState);
+            States.Instance.SetCurrentAvatarBalance(runeStone);
+            return (eval, runeStone);
         }
 
-        private void ResponseRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
+        private void ResponseRuneEnhancement((ActionEvaluation<RuneEnhancement> eval, FungibleAssetValue runeStone) prepared)
         {
-            Widget.Find<Rune>().OnActionRender(new LocalRandom(eval.RandomSeed)).Forget();
+            Widget.Find<Rune>().OnActionRender(new LocalRandom(prepared.eval.RandomSeed), prepared.runeStone);
         }
 
         private ActionEvaluation<UnlockRuneSlot> PreResponseUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)

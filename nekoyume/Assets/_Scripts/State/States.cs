@@ -386,23 +386,6 @@ namespace Nekoyume.State
             return itemSlotState;
         }
 
-        public async Task<FungibleAssetValue?> UpdateRuneStoneBalance(int runeId)
-        {
-            var avatarAddress = CurrentAvatarState.address;
-            var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
-            if (!costSheet.TryGetValue(runeId, out _))
-            {
-                return null;
-            }
-
-            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-            var runeRow = runeSheet.Values.First(x => x.Id == runeId);
-            var rune = RuneHelper.ToCurrency(runeRow);
-            var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-            CurrentAvatarBalances[runeRow.Ticker] = fungibleAsset;
-            return fungibleAsset;
-        }
-
         public async Task SetBalanceAsync(string ticker)
         {
             var currency = Currencies.GetMinterlessCurrency(ticker);
