@@ -194,6 +194,7 @@ MonoBehaviour:
   tabToggleGroup: {fileID: 6327505566752646343}
   iAPShopDynamicGridLayout: {fileID: 6428342440512112935}
   loadDataScreen: {fileID: 7519953081399492157}
+  emptyCategoryPannel: {fileID: 1403861813068081876}
 --- !u!1 &598574704044018674
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,8 +724,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6113021123441700787}
   m_HandleRect: {fileID: 7440800650224879723}
   m_Direction: 2
-  m_Value: 0.99999994
-  m_Size: 0.45245397
+  m_Value: 1
+  m_Size: 0.45161638
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1561,7 +1562,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_WORKSHOP_EMPTY_CATEGORY
+  l10nKey: UI_MOBILE_SHOP_EMPTY_CATEGORY
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1996,7 +1997,7 @@ PrefabInstance:
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 243
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
