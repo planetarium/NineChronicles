@@ -45,7 +45,7 @@ namespace Nekoyume.Blockchain
         protected static bool ValidateEvaluationForCurrentAgent<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
-            return !(States.Instance.AgentState is null) &&
+            return States.Instance?.AgentState is not null &&
                 evaluation.Signer.Equals(States.Instance.AgentState.address);
         }
 

@@ -480,8 +480,8 @@ namespace Nekoyume.Blockchain
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
                     ValidateEvaluationForCurrentAgent(eval) ||
-                    eval.Action.Recipient.Equals(States.Instance.AgentState.address) ||
-                    eval.Action.Recipient.Equals(States.Instance.CurrentAvatarState.address))
+                    eval.Action.Recipient.Equals(States.Instance.AgentState?.address) ||
+                    eval.Action.Recipient.Equals(States.Instance.CurrentAvatarState?.address))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareTransferAsset)
                 .ObserveOnMainThread()
@@ -496,8 +496,8 @@ namespace Nekoyume.Blockchain
                 .Where(eval =>
                     ValidateEvaluationForCurrentAgent(eval) ||
                     eval.Action.Recipients.Any(e =>
-                        e.recipient.Equals(States.Instance.AgentState.address) ||
-                        e.recipient.Equals(States.Instance.CurrentAvatarState.address)))
+                        e.recipient.Equals(States.Instance.AgentState?.address) ||
+                        e.recipient.Equals(States.Instance.CurrentAvatarState?.address)))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareTransferAssets)
                 .ObserveOnMainThread()
@@ -791,7 +791,6 @@ namespace Nekoyume.Blockchain
             PrepareRapidCombination(
                 ActionEvaluation<RapidCombination> eval)
         {
-            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
             var avatarState = States.Instance.AvatarStates.Values
@@ -802,7 +801,7 @@ namespace Nekoyume.Blockchain
                     Game.Game.instance.Agent.BlockIndex)
                 : null;
 
-            if(StateGetter.TryGetCombinationSlotState(
+            if (StateGetter.TryGetCombinationSlotState(
                    avatarAddress,
                    slotIndex,
                    eval.OutputState,
