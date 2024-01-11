@@ -267,7 +267,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             string avatarAddr,
             string planetId,
             string productId,
-            string orderId)
+            string orderId,
+            string data)
         {
             if (!IsInitialized)
             {
@@ -281,7 +282,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                     avatarAddr,
                     planetId,
                     productId,
-                    orderId);
+                    orderId,
+                    data);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {

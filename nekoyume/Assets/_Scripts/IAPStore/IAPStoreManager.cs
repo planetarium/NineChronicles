@@ -107,7 +107,7 @@ namespace Nekoyume.IAPStore
                     "Unity/Shop/IAP/OnPurchaseClicked/Error",
                     ("error", error.Message));
             }
-
+            PurchaseLog(productId, "", $"PurchaseOnClicked");
             _controller.InitiatePurchase(productId);
         }
 
@@ -195,7 +195,7 @@ namespace Nekoyume.IAPStore
             }
         }
 
-        async void PurchaseLog(PurchaseEventArgs e)
+        async void PurchaseLog(string productId, string orderId, string data)
         {
             var states = States.Instance;
             try
@@ -205,8 +205,9 @@ namespace Nekoyume.IAPStore
                         states.AgentState.address.ToHex(),
                         states.CurrentAvatarState.address.ToHex(),
                         Game.Game.instance.CurrentPlanetId.ToString(),
-                        e.purchasedProduct.definition.id,
-                        e.purchasedProduct.transactionID);
+                        productId,
+                        orderId,
+                        data);
 
                 Debug.Log("[PurchaseLog] Log " + result);
             }
@@ -293,7 +294,7 @@ namespace Nekoyume.IAPStore
                     ("error", error.Message));
             }
 
-            PurchaseLog(e);
+            PurchaseLog(e.purchasedProduct.definition.id, e.purchasedProduct.transactionID, "PurchaseSuccess");
 
             if (e == null)
             {
@@ -364,6 +365,7 @@ namespace Nekoyume.IAPStore
         void IStoreListener.OnPurchaseFailed(Product i, PurchaseFailureReason p)
         {
             Debug.LogError($"[IStoreListener PurchaseFail] reason: {p}, Product: {i.metadata.localizedTitle}");
+            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p}]");
             if (p == PurchaseFailureReason.PurchasingUnavailable)
             {
                 // IAP may be disabled in device settings.
@@ -376,6 +378,7 @@ namespace Nekoyume.IAPStore
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
             Debug.LogError($"[IDetailedStoreListener PurchaseFail] reason: {p.reason}, Product: {i.metadata.localizedTitle}");
+            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}]");
             Analyzer.Instance.Track(
                 "Unity/Shop/IAP/PurchaseResult",
                 ("product-id", p.productId),
