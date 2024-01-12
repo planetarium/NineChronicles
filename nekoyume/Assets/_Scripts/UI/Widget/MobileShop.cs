@@ -30,6 +30,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject loadDataScreen;
 
+        [SerializeField]
+        private GameObject emptyCategoryPannel;
+
         private bool _isInitializedObj;
 
         private readonly Dictionary<string, IAPShopProductCellView> _allProductObjs =
@@ -242,10 +245,12 @@ namespace Nekoyume.UI
                 item.Value.gameObject.SetActive(false);
             }
 
-            foreach (var item in _allProductObjByCategory[categoryName].Where(item => item.IsBuyable()))
+            var buyableItems = _allProductObjByCategory[categoryName].Where(item => item.IsBuyable());
+            foreach (var item in buyableItems)
             {
                 item.gameObject.SetActive(true);
             }
+            emptyCategoryPannel.SetActive(buyableItems.Count() == 0);
 
             iAPShopDynamicGridLayout.Refresh();
         }
