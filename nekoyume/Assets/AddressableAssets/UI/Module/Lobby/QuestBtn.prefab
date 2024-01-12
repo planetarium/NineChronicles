@@ -265,6 +265,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   season: 3
   times: []
+  enableKey: UI_Menu_QuestBtn_EventMark
+  timeText: {fileID: 0}
+  bannerImage: {fileID: 0}
+  linkButton: {fileID: 0}
 --- !u!1 &1279750213824221874
 GameObject:
   m_ObjectHideFlags: 0

@@ -1785,6 +1785,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   season: 1
   times: []
+  enableKey: UI_Menu_RankingBtn_Promotion
+  timeText: {fileID: 0}
+  bannerImage: {fileID: 0}
+  linkButton: {fileID: 0}
 --- !u!1 &3090404575607548929
 GameObject:
   m_ObjectHideFlags: 0

@@ -9802,9 +9802,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   season: 0
-  times:
-  - beginDateTime: 2023-12-20T00:00:00
-    endDateTime: 2024-01-09T23:59:00
+  times: []
+  enableKey: UI_PatrolRewardPopup_Event
+  timeText: {fileID: 8002541663707707755}
+  bannerImage: {fileID: 0}
+  linkButton: {fileID: 1556154476328180694}
 --- !u!1 &8691271680272507447
 GameObject:
   m_ObjectHideFlags: 0

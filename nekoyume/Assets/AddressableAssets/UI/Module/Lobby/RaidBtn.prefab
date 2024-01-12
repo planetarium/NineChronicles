@@ -64988,6 +64988,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   season: 2
   times: []
+  enableKey: UI_Menu_RaidBtn_Promotion
+  timeText: {fileID: 0}
+  bannerImage: {fileID: 0}
+  linkButton: {fileID: 0}
 --- !u!1 &6878589271596072809
 GameObject:
   m_ObjectHideFlags: 0

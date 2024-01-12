@@ -13654,9 +13654,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   season: 0
-  times:
-  - beginDateTime: 2023-11-22T00:00:00
-    endDateTime: 2023-12-19T23:59:00
+  times: []
+  enableKey: UI_Menu_CombinationBtn_EventMark
+  timeText: {fileID: 0}
+  bannerImage: {fileID: 0}
+  linkButton: {fileID: 0}
 --- !u!1 &8677419603474196147
 GameObject:
   m_ObjectHideFlags: 0
