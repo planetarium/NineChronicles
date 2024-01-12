@@ -75,7 +75,7 @@ namespace Nekoyume.Multiplanetary
                 ErrorType.PlanetNotSelected =>
                     L10nManager.Localize("EDESC_PLANET_NOT_SELECTED"),
                 ErrorType.UnsupportedCase01 =>
-                    L10nManager.Localize("EDESC_UNSUPPORTED_CASE_01"),
+                    L10nManager.Localize("EDESC_UNSUPPORTED_CASE_01", args),
                 _ => throw new ArgumentOutOfRangeException(nameof(errorType), errorType, null)
             };
         }
