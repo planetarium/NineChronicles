@@ -669,7 +669,8 @@ namespace Nekoyume.UI
 
                 Game.Game.instance.ActionManager
                     .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
-                States.Instance.SetCurrentAvatarBalance(fungibleAsset);
+                var preBalance = States.Instance.CurrentAvatarBalances[currency.Ticker];
+                States.Instance.SetCurrentAvatarBalance(preBalance - fungibleAsset);
                 inventory.UpdateFungibleAssets();
                 PostRegisterProduct(fungibleAsset.GetLocalizedName());
             }
