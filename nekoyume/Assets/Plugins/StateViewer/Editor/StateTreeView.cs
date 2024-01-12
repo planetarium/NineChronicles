@@ -33,13 +33,15 @@ namespace StateViewer.Editor
         private TableSheets _tableSheets;
         private StateTreeViewItemModel? _itemModel;
 
+        public Address? AccountAddress { get; private set; }
+
         public Address? Address { get; private set; }
 
         public ContentKind ContentKind { get; private set; }
 
-        public (Address? addr, IValue value) Serialize()
+        public (Address? accountAddr, Address? addr, IValue value) Serialize()
         {
-            return (Address, _itemModel?.Serialize() ?? Null.Value);
+            return (AccountAddress, Address, _itemModel?.Serialize() ?? Null.Value);
         }
 
         public StateTreeView(
@@ -102,10 +104,12 @@ namespace StateViewer.Editor
         }
 
         public void SetData(
+            Address? accountAddr,
             Address? addr,
             IValue? data,
             ContentKind? contentKind = null)
         {
+            AccountAddress = accountAddr;
             Address = addr;
             _itemModel = new StateTreeViewItemModel(
                 data ?? Null.Value,
@@ -202,7 +206,7 @@ namespace StateViewer.Editor
             Reload();
         }
 
-        public void ClearData() => SetData(default, Null.Value);
+        public void ClearData() => SetData(default, default, Null.Value);
 
         protected override TreeViewItem BuildRoot()
         {

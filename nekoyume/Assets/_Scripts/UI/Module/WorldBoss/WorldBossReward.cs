@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
@@ -198,7 +199,9 @@ namespace Nekoyume.UI.Module.WorldBoss
                 }
 
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
-                var raiderState = await Game.Game.instance.Agent.GetStateAsync(raiderAddress);
+                var raiderState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    raiderAddress);
                 var raider = raiderState is Bencodex.Types.List raiderList
                     ? new RaiderState(raiderList)
                     : null;

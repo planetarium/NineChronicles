@@ -162,53 +162,6 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        public IObservable<ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
-            List<Guid> costumes,
-            List<Guid> equipments,
-            List<Consumable> foods,
-            List<RuneSlotInfo> runeInfos,
-            int worldId,
-            int stageId,
-            int playCount)
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes ??= new List<Guid>();
-            equipments ??= new List<Guid>();
-            foods ??= new List<Consumable>();
-            runeInfos ??= new List<RuneSlotInfo>();
-
-            var action = new MimisbrunnrBattle
-            {
-                Costumes = costumes,
-                Equipments = equipments,
-                Foods = foods.Select(f => f.ItemId).ToList(),
-                RuneInfos = runeInfos,
-                WorldId = worldId,
-                StageId = stageId,
-                AvatarAddress = avatarAddress,
-                PlayCount = playCount,
-            };
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
-            ProcessAction(action);
-            _lastBattleActionId = action.Id;
-
-            return _agent.ActionRenderer.EveryRender<MimisbrunnrBattle>()
-                .Timeout(ActionTimeout)
-                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
-                .First()
-                .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    if (_lastBattleActionId == action.Id)
-                    {
-                        _lastBattleActionId = null;
-                    }
-
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
-        }
-
         public IObservable<ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Guid> costumes,
             List<Guid> equipments,
@@ -1804,12 +1757,12 @@ namespace Nekoyume.Blockchain
         }
 
         public IObservable<ActionEvaluation<ManipulateState>> ManipulateState(
-            List<(Address, IValue)> stateList,
+            List<(Address, Address, IValue)> stateList,
             List<(Address, FungibleAssetValue)> balanceList)
         {
             var action = new ManipulateState
             {
-                StateList = stateList ?? new List<(Address addr, IValue value)>(),
+                StateList = stateList ?? new List<(Address accountAddr, Address addr, IValue value)>(),
                 BalanceList = balanceList ?? new List<(Address addr, FungibleAssetValue fav)>(),
             };
 
