@@ -163,7 +163,8 @@ namespace Nekoyume.Game.LiveAsset
                     EndDateTime = banner.EndDateTime,
                     Url = banner.Url,
                     UseAgentAddress = banner.UseAgentAddress,
-                    Description = banner.Description
+                    Description = banner.Description,
+                    EnableKeys = banner.EnableKeys
                 };
                 _bannerData.Add(newData);
 
