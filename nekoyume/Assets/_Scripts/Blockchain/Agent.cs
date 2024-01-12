@@ -15,6 +15,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet.Action;
+using Libplanet.Action.State;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blockchain.Renderers;
@@ -35,6 +36,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
+using Nekoyume.Module;
 using Nekoyume.Serilog;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -66,6 +68,7 @@ namespace Nekoyume.Blockchain
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
+
         private static IEnumerator _swarmRunner;
         private static IEnumerator _autoPlayer;
         private static IEnumerator _logger;
@@ -90,7 +93,7 @@ namespace Nekoyume.Blockchain
 
         public long BlockIndex => blocks?.Tip?.Index ?? 0;
         public PrivateKey PrivateKey { get; private set; }
-        public Address Address => PrivateKey.PublicKey.Address;
+        public Address Address => PrivateKey.Address;
 
         public BlockRenderer BlockRenderer { get; } = new BlockRenderer();
 
@@ -247,83 +250,83 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        public IValue GetState(Address address)
-        {
-            return blocks.GetState(address);
-        }
+        public IValue GetState(Address accountAddress, Address address) =>
+            blocks.GetWorldState().GetAccountState(accountAddress).GetState(accountAddress);
 
-        public IValue GetState(Address address, HashDigest<SHA256> stateRootHash) =>
-            blocks.GetAccountState(stateRootHash).GetState(address);
+        public IValue GetState(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address) =>
+            blocks.GetWorldState(stateRootHash).GetAccountState(accountAddress).GetState(address);
 
-        public async Task<IValue> GetStateAsync(Address address, long? blockIndex = null)
-        {
-            if (blockIndex.HasValue)
-            {
-                throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
-            }
+        public async Task<IValue> GetStateAsync(Address accountAddress, Address address) =>
+            await Task.FromResult(blocks.GetWorldState().GetAccountState(accountAddress).GetState(address));
 
-            return await Task.FromResult(blocks.GetState(address));
-        }
+        public Task<IValue> GetStateAsync(long blockIndex, Address accountAddress, Address address) =>
+            throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
 
-        public async Task<IValue> GetStateAsync(Address address, BlockHash blockHash)
-        {
-            return await Task.FromResult(blocks.GetState(address, blockHash));
-        }
+        public async Task<IValue> GetStateAsync(BlockHash blockHash, Address accountAddress, Address address) =>
+            await Task.FromResult(blocks.GetWorldState(blockHash).GetAccountState(accountAddress).GetState(address));
 
-        public async Task<IValue> GetStateAsync(Address address, HashDigest<SHA256> stateRootHash) =>
-            await Task.FromResult(blocks.GetAccountState(stateRootHash).GetState(address));
+        public async Task<IValue> GetStateAsync(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address) =>
+            await Task.FromResult(blocks.GetWorldState(stateRootHash).GetAccountState(accountAddress).GetState(address));
 
-        public async Task<FungibleAssetValue> GetBalanceAsync(
-            Address address,
-            Currency currency,
-            HashDigest<SHA256> stateRootHash) =>
-            await Task.FromResult(blocks.GetAccountState(stateRootHash).GetBalance(address, currency));
+        public async Task<AgentState> GetAgentStateAsync(Address address) =>
+            await Task.FromResult(blocks.GetWorldState().GetAgentState(address));
+
+        public Task<AgentState> GetAgentStateAsync(long blockIndex, Address address) =>
+            throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+
+        public async Task<AgentState> GetAgentStateAsync(HashDigest<SHA256> stateRootHash, Address address) =>
+            await Task.FromResult(blocks.GetWorldState(stateRootHash).GetAgentState(address));
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
-            IEnumerable<Address> addressList,
-            long? blockIndex = null)
+            IEnumerable<Address> addressList)
         {
-            if (blockIndex.HasValue)
-            {
-                throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
-            }
-
             var dict = new Dictionary<Address, AvatarState>();
             foreach (var address in addressList)
             {
-                var result = await await Task.FromResult(States.TryGetAvatarStateAsync(address));
-                if (result.exist)
+                try
                 {
-                    dict[address] = result.avatarState;
+                    dict[address] = await Task.FromResult(blocks.GetWorldState().GetAvatarState(address));
+                }
+                catch (Exception)
+                {
+                    // ignored
                 }
             }
 
             return dict;
         }
 
+        public Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
+            long blockIndex,
+            IEnumerable<Address> addressList) =>
+            throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
-            IEnumerable<Address> addressList,
-            HashDigest<SHA256> stateRootHash)
+            HashDigest<SHA256> stateRootHash,
+            IEnumerable<Address> addressList)
         {
             var dict = new Dictionary<Address, AvatarState>();
             foreach (var address in addressList)
             {
-                var result = await await Task.FromResult(States.TryGetAvatarStateAsync(address, stateRootHash));
-                if (result.exist)
+                try
                 {
-                    dict[address] = result.avatarState;
+                    dict[address] = await Task.FromResult(blocks.GetWorldState(stateRootHash).GetAvatarState(address));
+                }
+                catch (Exception)
+                {
+                    // ignored
                 }
             }
 
             return dict;
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList)
+        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
         {
             var dict = new Dictionary<Address, IValue>();
             foreach (var address in addressList)
             {
-                var result = await await Task.FromResult(GetStateAsync(address));
+                var result = await await Task.FromResult(GetStateAsync(accountAddress, address));
                 dict[address] = result;
             }
 
@@ -331,13 +334,14 @@ namespace Nekoyume.Blockchain
         }
 
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
-            IEnumerable<Address> addressList,
-            HashDigest<SHA256> stateRootHash)
+            HashDigest<SHA256> stateRootHash,
+            Address accountAddress,
+            IEnumerable<Address> addressList)
         {
             var dict = new Dictionary<Address, IValue>();
             foreach (var address in addressList)
             {
-                var result = await await Task.FromResult(GetStateAsync(address, stateRootHash));
+                var result = await await Task.FromResult(GetStateAsync(stateRootHash, accountAddress, address));
                 dict[address] = result;
             }
 
@@ -349,7 +353,9 @@ namespace Nekoyume.Blockchain
             var dict = new Dictionary<Address, IValue>();
             foreach (var address in addressList)
             {
-                var result = await await Task.FromResult(GetStateAsync(address));
+                var result = await await Task.FromResult(GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    address));
                 dict[address] = result;
             }
 
@@ -363,28 +369,30 @@ namespace Nekoyume.Blockchain
             UniTask.FromResult(blocks.GetStagedTransactionIds().Contains(txId));
 
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
-            blocks.GetBalance(address, currency);
+            blocks.GetWorldState().GetBalance(address, currency);
+
+        public async Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency) =>
+            await Task.FromResult(blocks.GetWorldState().GetBalance(address, currency));
 
         public Task<FungibleAssetValue> GetBalanceAsync(
+            long blockIndex,
             Address address,
-            Currency currency,
-            long? blockIndex = null)
-        {
-            if (blockIndex.HasValue)
-            {
-                throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
-            }
+            Currency currency) =>
+            throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
 
-            return Task.FromResult(blocks.GetBalance(address, currency));
-        }
-
-        public Task<FungibleAssetValue> GetBalanceAsync(
+        public async Task<FungibleAssetValue> GetBalanceAsync(
+            BlockHash blockHash,
             Address address,
-            Currency currency,
-            BlockHash blockHash)
-        {
-            return Task.FromResult(blocks.GetBalance(address, currency, blockHash));
-        }
+            Currency currency) =>
+            await Task.FromResult(blocks.GetWorldState(blockHash).GetBalance(address, currency));
+
+        public async Task<FungibleAssetValue> GetBalanceAsync(
+            HashDigest<SHA256> stateRootHash,
+            Address address,
+            Currency currency) =>
+            await Task.FromResult(blocks.GetWorldState(stateRootHash).GetBalance(address, currency));
 
         #region Mono
 
@@ -477,20 +485,17 @@ namespace Nekoyume.Blockchain
             {
                 // 에이전트의 상태를 한 번 동기화 한다.
                 var goldCurrency = new GoldCurrencyState(
-                    (Dictionary)await GetStateAsync(GoldCurrencyState.Address)
+                    (Dictionary)await GetStateAsync(ReservedAddresses.LegacyAccount, GoldCurrencyState.Address)
                 ).Currency;
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
-                await States.Instance.SetAgentStateAsync(
-                    await GetStateAsync(Address) is Dictionary agentDict
-                        ? new AgentState(agentDict)
-                        : new AgentState(Address));
+                await States.Instance.SetAgentStateAsync(await GetAgentStateAsync(Address));
                 States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
 
-                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
+                if (await GetStateAsync(ReservedAddresses.LegacyAccount, GameConfigState.Address) is Dictionary configDict)
                 {
                     States.Instance.SetGameConfigState(new GameConfigState(configDict));
                 }
@@ -501,7 +506,7 @@ namespace Nekoyume.Blockchain
 
                 // NOTE: Initialize staking states after setting GameConfigState.
                 var stakeAddr = StakeStateV2.DeriveAddress(States.Instance.AgentState.address);
-                if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
+                if (await GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr) is { } serializedStakeState)
                 {
                     if (!StakeStateUtilsForClient.TryMigrate(
                             serializedStakeState,
@@ -526,7 +531,7 @@ namespace Nekoyume.Blockchain
                                 Addresses.GetSheetAddress(
                                     stakeStateV2.Contract.StakeRegularRewardSheetTableName),
                             };
-                            var sheetStates = await GetStateBulkAsync(sheetAddrArr);
+                            var sheetStates = await GetStateBulkAsync(ReservedAddresses.LegacyAccount, sheetAddrArr);
                             stakeRegularFixedRewardSheet.Set(
                                 sheetStates[sheetAddrArr[0]].ToDotnetString());
                             stakeRegularRewardSheet.Set(
@@ -553,7 +558,7 @@ namespace Nekoyume.Blockchain
                 var pledgeAddress = agentAddress.GetPledgeAddress();
                 Address? patronAddress = null;
                 var approved = false;
-                if (await GetStateAsync(pledgeAddress) is List list)
+                if (await GetStateAsync(ReservedAddresses.LegacyAccount, pledgeAddress) is List list)
                 {
                     patronAddress = list[0].ToAddress();
                     approved = list[1].ToBoolean();

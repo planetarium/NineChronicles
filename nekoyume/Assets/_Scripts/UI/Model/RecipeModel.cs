@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Helper;
@@ -158,7 +159,9 @@ namespace Nekoyume.UI.Model
         public async void UpdateUnlockedRecipesAsync(Address address)
         {
             var unlockedRecipeIdsAddress = address.Derive("recipe_ids");
-            var recipeState = await Game.Game.instance.Agent.GetStateAsync(unlockedRecipeIdsAddress);
+            var recipeState = await Game.Game.instance.Agent.GetStateAsync(
+                ReservedAddresses.LegacyAccount,
+                unlockedRecipeIdsAddress);
             var result = recipeState != null && !(recipeState is Null)
                 ? recipeState.ToList(StateExtensions.ToInteger)
                 : new List<int> { 1 };

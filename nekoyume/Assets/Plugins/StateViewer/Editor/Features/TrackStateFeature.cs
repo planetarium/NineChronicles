@@ -6,6 +6,7 @@ using Bencodex.Types;
 using CsvHelper.Configuration;
 using CsvHelper.Configuration.Attributes;
 using Cysharp.Threading.Tasks;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
@@ -255,12 +256,15 @@ namespace StateViewer.Editor.Features
                     var (_, stakeBalance) = stateProxy is null
                         ? ((Address?)null, (FungibleAssetValue?)null)
                         : await stateProxy.GetBalanceAsync(
+                            prevBlockHash,
                             stakeAddr,
-                            _ncg,
-                            prevBlockHash);
-                    var (_, stakeStateValue) = stateProxy is null
-                        ? ((Address?)null, (IValue)null)
-                        : await stateProxy.GetStateAsync(stakeAddr, prevBlockHash);
+                            _ncg);
+                    var (_, _, stakeStateValue) = stateProxy is null
+                        ? ((Address?)null, (Address?)null, (IValue)null)
+                        : await stateProxy.GetStateAsync(
+                            prevBlockHash,
+                            ReservedAddresses.LegacyAccount,
+                            stakeAddr);
                     var rowToWrite = ToOutputCsvRow(
                         sourceCsvRow,
                         stakeAddr,

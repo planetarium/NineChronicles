@@ -81,6 +81,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e3f4f6c0067de4aaf9d8e7a138a3c147, type: 3}
   - {fileID: 21300000, guid: 633313d0ff9414b49bd1914e1334107e, type: 3}
   - {fileID: 21300000, guid: 44f317d0df36bb54d82683fe84aa74f1, type: 3}
+  - {fileID: 21300000, guid: 14f95dd0f7fd6144f8da2013afeded48, type: 3}
   - {fileID: 21300000, guid: f440aaf02c7b7d545b9d7d61d21d65b9, type: 3}
   - {fileID: 21300000, guid: 1e5ceaf0dbee4b34ca478b930a086100, type: 3}
   - {fileID: 21300000, guid: eb8ae001e201248ec82527da02ac7069, type: 3}
@@ -118,6 +119,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2ca4e332521dd4678a899db56f0e581e, type: 3}
   - {fileID: 21300000, guid: 80648c32993e048ee9518f2def412f33, type: 3}
   - {fileID: 21300000, guid: 1455c052005334ab6aa8ab41881519d1, type: 3}
+  - {fileID: 21300000, guid: 26ba8252e549c624092542959d6b9419, type: 3}
   - {fileID: 21300000, guid: 8a64af5246a66451fb5873024699fc80, type: 3}
   - {fileID: 21300000, guid: 1dd52c625e931c8419bd680c998ec26b, type: 3}
   - {fileID: 21300000, guid: 2f183c62cc23f56488cada258bdc5ac0, type: 3}
@@ -484,6 +486,7 @@ SpriteAtlas:
   - UI_Popup_bg_02_1
   - item_bg_Plusbg
   - UI_scroll_bg1
+  - Button_i
   - UI_icon_item_bg_05
   - PatrolGauge_02
   - UI_icon_Mainmenu_main
@@ -521,6 +524,7 @@ SpriteAtlas:
   - Common_gradiant_64
   - UI_bg_frame_08
   - UI_bg_frame_07
+  - Button_Plus
   - UI_bg_frame_deco_01
   - icon_combination_01_black
   - DailyBonusGauge_Bg

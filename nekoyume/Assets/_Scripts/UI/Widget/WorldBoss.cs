@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
@@ -359,20 +360,26 @@ namespace Nekoyume.UI
             var task = Task.Run(async () =>
             {
                 var worldBossAddress = Addresses.GetWorldBossAddress(row.Id);
-                var worldBossState = await Game.Game.instance.Agent.GetStateAsync(worldBossAddress);
+                var worldBossState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    worldBossAddress);
                 var worldBoss = worldBossState is Bencodex.Types.List worldBossList
                     ? new WorldBossState(worldBossList)
                     : null;
 
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, row.Id);
-                var raiderState = await Game.Game.instance.Agent.GetStateAsync(raiderAddress);
+                var raiderState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    raiderAddress);
                 var raider = raiderState is Bencodex.Types.List raiderList
                     ? new RaiderState(raiderList)
                     : null;
 
                 var killRewardAddress = Addresses.GetWorldBossKillRewardRecordAddress(avatarAddress, row.Id);
-                var killRewardState = await Game.Game.instance.Agent.GetStateAsync(killRewardAddress);
+                var killRewardState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    killRewardAddress);
                 var killReward = killRewardState is Bencodex.Types.List killRewardList
                     ? new WorldBossKillRewardRecord(killRewardList)
                     : null;

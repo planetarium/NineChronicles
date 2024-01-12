@@ -9,6 +9,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Lib9c;
+using Libplanet.Action.State;
 using Libplanet.Common;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
@@ -227,7 +228,7 @@ namespace Nekoyume.State
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
                 };
-                var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(addresses);
+                var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addresses);
                 foreach (var value in stateBulk.Values)
                 {
                     if (value is List list)
@@ -297,7 +298,7 @@ namespace Nekoyume.State
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
                 };
-                var stateBulk = await agent.GetStateBulkAsync(addresses);
+                var stateBulk = await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addresses);
                 foreach (var value in stateBulk.Values)
                 {
                     if (value is List list)
@@ -335,7 +336,7 @@ namespace Nekoyume.State
                 ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
             };
 
-            var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(addresses);
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addresses);
             foreach (var value in stateBulk.Values)
             {
                 if (value is List list)
@@ -446,156 +447,15 @@ namespace Nekoyume.State
             int index,
             bool initializeReactiveState = true)
         {
-            var (exist, avatarState) = await TryGetAvatarStateAsync(avatarAddress, true);
-            if (exist)
+            var avatarState =
+                (await Game.Game.instance.Agent.GetAvatarStatesAsync(
+                    new[] { avatarAddress }))[avatarAddress];
+            if (avatarState is not null)
             {
                 await AddOrReplaceAvatarStateAsync(avatarState, index, initializeReactiveState);
             }
 
             return null;
-        }
-
-        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(
-            Address address,
-            HashDigest<SHA256> hash,
-            bool allowBrokenState = false)
-        {
-            AvatarState avatarState = null;
-            var exist = false;
-            try
-            {
-                avatarState = await GetAvatarStateAsync(address, hash, allowBrokenState);
-                exist = true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(
-                    $"{e.GetType().FullName}: {e.Message} address({address.ToHex()})\n{e.StackTrace}");
-            }
-
-            return (exist, avatarState);
-        }
-
-        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(
-            Address address,
-            bool allowBrokenState = false)
-        {
-            AvatarState avatarState = null;
-            var exist = false;
-            try
-            {
-                avatarState = await GetAvatarStateAsync(address, allowBrokenState);
-                exist = true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(
-                    $"{e.GetType().FullName}: {e.Message} address({address.ToHex()})\n{e.StackTrace}");
-            }
-
-            return (exist, avatarState);
-        }
-
-        private static async UniTask<AvatarState> GetAvatarStateAsync(
-            Address address,
-            HashDigest<SHA256> hash,
-            bool allowBrokenState)
-        {
-            var agent = Game.Game.instance.Agent;
-            var avatarStateValue = await agent.GetStateAsync(address, hash);
-            if (avatarStateValue is not Dictionary dict)
-            {
-                Debug.LogWarning("Failed to get AvatarState");
-                throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
-            }
-
-            if (dict.ContainsKey(LegacyNameKey))
-            {
-                return new AvatarState(dict);
-            }
-
-            var addressPairList = new List<string>
-            {
-                LegacyInventoryKey,
-                LegacyWorldInformationKey,
-                LegacyQuestListKey
-            }.Select(key => (Key: key, KeyAddress: address.Derive(key))).ToArray();
-
-            var states =
-                await agent.GetStateBulkAsync(addressPairList.Select(value => value.KeyAddress), hash);
-            // Make Tuple list by state value and state address key.
-            var stateAndKeys = states.Join(
-                addressPairList,
-                state => state.Key,
-                addressPair => addressPair.KeyAddress,
-                (state, addressPair) => (state.Value, addressPair.Key));
-
-            foreach (var (stateIValue, key) in stateAndKeys)
-            {
-                if (stateIValue is null)
-                {
-                    if (allowBrokenState && dict.ContainsKey(key))
-                    {
-                        dict = new Dictionary(dict.Remove((Text)key));
-                    }
-
-                    continue;
-                }
-
-                dict = dict.SetItem(key, stateIValue);
-            }
-
-            return new AvatarState(dict);
-        }
-
-        private static async UniTask<AvatarState> GetAvatarStateAsync(Address address,
-            bool allowBrokenState)
-        {
-            var agent = Game.Game.instance.Agent;
-            var avatarStateValue = await agent.GetStateAsync(address);
-            if (avatarStateValue is not Dictionary dict)
-            {
-                Debug.LogWarning("Failed to get AvatarState");
-                throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
-            }
-
-            if (dict.ContainsKey(LegacyNameKey))
-            {
-                return new AvatarState(dict);
-            }
-
-            var addressPairList = new List<string>
-            {
-                LegacyInventoryKey,
-                LegacyWorldInformationKey,
-                LegacyQuestListKey
-            }.Select(key => (Key: key, KeyAddress: address.Derive(key))).ToArray();
-
-            var states =
-                await agent.GetStateBulkAsync(addressPairList.Select(value => value.KeyAddress));
-            // Make Tuple list by state value and state address key.
-            var stateAndKeys = states.Join(
-                addressPairList,
-                state => state.Key,
-                addressPair => addressPair.KeyAddress,
-                (state, addressPair) => (state.Value, addressPair.Key));
-
-            foreach (var (stateIValue, key) in stateAndKeys)
-            {
-                if (stateIValue is null)
-                {
-                    if (allowBrokenState && dict.ContainsKey(key))
-                    {
-                        dict = new Dictionary(dict.Remove((Text)key));
-                    }
-
-                    continue;
-                }
-
-                dict = dict.SetItem(key, stateIValue);
-            }
-
-            return new AvatarState(dict);
         }
 
         /// <summary>
@@ -673,7 +533,9 @@ namespace Nekoyume.State
             LocalLayer.Instance.InitializeCurrentAvatarState(avatarState);
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
             var agent = Game.Game.instance.Agent;
-            var worldIds = await agent.GetStateAsync(avatarState.address.Derive("world_ids"));
+            var worldIds = await agent.GetStateAsync(
+                ReservedAddresses.LegacyAccount,
+                avatarState.address.Derive("world_ids"));
             var unlockedIds = worldIds is not (null or Null)
                 ? worldIds.ToList(StateExtensions.ToInteger)
                 : new List<int>
@@ -688,8 +550,9 @@ namespace Nekoyume.State
                 _hammerPointStates = null;
                 await UniTask.RunOnThreadPool(async () =>
                 {
-                    var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
-                    if (!exist)
+                    var curAvatarState = (await Game.Game.instance.Agent.GetAvatarStatesAsync(
+                        new[] { avatarState.address }))[avatarState.address];
+                    if (curAvatarState is null)
                     {
                         return;
                     }
@@ -698,7 +561,9 @@ namespace Nekoyume.State
                     var skillStateAddress =
                         Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
                     var skillStateIValue =
-                        await Game.Game.instance.Agent.GetStateAsync(skillStateAddress);
+                        await Game.Game.instance.Agent.GetStateAsync(
+                            ReservedAddresses.LegacyAccount,
+                            skillStateAddress);
                     if (skillStateIValue is List serialized)
                     {
                         var skillState = new CrystalRandomSkillState(skillStateAddress, serialized);
@@ -750,7 +615,9 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                var stateValue = await agent.GetStateAsync(slotAddress);
+                var stateValue = await agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    slotAddress);
                 var state = new CombinationSlotState((Dictionary)stateValue);
                 UpdateCombinationSlotState(avatarState.address, i, state);
             }
@@ -847,6 +714,7 @@ namespace Nekoyume.State
                         .ToList();
                 var states =
                     await Game.Game.instance.Agent.GetStateBulkAsync(
+                        ReservedAddresses.LegacyAccount,
                         hammerPointStateAddresses.Select(tuple => tuple.Item1));
                 var joinedStates = states.Join(
                     hammerPointStateAddresses,
@@ -913,6 +781,7 @@ namespace Nekoyume.State
         {
             var petIds = TableSheets.Instance.PetSheet.Values.Select(row => row.Id).ToList();
             var petRawStates = await Game.Game.instance.Agent.GetStateBulkAsync(
+                ReservedAddresses.LegacyAccount,
                 petIds.Select(id => PetState.DeriveAddress(avatarAddress, id))
             );
             foreach (var petId in petIds)

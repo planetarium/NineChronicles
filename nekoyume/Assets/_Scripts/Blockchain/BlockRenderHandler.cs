@@ -6,6 +6,8 @@ using Cysharp.Threading.Tasks;
 using Lib9c;
 using Lib9c.Renderers;
 using Libplanet.Types.Assets;
+using Nekoyume.Exceptions;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using UnityEngine;
@@ -111,35 +113,29 @@ namespace Nekoyume.Blockchain
                 var (hasException, exception) =
                     await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                     {
-                        IValue value;
+                        AvatarState avatarState;
                         try
                         {
-                            value = await agent.GetStateAsync(currentAvatarState.address);
+                            avatarState = (await agent.GetAvatarStatesAsync(
+                                new[] { currentAvatarState.address }))[currentAvatarState.address];
                         }
                         catch (Exception e)
                         {
                             return (true, e);
                         }
 
-                        if (value is not Dictionary dict)
+                        if (avatarState is null)
                         {
-                            return (true, new InvalidCastException(
-                                $"value cannot cast to {typeof(Dictionary).FullName}"));
+                            return (true, new StateNullException(
+                                $"Given address {currentAvatarState.address} is empty."));
                         }
 
-                        var ap = dict.ContainsKey(ActionPointKey)
-                            ? (int)(Integer)dict[ActionPointKey]
-                            : dict.ContainsKey(LegacyActionPointKey)
-                                ? (Integer)dict[LegacyActionPointKey]
-                                : 0;
+
+                        var ap = avatarState.actionPoint;
                         ReactiveAvatarState.UpdateActionPoint(ap);
 
-                        var bi = dict.ContainsKey(DailyRewardReceivedIndexKey)
-                            ? (int)(Integer)dict[DailyRewardReceivedIndexKey]
-                            : dict.ContainsKey(LegacyDailyRewardReceivedIndexKey)
-                                ? (Integer)dict[LegacyDailyRewardReceivedIndexKey]
-                                : 0;
-                        ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
+                        var dri = avatarState.dailyRewardReceivedIndex;
+                        ReactiveAvatarState.UpdateDailyRewardReceivedIndex(dri);
                         _avatarUpdateRequired = false;
                         return (false, null);
                     });
