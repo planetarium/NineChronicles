@@ -126,6 +126,8 @@ namespace Nekoyume.Game
 
         public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
 
+        public GuildServiceClient GuildServiceClient { get; private set; }
+
         public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -167,6 +169,10 @@ namespace Nekoyume.Game
 
         public string CurrentSocialEmail { get; private set; }
 
+        public string GuildBucketUrl => _guildBucketUrl;
+
+        public GuildServiceClient.GuildModel[] GuildModels { get; private set; } = { };
+
         private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
@@ -183,6 +189,8 @@ namespace Nekoyume.Game
 
         private Thread _headlessThread;
         private Thread _marketThread;
+
+        private string _guildBucketUrl;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -651,6 +659,27 @@ namespace Nekoyume.Game
 
             var showNextEvt = new AirbridgeEvent("Intro_Start_ShowNext");
             AirbridgeUnity.TrackEvent(showNextEvt);
+
+            if (!string.IsNullOrEmpty(_commandLineOptions.GuildServiceUrl))
+            {
+                GuildServiceClient = new GuildServiceClient(_commandLineOptions.GuildServiceUrl);
+                if (!string.IsNullOrEmpty(_commandLineOptions.GuildIconBucket))
+                {
+                    _guildBucketUrl = _commandLineOptions.GuildIconBucket;
+                }
+                GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
+                {
+                    GuildModels = guildModels;
+                    Debug.Log($"[Guild] GetGuildAsync success");
+                    {
+                        foreach (var guildModel in guildModels)
+                        {
+                            var url = $"{_guildBucketUrl}/{guildModel.Name}.png";
+                            Helper.Util.DownloadTexture(url).Forget();
+                        }
+                    }
+                }, onError: Debug.LogError).AsUniTask().Forget();
+            }
 
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
