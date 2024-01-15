@@ -10,27 +10,23 @@ namespace Nekoyume.UI.Module
     {
         [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI countText;
-        [SerializeField] private TextMeshProUGUI benefitsText;
 
-        public void Set(ItemBase itemBase, int count, int benefitsRate)
+        public void Set(ItemBase itemBase, int count)
         {
             iconImage.sprite = BaseItemView.GetItemIcon(itemBase);
             countText.text = $"+{count}";
-            benefitsText.text = $"{benefitsRate}%";
         }
 
-        public void Set(int runeId, int count, int benefitsRate)
+        public void Set(int runeId, int count)
         {
             iconImage.sprite = SpriteHelper.GetItemIcon(runeId);
             countText.text = $"+{count}";
-            benefitsText.text = $"{benefitsRate}%";
         }
 
-        public void Set(string ticker, int count, int benefitsRate)
+        public void Set(string ticker, int count)
         {
             iconImage.sprite = SpriteHelper.GetFavIcon(ticker);
             countText.text = $"+{count}";
-            benefitsText.text = $"{benefitsRate}%";
         }
     }
 }
