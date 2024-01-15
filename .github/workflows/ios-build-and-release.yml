@@ -100,7 +100,7 @@ jobs:
           sudo swapoff -a
           sudo rm -f /swapfile
           sudo apt clean
-          docker rmi $(docker image ls -aq)
+          docker rmi $(docker images -q)
           df -h
           
       - uses: game-ci/unity-builder@v2
