@@ -678,7 +678,11 @@ namespace Nekoyume.Game
                             Helper.Util.DownloadTexture(url).Forget();
                         }
                     }
-                }, onError: Debug.LogError).AsUniTask().Forget();
+                }, onError: message =>
+                {
+                    // cannot convert into method group because the method might not exist in some builds.
+                    Debug.LogError(message);
+                }).AsUniTask().Forget();
             }
 
             StartCoroutine(CoUpdate());
