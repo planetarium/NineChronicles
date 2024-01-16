@@ -82,7 +82,6 @@ jobs:
           key: Library-${{ matrix.projectPath }}-macos-${{ matrix.targetPlatform }}
           restore-keys: |
             Library-${{ matrix.projectPath }}-macos-
-            Library-
 
       - name: Copy clo.json
         run: |
