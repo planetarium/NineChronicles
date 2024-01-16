@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using Cysharp.Threading.Tasks;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using TMPro;
@@ -69,7 +68,11 @@ namespace Nekoyume.UI.Module.Arena.Board
         [SerializeField]
         private ConditionalButton _choiceButton;
 
-        public Image GuildMark;
+        [SerializeField]
+        private Image guildMark;
+
+        [SerializeField]
+        private Image guildMarkEmpty;
 
         private ArenaBoardPlayerItemData _currentData;
 
@@ -95,7 +98,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         {
             _currentData = itemData;
 
-            var prefixedAddress = "0x" + itemData.address;
+            var prefixedAddress = "0x" + _currentData.address;
             if (Dcc.instance.Avatars.TryGetValue(prefixedAddress, out var dccId))
             {
                 _characterView.SetByDccId(dccId, _currentData.level);
@@ -115,15 +118,17 @@ namespace Nekoyume.UI.Module.Arena.Board
 
             _choiceButton.gameObject.SetActive(_currentData.canFight);
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
-            bool guildEnabled = !string.IsNullOrEmpty(itemData.guildName);
+            var guildEnabled = !string.IsNullOrEmpty(_currentData.guildName);
             if (guildEnabled)
             {
-                var url = $"{Game.Game.instance.GuildBucketUrl}/{itemData.guildName}.png";
-                GuildMark.sprite = Util.GetTexture(url);
-                Debug.Log($"[Guild]Set guild image {itemData.guildName}");
+                var url = $"{Game.Game.instance.GuildBucketUrl}/{_currentData.guildName}.png";
+                guildMark.sprite = Util.GetTexture(url);
+                Debug.Log($"[Guild]Set guild image {_currentData.guildName}");
             }
 
-            GuildMark.enabled = guildEnabled;
+            guildMark.enabled = guildEnabled;
+            guildMarkEmpty.enabled = !guildEnabled;
+
             UpdateRank();
         }
 
