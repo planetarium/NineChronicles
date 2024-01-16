@@ -259,6 +259,27 @@ namespace Nekoyume.State
                 }));
             }
 
+            string playerGuildName = null;
+            if (Game.Game.instance.GuildModels.Any())
+            {
+                var guildModels = Game.Game.instance.GuildModels;
+                foreach (var guildModel in guildModels)
+                {
+                    if (guildModel.AvatarModels.Any(a => a.AvatarAddress == currentAvatarAddr))
+                    {
+                        playerGuildName = guildModel.Name;
+                    }
+                    foreach (var info in arenaInfo)
+                    {
+                        var model = guildModel.AvatarModels.FirstOrDefault(a => a.AvatarAddress == info.AvatarAddr);
+                        if (model is not null)
+                        {
+                            info.GuildName = guildModel.Name;
+                        }
+                    }
+                }
+            }
+
             var portraitId = Util.GetPortraitId(BattleType.Arena);
             var cp = Util.TotalCP(BattleType.Arena);
             ArenaParticipantModel playerArenaInf = new ArenaParticipantModel
@@ -270,7 +291,8 @@ namespace Nekoyume.State
                 NameWithHash = currentAvatar.NameWithHash,
                 PortraitId = portraitId,
                 Cp = cp,
-                Level = currentAvatar.level
+                Level = currentAvatar.level,
+                GuildName = playerGuildName,
             };
 
             if (!arenaInfo.Any())

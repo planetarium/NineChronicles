@@ -615,5 +615,10 @@ namespace Nekoyume.Helper
             CachedDownloadTexturesRaw.TryAdd(url, data);
             return data;
         }
+
+        public static Sprite GetTexture(string url)
+        {
+            return CachedDownloadTextures.GetValueOrDefault(url);
+        }
     }
 }

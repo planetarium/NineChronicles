@@ -455,7 +455,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6499187162945894566
 RectTransform:
   m_ObjectHideFlags: 0
@@ -491,7 +491,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2652560360971982451}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -1184,6 +1184,7 @@ MonoBehaviour:
   _cpText: {fileID: 1991182203086928886}
   _plusRatingText: {fileID: 4133636230288920637}
   _choiceButton: {fileID: 5759196546260136036}
+  GuildMark: {fileID: 7038393542740975417}
   _normalizedPosition: 0
 --- !u!1 &6022805100448495617
 GameObject:

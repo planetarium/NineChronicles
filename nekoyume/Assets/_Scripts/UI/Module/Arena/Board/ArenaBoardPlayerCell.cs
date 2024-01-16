@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using TMPro;
@@ -25,6 +26,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         public bool interactableChoiceButton;
         public bool canFight;
         public string address;
+        public string guildName;
     }
 
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
@@ -66,6 +68,8 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         [SerializeField]
         private ConditionalButton _choiceButton;
+
+        public Image GuildMark;
 
         private ArenaBoardPlayerItemData _currentData;
 
@@ -111,6 +115,15 @@ namespace Nekoyume.UI.Module.Arena.Board
 
             _choiceButton.gameObject.SetActive(_currentData.canFight);
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
+            bool guildEnabled = !string.IsNullOrEmpty(itemData.guildName);
+            if (guildEnabled)
+            {
+                var url = $"{Game.Game.instance.GuildBucketUrl}/{itemData.guildName}.png";
+                GuildMark.sprite = Util.GetTexture(url);
+                Debug.Log($"[Guild]Set guild image {itemData.guildName}");
+            }
+
+            GuildMark.enabled = guildEnabled;
             UpdateRank();
         }
 

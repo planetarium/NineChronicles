@@ -106,6 +106,10 @@ namespace Nekoyume.Helper
 
         private bool _requiredUpdate;
 
+        private string _guildServiceUrl;
+
+        private string _guildIconBucket;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -560,6 +564,28 @@ namespace Nekoyume.Helper
             set
             {
                 _requiredUpdate = value;
+                Empty = false;
+            }
+        }
+
+        [Option("guild-service-url", Required = false, HelpText = "guild service url")]
+        public string GuildServiceUrl
+        {
+            get => _guildServiceUrl;
+            set
+            {
+                _guildServiceUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("guild-icon-bucket", Required = false, HelpText = "guild icon s3 bucket url")]
+        public string GuildIconBucket
+        {
+            get => _guildIconBucket;
+            set
+            {
+                _guildIconBucket = value;
                 Empty = false;
             }
         }
