@@ -57,6 +57,7 @@ namespace Nekoyume.UI.Module
             baseItemView.LockObject.SetActive(false);
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActive(false);
         }
     }
 }
