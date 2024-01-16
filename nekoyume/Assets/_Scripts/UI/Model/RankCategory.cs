@@ -11,7 +11,6 @@ namespace Nekoyume.UI.Model
         EquipmentBelt,
         EquipmentNecklace,
         EquipmentRing,
-        EquipmentAura,
-        EquipmentRune
+        EquipmentAura
     }
 }
