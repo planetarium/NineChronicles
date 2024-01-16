@@ -1888,6 +1888,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1516406141797970219
 GameObject:
   m_ObjectHideFlags: 0
@@ -12923,6 +12927,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8896312618204441212
 GameObject:
   m_ObjectHideFlags: 0
@@ -13674,6 +13682,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 72dcfe1acfcde406b8b7dc8b42635600,
         type: 2}
+    - target: {fileID: 4508914646000692639, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: m_fontStyle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4508914646000692639, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -15001,7 +15014,7 @@ PrefabInstance:
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
       propertyPath: m_fontSize
-      value: 30
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
@@ -15017,7 +15030,7 @@ PrefabInstance:
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
       propertyPath: m_fontSizeMax
-      value: 30
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
@@ -15379,7 +15392,7 @@ PrefabInstance:
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
       propertyPath: m_fontSize
-      value: 30
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
@@ -15410,7 +15423,7 @@ PrefabInstance:
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
       propertyPath: m_fontSizeMax
-      value: 30
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 3521576152166620241, guid: 53e520f2a4d6941b3afdb31ab7af136b,
         type: 3}
