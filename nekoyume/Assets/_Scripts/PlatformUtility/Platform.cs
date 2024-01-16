@@ -26,7 +26,7 @@ namespace Nekoyume
         }
 
         [RuntimeInitializeOnLoadMethod]
-        static void OnRuntimeMethodLoad()
+        private static void OnRuntimeMethodLoad()
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
             Debug.Log("[OnRuntimeMethodLoad] After Scene is loaded and game is running");
@@ -40,7 +40,7 @@ namespace Nekoyume
         /// After copying, it deletes any files in the new location that have the same names as those in the original path.
         /// This method is typically used for data migration or backup purposes in Android applications.
         /// </summary>
-        static void AndroidKeyStorePathChange()
+        private static void AndroidKeyStorePathChange()
         {
             CopyFolder("storage/emulated/0/Documents/NineChronicles", Platform.PersistentDataPath);
             DeleteSameFileName(Platform.PersistentDataPath, "storage/emulated/0/Documents/NineChronicles");
@@ -53,7 +53,7 @@ namespace Nekoyume
         /// </summary>
         /// <param name="path">The source path of the folder to be copied.</param>
         /// <param name="target">The target path where the folder will be copied to.</param>
-        static void CopyFolder(string path, string target)
+        private static void CopyFolder(string path, string target)
         {
             Debug.Log($"[CopyFolder] path:{path}    target:{target}");
 
@@ -83,7 +83,7 @@ namespace Nekoyume
         /// </summary>
         /// <param name="path">The source directory path to compare files from.</param>
         /// <param name="target">The target directory path where files will be checked and deleted if a match is found.</param>
-        static void DeleteSameFileName(string path, string target)
+        private static void DeleteSameFileName(string path, string target)
         {
             Debug.Log($"[DeleteCopiedFile] path:{path}    target:{target}");
             foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
