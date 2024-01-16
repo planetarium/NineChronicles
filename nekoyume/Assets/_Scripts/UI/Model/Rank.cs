@@ -310,7 +310,7 @@ namespace Nekoyume.UI.Model
             var subTypes = new ItemSubType[]
             {
                 ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace,
-                ItemSubType.Ring, ItemSubType.Aura, ItemSubType.NormalMaterial // <- rune
+                ItemSubType.Ring, ItemSubType.Aura
             };
             EquipmentRankingInfosMap = new Dictionary<ItemSubType, List<EquipmentRankingModel>>();
 
