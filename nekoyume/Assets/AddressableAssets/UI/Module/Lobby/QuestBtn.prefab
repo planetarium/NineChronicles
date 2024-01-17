@@ -263,10 +263,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  season: 0
-  times:
-  - beginDateTime: 2023-12-20T00:00:00
-    endDateTime: 2024-01-09T23:59:00
+  season: 3
+  times: []
+  enableKey: UI_Menu_QuestBtn_EventMark
+  timeText: {fileID: 0}
+  bannerImage: {fileID: 0}
+  linkButton: {fileID: 0}
 --- !u!1 &1279750213824221874
 GameObject:
   m_ObjectHideFlags: 0

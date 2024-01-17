@@ -124,12 +124,12 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 string avatarAddr,
                 string planetId,
                 string productId,
-                string orderId)
+                string orderId,
+                string data)
         {
-            Debug.Log($"PurchaseLogAsync");
-
-            var query = $"planet_id={planetId}&agent_address={agentAddr}&avatar_address={avatarAddr}&product_id={productId}&order_id={orderId}";
-            var uriBuilder = new UriBuilder(_endpoints.PurchaseStatus);
+            var query = $"planet_id={planetId}&agent_address={agentAddr}&avatar_address={avatarAddr}&product_id={productId}&order_id={orderId}&data={data}";
+            Debug.Log($"PurchaseLogAsync [planet_id={planetId}&agent_address={agentAddr}&avatar_address={avatarAddr}&product_id={productId}&order_id={orderId}&data={data}]");
+            var uriBuilder = new UriBuilder(_endpoints.PurchaseLog);
             uriBuilder.Query = string.IsNullOrEmpty(uriBuilder.Query)
                 ? query
                 : uriBuilder.Query[1..] + query;

@@ -14,5 +14,6 @@ namespace Nekoyume.UI.Model
         public string NameWithHash;
         public int Cp;
         public int PortraitId;
+        public string GuildName;
     }
 }

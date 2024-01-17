@@ -52736,6 +52736,11 @@ PrefabInstance:
       propertyPath: l10nKey
       value: UI_UPGRADE_EQUIPMENT
       objectReference: {fileID: 0}
+    - target: {fileID: 3836353999784113033, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: enableKey
+      value: UI_Enhancement_BackButton_Banner
+      objectReference: {fileID: 0}
     - target: {fileID: 4709182046330643181, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_IsActive
@@ -52967,25 +52972,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &3919546245534927445 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4709182046330643181, guid: 29c5c99555c2b5f40a6f757cea5554b3,
-    type: 3}
-  m_PrefabInstance: {fileID: 8592699407470438584}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &3193903933376438127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3919546245534927445}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  season: 0
-  times:
-  - beginDateTime: 2023-11-22T00:00:00
-    endDateTime: 2023-12-19T23:59:00

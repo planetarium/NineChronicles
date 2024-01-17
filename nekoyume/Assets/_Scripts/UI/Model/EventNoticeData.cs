@@ -15,5 +15,6 @@ namespace Nekoyume.UI.Model
         public string Url { get; set; }
         public bool UseAgentAddress { get; set; }
         public string Description { get; set; }
+        public string[] EnableKeys { get; set; }
     }
 }
