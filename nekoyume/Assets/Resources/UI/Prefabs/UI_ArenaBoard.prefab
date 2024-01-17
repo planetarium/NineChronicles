@@ -2398,6 +2398,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2293727333140903396, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
+        type: 3}
+      propertyPath: m_text
+      value: Rating Point
+      objectReference: {fileID: 0}
     - target: {fileID: 3088123519211179600, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2427,6 +2432,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3904773199942389459, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -145
       objectReference: {fileID: 0}
     - target: {fileID: 3926784711464868923, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
         type: 3}
@@ -2567,6 +2577,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ChildAlignment
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6746046080941715950, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 7107378006110300494, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
         type: 3}

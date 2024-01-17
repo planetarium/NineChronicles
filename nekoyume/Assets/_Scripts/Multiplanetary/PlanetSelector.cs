@@ -517,6 +517,13 @@ namespace Nekoyume.Multiplanetary
                 ? rpcEndpoints.PatrolRewardGql[Random.Range(0, rpcEndpoints.PatrolRewardGql.Count)]
                 : null;
 
+            clo.GuildServiceUrl = rpcEndpoints.GuildRest.Any()
+                ? rpcEndpoints.GuildRest.First()
+                : clo.GuildServiceUrl;
+
+            clo.GuildIconBucket = string.IsNullOrEmpty(selectedPlanetInfo.GuildIconBucket)
+                ? clo.GuildIconBucket
+                : selectedPlanetInfo.GuildIconBucket;
             return context;
         }
     }

@@ -25,6 +25,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         public bool interactableChoiceButton;
         public bool canFight;
         public string address;
+        public string guildName;
     }
 
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
@@ -67,6 +68,12 @@ namespace Nekoyume.UI.Module.Arena.Board
         [SerializeField]
         private ConditionalButton _choiceButton;
 
+        [SerializeField]
+        private Image guildMark;
+
+        [SerializeField]
+        private Image guildMarkEmpty;
+
         private ArenaBoardPlayerItemData _currentData;
 
 #if UNITY_EDITOR
@@ -91,7 +98,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         {
             _currentData = itemData;
 
-            var prefixedAddress = "0x" + itemData.address;
+            var prefixedAddress = "0x" + _currentData.address;
             if (Dcc.instance.Avatars.TryGetValue(prefixedAddress, out var dccId))
             {
                 _characterView.SetByDccId(dccId, _currentData.level);
@@ -111,6 +118,17 @@ namespace Nekoyume.UI.Module.Arena.Board
 
             _choiceButton.gameObject.SetActive(_currentData.canFight);
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
+            var guildEnabled = !string.IsNullOrEmpty(_currentData.guildName);
+            if (guildEnabled)
+            {
+                var url = $"{Game.Game.instance.GuildBucketUrl}/{_currentData.guildName}.png";
+                guildMark.sprite = Util.GetTexture(url);
+                Debug.Log($"[Guild]Set guild image {_currentData.guildName}");
+            }
+
+            guildMark.enabled = guildEnabled;
+            guildMarkEmpty.enabled = !guildEnabled;
+
             UpdateRank();
         }
 
