@@ -39,6 +39,7 @@ namespace Nekoyume.UI.Scroller
             view.LevelLimitObject.SetActive(false);
             view.TradableObject.SetActive(false);
             view.GrindingCountObject.SetActive(false);
+            view.RuneNotificationObj.SetActive(false);
 
             if (RuneFrontHelper.TryGetRuneIcon(viewModel.SheetData.Id, out var icon))
             {
