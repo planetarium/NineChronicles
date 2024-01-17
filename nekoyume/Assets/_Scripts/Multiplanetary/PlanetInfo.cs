@@ -19,6 +19,9 @@ namespace Nekoyume.Multiplanetary
 
         [JsonPropertyName("rpcEndpoints")]
         public RpcEndpoints RPCEndpoints { get; set; }
+
+        [JsonPropertyName("guildIconBucket")]
+        public string GuildIconBucket { get; set; }
     }
 
     public class RpcEndpoints
@@ -43,5 +46,8 @@ namespace Nekoyume.Multiplanetary
 
         [JsonPropertyName("patrol-reward.gql")]
         public List<string> PatrolRewardGql { get; set; }
+
+        [JsonPropertyName("guild.rest")]
+        public List<string> GuildRest { get; set; } = new ();
     }
 }
