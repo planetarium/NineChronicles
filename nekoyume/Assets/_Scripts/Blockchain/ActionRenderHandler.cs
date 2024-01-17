@@ -1541,7 +1541,7 @@ namespace Nekoyume.Blockchain
                     case AssetInfo assetInfo:
                         await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
                         itemName = assetInfo.Asset.GetLocalizedName();
-                        count = Convert.ToInt32(assetInfo.Asset.GetQuantityString());
+                        count = MathematicsExtensions.ConvertToInt32(assetInfo.Asset.GetQuantityString());
                         break;
                 }
 
