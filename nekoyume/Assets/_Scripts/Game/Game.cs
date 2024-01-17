@@ -667,7 +667,8 @@ namespace Nekoyume.Game
                 {
                     _guildBucketUrl = _commandLineOptions.GuildIconBucket;
                 }
-                GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
+
+                yield return GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
                 {
                     GuildModels = guildModels;
                     Debug.Log($"[Guild] GetGuildAsync success");
@@ -682,7 +683,7 @@ namespace Nekoyume.Game
                 {
                     // cannot convert into method group because the method might not exist in some builds.
                     Debug.LogError(message);
-                }).AsUniTask().Forget();
+                }).AsUniTask().ToCoroutine();
             }
 
             StartCoroutine(CoUpdate());
