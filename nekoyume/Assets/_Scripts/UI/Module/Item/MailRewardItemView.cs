@@ -41,7 +41,7 @@ namespace Nekoyume
             baseItemView.NotificationObject.SetActive(false);
             baseItemView.GrindingCountObject.SetActive((false));
             baseItemView.LevelLimitObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
 
             if (mailReward.ItemBase is not null)
             {
