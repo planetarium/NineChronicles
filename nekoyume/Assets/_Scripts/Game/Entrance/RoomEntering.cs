@@ -91,11 +91,14 @@ namespace Nekoyume.Game.Entrance
             {
                 try
                 {
+
+#if UNITY_ANDROID || UNITY_IOS
                     var shopListPopup = Widget.Find<ShopListPopup>();
                     if (shopListPopup.HasUnread)
                     {
                         shopListPopup.ShowAtRoomEntering();
                     }
+#endif
 
                     var avatarInfo = Game.instance.SeasonPassServiceManager.AvatarInfo;
                     var seasonPassNewPopup = Widget.Find<SeasonPassNewPopup>();
