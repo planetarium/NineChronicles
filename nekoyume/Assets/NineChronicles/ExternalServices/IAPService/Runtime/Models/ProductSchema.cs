@@ -69,5 +69,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
 
         [JsonPropertyName("fungible_item_list")]
         public FungibleItemSchema[] FungibleItemList { get; set; }
+
+        [JsonPropertyName("is_free")]
+        public bool IsFree { get; set; }
+
     }
 }

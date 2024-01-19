@@ -217,6 +217,74 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
         }
 
+        public async Task<ReceiptDetailSchema?> PurchaseFreeAsync(
+            string agentAddr,
+            string avatarAddr,
+            string planetId,
+            string sku)
+        {
+            if (!IsInitialized)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+
+            var (code, error, mediaType, content) =
+                await _client.PurchaseFreeAsync(
+                    _store,
+                    agentAddr,
+                    avatarAddr,
+                    planetId,
+                    sku);
+            if (code != HttpStatusCode.OK ||
+                !string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(
+                    $"Purchase Free failed: {code}, {sku}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (mediaType != "application/json")
+            {
+                Debug.LogError(
+                    $"Unexpected media type: {code}, {sku}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                Debug.LogError(
+                    $"Content is empty: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            try
+            {
+                var result = JsonSerializer.Deserialize<ReceiptDetailSchema>(
+                    content!,
+                    IAPServiceClient.JsonSerializerOptions)!;
+                // NOTE: Enable this code if you want to use cache.
+                // _cache.PurchaseProcessResults[result.Uuid] = result;
+                if (result.Status == ReceiptStatus.Invalid ||
+                    result.Status == ReceiptStatus.Unknown)
+                {
+                    UnregisterAndCache(result);
+                }
+                // NOTE: Enable this code if you want to use poller.
+                // else
+                // {
+                //     _poller.Register(result.Uuid);
+                // }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return null;
+            }
+        }
+
         public async Task<Dictionary<string, ReceiptDetailSchema?>?> PurchaseStatusAsync(
             HashSet<string> uuids)
         {
