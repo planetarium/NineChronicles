@@ -175,7 +175,19 @@ namespace Nekoyume.State
                         CurrentAvatarBalances.Add(row.Ticker, fungibleAsset);
                     }
                 }),
-                InitSoulStoneBalance());
+                UniTask.Run(async () =>
+                {
+                    var agent = Game.Game.instance.Agent;
+                    var avatarAddress = CurrentAvatarState.address;
+                    var petSheet = Game.Game.instance.TableSheets.PetSheet;
+                    await foreach (var row in petSheet.Values)
+                    {
+                        CurrentAvatarBalances.Remove(row.SoulStoneTicker);
+                        var soulStone = PetHelper.GetSoulstoneCurrency(row.SoulStoneTicker);
+                        var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, soulStone);
+                        CurrentAvatarBalances.Add(soulStone.Ticker, fungibleAsset);
+                    }
+                }));
         }
 
         public void SetRuneStates(IEnumerable<RuneState> runeStates)
@@ -298,20 +310,6 @@ namespace Nekoyume.State
                         }
                     }
                 }
-            }
-        }
-
-        public async UniTask InitSoulStoneBalance()
-        {
-            var agent = Game.Game.instance.Agent;
-            var avatarAddress = CurrentAvatarState.address;
-            var petSheet = Game.Game.instance.TableSheets.PetSheet;
-            await foreach (var row in petSheet.Values)
-            {
-                CurrentAvatarBalances.Remove(row.SoulStoneTicker);
-                var soulStone = PetHelper.GetSoulstoneCurrency(row.SoulStoneTicker);
-                var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, soulStone);
-                CurrentAvatarBalances.Add(soulStone.Ticker, fungibleAsset);
             }
         }
 
