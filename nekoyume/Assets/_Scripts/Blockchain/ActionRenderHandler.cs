@@ -3071,8 +3071,6 @@ namespace Nekoyume.Blockchain
                 runeStates);
 
             await WorldBossStates.Set(avatarAddress);
-
-            Game.Event.OnRoomEnter.Invoke(true);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)
