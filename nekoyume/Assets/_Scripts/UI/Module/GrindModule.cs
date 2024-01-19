@@ -250,9 +250,8 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                const string blockMessage = "ERROR_NOT_GRINDING_10OVER";
                 OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize(blockMessage),
+                    L10nManager.Localize("ERROR_NOT_GRINDING_OVER", LimitGrindingCount),
                     NotificationCell.NotificationType.Alert);
             }
 
