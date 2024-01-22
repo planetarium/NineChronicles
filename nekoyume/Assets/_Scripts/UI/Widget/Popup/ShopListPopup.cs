@@ -164,12 +164,22 @@ namespace Nekoyume.UI
 
             await DownloadTexture();
 
-            var metadata = _puchasingData.metadata;
-            Debug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+            var metadata = _puchasingData?.metadata;
 
-            foreach (var item in priceTexts)
+            if (!_data.IsFree)
             {
-                item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                Debug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                foreach (var item in priceTexts)
+                {
+                    item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                }
+            }
+            else
+            {
+                foreach (var item in priceTexts)
+                {
+                    item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
+                }
             }
 
             // Initialize IAP Reward
@@ -228,7 +238,7 @@ namespace Nekoyume.UI
             discountText.gameObject.SetActive(false);
             timeLimitText.gameObject.SetActive(false);
 
-            if (isDiscount)
+            if (isDiscount && !_data.IsFree)
             {
                 discountText.text = _data.Discount.ToString();
                 foreach (var item in preDiscountPrice)
