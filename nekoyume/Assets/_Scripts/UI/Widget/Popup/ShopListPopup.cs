@@ -125,7 +125,14 @@ namespace Nekoyume.UI
                 evt.AddCustomAttribute("product-id", _data.Sku);
                 AirbridgeUnity.TrackEvent(evt);
 
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
+                if (_data.IsFree)
+                {
+                    Game.Game.instance.IAPStoreManager.OnPurchaseFreeAsync(_data.Sku).Forget();
+                }
+                else
+                {
+                    Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
+                }
 
                 buyButton.interactable = false;
                 buttonDisableObj.SetActive(true);

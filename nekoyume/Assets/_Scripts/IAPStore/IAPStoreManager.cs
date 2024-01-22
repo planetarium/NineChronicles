@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
@@ -416,6 +417,68 @@ namespace Nekoyume.IAPStore
                 default:
                     break;
             }
+        }
+
+        public async UniTaskVoid  OnPurchaseFreeAsync(string sku)
+        {
+            var popup = Widget.Find<IconAndButtonSystem>();
+            var states = States.Instance;
+            try
+            {
+                var result = await Game.Game.instance.IAPServiceManager.
+                    PurchaseFreeAsync(
+                    states.AgentState.address.ToHex(),
+                    states.CurrentAvatarState.address.ToHex(),
+                    Game.Game.instance.CurrentPlanetId.ToString(),
+                    sku);
+
+                Widget.Find<ShopListPopup>()?.PurchaseButtonLoadingEnd();
+                Widget.Find<SeasonPassPremiumPopup>()?.PurchaseButtonLoadingEnd();
+
+                if (result is null)
+                {
+                    popup.Show(
+                        "UI_ERROR",
+                        "UI_IAP_PURCHASE_FAILED",
+                        "UI_OK",
+                        true);
+                }
+                else
+                {
+                    Widget.Find<MobileShop>()?.PurchaseComplete(sku);
+                    popup.Show(
+                        "UI_COMPLETED",
+                        "UI_IAP_PURCHASE_COMPLETE",
+                        "UI_OK",
+                        true,
+                        IconAndButtonSystem.SystemType.Information);
+
+                    popup.ConfirmCallback = () =>
+                    {
+                        var cachedPassphrase = KeyManager.GetCachedPassphrase(
+                            states.AgentState.address,
+                            Util.AesDecrypt,
+                            defaultValue: string.Empty);
+                        if (cachedPassphrase.Equals(string.Empty))
+                        {
+                            Widget.Find<LoginSystem>().ShowResetPassword();
+                        }
+                    };
+
+                    Widget.Find<MobileShop>()?.RefreshGrid();
+                    Widget.Find<ShopListPopup>()?.Close();
+                }
+
+            }
+            catch (Exception exc)
+            {
+                Widget.Find<MobileShop>()?.RefreshGrid();
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
+                Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+                Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
+            }
+
+            return;
         }
 
         private async void OnPurchaseRequestAsync(PurchaseEventArgs e)
