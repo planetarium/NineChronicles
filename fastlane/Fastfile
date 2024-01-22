@@ -65,7 +65,7 @@ platform :ios do
       )
       set_info_plist_value(path: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Info.plist", key: "ITSAppUsesNonExemptEncryption", value: false)
       set_info_plist_value(path: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Info.plist", key: "GIDClientID", value: "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com")
-      set_info_plist_value(path: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Info.plist", key: "CFBundleURLTypes", subkey: "CFBundleURLSchemes", value: "com.googleusercontent.apps.449111430622-14152cpabg35n1squ7bq180rjptnmcvs,ninechroniclesmobile,ninechronicles-launcher")
+      #set_info_plist_value(path: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Info.plist", key: "CFBundleURLTypes", subkey: "CFBundleURLSchemes", value: "com.googleusercontent.apps.449111430622-14152cpabg35n1squ7bq180rjptnmcvs,ninechroniclesmobile,ninechronicles-launcher")
       gym(
         workspace: "#{ENV['IOS_BUILD_PATH']}/Nine Chronicles M/Unity-iPhone.xcworkspace",
         scheme: "Unity-iPhone",
