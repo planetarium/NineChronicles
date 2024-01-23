@@ -95,8 +95,8 @@ namespace Nekoyume.UI.Model
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
                     info.stat.StatType.ToString(),
-                    info.stat.StatType.ValueToString(info.stat.TotalValueAsInt),
-                    nextInfo.stat.StatType.ValueToString(nextInfo.stat.TotalValueAsInt));
+                    info.stat.StatType.ValueToString(info.stat.TotalValueAsLong),
+                    nextInfo.stat.StatType.ValueToString(nextInfo.stat.TotalValueAsLong));
             }
 
             if (option.SkillId != 0)
@@ -167,7 +167,7 @@ namespace Nekoyume.UI.Model
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
                     info.stat.StatType.ToString(),
-                    info.stat.StatType.ValueToString(info.stat.TotalValueAsInt),
+                    info.stat.StatType.ValueToString(info.stat.TotalValueAsLong),
                     string.Empty);
             }
 

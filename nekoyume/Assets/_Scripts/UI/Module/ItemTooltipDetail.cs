@@ -205,7 +205,7 @@ namespace Nekoyume.UI.Module
                         var statView = statViewList[i];
                         if (i < usableStatCount)
                         {
-                            statView.Show(stats[i].StatType, stats[i].TotalValueAsInt);
+                            statView.Show(stats[i].StatType, stats[i].TotalValueAsLong);
                             continue;
                         }
 
@@ -231,7 +231,7 @@ namespace Nekoyume.UI.Module
                         var statView = statViewList[i];
                         if (i < usableStatCount)
                         {
-                            statView.Show(stats[i].StatType, stats[i].TotalValueAsInt);
+                            statView.Show(stats[i].StatType, stats[i].TotalValueAsLong);
                             statCount++;
                             continue;
                         }

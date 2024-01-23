@@ -190,7 +190,7 @@ namespace Nekoyume.UI
             {
                 var info = nextOption.Stats[i];
                 stats[i].gameObject.SetActive(true);
-                statTextList[i].text = $"{info.stat.StatType.ToString()} {info.stat.TotalValueAsInt}";
+                statTextList[i].text = $"{info.stat.StatType.ToString()} {info.stat.TotalValueAsLong}";
             }
 
             if (item.Level > 0)
@@ -204,7 +204,7 @@ namespace Nekoyume.UI
                 {
                     var next = nextOption.Stats[i];
                     var cur = curOption.Stats[i];
-                    var result = next.stat.TotalValueAsInt - cur.stat.TotalValueAsInt;
+                    var result = next.stat.TotalValueAsLong - cur.stat.TotalValueAsLong;
                     addStatTextList[i].text = $"(+{result})";
                 }
             }
@@ -213,7 +213,7 @@ namespace Nekoyume.UI
                 for (var i = 0; i < nextOption.Stats.Count; i++)
                 {
                     var info = nextOption.Stats[i];
-                    addStatTextList[i].text = $"(+{info.stat.TotalValueAsInt})";
+                    addStatTextList[i].text = $"(+{info.stat.TotalValueAsLong})";
                 }
             }
         }
