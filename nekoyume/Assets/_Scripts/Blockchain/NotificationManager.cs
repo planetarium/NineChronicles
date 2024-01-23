@@ -44,7 +44,7 @@ namespace Nekoyume.Blockchain
 
         public static void NotifyRuneSummon(ActionEvaluation<RuneSummon> eval)
         {
-            var avatarName = States.Instance.CurrentAvatarState.name;
+            var avatarName = StateGetter.GetAvatarState(eval.Action.AvatarAddress, eval.OutputState).name;
             var runeSheet = TableSheets.RuneSheet;
             var runeList = FilterRuneSummon(eval);
             foreach (var rune in runeList)
@@ -78,7 +78,7 @@ namespace Nekoyume.Blockchain
 
         public static void NotifyAuraSummon(ActionEvaluation<AuraSummon> eval)
         {
-            var avatarName = States.Instance.CurrentAvatarState.name;
+            var avatarName = StateGetter.GetAvatarState(eval.Action.AvatarAddress, eval.OutputState).name;
             foreach (var aura in FilterAuraSummon(eval))
             {
                 if (aura.Grade == 5)
