@@ -11,6 +11,7 @@ using Cysharp.Threading.Tasks;
 using System.Numerics;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 
 namespace Nekoyume.UI
 {
@@ -265,7 +266,16 @@ namespace Nekoyume.UI
             }
 
             buyButton.interactable = true;
-            buttonDisableObj.SetActive(false);
+
+            if(_data.RequiredLevel != null)
+            {
+                buttonDisableObj.SetActive(_data.RequiredLevel > States.Instance.CurrentAvatarState.level);
+            }
+            else
+            {
+                buttonDisableObj.SetActive(false);
+            }
+
             buttonActiveEffectObj.SetActive(true);
 
             buyLimitObj.SetActive(false);

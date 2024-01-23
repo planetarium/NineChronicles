@@ -73,5 +73,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("is_free")]
         public bool IsFree { get; set; }
 
-    }
+        [JsonPropertyName("required_level")]
+        public int? RequiredLevel { get; set; }
+    } 
 }
