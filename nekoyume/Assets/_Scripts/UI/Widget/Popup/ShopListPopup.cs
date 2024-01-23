@@ -265,15 +265,16 @@ namespace Nekoyume.UI
                 item.gameObject.SetActive(true);
             }
 
-            buyButton.interactable = true;
 
             if(_data.RequiredLevel != null)
             {
                 buttonDisableObj.SetActive(_data.RequiredLevel > States.Instance.CurrentAvatarState.level);
+                buyButton.interactable = !buttonDisableObj.activeSelf;
             }
             else
             {
                 buttonDisableObj.SetActive(false);
+                buyButton.interactable = true;
             }
 
             buttonActiveEffectObj.SetActive(true);
