@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Character
         protected SpeechBubble _speechBubble;
         public HpBar HPBar { get; private set; }
 
-        protected int _currentHp;
+        protected long _currentHp;
 
         protected WorldBossBattle _worldBossBattle;
         protected float _attackTime;

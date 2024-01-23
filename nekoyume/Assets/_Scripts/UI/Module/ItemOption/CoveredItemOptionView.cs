@@ -48,7 +48,7 @@ namespace Nekoyume.UI.Module
             IsEmpty = IsEmpty && string.IsNullOrEmpty(coverText);
         }
 
-        public void UpdateAsStatWithCount(StatType type, int value, int count) =>
+        public void UpdateAsStatWithCount(StatType type, long value, int count) =>
             UpdateView(
                 $"{type} +{type.ValueToString(value)}",
                 string.Empty,

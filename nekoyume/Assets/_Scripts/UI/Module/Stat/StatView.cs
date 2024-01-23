@@ -14,8 +14,8 @@ namespace Nekoyume.UI.Module
         {
             Show(decimalStat.StatType, decimalStat.TotalValueAsInt);
         }
-        
-        public virtual void Show(StatType statType, int value, bool showPlus = false)
+
+        public virtual void Show(StatType statType, long value, bool showPlus = false)
         {
             var valueString = statType.ValueToString(value);
             Show(statType.ToString(), showPlus ? $"+{valueString}" : valueString);

@@ -38,7 +38,7 @@ namespace Nekoyume
             return description;
         }
 
-        public static string ValueToString(this StatType statType, int value, bool isSigned = false)
+        public static string ValueToString(this StatType statType, long value, bool isSigned = false)
         {
             switch (statType)
             {
@@ -67,7 +67,7 @@ namespace Nekoyume
             }
         }
 
-        public static string ValueToShortString(this StatType statType, int value)
+        public static string ValueToShortString(this StatType statType, long value)
         {
             switch (statType)
             {
@@ -84,7 +84,7 @@ namespace Nekoyume
                 case StatType.SPD:
                 case StatType.DRR:
                 case StatType.CDMG:
-                    return ((int)(value / 100m)).ToCurrencyNotation();
+                    return ((long)(value / 100m)).ToCurrencyNotation();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }

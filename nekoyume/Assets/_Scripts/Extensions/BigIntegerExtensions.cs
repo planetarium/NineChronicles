@@ -30,6 +30,8 @@ namespace Nekoyume
             return ToCurrencyNotation((decimal)num);
         }
 
+        public static string ToCurrencyNotation(this long num) => ToCurrencyNotation((decimal)num);
+
         public static string ToCurrencyNotation(this int num) => ToCurrencyNotation((decimal)num);
 
         private static string ToCurrencyNotation(decimal value)

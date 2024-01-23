@@ -20,8 +20,8 @@ namespace Nekoyume.UI.Module.Common
             public int SkillId;
             public int ChanceMin;
             public int ChanceMax;
-            public int PowerMin;
-            public int PowerMax;
+            public long PowerMin;
+            public long PowerMax;
             public int StatPowerRatioMin;
             public int StatPowerRatioMax;
             public StatType ReferencedStatType;
@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Module.Common
             debuffObject.SetActive(false);
         }
 
-        private void SetSkillDescription(string key, SkillSheet.Row skillRow, int skillValue, int skillChance)
+        private void SetSkillDescription(string key, SkillSheet.Row skillRow, long skillValue, int skillChance)
         {
             var sheets = TableSheets.Instance;
             List<string> arg = new List<string>();
@@ -178,8 +178,8 @@ namespace Nekoyume.UI.Module.Common
             SkillSheet.Row skillRow,
             int chanceMin,
             int chanceMax,
-            int powerMin,
-            int powerMax,
+            long powerMin,
+            long powerMax,
             int ratioMin,
             int ratioMax,
             StatType referencedStatType)
