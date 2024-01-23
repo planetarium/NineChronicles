@@ -10,8 +10,6 @@ using UnityEngine.UI;
 using Nekoyume.Model.State;
 using System.Collections;
 using System.Collections.Generic;
-using Lib9c.Renderers;
-using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -112,15 +110,8 @@ namespace Nekoyume.UI
                 .Subscribe();
         }
 
-        public void OnRenderCreateAvatar(ActionEvaluation<CreateAvatar> eval)
+        public void OnRenderCreateAvatar()
         {
-            if (eval.Exception is { })
-            {
-                // NOTE: If eval has an exception then
-                // UIs will handled in other places.
-                return;
-            }
-
             var avatarState = States.Instance.CurrentAvatarState;
             StartCoroutine(CreateAndLoginAnimation(avatarState));
         }

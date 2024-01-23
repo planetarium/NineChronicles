@@ -759,10 +759,8 @@ namespace Nekoyume.Blockchain
                 {
                     await UpdateAgentStateAsync(eval);
                     await UpdateAvatarState(eval, eval.Action.index);
-
                     await States.Instance.SelectAvatarAsync(eval.Action.index);
-                    await States.Instance.InitSoulStoneBalance();
-                    UpdateCurrentAvatarRuneStoneBalance(eval);
+                    await States.Instance.InitAvatarBalancesAsync();
                     States.Instance.SetRuneStates(TableSheets.Instance.RuneListSheet.Select(pair => new RuneState(pair.Value.Id)));
                     await States.Instance.InitItemSlotStates();
                     await States.Instance.InitRuneSlotStates();
@@ -782,7 +780,7 @@ namespace Nekoyume.Blockchain
                     var loginDetail = Widget.Find<LoginDetail>();
                     if (loginDetail && loginDetail.IsActive())
                     {
-                        loginDetail.OnRenderCreateAvatar(eval);
+                        loginDetail.OnRenderCreateAvatar();
                     }
                 });
         }
