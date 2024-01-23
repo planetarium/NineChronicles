@@ -442,7 +442,6 @@ namespace Editor
             }
         }
 
-#if UNITY_IOS
         [PostProcessBuild]
         public static void OnPostprocessBuildForiOS(BuildTarget buildTarget, string buildPath)
         {
@@ -516,7 +515,6 @@ namespace Editor
             // write plist
             Plist.writeXml(dict, plistPath);
         }
-#endif
 
         private static void PreProcessBuildForIOS()
         {
