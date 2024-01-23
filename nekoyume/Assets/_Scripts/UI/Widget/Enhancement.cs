@@ -423,9 +423,9 @@ namespace Nekoyume.UI
             return (int)result;
         }
 
-        private long UpgradeStat(long baseStat, long upgradeStat)
+        private long UpgradeStat(long baseStat, int upgradeStat)
         {
-            var result = baseStat * ((int)upgradeStat).NormalizeFromTenThousandths();
+            var result = baseStat * upgradeStat.NormalizeFromTenThousandths();
             if (result > 0)
             {
                 result = Math.Max(1.0m, result);
