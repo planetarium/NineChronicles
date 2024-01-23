@@ -71,7 +71,7 @@ namespace Nekoyume.Game
             int bossId,
             BattleLog log,
             ArenaPlayerDigest player,
-            int damageDealt,
+            long damageDealt,
             bool isNewRecord,
             bool isPractice,
             List<FungibleAssetValue> battleRewards,
@@ -106,7 +106,7 @@ namespace Nekoyume.Game
             int bossId,
             BattleLog log,
             ArenaPlayerDigest player,
-            int damageDealt,
+            long damageDealt,
             bool isNewRecord,
             bool isPractice,
             List<FungibleAssetValue> rewards,
@@ -233,7 +233,7 @@ namespace Nekoyume.Game
         }
 
         private IEnumerator CoFinish(
-            int damageDealt,
+            long damageDealt,
             bool isNewRecord,
             bool isPractice,
             List<FungibleAssetValue> rewards,
