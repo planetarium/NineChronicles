@@ -88,9 +88,22 @@ namespace Nekoyume.IAPStore
 
         public bool ExistAvailableFreeProduct()
         {
-            return _initailizedProductSchema.Any(product => product.Value.IsFree
-                                        && product.Value.Buyable
-                                        && product.Value.RequiredLevel >= States.Instance.CurrentAvatarState.level);
+            foreach (var item in _initailizedProductSchema)
+            {
+                if (!item.Value.IsFree)
+                    continue;
+
+                if (!item.Value.Buyable)
+                    continue;
+
+                if (item.Value.RequiredLevel == null)
+                    return true;
+
+                if (item.Value.RequiredLevel.Value < States.Instance.CurrentAvatarState.level)
+                    return true;
+            }
+
+            return false;
         }
 
         public ProductSchema GetProductSchema(string sku)
