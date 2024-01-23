@@ -50,7 +50,7 @@ namespace Nekoyume.Game
         private int _turnLimit;
         private int _wave;
         private bool _isPlaying;
-        private int _currentScore;
+        private long _currentScore;
         private int _currentBossId;
 
         public SkillController SkillController { get; private set; }
@@ -544,7 +544,7 @@ namespace Nekoyume.Game
             }
         }
 
-        public void AddScore(int score)
+        public void AddScore(long score)
         {
             _currentScore += score;
             Widget.Find<WorldBossBattle>().UpdateScore(_currentScore);

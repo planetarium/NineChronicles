@@ -649,7 +649,7 @@ namespace Nekoyume.Game.Character
             }
 
             var value = _currentHp - dmg;
-            _currentHp = Mathf.Clamp(value, 0, _characterModel.HP);
+            _currentHp = Math.Clamp(value, 0, _characterModel.HP);
 
             Animator.Hit();
             UpdateStatusUI();
