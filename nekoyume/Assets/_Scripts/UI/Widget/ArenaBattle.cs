@@ -79,8 +79,8 @@ namespace Nekoyume.UI
 
         public void UpdateStatus(
             bool isEnemy,
-            int currentHp,
-            int maxHp,
+            long currentHp,
+            long maxHp,
             Dictionary<int, Nekoyume.Model.Buff.Buff> buffs)
         {
             if (isEnemy)

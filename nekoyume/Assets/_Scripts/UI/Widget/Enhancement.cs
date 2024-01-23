@@ -15,6 +15,7 @@ using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
+using PlasticPipe.PlasticProtocol.Messages;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
@@ -414,11 +415,23 @@ namespace Nekoyume.UI
         private int UpgradeStat(int baseStat, int upgradeStat)
         {
             var result = baseStat * upgradeStat.NormalizeFromTenThousandths();
-            if(result > 0)
+            if (result > 0)
             {
                 result = Math.Max(1.0m, result);
             }
+
             return (int)result;
+        }
+
+        private long UpgradeStat(long baseStat, int upgradeStat)
+        {
+            var result = baseStat * upgradeStat.NormalizeFromTenThousandths();
+            if (result > 0)
+            {
+                result = Math.Max(1.0m, result);
+            }
+
+            return (long)result;
         }
 
         private void UpdateInformation(EnhancementInventoryItem baseModel,

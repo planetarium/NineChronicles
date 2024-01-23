@@ -33,7 +33,7 @@ namespace Nekoyume.Game.Character
 
         private bool _applicationQuitting = false;
         private Root _root;
-        private int _currentHp;
+        private long _currentHp;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -56,14 +56,14 @@ namespace Nekoyume.Game.Character
             set => CharacterModel.Level = value;
         }
 
-        public int HP => CharacterModel.HP;
+        public long HP => CharacterModel.HP;
 
-        public int CurrentHP
+        public long CurrentHP
         {
             get => _currentHp;
             private set
             {
-                _currentHp = Math.Min(Math.Max(value, 0), HP);
+                _currentHp = Math.Min(Math.Max(value, 0l), HP);
                 UpdateHpBar();
             }
         }

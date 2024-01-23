@@ -52,7 +52,7 @@ namespace Nekoyume.UI
             progressBar.Show();
         }
 
-        public void UpdateScore(int score)
+        public void UpdateScore(long score)
         {
             progressBar.UpdateScore(score);
         }
@@ -76,8 +76,8 @@ namespace Nekoyume.UI
         }
 
         public void UpdateStatus(
-            int currentHp,
-            int maxHp,
+            long currentHp,
+            long maxHp,
             Dictionary<int, Nekoyume.Model.Buff.Buff> buffs)
         {
             bossStatus.SetHp(currentHp, maxHp);

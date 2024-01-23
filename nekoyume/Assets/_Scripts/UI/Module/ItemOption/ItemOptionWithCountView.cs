@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Module
             IsEmpty = IsEmpty && optionCount == 0;
         }
 
-        public void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int plusValue, int count)
+        public void UpdateAsTotalAndPlusStatWithCount(StatType type, long totalValue, long plusValue, int count)
         {
             var totalValueString = type.ValueToString(totalValue);
             var plusValueString = type.ValueToString(plusValue);

@@ -379,7 +379,7 @@ namespace Nekoyume.UI
 
                 var (skillRow, power, chance, ratio, type) = itemOptionInfo.SkillOptions[i];
                 var (_, prePower, preChance, preRatio, _) = itemOptionInfoPre.SkillOptions[i];
-                int powerRate = 0;
+                long powerRate = 0;
 
                 if (prePower != power)
                 {
@@ -461,9 +461,9 @@ namespace Nekoyume.UI
             return _informations.FirstOrDefault(x => x.Type.Equals(type));
         }
 
-        private static int RateOfChange(decimal previous, decimal current)
+        private static long RateOfChange(decimal previous, decimal current)
         {
-            return (int)Math.Round((current - previous) / previous * 100);
+            return (long)Math.Round((current - previous) / previous * 100);
         }
     }
 }

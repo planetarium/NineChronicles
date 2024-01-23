@@ -163,7 +163,7 @@ namespace Nekoyume.Helper
                 tableSheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow) &&
                 tableSheets.StatBuffSheet.TryGetValue(skillBuffRow.BuffIds.First(), out var buffRow))
             {
-                valueString = $"{StatExtensions.ValueToString(buffRow.StatType, (int)curPower)}%";
+                valueString = $"{buffRow.StatType.ValueToString((long)curPower)}%";
             }
             else if (isPercent)
             {
@@ -171,8 +171,8 @@ namespace Nekoyume.Helper
             }
             else
             {
-                valueString = curPower == (int)curPower ?
-                    $"{(int)curPower}" : $"{curPower}";
+                valueString = curPower == (long)curPower ?
+                    $"{(long)curPower}" : $"{curPower}";
             }
 
             return valueString;

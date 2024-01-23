@@ -53,7 +53,7 @@ namespace Nekoyume.UI
             levelText.text = value.ToString();
         }
 
-        public void Set(int current, int additional, int max)
+        public void Set(long current, long additional, long max)
         {
             SetText($"{current} / {max}");
             SetValue((float) math.min(current, max - additional) / max);

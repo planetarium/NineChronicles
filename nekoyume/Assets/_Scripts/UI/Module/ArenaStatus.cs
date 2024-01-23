@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Libplanet.Crypto;
 using Nekoyume.Game;
@@ -64,9 +65,9 @@ namespace Nekoyume.UI.Module
             infoText.text = avatarName;
         }
 
-        public void SetHp(int current, int max)
+        public void SetHp(long current, long max)
         {
-            current = Mathf.Max(current, 0);
+            current = Math.Max(current, 0);
             hpBar.fillAmount = (float) current / max;
             hpText.text = $"{current}/{max}";
         }

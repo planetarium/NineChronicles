@@ -274,7 +274,7 @@ namespace Nekoyume.UI
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.TotalValueAsInt)));
+                            x.stat.TotalValueAsLong)));
             }
 
             var characterStats = new CharacterStats(row, avatarState.level);

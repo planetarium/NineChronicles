@@ -23,9 +23,9 @@ namespace Nekoyume.UI.Module
             bulletSubImage.enabled = !isMainStat;
 
             if (isMainStat)
-                Show(decimalStat.StatType, decimalStat.BaseValueAsInt, decimalStat.AdditionalValueAsInt);
+                Show(decimalStat.StatType, decimalStat.BaseValueAsLong, decimalStat.AdditionalValueAsLong);
             else
-                Show(decimalStat.StatType, decimalStat.TotalValueAsInt, 0);
+                Show(decimalStat.StatType, decimalStat.TotalValueAsLong, 0);
         }
 
         public override void Show()
