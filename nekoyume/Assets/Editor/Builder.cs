@@ -123,6 +123,7 @@ namespace Editor
         [MenuItem("Build/Standalone/iOS")]
         public static void BuildiOS()
         {
+            EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
             Debug.Log("Build iOS");
             PreProcessBuildForIOS();
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
@@ -474,7 +475,7 @@ namespace Editor
             }
 
             // xcode 15 error
-            pbxProject.AddBuildProperty(unityFrameworkTargetGuid, "OTHER_LDFLAGS", "-ld64");
+            //pbxProject.AddBuildProperty(unityFrameworkTargetGuid, "OTHER_LDFLAGS", "-ld64");
 
             // Re-Write project file.
             pbxProject.WriteToFile(pbxProjectPath);

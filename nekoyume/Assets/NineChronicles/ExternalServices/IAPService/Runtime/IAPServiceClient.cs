@@ -119,6 +119,27 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
+            PurchaseLogAsync(
+                string agentAddr,
+                string avatarAddr,
+                string planetId,
+                string productId,
+                string orderId,
+                string data)
+        {
+            var query = $"planet_id={planetId}&agent_address={agentAddr}&avatar_address={avatarAddr}&product_id={productId}&order_id={orderId}&data={data}";
+            Debug.Log($"PurchaseLogAsync [planet_id={planetId}&agent_address={agentAddr}&avatar_address={avatarAddr}&product_id={productId}&order_id={orderId}&data={data}]");
+            var uriBuilder = new UriBuilder(_endpoints.PurchaseLog);
+            uriBuilder.Query = string.IsNullOrEmpty(uriBuilder.Query)
+                ? query
+                : uriBuilder.Query[1..] + query;
+
+            using var res = await _client.GetAsync(uriBuilder.Uri);
+            return await ProcessResponseAsync(res);
+        }
+
+        public async
+            Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             L10NAsync()
         {
             using var res = await _client.GetAsync(_endpoints.L10N);
