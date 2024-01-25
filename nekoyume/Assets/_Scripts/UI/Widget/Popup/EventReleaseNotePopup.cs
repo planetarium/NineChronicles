@@ -82,65 +82,84 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            _tabGroup.RegisterToggleable(eventTabButton);
-            _tabGroup.RegisterToggleable(noticeTabButton);
-            _tabGroup.OnToggledOn.Subscribe(toggle =>
+            try
             {
-                if (eventTabButton.Equals(toggle))
+                _tabGroup.RegisterToggleable(eventTabButton);
+                _tabGroup.RegisterToggleable(noticeTabButton);
+                _tabGroup.OnToggledOn.Subscribe(toggle =>
                 {
-                    RenderNotice(_selectedEventBannerItem.Data);
-                    objectsForEvent.ForEach(go => go.SetActive(true));
-                    objectsForNotice.ForEach(go => go.SetActive(false));
-                }
-                else
-                {
-                    RenderNotice(_selectedNoticeItem.Data);
-                    objectsForNotice.ForEach(go => go.SetActive(true));
-                    objectsForEvent.ForEach(go => go.SetActive(false));
-                }
-            }).AddTo(gameObject);
-            _tabGroup.SetToggledOn(eventTabButton);
-            closeButton.onClick.AddListener(() => Close());
+                    if (eventTabButton.Equals(toggle))
+                    {
+                        RenderNotice(_selectedEventBannerItem.Data);
+                        objectsForEvent.ForEach(go => go.SetActive(true));
+                        objectsForNotice.ForEach(go => go.SetActive(false));
+                    }
+                    else
+                    {
+                        RenderNotice(_selectedNoticeItem.Data);
+                        objectsForNotice.ForEach(go => go.SetActive(true));
+                        objectsForEvent.ForEach(go => go.SetActive(false));
+                    }
+                }).AddTo(gameObject);
+                _tabGroup.SetToggledOn(eventTabButton);
+                closeButton.onClick.AddListener(() => Close());
 
-            var liveAssetManager = LiveAssetManager.instance;
-            eventTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadEvent);
-            noticeTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadNotice);
-            liveAssetManager.ObservableHasUnreadEvent
-                .SubscribeTo(eventTabButton.HasNotification)
-                .AddTo(gameObject);
-            liveAssetManager.ObservableHasUnreadNotice
-                .SubscribeTo(noticeTabButton.HasNotification)
-                .AddTo(gameObject);
-            var eventData = liveAssetManager.BannerData;
-            foreach (var notice in eventData)
-            {
-                var item = Instantiate(originEventNoticeItem, eventScrollViewport);
-                item.Set(notice,
-                    !liveAssetManager.IsAlreadyReadNotice(notice.Description),
-                    OnClickEventNoticeItem);
-                _eventBannerItems.Add(notice.Description, item);
-                if (_selectedEventBannerItem == null)
+                var liveAssetManager = LiveAssetManager.instance;
+                eventTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadEvent);
+                noticeTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadNotice);
+                liveAssetManager.ObservableHasUnreadEvent
+                    .SubscribeTo(eventTabButton.HasNotification)
+                    .AddTo(gameObject);
+                liveAssetManager.ObservableHasUnreadNotice
+                    .SubscribeTo(noticeTabButton.HasNotification)
+                    .AddTo(gameObject);
+                var eventData = liveAssetManager.BannerData;
+                foreach (var notice in eventData)
                 {
-                    _selectedEventBannerItem = item;
-                    _selectedEventBannerItem.Select();
+                    var item = Instantiate(originEventNoticeItem, eventScrollViewport);
+
+                    if(item is null)
+                    {
+                        Debug.LogError($"item is Null");
+                    }
+
+                    if (notice is null)
+                    {
+                        Debug.LogError($"notice is Null");
+                    }
+
+                    item.Set(notice,
+                        !liveAssetManager.IsAlreadyReadNotice(notice.Description),
+                        OnClickEventNoticeItem);
+                    _eventBannerItems.Add(notice.Description, item);
+                    if (_selectedEventBannerItem == null)
+                    {
+                        _selectedEventBannerItem = item;
+                        _selectedEventBannerItem.Select();
+                    }
                 }
+
+                var noticeData = liveAssetManager.NoticeData.ToList();
+                foreach (var notice in noticeData)
+                {
+                    var item = Instantiate(originNoticeItem, noticeScrollViewport);
+                    item.Set(notice,
+                        !liveAssetManager.IsAlreadyReadNotice(notice.Header),
+                        OnClickNoticeItem);
+                    if (_selectedNoticeItem == null)
+                    {
+                        _selectedNoticeItem = item;
+                        _selectedNoticeItem.Select();
+                    }
+                }
+
+                RenderNotice(_selectedEventBannerItem.Data);
+
             }
-
-            var noticeData = liveAssetManager.NoticeData.ToList();
-            foreach (var notice in noticeData)
+            catch(Exception e)
             {
-                var item = Instantiate(originNoticeItem, noticeScrollViewport);
-                item.Set(notice,
-                    !liveAssetManager.IsAlreadyReadNotice(notice.Header),
-                    OnClickNoticeItem);
-                if (_selectedNoticeItem == null)
-                {
-                    _selectedNoticeItem = item;
-                    _selectedNoticeItem.Select();
-                }
+                Debug.LogError(e);
             }
-
-            RenderNotice(_selectedEventBannerItem.Data);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
