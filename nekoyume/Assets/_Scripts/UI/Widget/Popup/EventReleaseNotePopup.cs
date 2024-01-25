@@ -154,7 +154,6 @@ namespace Nekoyume.UI
                 }
 
                 RenderNotice(_selectedEventBannerItem.Data);
-
             }
             catch(Exception e)
             {
