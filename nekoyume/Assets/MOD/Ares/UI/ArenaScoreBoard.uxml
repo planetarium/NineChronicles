@@ -1,0 +1,56 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" MemoryProfiler="Unity.MemoryProfiler.Editor" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="arena-score-board__avatar-cell" src="project://database/Assets/MOD/Ares/UI/VisualTreeAssets/arena-score-board__avatar-cell.uxml?fileID=9197481963319205126&amp;guid=ae92980cb7a8e4e4c87063e1513c0a81&amp;type=3#arena-score-board__avatar-cell" />
+    <Style src="project://database/Assets/MOD/Ares/UI/AresStyle.uss?fileID=7433441132597879392&amp;guid=99fe2bcf3146e401bb02327eb954e123&amp;type=3#AresStyle" />
+    <ui:VisualElement name="arena-score-board__container" class="mod-container" style="justify-content: flex-start;">
+        <ui:Button text="Previous" display-tooltip-when-elided="true" name="arena-score-board__previous-button" class="mod-previous-button" />
+        <ui:GroupBox picking-mode="Ignore" style="height: 40px; background-color: rgba(255, 255, 255, 0.2); margin-left: 100px; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-top: 0; padding-bottom: 0; justify-content: flex-start; padding-right: 0; flex-direction: row;">
+            <ui:GroupBox picking-mode="Ignore" style="flex-direction: row; background-color: rgb(0, 0, 0); margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;">
+                <ui:Label text="Agent:" display-tooltip-when-elided="true" picking-mode="Ignore" style="font-size: 14px; -unity-font-style: bold; color: rgb(222, 209, 195); -unity-text-align: middle-left; margin-left: 10px; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                <ui:Label text="0x12345678..." display-tooltip-when-elided="true" picking-mode="Ignore" name="arena-score-board__agent-address" style="font-size: 14px; -unity-font-style: bold; color: rgb(222, 209, 195); -unity-text-align: middle-left; margin-left: 10px; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                <ui:Button text="Copy" display-tooltip-when-elided="true" name="arena-score-board__copy-agent-address-button" style="background-color: rgb(228, 210, 162); margin-left: 10px; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 12px; width: 40px;" />
+            </ui:GroupBox>
+            <ui:GroupBox picking-mode="Ignore" style="flex-direction: row; background-color: rgb(0, 0, 0); margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;">
+                <ui:Label text="Avatar:" display-tooltip-when-elided="true" picking-mode="Ignore" style="font-size: 14px; -unity-font-style: bold; color: rgb(222, 209, 195); -unity-text-align: middle-left; margin-left: 10px; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                <ui:Label text="NickName" display-tooltip-when-elided="true" picking-mode="Ignore" name="arena-score-board__avatar-nickname" style="font-size: 14px; -unity-font-style: bold; color: rgb(222, 209, 195); -unity-text-align: middle-left; margin-left: 10px; margin-right: 10px; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+        <ui:GroupBox picking-mode="Ignore" style="margin-top: 0; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; height: 30px; flex-direction: row; justify-content: flex-end; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:Label text="Search..." display-tooltip-when-elided="true" picking-mode="Ignore" style="margin-left: 10px; margin-right: 10px; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; color: rgb(222, 209, 195); -unity-font-style: normal;" />
+        </ui:GroupBox>
+        <ui:GroupBox picking-mode="Ignore" style="margin-top: 0; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; height: 450px; background-color: rgba(255, 255, 255, 0.2); flex-direction: row; justify-content: center; width: 1136px;">
+            <ui:GroupBox picking-mode="Ignore" style="margin-left: 2px; margin-right: 1px; margin-top: 2px; margin-bottom: 2px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-grow: 0; width: 50%; height: 446px;">
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-00" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-01" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-02" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-03" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-04" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-05" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-06" />
+            </ui:GroupBox>
+            <ui:GroupBox picking-mode="Ignore" style="margin-left: 2px; margin-right: 1px; margin-top: 2px; margin-bottom: 2px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; flex-grow: 0; width: 50%; height: 446px;">
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-07" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-08" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-09" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-10" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-11" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-12" />
+                <ui:Instance template="arena-score-board__avatar-cell" name="arena-score-board__avatar-cell-13" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+        <ui:GroupBox picking-mode="Ignore" style="margin-top: 0; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px; height: 62px; flex-direction: row; justify-content: flex-end; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:Button text="&lt;" display-tooltip-when-elided="true" name="arena-score-board__previous-page-button" style="margin-left: 2px; margin-right: 2px; margin-top: 0; margin-bottom: 0; padding-left: 20px; padding-right: 20px; padding-top: 0; padding-bottom: 0; font-size: 48px; -unity-font-style: bold; -unity-text-align: middle-center; background-color: rgb(185, 143, 255); width: 100px;" />
+            <ui:Button text="&gt;" display-tooltip-when-elided="true" name="arena-score-board__next-page-button" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 20px; padding-right: 20px; padding-top: 0; padding-bottom: 0; font-size: 48px; -unity-font-style: bold; -unity-text-align: middle-center; background-color: rgb(185, 143, 255); width: 100px;" />
+        </ui:GroupBox>
+        <ui:GroupBox picking-mode="Ignore" style="height: 40px; background-color: rgba(255, 255, 255, 0.2); margin-left: 0; margin-right: 0; margin-top: auto; margin-bottom: 0; padding-left: 0; padding-top: 0; padding-bottom: 0; padding-right: 0; flex-direction: row;">
+            <ui:Button text="Load" display-tooltip-when-elided="true" name="arena-score-board__load-button" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; width: 80px; font-size: 20px; background-color: rgb(132, 191, 174); -unity-font-style: bold;" />
+            <ui:GroupBox picking-mode="Ignore" style="flex-direction: row; background-color: rgb(0, 0, 0); margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;">
+                <ui:Label text="Loaded Block:" display-tooltip-when-elided="true" picking-mode="Ignore" style="font-size: 14px; -unity-font-style: bold; color: rgb(222, 209, 195); -unity-text-align: middle-left; margin-left: 10px; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                <ui:Label text="1,000,000" display-tooltip-when-elided="true" picking-mode="Ignore" name="arena-score-board__loaded-block-index" style="font-size: 14px; -unity-font-style: bold; color: rgb(222, 209, 195); -unity-text-align: middle-left; margin-left: 10px; margin-right: 10px; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+            </ui:GroupBox>
+            <ui:GroupBox picking-mode="Ignore" style="flex-direction: row; background-color: rgb(0, 0, 0); margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;">
+                <ui:Label text="Current Block:" display-tooltip-when-elided="true" picking-mode="Ignore" style="font-size: 14px; -unity-font-style: bold; color: rgb(222, 209, 195); -unity-text-align: middle-left; margin-left: 10px; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+                <ui:Label text="1,000,019" display-tooltip-when-elided="true" picking-mode="Ignore" name="arena-score-board__current-block-index" style="font-size: 14px; -unity-font-style: bold; color: rgb(222, 209, 195); -unity-text-align: middle-left; margin-left: 10px; margin-right: 10px; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+    </ui:VisualElement>
+</ui:UXML>
