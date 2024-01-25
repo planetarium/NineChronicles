@@ -17,6 +17,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI[] tabNames;
 
+        [SerializeField]
+        private GameObject[] notificationObjs;
+
         private string _nameKey;
 
         private void Awake()
@@ -35,6 +38,14 @@ namespace Nekoyume.UI.Module
             foreach (var item in icons)
             {
                 item.sprite = icon;
+            }
+        }
+
+        public void SetNoti(bool isNoti)
+        {
+            foreach (var item in notificationObjs)
+            {
+                item.SetActive(isNoti);
             }
         }
 
