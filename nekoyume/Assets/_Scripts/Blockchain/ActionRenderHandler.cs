@@ -3417,7 +3417,7 @@ namespace Nekoyume.Blockchain
 
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+                if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
                 {
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                 }
@@ -3554,7 +3554,7 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarInventory(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+                if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
                 {
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                 }
@@ -3690,7 +3690,7 @@ namespace Nekoyume.Blockchain
             {
                 LocalLayerModifier.AddNewMail(avatar.address, mail.id);
             }
-            if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+            if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
             {
                 Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             }
