@@ -392,7 +392,10 @@ namespace Nekoyume.UI
             Find<Summon>().Close(true);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            Find<MobileShop>().Show();
+            if(TryFind<MobileShop>(out var mobileShop))
+            {
+                mobileShop.Show();
+            }
         }
 
         // Do not use with Aura summon tutorial. this logic is fake.
