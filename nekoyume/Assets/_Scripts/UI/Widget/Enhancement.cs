@@ -15,7 +15,6 @@ using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
-using PlasticPipe.PlasticProtocol.Messages;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
