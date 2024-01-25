@@ -1,0 +1,24 @@
+.mod-container {
+    background-color: rgba(0, 0, 0, 0.78);
+    height: 100%;
+    width: 100%;
+}
+
+.mod-previous-button {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 20px;
+    -unity-font-style: bold;
+    width: 100px;
+    height: 40px;
+    background-color: rgb(219, 113, 92);
+    position: absolute;
+    left: 0;
+    top: 0;
+}

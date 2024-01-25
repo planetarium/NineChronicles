@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" MemoryProfiler="Unity.MemoryProfiler.Editor" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="InputAgentAddress" src="project://database/Assets/MOD/Ares/UI/InputAgentAddress.uxml?fileID=9197481963319205126&amp;guid=d29c9813dc61e4786bfadc0754a5a72b&amp;type=3#InputAgentAddress" />
+    <ui:Template name="SelectAvatarAddress" src="project://database/Assets/MOD/Ares/UI/SelectAvatar.uxml?fileID=9197481963319205126&amp;guid=29af4dda8267c43c8a77959f412100fd&amp;type=3#SelectAvatar" />
+    <ui:Template name="ArenaScoreBoard" src="project://database/Assets/MOD/Ares/UI/ArenaScoreBoard.uxml?fileID=9197481963319205126&amp;guid=c070d0fafd52344eea8f327980d2db23&amp;type=3#ArenaScoreBoard" />
+    <ui:Instance template="InputAgentAddress" picking-mode="Ignore" name="InputAgentAddress" style="position: absolute; width: 100%; height: 100%;" />
+    <ui:Instance template="SelectAvatarAddress" picking-mode="Ignore" name="SelectAvatar" style="position: absolute; width: 100%; height: 100%;" />
+    <ui:Instance template="ArenaScoreBoard" picking-mode="Ignore" name="ArenaScoreBoard" style="position: absolute; width: 100%; height: 100%;" />
+</ui:UXML>

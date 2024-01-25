@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" MemoryProfiler="Unity.MemoryProfiler.Editor" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="select-avatar__avatar-button" src="project://database/Assets/MOD/Ares/UI/VisualTreeAssets/select-avatar__avatar-button.uxml?fileID=9197481963319205126&amp;guid=3815db2daa9324834b6c44a2cb01a927&amp;type=3#select-avatar__avatar-button" />
+    <Style src="project://database/Assets/MOD/Ares/UI/AresStyle.uss?fileID=7433441132597879392&amp;guid=99fe2bcf3146e401bb02327eb954e123&amp;type=3#AresStyle" />
+    <ui:VisualElement name="select-avatar__container" class="mod-container">
+        <ui:GroupBox picking-mode="Ignore" style="top: auto; height: auto; background-color: rgba(255, 255, 255, 0.2); margin-left: 0; margin-right: 0; margin-top: auto; margin-bottom: auto; padding-left: 200px; padding-top: 50px; padding-bottom: 50px; flex-shrink: 0; justify-content: center; padding-right: 200px;">
+            <ui:Label text="Select Avatar" display-tooltip-when-elided="true" picking-mode="Ignore" style="font-size: 20px; -unity-font-style: bold; color: rgb(222, 209, 195);" />
+            <ui:GroupBox picking-mode="Ignore" style="margin-left: 0; margin-right: auto; margin-top: 10px; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;">
+                <ui:Instance template="select-avatar__avatar-button" name="select-avatar__avatar-button-0">
+                    <AttributeOverrides element-name="select-avatar__avatar-button__container" value="false" />
+                </ui:Instance>
+                <ui:Instance template="select-avatar__avatar-button" name="select-avatar__avatar-button-1" />
+                <ui:Instance template="select-avatar__avatar-button" name="select-avatar__avatar-button-2" />
+            </ui:GroupBox>
+        </ui:GroupBox>
+        <ui:Button text="Previous" display-tooltip-when-elided="true" name="select-avatar__previous-button" class="mod-previous-button" />
+        <ui:Button text="NEXT" name="select-avatar__next-button" style="height: 100px; position: absolute; bottom: 0; left: 0; right: 0; font-size: 40px; -unity-font-style: bold; background-color: rgb(52, 188, 175); margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+    </ui:VisualElement>
+</ui:UXML>
