@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BalanceTool.Runtime
+namespace BalanceTool
 {
     public static partial class HackAndSlashCalculator
     {
