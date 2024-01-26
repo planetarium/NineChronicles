@@ -262,19 +262,29 @@ namespace Nekoyume.UI.Module
         public bool IsNotification()
         {
             if (!_data.IsFree)
+            {
                 return false;
+            }
 
             if (!IsBuyable())
+            {
                 return false;
+            }
 
             if (dimObj.activeSelf)
+            {
                 return false;
+            }
 
             if (_data.RequiredLevel == null)
+            {
                 return true;
+            }
 
             if (_data.RequiredLevel.Value < States.Instance.CurrentAvatarState.level)
+            {
                 return true;
+            }
 
             return false;
         }
