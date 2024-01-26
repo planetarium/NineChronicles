@@ -41,6 +41,9 @@ namespace Nekoyume.UI
         private readonly Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory =
             new Dictionary<string, List<IAPShopProductCellView>>();
 
+        private readonly Dictionary<string, IAPCategoryTab> _allCategoryTab =
+            new Dictionary<string, IAPCategoryTab>();
+
         private Toggle _recommendedToggle;
 
         private const string RecommendedString = "Recommended";
@@ -139,6 +142,8 @@ namespace Nekoyume.UI
                 _lastSelectedCategory = RecommendedString;
             }
 
+            RefreshAllCategoryNoti();
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             loading.Close();
         }
@@ -154,7 +159,8 @@ namespace Nekoyume.UI
                 var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
 
                 var iconSprite = await Util.DownloadTexture($"{MOBILE_L10N_SCHEMA.Host}/{category.Path}");
-                categoryTabObj.GetComponent<IAPCategoryTab>().SetData(category.L10n_Key, iconSprite);
+                var categoryTab = categoryTabObj.GetComponent<IAPCategoryTab>();
+                categoryTab.SetData(category.L10n_Key, iconSprite);
 
                 categoryTabObj.onObject.SetActive(false);
                 categoryTabObj.offObject.SetActive(true);
@@ -171,6 +177,8 @@ namespace Nekoyume.UI
                     RefreshGridByCategory(category.Name);
                     _lastSelectedCategory = category.Name;
                 });
+
+                _allCategoryTab.Add(category.Name, categoryTab);
 
                 var productList = category.ProductList
                     .Where(p => p.Active)
@@ -229,6 +237,17 @@ namespace Nekoyume.UI
             if (_allProductObjs.TryGetValue(productId, out var cell))
             {
                 cell.LocalPurchaseSuccess();
+            }
+
+            RefreshAllCategoryNoti();
+        }
+
+        private void RefreshAllCategoryNoti()
+        {
+            foreach (var item in _allCategoryTab)
+            {
+                var noti = _allProductObjByCategory[item.Key].Any(product => product.IsNotification());
+                item.Value.SetNoti(noti);
             }
         }
 

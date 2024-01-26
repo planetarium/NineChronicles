@@ -7,6 +7,7 @@ using UniRx;
 using Nekoyume.L10n;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
+using Nekoyume.State;
 
 namespace Nekoyume.UI.Module
 {
@@ -256,6 +257,36 @@ namespace Nekoyume.UI.Module
             }
 
             return true;
+        }
+
+        public bool IsNotification()
+        {
+            if (!_data.IsFree)
+            {
+                return false;
+            }
+
+            if (!IsBuyable())
+            {
+                return false;
+            }
+
+            if (dimObj.activeSelf)
+            {
+                return false;
+            }
+
+            if (_data.RequiredLevel == null)
+            {
+                return true;
+            }
+
+            if (_data.RequiredLevel.Value < States.Instance.CurrentAvatarState.level)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public int GetOrder()
