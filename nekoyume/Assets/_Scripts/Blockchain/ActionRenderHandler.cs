@@ -190,6 +190,9 @@ namespace Nekoyume.Blockchain
 
             PetEnhancement();
 
+            // Collection
+            ActivateCollection();
+
             // GARAGE
             UnloadFromMyGarages();
 
@@ -648,6 +651,19 @@ namespace Nekoyume.Blockchain
                 .Select(PreparePetEnhancement)
                 .ObserveOnMainThread()
                 .Subscribe(ResponsePetEnhancement)
+                .AddTo(_disposables);
+        }
+
+        private void ActivateCollection()
+        {
+            _actionRenderer.EveryRender<ActivateCollection>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(eval => eval.Action.AvatarAddress == States.Instance.CurrentAvatarState.address)
+                .Select(PrepareActivateCollection)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseActivateCollection)
                 .AddTo(_disposables);
         }
 
@@ -3217,6 +3233,30 @@ namespace Nekoyume.Blockchain
 
             Widget.Find<DccCollection>().UpdateView();
             Game.Game.instance.SavedPetId = action.PetId;
+        }
+
+        private ActionEvaluation<ActivateCollection> PrepareActivateCollection(ActionEvaluation<ActivateCollection> eval)
+        {
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            var collectionStateIValue = StateGetter.GetState(
+                CollectionState.Derive(eval.Action.AvatarAddress),
+                eval.OutputState);
+            if (collectionStateIValue is List collectionDict)
+            {
+                States.Instance.SetCollectionState(new CollectionState(collectionDict));
+            }
+            else
+            {
+                States.Instance.SetCollectionState(null);
+            }
+
+            return eval;
+        }
+
+        private void ResponseActivateCollection(ActionEvaluation<ActivateCollection> eval)
+        {
+
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR

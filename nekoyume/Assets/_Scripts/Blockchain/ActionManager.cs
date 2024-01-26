@@ -1596,6 +1596,46 @@ namespace Nekoyume.Blockchain
                 }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
+        public IObservable<ActionEvaluation<ActivateCollection>> ActivateCollection(
+            int collectionId,
+            List<Guid> itemIdList)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var agentAddress = States.Instance.AgentState.address;
+
+            var sentryTrace = Analyzer.Instance.Track("Unity/ActivateCollection",
+                new Dictionary<string, Value>()
+                {
+                    ["AvatarAddress"] = avatarAddress.ToString(),
+                    ["AgentAddress"] = agentAddress.ToString(),
+                    ["CollectionId"] = collectionId,
+                    ["ItemIdList"] = itemIdList,
+                }, true);
+
+            var evt = new AirbridgeEvent("ActivateCollection");
+            evt.SetValue(collectionId);
+            evt.AddCustomAttribute("item-id-list", itemIdList);
+            evt.AddCustomAttribute("agent-address", avatarAddress.ToString());
+            evt.AddCustomAttribute("avatar-address", agentAddress.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
+            var action = new ActivateCollection
+            {
+                AvatarAddress = avatarAddress,
+                CollectionId = collectionId,
+                ItemIdList = itemIdList
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ActivateCollection>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+        }
 
         public IObservable<ActionEvaluation<ApprovePledge>> ApprovePledge(Address patronAddress)
         {

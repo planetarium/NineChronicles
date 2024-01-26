@@ -96,6 +96,8 @@ namespace Nekoyume.State
         public bool PledgeRequested => PatronAddress is not null;
         public bool PledgeApproved { get; private set; }
 
+        public CollectionState CollectionState { get; private set; }
+
         public States()
         {
             DeselectAvatar();
@@ -712,6 +714,18 @@ namespace Nekoyume.State
                     await SetCombinationSlotStatesAsync(curAvatarState);
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
                     await SetPetStates(avatarState.address);
+
+                    var collectionAddress = CollectionState.Derive(avatarAddress);
+                    var collectionStateIValue =
+                        await Game.Game.instance.Agent.GetStateAsync(collectionAddress);
+                    if (collectionStateIValue is List collectionDict)
+                    {
+                        SetCollectionState(new CollectionState(collectionDict));
+                    }
+                    else
+                    {
+                        SetCollectionState(null);
+                    }
                 });
 
                 Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
@@ -922,6 +936,16 @@ namespace Nekoyume.State
                     petId,
                     petRawStates[petAddress] is List rawState ? new PetState(rawState) : null);
             }
+        }
+
+        public void SetCollectionState(CollectionState state)
+        {
+            if (state is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetCollectionState)}] {nameof(state)} is null.");
+            }
+
+            CollectionState = state;
         }
 
         public void SetPledgeStates(Address? patronAddress, bool isApproved)
