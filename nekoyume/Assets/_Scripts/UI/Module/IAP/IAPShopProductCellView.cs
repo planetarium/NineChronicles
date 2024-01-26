@@ -267,6 +267,9 @@ namespace Nekoyume.UI.Module
             if (!IsBuyable())
                 return false;
 
+            if (dimObj.activeSelf)
+                return false;
+
             if (_data.RequiredLevel == null)
                 return true;
 
