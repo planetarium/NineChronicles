@@ -90,7 +90,8 @@ namespace Nekoyume.Blockchain
             }).AddTo(_disposables);
             _actionRenderer.ActionRenderSubject.ObserveOnMainThread().Subscribe(eval =>
             {
-                if (eval.Action is not GameAction gameAction)
+                if (eval.Action is not GameAction gameAction ||
+                    ActionManager.Instance is null)
                 {
                     return;
                 }
@@ -313,7 +314,8 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<BuyProduct>()
                 .Where(eval =>
                     ValidateEvaluationForCurrentAgent(eval) ||
-                    eval.Action.ProductInfos.Any(info => info.AgentAddress.Equals(States.Instance.AgentState.address)))
+                    eval.Action.ProductInfos.Any(info =>
+                        info.AgentAddress.Equals(States.Instance.AgentState?.address)))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuyProduct)
                 .AddTo(_disposables);
@@ -614,7 +616,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(ValidateEvaluationIsSuccess)
-                .Where(eval => eval.Action.AvatarAddress == States.Instance.CurrentAvatarState.address)
+                .Where(eval => eval.Action.AvatarAddress == States.Instance.CurrentAvatarState?.address)
                 .Select(PreparePetEnhancement)
                 .ObserveOnMainThread()
                 .Subscribe(ResponsePetEnhancement)
@@ -625,7 +627,7 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<RequestPledge>()
                 .ObserveOn(Scheduler.ThreadPool)
-                .Where(eval => eval.Action.AgentAddress.Equals(States.Instance.AgentState.address))
+                .Where(eval => eval.Action.AgentAddress.Equals(States.Instance.AgentState?.address))
                 .Subscribe(ResponseRequestPledge)
                 .AddTo(_disposables);
         }
@@ -644,11 +646,11 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<UnloadFromMyGarages>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
-                    eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) ||
+                    eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState?.address) ||
                     (eval.Action.FungibleAssetValues is not null &&
                         eval.Action.FungibleAssetValues.Any(e =>
-                            e.balanceAddr.Equals(States.Instance.AgentState.address) ||
-                            e.balanceAddr.Equals(States.Instance.CurrentAvatarState.address))))
+                            e.balanceAddr.Equals(States.Instance.AgentState?.address) ||
+                            e.balanceAddr.Equals(States.Instance.CurrentAvatarState?.address))))
                 .Select(PrepareUnloadFromMyGarages)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnloadFromMyGarages)
@@ -691,7 +693,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
                     eval.Action.ClaimData.Any(e =>
-                        e.address.Equals(States.Instance?.CurrentAvatarState?.address)))
+                        e.address.Equals(States.Instance.CurrentAvatarState?.address)))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareClaimItems)
                 .ObserveOnMainThread()
@@ -817,74 +819,74 @@ namespace Nekoyume.Blockchain
             switch (stateResult)
             {
                 case CombinationConsumable5.ResultModel combineResultModel:
-                {
-                    LocalLayerModifier.AddNewResultAttachmentMail(
-                        avatarAddress,
-                        combineResultModel.id,
-                        currentBlockIndex);
-                    if (combineResultModel.itemUsable is Equipment equipment)
                     {
-                        var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
-                        if (combineResultModel.subRecipeId.HasValue &&
-                            sheet.TryGetValue(
-                                combineResultModel.subRecipeId.Value,
-                                out var subRecipeRow))
+                        LocalLayerModifier.AddNewResultAttachmentMail(
+                            avatarAddress,
+                            combineResultModel.id,
+                            currentBlockIndex);
+                        if (combineResultModel.itemUsable is Equipment equipment)
                         {
-                            formatKey = equipment.optionCountFromCombination ==
-                                subRecipeRow.Options.Count
-                                    ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                                    : "NOTIFICATION_COMBINATION_COMPLETE";
+                            var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
+                            if (combineResultModel.subRecipeId.HasValue &&
+                                sheet.TryGetValue(
+                                    combineResultModel.subRecipeId.Value,
+                                    out var subRecipeRow))
+                            {
+                                formatKey = equipment.optionCountFromCombination ==
+                                    subRecipeRow.Options.Count
+                                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                                        : "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
+                            else
+                            {
+                                formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
                         }
                         else
                         {
                             formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                         }
-                    }
-                    else
-                    {
-                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                    }
 
-                    break;
-                }
+                        break;
+                    }
                 case ItemEnhancement13.ResultModel enhancementResultModel:
-                {
-                    LocalLayerModifier.AddNewResultAttachmentMail(
-                        avatarAddress,
-                        enhancementResultModel.id,
-                        currentBlockIndex);
-
-                    switch (enhancementResultModel.enhancementResult)
                     {
-                        /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                            break;*/
-                        case Action.ItemEnhancement13.EnhancementResult.Success:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                            break;
-                        /*case Action.ItemEnhancement.EnhancementResult.Fail:
-                            Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
-                                new Dictionary<string, Value>
-                                {
-                                    ["GainedCrystal"] =
-                                        (long)enhancementResultModel.CRYSTAL.MajorUnit,
-                                    ["BurntNCG"] = (long)enhancementResultModel.gold,
-                                    ["AvatarAddress"] =
-                                        States.Instance.CurrentAvatarState.address.ToString(),
-                                    ["AgentAddress"] =
-                                        States.Instance.AgentState.address.ToString(),
-                                });
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                            break;*/
-                        default:
-                            Debug.LogError(
-                                $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                            break;
-                    }
+                        LocalLayerModifier.AddNewResultAttachmentMail(
+                            avatarAddress,
+                            enhancementResultModel.id,
+                            currentBlockIndex);
 
-                    break;
-                }
+                        switch (enhancementResultModel.enhancementResult)
+                        {
+                            /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                                break;*/
+                            case Action.ItemEnhancement13.EnhancementResult.Success:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                            /*case Action.ItemEnhancement.EnhancementResult.Fail:
+                                Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
+                                    new Dictionary<string, Value>
+                                    {
+                                        ["GainedCrystal"] =
+                                            (long)enhancementResultModel.CRYSTAL.MajorUnit,
+                                        ["BurntNCG"] = (long)enhancementResultModel.gold,
+                                        ["AvatarAddress"] =
+                                            States.Instance.CurrentAvatarState.address.ToString(),
+                                        ["AgentAddress"] =
+                                            States.Instance.AgentState.address.ToString(),
+                                    });
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                                break;*/
+                            default:
+                                Debug.LogError(
+                                    $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                        }
+
+                        break;
+                    }
                 default:
                     Debug.LogError(
                         $"Unexpected state.Result: {stateResult}");
@@ -1291,7 +1293,7 @@ namespace Nekoyume.Blockchain
                         tradableId,
                         out ItemUsable materialItem))
                 {
-                    if(itemUsable.ItemSubType == ItemSubType.Aura)
+                    if (itemUsable.ItemSubType == ItemSubType.Aura)
                     {
                         //Because aura is a tradable item, local removal or add fails and an exception is handled.
                         LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId);
@@ -3262,7 +3264,7 @@ namespace Nekoyume.Blockchain
                     if (mail.Memo != null && mail.Memo.Contains("iap"))
                     {
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
-                        if(product != null)
+                        if (product != null)
                         {
                             var productName = L10nManager.Localize(product.L10n_Key);
                             var format = L10nManager.Localize(
@@ -3426,7 +3428,7 @@ namespace Nekoyume.Blockchain
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
             var action = eval.Action;
-            if (action.MintSpecs is {} specs)
+            if (action.MintSpecs is { } specs)
             {
                 var requiredUpdateAvatarState = false;
                 foreach (var spec in specs.Where(spec => spec.Recipient.Equals(avatarAddr) || spec.Recipient.Equals(agentAddr)))
