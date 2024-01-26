@@ -18,7 +18,7 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 
-namespace BalanceTool.Runtime
+namespace BalanceTool
 {
     public static partial class HackAndSlashCalculator
     {
