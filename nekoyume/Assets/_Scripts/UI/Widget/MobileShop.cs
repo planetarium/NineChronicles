@@ -246,14 +246,8 @@ namespace Nekoyume.UI
         {
             foreach (var item in _allCategoryTab)
             {
-                if(_allProductObjByCategory[item.Key].Any(product => product.IsNotification()))
-                {
-                    item.Value.SetNoti(true);
-                }
-                else
-                {
-                    item.Value.SetNoti(false);
-                }
+                var noti = _allProductObjByCategory[item.Key].Any(product => product.IsNotification());
+                item.Value.SetNoti(noti);
             }
         }
 
