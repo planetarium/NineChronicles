@@ -3363,7 +3363,7 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-
+            UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, states)).Forget();
             return eval;
         }
 
