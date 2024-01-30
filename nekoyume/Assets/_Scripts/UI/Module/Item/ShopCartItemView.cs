@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
             baseItemView.ExpiredObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
 
             if (model.ItemBase is not null)
             {

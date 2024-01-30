@@ -759,10 +759,8 @@ namespace Nekoyume.Blockchain
                 {
                     await UpdateAgentStateAsync(eval);
                     await UpdateAvatarState(eval, eval.Action.index);
-
                     await States.Instance.SelectAvatarAsync(eval.Action.index);
-                    await States.Instance.InitSoulStoneBalance();
-                    UpdateCurrentAvatarRuneStoneBalance(eval);
+                    await States.Instance.InitAvatarBalancesAsync();
                     States.Instance.SetRuneStates(TableSheets.Instance.RuneListSheet.Select(pair => new RuneState(pair.Value.Id)));
                     await States.Instance.InitItemSlotStates();
                     await States.Instance.InitRuneSlotStates();
@@ -782,7 +780,7 @@ namespace Nekoyume.Blockchain
                     var loginDetail = Widget.Find<LoginDetail>();
                     if (loginDetail && loginDetail.IsActive())
                     {
-                        loginDetail.OnRenderCreateAvatar(eval);
+                        loginDetail.OnRenderCreateAvatar();
                     }
                 });
         }
@@ -3071,8 +3069,6 @@ namespace Nekoyume.Blockchain
                 runeStates);
 
             await WorldBossStates.Set(avatarAddress);
-
-            Game.Event.OnRoomEnter.Invoke(true);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)
@@ -3367,7 +3363,7 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-
+            UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, states)).Forget();
             return eval;
         }
 
@@ -3421,7 +3417,7 @@ namespace Nekoyume.Blockchain
 
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+                if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
                 {
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                 }
@@ -3558,7 +3554,7 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarInventory(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+                if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
                 {
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                 }
@@ -3694,7 +3690,7 @@ namespace Nekoyume.Blockchain
             {
                 LocalLayerModifier.AddNewMail(avatar.address, mail.id);
             }
-            if (Widget.Find<MobileShop>() != null && Widget.Find<MobileShop>().IsActive())
+            if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
             {
                 Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             }

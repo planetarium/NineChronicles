@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
 
             baseItemView.ItemImage.overrideSprite =
                 BaseItemView.GetItemIcon(model.ItemBase);
@@ -137,7 +137,7 @@ namespace Nekoyume.UI.Module
             baseItemView.LevelLimitObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
             baseItemView.GrindingCountObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
 
             if (RuneFrontHelper.TryGetRuneIcon(model.RuneState.RuneId, out var icon))
             {
@@ -213,7 +213,7 @@ namespace Nekoyume.UI.Module
             baseItemView.EnhancementImage.gameObject.SetActive(false);
             baseItemView.OptionTag.gameObject.SetActive(false);
             baseItemView.CountText.gameObject.SetActive(true);
-            baseItemView.RuneNotificationObj.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
 
             baseItemView.CountText.text = model.FungibleAssetValue.GetQuantityString();
             baseItemView.ItemImage.overrideSprite = model.FungibleAssetValue.GetIconSprite();

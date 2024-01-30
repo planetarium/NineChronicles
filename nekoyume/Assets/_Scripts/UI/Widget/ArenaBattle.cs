@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using Libplanet.Crypto;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.Model;
-using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UnityEngine;
 
@@ -80,8 +79,8 @@ namespace Nekoyume.UI
 
         public void UpdateStatus(
             bool isEnemy,
-            int currentHp,
-            int maxHp,
+            long currentHp,
+            long maxHp,
             Dictionary<int, Nekoyume.Model.Buff.Buff> buffs)
         {
             if (isEnemy)
@@ -104,9 +103,8 @@ namespace Nekoyume.UI
 
         private void SetStatus(ArenaPlayerDigest digest, ArenaStatus status, Address address)
         {
-            var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
-            var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
-            status.Set(armorId, digest.NameWithHash, digest.Level, address);
+            var portraitId = Util.GetPortraitId(digest.Equipments, digest.Costumes);
+            status.Set(portraitId, digest.NameWithHash, digest.Level, address);
             status.gameObject.SetActive(false);
         }
     }

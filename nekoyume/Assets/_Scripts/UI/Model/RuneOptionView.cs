@@ -95,8 +95,8 @@ namespace Nekoyume.UI.Model
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
                     info.stat.StatType.ToString(),
-                    info.stat.TotalValueAsInt.ToString(),
-                    nextInfo.stat.TotalValueAsInt.ToString());
+                    info.stat.StatType.ValueToString(info.stat.TotalValueAsLong),
+                    nextInfo.stat.StatType.ValueToString(nextInfo.stat.TotalValueAsLong));
             }
 
             if (option.SkillId != 0)
@@ -107,14 +107,14 @@ namespace Nekoyume.UI.Model
 
                 var skillName = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
                 var curChance = $"{option.SkillChance}%";
-                var nextChance = option.SkillChance == nextOption.SkillChance ? string.Empty : $"{nextOption.SkillChance}%";
+                var nextChance = option.SkillChance == nextOption.SkillChance ? $"<color=#FFF3D4>{option.SkillChance}%</color>" : $"{nextOption.SkillChance}%";
                 var curCooldown = $"{option.SkillCooldown}";
-                var nextCooldown = option.SkillCooldown == nextOption.SkillCooldown ? string.Empty : $"{nextOption.SkillCooldown}";
+                var nextCooldown = option.SkillCooldown == nextOption.SkillCooldown ? $"<color=#FFF3D4>{option.SkillCooldown}</color>" : $"{nextOption.SkillCooldown}";
                 var currentValueString = RuneFrontHelper.GetRuneValueString(option);
                 var nextValueString = RuneFrontHelper.GetRuneValueString(nextOption);
                 if (currentValueString.Equals(nextValueString))
                 {
-                    nextValueString = string.Empty;
+                    nextValueString = $"<color=#FFF3D4>{currentValueString}</color>";
                 }
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
                     option.SkillChance, option.BuffDuration, currentValueString);
@@ -167,7 +167,7 @@ namespace Nekoyume.UI.Model
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
                     info.stat.StatType.ToString(),
-                    info.stat.TotalValueAsInt.ToString(),
+                    info.stat.StatType.ValueToString(info.stat.TotalValueAsLong),
                     string.Empty);
             }
 

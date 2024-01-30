@@ -66,7 +66,7 @@ namespace Nekoyume
         public static string EffectToString(
             int skillId,
             SkillType skillType,
-            int power,
+            long power,
             int statPowerRatio,
             StatType referencedStatType)
         {

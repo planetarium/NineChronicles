@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
@@ -89,9 +90,13 @@ namespace Nekoyume.UI.Module
 
                 if (timeText)
                 {
-                    var begin = DateTime.ParseExact(_bannerData.BeginDateTime, "yyyy-MM-ddTHH:mm:ss", null);
-                    var end = DateTime.ParseExact(_bannerData.EndDateTime, "yyyy-MM-ddTHH:mm:ss", null);
-                    timeText.text = $"{begin:MM/dd} - {end:MM/dd}";
+                    var begin = DateTime
+                        .ParseExact(_bannerData.BeginDateTime, "yyyy-MM-ddTHH:mm:ss", null)
+                        .ToString("M/d", CultureInfo.InvariantCulture);
+                    var end = DateTime
+                        .ParseExact(_bannerData.EndDateTime, "yyyy-MM-ddTHH:mm:ss", null)
+                        .ToString("M/d", CultureInfo.InvariantCulture);
+                    timeText.text = $"{begin} - {end}";
                 }
 
                 if (bannerImage)

@@ -77,7 +77,7 @@ namespace Nekoyume.State
                 ArenaInfoTuple.UpdateAsync(),
                 EventDungeonInfo.UpdateAsync(),
                 WorldBossStates.Set(States.Instance.CurrentAvatarState.address),
-                States.Instance.InitAvatarBalancesAsync(),
+                UniTask.RunOnThreadPool(States.Instance.InitAvatarBalancesAsync).ToObservable().ObserveOnMainThread().ToUniTask(),
                 UniTask.Run(async () =>
                 {
                     var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;

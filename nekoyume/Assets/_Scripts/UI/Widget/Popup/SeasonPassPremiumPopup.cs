@@ -193,7 +193,7 @@ namespace Nekoyume.UI
             baseItem.LevelLimitObject.SetActive(false);
             baseItem.RewardReceived.SetActive(false);
             baseItem.LevelLimitObject.SetActive(false);
-            baseItem.RuneNotificationObj.SetActive(false);
+            baseItem.RuneNotificationObj.SetActiveSafe(false);
         }
 
         private void RefreshIcons(SeasonPassServiceClient.UserSeasonPassSchema seasonPassInfo)

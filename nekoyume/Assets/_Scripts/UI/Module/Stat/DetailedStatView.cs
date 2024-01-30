@@ -10,14 +10,14 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI additionalText;
 
-        public void Show(StatType statType, int statValue, int additionalStatValue)
+        public void Show(StatType statType, long statValue, long additionalStatValue)
         {
             statTypeText.text = statType.ToString();
             valueText.text = statType.ValueToString(statValue);
             SetAdditional(statType, additionalStatValue);
         }
 
-        public void Show(StatType statType, (int valueMin, int valueMax) valueRange)
+        public void Show(StatType statType, (long valueMin, long valueMax) valueRange)
         {
             statTypeText.text = statType.ToString();
             var valueMin = statType.ValueToString(valueRange.valueMin);
@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
         }
 
-        public void Show(string keyText, int statValue, int additionalStatValue)
+        public void Show(string keyText, long statValue, long additionalStatValue)
         {
             if (!Enum.TryParse<StatType>(keyText, out var statType))
             {
@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
             Show(statType, statValue, additionalStatValue);
         }
 
-        public void SetAdditional(StatType statType, int additionalStatValue)
+        public void SetAdditional(StatType statType, long additionalStatValue)
         {
             if (additionalStatValue == 0)
             {

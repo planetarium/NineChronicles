@@ -111,7 +111,7 @@ namespace Nekoyume.UI.Module
             SetStarProgress(_currentStar.Value + 1);
         }
 
-        public void UpdateScore(int score)
+        public void UpdateScore(long score)
         {
             scoreText.text = score.ToString("N0");
             var grade = (WorldBossGrade) WorldBossHelper.CalculateRank(_currentRow, score);

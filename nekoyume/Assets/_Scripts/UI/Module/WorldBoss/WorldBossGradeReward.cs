@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private void UpdateGauges(WorldBossCharacterSheet.Row bossRow, int highScore,
+        private void UpdateGauges(WorldBossCharacterSheet.Row bossRow, long highScore,
             int currentRank)
         {
             switch (currentRank)
@@ -166,7 +166,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private void UpdateRecord(int highScore)
+        private void UpdateRecord(long highScore)
         {
             myBestRecordText.text = $"{highScore:#,0}";
         }

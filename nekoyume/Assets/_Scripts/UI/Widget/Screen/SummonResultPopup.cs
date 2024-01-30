@@ -284,7 +284,10 @@ namespace Nekoyume.UI
             Find<SummonResultPopup>().Close(true);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            Find<MobileShop>().Show();
+            if (TryFind<MobileShop>(out var mobileShop))
+            {
+                mobileShop.Show();
+            }
         }
     }
 }
