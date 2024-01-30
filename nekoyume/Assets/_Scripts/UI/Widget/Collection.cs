@@ -67,6 +67,11 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
+            UpdateView();
+        }
+
+        private void UpdateView()
+        {
             var models = GetModels();
             scroll.UpdateData(models, true);
             collectionEffect.Set(models.ToArray());
@@ -103,6 +108,11 @@ namespace Nekoyume.UI
             }
 
             ActionManager.Instance.ActivateCollection(row.Id, itemIds).Subscribe();
+        }
+
+        public void OnActionRender()
+        {
+            UpdateView();
         }
     }
 }

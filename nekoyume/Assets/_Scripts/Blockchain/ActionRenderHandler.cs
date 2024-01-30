@@ -3239,24 +3239,22 @@ namespace Nekoyume.Blockchain
         {
             UpdateCurrentAvatarStateAsync(eval).Forget();
 
-            var collectionStateIValue = StateGetter.GetState(
-                CollectionState.Derive(eval.Action.AvatarAddress),
-                eval.OutputState);
-            if (collectionStateIValue is List collectionDict)
-            {
-                States.Instance.SetCollectionState(new CollectionState(collectionDict));
-            }
-            else
-            {
-                States.Instance.SetCollectionState(null);
-            }
+            var collectionAddress = CollectionState.Derive(eval.Action.AvatarAddress);
+            var collectionStateIValue = StateGetter.GetState(collectionAddress, eval.OutputState);
+            var collectionState = collectionStateIValue is List collectionDict
+                ? new CollectionState(collectionDict)
+                : new CollectionState
+                {
+                    Address = collectionAddress
+                };
+            States.Instance.SetCollectionState(collectionState);
 
             return eval;
         }
 
         private void ResponseActivateCollection(ActionEvaluation<ActivateCollection> eval)
         {
-
+            Widget.Find<Collection>().OnActionRender();
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR

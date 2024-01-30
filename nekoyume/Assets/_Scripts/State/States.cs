@@ -718,14 +718,13 @@ namespace Nekoyume.State
                     var collectionAddress = CollectionState.Derive(avatarAddress);
                     var collectionStateIValue =
                         await Game.Game.instance.Agent.GetStateAsync(collectionAddress);
-                    if (collectionStateIValue is List collectionDict)
-                    {
-                        SetCollectionState(new CollectionState(collectionDict));
-                    }
-                    else
-                    {
-                        SetCollectionState(null);
-                    }
+                    var collectionState = collectionStateIValue is List collectionDict
+                        ? new CollectionState(collectionDict)
+                        : new CollectionState
+                        {
+                            Address = collectionAddress
+                        };
+                    SetCollectionState(collectionState);
                 });
 
                 Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
