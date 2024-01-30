@@ -57,7 +57,11 @@ namespace Nekoyume.UI.Module
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
+            baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectCollectionObject.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite =
                 BaseItemView.GetItemIcon(model.ItemBase);
@@ -138,6 +142,9 @@ namespace Nekoyume.UI.Module
             baseItemView.TradableObject.SetActive(false);
             baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectCollectionObject.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
 
             if (RuneFrontHelper.TryGetRuneIcon(model.RuneState.RuneId, out var icon))
             {
@@ -214,6 +221,9 @@ namespace Nekoyume.UI.Module
             baseItemView.OptionTag.gameObject.SetActive(false);
             baseItemView.CountText.gameObject.SetActive(true);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectCollectionObject.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
 
             baseItemView.CountText.text = model.FungibleAssetValue.GetQuantityString();
             baseItemView.ItemImage.overrideSprite = model.FungibleAssetValue.GetIconSprite();
