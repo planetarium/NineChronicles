@@ -20,9 +20,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Selected;
         public readonly ReactiveProperty<bool> Focused;
         public readonly ReactiveProperty<bool> HasNotification;
-        public readonly ReactiveProperty<int> GrindingCount;
         public readonly ReactiveProperty<bool> Disabled;
-        public readonly Subject<bool> GrindingCountEnabled;
+        public readonly ReactiveProperty<bool> GrindingCountEnabled;
 
         public InventoryItem(ItemBase itemBase, int count, bool limited, bool tradable)
         {
@@ -35,9 +34,8 @@ namespace Nekoyume.UI.Model
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             HasNotification = new ReactiveProperty<bool>(false);
-            GrindingCount = new ReactiveProperty<int>(0);
             Disabled = new ReactiveProperty<bool>(false);
-            GrindingCountEnabled = new Subject<bool>();
+            GrindingCountEnabled = new ReactiveProperty<bool>(false);
         }
 
         public InventoryItem(RuneState runeState)
@@ -51,9 +49,8 @@ namespace Nekoyume.UI.Model
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             HasNotification = new ReactiveProperty<bool>(false);
-            GrindingCount = new ReactiveProperty<int>(0);
             Disabled = new ReactiveProperty<bool>(false);
-            GrindingCountEnabled = new Subject<bool>();
+            GrindingCountEnabled = new ReactiveProperty<bool>(false);
         }
 
         public InventoryItem(FungibleAssetValue fungibleAssetValue)
@@ -68,9 +65,8 @@ namespace Nekoyume.UI.Model
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             HasNotification = new ReactiveProperty<bool>(false);
-            GrindingCount = new ReactiveProperty<int>(0);
             Disabled = new ReactiveProperty<bool>(false);
-            GrindingCountEnabled = new Subject<bool>();
+            GrindingCountEnabled = new ReactiveProperty<bool>(false);
         }
     }
 

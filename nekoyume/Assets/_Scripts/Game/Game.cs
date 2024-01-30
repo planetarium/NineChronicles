@@ -126,6 +126,8 @@ namespace Nekoyume.Game
 
         public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
 
+        public GuildServiceClient GuildServiceClient { get; private set; }
+
         public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -167,6 +169,10 @@ namespace Nekoyume.Game
 
         public string CurrentSocialEmail { get; private set; }
 
+        public string GuildBucketUrl => _guildBucketUrl;
+
+        public GuildServiceClient.GuildModel[] GuildModels { get; private set; } = { };
+
         private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
@@ -183,6 +189,8 @@ namespace Nekoyume.Game
 
         private Thread _headlessThread;
         private Thread _marketThread;
+
+        private string _guildBucketUrl;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -276,6 +284,27 @@ namespace Nekoyume.Game
             OnLoadCommandlineOptions();
 #endif
 
+            // NOTE: Initialize KeyManager after load CommandLineOptions.
+            if (!KeyManager.Instance.IsInitialized)
+            {
+                KeyManager.Instance.Initialize(
+                    keyStorePath: _commandLineOptions.KeyStorePath,
+                    encryptPassphraseFunc: Helper.Util.AesEncrypt,
+                    decryptPassphraseFunc: Helper.Util.AesDecrypt);
+            }
+
+            // NOTE: Try to sign in with the first registered key
+            //       if the CommandLineOptions.PrivateKey is empty in mobile.
+            if (Platform.IsMobilePlatform() &&
+                string.IsNullOrEmpty(_commandLineOptions.PrivateKey) &&
+                KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
+            {
+                Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty in mobile." +
+                                  " Set cached private key instead.");
+                _commandLineOptions.PrivateKey =
+                    KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
+            }
+
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -365,7 +394,7 @@ namespace Nekoyume.Game
                         "UI_OK",
                         true,
                         IconAndButtonSystem.SystemType.Information);
-                popup.ConfirmCallback = popup.CancelCallback =  () =>
+                popup.ConfirmCallback = popup.CancelCallback = () =>
                 {
 #if UNITY_ANDROID
                     Application.OpenURL(_commandLineOptions.GoogleMarketUrl);
@@ -381,20 +410,7 @@ namespace Nekoyume.Game
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-#if RUN_ON_MOBILE
-            // NOTE: Invoke LoginSystem.TryLoginWithLocalPpk() after MainCanvas initialized.
-            //       Because the _commandLineOptions.PrivateKey is empty when run on mobile.
-            if (string.IsNullOrEmpty(_commandLineOptions.PrivateKey))
-            {
-                var loginSystem = Widget.Find<LoginSystem>();
-                if (loginSystem.TryLoginWithLocalPpk())
-                {
-                    Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
-                              " Set local private key instead.");
-                    _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
-                }
-            }
-#endif
+
             var settingPopup = Widget.Find<SettingPopup>();
             settingPopup.UpdateSoundSettings();
 
@@ -643,6 +659,32 @@ namespace Nekoyume.Game
 
             var showNextEvt = new AirbridgeEvent("Intro_Start_ShowNext");
             AirbridgeUnity.TrackEvent(showNextEvt);
+
+            if (!string.IsNullOrEmpty(_commandLineOptions.GuildServiceUrl))
+            {
+                GuildServiceClient = new GuildServiceClient(_commandLineOptions.GuildServiceUrl);
+                if (!string.IsNullOrEmpty(_commandLineOptions.GuildIconBucket))
+                {
+                    _guildBucketUrl = _commandLineOptions.GuildIconBucket;
+                }
+
+                yield return GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
+                {
+                    GuildModels = guildModels;
+                    Debug.Log($"[Guild] GetGuildAsync success");
+                    {
+                        foreach (var guildModel in guildModels)
+                        {
+                            var url = $"{_guildBucketUrl}/{guildModel.Name}.png";
+                            Helper.Util.DownloadTexture(url).Forget();
+                        }
+                    }
+                }, onError: message =>
+                {
+                    // cannot convert into method group because the method might not exist in some builds.
+                    Debug.LogError(message);
+                }).AsUniTask().ToCoroutine();
+            }
 
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
@@ -1260,7 +1302,7 @@ namespace Nekoyume.Game
             Event.OnNestEnter.Invoke();
         }
 
-        #endregion
+#endregion
 
         protected override void OnApplicationQuit()
         {
@@ -1453,12 +1495,12 @@ namespace Nekoyume.Game
             var sw = new Stopwatch();
             if (Application.isBatchMode)
             {
-                loginSystem.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
+                loginSystem.Show(privateKeyString: _commandLineOptions.PrivateKey);
                 sw.Reset();
                 sw.Start();
                 yield return Agent.Initialize(
                     _commandLineOptions,
-                    loginSystem.GetPrivateKey(),
+                    KeyManager.Instance.SignedInPrivateKey,
                     callback);
                 sw.Stop();
                 Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
@@ -1469,10 +1511,10 @@ namespace Nekoyume.Game
             if (planetContext is null)
             {
                 Debug.Log("[Game] CoLogin()... PlanetContext is null.");
-                if (!loginSystem.Login)
+                if (!KeyManager.Instance.IsSignedIn)
                 {
-                    Debug.Log("[Game] CoLogin()... LoginSystem.Login is false");
-                    if (!loginSystem.TryLoginWithLocalPpk())
+                    Debug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
+                    if (!KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
                     {
                         Debug.Log("[Game] CoLogin()... LoginSystem.TryLoginWithLocalPpk() is false.");
                         introScreen.Show(
@@ -1481,14 +1523,14 @@ namespace Nekoyume.Game
                             planetContext: null);
                     }
 
-                    Debug.Log("[Game] CoLogin()... WaitUntil LoginPopup.Login.");
-                    yield return new WaitUntil(() => loginSystem.Login);
-                    Debug.Log("[Game] CoLogin()... WaitUntil LoginPopup.Login. Done.");
+                    Debug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
+                    yield return new WaitUntil(() => KeyManager.Instance.IsSignedIn);
+                    Debug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
 
                     // NOTE: Update CommandlineOptions.PrivateKey finally.
-                    _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
+                    _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
                     Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                              $" to ({loginSystem.GetPrivateKey().Address}).");
+                              $" to ({KeyManager.Instance.SignedInAddress}).");
                 }
 
                 dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
@@ -1496,7 +1538,7 @@ namespace Nekoyume.Game
                 sw.Start();
                 yield return Agent.Initialize(
                     _commandLineOptions,
-                    loginSystem.GetPrivateKey(),
+                    KeyManager.Instance.SignedInPrivateKey,
                     callback);
                 sw.Stop();
                 Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
@@ -1517,12 +1559,12 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Check already logged in or local passphrase.
-            if (loginSystem.Login ||
-                loginSystem.TryLoginWithLocalPpk())
+            if (KeyManager.Instance.IsSignedIn ||
+                KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
             {
-                Debug.Log("[Game] CoLogin()... LocalSystem.Login is true or" +
+                Debug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is true or" +
                           " LoginSystem.TryLoginWithLocalPpk() is true.");
-                var pk = loginSystem.GetPrivateKey();
+                var pk = KeyManager.Instance.SignedInPrivateKey;
 
                 // NOTE: Update CommandlineOptions.PrivateKey.
                 _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
@@ -1567,7 +1609,7 @@ namespace Nekoyume.Game
             if (planetContext.HasPledgedAccount)
             {
                 Debug.Log("[Game] CoLogin()... Has pledged account.");
-                var pk = loginSystem.GetPrivateKey();
+                var pk = KeyManager.Instance.SignedInPrivateKey;
                 introScreen.Show(
                     _commandLineOptions.KeyStorePath,
                     pk.ToHexWithZeroPaddings(),
@@ -1668,12 +1710,12 @@ namespace Nekoyume.Game
             if (agentAddrInPortal is null)
             {
                 Debug.Log("[Game] CoLogin()... AgentAddress in portal is null");
-                if (!loginSystem.Login)
+                if (!KeyManager.Instance.IsSignedIn)
                 {
-                    Debug.Log("[Game] CoLogin()... LoginSystem.Login is false");
+                    Debug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
                     loginSystem.Show(connectedAddress: null);
                     // NOTE: Don't set the autoGeneratedAgentAddress to agentAddr.
-                    var autoGeneratedAgentAddress = loginSystem.GetPrivateKey().Address;
+                    var autoGeneratedAgentAddress = KeyManager.Instance.SignedInAddress;
                     Debug.Log($"[Game] CoLogin()... auto generated agent address: {autoGeneratedAgentAddress}." +
                               " And Update planet account infos w/ empty agent address.");
                 }
@@ -1709,7 +1751,7 @@ namespace Nekoyume.Game
             if (planetContext.HasPledgedAccount)
             {
                 Debug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
-                introScreen.ShowPlanetAccountInfosPopup(planetContext, !loginSystem.Login);
+                introScreen.ShowPlanetAccountInfosPopup(planetContext, !KeyManager.Instance.IsSignedIn);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
                           " is not null.");
@@ -1728,9 +1770,9 @@ namespace Nekoyume.Game
                     //       - Portal has player's account.
                     //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
                     //         - Import the agent key.
-                    if (!loginSystem.Login)
+                    if (!KeyManager.Instance.IsSignedIn)
                     {
-                        // NOTE: QR code import sets loginSystem.Login to true.
+                        // NOTE: QR code import sets KeyManager.Instance.IsSignedIn to true.
                         introScreen.ShowForQrCodeGuide();
                     }
                 }
@@ -1745,9 +1787,9 @@ namespace Nekoyume.Game
                     //       - Portal has player's account.
                     //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
                     //         - Create a new agent in a new planet.
-                    if (!loginSystem.Login)
+                    if (!KeyManager.Instance.IsSignedIn)
                     {
-                        // NOTE: QR code import sets loginSystem.Login to true.
+                        // NOTE: QR code import sets KeyManager.Instance.IsSignedIn to true.
                         introScreen.ShowForQrCodeGuide();
                     }
                 }
@@ -1755,9 +1797,9 @@ namespace Nekoyume.Game
             else
             {
                 Debug.Log("[Game] CoLogin()... pledged account not exist.");
-                if (!loginSystem.Login)
+                if (!KeyManager.Instance.IsSignedIn)
                 {
-                    Debug.Log("[Game] CoLogin()... LoginSystem.Login is false");
+                    Debug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
 
                     // FIXME: 이 분기의 상황
                     //        - 포탈에는 에이전트 A의 주소가 있다.
@@ -1803,21 +1845,21 @@ namespace Nekoyume.Game
 
             CurrentSocialEmail = email == null ? string.Empty : email;
 
-            Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login.");
-            yield return new WaitUntil(() => loginSystem.Login);
-            Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login. Done.");
+            Debug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
+            yield return new WaitUntil(() => KeyManager.Instance.IsSignedIn);
+            Debug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
 
             // NOTE: Update CommandlineOptions.PrivateKey finally.
-            _commandLineOptions.PrivateKey = loginSystem.GetPrivateKey().ToHexWithZeroPaddings();
+            _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                      $" to ({loginSystem.GetPrivateKey().Address}).");
+                      $" to ({KeyManager.Instance.SignedInAddress}).");
 
             dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
             sw.Reset();
             sw.Start();
             yield return Agent.Initialize(
                 _commandLineOptions,
-                loginSystem.GetPrivateKey(),
+                KeyManager.Instance.SignedInPrivateKey,
                 callback);
             sw.Stop();
             dimmedLoadingScreen.Close();

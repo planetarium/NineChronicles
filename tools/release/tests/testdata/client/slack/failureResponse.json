@@ -1,0 +1,44 @@
+{
+    "ok": false,
+    "channel": "CTESTTESTX",
+    "ts": "1663908036.907059",
+    "message": {
+        "bot_id": "BCTESTTESTXW",
+        "type": "message",
+        "text": "test2",
+        "user": "UCTESTTESTXF",
+        "ts": "1663908036.907059",
+        "app_id": "ACTESTTESTXK",
+        "team": "TTESTTF",
+        "bot_profile": {
+            "id": "BCTESTTESTXW",
+            "app_id": "ACTESTTESTXK",
+            "name": "CTest bot",
+            "icons": {
+                "image_36": "https: //test.com/80588/img/bot_36.png",
+                "image_48": "https://test.com/80588/img/bot_48.png",
+                "image_72": "https://test.com/80588/img/service_72.png"
+            },
+            "deleted": false,
+            "updated": 1663907633,
+            "team_id": "TTESTTF"
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "n9BG",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "test2"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -17,6 +17,7 @@ using Random = UnityEngine.Random;
 namespace Nekoyume.UI
 {
     using System.Net.Http;
+    using Nekoyume.Blockchain;
     using UniRx;
     public class PortalConnect
     {
@@ -138,7 +139,7 @@ namespace Nekoyume.UI
                 _onPortalEnd = null;
             }
 
-            if (Widget.Find<LoginSystem>().KeyStore.ListIds().Any())
+            if (KeyManager.Instance.GetListIds().Any())
             {
                 return;
             }

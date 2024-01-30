@@ -414,11 +414,23 @@ namespace Nekoyume.UI
         private int UpgradeStat(int baseStat, int upgradeStat)
         {
             var result = baseStat * upgradeStat.NormalizeFromTenThousandths();
-            if(result > 0)
+            if (result > 0)
             {
                 result = Math.Max(1.0m, result);
             }
+
             return (int)result;
+        }
+
+        private long UpgradeStat(long baseStat, int upgradeStat)
+        {
+            var result = baseStat * upgradeStat.NormalizeFromTenThousandths();
+            if (result > 0)
+            {
+                result = Math.Max(1.0m, result);
+            }
+
+            return (long)result;
         }
 
         private void UpdateInformation(EnhancementInventoryItem baseModel,
@@ -465,7 +477,7 @@ namespace Nekoyume.UI
                 else
                 {
                     if(_matarialsScroller?.Position != 0)
-                        enhancementSelectedMaterialItemScroll.RawJumpto(0, 0);
+                        enhancementSelectedMaterialItemScroll.RawJumpTo(0, 0);
 
                     noneContainer.SetActive(true);
                 }

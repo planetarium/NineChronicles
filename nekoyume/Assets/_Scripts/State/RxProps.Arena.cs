@@ -242,7 +242,11 @@ namespace Nekoyume.State
             try
             {
                 var response = await Game.Game.instance.RpcGraphQLClient.QueryArenaInfoAsync(currentAvatarAddr);
-                arenaInfo = response.StateQuery.ArenaParticipants;
+                // Arrange my information so that it comes first when it's the same score.
+                arenaInfo = response.StateQuery.ArenaParticipants
+                    .OrderByDescending(participant => participant.Score)
+                    .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
+                    .ToList();
             }
             catch (Exception e)
             {
@@ -253,6 +257,27 @@ namespace Nekoyume.State
                     AvatarAddr = avatar.address,
                     NameWithHash = avatar.NameWithHash,
                 }));
+            }
+
+            string playerGuildName = null;
+            if (Game.Game.instance.GuildModels.Any())
+            {
+                var guildModels = Game.Game.instance.GuildModels;
+                foreach (var guildModel in guildModels)
+                {
+                    if (guildModel.AvatarModels.Any(a => a.AvatarAddress == currentAvatarAddr))
+                    {
+                        playerGuildName = guildModel.Name;
+                    }
+                    foreach (var info in arenaInfo)
+                    {
+                        var model = guildModel.AvatarModels.FirstOrDefault(a => a.AvatarAddress == info.AvatarAddr);
+                        if (model is not null)
+                        {
+                            info.GuildName = guildModel.Name;
+                        }
+                    }
+                }
             }
 
             var portraitId = Util.GetPortraitId(BattleType.Arena);
@@ -266,7 +291,8 @@ namespace Nekoyume.State
                 NameWithHash = currentAvatar.NameWithHash,
                 PortraitId = portraitId,
                 Cp = cp,
-                Level = currentAvatar.level
+                Level = currentAvatar.level,
+                GuildName = playerGuildName,
             };
 
             if (!arenaInfo.Any())

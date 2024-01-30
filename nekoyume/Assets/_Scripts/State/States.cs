@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace Nekoyume.State
 
         public AvatarState CurrentAvatarState { get; private set; }
 
-        public Dictionary<string, FungibleAssetValue> CurrentAvatarBalances { get; } = new();
+        public ConcurrentDictionary<string, FungibleAssetValue> CurrentAvatarBalances { get; } = new();
 
         public GameConfigState GameConfigState { get; private set; }
 
@@ -162,49 +163,41 @@ namespace Nekoyume.State
         public async UniTask InitAvatarBalancesAsync()
         {
             await UniTask.WhenAll(
-                InitRuneStoneBalance(),
-                InitSoulStoneBalance());
-        }
-
-        public async UniTask InitRuneStoneBalance()
-        {
-            var agent = Game.Game.instance.Agent;
-            var avatarAddress = CurrentAvatarState.address;
-            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-            await foreach (var row in runeSheet.Values)
-            {
-                CurrentAvatarBalances.Remove(row.Ticker);
-                var rune = RuneHelper.ToCurrency(row);
-                var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, rune);
-                CurrentAvatarBalances.Add(row.Ticker, fungibleAsset);
-            }
-        }
-
-        public async UniTask InitRuneStates()
-        {
-            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-            var avatarAddress = CurrentAvatarState.address;
-            var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
-            var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id))
-                .ToList();
-            var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(runeAddresses);
-            RuneStates.Clear();
-            foreach (var value in stateBulk.Values)
-            {
-                if (value is List list)
+                UniTask.Run(async () =>
                 {
-                    RuneStates.Add(new RuneState(list));
-                }
-            }
+                    var agent = Game.Game.instance.Agent;
+                    var avatarAddress = CurrentAvatarState.address;
+                    var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                    await foreach (var row in runeSheet.Values)
+                    {
+                        CurrentAvatarBalances.TryRemove(row.Ticker, out _);
+                        var rune = RuneHelper.ToCurrency(row);
+                        var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, rune);
+                        CurrentAvatarBalances.TryAdd(row.Ticker, fungibleAsset);
+                    }
+                }),
+                UniTask.Run(async () =>
+                {
+                    var agent = Game.Game.instance.Agent;
+                    var avatarAddress = CurrentAvatarState.address;
+                    var petSheet = Game.Game.instance.TableSheets.PetSheet;
+                    await foreach (var row in petSheet.Values)
+                    {
+                        CurrentAvatarBalances.TryRemove(row.SoulStoneTicker, out _);
+                        var soulStone = PetHelper.GetSoulstoneCurrency(row.SoulStoneTicker);
+                        var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, soulStone);
+                        CurrentAvatarBalances.TryAdd(soulStone.Ticker, fungibleAsset);
+                    }
+                }));
         }
 
-        public void UpdateRuneStates(List<RuneState> runeStates)
+        public void SetRuneStates(IEnumerable<RuneState> runeStates)
         {
             RuneStates.Clear();
             RuneStates.AddRange(runeStates);
         }
 
-        public void UpdateRuneState(RuneState runeState)
+        public void SetRuneState(RuneState runeState)
         {
             RuneStates.RemoveAll(rune => rune.RuneId == runeState.RuneId);
             RuneStates.Add(runeState);
@@ -321,20 +314,6 @@ namespace Nekoyume.State
             }
         }
 
-        public async UniTask InitSoulStoneBalance()
-        {
-            var agent = Game.Game.instance.Agent;
-            var avatarAddress = CurrentAvatarState.address;
-            var petSheet = Game.Game.instance.TableSheets.PetSheet;
-            await foreach (var row in petSheet.Values)
-            {
-                CurrentAvatarBalances.Remove(row.SoulStoneTicker);
-                var soulStone = PetHelper.GetSoulstoneCurrency(row.SoulStoneTicker);
-                var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, soulStone);
-                CurrentAvatarBalances.Add(soulStone.Ticker, fungibleAsset);
-            }
-        }
-
         private async UniTask InitItemSlotState(int slotIndex, AvatarState avatarState)
         {
             if (ItemSlotStates.ContainsKey(slotIndex))
@@ -406,23 +385,6 @@ namespace Nekoyume.State
             return itemSlotState;
         }
 
-        public async Task<FungibleAssetValue?> UpdateRuneStoneBalance(int runeId)
-        {
-            var avatarAddress = CurrentAvatarState.address;
-            var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
-            if (!costSheet.TryGetValue(runeId, out _))
-            {
-                return null;
-            }
-
-            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-            var runeRow = runeSheet.Values.First(x => x.Id == runeId);
-            var rune = RuneHelper.ToCurrency(runeRow);
-            var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-            CurrentAvatarBalances[runeRow.Ticker] = fungibleAsset;
-            return fungibleAsset;
-        }
-
         public async Task SetBalanceAsync(string ticker)
         {
             var currency = Currencies.GetMinterlessCurrency(ticker);
@@ -431,24 +393,9 @@ namespace Nekoyume.State
             CurrentAvatarBalances[ticker] = fungibleAsset;
         }
 
-        /// <summary>
-        /// For caching
-        /// </summary>
         public void SetCurrentAvatarBalance(FungibleAssetValue fav)
         {
-            var preFav = CurrentAvatarBalances[fav.Currency.Ticker];
-            var major = preFav.MajorUnit - fav.MajorUnit;
-            var miner = preFav.MinorUnit - fav.MinorUnit;
-            CurrentAvatarBalances[fav.Currency.Ticker] =
-                new FungibleAssetValue(fav.Currency, major, miner);
-        }
-
-        public void UpdateCurrentAvatarBalance(FungibleAssetValue fav)
-        {
-            var major = fav.MajorUnit;
-            var miner = fav.MinorUnit;
-            CurrentAvatarBalances[fav.Currency.Ticker] =
-                new FungibleAssetValue(fav.Currency, major, miner);
+            CurrentAvatarBalances[fav.Currency.Ticker] = fav;
         }
 
         public void SetStakeState(

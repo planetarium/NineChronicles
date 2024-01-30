@@ -395,6 +395,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<WorldClearPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
@@ -448,8 +450,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<SeasonPassPremiumPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<InviteFriendsPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<EventPopup>());
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());

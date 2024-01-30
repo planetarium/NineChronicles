@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.Helper;
     using UniRx;
     [RequireComponent(typeof(BaseItemView))]
     public class SweepItemView : MonoBehaviour
@@ -57,6 +58,7 @@ namespace Nekoyume.UI.Module
             baseItemView.LockObject.SetActive(false);
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
         }
     }
 }

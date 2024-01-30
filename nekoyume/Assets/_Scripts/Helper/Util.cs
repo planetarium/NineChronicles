@@ -615,5 +615,23 @@ namespace Nekoyume.Helper
             CachedDownloadTexturesRaw.TryAdd(url, data);
             return data;
         }
+
+        public static Sprite GetTexture(string url)
+        {
+            return CachedDownloadTextures.GetValueOrDefault(url);
+        }
+
+
+        public static void SetActiveSafe(this GameObject obj, bool active)
+        {
+            if (obj != null)
+            {
+                obj.SetActive(active);
+            }
+            else
+            {
+                Debug.LogWarning("[SetActiveSafe] fail");
+            }
+        }
     }
 }

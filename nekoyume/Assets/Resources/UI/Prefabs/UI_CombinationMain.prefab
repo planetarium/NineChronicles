@@ -958,9 +958,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   season: 0
-  times:
-  - beginDateTime: 2023-11-22T00:00:00
-    endDateTime: 2023-12-19T23:59:00
+  times: []
+  enableKey: UI_CombinationMain_UpgradeButton_EventMark
+  timeText: {fileID: 0}
+  bannerImage: {fileID: 0}
+  linkButton: {fileID: 0}
 --- !u!1 &1694452056110715942
 GameObject:
   m_ObjectHideFlags: 0
@@ -7461,6 +7463,36 @@ PrefabInstance:
       propertyPath: l10nKey
       value: UI_MAIN_MENU_COMBINATION
       objectReference: {fileID: 0}
+    - target: {fileID: 3679167110784996718, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679167110784996718, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679167110784996718, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679167110784996718, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679167110784996718, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3836353999784113033, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: enableKey
+      value: UI_CombinationMain_BackButton_Banner
+      objectReference: {fileID: 0}
     - target: {fileID: 4157463649150398291, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -7575,6 +7607,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8422040222294485996, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8576535366293533755, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -7703,28 +7740,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29c5c99555c2b5f40a6f757cea5554b3, type: 3}
---- !u!1 &509049999076541628 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4709182046330643181, guid: 29c5c99555c2b5f40a6f757cea5554b3,
-    type: 3}
-  m_PrefabInstance: {fileID: 5065109598549157457}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7342384311579183804
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 509049999076541628}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  season: 0
-  times:
-  - beginDateTime: 2023-11-22T00:00:00
-    endDateTime: 2023-12-19T23:59:00
 --- !u!114 &3174719986751943182 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7657312722897278047, guid: 29c5c99555c2b5f40a6f757cea5554b3,

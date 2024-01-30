@@ -14,17 +14,31 @@ namespace Nekoyume.UI
         private const string LastReadingDayKey = "SEASON_PASS_NEW_POPUP_LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 
+        private string LastReadingDayBySeasonId
+        {
+            get
+            {
+                string seasonId = string.Empty;
+                if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+                {
+                    seasonId = Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData.Id.ToString();
+                }
+                return $"{LastReadingDayKey}{seasonId}";
+            }
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
+            
+            PlayerPrefs.SetString(LastReadingDayBySeasonId, DateTime.Today.ToString(DateTimeFormat));
         }
 
         public bool HasUnread
         {
             get
             {
-                return !PlayerPrefs.HasKey(LastReadingDayKey);
+                return !PlayerPrefs.HasKey(LastReadingDayBySeasonId);
             }
         }
 

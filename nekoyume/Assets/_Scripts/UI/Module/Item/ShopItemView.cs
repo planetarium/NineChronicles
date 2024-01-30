@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Nekoyume.Helper;
@@ -40,6 +40,7 @@ namespace Nekoyume.UI.Module
             baseItemView.DimObject.SetActive(false);
             baseItemView.EquippedObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
 
             if (model.ItemBase is not null)
             {

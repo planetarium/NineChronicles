@@ -248,12 +248,33 @@ namespace Nekoyume.UI
         {
             _IsAlreadyOut = true;
             AudioController.PlayClick();
-            if (SharedModel.IsClear)
+
+            if (SharedModel.IsClear && SharedModel.StageType != StageType.EventDungeon)
             {
                 yield return CoDialog(SharedModel.StageID);
             }
 
-            GoToMain();
+            var worldClear = false;
+            if (States.Instance.CurrentAvatarState.worldInformation
+                .TryGetLastClearedStageId(out var lastClearedStageId))
+            {
+                if (SharedModel.IsClear
+                    && SharedModel.IsEndStage
+                    && lastClearedStageId == SharedModel.StageID
+                    && !Find<WorldMap>().SharedViewModel.UnlockedWorldIds.Contains(SharedModel.WorldID + 1))
+                {
+                    worldClear = true;
+                }
+            }
+
+            if (worldClear)
+            {
+                var worldClearPopup = Find<WorldClearPopup>();
+                worldClearPopup.Show(SharedModel.WorldID, SharedModel.WorldName);
+                yield return new WaitUntil(() => !worldClearPopup.Displaying);
+            }
+
+            GoToMain(worldClear);
         }
 
         private void OnClickStage()
@@ -359,11 +380,6 @@ namespace Nekoyume.UI
 
         private IEnumerator CoDialog(int stageId)
         {
-            if (SharedModel.StageType == StageType.EventDungeon)
-            {
-                yield break;
-            }
-
             var stageDialogs = TableSheets.Instance.StageDialogSheet
                 .OrderedList
                 .Where(i => i.StageId == stageId)
@@ -616,8 +632,8 @@ namespace Nekoyume.UI
             {
                 if (SharedModel.IsClear)
                 {
-                    stagePreparationButton.gameObject.SetActive(canExit);
-                    stagePreparationButton.interactable = canExit;
+                    stagePreparationButton.gameObject.SetActive(canExit && !SharedModel.IsEndStage);
+                    stagePreparationButton.interactable = canExit && !SharedModel.IsEndStage;
                 }
                 else
                 {
@@ -677,6 +693,7 @@ namespace Nekoyume.UI
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
 
             yield return new WaitUntil(() => CanClose);
+            var dialog = Find<DialogPopup>();
 
             var floatTime = (float)limitSeconds;
             var floatTimeMinusOne = limitSeconds - 1f;
@@ -688,6 +705,11 @@ namespace Nekoyume.UI
                 if (floatTimeMinusOne < floatTime)
                 {
                     continue;
+                }
+
+                if (dialog.gameObject.activeSelf)
+                {
+                    yield break;
                 }
 
                 limitSeconds--;
@@ -886,7 +908,7 @@ namespace Nekoyume.UI
             Close();
         }
 
-        private void GoToMain()
+        private void GoToMain(bool worldClear)
         {
             var props = new Dictionary<string, Value>()
             {
@@ -906,24 +928,17 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
-            if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
-                    out var lastClearedStageId))
+            if (worldClear)
             {
-                if (SharedModel.IsClear
-                    && SharedModel.IsEndStage
-                    && lastClearedStageId == SharedModel.StageID
-                    && !Find<WorldMap>().SharedViewModel.UnlockedWorldIds.Contains(SharedModel.WorldID + 1))
+                var worldMapLoading = Find<LoadingScreen>();
+                worldMapLoading.Show(LoadingScreen.LoadingType.Adventure);
+                Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
                 {
-                    var worldMapLoading = Find<LoadingScreen>();
-                    worldMapLoading.Show();
-                    Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
-                    {
-                        Find<HeaderMenuStatic>().Show();
-                        Find<Menu>().Close();
-                        Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
-                        worldMapLoading.Close(true);
-                    });
-                }
+                    Find<HeaderMenuStatic>().Show();
+                    Find<Menu>().Close();
+                    Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
+                    worldMapLoading.Close(true);
+                });
             }
         }
 
@@ -1088,7 +1103,14 @@ namespace Nekoyume.UI
                     Debug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
                 }
 
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                if (SharedModel.StageType == StageType.EventDungeon)
+                {
+                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.EventDungeonCourageAmount * playCount}";
+                }
+                else
+                {
+                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                }
             }
             else
             {

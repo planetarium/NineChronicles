@@ -167,7 +167,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private void UpdateGrade(int bossId, int highScore)
+        private void UpdateGrade(int bossId, long highScore)
         {
             if (_gradeObject != null)
             {

@@ -58,6 +58,7 @@ namespace Nekoyume.UI.Module
                 ItemView.GrindingCountObject.SetActive((false));
                 ItemView.LevelLimitObject.SetActive(false);
                 ItemView.RewardReceived.SetActive(false);
+                ItemView.RuneNotificationObj.SetActiveSafe(false);
 
                 disposable?.Dispose();
 

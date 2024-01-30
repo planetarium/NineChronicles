@@ -336,8 +336,6 @@ namespace Nekoyume.UI
             var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var firstOpenCombinationKey
                 = string.Format(FirstOpenCombinationKeyFormat, addressHex);
-            var firstOpenShopKey
-                = string.Format(FirstOpenShopKeyFormat, addressHex);
             var firstOpenQuestKey
                 = string.Format(FirstOpenQuestKeyFormat, addressHex);
             var firstOpenMimisbrunnrKey
@@ -349,7 +347,7 @@ namespace Nekoyume.UI
                   Craft.SharedModel.HasNotification)) || Summon.HasNotification);
             shopExclamationMark.SetActive(
                 btnShop.IsUnlocked
-                && PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
+                && ShopNoti(addressHex));
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
@@ -358,6 +356,18 @@ namespace Nekoyume.UI
                 (btnQuest.IsUnlocked
                  && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0)
                 || hasNotificationInWorldMap);
+        }
+
+        private bool ShopNoti(string addressHex)
+        {
+            var firstOpenShopKey
+                = string.Format(FirstOpenShopKeyFormat, addressHex);
+#if UNITY_ANDROID || UNITY_IOS
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
+            return PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0 || iapStoreManager.ExistAvailableFreeProduct();
+#else
+            return PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0;
+#endif
         }
 
         private void HideButtons()

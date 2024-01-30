@@ -114,3 +114,6 @@ nekoyume/Assets/StreamingAssets/9c_dev*
 # fastlane
 **/fastlane/google-fastlane.json
 **/fastlane/report.xml
+
+# For codesigner
+tmp/*

@@ -32,7 +32,6 @@ namespace Nekoyume.UI.Module
         {
             var id = Util.GetPortraitId(BattleType.Adventure);
             SetByFullCostumeOrArmorId(id);
-            SetByCharacterId(player.Model.RowData.Id);
         }
 
         public virtual void SetByCharacterId(int characterId)

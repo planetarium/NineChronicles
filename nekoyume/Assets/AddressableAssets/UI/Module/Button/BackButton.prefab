@@ -114,10 +114,10 @@ GameObject:
   - component: {fileID: 6607016362468311025}
   - component: {fileID: 4667774521967954348}
   - component: {fileID: 8507292402714764923}
-  - component: {fileID: 496472890212469484}
-  - component: {fileID: 7140203692251810205}
   - component: {fileID: 4622884437606572034}
+  - component: {fileID: 5899911771320810220}
   - component: {fileID: 5177212872937828796}
+  - component: {fileID: 3836353999784113033}
   m_Layer: 5
   m_Name: Banner
   m_TagString: Untagged
@@ -193,7 +193,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 7140203692251810205}
+  m_TargetGraphic: {fileID: 5899911771320810220}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -217,61 +217,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &496472890212469484
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4709182046330643181}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6a12f91d31d4096b9b6487eea079b2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  image: {fileID: 7140203692251810205}
-  button: {fileID: 4667774521967954348}
-  selectObject: {fileID: 0}
-  notificationObject: {fileID: 0}
-  defaultItem:
-    bannerSprite: {fileID: 21300000, guid: 7eca02d9cf7702d4bb7762596e82c20d, type: 3}
-    popupSprite: {fileID: 21300000, guid: b7b2314367fbf4345b343689d4882ec0, type: 3}
-    url: https://medium.com/nine-chronicles/9c-m-awaken-your-potential-aura-upgrade-event-d3972b475f31
-  krItem:
-    bannerSprite: {fileID: 21300000, guid: 07600ccb89d7e9d46ba098921732e7b6, type: 3}
-    popupSprite: {fileID: 21300000, guid: f6466a2403f064844a4fe09b4ae80eec, type: 3}
-    url: https://medium.com/nine-chronicles/9c-m-awaken-your-potential-aura-upgrade-event-d3972b475f31
-  jpItem:
-    bannerSprite: {fileID: 21300000, guid: bd9f994352b7e484495591ed194f1baa, type: 3}
-    popupSprite: {fileID: 21300000, guid: 9ae24865ae57b1346b0a1a8cd045a427, type: 3}
-    url: https://medium.com/nine-chronicles/9c-m-awaken-your-potential-aura-upgrade-event-d3972b475f31
---- !u!114 &7140203692251810205
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4709182046330643181}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 7eca02d9cf7702d4bb7762596e82c20d, type: 3}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
 --- !u!114 &4622884437606572034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,6 +243,36 @@ MonoBehaviour:
     loop: 0
     loopDelay: 0
     updateMode: 0
+--- !u!114 &5899911771320810220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4709182046330643181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 7eca02d9cf7702d4bb7762596e82c20d, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!95 &5177212872937828796
 Animator:
   serializedVersion: 4
@@ -318,6 +293,24 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3836353999784113033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4709182046330643181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  season: 0
+  times: []
+  enableKey: 
+  timeText: {fileID: 0}
+  bannerImage: {fileID: 5899911771320810220}
+  linkButton: {fileID: 4667774521967954348}
 --- !u!1 &5005903512991950371
 GameObject:
   m_ObjectHideFlags: 0

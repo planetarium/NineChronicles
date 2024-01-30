@@ -8,6 +8,7 @@ using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using EventType = Nekoyume.EnumType.EventType;
 
 namespace Nekoyume.UI.Module
 {
@@ -26,25 +27,28 @@ namespace Nekoyume.UI.Module
         {
             public readonly StageType stageType;
             public readonly int stageId;
-            public readonly bool hasBoss;
+            public readonly BossType bossType;
+            public readonly EventType eventType;
             public readonly ReactiveProperty<State> State = new();
             public readonly ReactiveProperty<bool> Selected = new();
             public readonly ReactiveProperty<bool> HasNotification = new(false);
 
             public ViewModel(StageType stageType, State state)
-                : this(stageType, -1, false, state)
+                : this(stageType, -1, BossType.None, EventType.Default, state)
             {
             }
 
             public ViewModel(
                 StageType stageType,
                 int stageId,
-                bool hasBoss,
+                BossType bossType,
+                EventType eventType,
                 State state)
             {
                 this.stageType = stageType;
                 this.stageId = stageId;
-                this.hasBoss = hasBoss;
+                this.bossType = bossType;
+                this.eventType = eventType;
                 State.Value = state;
             }
 
@@ -131,7 +135,7 @@ namespace Nekoyume.UI.Module
             SharedViewModel.State.Subscribe(SubscribeState).AddTo(_disposablesForModel);
             SharedViewModel.Selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
             SharedViewModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(_disposablesForModel);
-            Set(SharedViewModel.hasBoss);
+            Set(SharedViewModel.bossType, SharedViewModel.eventType);
 
             buttonText.text = StageInformation.GetStageIdString(
                 SharedViewModel.stageType,
@@ -210,10 +214,13 @@ namespace Nekoyume.UI.Module
                 .SetLoops(-1, LoopType.Yoyo);
         }
 
-        private void Set(bool isBoss)
+        private void Set(BossType bossType, EventType eventType)
         {
-            var icon = EventManager.GetEventInfo().StageIcon;
-            var offset = EventManager.GetEventInfo().StageIconOffset;
+            var stageIcon = WorldMapDataHelper.GetStageIcon(bossType, eventType);
+            var icon = stageIcon.icon.sprite;
+            var offset = stageIcon.icon.offset;
+            var selectedColor = stageIcon.selectedColor;
+
             normalImage.sprite = icon;
             normalImage.SetNativeSize();
             normalImage.rectTransform.anchoredPosition = offset;
@@ -221,16 +228,23 @@ namespace Nekoyume.UI.Module
             disabledImage.sprite = icon;
             disabledImage.SetNativeSize();
             disabledImage.rectTransform.anchoredPosition = offset;
+
             selectedImage.sprite = icon;
             selectedImage.SetNativeSize();
             selectedImage.rectTransform.anchoredPosition = offset;
-            bossImage.enabled = isBoss;
+            selectedImage.color = selectedColor;
+
+            var bossMark = WorldMapDataHelper.GetBossMarkIcon(bossType);
+            var hasBossMark = bossMark != null;
+
             ResetScale();
-            if (isBoss)
+            bossImage.enabled = hasBossMark;
+            if (hasBossMark)
             {
-                normalImage.transform.localScale *= bossScale;
-                disabledImage.transform.localScale *= bossScale;
-                selectedImage.transform.localScale *= bossScale;
+                SetScale(bossScale);
+                bossImage.sprite = bossMark.sprite;
+                bossImage.SetNativeSize();
+                bossImage.rectTransform.anchoredPosition = bossMark.offset;
             }
         }
 
@@ -239,6 +253,14 @@ namespace Nekoyume.UI.Module
             normalImage.transform.localScale = _normalImageScale;
             disabledImage.transform.localScale = _disabledImageScale;
             selectedImage.transform.localScale = _selectedImageScale;
+        }
+
+        private void SetScale(float scale)
+        {
+            Vector3 scaleVector = Vector2.one * scale;
+            normalImage.transform.localScale = scaleVector;
+            disabledImage.transform.localScale = scaleVector;
+            selectedImage.transform.localScale = scaleVector;
         }
     }
 }

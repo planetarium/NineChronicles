@@ -39,6 +39,7 @@ namespace Nekoyume.UI.Scroller
             view.LevelLimitObject.SetActive(false);
             view.TradableObject.SetActive(false);
             view.GrindingCountObject.SetActive(false);
+            view.RuneNotificationObj.SetActiveSafe(false);
 
             if (RuneFrontHelper.TryGetRuneIcon(viewModel.SheetData.Id, out var icon))
             {
@@ -77,7 +78,7 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe(Context.OnClick.OnNext)
                 .AddTo(_disposables);
 
-            view.RuneNotificationObj.SetActive(viewModel.item.HasNotification);
+            view.RuneNotificationObj.SetActiveSafe(viewModel.item.HasNotification);
 
             viewModel.item.IsSelected.Subscribe(b => view.RuneSelectMove.SetActive(b)).AddTo(_disposables);
             viewModel.item.IsSelected.Value = false;

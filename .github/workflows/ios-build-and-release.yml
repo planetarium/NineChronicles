@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - development
       - release/*
       - fast-track/*
     tags: ["*"]
@@ -39,7 +38,8 @@ env:
 jobs:
   build:
     name: Build for ${{ matrix.targetPlatform }}
-    runs-on: ubuntu-latest
+    runs-on: 
+      labels: ["linux", "8cores"]
     defaults:
         run:
           shell: bash
@@ -99,7 +99,7 @@ jobs:
           sudo swapoff -a
           sudo rm -f /swapfile
           sudo apt clean
-          docker rmi $(docker images -q)
+          docker rmi $(docker image ls -aq)
           df -h
           
       - uses: game-ci/unity-builder@v2

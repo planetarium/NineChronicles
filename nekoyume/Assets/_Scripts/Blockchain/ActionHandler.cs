@@ -45,7 +45,7 @@ namespace Nekoyume.Blockchain
         protected static bool ValidateEvaluationForCurrentAgent<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
-            return !(States.Instance.AgentState is null) &&
+            return States.Instance?.AgentState is not null &&
                 evaluation.Signer.Equals(States.Instance.AgentState.address);
         }
 
@@ -59,10 +59,6 @@ namespace Nekoyume.Blockchain
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
-            if (!evaluation.Signer.Equals(agentAddress))
-            {
-                return null;
-            }
 
             return StateGetter.GetGoldBalanceState(
                 agentAddress,
@@ -319,15 +315,10 @@ namespace Nekoyume.Blockchain
 
         protected static void UpdateCrystalBalance<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            if (!evaluation.Signer.Equals(States.Instance.AgentState.address))
-            {
-                return;
-            }
-
             try
             {
                 var crystal = StateGetter.GetBalance(
-                    evaluation.Signer,
+                    States.Instance.AgentState.address,
                     CrystalCalculator.CRYSTAL,
                     evaluation.OutputState);
                 States.Instance.SetCrystalBalance(crystal);
@@ -449,6 +440,21 @@ namespace Nekoyume.Blockchain
                 battleType,
                 evaluation.OutputState);
             States.Instance.UpdateRuneSlotState(runeSlotState);
+        }
+
+        protected static void UpdateCurrentAvatarRuneStoneBalance<T>(
+            ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var runeSheet = TableSheets.Instance.RuneSheet;
+            foreach (var row in runeSheet.Values)
+            {
+                States.Instance.SetCurrentAvatarBalance(
+                    StateGetter.GetBalance(
+                        avatarAddress,
+                        RuneHelper.ToCurrency(row),
+                        evaluation.OutputState));
+            }
         }
     }
 }

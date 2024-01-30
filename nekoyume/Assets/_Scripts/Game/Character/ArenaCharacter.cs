@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Character
         private SpeechBubble _speechBubble;
         private Root _root;
         private bool _forceStop;
-        private int _currentHp;
+        private long _currentHp;
         private readonly List<Costume> _costumes = new List<Costume>();
         private readonly List<Equipment> _equipments = new List<Equipment>();
         private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
@@ -286,7 +286,7 @@ namespace Nekoyume.Game.Character
             }
 
             var value = _currentHp - dmg;
-            _currentHp = Mathf.Clamp(value, 0, CharacterModel.HP);
+            _currentHp = Math.Clamp(value, 0, CharacterModel.HP);
 
             UpdateStatusUI();
             PopUpDmg(position, force, info, isConsiderElementalType);

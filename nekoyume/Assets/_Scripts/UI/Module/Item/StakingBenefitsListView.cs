@@ -9,13 +9,13 @@ namespace Nekoyume.UI.Module
     {
         public class Model
         {
-            public int BenefitRate;
             public long RequiredDeposit;
             public long HourGlassInterest;
             public long ApPotionInterest;
             public long RuneInterest;
             public long CrystalInterest;
             public long GoldenPowderInterest;
+            public long GoldenMeatInterest;
             public int ArenaRewardBuff;
             public int CrystalBuff;
             public int ActionPointBuff;
@@ -25,13 +25,13 @@ namespace Nekoyume.UI.Module
         private class TextList
         {
             public Image iconImage;
-            public TextMeshProUGUI benefitRateText;
             public TextMeshProUGUI requiredDepositText;
             public TextMeshProUGUI hourGlassInterestText;
             public TextMeshProUGUI apPotionInterestText;
             public TextMeshProUGUI runeInterestText;
             public TextMeshProUGUI crystalInterestText;
             public TextMeshProUGUI goldenPowderInterestText;
+            public TextMeshProUGUI goldenMeatInterestText;
             public TextMeshProUGUI arenaTicketBuffText;
             public TextMeshProUGUI crystalBuffText;
             public TextMeshProUGUI actionPointBuffText;
@@ -52,6 +52,7 @@ namespace Nekoyume.UI.Module
         private const string RuneInterestFormat = "<Style=G9>x{0}";
         private const string CrystalInterestFormat = "<Style=G1>x{0}";
         private const string GoldenPowderInterestFormat = "<Style=G11>x{0}";
+        private const string GoldenMeatInterestFormat = "<Style=G10>x{0}";
 
         private const string ArenaTicketBuffFormat = "<Style=G0>{0}%";
         private const string CrystalBuffFormat = "<Style=G1>{0}%";
@@ -63,7 +64,6 @@ namespace Nekoyume.UI.Module
             foreach (var textList in textLists)
             {
                 textList.iconImage.sprite = levelIcon;
-                textList.benefitRateText.text = $"{viewModel.BenefitRate}%";
                 textList.requiredDepositText.text =
                     string.Format(RequiredDepositFormat, viewModel.RequiredDeposit);
                 textList.hourGlassInterestText.text =
@@ -79,6 +79,9 @@ namespace Nekoyume.UI.Module
                 textList.goldenPowderInterestText.text = viewModel.GoldenPowderInterest == 0
                     ? "-"
                     : string.Format(GoldenPowderInterestFormat, viewModel.GoldenPowderInterest);
+                textList.goldenMeatInterestText.text = viewModel.GoldenMeatInterest == 0
+                    ? "-"
+                    : string.Format(GoldenMeatInterestFormat, viewModel.GoldenMeatInterest);
                 textList.arenaTicketBuffText.text = viewModel.ArenaRewardBuff == 0
                     ? "-"
                     : string.Format(ArenaTicketBuffFormat, viewModel.ArenaRewardBuff);

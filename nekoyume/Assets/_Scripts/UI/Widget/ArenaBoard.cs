@@ -223,6 +223,7 @@ namespace Nekoyume.UI
                     interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                     canFight = true,
                     address = e.AvatarAddr.ToHex(),
+                    guildName = e.GuildName,
                 }).ToList();
             for (var i = 0; i < _boundedData.Count; i++)
             {

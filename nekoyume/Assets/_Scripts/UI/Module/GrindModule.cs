@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Module
         private StakingBonus stakingBonus;
 
         [SerializeField]
-        private List<GrindingItemSlot> itemSlots;
+        private GrindingItemSlotScroll scroll;
 
         // TODO: It is used when NCG can be obtained through grinding later.
         [SerializeField]
@@ -57,6 +57,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private CanvasGroup canvasGroup;
+
+        [SerializeField]
+        private ConditionalButton removeAllButton;
 
         [SerializeField]
         private Animator animator;
@@ -88,7 +91,7 @@ namespace Nekoyume.UI.Module
                 (ItemType.Costume, _ => true),
             };
 
-        private const int LimitGrindingCount = 10;
+        private const int LimitGrindingCount = 50;
         private static readonly BigInteger MaximumCrystal = 100_000;
         private static readonly BigInteger MiddleCrystal = 1_000;
 
@@ -96,17 +99,12 @@ namespace Nekoyume.UI.Module
         private static readonly int FirstRegister = Animator.StringToHash("FirstRegister");
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
-        private static readonly int ShowAnimationHash = Animator.StringToHash("Show");
 
         private bool CanGrind => _selectedItemsForGrind.Any();
 
         public void Show(bool reverseInventoryOrder = false)
         {
             gameObject.SetActive(true);
-            if (animator)
-            {
-                animator.Play(ShowAnimationHash);
-            }
 
             Initialize();
             Subscribe();
@@ -116,7 +114,7 @@ namespace Nekoyume.UI.Module
                 OnUpdateInventory,
                 DimConditionPredicateList,
                 reverseInventoryOrder);
-            grindButton.Interactable = false;
+            UpdateScroll();
             UpdateStakingBonusObject(States.Instance.StakingLevel);
             crystalRewardText.text = string.Empty;
         }
@@ -124,6 +122,7 @@ namespace Nekoyume.UI.Module
         private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
+            _selectedItemsForGrind.Clear();
         }
 
         private void Initialize()
@@ -135,6 +134,15 @@ namespace Nekoyume.UI.Module
 
             grindButton.SetCost(CostType.ActionPoint, 5);
             grindButton.SetCondition(() => CanGrind);
+            removeAllButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                foreach (var item in _selectedItemsForGrind.ToList())
+                {
+                    item.GrindingCountEnabled.SetValueAndForceNotify(false);
+                }
+
+                _selectedItemsForGrind.Clear();
+            }).AddTo(gameObject);
             stakingBonus.SetBonusTextFunc(level =>
             {
                 if (level > 0 &&
@@ -147,20 +155,15 @@ namespace Nekoyume.UI.Module
                 return "+0%";
             });
 
-            _isInitialized = true;
-        }
-
-        private void Subscribe()
-        {
             grindButton.OnClickDisabledSubject.Subscribe(_ =>
             {
-                var l10nkey = _selectedItemsForGrind.Any()
-                    ? "ERROR_NOT_GRINDING_EQUIPPED"
-                    : "GRIND_UI_SLOTNOTICE";
+                var l10nkey = scroll.DataCount > 0
+                    ? "GRIND_UI_SLOTNOTICE"
+                    : "ERROR_NOT_GRINDING_EQUIPPED";
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize(l10nkey),
                     NotificationCell.NotificationType.Notification);
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
             grindButton.OnClickSubject.Subscribe(state =>
             {
                 switch (state)
@@ -178,51 +181,40 @@ namespace Nekoyume.UI.Module
                     default:
                         throw new ArgumentOutOfRangeException(nameof(state), state, null);
                 }
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
-                item.Value.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrind.Count);
-                itemSlots[item.Index].UpdateSlot(item.Value);
-                item.Value.GrindingCountEnabled.OnNext(true);
+                item.Value.GrindingCountEnabled.SetValueAndForceNotify(true);
 
                 if (_selectedItemsForGrind.Count == 1 && animator)
                 {
                     animator.SetTrigger(FirstRegister);
                 }
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
             _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
             {
-                var listSize = _selectedItemsForGrind.Count;
-                for (int i = item.Index; i < LimitGrindingCount; i++)
-                {
-                    if (i < listSize)
-                    {
-                        _selectedItemsForGrind[i].GrindingCount.SetValueAndForceNotify(i + 1);
-                        itemSlots[i].UpdateSlot(_selectedItemsForGrind[i]);
-                    }
-                    else
-                    {
-                        itemSlots[i].UpdateSlot();
-                    }
-                }
+                item.Value.GrindingCountEnabled.SetValueAndForceNotify(false);
+            }).AddTo(gameObject);
 
-                item.Value.GrindingCount.SetValueAndForceNotify(0);
-
+            _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
+            {
+                UpdateScroll();
                 if (_selectedItemsForGrind.Count == 0)
                 {
                     animator.SetTrigger(EmptySlot);
                 }
-            }).AddTo(_disposables);
-            _selectedItemsForGrind.ObserveReset()
-                .Subscribe(_ => { itemSlots.ForEach(slot => slot.ResetSlot()); })
-                .AddTo(_disposables);
-            _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
-            {
-                grindButton.Interactable = CanGrind;
-                UpdateCrystalReward();
-            }).AddTo(_disposables);
+            }).AddTo(gameObject);
 
+            scroll.OnClick
+                .Subscribe(item => _selectedItemsForGrind.Remove(item))
+                .AddTo(gameObject);
+
+            _isInitialized = true;
+        }
+
+        private void Subscribe()
+        {
             ReactiveAvatarState.ActionPoint
                 .Subscribe(_ => grindButton.Interactable = CanGrind)
                 .AddTo(_disposables);
@@ -230,19 +222,15 @@ namespace Nekoyume.UI.Module
             StakingSubject.Level
                 .Subscribe(UpdateStakingBonusObject)
                 .AddTo(_disposables);
-
-            itemSlots.ForEach(slot =>
-                slot.OnClick.Subscribe(_ => { _selectedItemsForGrind.Remove(slot.AssignedItem); }).AddTo(_disposables));
         }
 
         private void OnClickItem(InventoryItem model)
         {
             var isRegister = !_selectedItemsForGrind.Contains(model);
+            var inLimit = _selectedItemsForGrind.Count < LimitGrindingCount;
             var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
             var isEquipped = model.Equipped.Value;
-            var isValid =
-                _selectedItemsForGrind.Count < 10 && isEquipment
-                || !isRegister;
+            var isValid = inLimit && isEquipment || !isRegister;
 
             if (isValid)
             {
@@ -262,9 +250,8 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                const string blockMessage = "ERROR_NOT_GRINDING_10OVER";
                 OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize(blockMessage),
+                    L10nManager.Localize("ERROR_NOT_GRINDING_OVER", LimitGrindingCount),
                     NotificationCell.NotificationType.Alert);
             }
 
@@ -273,25 +260,14 @@ namespace Nekoyume.UI.Module
 
         private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)
         {
-            var selectedItemList = _selectedItemsForGrind.OrderBy(i => i.GrindingCount.Value).ToList();
+            var selectedItemList = _selectedItemsForGrind.ToList();
             _selectedItemsForGrind.Clear();
-            var notExistItemCount = 0;
-            var slotIndex = 0;
             foreach (var inventoryItem in selectedItemList)
             {
                 if (inventory.TryGetModel(inventoryItem.ItemBase, out var newItem))
                 {
-                    newItem.GrindingCount.SetValueAndForceNotify(
-                        inventoryItem.GrindingCount.Value - notExistItemCount);
-                    itemSlots[slotIndex - notExistItemCount].UpdateSlot(inventoryItem);
                     _selectedItemsForGrind.Add(newItem);
                 }
-                else
-                {
-                    notExistItemCount++;
-                }
-
-                slotIndex++;
             }
 
             grindButton.Interactable = CanGrind;
@@ -333,6 +309,20 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        private void UpdateScroll()
+        {
+            var count = _selectedItemsForGrind.Count;
+            grindButton.Interactable = CanGrind;
+            removeAllButton.Interactable = count > 1;
+            scroll.UpdateData(_selectedItemsForGrind);
+            scroll.RawJumpTo(count - 1);
+
+            if (_selectedItemsForGrind.Any())
+            {
+                UpdateCrystalReward();
+            }
+        }
+
         private void UpdateStakingBonusObject(int level)
         {
             stakingBonus.OnUpdateStakingLevel(level);
@@ -354,16 +344,9 @@ namespace Nekoyume.UI.Module
                 States.Instance.StakingLevel);
             if (_cachedGrindingRewardCrystal.MajorUnit > 0)
             {
-                if (prevCrystalReward > _cachedGrindingRewardCrystal.MajorUnit)
-                {
-                    crystalRewardText.text = _cachedGrindingRewardCrystal.GetQuantityString();
-                }
-                else
-                {
-                    crystalRewardTweener.Play(
+                crystalRewardTweener.Play(
                         (long) prevCrystalReward,
                         (long) _cachedGrindingRewardCrystal.MajorUnit);
-                }
             }
             else
             {
