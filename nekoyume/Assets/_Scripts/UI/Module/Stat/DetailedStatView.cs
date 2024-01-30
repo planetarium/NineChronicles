@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
@@ -9,6 +8,7 @@ namespace Nekoyume.UI.Module
     public class DetailedStatView : StatView
     {
         public TextMeshProUGUI additionalText;
+        public TextMeshProUGUI valueText2;
 
         public void Show(StatType statType, long statValue, long additionalStatValue)
         {
@@ -52,6 +52,27 @@ namespace Nekoyume.UI.Module
             }
 
             gameObject.SetActive(true);
+        }
+
+        public void Show(
+            StatType statType,
+            StatModifier.OperationType operationType1, int value1,
+            StatModifier.OperationType operationType2, int value2)
+        {
+            statTypeText.text = statType.ToString();
+            valueText.text = operationType1 == StatModifier.OperationType.Add
+                ? $"+{statType.ValueToString(value1)}"
+                : $"+{value1}%";
+            valueText2.text = operationType2 == StatModifier.OperationType.Add
+                ? $"+{statType.ValueToString(value2)}"
+                : $"+{value2}%";
+
+            gameObject.SetActive(true);
+        }
+
+        public override void Hide()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

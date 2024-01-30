@@ -11700,11 +11700,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1357701940013637878, guid: e80834a947c859e448b746f5f244c338,
         type: 3}
-      propertyPath: m_TargetGraphic
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1357701940013637878, guid: e80834a947c859e448b746f5f244c338,
-        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 4575422773675835264}

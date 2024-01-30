@@ -2505,6 +2505,7 @@ MonoBehaviour:
   disableSprite: {fileID: 21300000, guid: 42abb5898ce1c954bacb20420fbd0500, type: 3}
   dccSlotDefaultSprite: {fileID: 21300000, guid: b44fbf2f977377243a3464d01aee3a0d,
     type: 3}
+  collectionEffectButton: {fileID: 2711910085520296016}
 --- !u!114 &7399876986068683393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3741,7 +3742,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_COLLECTION_EFFECT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
