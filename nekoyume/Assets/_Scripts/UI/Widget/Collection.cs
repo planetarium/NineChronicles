@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,8 +14,32 @@ namespace Nekoyume.UI
     using UniRx;
     public class Collection : Widget
     {
-        [SerializeField] private Button backButton;
+        public class Model
+        {
+            public CollectionSheet.Row Row;
+            public bool Active;
+        }
 
+        public static List<Model> GetModels()
+        {
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var models = new List<Model>();
+            foreach (var row in collectionSheet.Values)
+            {
+                var active = collectionState.Ids.Contains(row.Id);
+                models.Add(new Model
+                {
+                    Row = row,
+                    Active = active
+                });
+            }
+
+            return models;
+        }
+
+        [SerializeField] private Button backButton;
+        [SerializeField] private CollectionEffect collectionEffect;
         [SerializeField] private CollectionScroll scroll;
 
         protected override void Awake()
@@ -42,36 +67,9 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
-            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
-            var collectionState = Game.Game.instance.States.CollectionState;
-            var collectionCellViewModels = new List<CollectionCell.ViewModel>();
-
-            var sb = new System.Text.StringBuilder();
-            foreach (var row in collectionSheet.Values)
-            {
-                collectionCellViewModels.Add(new CollectionCell.ViewModel
-                {
-                    Row = row,
-                    Active = collectionState.Ids.Contains(row.Id)
-                });
-
-                var active = collectionState.Ids.Contains(row.Id);
-                sb.AppendLine($"Id: {row.Id} (active : {active})");
-                foreach (var material in row.Materials)
-                {
-                    sb.AppendLine($"  ItemId: {material.ItemId}, Level: {material.Level}, Count: {material.Count}");
-                }
-
-                sb.AppendLine();
-                foreach (var statModifier in row.StatModifiers)
-                {
-                    sb.AppendLine($"  StatType: {statModifier.StatType}, Value: {statModifier.Value}");
-                }
-            }
-
-            Debug.Log(sb);
-
-            scroll.UpdateData(collectionCellViewModels, true);
+            var models = GetModels();
+            scroll.UpdateData(models, true);
+            collectionEffect.Set(models.ToArray());
         }
 
         private void ActivateCollectionAction(CollectionSheet.Row row)

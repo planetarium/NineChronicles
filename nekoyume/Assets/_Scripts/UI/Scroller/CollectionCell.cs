@@ -1,43 +1,71 @@
+using System;
 using Nekoyume.Game.Controller;
-using Nekoyume.TableData;
+using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.UI.Module;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class CollectionCell : RectCell<CollectionCell.ViewModel, CollectionScroll.ContextModel>
+    using UniRx;
+    public class CollectionCell : RectCell<Collection.Model, CollectionScroll.ContextModel>
     {
-        public class ViewModel
+        [Serializable]
+        public class CellBackground
         {
-            public CollectionSheet.Row Row;
-            public bool Active;
+            public GameObject container;
+            public TextMeshProUGUI nameText;
+            public TextMeshProUGUI[] statTexts;
         }
 
-        [SerializeField] private Button activeButton;
+        [SerializeField] private CellBackground complete;
+        [SerializeField] private CellBackground incomplete;
+        [SerializeField] private CollectionItemView[] collectionItemViews;
+        [SerializeField] private ConditionalButton activeButton;
 
-        public override void UpdateContent(ViewModel itemData)
+        public override void UpdateContent(Collection.Model itemData)
         {
-            activeButton.onClick.RemoveAllListeners();
-            activeButton.onClick.AddListener(() =>
+            activeButton.OnSubmitSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 Context.OnClickActiveButton.OnNext(itemData);
-            });
+            }).AddTo(gameObject);
 
-            foreach (var collectionMaterial in itemData.Row.Materials)
+            complete.container.SetActive(false);
+            incomplete.container.SetActive(false);
+
+            var cellBackground = itemData.Active ? complete : incomplete;
+            cellBackground.container.SetActive(true);
+            cellBackground.nameText.text =
+                L10nManager.Localize($"COLLECTION_NAME_{itemData.Row.Id}");
+            for (var i = 0; i < cellBackground.statTexts.Length; i++)
             {
-                Debug.Log($"collectionMaterial.ItemId: {collectionMaterial.ItemId}\n" +
-                          $"collectionMaterial.Level: {collectionMaterial.Level}\n" +
-                          $"collectionMaterial.Count: {collectionMaterial.Count}\n");
+                var statText = cellBackground.statTexts[i];
+                statText.gameObject.SetActive(i < itemData.Row.StatModifiers.Count);
+                if (i < itemData.Row.StatModifiers.Count)
+                {
+                    var statModifier = itemData.Row.StatModifiers[i];
+                    statText.text = $"{statModifier.StatType} {statModifier.StatType.ValueToString(statModifier.Value)}";
+                }
             }
 
-            foreach (var statModifier in itemData.Row.StatModifiers)
+            for (var i = 0; i < collectionItemViews.Length; i++)
             {
-                Debug.Log($"statModifier.StatType: {statModifier.StatType}\n" +
-                          $"statModifier.Value: {statModifier.Value}\n");
+                var itemView = collectionItemViews[i];
+                itemView.gameObject.SetActive(i < itemData.Row.Materials.Count);
+                if (i < itemData.Row.Materials.Count)
+                {
+                    var material = itemData.Row.Materials[i];
+                    var itemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+                    var item = new Weapon(itemSheet[material.ItemId], Guid.NewGuid(), 0);
+                    itemView.Set(item, material.Level, material.Count);
+                }
             }
 
-            activeButton.interactable = !itemData.Active;
+            // set conditional
+
+            activeButton.Interactable = !itemData.Active;
         }
     }
 }
