@@ -112,6 +112,9 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Print file content
+        run: ls -R $GITHUB_WORKSPACE/build
+
       - name: Move Folder
         run: |
           sudo mv $GITHUB_WORKSPACE/build /tmp/player
