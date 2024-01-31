@@ -32,6 +32,7 @@ using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Extensions;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -765,6 +766,8 @@ namespace Nekoyume.Game
                         .ToList();
                     SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
                 }).AddTo(gameObject);
+
+                yield return InitializeStakeStateAsync().ToCoroutine();
             }
 
             IEnumerator CoInitializeSecondWidget()
@@ -1224,6 +1227,58 @@ namespace Nekoyume.Game
             TableSheets = new TableSheets(csv);
             sw.Stop();
             Debug.Log($"[SyncTableSheets] TableSheets cosntructor: {sw.Elapsed}");
+        }
+
+        private async UniTask InitializeStakeStateAsync()
+        {
+            // NOTE: Initialize staking states after setting GameConfigState.
+            var stakeAddr = Model.Stake.StakeStateV2.DeriveAddress(Agent.Address);
+            var stakeStateIValue = await Agent.GetStateAsync(stakeAddr);
+            var goldCurrency = States.GoldBalanceState.Gold.Currency;
+            var balance = goldCurrency * 0;
+            var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+            var stakeRegularRewardSheet = new StakeRegularRewardSheet();
+            var policySheet = TableSheets.StakePolicySheet;
+            Address[] sheetAddr;
+            Model.Stake.StakeStateV2? stakeState = null;
+            if (!StakeStateUtilsForClient.TryMigrate(
+                    stakeStateIValue,
+                    States.Instance.GameConfigState,
+                    out var stakeStateV2))
+            {
+                sheetAddr = new[]
+                {
+                    Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
+                    Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                };
+            }
+            else
+            {
+                stakeState = stakeStateV2;
+                balance = await Agent.GetBalanceAsync(stakeAddr, goldCurrency);
+                sheetAddr = new[]
+                {
+                    Addresses.GetSheetAddress(
+                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                    Addresses.GetSheetAddress(
+                        stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                };
+            }
+
+            var sheets = await Agent.GetSheetsAsync(sheetAddr);
+            stakeRegularFixedRewardSheet.Set(sheets[sheetAddr[0]].ToDotnetString());
+            stakeRegularRewardSheet.Set(sheets[sheetAddr[1]].ToDotnetString());
+            var level = balance.RawValue > 0
+                ? stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
+                    Agent.Address,
+                    balance)
+                : 0;
+            States.Instance.SetStakeState(
+                stakeState,
+                new GoldBalanceState(stakeAddr, balance),
+                level,
+                stakeRegularFixedRewardSheet,
+                stakeRegularRewardSheet);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
