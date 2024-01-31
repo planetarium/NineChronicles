@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Lib9c.DevExtensions;
 using Libplanet.Crypto;
 using Nekoyume.Action;
@@ -10,7 +11,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 using static Nekoyume.Model.BattleStatus.Arena.ArenaLog;
 
 namespace BalanceTool
@@ -30,6 +31,8 @@ namespace BalanceTool
             List<RuneState> enemyRuneStates,
             int playCount = 1)
         {
+            var sw = new Stopwatch();
+            sw.Start();
             randomSeed ??= new RandomImpl(DateTime.Now.Millisecond).Next(0, int.MaxValue);
             var random = new RandomImpl(randomSeed.Value);
             var avatarDigest = new ArenaPlayerDigest(
@@ -61,7 +64,7 @@ namespace BalanceTool
             }
 
             var winRate = (float)winCount / playCount;
-            Debug.Log($"WinCount: {winCount}, PlayCount: {playCount}, WinRate: {winRate}");
+            Debug.Log($"ExecuteArena({playCount}) elapsed time: {sw.Elapsed}");
             return winRate;
         }
     }
