@@ -1709,8 +1709,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()
                 .ObserveOnMainThread()
-                // .DoOnError(e => HandleException(action.Id, e));
-                .DoOnError(e => { });
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionEvaluation<ClaimStakeReward>> ClaimStakeReward(

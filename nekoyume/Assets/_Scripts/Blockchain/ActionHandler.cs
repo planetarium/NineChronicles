@@ -67,7 +67,6 @@ namespace Nekoyume.Blockchain
                 GoldCurrency);
         }
 
-        // NOTE: The deposit in returned tuple is get from the IAgent not evaluation.OutputState.
         protected async UniTask<(
                 Address stakeAddr,
                 StakeStateV2? stakeStateV2,
@@ -334,7 +333,7 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        protected async UniTaskVoid UpdateStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
+        protected async UniTask UpdateStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var (
                     stakeAddr,
