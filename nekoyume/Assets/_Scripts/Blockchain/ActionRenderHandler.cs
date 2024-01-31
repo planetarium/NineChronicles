@@ -170,7 +170,6 @@ namespace Nekoyume.Blockchain
             DailyReward();
             RedeemCode();
             ChargeActionPoint();
-            ClaimMonsterCollectionReward();
             ClaimStakeReward();
 
             // Crystal Unlocks
@@ -465,15 +464,6 @@ namespace Nekoyume.Blockchain
                     eval.Action.avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint)
-                .AddTo(_disposables);
-        }
-
-        private void ClaimMonsterCollectionReward()
-        {
-            _actionRenderer.EveryRender<ClaimMonsterCollectionReward>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseClaimMonsterCollectionReward)
                 .AddTo(_disposables);
         }
 
@@ -2371,84 +2361,6 @@ namespace Nekoyume.Blockchain
                     LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
                 });
             }
-        }
-
-        private void ResponseClaimMonsterCollectionReward(
-            ActionEvaluation<ClaimMonsterCollectionReward> eval)
-        {
-            if (!(eval.Exception is null))
-            {
-                return;
-            }
-
-            var agentAddress = eval.Signer;
-            var avatarAddress = eval.Action.avatarAddress;
-            AvatarState avatarState = null;
-            UniTask.RunOnThreadPool(async () =>
-            {
-                if (StateGetter.TryGetAvatarState(
-                        agentAddress,
-                        avatarAddress,
-                        eval.OutputState,
-                        out avatarState))
-                {
-                    await UpdateAgentStateAsync(eval);
-                    await UpdateCurrentAvatarStateAsync(eval);
-                }
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
-                var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
-                if (mail is not MonsterCollectionMail
-                {
-                    attachment: MonsterCollectionResult monsterCollectionResult
-                })
-                {
-                    return;
-                }
-
-                // LocalLayer
-                var rewardInfos = monsterCollectionResult.rewards;
-                for (var i = 0; i < rewardInfos.Count; i++)
-                {
-                    var rewardInfo = rewardInfos[i];
-                    if (!rewardInfo.ItemId.TryParseAsTradableId(
-                            TableSheets.Instance.ItemSheet,
-                            out var tradableId))
-                    {
-                        continue;
-                    }
-
-                    if (!rewardInfo.ItemId.TryGetFungibleId(
-                            TableSheets.Instance.ItemSheet,
-                            out var fungibleId))
-                    {
-                        continue;
-                    }
-
-                    if (avatarState.inventory.TryGetFungibleItems(fungibleId, out var items))
-                    {
-                        var item = items.FirstOrDefault(x => x.item is ITradableItem);
-                        if (item?.item is ITradableItem tradableItem)
-                        {
-                            LocalLayerModifier.RemoveItem(
-                                avatarAddress,
-                                tradableId,
-                                tradableItem.RequiredBlockIndex,
-                                rewardInfo.Quantity);
-                        }
-                    }
-                }
-
-                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, mail.id);
-                // ~LocalLayer
-
-                // Notification
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
-                    NotificationCell.NotificationType.Information);
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-            });
         }
 
         private ActionEvaluation<TransferAsset> PrepareTransferAsset(
