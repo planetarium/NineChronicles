@@ -15,7 +15,7 @@ namespace Nekoyume.Helper
             // args may contain raw private key string. like "--private-key={private-key}".
             // and, WE MUST DO NOT LOG PRIVATE KEY.
             var filteredArgs = args.Where(str =>
-                !str.Contains("private", StringComparison.InvariantCultureIgnoreCase)).ToList();
+                !str.Contains("private")).ToList();
             var argsString = string.Join(" ", filteredArgs);
             Debug.Log($"[CommandLineParser] GetCommandLineOptions<{typeof(T).Name}> invoked" +
                       $" with {argsString}");
