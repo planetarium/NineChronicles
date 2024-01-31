@@ -155,6 +155,7 @@ namespace MagicOnion.Resolvers
                 {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>), 5 },
                 {typeof(global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>), 6 },
                 {typeof(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>), 7 },
+                {typeof(global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>), 8 },
             };
         }
         internal static object GetFormatter(Type t)
@@ -175,6 +176,7 @@ namespace MagicOnion.Resolvers
                 case 5: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.String, global::System.String>(default(global::System.String), default(global::System.String));
                 case 6: return new global::MessagePack.Formatters.DictionaryFormatter<global::System.Byte[], global::System.Byte[]>();
                 case 7: return new global::MessagePack.Formatters.InterfaceEnumerableFormatter<global::System.Byte[]>();
+                case 8: return new global::MagicOnion.DynamicArgumentTupleFormatter<global::System.Byte[], global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>(default(global::System.Byte[]), default(global::System.Byte[]), default(global::System.Collections.Generic.IEnumerable<global::System.Byte[]>));
                 default: return null;
             }
         }
@@ -188,6 +190,7 @@ namespace MagicOnion.Resolvers
         {
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>>();
             _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>>();
