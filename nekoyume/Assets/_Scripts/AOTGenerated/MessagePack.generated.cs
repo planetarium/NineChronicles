@@ -110,11 +110,12 @@ namespace MessagePack.Formatters.Nekoyume.Action
         private readonly global::Lib9c.Formatters.HashDigestFormatter __OutputStateCustomFormatter__ = new global::Lib9c.Formatters.HashDigestFormatter();
         private readonly global::Lib9c.Formatters.ExceptionFormatter<global::System.Exception> __ExceptionCustomFormatter__ = new global::Lib9c.Formatters.ExceptionFormatter<global::System.Exception>();
         private readonly global::Lib9c.Formatters.HashDigestFormatter __PreviousStateCustomFormatter__ = new global::Lib9c.Formatters.HashDigestFormatter();
+        private readonly global::Lib9c.Formatters.TxIdFormatter __TxIdCustomFormatter__ = new global::Lib9c.Formatters.TxIdFormatter();
 
         public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Nekoyume.Action.NCActionEvaluation value, global::MessagePack.MessagePackSerializerOptions options)
         {
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(8);
+            writer.WriteArrayHeader(9);
             this.__ActionCustomFormatter__.Serialize(ref writer, value.Action, options);
             this.__SignerCustomFormatter__.Serialize(ref writer, value.Signer, options);
             writer.Write(value.BlockIndex);
@@ -123,6 +124,7 @@ namespace MessagePack.Formatters.Nekoyume.Action
             this.__PreviousStateCustomFormatter__.Serialize(ref writer, value.PreviousState, options);
             writer.Write(value.RandomSeed);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<string, IValue>>(formatterResolver).Serialize(ref writer, value.Extra, options);
+            this.__TxIdCustomFormatter__.Serialize(ref writer, value.TxId, options);
         }
 
         public global::Nekoyume.Action.NCActionEvaluation Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -143,6 +145,7 @@ namespace MessagePack.Formatters.Nekoyume.Action
             var __PreviousState__ = default(global::Libplanet.Common.HashDigest<SHA256>);
             var __RandomSeed__ = default(int);
             var __Extra__ = default(global::System.Collections.Generic.Dictionary<string, IValue>);
+            var __TxId__ = default(global::Libplanet.Types.Tx.TxId?);
 
             for (int i = 0; i < length; i++)
             {
@@ -172,13 +175,16 @@ namespace MessagePack.Formatters.Nekoyume.Action
                     case 7:
                         __Extra__ = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<string, IValue>>(formatterResolver).Deserialize(ref reader, options);
                         break;
+                    case 8:
+                        __TxId__ = this.__TxIdCustomFormatter__.Deserialize(ref reader, options);
+                        break;
                     default:
                         reader.Skip();
                         break;
                 }
             }
 
-            var ____result = new global::Nekoyume.Action.NCActionEvaluation(__Action__, __Signer__, __BlockIndex__, __OutputState__, __Exception__, __PreviousState__, __RandomSeed__, __Extra__);
+            var ____result = new global::Nekoyume.Action.NCActionEvaluation(__Action__, __Signer__, __BlockIndex__, __OutputState__, __Exception__, __PreviousState__, __RandomSeed__, __Extra__, __TxId__);
             reader.Depth--;
             return ____result;
         }
