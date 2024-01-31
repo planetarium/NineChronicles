@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
@@ -18,6 +16,7 @@ namespace Nekoyume.UI
         {
             public CollectionSheet.Row Row;
             public bool Active;
+            // search tags
         }
 
         public static List<Model> GetModels()
@@ -58,7 +57,6 @@ namespace Nekoyume.UI
             };
 
             scroll.OnClickActiveButton
-                .Select(vm => vm.Row)
                 .Subscribe(ActivateCollectionAction)
                 .AddTo(gameObject);
         }
@@ -77,37 +75,19 @@ namespace Nekoyume.UI
             collectionEffect.Set(models.ToArray());
         }
 
-        private void ActivateCollectionAction(CollectionSheet.Row row)
+        private void ActivateCollectionAction(Model model)
         {
             // check collection - is active
             var collectionState = Game.Game.instance.States.CollectionState;
-            if (collectionState.Ids.Contains(row.Id))
+            if (collectionState.Ids.Contains(model.Row.Id))
             {
                 Debug.LogError("collection already active");
                 return;
             }
 
-            // check itemIds invalid - are in inventory
-            var itemIds = new List<Guid>();
-            foreach (var materialId in row.Materials)
-            {
-                var itemUsable = Game.Game.instance.States.CurrentAvatarState.inventory.Equipments
-                    .FirstOrDefault(i => i.Id == materialId.ItemId);
-                if (itemUsable is null)
-                {
-                    Debug.LogError("item not found");
-                    return;
-                }
-
-                if (itemUsable.Equipped)
-                {
-                    Debug.LogError("warning - item is equipped");
-                }
-
-                itemIds.Add(itemUsable.ItemId);
-            }
-
-            ActionManager.Instance.ActivateCollection(row.Id, itemIds).Subscribe();
+            // set materials
+            Find<CollectionRegistrationPopup>().Show(model, materials =>
+                ActionManager.Instance.ActivateCollection(model.Row.Id, materials).Subscribe());
         }
 
         public void OnActionRender()

@@ -56,8 +56,8 @@ namespace Nekoyume.UI.Module
 
         public void Show(
             StatType statType,
-            StatModifier.OperationType operationType1, int value1,
-            StatModifier.OperationType operationType2, int value2)
+            StatModifier.OperationType operationType1, long value1,
+            StatModifier.OperationType operationType2, long value2)
         {
             statTypeText.text = statType.ToString();
             valueText.text = operationType1 == StatModifier.OperationType.Add

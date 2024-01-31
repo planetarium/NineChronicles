@@ -115,7 +115,7 @@ PrefabInstance:
     - target: {fileID: 9176155653163038766, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_Name
-      value: ItemView
+      value: ItemView_Collection
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd7a738610a297e41bd57e2eebf6fe64, type: 3}
@@ -150,3 +150,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseItemView: {fileID: 5704313979244312890}
+  requiredColor: {r: 0.8980393, g: 0.31764707, b: 0.31764707, a: 1}

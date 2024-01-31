@@ -1,9 +1,8 @@
-using System;
+using System.Linq;
 using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
@@ -11,16 +10,8 @@ namespace Nekoyume.UI.Scroller
     using UniRx;
     public class CollectionCell : RectCell<Collection.Model, CollectionScroll.ContextModel>
     {
-        [Serializable]
-        public class CellBackground
-        {
-            public GameObject container;
-            public TextMeshProUGUI nameText;
-            public TextMeshProUGUI[] statTexts;
-        }
-
-        [SerializeField] private CellBackground complete;
-        [SerializeField] private CellBackground incomplete;
+        [SerializeField] private CollectionStat complete;
+        [SerializeField] private CollectionStat incomplete;
         [SerializeField] private CollectionItemView[] collectionItemViews;
         [SerializeField] private ConditionalButton activeButton;
 
@@ -32,38 +23,38 @@ namespace Nekoyume.UI.Scroller
                 Context.OnClickActiveButton.OnNext(itemData);
             }).AddTo(gameObject);
 
-            complete.container.SetActive(false);
-            incomplete.container.SetActive(false);
+            complete.gameObject.SetActive(false);
+            incomplete.gameObject.SetActive(false);
 
             var cellBackground = itemData.Active ? complete : incomplete;
-            cellBackground.container.SetActive(true);
-            cellBackground.nameText.text =
-                L10nManager.Localize($"COLLECTION_NAME_{itemData.Row.Id}");
-            for (var i = 0; i < cellBackground.statTexts.Length; i++)
-            {
-                var statText = cellBackground.statTexts[i];
-                statText.gameObject.SetActive(i < itemData.Row.StatModifiers.Count);
-                if (i < itemData.Row.StatModifiers.Count)
-                {
-                    var statModifier = itemData.Row.StatModifiers[i];
-                    statText.text = $"{statModifier.StatType} {statModifier.StatType.ValueToString(statModifier.Value)}";
-                }
-            }
+            cellBackground.Set(itemData);
 
+            var materialCount = itemData.Row.Materials.Count;
+            var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
             for (var i = 0; i < collectionItemViews.Length; i++)
             {
-                var itemView = collectionItemViews[i];
-                itemView.gameObject.SetActive(i < itemData.Row.Materials.Count);
-                if (i < itemData.Row.Materials.Count)
+                collectionItemViews[i].gameObject.SetActive(i < materialCount);
+                if (i >= materialCount)
                 {
-                    var material = itemData.Row.Materials[i];
-                    var itemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
-                    var item = new Weapon(itemSheet[material.ItemId], Guid.NewGuid(), 0);
-                    itemView.Set(item, material.Level, material.Count);
+                    continue;
                 }
+
+                var material = itemData.Row.Materials[i];
+                var itemRow = itemSheet[material.ItemId];
+                var items = inventory.Items.Where(item => item.item.Id == material.ItemId).ToArray();
+                var equipments = items.Select(item => item.item).OfType<Equipment>().ToArray();
+
+                collectionItemViews[i].Set(
+                    new CollectionMaterial(
+                        itemRow, items.Any(),
+                        material.Level, equipments.Any() ||
+                                        equipments.Any(item => item.level == material.Level),
+                        material.Count, items.Any() || items.Length > material.Count),
+                    model => Context.OnClickMaterial.OnNext(model));
             }
 
-            // set conditional
+            // set conditional of active button
 
             activeButton.Interactable = !itemData.Active;
         }

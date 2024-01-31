@@ -1,48 +1,55 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Model.Item;
+using Nekoyume.Helper;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     [RequireComponent(typeof(BaseItemView))]
     public class CollectionItemView : MonoBehaviour
     {
         [SerializeField]
         private BaseItemView baseItemView;
 
+        [SerializeField]
+        private Color requiredColor;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public void Set(ItemBase itemBase, int level, int count)
+        public void Set(CollectionMaterial model, Action<CollectionMaterial> onClick)
         {
-            if (itemBase == null)
-            {
-                return;
-            }
-
             _disposables.DisposeAllAndClear();
 
             baseItemView.Container.SetActive(true);
             baseItemView.EmptyObject.SetActive(false);
-            baseItemView.TouchHandler.gameObject.SetActive(false);
             baseItemView.MinusObject.gameObject.SetActive(false);
 
-            var data = baseItemView.GetItemViewData(itemBase);
+            var data = baseItemView.GetItemViewData(model.Row.Grade);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;
             baseItemView.GradeHsv.range = data.GradeHsvRange;
             baseItemView.GradeHsv.hue = data.GradeHsvHue;
             baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
             baseItemView.GradeHsv.value = data.GradeHsvValue;
 
-            baseItemView.ItemImage.overrideSprite = BaseItemView.GetItemIcon(itemBase);
+            baseItemView.TouchHandler.gameObject.SetActive(true);
             baseItemView.EnhancementText.gameObject.SetActive(true);
-            baseItemView.EnhancementText.text = level.ToString();
             baseItemView.CountText.gameObject.SetActive(true);
-            baseItemView.CountText.text = count.ToString();
-            baseItemView.OptionTag.gameObject.SetActive(true);
-            baseItemView.OptionTag.Set(itemBase);
-            baseItemView.EnoughObject.SetActive(false);
-            baseItemView.TradableObject.SetActive(false);
+            baseItemView.OptionTag.gameObject.SetActive(false);
+
+            baseItemView.TouchHandler.OnClick.Select(_ => model).Subscribe(onClick).AddTo(_disposables);
+            baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.Id);
+            baseItemView.EnhancementText.text = model.Level.ToString();
+            baseItemView.EnhancementText.color = model.EnoughLevel ? Color.white : requiredColor;
+            baseItemView.EnhancementText.enableVertexGradient = model.EnoughLevel;
+            baseItemView.CountText.text = model.Count.ToString();
+            baseItemView.CountText.color = model.EnoughCount ? Color.white : requiredColor;
+            // baseItemView.OptionTag.Set(itemBase);
+
+            baseItemView.EnoughObject.SetActive(model.HasItem && (model.EnoughLevel || model.EnoughCount));
+            baseItemView.TradableObject.SetActive(!model.HasItem);
             baseItemView.SelectCollectionObject.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);
 
@@ -65,6 +72,9 @@ namespace Nekoyume.UI.Module
             baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActive(false);
             baseItemView.RuneSelectMove.SetActive(false);
+
+            model.Selected
+                .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b)).AddTo(_disposables);
         }
     }
 }

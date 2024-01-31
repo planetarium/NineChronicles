@@ -17,6 +17,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Collection;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -1598,10 +1599,11 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<ActivateCollection>> ActivateCollection(
             int collectionId,
-            List<Guid> itemIdList)
+            List<ICollectionMaterial> materials)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var agentAddress = States.Instance.AgentState.address;
+            var materialsType = materials.First().Type;
 
             var sentryTrace = Analyzer.Instance.Track("Unity/ActivateCollection",
                 new Dictionary<string, Value>()
@@ -1609,12 +1611,12 @@ namespace Nekoyume.Blockchain
                     ["AvatarAddress"] = avatarAddress.ToString(),
                     ["AgentAddress"] = agentAddress.ToString(),
                     ["CollectionId"] = collectionId,
-                    ["ItemIdList"] = itemIdList,
+                    ["MaterialsType"] = materialsType.ToString(),
                 }, true);
 
             var evt = new AirbridgeEvent("ActivateCollection");
             evt.SetValue(collectionId);
-            evt.AddCustomAttribute("item-id-list", itemIdList);
+            evt.AddCustomAttribute("materials-type", materialsType.ToString());
             evt.AddCustomAttribute("agent-address", avatarAddress.ToString());
             evt.AddCustomAttribute("avatar-address", agentAddress.ToString());
             AirbridgeUnity.TrackEvent(evt);
@@ -1623,7 +1625,7 @@ namespace Nekoyume.Blockchain
             {
                 AvatarAddress = avatarAddress,
                 CollectionId = collectionId,
-                ItemIdList = itemIdList
+                Materials = materials,
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ActivateCollection>()

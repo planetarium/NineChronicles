@@ -3266,7 +3266,7 @@ MonoBehaviour:
   btnDcc: {fileID: 3151286348115748959}
   btnPatrolReward: {fileID: 5635383302461121711}
   btnSeasonPass: {fileID: 7853739822948596033}
-  btnCollection: {fileID: 0}
+  btnCollection: {fileID: 6725642453554144222}
   speechBubbles:
   - {fileID: 5726702647442793415}
   - {fileID: 8996571131477431847}
@@ -11815,6 +11815,18 @@ PrefabInstance:
       objectReference: {fileID: 2894346975772333054}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e80834a947c859e448b746f5f244c338, type: 3}
+--- !u!114 &6725642453554144222 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4020814102821514429, guid: e80834a947c859e448b746f5f244c338,
+    type: 3}
+  m_PrefabInstance: {fileID: 7681598568002424675}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6367125a1a864c84806c683a9fdeaf33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &9143894269758035659 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1476941356634429864, guid: e80834a947c859e448b746f5f244c338,
