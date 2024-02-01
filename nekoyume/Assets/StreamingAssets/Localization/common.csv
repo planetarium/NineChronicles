@@ -296,7 +296,7 @@ Silakan mulai ulang permainannya.",,"发生错误。
 请重新启动游戏。",發生了錯誤。 （{0}）請重新啟動遊戲。,"May kamalian. ({0}) Pakiusap, simulan ulit ang laro.","Xảy ra lỗi. ({0})
 Vui lòng khởi động lại trò chơi."
 UI_ERROR_RPC_CONNECTION,"RPC server connection failed.
-Please make sure your decive is connected to the internet.","RPC 서버 연결 실패
+Please make sure your device is connected to the internet.","RPC 서버 연결 실패
 디바이스가 인터넷에 연결된 상태인지 확인해주세요.","Falha na conexão do servidor RPC.
 Verifique se o iniciador de jogos está executando
 e tente novamente.","サーバーへの接続に失敗しました。
@@ -1269,26 +1269,37 @@ UI_PUSH_ALERT,Push Alert,푸시 알림,Empurre o alerta,プッシュ通知,Alert
 UI_NIGHTTIME_PUSH,Nighttime (21:00-08:00),야간 (21:00-08:00),Nighttime (21: 00-08: 00),夜間（21:00－08:00）,Noche (21:00-08:00),ช่วงกลางคืน (21:00-08:00 น.),Malam hari (21: 00-08: 00),Ночь (21: 00-08: 00),夜间（21：00-08：00）,夜間（21：00-08：00）,Oras ng gabi,Ban đêm (21: 00-08: 00)
 UI_IAP_PURCHASE_COMPLETE,"<line-height=120%><size=24>Purchase completed.</size>
 <line-height=50%><size=16>Product delivery via blockchain.
+
 item sent to your mailbox upon completion.</size>","<line-height=120%><size=24>구매 성공</size>
 <line-height=50%><size=16>블록체인 네트워크를 통해 상품 배송이 시작됩니다.
+
 곧 제이드가 메일로 상품을 보내줄거예요!</size>","<line-height=120%><size=24>Compra concluída.</size>
 <line-height=50%><size=16>Entrega via blockchain;
+
 item enviado à sua caixa de correio após conclusão.</size>","<line-height=120%><size=24>購買に成功しました。</size>
 <line-height=50%><size=16>ブロックチェーンネットワークを介し商品配送が始まります。
+
 ジェイドがすぐアイテムをメールボックスに送ります！</size>","<line-height=120%><size=24>Compra completada.</size>
 <line-height=50%><size=16>La entrega de productos comenzará a través de la red blockchain.
+
 Pronto, Jade enviará los artículos por correo.</size>","<line-height=120%><size=24>ซื้อเสร็จ</size>
 <line-height=50%><size=16>การจัดส่งสินค้าจะเริ่มต้นผ่านเครือข่ายบล็อกเชนแล้ว
+
 ในไม่ช้า เจดจะส่งไอเท็มให้คุณทางไปรษณีย์!</size>","<line-height=120%><size=24>Pembelian selesai.</size>
 <line-height=50%><size=16>Pengiriman produk akan dimulai melalui jaringan blockchain.
+
 Setelah pengiriman selesai, produk akan dikirimkan kepada Anda melalui mail.</size>",,"<line-height=120%><size=24>购买完成。</size>
 <line-height=50%><size=16>产品将通过区块链网络开始交付。
+
 很快，Jade将通过邮件向您发送物品！</size>","<line-height=120%><size=24>購買完成。</size>
 <line-height=50%><size=16>產品將透過區塊鏈網絡開始交付。
+
 不久後，Jade將透過郵件將物品發送給您！</size>","<line-height=120%><size=24>Bumili ng nakumpleto.</size>
 <line-height=50%><size=16>Mag-umpisa na ang delivery ng produkto sa blockchain network.
+
 Ipadadala ni Jade ang items sa iyo via mailbox.</size>","<line-height=120%><size=24>Giao dịch hoàn tất.</size>
 <line-height=50%><size=16>Giao hàng qua blockchain sắp bắt đầu.
+
 Jade sẽ gửi sản phẩm đến bạn sớm thôi!</size>"
 UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL,"<color=#FFA78B>[Shop Cat Jade]</color>
 {0} delivery is complete!","<color=#FFA78B>[마켓고양이 제이드]</color>
@@ -1436,7 +1447,7 @@ UI_BATTLE_RESULT_BUFF_DESCRIPTION,Collect Stars and try Bonus Buffs!,별을 모�
 UI_BATTLE_RESULT_LEVEL_DESCRIPTION,Level up your character.,당신의 캐릭터 레벨을 올려보세요.,Subir o seu personagem.,キャラクターのレベルを上げましょう。,Nivela tu personaje.,ยกระดับตัวละครของคุณ,Naikkan level karakter anda.,Уровень вашего персонажа.,升级您的角色。,升級您的角色。,I -level up ang iyong character.,Lên cấp nhân vật của bạn.
 UI_CONNECTING_TO_THE_NETWORKS,Connecting to the networks...,네트워크에 연결하는 중…,Conectando -se às redes ...,ネットワークに接続中···,Conectarse a las redes ...,เชื่อมต่อกับเครือข่าย ...,Menghubungkan ke jaringan ...,,连接到网络...,連接到網絡...,Pagkonekta sa mga network ...,Đang kết nối mạng ...
 UI_CONNECTING_TO_THE_NETWORKS_DESC,"Slow or no internet connections.
-Please ensure your decive is connected to the internet.","인터넷 연결이 느리거나 없습니다.
+Please ensure your device is connected to the internet.","인터넷 연결이 느리거나 없습니다.
 기기가 인터넷에 연결되어 있는지 확인하세요.","Conexões lentas ou nenhuma da Internet.
 Certifique -se de que a sua disco esteja conectada à Internet.","インターネット速度が遅いか、繋がっていないようです。
 接続状況をもう一度確認してください。","Conexiones lentas o no a Internet.
