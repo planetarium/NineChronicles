@@ -2458,6 +2458,7 @@ namespace Nekoyume.Blockchain
 
         private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
         {
+            LoadingHelper.ClaimStakeReward.Value = false;
             if (eval.Exception is not null)
             {
                 return;

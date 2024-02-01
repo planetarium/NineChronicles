@@ -5,6 +5,7 @@ using System.Numerics;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -95,6 +96,7 @@ namespace Nekoyume.UI
                     .ClaimStakeReward(States.Instance.CurrentAvatarState.address)
                     .Subscribe();
                 archiveButton.Interactable = false;
+                LoadingHelper.ClaimStakeReward.Value = true;
             }).AddTo(gameObject);
 
             stakingNcgInputField.onEndEdit.AddListener(value =>
@@ -217,6 +219,7 @@ namespace Nekoyume.UI
                 RemainingBlockFormat,
                 remainingBlock.ToString("N0"),
                 remainingBlock.BlockRangeToTimeSpanString());
+            archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
         }
 
         private static bool TryGetWaitedBlockIndex(
