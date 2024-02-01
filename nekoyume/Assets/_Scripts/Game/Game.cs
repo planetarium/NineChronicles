@@ -1246,11 +1246,24 @@ namespace Nekoyume.Game
                     States.Instance.GameConfigState,
                     out var stakeStateV2))
             {
-                sheetAddr = new[]
+                if (Agent is RPCAgent)
                 {
-                    Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
-                    Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
-                };
+                    sheetAddr = new[]
+                    {
+                        Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
+                        Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                    };
+                }
+                // It is local play. local genesis block not has Stake***Sheet_V*.
+                // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
+                else
+                {
+                    sheetAddr = new[]
+                    {
+                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
+                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
+                    };
+                }
             }
             else
             {

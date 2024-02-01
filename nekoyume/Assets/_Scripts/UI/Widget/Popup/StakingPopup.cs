@@ -288,8 +288,16 @@ namespace Nekoyume.UI
                     model.CrystalBuff = row.Multiplier;
                 }
 
-                model.ActionPointBuff = 100 - TableSheets.Instance
-                    .StakeActionPointCoefficientSheet[level].Coefficient;
+                if (TableSheets.Instance.StakeActionPointCoefficientSheet
+                    .TryGetValue(level, out var coefficientRow))
+                {
+                    model.ActionPointBuff = 100 - coefficientRow.Coefficient;
+                }
+                else
+                {
+                    model.ActionPointBuff = 0;
+                }
+
                 model.ArenaRewardBuff = _arenaNcgBonus[level];
 
                 benefitsListViews[level].Set(level, model);
