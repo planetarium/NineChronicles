@@ -47,10 +47,9 @@ namespace Nekoyume.UI.Scroller
 
                 collectionItemViews[i].Set(
                     new CollectionMaterial(
-                        itemRow, items.Any(),
-                        material.Level, equipments.Any() ||
-                                        equipments.Any(item => item.level == material.Level),
-                        material.Count, items.Any() || items.Length > material.Count),
+                        material, itemRow.Grade, items.Any(),
+                        !equipments.Any() || equipments.Any(item => item.level == material.Level),
+                        !items.Any() || items.Length > material.Count),
                     model => Context.OnClickMaterial.OnNext(model));
             }
 

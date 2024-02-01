@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module
             baseItemView.EmptyObject.SetActive(false);
             baseItemView.MinusObject.gameObject.SetActive(false);
 
-            var data = baseItemView.GetItemViewData(model.Row.Grade);
+            var data = baseItemView.GetItemViewData(model.Grade);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;
             baseItemView.GradeHsv.range = data.GradeHsvRange;
             baseItemView.GradeHsv.hue = data.GradeHsvHue;
@@ -35,17 +35,19 @@ namespace Nekoyume.UI.Module
             baseItemView.GradeHsv.value = data.GradeHsvValue;
 
             baseItemView.TouchHandler.gameObject.SetActive(true);
-            baseItemView.EnhancementText.gameObject.SetActive(true);
-            baseItemView.CountText.gameObject.SetActive(true);
-            baseItemView.OptionTag.gameObject.SetActive(false);
-
             baseItemView.TouchHandler.OnClick.Select(_ => model).Subscribe(onClick).AddTo(_disposables);
-            baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.Id);
-            baseItemView.EnhancementText.text = model.Level.ToString();
+            baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.ItemId);
+
+            baseItemView.EnhancementText.gameObject.SetActive(model.Row.Level > 0);
+            baseItemView.EnhancementText.text = $"+{model.Row.Level.ToString()}";
             baseItemView.EnhancementText.color = model.EnoughLevel ? Color.white : requiredColor;
             baseItemView.EnhancementText.enableVertexGradient = model.EnoughLevel;
-            baseItemView.CountText.text = model.Count.ToString();
+
+            baseItemView.CountText.gameObject.SetActive(false);
+            baseItemView.CountText.text = model.Row.Count.ToString();
             baseItemView.CountText.color = model.EnoughCount ? Color.white : requiredColor;
+
+            baseItemView.OptionTag.gameObject.SetActive(false);
             // baseItemView.OptionTag.Set(itemBase);
 
             baseItemView.EnoughObject.SetActive(model.HasItem && (model.EnoughLevel || model.EnoughCount));
