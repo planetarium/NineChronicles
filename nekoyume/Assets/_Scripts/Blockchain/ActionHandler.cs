@@ -78,27 +78,41 @@ namespace Nekoyume.Blockchain
         {
             var agentAddr = States.Instance.AgentState.address;
             var stakeAddr = StakeStateV2.DeriveAddress(agentAddr);
-            if (!StateGetter.TryGetStakeStateV2(evaluation.OutputState, agentAddr,out var stakeStateV2))
+            var agent = Game.Game.instance.Agent;
+            Address[] sheetAddrArr;
+            FungibleAssetValue balance;
+            StakeStateV2? nullableStakeState;
+            if (!StateGetter.TryGetStakeStateV2(agentAddr, evaluation.OutputState, out var stakeStateV2))
             {
-                return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
-            }
-
-            try
-            {
-                var agent = Game.Game.instance.Agent;
-                if (agent is null)
+                nullableStakeState = null;
+                var policySheet = TableSheets.Instance.StakePolicySheet;
+                sheetAddrArr = new[]
                 {
-                    return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
-                }
-
-                var balance = await agent.GetBalanceAsync(stakeAddr, GoldCurrency);
-                var sheetAddrArr = new[]
+                    Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
+                    Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                };
+                balance = GoldCurrency * 0;
+            }
+            else
+            {
+                nullableStakeState = stakeStateV2;
+                balance = await agent.GetBalanceAsync(stakeAddr, GoldCurrency);
+                sheetAddrArr = new[]
                 {
                     Addresses.GetSheetAddress(
                         stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
                     Addresses.GetSheetAddress(
                         stakeStateV2.Contract.StakeRegularRewardSheetTableName),
                 };
+            }
+
+            try
+            {
+                if (agent is null)
+                {
+                    return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
+                }
+
                 var sheetStates = await agent.GetStateBulkAsync(
                     ReservedAddresses.LegacyAccount, sheetAddrArr);
                 var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
@@ -107,18 +121,21 @@ namespace Nekoyume.Blockchain
                 var stakeRegularRewardSheet = new StakeRegularRewardSheet();
                 stakeRegularRewardSheet.Set(
                     sheetStates[sheetAddrArr[1]].ToDotnetString());
-                var level = stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
-                    agentAddr,
-                    balance);
+                var level = nullableStakeState.HasValue
+                    ? stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
+                        agentAddr,
+                        balance)
+                    : 0;
+
                 return (
                     stakeAddr,
-                    stakeStateV2,
+                    nullableStakeState,
                     balance,
                     level,
                     stakeRegularFixedRewardSheet,
                     stakeRegularRewardSheet);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
             }
