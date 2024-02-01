@@ -952,7 +952,7 @@ namespace Nekoyume.UI.Module
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.TotalValueAsInt)));
+                            x.stat.TotalValueAsLong)));
             }
 
             characterStats.SetAll(

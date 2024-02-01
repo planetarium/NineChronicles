@@ -59,6 +59,7 @@ namespace Nekoyume.UI.Module
             baseItemView.ItemImage.gameObject.SetActive(true);
             baseItemView.SpineItemImage.gameObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
 
             baseItemView.ItemImage.overrideSprite = BaseItemView.GetItemIcon(itemBase);
 

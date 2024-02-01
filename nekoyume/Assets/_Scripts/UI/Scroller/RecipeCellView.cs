@@ -369,7 +369,7 @@ namespace Nekoyume.UI.Scroller
 
             StatType = consumable.MainStat;
 
-            var optionString = $"{consumable.MainStat} +{consumable.Stats.First(stat => stat.StatType == consumable.MainStat).TotalValueAsInt}";
+            var optionString = $"{consumable.MainStat} +{consumable.Stats.First(stat => stat.StatType == consumable.MainStat).TotalValueAsLong}";
             optionText.text = optionString;
             SetLocked(false, UnlockStage);
         }

@@ -35,10 +35,12 @@ namespace Nekoyume.Multiplanetary
             PlayerPrefs.GetString(CachedPlanetIdStringKey);
 
         public static Subject<(PlanetContext planetContext, PlanetInfo? planetInfo)>
-            SelectedPlanetInfoSubject { get; } = new();
+            SelectedPlanetInfoSubject
+        { get; } = new();
 
         public static Subject<(PlanetContext planetContext, PlanetAccountInfo? planetAccountInfo)>
-            SelectedPlanetAccountInfoSubject { get; } = new();
+            SelectedPlanetAccountInfoSubject
+        { get; } = new();
 
         public static async UniTask<PlanetContext> InitializePlanetRegistryAsync(
             PlanetContext context)
@@ -83,11 +85,21 @@ namespace Nekoyume.Multiplanetary
                       $" PlanetRegistryUrl: {clo.PlanetRegistryUrl}");
             context.PlanetRegistry = new PlanetRegistry(clo.PlanetRegistryUrl);
 
-            var sw = new Stopwatch();
-            sw.Start();
-            await context.PlanetRegistry.InitializeAsync();
-            sw.Stop();
-            Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            for (var i = 0; i < 3; i++)
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+                await context.PlanetRegistry.InitializeAsync();
+                sw.Stop();
+                if (context.PlanetRegistry.IsInitialized)
+                {
+                    Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    break;
+                }
+
+                Debug.LogError($"[PlanetSelector] Failed to initialize PlanetRegistry. Retry({i + 1})...");
+            }
+
             if (!context.PlanetRegistry.IsInitialized)
             {
                 Debug.LogError("[PlanetSelector] Failed to initialize PlanetRegistry.");

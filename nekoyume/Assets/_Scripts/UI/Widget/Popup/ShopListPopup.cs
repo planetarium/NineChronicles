@@ -11,6 +11,7 @@ using Cysharp.Threading.Tasks;
 using System.Numerics;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 
 namespace Nekoyume.UI
 {
@@ -125,7 +126,14 @@ namespace Nekoyume.UI
                 evt.AddCustomAttribute("product-id", _data.Sku);
                 AirbridgeUnity.TrackEvent(evt);
 
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
+                if (_data.IsFree)
+                {
+                    Game.Game.instance.IAPStoreManager.OnPurchaseFreeAsync(_data.Sku).Forget();
+                }
+                else
+                {
+                    Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
+                }
 
                 buyButton.interactable = false;
                 buttonDisableObj.SetActive(true);
@@ -164,12 +172,22 @@ namespace Nekoyume.UI
 
             await DownloadTexture();
 
-            var metadata = _puchasingData.metadata;
-            Debug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+            var metadata = _puchasingData?.metadata;
 
-            foreach (var item in priceTexts)
+            if (!_data.IsFree)
             {
-                item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                Debug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                foreach (var item in priceTexts)
+                {
+                    item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                }
+            }
+            else
+            {
+                foreach (var item in priceTexts)
+                {
+                    item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
+                }
             }
 
             // Initialize IAP Reward
@@ -228,7 +246,7 @@ namespace Nekoyume.UI
             discountText.gameObject.SetActive(false);
             timeLimitText.gameObject.SetActive(false);
 
-            if (isDiscount)
+            if (isDiscount && !_data.IsFree)
             {
                 discountText.text = _data.Discount.ToString();
                 foreach (var item in preDiscountPrice)
@@ -247,8 +265,18 @@ namespace Nekoyume.UI
                 item.gameObject.SetActive(true);
             }
 
-            buyButton.interactable = true;
-            buttonDisableObj.SetActive(false);
+
+            if(_data.RequiredLevel != null)
+            {
+                buttonDisableObj.SetActive(_data.RequiredLevel > States.Instance.CurrentAvatarState.level);
+                buyButton.interactable = !buttonDisableObj.activeSelf;
+            }
+            else
+            {
+                buttonDisableObj.SetActive(false);
+                buyButton.interactable = true;
+            }
+
             buttonActiveEffectObj.SetActive(true);
 
             buyLimitObj.SetActive(false);

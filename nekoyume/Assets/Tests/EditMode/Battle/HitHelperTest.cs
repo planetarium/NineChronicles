@@ -20,18 +20,18 @@ namespace Tests.EditMode.Battle
             var hit = HitHelper.GetHitStep4(chance, correction);
             Assert.AreEqual(hit, HitHelper.IsHit(attackerLevel, attackerHit, defenderLevel, defenderHit, chance));
         }
-        
+
         [Test]
         public void GetHitStep1()
         {
-            var attackerLevel = 1;
+            var attackerLevel = 1L;
             var defenderLevel = 1 + Math.Abs(HitHelper.GetHitStep1LevelDiffMin);
             Assert.AreEqual(HitHelper.GetHitStep1CorrectionMin, HitHelper.GetHitStep1(attackerLevel, defenderLevel));
             attackerLevel = 1 + Math.Abs(HitHelper.GetHitStep1LevelDiffMax);
             defenderLevel = 1;
             Assert.AreEqual(HitHelper.GetHitStep1CorrectionMax, HitHelper.GetHitStep1(attackerLevel, defenderLevel));
         }
-        
+
         [Test]
         public void GetHitStep2()
         {
@@ -48,14 +48,14 @@ namespace Tests.EditMode.Battle
         [Test]
         public void GetHitStep3()
         {
-            var correction = 1;
+            var correction = 1L;
             correction = HitHelper.GetHitStep3(correction);
             Assert.AreEqual(HitHelper.GetHitStep3CorrectionMin, correction);
             correction = 100;
             correction = HitHelper.GetHitStep3(correction);
             Assert.AreEqual(HitHelper.GetHitStep3CorrectionMax, correction);
         }
-        
+
         [Test]
         public void GetHitStep4()
         {

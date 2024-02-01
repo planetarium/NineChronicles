@@ -100,6 +100,37 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
+            PurchaseFreeAsync(
+                Store store,
+                string agentAddr,
+                string avatarAddr,
+                string planetId,
+                string sku)
+        {
+            var reqJson = new JsonObject
+            {
+                { "sku", sku },
+                { "store", (int)store },
+                { "agentAddress", agentAddr },
+                { "avatarAddress", avatarAddr},
+                { "planetId", planetId},
+            };
+
+            Debug.Log($"PurchaseFreeAsync : {reqJson}");
+
+            var reqContent = new StringContent(
+                reqJson.ToJsonString(JsonSerializerOptions),
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            reqContent.Headers.Add("agentAddress", agentAddr);
+
+            using var res = await _client.PostAsync(_endpoints.PurchaseFree, reqContent);
+            return await ProcessResponseAsync(res);
+        }
+
+        public async
+            Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             PurchaseStatusAsync(HashSet<string> uuids)
         {
             var sb = new StringBuilder();

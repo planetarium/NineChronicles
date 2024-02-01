@@ -55,7 +55,7 @@ namespace Nekoyume.UI
 
         public void Show(
             int bossId,
-            int score,
+            long score,
             bool isBest,
             List<FungibleAssetValue> battleRewards,
             List<FungibleAssetValue> killRewards)
@@ -101,7 +101,7 @@ namespace Nekoyume.UI
             RefreshSeasonPassCourageAmount();
         }
 
-        public void ShowAsPractice(int bossId, int score)
+        public void ShowAsPractice(int bossId, long score)
         {
             foreach (var view in rewardViews)
             {

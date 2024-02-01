@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Character
         protected SpeechBubble _speechBubble;
         public HpBar HPBar { get; private set; }
 
-        protected int _currentHp;
+        protected long _currentHp;
 
         protected WorldBossBattle _worldBossBattle;
         protected float _attackTime;
@@ -649,7 +649,7 @@ namespace Nekoyume.Game.Character
             }
 
             var value = _currentHp - dmg;
-            _currentHp = Mathf.Clamp(value, 0, _characterModel.HP);
+            _currentHp = Math.Clamp(value, 0, _characterModel.HP);
 
             Animator.Hit();
             UpdateStatusUI();

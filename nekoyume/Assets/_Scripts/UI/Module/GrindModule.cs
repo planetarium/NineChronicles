@@ -250,9 +250,8 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                const string blockMessage = "ERROR_NOT_GRINDING_10OVER";
                 OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize(blockMessage),
+                    L10nManager.Localize("ERROR_NOT_GRINDING_OVER", LimitGrindingCount),
                     NotificationCell.NotificationType.Alert);
             }
 
@@ -345,16 +344,9 @@ namespace Nekoyume.UI.Module
                 States.Instance.StakingLevel);
             if (_cachedGrindingRewardCrystal.MajorUnit > 0)
             {
-                if (prevCrystalReward > _cachedGrindingRewardCrystal.MajorUnit)
-                {
-                    crystalRewardText.text = _cachedGrindingRewardCrystal.GetQuantityString();
-                }
-                else
-                {
-                    crystalRewardTweener.Play(
+                crystalRewardTweener.Play(
                         (long) prevCrystalReward,
                         (long) _cachedGrindingRewardCrystal.MajorUnit);
-                }
             }
             else
             {

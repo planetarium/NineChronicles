@@ -7,6 +7,7 @@ using UniRx;
 using Nekoyume.L10n;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
+using Nekoyume.State;
 
 namespace Nekoyume.UI.Module
 {
@@ -137,10 +138,15 @@ namespace Nekoyume.UI.Module
         private void Refresh()
         {
             _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku);
-            if (_purchasingData == null)
+            if (_purchasingData == null && !_data.IsFree)
             {
                 gameObject.SetActive(false);
                 return;
+            }
+
+            if (_data.IsFree)
+            {
+                _purchasingData = null;
             }
 
             switch (_data.Size)
@@ -157,13 +163,23 @@ namespace Nekoyume.UI.Module
                     break;
             }
 
-            var metadata = _purchasingData.metadata;
-            Debug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
-
-            foreach (var item in price)
+            var metadata = _purchasingData?.metadata;
+            if (!_data.IsFree)
             {
-                item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                Debug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                foreach (var item in price)
+                {
+                    item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                }
             }
+            else
+            {
+                foreach (var item in price)
+                {
+                    item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
+                }
+            }
+
 
             var isDiscount = _data.Discount > 0;
             foreach (var item in discountObjs)
@@ -174,7 +190,7 @@ namespace Nekoyume.UI.Module
             tagObj.SetActive(false);
             discount.gameObject.SetActive(false);
             timeLimitText.gameObject.SetActive(false);
-            if (isDiscount)
+            if (isDiscount && !_data.IsFree)
             {
                 discount.text = $"{_data.Discount}%";
                 foreach (var item in preDiscountPrice)
@@ -241,6 +257,36 @@ namespace Nekoyume.UI.Module
             }
 
             return true;
+        }
+
+        public bool IsNotification()
+        {
+            if (!_data.IsFree)
+            {
+                return false;
+            }
+
+            if (!IsBuyable())
+            {
+                return false;
+            }
+
+            if (dimObj.activeSelf)
+            {
+                return false;
+            }
+
+            if (_data.RequiredLevel == null)
+            {
+                return true;
+            }
+
+            if (_data.RequiredLevel.Value < States.Instance.CurrentAvatarState.level)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public int GetOrder()

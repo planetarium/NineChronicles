@@ -28,8 +28,8 @@ namespace Nekoyume.UI
         private float _xLength = 0;
 
         private readonly ReactiveProperty<int> _currentStar = new ReactiveProperty<int>(0);
-        private int _currentWaveHpSum = 0;
-        private int _progress = 0;
+        private long _currentWaveHpSum = 0;
+        private long _progress = 0;
         private bool _vfxEnabled;
 
         [SerializeField] private StageProgressBarVFX stageProgressBarVFX = null;
@@ -106,12 +106,12 @@ namespace Nekoyume.UI
             SetStarProgress(_currentStar.Value + 1);
         }
 
-        private void SetNextWave(int waveHpSum)
+        private void SetNextWave(long waveHpSum)
         {
             _currentWaveHpSum = _progress = waveHpSum;
         }
 
-        private void IncreaseProgress(int hp)
+        private void IncreaseProgress(long hp)
         {
             if (_vfxEnabled)
             {

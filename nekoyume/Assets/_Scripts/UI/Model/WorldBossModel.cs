@@ -12,8 +12,8 @@ namespace Nekoyume.UI.Model
         public int IconId;
         public string AvatarName;
         public string Address;
-        public int HighScore;
-        public int TotalScore;
+        public long HighScore;
+        public long TotalScore;
     }
 
     public class worldBossRanking

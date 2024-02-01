@@ -10,8 +10,8 @@ namespace Nekoyume.UI.Model
         public int Ranking { get; }
         public string AvatarName { get; }
         public string Address { get; }
-        public int HighScore { get; }
-        public int TotalScore { get; }
+        public long HighScore { get; }
+        public long TotalScore { get; }
         public int Cp { get; }
         public int Level { get; }
         public int Portrait { get; }

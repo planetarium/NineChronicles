@@ -12,10 +12,10 @@ namespace Nekoyume.UI.Module
 
         public virtual void Show(DecimalStat decimalStat)
         {
-            Show(decimalStat.StatType, decimalStat.TotalValueAsInt);
+            Show(decimalStat.StatType, decimalStat.TotalValueAsLong);
         }
-        
-        public virtual void Show(StatType statType, int value, bool showPlus = false)
+
+        public virtual void Show(StatType statType, long value, bool showPlus = false)
         {
             var valueString = statType.ValueToString(value);
             Show(statType.ToString(), showPlus ? $"+{valueString}" : valueString);

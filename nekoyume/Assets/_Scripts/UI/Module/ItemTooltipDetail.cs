@@ -170,7 +170,7 @@ namespace Nekoyume.UI.Module
                         var statView = statViewList[i];
                         if (i == 0)
                         {
-                            statView.Show(mainStatType, (int)mainStatTotalValue);
+                            statView.Show(mainStatType, mainStatTotalValue);
                             continue;
                         }
 
@@ -179,7 +179,7 @@ namespace Nekoyume.UI.Module
 
                     foreach (var (type, value, count) in optionInfo.StatOptions)
                     {
-                        AddStat(type, (int)value, count);
+                        AddStat(type, value, count);
                         statCount += count;
                     }
 
@@ -205,7 +205,7 @@ namespace Nekoyume.UI.Module
                         var statView = statViewList[i];
                         if (i < usableStatCount)
                         {
-                            statView.Show(stats[i].StatType, stats[i].TotalValueAsInt);
+                            statView.Show(stats[i].StatType, stats[i].TotalValueAsLong);
                             continue;
                         }
 
@@ -231,7 +231,7 @@ namespace Nekoyume.UI.Module
                         var statView = statViewList[i];
                         if (i < usableStatCount)
                         {
-                            statView.Show(stats[i].StatType, stats[i].TotalValueAsInt);
+                            statView.Show(stats[i].StatType, stats[i].TotalValueAsLong);
                             statCount++;
                             continue;
                         }
@@ -286,7 +286,7 @@ namespace Nekoyume.UI.Module
             starImage.SetActive(true);
         }
 
-        private void AddStat(StatType statType, int value, int count)
+        private void AddStat(StatType statType, long value, int count)
         {
             var statView = GetDisabledStatRow();
             if (statView.Equals(default) ||
