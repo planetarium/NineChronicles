@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.Planetarium.NineChronicles" xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.planetariumlabs.ninechroniclesmobile" xmlns:tools="http://schemas.android.com/tools">
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
@@ -28,6 +28,30 @@
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="ninechroniclesmobile" />
       </intent-filter>
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="http" android:host="ninechronicles.airbridge.io" />
+      </intent-filter>
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" android:host="ninechronicles.airbridge.io" />
+      </intent-filter>
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="http" android:host="ninechronicles.deeplink.page" />
+      </intent-filter>
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" android:host="ninechronicles.deeplink.page" />
+      </intent-filter>
     </activity>
     <meta-data android:name="co.ab180.airbridge.sdk.app_name" android:value="airbridge==ninechronicles" />
     <meta-data android:name="co.ab180.airbridge.sdk.app_token" android:value="airbridge==c476471c40544e479b367e2ddee1e587" />
@@ -41,7 +65,7 @@
     <meta-data android:name="co.ab180.airbridge.sdk.track_airbridge_link_only" android:value="false" />
     <meta-data android:name="co.ab180.airbridge.sdk.auto_start_tracking_enabled" android:value="true" />
     <meta-data android:name="co.ab180.airbridge.sdk.facebook_deferred_app_link_enabled" android:value="true" />
-    <provider android:name="co.ab180.airbridge.unity.AirbridgeContentProvider" android:authorities="${applicationId}.co.ab180.airbridge.unity.AirbridgeContentProvider" android:exported="false" />
+    <provider android:name="co.ab180.airbridge.unity.AirbridgeContentProvider" android:authorities="com.planetariumlabs.ninechroniclesmobile.co.ab180.airbridge.unity.AirbridgeContentProvider" android:exported="false" />
   </application>
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
