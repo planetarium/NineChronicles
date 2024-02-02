@@ -867,7 +867,7 @@ PlayerSettings:
   il2cppCompilerConfiguration:
     Android: 1
   managedStrippingLevel:
-    Android: 1
+    Android: 4
     EmbeddedLinux: 1
     GameCoreScarlett: 1
     GameCoreXboxOne: 1
@@ -879,7 +879,7 @@ PlayerSettings:
     WebGL: 1
     Windows Store Apps: 1
     XboxOne: 1
-    iPhone: 1
+    iPhone: 4
     tvOS: 1
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
