@@ -20,13 +20,13 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            LoadingHelper.ActivateCollection.Subscribe(collectionId =>
-            {
-                activeButtonLoadingObject.SetActive(collectionId == _itemData.Row.Id);
-            }).AddTo(gameObject);
+            LoadingHelper.ActivateCollection
+                .Subscribe(activeButtonLoadingObject.SetActive)
+                .AddTo(gameObject);
 
-            activeButton.OnSubmitSubject.Select(_ => _itemData)
-                .Subscribe(Context.OnClickActiveButton.OnNext).AddTo(gameObject);
+            activeButton.OnSubmitSubject
+                .Subscribe(_=> Context.OnClickActiveButton.OnNext(_itemData))
+                .AddTo(gameObject);
         }
 
         public override void UpdateContent(Collection.Model itemData)

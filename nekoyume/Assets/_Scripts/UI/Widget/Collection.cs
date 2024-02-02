@@ -74,6 +74,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             UpdateView();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
         }
 
         private void UpdateView()
@@ -85,9 +86,23 @@ namespace Nekoyume.UI
 
         private void OnClickMaterial(CollectionMaterial viewModel)
         {
-            _selectedMaterial.Selected.SetValueAndForceNotify(false);
-            _selectedMaterial = viewModel;
-            _selectedMaterial.Selected.SetValueAndForceNotify(true);
+            if (_selectedMaterial == null)
+            {
+                _selectedMaterial = viewModel;
+                _selectedMaterial.Selected.SetValueAndForceNotify(true);
+            }
+            else if (_selectedMaterial.Equals(viewModel))
+            {
+                _selectedMaterial.Selected.SetValueAndForceNotify(false);
+                _selectedMaterial = null;
+            }
+            else
+            {
+                _selectedMaterial.Selected.SetValueAndForceNotify(false);
+                _selectedMaterial = viewModel;
+                _selectedMaterial.Selected.SetValueAndForceNotify(true);
+            }
+
             // Todo : Show Item Info
         }
 
@@ -106,13 +121,13 @@ namespace Nekoyume.UI
             {
                 var collectionId = model.Row.Id;
                 ActionManager.Instance.ActivateCollection(collectionId, materials).Subscribe();
-                LoadingHelper.ActivateCollection.Value = collectionId;
+                LoadingHelper.ActivateCollection.Value = true;
             });
         }
 
         public void OnActionRender()
         {
-            LoadingHelper.ActivateCollection.Value = 0;
+            LoadingHelper.ActivateCollection.Value = false;
             UpdateView();
         }
     }

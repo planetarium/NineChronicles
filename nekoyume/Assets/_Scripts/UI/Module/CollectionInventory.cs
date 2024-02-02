@@ -34,10 +34,10 @@ namespace Nekoyume.UI.Module
         public void SetRequiredItem(CollectionMaterial requiredItem)
         {
             _requiredItem = requiredItem;
-            // Todo : Click First Item
-            OnClickItem(null);
 
-            scroll.UpdateData(GetModels(_requiredItem), true);
+            var models = GetModels(_requiredItem);
+            scroll.UpdateData(models, true);
+            OnClickItem(models.FirstOrDefault());
         }
 
         private void UpdateInventory(Nekoyume.Model.Item.Inventory inventory)
@@ -53,7 +53,9 @@ namespace Nekoyume.UI.Module
                 AddItem(item.item, item.count);
             }
 
-            scroll.UpdateData(GetModels(_requiredItem), true);
+            var models = GetModels(_requiredItem);
+            scroll.UpdateData(models, true);
+            OnClickItem(models.FirstOrDefault());
         }
 
         private void AddItem(ItemBase itemBase, int count = 1)

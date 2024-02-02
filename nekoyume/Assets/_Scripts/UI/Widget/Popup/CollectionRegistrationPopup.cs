@@ -35,8 +35,7 @@ namespace Nekoyume.UI
             });
             CloseWidget = () =>
             {
-                Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Close();
             };
 
             registrationButton.OnSubmitSubject
