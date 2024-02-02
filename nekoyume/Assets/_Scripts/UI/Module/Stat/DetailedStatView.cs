@@ -54,18 +54,12 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
         }
 
-        public void Show(
-            StatType statType,
-            StatModifier.OperationType operationType1, long value1,
-            StatModifier.OperationType operationType2, long value2)
+        public void ShowModify(StatType statType, long addValue, long percentageValue)
         {
+            const string none = "-";
             statTypeText.text = statType.ToString();
-            valueText.text = operationType1 == StatModifier.OperationType.Add
-                ? $"+{statType.ValueToString(value1)}"
-                : $"+{value1}%";
-            valueText2.text = operationType2 == StatModifier.OperationType.Add
-                ? $"+{statType.ValueToString(value2)}"
-                : $"+{value2}%";
+            valueText.text = addValue > 0 ? $"+{statType.ValueToString(addValue)}" : none;
+            valueText2.text = percentageValue > 0 ? $"+{percentageValue:0.#\\%}" : none;
 
             gameObject.SetActive(true);
         }

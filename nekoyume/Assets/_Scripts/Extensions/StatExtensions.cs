@@ -1,12 +1,7 @@
-using mixpanel;
-using Nekoyume.Game;
-using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
-using Org.BouncyCastle.Utilities;
 using System;
 using System.Globalization;
-using System.Linq;
 
 namespace Nekoyume
 {
@@ -21,6 +16,15 @@ namespace Nekoyume
                 (stat.BaseValue / 100m) : stat.BaseValue;
 
             return $"{stat.StatType} +{(float)value}";
+        }
+
+        public static string StatModifierToString(this StatModifier statModifier)
+        {
+            var value = statModifier.Operation == StatModifier.OperationType.Percentage
+                ? $"+{statModifier.Value:0.#\\%}"
+                : $"+{statModifier.StatType.ValueToString(statModifier.Value)}";
+
+            return $"{statModifier.StatType} {value}";
         }
 
         public static string OptionRowToString(

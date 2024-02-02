@@ -1,5 +1,4 @@
 using Nekoyume.L10n;
-using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
 
@@ -15,18 +14,13 @@ namespace Nekoyume.UI.Model
             gameObject.SetActive(true);
             nameText.text = L10nManager.Localize($"COLLECTION_NAME_{itemData.Row.Id}");
 
+            var stat = itemData.Row.StatModifiers;
             for (var i = 0; i < statTexts.Length; i++)
             {
-                var statText = statTexts[i];
-                statText.gameObject.SetActive(i < itemData.Row.StatModifiers.Count);
-                if (i < itemData.Row.StatModifiers.Count)
+                statTexts[i].gameObject.SetActive(i < stat.Count);
+                if (i < stat.Count)
                 {
-                    var statModifier = itemData.Row.StatModifiers[i];
-                    var statValueToString = statModifier.Operation == StatModifier.OperationType.Add
-                        ? $"+{statModifier.StatType.ValueToString(statModifier.Value)}"
-                        : $"+{statModifier.StatType.ValueToString(statModifier.Value)}%";
-
-                    statText.text = $"{statModifier.StatType} {statValueToString}";
+                    statTexts[i].text = stat[i].StatModifierToString();
                 }
             }
         }

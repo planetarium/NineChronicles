@@ -56,17 +56,14 @@ namespace Nekoyume.UI.Module
             foreach (var grouping in data)
             {
                 var statType = grouping.Key;
-                var percentageValue = grouping
-                    .Where(stat => stat.Operation == StatModifier.OperationType.Percentage)
-                    .Sum(s => s.Value);
                 var addValue = grouping
                     .Where(stat => stat.Operation == StatModifier.OperationType.Add)
                     .Sum(s => s.Value);
+                var percentageValue = grouping
+                    .Where(stat => stat.Operation == StatModifier.OperationType.Percentage)
+                    .Sum(s => s.Value);
 
-                statViews[i].Show(statType,
-                    StatModifier.OperationType.Add, addValue,
-                    StatModifier.OperationType.Percentage, percentageValue);
-                i++;
+                statViews[i++].ShowModify(statType, addValue, percentageValue);
             }
 
             countText.text = activeCount.ToString();
