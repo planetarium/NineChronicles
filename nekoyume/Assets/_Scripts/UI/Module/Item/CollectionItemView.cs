@@ -52,8 +52,6 @@ namespace Nekoyume.UI.Module
 
             baseItemView.EnoughObject.SetActive(model.Enough);
             baseItemView.TradableObject.SetActive(!model.HasItem);
-            baseItemView.SelectCollectionObject.SetActive(false);
-            baseItemView.SelectArrowObject.SetActive(false);
 
             baseItemView.SpineItemImage.gameObject.SetActive(false);
             baseItemView.EnhancementImage.gameObject.SetActive(false);
@@ -76,7 +74,11 @@ namespace Nekoyume.UI.Module
             baseItemView.RuneSelectMove.SetActive(false);
 
             model.Selected
-                .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b)).AddTo(_disposables);
+                .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b))
+                .AddTo(_disposables);
+            model.Focused
+                .Subscribe(b => baseItemView.SelectArrowObject.SetActive(b))
+                .AddTo(_disposables);
         }
     }
 }

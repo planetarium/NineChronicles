@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -40,6 +41,9 @@ namespace Nekoyume.UI
         [SerializeField] private Button backButton;
         [SerializeField] private CollectionEffect collectionEffect;
         [SerializeField] private CollectionScroll scroll;
+        // Todo : Item Info View
+
+        private CollectionMaterial _selectedMaterial;
 
         protected override void Awake()
         {
@@ -59,6 +63,9 @@ namespace Nekoyume.UI
             scroll.OnClickActiveButton
                 .Subscribe(ActivateCollectionAction)
                 .AddTo(gameObject);
+            scroll.OnClickMaterial
+                .Subscribe(OnClickMaterial)
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -73,6 +80,14 @@ namespace Nekoyume.UI
             var models = GetModels();
             scroll.UpdateData(models, true);
             collectionEffect.Set(models.ToArray());
+        }
+
+        private void OnClickMaterial(CollectionMaterial viewModel)
+        {
+            _selectedMaterial.Selected.SetValueAndForceNotify(false);
+            _selectedMaterial = viewModel;
+            _selectedMaterial.Selected.SetValueAndForceNotify(true);
+            // Todo : Show Item Info
         }
 
         private void ActivateCollectionAction(Model model)

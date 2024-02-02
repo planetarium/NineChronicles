@@ -101,9 +101,9 @@ namespace Nekoyume.UI
 
         private void OnClickItem(CollectionMaterial collectionMaterial)
         {
-            _focusedRequiredItem?.Selected.SetValueAndForceNotify(false);
+            _focusedRequiredItem?.Focused.SetValueAndForceNotify(false);
             _focusedRequiredItem = collectionMaterial;
-            _focusedRequiredItem.Selected.SetValueAndForceNotify(true);
+            _focusedRequiredItem.Focused.SetValueAndForceNotify(true);
             collectionInventory.SetRequiredItem(_focusedRequiredItem);
         }
 
