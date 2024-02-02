@@ -1,4 +1,5 @@
 using System.Linq;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -13,11 +14,17 @@ namespace Nekoyume.UI.Scroller
         [SerializeField] private CollectionStat incomplete;
         [SerializeField] private CollectionItemView[] collectionItemViews;
         [SerializeField] private ConditionalButton activeButton;
+        [SerializeField] private GameObject activeButtonLoadingObject;
 
         private Collection.Model _itemData;
 
         private void Awake()
         {
+            LoadingHelper.ActivateCollection.Subscribe(collectionId =>
+            {
+                activeButtonLoadingObject.SetActive(collectionId == _itemData.Row.Id);
+            }).AddTo(gameObject);
+
             activeButton.OnSubmitSubject.Select(_ => _itemData)
                 .Subscribe(Context.OnClickActiveButton.OnNext).AddTo(gameObject);
         }

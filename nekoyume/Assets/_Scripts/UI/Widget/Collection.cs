@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -102,11 +103,16 @@ namespace Nekoyume.UI
 
             // set materials
             Find<CollectionRegistrationPopup>().Show(model, materials =>
-                ActionManager.Instance.ActivateCollection(model.Row.Id, materials).Subscribe());
+            {
+                var collectionId = model.Row.Id;
+                ActionManager.Instance.ActivateCollection(collectionId, materials).Subscribe();
+                LoadingHelper.ActivateCollection.Value = collectionId;
+            });
         }
 
         public void OnActionRender()
         {
+            LoadingHelper.ActivateCollection.Value = 0;
             UpdateView();
         }
     }
