@@ -33,7 +33,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
-using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
@@ -812,58 +811,6 @@ namespace Nekoyume.Blockchain
                 else
                 {
                     throw new FailedToInstantiateStateException<GameConfigState>();
-                }
-
-                // NOTE: Initialize staking states after setting GameConfigState.
-                var stakeAddr = StakeStateV2.DeriveAddress(Address);
-                if (await GetStateAsync(
-                        ReservedAddresses.LegacyAccount,
-                        stakeAddr) is { } serializedStakeState)
-                {
-                    if (!StakeStateUtilsForClient.TryMigrate(
-                            serializedStakeState,
-                            States.Instance.GameConfigState,
-                            out var stakeStateV2))
-                    {
-                        States.Instance.SetStakeState(null, null, 0, null, null);
-                    }
-                    else
-                    {
-                        var balance = new FungibleAssetValue(goldCurrency);
-                        var level = 0;
-                        var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
-                        var stakeRegularRewardSheet = new StakeRegularRewardSheet();
-                        try
-                        {
-                            balance = await GetBalanceAsync(stakeAddr, goldCurrency);
-                            var sheetAddrArr = new[]
-                            {
-                                Addresses.GetSheetAddress(
-                                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
-                                Addresses.GetSheetAddress(
-                                    stakeStateV2.Contract.StakeRegularRewardSheetTableName),
-                            };
-                            var sheetStates = await GetSheetsAsync(sheetAddrArr);
-                            stakeRegularFixedRewardSheet.Set(
-                                sheetStates[sheetAddrArr[0]].ToDotnetString());
-                            stakeRegularRewardSheet.Set(
-                                sheetStates[sheetAddrArr[1]].ToDotnetString());
-                            level = stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
-                                Address,
-                                balance);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-
-                        States.Instance.SetStakeState(
-                            stakeStateV2,
-                            new GoldBalanceState(stakeAddr, balance),
-                            level,
-                            stakeRegularFixedRewardSheet,
-                            stakeRegularRewardSheet);
-                    }
                 }
 
                 var agentAddress = Address;

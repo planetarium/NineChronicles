@@ -82,7 +82,7 @@ namespace Nekoyume.Blockchain
             Address[] sheetAddrArr;
             FungibleAssetValue balance;
             StakeStateV2? nullableStakeState;
-            if (!StateGetter.TryGetStakeStateV2(agentAddr, evaluation.OutputState, out var stakeStateV2))
+            if (!StateGetter.TryGetStakeStateV2(evaluation.OutputState, agentAddr, out var stakeStateV2))
             {
                 nullableStakeState = null;
                 var policySheet = TableSheets.Instance.StakePolicySheet;

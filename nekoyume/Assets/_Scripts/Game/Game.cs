@@ -1233,7 +1233,7 @@ namespace Nekoyume.Game
         {
             // NOTE: Initialize staking states after setting GameConfigState.
             var stakeAddr = Model.Stake.StakeStateV2.DeriveAddress(Agent.Address);
-            var stakeStateIValue = await Agent.GetStateAsync(stakeAddr);
+            var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
             var goldCurrency = States.GoldBalanceState.Gold.Currency;
             var balance = goldCurrency * 0;
             var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
