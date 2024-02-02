@@ -8,8 +8,11 @@ namespace Nekoyume.UI.Model
         public CollectionSheet.CollectionMaterial Row { get; }
         public int Grade { get; }
         public bool HasItem { get; }
-        public bool EnoughLevel { get; }
+        public bool CheckLevel { get; }
         public bool EnoughCount { get; }
+
+        // enough condition for active
+        public bool Enough => HasItem && EnoughCount;
 
         public ReactiveProperty<bool> Selected { get; }
 
@@ -17,14 +20,24 @@ namespace Nekoyume.UI.Model
             CollectionSheet.CollectionMaterial row,
             int grade,
             bool hasItem,
-            bool enoughLevel,
+            bool checkLevel,
             bool enoughCount)
         {
             Row = row;
             Grade = grade;
             HasItem = hasItem;
-            EnoughLevel = enoughLevel;
+            CheckLevel = checkLevel;
             EnoughCount = enoughCount;
+            Selected = new ReactiveProperty<bool>(false);
+        }
+
+        // when collection is active - set default (no need to check level and enough count)
+        public CollectionMaterial(
+            CollectionSheet.CollectionMaterial row,
+            int grade) : this(row, grade, true, true, true)
+        {
+            Row = row;
+            Grade = grade;
             Selected = new ReactiveProperty<bool>(false);
         }
     }

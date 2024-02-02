@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Scroller
             activeButton.OnSubmitSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Context.OnClickActiveButton.OnNext(itemData);
+                Context.OnClickActiveButton.OnNext(itemData); // fixme :
             }).AddTo(gameObject);
 
             complete.gameObject.SetActive(false);
@@ -32,6 +32,8 @@ namespace Nekoyume.UI.Scroller
             var materialCount = itemData.Row.Materials.Count;
             var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
             var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+
+            var canActive = true;
             for (var i = 0; i < collectionItemViews.Length; i++)
             {
                 collectionItemViews[i].gameObject.SetActive(i < materialCount);
@@ -42,19 +44,38 @@ namespace Nekoyume.UI.Scroller
 
                 var material = itemData.Row.Materials[i];
                 var itemRow = itemSheet[material.ItemId];
-                var items = inventory.Items.Where(item => item.item.Id == material.ItemId).ToArray();
-                var equipments = items.Select(item => item.item).OfType<Equipment>().ToArray();
+                CollectionMaterial requiredItem;
+                if (itemData.Active)
+                {
+                     requiredItem = new CollectionMaterial(material, itemRow.Grade);
+                }
+                else
+                {
+                    var items = inventory.Items.Where(item => item.item.Id == material.ItemId).ToArray();
+                    var checkLevel = itemRow.ItemType == ItemType.Equipment;
+                    bool enoughCount;
+                    if (checkLevel)
+                    {
+                        var equipments = items.Select(item => item.item).OfType<Equipment>().ToArray();
+                        enoughCount = !equipments.Any() || equipments.Any(item => item.level == material.Level);
+                    }
+                    else
+                    {
+                        enoughCount = !items.Any() || items.Length > material.Count;
+                    }
+
+                    requiredItem = new CollectionMaterial(
+                        material, itemRow.Grade, items.Any(), checkLevel, enoughCount);
+                }
 
                 collectionItemViews[i].Set(
-                    new CollectionMaterial(
-                        material, itemRow.Grade, items.Any(),
-                        !equipments.Any() || equipments.Any(item => item.level == material.Level),
-                        !items.Any() || items.Length > material.Count),
+                    requiredItem,
                     model => Context.OnClickMaterial.OnNext(model));
+
+                canActive &= requiredItem.Enough;
             }
 
-            // set conditional of active button
-
+            activeButton.SetCondition(() => canActive);
             activeButton.Interactable = !itemData.Active;
         }
     }

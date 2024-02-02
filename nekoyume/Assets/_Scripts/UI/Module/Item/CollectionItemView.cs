@@ -38,19 +38,19 @@ namespace Nekoyume.UI.Module
             baseItemView.TouchHandler.OnClick.Select(_ => model).Subscribe(onClick).AddTo(_disposables);
             baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.ItemId);
 
-            baseItemView.EnhancementText.gameObject.SetActive(model.Row.Level > 0);
+            baseItemView.EnhancementText.gameObject.SetActive(model.CheckLevel);
             baseItemView.EnhancementText.text = $"+{model.Row.Level.ToString()}";
-            baseItemView.EnhancementText.color = model.EnoughLevel ? Color.white : requiredColor;
-            baseItemView.EnhancementText.enableVertexGradient = model.EnoughLevel;
+            baseItemView.EnhancementText.color = model.EnoughCount ? Color.white : requiredColor;
+            baseItemView.EnhancementText.enableVertexGradient = model.EnoughCount;
 
-            baseItemView.CountText.gameObject.SetActive(false);
+            baseItemView.CountText.gameObject.SetActive(!model.CheckLevel);
             baseItemView.CountText.text = model.Row.Count.ToString();
             baseItemView.CountText.color = model.EnoughCount ? Color.white : requiredColor;
 
             baseItemView.OptionTag.gameObject.SetActive(false);
             // baseItemView.OptionTag.Set(itemBase);
 
-            baseItemView.EnoughObject.SetActive(model.HasItem && (model.EnoughLevel || model.EnoughCount));
+            baseItemView.EnoughObject.SetActive(model.Enough);
             baseItemView.TradableObject.SetActive(!model.HasItem);
             baseItemView.SelectCollectionObject.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);
