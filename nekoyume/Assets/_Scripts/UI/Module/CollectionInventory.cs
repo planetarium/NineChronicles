@@ -19,35 +19,28 @@ namespace Nekoyume.UI.Module
         private CollectionMaterial _requiredItem;
         private Action<InventoryItem> _onClickItem;
         private readonly List<InventoryItem> _items = new List<InventoryItem>();
-        private readonly List<IDisposable> _disposablesOnSet = new();
 
         public InventoryItem SelectedItem { get; private set; }
 
-        public void SetInventory(
-            Action<InventoryItem> onClickItem,
-            Action<CollectionInventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null)
+        public void SetInventory(Action<InventoryItem> onClickItem)
         {
             _onClickItem = onClickItem;
 
-            ReactiveAvatarState.Inventory
-                .Subscribe(e => { UpdateInventory(e, onUpdateInventory); })
-                .AddTo(_disposablesOnSet);
+            ReactiveAvatarState.Inventory.Subscribe(UpdateInventory).AddTo(gameObject);
 
-            scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposablesOnSet);
+            scroll.OnClick.Subscribe(OnClickItem).AddTo(gameObject);
         }
 
         public void SetRequiredItem(CollectionMaterial requiredItem)
         {
-            ClearSelectedItem();
             _requiredItem = requiredItem;
+            // Todo : Click First Item
+            OnClickItem(null);
 
-            var models = GetModels(_requiredItem);
-            scroll.UpdateData(models, true);
+            scroll.UpdateData(GetModels(_requiredItem), true);
         }
 
-        private void UpdateInventory(
-            Nekoyume.Model.Item.Inventory inventory,
-            Action<CollectionInventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null)
+        private void UpdateInventory(Nekoyume.Model.Item.Inventory inventory)
         {
             _items.Clear();
             if (inventory == null)
@@ -60,10 +53,7 @@ namespace Nekoyume.UI.Module
                 AddItem(item.item, item.count);
             }
 
-            var models = GetModels(_requiredItem);
-            scroll.UpdateData(models, true);
-            onUpdateInventory?.Invoke(this, inventory);
-
+            scroll.UpdateData(GetModels(_requiredItem), true);
         }
 
         private void AddItem(ItemBase itemBase, int count = 1)
@@ -121,43 +111,27 @@ namespace Nekoyume.UI.Module
 
         private void OnClickItem(InventoryItem item)
         {
-            if (SelectedItem == null)
+            if (item == null)
             {
-                SelectedItem = item;
-                SelectedItem.Selected.SetValueAndForceNotify(true);
-                _onClickItem?.Invoke(SelectedItem);
+                return;
             }
-            else
-            {
-                if (SelectedItem.Equals(item))
-                {
-                    SelectedItem.Selected.SetValueAndForceNotify(false);
-                    SelectedItem = null;
-                }
-                else
-                {
-                    SelectedItem.Selected.SetValueAndForceNotify(false);
-                    SelectedItem = item;
-                    SelectedItem.Selected.SetValueAndForceNotify(true);
-                    _onClickItem?.Invoke(SelectedItem);
-                }
-            }
-        }
 
-        private void ClearSelectedItem()
-        {
-            SelectedItem?.Selected.SetValueAndForceNotify(false);
-            SelectedItem = null;
+            SelectedItem?.CollectionSelected.SetValueAndForceNotify(false);
+            SelectedItem = item;
+            SelectedItem.CollectionSelected.SetValueAndForceNotify(true);
+            _onClickItem?.Invoke(SelectedItem);
         }
 
         private List<InventoryItem> GetModels(CollectionMaterial requiredItem)
         {
-            var items = _items.Where(item => item.ItemBase.Id == requiredItem.Row.ItemId);
+            // get from _items by required item's condition
+            var row = requiredItem.Row;
+            var items = _items.Where(item => item.ItemBase.Id == row.ItemId);
             items = items.First().ItemBase.ItemType == ItemType.Equipment
-                ? items.Where(item => ((Equipment)item.ItemBase).level == requiredItem.Row.Level)
-                : items.Where(item => item.Count.Value >= requiredItem.Row.Count);
-            // items = items.Where(item => ((Equipment)item.ItemBase).GetOptionCount() == requiredItem.OptionCount);
-            // items = items.Where(item => ((Equipment)item.ItemBase).Skills.Any() == requiredItem.SkillContains);
+                ? items.Where(item => ((Equipment)item.ItemBase).level == row.Level)
+                : items.Where(item => item.Count.Value >= row.Count);
+            // items = items.Where(item => ((Equipment)item.ItemBase).GetOptionCount() == row.OptionCount);
+            // items = items.Where(item => ((Equipment)item.ItemBase).Skills.Any() == row.SkillContains);
 
             var usableItems = new List<InventoryItem>();
             var unusableItems = new List<InventoryItem>();

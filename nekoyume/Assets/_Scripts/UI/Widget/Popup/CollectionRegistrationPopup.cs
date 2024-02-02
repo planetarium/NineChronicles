@@ -20,9 +20,8 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton registrationButton;
         [SerializeField] private CollectionInventory collectionInventory;
 
+        private readonly Dictionary<CollectionMaterial, ICollectionMaterial> _registeredItems = new();
         private CollectionMaterial _focusedRequiredItem;
-        private readonly List<CollectionMaterial> _requiredItems = new(); // required와 registered가 짝이 지어져야 함
-        private readonly List<ICollectionMaterial> _registeredItems = new();
         private Action<List<ICollectionMaterial>> _activate;
 
         protected override void Awake()
@@ -40,62 +39,72 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             };
 
-            registrationButton.OnSubmitSubject.Subscribe(_ =>
+            registrationButton.OnSubmitSubject
+                .Select(_ => collectionInventory.SelectedItem)
+                .Subscribe(RegisterItem)
+                .AddTo(gameObject);
+
+            collectionInventory.SetInventory(OnClickInventoryItem);
+        }
+
+        private void RegisterItem(InventoryItem item)
+        {
+            ICollectionMaterial collectionMaterialItem;
+            if (item.ItemBase is Equipment equipment)  // Todo : check if it's a non-fungible item
             {
-                ICollectionMaterial material;
-                var selectedItem = collectionInventory.SelectedItem;
-                if (selectedItem.ItemBase is Equipment equipment)
+                collectionMaterialItem = new NonFungibleCollectionMaterial
                 {
-                    material = new NonFungibleCollectionMaterial
-                    {
-                        ItemId = equipment.Id,
-                        ItemCount = 1,
-                        NonFungibleId = equipment.NonFungibleId,
-                        Level = equipment.level,
-                        OptionCount = equipment.GetOptionCount(),
-                        SkillContains = equipment.Skills.Any()
-                    };
-                }
-                else
-                {
-                    material = new FungibleCollectionMaterial
-                    {
-                        ItemId = selectedItem.ItemBase.Id,
-                        ItemCount = selectedItem.Count.Value,
-                    };
-                }
-
-                _registeredItems.Add(material);
-
-                var sb = new System.Text.StringBuilder();
-                foreach (var item in _registeredItems)
-                {
-                    sb.Append(item.ItemId);
-                    sb.AppendLine(", ");
-                }
-
-                Debug.LogError(sb);
-
-                if (_registeredItems.Count < _requiredItems.Count)
-                {
-                    var first = _requiredItems.FirstOrDefault(collectionMaterial =>
-                        !collectionMaterial.Selected.Value);
-                    FocusRequiredMaterial(first);
-                }
-                else
-                {
-                    _activate?.Invoke(_registeredItems);
-                    CloseWidget.Invoke();
-                }
-            }).AddTo(gameObject);
-
-            collectionInventory.SetInventory(item =>
+                    ItemId = equipment.Id,
+                    ItemCount = 1,
+                    NonFungibleId = equipment.NonFungibleId,
+                    Level = equipment.level,
+                    OptionCount = equipment.GetOptionCount(),
+                    SkillContains = equipment.Skills.Any()
+                };
+            }
+            else
             {
-                registrationButton.Interactable = item != null;
-                registrationButton.Text = _registeredItems.Count < _requiredItems.Count
-                    ? "Register"
-                    : "Activate";
-            }, (_, _) => { });
+                collectionMaterialItem = new FungibleCollectionMaterial
+                {
+                    ItemId = item.ItemBase.Id,
+                    ItemCount = item.Count.Value,
+                };
+            }
+
+            _registeredItems[_focusedRequiredItem] = collectionMaterialItem;
+
+            // Focus next required item or Activate
+            var notRegisteredItem = _registeredItems
+                .FirstOrDefault(registeredItem => registeredItem.Value == null).Key;
+            if (notRegisteredItem != null)
+            {
+                OnClickItem(notRegisteredItem);
+            }
+            else
+            {
+                var registeredItems = _registeredItems.Values.ToList();
+                _activate?.Invoke(registeredItems);
+                CloseWidget.Invoke();
+            }
+        }
+
+        private void OnClickInventoryItem(InventoryItem item)
+        {
+            // Todo : Show item info
+
+            registrationButton.Interactable = item != null;
+            var registeredAll = false;
+            registrationButton.Text = registeredAll
+                ? "Register"
+                : "Activate";
+        }
+
+        private void OnClickItem(CollectionMaterial collectionMaterial)
+        {
+            _focusedRequiredItem?.Selected.SetValueAndForceNotify(false);
+            _focusedRequiredItem = collectionMaterial;
+            _focusedRequiredItem.Selected.SetValueAndForceNotify(true);
+            collectionInventory.SetRequiredItem(_focusedRequiredItem);
         }
 
         public void Show(
@@ -104,27 +113,12 @@ namespace Nekoyume.UI
             bool ignoreShowAnimation = false)
         {
             collectionStat.Set(model);
-
-            _registeredItems.Clear();
             _activate = register;
 
-            _requiredItems.Clear();
+            var materialCount = model.Row.Materials.Count;
             var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
-            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
-            foreach (var material in model.Row.Materials)
-            {
-                var itemRow = itemSheet[material.ItemId];
-                var items = inventory.Items.Where(item => item.item.Id == material.ItemId).ToArray();
-                var equipments = items.Select(item => item.item).OfType<Equipment>().ToArray();
 
-                var collectionMaterial = new CollectionMaterial(
-                    material, itemRow.Grade, items.Any(),
-                    equipments.Any() || equipments.Any(item => item.level == material.Level),
-                    items.Any() || items.Length > material.Count);
-                _requiredItems.Add(collectionMaterial);
-            }
-
-            var materialCount = _requiredItems.Count;
+            _registeredItems.Clear();
             for (var i = 0; i < collectionItemViews.Length; i++)
             {
                 collectionItemViews[i].gameObject.SetActive(i < materialCount);
@@ -133,20 +127,17 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                collectionItemViews[i].Set(_requiredItems[i], FocusRequiredMaterial);
+                var material = model.Row.Materials[i];
+                var itemRow = itemSheet[material.ItemId];
+
+                var requiredItem = new CollectionMaterial(material, itemRow.Grade);
+                collectionItemViews[i].Set(requiredItem, OnClickItem);
+                _registeredItems.Add(requiredItem, null);
             }
 
-            FocusRequiredMaterial(_requiredItems.First());
+            OnClickItem(_registeredItems.Keys.First());
 
             base.Show(ignoreShowAnimation);
-        }
-
-        private void FocusRequiredMaterial(CollectionMaterial collectionMaterial)
-        {
-            _focusedRequiredItem?.Selected.SetValueAndForceNotify(false);
-            _focusedRequiredItem = collectionMaterial;
-            _focusedRequiredItem.Selected.SetValueAndForceNotify(true);
-            collectionInventory.SetRequiredItem(_focusedRequiredItem);
         }
     }
 }
