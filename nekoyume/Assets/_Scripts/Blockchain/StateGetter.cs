@@ -92,7 +92,7 @@ namespace Nekoyume.Blockchain
             if (serialized is null or Null)
             {
                 Log.Warning("No stake state ({Address})", address.ToHex());
-                throw new StateNullException(address);
+                return null;
             }
 
             try

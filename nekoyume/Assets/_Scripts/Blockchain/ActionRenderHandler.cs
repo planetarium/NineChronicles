@@ -500,6 +500,7 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<Stake>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
                 .Subscribe(ResponseStake)
                 .AddTo(_disposables);
         }
@@ -2440,33 +2441,43 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            NotificationSystem.Push(
-                MailType.System,
-                L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
-                NotificationCell.NotificationType.Information);
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateStakeStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                    NotificationCell.NotificationType.Information);
 
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateStakeStateAsync(eval).Forget();
+                Widget.Find<StakingPopup>().SetView();
+            });
         }
 
         private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
         {
+            LoadingHelper.ClaimStakeReward.Value = false;
             if (eval.Exception is not null)
             {
                 return;
             }
 
-            // Notification
-            NotificationSystem.Push(
-                MailType.System,
-                L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
-                NotificationCell.NotificationType.Information);
-
-            UniTask.RunOnThreadPool(() =>
+            UniTask.RunOnThreadPool(async () =>
             {
-                UpdateStakeStateAsync(eval).Forget();
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-            }).Forget();
+                await UpdateStakeStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                // Notification
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
+                    NotificationCell.NotificationType.Information);
+
+                Widget.Find<StakingPopup>().SetView();
+            });
         }
 
 

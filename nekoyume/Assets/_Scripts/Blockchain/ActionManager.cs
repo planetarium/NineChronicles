@@ -1699,6 +1699,33 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
+        public IObservable<ActionEvaluation<Stake>> Stake(
+            BigInteger amount)
+        {
+            var action = new Stake(amount);
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<Stake>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionEvaluation<ClaimStakeReward>> ClaimStakeReward(
+            Address avatarAddress)
+        {
+            var action = new ClaimStakeReward(avatarAddress);
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimStakeReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
         public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
