@@ -81,8 +81,9 @@ namespace Nekoyume.UI
 
         public async void ShowAsync(RectTransform target, Address avatarAddress)
         {
-            var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);
-            if (!exist)
+            var avatarState = (await Game.Game.instance.Agent.GetAvatarStatesAsync(
+                new[] { avatarAddress }))[avatarAddress];
+            if (avatarState is null)
             {
                 return;
             }

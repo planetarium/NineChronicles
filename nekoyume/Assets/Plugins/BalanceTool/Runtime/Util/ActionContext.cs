@@ -27,7 +27,7 @@ namespace BalanceTool.Util
 
         public int BlockProtocolVersion { get; set; }
 
-        public IAccount PreviousState { get; set; }
+        public IWorld PreviousState { get; set; }
 
         public int RandomSeed { get; set; }
 

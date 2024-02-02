@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Libplanet.Action.State;
 using Libplanet.KeyStore;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
@@ -47,7 +48,9 @@ namespace Nekoyume.Helper
             var address = Order.DeriveAddress(orderId);
             return await UniTask.RunOnThreadPool(async () =>
             {
-                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                var state = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    address);
                 if (state is Dictionary dictionary)
                 {
                     return OrderFactory.Deserialize(dictionary);
@@ -68,7 +71,9 @@ namespace Nekoyume.Helper
             var address = Addresses.GetItemAddress(order.TradableId);
             return await UniTask.RunOnThreadPool(async () =>
             {
-                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                var state = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    address);
                 if (state is Dictionary dictionary)
                 {
                     var itemBase = ItemFactory.Deserialize(dictionary);
@@ -86,7 +91,9 @@ namespace Nekoyume.Helper
             var address = Addresses.GetItemAddress(tradableId);
             return await UniTask.RunOnThreadPool(async () =>
             {
-                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                var state = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    address);
                 if (state is Dictionary dictionary)
                 {
                     var itemBase = ItemFactory.Deserialize(dictionary);

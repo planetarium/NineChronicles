@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
@@ -85,7 +86,9 @@ namespace Nekoyume.State
                     var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
                     var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id))
                         .ToList();
-                    var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(runeAddresses);
+                    var stateBulk =
+                        await Game.Game.instance.Agent.GetStateBulkAsync(
+                            ReservedAddresses.LegacyAccount, runeAddresses);
                     States.Instance.SetRuneStates(stateBulk.Values.OfType<List>().Select(serialized => new RuneState(serialized)));
                 }),
                 States.Instance.InitRuneSlotStates(),

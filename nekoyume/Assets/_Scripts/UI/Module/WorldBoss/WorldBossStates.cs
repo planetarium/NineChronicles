@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -212,13 +213,17 @@ namespace Nekoyume.UI.Module.WorldBoss
                 }
 
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidRow.Id);
-                var raiderState = await Game.Game.instance.Agent.GetStateAsync(raiderAddress);
+                var raiderState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    raiderAddress);
                 var raider = raiderState is Bencodex.Types.List raiderList
                     ? new RaiderState(raiderList)
                     : null;
 
                 var killRewardAddress = Addresses.GetWorldBossKillRewardRecordAddress(avatarAddress, raidRow.Id);
-                var killRewardState = await Game.Game.instance.Agent.GetStateAsync(killRewardAddress);
+                var killRewardState = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                killRewardAddress);
                 var killReward = killRewardState is Bencodex.Types.List killRewardList
                     ? new WorldBossKillRewardRecord(killRewardList)
                     : null;

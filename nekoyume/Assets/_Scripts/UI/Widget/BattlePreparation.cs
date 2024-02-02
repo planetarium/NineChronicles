@@ -622,19 +622,6 @@ namespace Nekoyume.UI
                     PlayerPrefs.SetInt(key, 0);
                     break;
                 }
-                case StageType.Mimisbrunnr:
-                {
-                    ActionManager.Instance.MimisbrunnrBattle(
-                        costumes,
-                        equipments,
-                        consumables,
-                        runeInfos,
-                        _worldId,
-                        _stageId,
-                        1
-                    ).Subscribe();
-                    break;
-                }
                 case StageType.EventDungeon:
                 {
                     if (!_scheduleId.HasValue)
