@@ -34,8 +34,6 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
 
-        [SerializeField] private StakingBenefitsListView[] benefitsListViews;
-
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
         [SerializeField] private CategoryTabButton levelBenefitsTabButton;
@@ -129,8 +127,9 @@ namespace Nekoyume.UI
             _deposit.Value = deposit;
             OnBlockUpdated(blockIndex);
             _toggleGroup.SetToggledOffAll();
-            currentBenefitsTabButton.OnClick.OnNext(currentBenefitsTabButton);
-            currentBenefitsTabButton.SetToggledOn();
+            var selectedTabButton = deposit > 0 ? currentBenefitsTabButton : levelBenefitsTabButton;
+            selectedTabButton.OnClick.OnNext(selectedTabButton);
+            selectedTabButton.SetToggledOn();
         }
 
         private void OnDepositEdited(BigInteger deposit)
@@ -154,11 +153,6 @@ namespace Nekoyume.UI
             buffBenefitsViews[2].Set(
                 string.Format(ActionPointBuffFormat, L10nManager.Localize("STAGE_AP_BONUS"),
                     _cachedModel[level].ActionPointBuff));
-
-            for (int i = 0; i <= 7; i++)
-            {
-                benefitsListViews[i].Set(i, level);
-            }
         }
 
         private void OnBlockUpdated(long blockIndex)
@@ -299,8 +293,6 @@ namespace Nekoyume.UI
                 }
 
                 model.ArenaRewardBuff = _arenaNcgBonus[level];
-
-                benefitsListViews[level].Set(level, model);
                 _cachedModel[level] = model;
             }
 
