@@ -1,5 +1,4 @@
 using System.Linq;
-using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -15,13 +14,17 @@ namespace Nekoyume.UI.Scroller
         [SerializeField] private CollectionItemView[] collectionItemViews;
         [SerializeField] private ConditionalButton activeButton;
 
+        private Collection.Model _itemData;
+
+        private void Awake()
+        {
+            activeButton.OnSubmitSubject.Select(_ => _itemData)
+                .Subscribe(Context.OnClickActiveButton.OnNext).AddTo(gameObject);
+        }
+
         public override void UpdateContent(Collection.Model itemData)
         {
-            activeButton.OnSubmitSubject.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                Context.OnClickActiveButton.OnNext(itemData); // fixme :
-            }).AddTo(gameObject);
+            _itemData = itemData;
 
             complete.gameObject.SetActive(false);
             incomplete.gameObject.SetActive(false);
