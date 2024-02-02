@@ -489,8 +489,10 @@ namespace Nekoyume.Blockchain
                 ).Currency;
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
-                await States.Instance.SetAgentStateAsync(await GetAgentStateAsync(Address));
-                States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
+                await States.Instance.SetAgentStateAsync(
+                    await GetAgentStateAsync(Address) ?? new AgentState(Address));
+                States.Instance.SetGoldBalanceState(
+                    new GoldBalanceState(Address,
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
