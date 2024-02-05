@@ -16,7 +16,7 @@ using Nekoyume.UI.Model;
 using NineChronicles.MOD.Ares.UI;
 using NineChronicles.MOD.Extensions;
 using UnityEngine;
-using UnityEngine.UIElements;
+using Debug = UnityEngine.Debug;
 
 namespace NineChronicles.MOD.Ares
 {
