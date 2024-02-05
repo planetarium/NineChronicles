@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: main_PFPNPC_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: 078df1d12fa85524fae7ba173a787074, type: 3}
   materials:
   - {fileID: 2100000, guid: 65665def4f5533549a90e4c767466b07, type: 2}

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: UI_Sweep_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: d0bbe4ab2a1cce3438f173f9bb27524e, type: 3}
   materials:
   - {fileID: 2100000, guid: ef16524845485d041a5f3e217d1e8a23, type: 2}

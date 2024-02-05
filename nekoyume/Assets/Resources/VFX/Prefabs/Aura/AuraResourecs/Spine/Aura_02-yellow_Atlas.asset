@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: Aura_02-yellow_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: c15ec60a39f096346a690499d57bfc27, type: 3}
   materials:
   - {fileID: 2100000, guid: aa66cb15baf8ac5479c29b53b6b17469, type: 2}

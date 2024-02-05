@@ -1,55 +1,24 @@
-
 201002.png
-size: 256,256
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:127,147
+filter:Linear,Linear
+pma:true
 acc_01
-  rotate: false
-  xy: 172, 181
-  size: 62, 53
-  orig: 62, 53
-  offset: 0, 0
-  index: -1
+bounds:2,10,61,53
+offsets:0,0,62,53
 acc_02
-  rotate: true
-  xy: 172, 160
-  size: 19, 61
-  orig: 19, 61
-  offset: 0, 0
-  index: -1
+bounds:65,55,19,60
+offsets:0,0,19,61
+rotate:90
 body
-  rotate: false
-  xy: 91, 165
-  size: 79, 69
-  orig: 79, 69
-  offset: 0, 0
-  index: -1
+bounds:41,76,79,69
 eye_01
-  rotate: false
-  xy: 2, 140
-  size: 35, 22
-  orig: 35, 22
-  offset: 0, 0
-  index: -1
+bounds:65,2,35,22
 eye_02
-  rotate: false
-  xy: 2, 164
-  size: 36, 22
-  orig: 36, 22
-  offset: 0, 0
-  index: -1
+bounds:102,17,36,22
+rotate:90
 eye_03
-  rotate: false
-  xy: 40, 159
-  size: 35, 27
-  orig: 35, 27
-  offset: 0, 0
-  index: -1
+bounds:65,26,35,27
 shadow
-  rotate: false
-  xy: 2, 188
-  size: 87, 46
-  orig: 87, 46
-  offset: 0, 0
-  index: -1
+bounds:2,65,80,37
+offsets:4,5,87,46
+rotate:90

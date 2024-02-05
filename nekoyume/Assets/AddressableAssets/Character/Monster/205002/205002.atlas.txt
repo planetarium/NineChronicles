@@ -1,167 +1,79 @@
-
 205002.png
-size: 512,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:523,110
+filter:Linear,Linear
+pma:true
 arm_L
-  rotate: true
-  xy: 2, 4
-  size: 29, 53
-  orig: 31, 55
-  offset: 1, 1
-  index: -1
+bounds:176,2,29,53
+offsets:1,1,31,55
+rotate:90
 arm_R
-  rotate: true
-  xy: 143, 37
-  size: 34, 38
-  orig: 36, 40
-  offset: 1, 1
-  index: -1
+bounds:231,4,34,38
+offsets:1,1,36,40
 body
-  rotate: true
-  xy: 344, 83
-  size: 43, 59
-  orig: 45, 61
-  offset: 1, 1
-  index: -1
+bounds:274,49,43,59
+offsets:1,1,45,61
 chain_01
-  rotate: false
-  xy: 226, 3
-  size: 11, 22
-  orig: 11, 22
-  offset: 0, 0
-  index: -1
+bounds:92,4,11,22
+rotate:90
 chain_02
-  rotate: false
-  xy: 95, 36
-  size: 46, 35
-  orig: 46, 35
-  offset: 0, 0
-  index: -1
+bounds:479,6,46,35
+rotate:90
 finger_01
-  rotate: false
-  xy: 237, 65
-  size: 12, 12
-  orig: 14, 14
-  offset: 1, 1
-  index: -1
+bounds:36,3,12,12
+offsets:1,1,14,14
 finger_02
-  rotate: true
-  xy: 239, 8
-  size: 17, 14
-  orig: 19, 16
-  offset: 1, 1
-  index: -1
+bounds:478,57,17,14
+offsets:1,1,19,16
+rotate:90
 finger_03
-  rotate: true
-  xy: 222, 42
-  size: 12, 15
-  orig: 14, 17
-  offset: 1, 1
-  index: -1
+bounds:19,3,12,15
+offsets:1,1,14,17
+rotate:90
 finger_04
-  rotate: false
-  xy: 239, 53
-  size: 8, 10
-  orig: 10, 12
-  offset: 1, 1
-  index: -1
+bounds:95,19,8,10
+offsets:1,1,10,12
 hand_L
-  rotate: false
-  xy: 223, 79
-  size: 119, 47
-  orig: 121, 49
-  offset: 1, 1
-  index: -1
+bounds:358,6,119,47
+offsets:1,1,121,49
 hand_R
-  rotate: true
-  xy: 204, 2
-  size: 23, 20
-  orig: 25, 22
-  offset: 1, 1
-  index: -1
+bounds:494,54,23,20
+offsets:1,1,25,22
 head
-  rotate: true
-  xy: 183, 42
-  size: 29, 37
-  orig: 31, 39
-  offset: 1, 1
-  index: -1
+bounds:267,5,29,37
+offsets:1,1,31,39
 hood_01
-  rotate: true
-  xy: 317, 12
-  size: 65, 77
-  orig: 67, 79
-  offset: 1, 1
-  index: -1
+bounds:95,31,65,77
+offsets:1,1,67,79
 hood_02
-  rotate: true
-  xy: 405, 83
-  size: 43, 58
-  orig: 45, 60
-  offset: 1, 1
-  index: -1
+bounds:298,4,43,58
+offsets:1,1,45,60
+rotate:90
 hood_03
-  rotate: false
-  xy: 2, 35
-  size: 91, 91
-  orig: 91, 91
-  offset: 0, 0
-  index: -1
+bounds:2,17,91,91
 hood_04
-  rotate: false
-  xy: 396, 6
-  size: 60, 75
-  orig: 62, 77
-  offset: 1, 1
-  index: -1
+bounds:162,33,60,75
+offsets:1,1,62,77
 hood_05
-  rotate: true
-  xy: 57, 7
-  size: 26, 58
-  orig: 28, 60
-  offset: 1, 1
-  index: -1
+bounds:116,3,26,58
+offsets:1,1,28,60
+rotate:90
 neck_01
-  rotate: false
-  xy: 251, 29
-  size: 64, 48
-  orig: 64, 48
-  offset: 0, 0
-  index: -1
+bounds:224,44,64,48
+rotate:90
 neck_02
-  rotate: false
-  xy: 222, 56
-  size: 13, 15
-  orig: 15, 17
-  offset: 1, 1
-  index: -1
+bounds:2,2,13,15
+offsets:1,1,15,17
+rotate:90
 shadow
-  rotate: false
-  xy: 204, 27
-  size: 40, 13
-  orig: 42, 15
-  offset: 1, 1
-  index: -1
+bounds:50,4,40,11
+offsets:1,2,42,15
 shoulder_L
-  rotate: true
-  xy: 161, 6
-  size: 29, 41
-  orig: 31, 43
-  offset: 1, 1
-  index: -1
+bounds:447,67,29,41
+offsets:1,1,31,43
 shoulder_R
-  rotate: true
-  xy: 117, 2
-  size: 32, 42
-  orig: 34, 44
-  offset: 1, 1
-  index: -1
+bounds:479,76,32,42
+offsets:1,1,34,44
+rotate:90
 tail
-  rotate: true
-  xy: 95, 73
-  size: 53, 126
-  orig: 53, 126
-  offset: 0, 0
-  index: -1
+bounds:319,55,53,126
+rotate:90
