@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -45,6 +46,7 @@ namespace Nekoyume.UI
         // Todo : Item Info View
 
         private CollectionMaterial _selectedMaterial;
+        private bool _initialized;
 
         protected override void Awake()
         {
@@ -61,12 +63,8 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             };
 
-            scroll.OnClickActiveButton
-                .Subscribe(ActivateCollectionAction)
-                .AddTo(gameObject);
-            scroll.OnClickMaterial
-                .Subscribe(OnClickMaterial)
-                .AddTo(gameObject);
+            scroll.OnClickActiveButton.Subscribe(ActivateCollectionAction).AddTo(gameObject);
+            scroll.OnClickMaterial.Subscribe(OnClickMaterial).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -75,6 +73,12 @@ namespace Nekoyume.UI
 
             UpdateView();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+
+            if (!_initialized)
+            {
+                _initialized = true;
+                ReactiveAvatarState.Inventory.Subscribe(_ => UpdateView()).AddTo(gameObject);
+            }
         }
 
         private void UpdateView()
@@ -119,8 +123,8 @@ namespace Nekoyume.UI
             // set materials
             Find<CollectionRegistrationPopup>().Show(model, materials =>
             {
-                var collectionId = model.Row.Id;
-                ActionManager.Instance.ActivateCollection(collectionId, materials).Subscribe();
+                ActionManager.Instance.ActivateCollection(model.Row.Id, materials)
+                    .Subscribe(_ => LoadingHelper.ActivateCollection.Value = false);
                 LoadingHelper.ActivateCollection.Value = true;
             });
         }

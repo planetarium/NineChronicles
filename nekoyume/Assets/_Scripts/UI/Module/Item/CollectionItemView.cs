@@ -39,7 +39,8 @@ namespace Nekoyume.UI.Module
             baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.ItemId);
 
             baseItemView.EnhancementText.gameObject.SetActive(model.CheckLevel);
-            baseItemView.EnhancementText.text = $"+{model.Row.Level.ToString()}";
+            var level = model.Row.Level;
+            baseItemView.EnhancementText.text = level > 0 ? $"+{level}" : string.Empty;
             baseItemView.EnhancementText.color = model.EnoughCount ? Color.white : requiredColor;
             baseItemView.EnhancementText.enableVertexGradient = model.EnoughCount;
 

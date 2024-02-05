@@ -90,12 +90,6 @@ namespace Nekoyume.UI
         private void OnClickInventoryItem(InventoryItem item)
         {
             // Todo : Show item info
-
-            registrationButton.Interactable = item != null;
-            var registeredAll = false;
-            registrationButton.Text = registeredAll
-                ? "Register"
-                : "Activate";
         }
 
         private void OnClickItem(CollectionMaterial collectionMaterial)
@@ -103,7 +97,13 @@ namespace Nekoyume.UI
             _focusedRequiredItem?.Focused.SetValueAndForceNotify(false);
             _focusedRequiredItem = collectionMaterial;
             _focusedRequiredItem.Focused.SetValueAndForceNotify(true);
+
             collectionInventory.SetRequiredItem(_focusedRequiredItem);
+
+            var canRegister = _registeredItems.Any(registeredItem => registeredItem.Value == null);
+            registrationButton.Text = canRegister
+                ? "Register"
+                : "Activate";
         }
 
         public void Show(
