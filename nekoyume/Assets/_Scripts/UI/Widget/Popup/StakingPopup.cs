@@ -8,10 +8,12 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -62,6 +64,8 @@ namespace Nekoyume.UI
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
 
+        private bool HasStakeState => _deposit.Value > 0;
+
         private bool _benefitListViewsInitialized;
 
         protected override void Awake()
@@ -72,8 +76,16 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(levelBenefitsTabButton);
             currentBenefitsTabButton.OnClick.Subscribe(_ =>
             {
-                currentBenefitsTab.SetActive(true);
-                levelBenefitsTab.SetActive(false);
+                if (HasStakeState)
+                {
+                    currentBenefitsTab.SetActive(true);
+                    levelBenefitsTab.SetActive(false);
+                }
+                else
+                {
+                    // TODO: change "asdgf" to localized system message.
+                    OneLineSystem.Push(MailType.System, "asdgf", NotificationCell.NotificationType.UnlockCondition);
+                }
             }).AddTo(gameObject);
             levelBenefitsTabButton.OnClick.Subscribe(_ =>
             {
@@ -214,6 +226,10 @@ namespace Nekoyume.UI
                 remainingBlock.ToString("N0"),
                 remainingBlock.BlockRangeToTimeSpanString());
             archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
+
+            // can not category UI toggle when user has not StakeState.
+            currentBenefitsTabButton.Toggleable = HasStakeState;
+            levelBenefitsTabButton.Toggleable = HasStakeState;
         }
 
         private static bool TryGetWaitedBlockIndex(
