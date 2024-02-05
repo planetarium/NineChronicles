@@ -1,5 +1,6 @@
 using System.Linq;
 using Nekoyume.Helper;
+using Spine;
 using Spine.Unity;
 using Spine.Unity.AttachmentTools;
 using UnityEngine;
@@ -31,11 +32,14 @@ namespace Nekoyume.UI
             var shader = Shader.Find("Sprites/Default");
             var material = new Material(shader);
 
-            var slotIndex = cutscene.SkeletonAnimation.skeleton.FindSlotIndex(SlotName);
-            var slot = cutscene.SkeletonAnimation.skeleton.FindSlot(SlotName);
-            var attachment = slot.Attachment.GetRemappedClone(sprite, material);
+            var slot       = cutscene.SkeletonAnimation.skeleton.FindSlot(SlotName);
+            var slotIndex  = slot == null ? -1 : slot.Data.Index;
+            var attachment = slot?.Attachment.GetRemappedClone(sprite, material);
 
-            var clonedSkin = cutscene.SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
+            var defaultSkin = cutscene.SkeletonAnimation.skeleton.Data.DefaultSkin;
+            var clonedSkin = new Skin($"{defaultSkin.Name} Clone");
+            clonedSkin.CopySkin(defaultSkin);
+
             clonedSkin.SetAttachment(slotIndex, AttachmentName, attachment);
             cutscene.SkeletonAnimation.skeleton.SetSkin(clonedSkin);
 
