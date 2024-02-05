@@ -59,14 +59,6 @@
       "dependencies": {},
       "hash": "05442994ffb7f6c679f648d702cdf888bd8c01dc"
     },
-    "com.esotericsoftware.spine.urp-shaders": {
-      "version": "file:../LocalPackages/com.esotericsoftware.spine.urp-shaders-3.8",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.render-pipelines.universal": "7.1.5"
-      }
-    },
     "com.laicasaane.texttyper": {
       "version": "https://github.com/laicasaane/unity-text-typer.git?path=Assets/TextTyper#3.1.0",
       "depth": 0,
