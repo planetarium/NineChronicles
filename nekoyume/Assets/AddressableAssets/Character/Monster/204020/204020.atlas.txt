@@ -1,209 +1,85 @@
-
 204020.png
-size: 512,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:449,142
+filter:Linear,Linear
+pma:true
 arm_L
-  rotate: true
-  xy: 269, 3
-  size: 38, 57
-  orig: 38, 57
-  offset: 0, 0
-  index: -1
+bounds:269,2,38,57
 arm_R
-  rotate: true
-  xy: 106, 59
-  size: 67, 120
-  orig: 67, 120
-  offset: 0, 0
-  index: -1
+bounds:2,20,67,120
 body_01
-  rotate: false
-  xy: 2, 40
-  size: 102, 86
-  orig: 102, 86
-  offset: 0, 0
-  index: -1
+bounds:71,38,102,86
+rotate:90
 body_02
-  rotate: false
-  xy: 228, 43
-  size: 92, 83
-  orig: 92, 83
-  offset: 0, 0
-  index: -1
+bounds:159,48,92,83
+rotate:90
 body_03
-  rotate: false
-  xy: 381, 15
-  size: 44, 34
-  orig: 44, 34
-  offset: 0, 0
-  index: -1
+bounds:77,2,44,34
 face_01
-  rotate: true
-  xy: 86, 10
-  size: 28, 17
-  orig: 28, 17
-  offset: 0, 0
-  index: -1
+bounds:2,2,26,16
+offsets:0,0,28,17
 face_02
-  rotate: false
-  xy: 389, 51
-  size: 45, 29
-  orig: 45, 29
-  offset: 0, 0
-  index: -1
+bounds:243,6,40,24
+offsets:2,2,45,29
+rotate:90
 face_03
-  rotate: true
-  xy: 436, 48
-  size: 32, 21
-  orig: 32, 21
-  offset: 0, 0
-  index: -1
+bounds:123,5,31,20
+offsets:0,0,32,21
+rotate:90
 face_04
-  rotate: false
-  xy: 459, 58
-  size: 30, 21
-  orig: 30, 21
-  offset: 0, 0
-  index: -1
+bounds:392,10,29,19
+offsets:0,1,30,21
 head
-  rotate: true
-  xy: 106, 2
-  size: 55, 50
-  orig: 55, 50
-  offset: 0, 0
-  index: -1
+bounds:309,18,55,50
+rotate:90
 leg_L
-  rotate: false
-  xy: 483, 33
-  size: 15, 22
-  orig: 15, 22
-  offset: 0, 0
-  index: -1
+bounds:54,3,15,21
+offsets:0,0,15,22
+rotate:90
 leg_R
-  rotate: false
-  xy: 491, 57
-  size: 16, 22
-  orig: 16, 22
-  offset: 0, 0
-  index: -1
+bounds:30,2,16,22
+rotate:90
 shadow
-  rotate: false
-  xy: 2, 10
-  size: 82, 28
-  orig: 82, 28
-  offset: 0, 0
-  index: -1
+bounds:244,61,79,25
+offsets:2,1,82,28
+rotate:90
 shoulder_L
-  rotate: true
-  xy: 389, 82
-  size: 44, 73
-  orig: 44, 73
-  offset: 0, 0
-  index: -1
+bounds:168,2,44,73
+rotate:90
 sweat
-  rotate: false
-  xy: 500, 35
-  size: 10, 20
-  orig: 10, 20
-  offset: 0, 0
-  index: -1
+bounds:244,49,10,20
+rotate:90
 tear
-  rotate: false
-  xy: 2, 3
-  size: 8, 5
-  orig: 8, 5
-  offset: 0, 0
-  index: -1
+bounds:159,38,8,5
+rotate:90
 thigh_L
-  rotate: false
-  xy: 427, 25
-  size: 30, 21
-  orig: 30, 21
-  offset: 0, 0
-  index: -1
+bounds:145,6,30,21
+rotate:90
 thigh_R
-  rotate: false
-  xy: 459, 29
-  size: 22, 27
-  orig: 22, 27
-  offset: 0, 0
-  index: -1
+bounds:368,2,22,27
 wood_01
-  rotate: false
-  xy: 483, 18
-  size: 15, 13
-  orig: 15, 13
-  offset: 0, 0
-  index: -1
+bounds:423,24,15,13
+rotate:90
 wood_02
-  rotate: false
-  xy: 328, 11
-  size: 51, 51
-  orig: 51, 51
-  offset: 0, 0
-  index: -1
+bounds:388,89,51,51
 wood_03
-  rotate: true
-  xy: 214, 2
-  size: 39, 53
-  orig: 39, 53
-  offset: 0, 0
-  index: -1
+bounds:361,31,39,53
 wood_04
-  rotate: true
-  xy: 464, 81
-  size: 45, 46
-  orig: 45, 46
-  offset: 0, 0
-  index: -1
+bounds:402,41,45,46
 wood_05
-  rotate: true
-  xy: 500, 21
-  size: 12, 10
-  orig: 12, 10
-  offset: 0, 0
-  index: -1
+bounds:285,61,12,10
+rotate:90
 wood_06
-  rotate: false
-  xy: 322, 64
-  size: 65, 62
-  orig: 65, 62
-  offset: 0, 0
-  index: -1
+bounds:271,75,65,62
+rotate:90
 wood_07
-  rotate: true
-  xy: 500, 11
-  size: 8, 10
-  orig: 8, 10
-  offset: 0, 0
-  index: -1
+bounds:297,63,8,10
 wood_08
-  rotate: true
-  xy: 467, 10
-  size: 17, 14
-  orig: 17, 14
-  offset: 0, 0
-  index: -1
+bounds:309,2,17,14
 wood_09
-  rotate: false
-  xy: 214, 45
-  size: 12, 12
-  orig: 12, 12
-  offset: 0, 0
-  index: -1
+bounds:271,61,12,12
 wood_10
-  rotate: false
-  xy: 158, 6
-  size: 54, 51
-  orig: 54, 51
-  offset: 0, 0
-  index: -1
+bounds:335,86,54,51
+rotate:90
 wood_11
-  rotate: true
-  xy: 427, 10
-  size: 13, 38
-  orig: 13, 38
-  offset: 0, 0
-  index: -1
+bounds:328,3,13,38
+rotate:90

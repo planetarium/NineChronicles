@@ -1,167 +1,63 @@
-
 204021.png
-size: 512,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:521,110
+filter:Linear,Linear
+pma:true
 arm_L
-  rotate: false
-  xy: 378, 8
-  size: 50, 63
-  orig: 50, 63
-  offset: 0, 0
-  index: -1
+bounds:414,45,50,63
 arm_R_01
-  rotate: false
-  xy: 132, 54
-  size: 70, 72
-  orig: 70, 72
-  offset: 0, 0
-  index: -1
+bounds:276,36,70,72
 body_01
-  rotate: false
-  xy: 2, 28
-  size: 128, 98
-  orig: 128, 98
-  offset: 0, 0
-  index: -1
+bounds:2,10,128,98
 body_02
-  rotate: false
-  xy: 423, 93
-  size: 54, 33
-  orig: 54, 33
-  offset: 0, 0
-  index: -1
+bounds:369,2,54,33
 face_01
-  rotate: false
-  xy: 165, 30
-  size: 31, 22
-  orig: 31, 22
-  offset: 0, 0
-  index: -1
+bounds:238,2,31,22
+rotate:90
 face_02
-  rotate: false
-  xy: 87, 2
-  size: 37, 24
-  orig: 37, 24
-  offset: 0, 0
-  index: -1
+bounds:425,8,35,22
+offsets:0,2,37,24
+rotate:90
 face_03
-  rotate: false
-  xy: 126, 3
-  size: 31, 23
-  orig: 31, 23
-  offset: 0, 0
-  index: -1
+bounds:180,4,31,23
 face_04
-  rotate: false
-  xy: 132, 29
-  size: 31, 23
-  orig: 31, 23
-  offset: 0, 0
-  index: -1
+bounds:213,2,31,23
+rotate:90
 head
-  rotate: false
-  xy: 361, 73
-  size: 60, 53
-  orig: 60, 53
-  offset: 0, 0
-  index: -1
+bounds:466,48,60,53
+rotate:90
 knee_L
-  rotate: false
-  xy: 268, 3
-  size: 8, 8
-  orig: 8, 8
-  offset: 0, 0
-  index: -1
+bounds:490,38,8,8
 knee_R
-  rotate: false
-  xy: 204, 54
-  size: 11, 7
-  orig: 11, 7
-  offset: 0, 0
-  index: -1
+bounds:347,2,11,7
 leg_L
-  rotate: true
-  xy: 268, 13
-  size: 17, 16
-  orig: 17, 16
-  offset: 0, 0
-  index: -1
+bounds:472,10,17,16
+rotate:90
 leg_R
-  rotate: true
-  xy: 229, 6
-  size: 21, 18
-  orig: 21, 18
-  offset: 0, 0
-  index: -1
+bounds:449,2,21,18
 pelvis
-  rotate: false
-  xy: 159, 2
-  size: 46, 25
-  orig: 46, 25
-  offset: 0, 0
-  index: -1
+bounds:132,2,46,25
 shadow
-  rotate: false
-  xy: 2, 4
-  size: 83, 22
-  orig: 83, 23
-  offset: 0, 0
-  index: -1
+bounds:191,29,79,18
+offsets:1,2,83,23
+rotate:90
 shoulder_L
-  rotate: true
-  xy: 264, 32
-  size: 29, 39
-  orig: 29, 39
-  offset: 0, 0
-  index: -1
+bounds:262,4,29,39
+rotate:90
 shoulder_R
-  rotate: true
-  xy: 305, 3
-  size: 64, 71
-  orig: 64, 71
-  offset: 0, 0
-  index: -1
+bounds:348,37,64,71
 shoulder_R_02
-  rotate: false
-  xy: 249, 10
-  size: 17, 17
-  orig: 17, 17
-  offset: 0, 0
-  index: -1
+bounds:471,29,17,17
 thigh_L
-  rotate: true
-  xy: 198, 29
-  size: 23, 20
-  orig: 23, 20
-  offset: 0, 0
-  index: -1
+bounds:347,11,23,20
+rotate:90
 thigh_R
-  rotate: false
-  xy: 207, 6
-  size: 20, 21
-  orig: 20, 21
-  offset: 0, 0
-  index: -1
+bounds:449,22,20,21
 wood_01
-  rotate: false
-  xy: 280, 69
-  size: 79, 57
-  orig: 79, 57
-  offset: 0, 0
-  index: -1
+bounds:132,29,79,57
+rotate:90
 wood_02
-  rotate: true
-  xy: 204, 63
-  size: 63, 74
-  orig: 63, 74
-  offset: 0, 0
-  index: -1
+bounds:211,35,63,73
+offsets:0,0,63,74
 wood_03
-  rotate: true
-  xy: 220, 29
-  size: 32, 42
-  orig: 32, 42
-  offset: 0, 0
-  index: -1
+bounds:303,2,32,42
+rotate:90

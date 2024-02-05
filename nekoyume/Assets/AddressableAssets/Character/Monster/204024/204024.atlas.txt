@@ -1,307 +1,109 @@
-
 204024.png
-size: 512,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:189,269
+filter:Linear,Linear
+pma:true
 Arm_R
-  rotate: true
-  xy: 92, 59
-  size: 67, 101
-  orig: 67, 101
-  offset: 0, 0
-  index: -1
+bounds:2,76,67,101
 arm_L
-  rotate: true
-  xy: 195, 71
-  size: 55, 107
-  orig: 55, 107
-  offset: 0, 0
-  index: -1
+bounds:101,160,55,107
 body_01
-  rotate: true
-  xy: 2, 29
-  size: 97, 88
-  orig: 97, 88
-  offset: 0, 0
-  index: -1
+bounds:2,179,97,88
 body_02
-  rotate: false
-  xy: 312, 38
-  size: 38, 38
-  orig: 38, 38
-  offset: 0, 0
-  index: -1
+bounds:104,71,38,38
 body_03
-  rotate: true
-  xy: 345, 2
-  size: 34, 36
-  orig: 34, 36
-  offset: 0, 0
-  index: -1
+bounds:152,97,34,36
 body_04
-  rotate: false
-  xy: 383, 5
-  size: 30, 34
-  orig: 30, 34
-  offset: 0, 0
-  index: -1
+bounds:102,18,30,34
+rotate:90
 face_01
-  rotate: false
-  xy: 79, 8
-  size: 37, 19
-  orig: 37, 19
-  offset: 0, 0
-  index: -1
+bounds:84,55,36,18
+offsets:0,0,37,19
+rotate:90
 face_02
-  rotate: false
-  xy: 188, 30
-  size: 33, 27
-  orig: 33, 27
-  offset: 0, 0
-  index: -1
+bounds:138,9,33,27
 face_03
-  rotate: false
-  xy: 184, 9
-  size: 33, 18
-  orig: 33, 18
-  offset: 0, 0
-  index: -1
+bounds:84,20,33,16
+offsets:0,1,33,18
+rotate:90
 face_04
-  rotate: false
-  xy: 118, 8
-  size: 34, 19
-  orig: 34, 19
-  offset: 0, 0
-  index: -1
+bounds:144,38,34,19
 foot_01
-  rotate: false
-  xy: 251, 38
-  size: 59, 31
-  orig: 59, 31
-  offset: 0, 0
-  index: -1
+bounds:71,93,59,31
+rotate:90
 foot_02
-  rotate: false
-  xy: 290, 6
-  size: 53, 30
-  orig: 53, 30
-  offset: 0, 0
-  index: -1
+bounds:52,21,53,30
+rotate:90
 head
-  rotate: true
-  xy: 304, 78
-  size: 48, 46
-  orig: 48, 46
-  offset: 0, 0
-  index: -1
+bounds:2,28,48,46
 shadow
-  rotate: false
-  xy: 92, 29
-  size: 94, 28
-  orig: 94, 28
-  offset: 0, 0
-  index: -1
+bounds:158,177,90,24
+offsets:2,2,94,28
+rotate:90
 water_01
-  rotate: false
-  xy: 273, 26
-  size: 7, 10
-  orig: 7, 10
-  offset: 0, 0
-  index: -1
+bounds:52,12,7,10
+rotate:90
 water_02
-  rotate: true
-  xy: 39, 2
-  size: 4, 8
-  orig: 4, 8
-  offset: 0, 0
-  index: -1
+bounds:138,40,4,8
 water_03
-  rotate: false
-  xy: 206, 2
-  size: 5, 5
-  orig: 5, 5
-  offset: 0, 0
-  index: -1
+bounds:182,68,5,5
 water_04
-  rotate: true
-  xy: 49, 2
-  size: 4, 5
-  orig: 4, 5
-  offset: 0, 0
-  index: -1
+bounds:169,160,4,5
+rotate:90
 water_05
-  rotate: true
-  xy: 56, 3
-  size: 3, 6
-  orig: 3, 6
-  offset: 0, 0
-  index: -1
+bounds:184,261,3,6
 water_06
-  rotate: true
-  xy: 79, 2
-  size: 4, 3
-  orig: 4, 3
-  offset: 0, 0
-  index: -1
+bounds:184,248,4,3
+rotate:90
 water_07
-  rotate: true
-  xy: 195, 61
-  size: 8, 21
-  orig: 8, 21
-  offset: 0, 0
-  index: -1
+bounds:40,2,8,21
+rotate:90
 wood_02
-  rotate: true
-  xy: 39, 8
-  size: 19, 38
-  orig: 19, 38
-  offset: 0, 0
-  index: -1
+bounds:104,50,19,38
+rotate:90
 wood_03
-  rotate: false
-  xy: 219, 4
-  size: 18, 24
-  orig: 18, 24
-  offset: 0, 0
-  index: -1
+bounds:2,2,18,24
 wood_04
-  rotate: true
-  xy: 218, 59
-  size: 10, 14
-  orig: 10, 14
-  offset: 0, 0
-  index: -1
+bounds:40,12,10,14
 wood_05
-  rotate: false
-  xy: 275, 5
-  size: 6, 8
-  orig: 6, 8
-  offset: 0, 0
-  index: -1
+bounds:179,169,6,8
+rotate:90
 wood_06
-  rotate: false
-  xy: 223, 33
-  size: 16, 24
-  orig: 16, 24
-  offset: 0, 0
-  index: -1
+bounds:22,2,16,24
 wood_07
-  rotate: true
-  xy: 234, 60
-  size: 9, 15
-  orig: 9, 15
-  offset: 0, 0
-  index: -1
+bounds:158,160,9,15
 wood_08
-  rotate: false
-  xy: 197, 2
-  size: 7, 5
-  orig: 7, 5
-  offset: 0, 0
-  index: -1
+bounds:182,75,7,5
+rotate:90
 wood_09
-  rotate: true
-  xy: 84, 2
-  size: 4, 3
-  orig: 4, 3
-  offset: 0, 0
-  index: -1
+bounds:184,242,4,3
+rotate:90
 wood_10
-  rotate: false
-  xy: 239, 5
-  size: 21, 13
-  orig: 21, 13
-  offset: 0, 0
-  index: -1
+bounds:76,5,21,13
 wood_11
-  rotate: false
-  xy: 2, 4
-  size: 35, 23
-  orig: 35, 23
-  offset: 0, 0
-  index: -1
+bounds:152,135,35,23
 wood_12
-  rotate: true
-  xy: 241, 47
-  size: 11, 8
-  orig: 11, 8
-  offset: 0, 0
-  index: -1
+bounds:63,2,11,8
 wood_13
-  rotate: true
-  xy: 64, 3
-  size: 3, 5
-  orig: 3, 5
-  offset: 0, 0
-  index: -1
+bounds:184,254,3,5
 wood_14
-  rotate: true
-  xy: 275, 15
-  size: 9, 7
-  orig: 9, 7
-  offset: 0, 0
-  index: -1
+bounds:64,12,9,7
 wood_15
-  rotate: false
-  xy: 352, 79
-  size: 46, 47
-  orig: 46, 47
-  offset: 0, 0
-  index: -1
+bounds:104,111,46,47
 wood_16
-  rotate: false
-  xy: 352, 41
-  size: 36, 36
-  orig: 36, 36
-  offset: 0, 0
-  index: -1
+bounds:144,59,36,36
 wood_17
-  rotate: true
-  xy: 262, 3
-  size: 15, 11
-  orig: 15, 11
-  offset: 0, 0
-  index: -1
+bounds:71,76,15,11
+rotate:90
 wood_18
-  rotate: false
-  xy: 241, 36
-  size: 8, 9
-  orig: 8, 9
-  offset: 0, 0
-  index: -1
+bounds:169,166,8,9
 wood_19
-  rotate: true
-  xy: 154, 4
-  size: 23, 28
-  orig: 23, 28
-  offset: 0, 0
-  index: -1
+bounds:71,154,23,28
+rotate:90
 wood_20
-  rotate: true
-  xy: 239, 20
-  size: 11, 32
-  orig: 11, 32
-  offset: 0, 0
-  index: -1
+bounds:173,4,11,32
 wood_21
-  rotate: true
-  xy: 71, 4
-  size: 2, 6
-  orig: 2, 6
-  offset: 0, 0
-  index: -1
+bounds:182,60,2,6
 wood_22
-  rotate: false
-  xy: 282, 26
-  size: 6, 10
-  orig: 6, 10
-  offset: 0, 0
-  index: -1
+bounds:144,99,6,10
 wood_23
-  rotate: true
-  xy: 184, 2
-  size: 5, 11
-  orig: 5, 11
-  offset: 0, 0
-  index: -1
+bounds:182,84,5,11

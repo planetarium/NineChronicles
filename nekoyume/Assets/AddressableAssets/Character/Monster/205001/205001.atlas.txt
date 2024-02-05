@@ -1,97 +1,48 @@
-
 205001.png
-size: 256,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:303,93
+filter:Linear,Linear
+pma:true
 body
-  rotate: false
-  xy: 2, 19
-  size: 85, 107
-  orig: 85, 107
-  offset: 0, 0
-  index: -1
+bounds:100,6,85,107
+rotate:90
 effect_01
-  rotate: true
-  xy: 163, 14
-  size: 14, 12
-  orig: 16, 14
-  offset: 1, 1
-  index: -1
+bounds:282,12,14,12
+offsets:1,1,16,14
 effect_02
-  rotate: false
-  xy: 96, 2
-  size: 24, 17
-  orig: 26, 19
-  offset: 1, 1
-  index: -1
+bounds:256,18,24,17
+offsets:1,1,26,19
+rotate:90
 eye_01
-  rotate: false
-  xy: 73, 9
-  size: 21, 8
-  orig: 23, 10
-  offset: 1, 1
-  index: -1
+bounds:246,2,21,8
+offsets:1,1,23,10
 eye_02
-  rotate: false
-  xy: 41, 9
-  size: 30, 8
-  orig: 32, 10
-  offset: 1, 1
-  index: -1
+bounds:246,12,30,8
+offsets:1,1,32,10
+rotate:90
 eye_03
-  rotate: false
-  xy: 122, 5
-  size: 39, 23
-  orig: 41, 25
-  offset: 1, 1
-  index: -1
+bounds:209,6,36,22
+offsets:4,2,41,25
+rotate:90
 eye_04
-  rotate: false
-  xy: 65, 3
-  size: 22, 4
-  orig: 22, 4
-  offset: 0, 0
-  index: -1
+bounds:256,12,22,4
 eye_05
-  rotate: false
-  xy: 41, 2
-  size: 22, 5
-  orig: 22, 5
-  offset: 0, 0
-  index: -1
+bounds:275,20,22,5
+rotate:90
 hand_L
-  rotate: true
-  xy: 89, 21
-  size: 7, 14
-  orig: 9, 16
-  offset: 1, 1
-  index: -1
+bounds:269,3,7,14
+offsets:1,1,9,16
+rotate:90
 hand_R
-  rotate: true
-  xy: 163, 2
-  size: 10, 16
-  orig: 12, 18
-  offset: 1, 1
-  index: -1
+bounds:282,26,10,16
+offsets:1,1,12,18
 head_01
-  rotate: true
-  xy: 89, 30
-  size: 96, 86
-  orig: 98, 88
-  offset: 1, 1
-  index: -1
+bounds:2,5,96,86
+offsets:1,1,98,88
 head_02
-  rotate: false
-  xy: 177, 34
-  size: 47, 92
-  orig: 49, 94
-  offset: 1, 1
-  index: -1
+bounds:209,44,47,92
+offsets:1,1,49,94
+rotate:90
 shadow
-  rotate: false
-  xy: 2, 6
-  size: 37, 11
-  orig: 39, 14
-  offset: 1, 1
-  index: -1
+bounds:233,6,36,11
+offsets:2,1,39,14
+rotate:90
