@@ -73,10 +73,9 @@ namespace Nekoyume.State
                 0);
             var modifier = new AgentCrystalModifier(fav);
             LocalLayer.Instance.Add(agentAddress, modifier);
-            var crystalBalance
-                = await Game.Game.instance.Agent.GetBalanceAsync(
-                    agentAddress,
-                    CrystalCalculator.CRYSTAL);
+            var crystalBalance = await Game.Game.instance.Agent.GetBalanceAsync(
+                agentAddress,
+                CrystalCalculator.CRYSTAL);
             States.Instance.SetCrystalBalance(crystalBalance);
         }
 

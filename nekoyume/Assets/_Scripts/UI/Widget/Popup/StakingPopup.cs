@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -20,28 +22,16 @@ namespace Nekoyume.UI
 
     public class StakingPopup : PopupWidget
     {
-        [SerializeField] private GameObject none;
-        [SerializeField] private GameObject content;
-
-        [Header("None")]
-        [SerializeField] private Button closeButtonNone;
-        [SerializeField] private ConditionalButton stakingButtonNone;
-
         [Header("Top")]
         [SerializeField] private Image levelIconImage;
         [SerializeField] private Image[] levelImages;
         [SerializeField] private TextMeshProUGUI depositText;
-        [SerializeField] private Image depositGaugeImage;
-        [SerializeField] private TextMeshProUGUI remainingDepositText;
-        [SerializeField] private Button stakingButton;
         [SerializeField] private Button closeButton;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
-        [SerializeField] private GameObject remainingBlockArea;
         [SerializeField] private TextMeshProUGUI remainingBlockText;
-        [SerializeField] private GameObject archiveButtonArea;
         [SerializeField] private ConditionalButton archiveButton;
 
         [SerializeField] private StakingBenefitsListView[] benefitsListViews;
@@ -53,6 +43,9 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject levelBenefitsTab;
 
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
+
+        [SerializeField]
+        private TMP_InputField stakingNcgInputField;
 
         private readonly ReactiveProperty<BigInteger> _deposit = new();
         private readonly Module.ToggleGroup _toggleGroup = new ();
@@ -89,35 +82,31 @@ namespace Nekoyume.UI
                 currentBenefitsTab.SetActive(false);
                 levelBenefitsTab.SetActive(true);
             }).AddTo(gameObject);
-
-            stakingButtonNone.OnClickSubject.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                Application.OpenURL(StakingUrl);
-            }).AddTo(gameObject);
-            closeButtonNone.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                Close();
-            });
-
-            stakingButton.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                Application.OpenURL(StakingUrl);
-            });
             closeButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
                 Close();
             });
 
-            archiveButton.OnClickSubject.Subscribe(_ =>
+            // TODO: 여기를 ClaimStakeReward action 보내는 버튼으로 바꿔야함
+            archiveButton.OnSubmitSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Application.OpenURL(StakingUrl);
+                ActionManager.Instance
+                    .ClaimStakeReward(States.Instance.CurrentAvatarState.address)
+                    .Subscribe();
+                archiveButton.Interactable = false;
+                LoadingHelper.ClaimStakeReward.Value = true;
             }).AddTo(gameObject);
 
+            stakingNcgInputField.onEndEdit.AddListener(value =>
+            {
+                ActionManager.Instance.Stake(BigInteger.Parse(value)).Subscribe();
+            });
+        }
+
+        public override void Initialize()
+        {
             SetBenefitsListViews();
             _deposit.Subscribe(OnDepositEdited).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
@@ -127,38 +116,27 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreStartAnimation = false)
         {
+            SetView();
+            base.Show(ignoreStartAnimation);
+        }
+
+        public void SetView()
+        {
             SetBenefitsListViews();
-            var level = States.Instance.StakingLevel;
             var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-
-            if (level < 1)
-            {
-                none.SetActive(true);
-                content.SetActive(false);
-                base.Show(ignoreStartAnimation);
-                return;
-            }
 
             _deposit.Value = deposit;
             OnBlockUpdated(blockIndex);
             _toggleGroup.SetToggledOffAll();
             currentBenefitsTabButton.OnClick.OnNext(currentBenefitsTabButton);
             currentBenefitsTabButton.SetToggledOn();
-            none.SetActive(false);
-            content.SetActive(true);
-
-            base.Show(ignoreStartAnimation);
         }
 
         private void OnDepositEdited(BigInteger deposit)
         {
             var states = States.Instance;
             var level = states.StakingLevel;
-            if (states.StakeStateV2 is null || level < 1)
-            {
-                return;
-            }
 
             levelIconImage.sprite = stakeIconData.GetIcon(level, IconType.Small);
             for (var i = 0; i < levelImages.Length; i++)
@@ -166,19 +144,7 @@ namespace Nekoyume.UI
                 levelImages[i].enabled = i < level;
             }
 
-            var regularSheet = states.StakeRegularRewardSheet;
-            if (regularSheet.TryGetValue(level, out var regular))
-            {
-                var nextRequired = regularSheet.TryGetValue(level + 1, out var nextLevel)
-                    ? nextLevel.RequiredGold
-                    : regular.RequiredGold;
-                depositText.text = deposit.ToString("N0");
-                depositGaugeImage.fillAmount = (float)deposit / nextRequired;
-                remainingDepositText.text = level >= 8
-                    ? ""
-                    : L10nManager.Localize("UI_REMAINING_NCG_TO_NEXT_LEVEL", nextRequired - deposit);
-            }
-
+            depositText.text = deposit.ToString("N0");
             buffBenefitsViews[0].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("ARENA_REWARD_BONUS"),
                     _cachedModel[level].ArenaRewardBuff));
@@ -203,69 +169,57 @@ namespace Nekoyume.UI
             var regularSheet = states.StakeRegularRewardSheet;
             var regularFixedSheet = states.StakeRegularFixedRewardSheet;
             var stakeStateV2 = states.StakeStateV2;
-            var rewardBlockInterval = stakeStateV2 is null
-                ? (int)StakeState.RewardInterval
-                : (int)stakeStateV2.Value.Contract.RewardInterval;
+            var rewardBlockInterval = stakeStateV2.HasValue
+                ? (int) stakeStateV2.Value.Contract.RewardInterval
+                : (int) StakeState.RewardInterval;
 
-            if (!TryGetWaitedBlockIndex(blockIndex, rewardBlockInterval, out var waitedBlockRange))
+            TryGetWaitedBlockIndex(blockIndex, rewardBlockInterval, out var waitedBlockRange);
+            var rewardCount = (int) waitedBlockRange / rewardBlockInterval;
+            regularSheet.TryGetValue(level, out var regular);
+            regularFixedSheet.TryGetValue(level, out var regularFixed);
+
+            var materialSheet = TableSheets.Instance.MaterialItemSheet;
+            for (var i = 0; i < interestBenefitsViews.Length; i++)
             {
-                return;
-            }
-
-            var rewardCount = (int)waitedBlockRange / rewardBlockInterval;
-
-            if (regularSheet.TryGetValue(level, out var regular)
-                && regularFixedSheet.TryGetValue(level, out var regularFixed))
-            {
-                var materialSheet = TableSheets.Instance.MaterialItemSheet;
-                for (var i = 0; i < interestBenefitsViews.Length; i++)
+                var result = GetReward(regular, regularFixed, (long) deposit, i);
+                result *= Mathf.Max(rewardCount, 1);
+                if (result <= 0)
                 {
-                    var result = GetReward(regular, regularFixed, (long)deposit, i);
-                    result *= Mathf.Max(rewardCount, 1);
-                    if (result <= 0)
-                    {
-                        interestBenefitsViews[i].gameObject.SetActive(false);
-                        continue;
-                    }
+                    interestBenefitsViews[i].gameObject.SetActive(false);
+                    continue;
+                }
 
-                    interestBenefitsViews[i].gameObject.SetActive(true);
+                interestBenefitsViews[i].gameObject.SetActive(true);
+                if (regular != null)
+                {
                     switch (regular.Rewards[i].Type)
                     {
                         case StakeRegularRewardSheet.StakeRewardType.Item:
                             interestBenefitsViews[i].Set(
-                                ItemFactory.CreateMaterial(materialSheet, regular.Rewards[i].ItemId),
-                                (int)result);
+                                ItemFactory.CreateMaterial(materialSheet,
+                                    regular.Rewards[i].ItemId),
+                                (int) result);
                             break;
                         case StakeRegularRewardSheet.StakeRewardType.Rune:
                             interestBenefitsViews[i].Set(
                                 regular.Rewards[i].ItemId,
-                                (int)result);
+                                (int) result);
                             break;
                         case StakeRegularRewardSheet.StakeRewardType.Currency:
                             interestBenefitsViews[i].Set(
                                 regular.Rewards[i].CurrencyTicker,
-                                (int)result);
+                                (int) result);
                             break;
                     }
                 }
             }
 
-            if (rewardCount > 0)
-            {
-                archiveButtonArea.SetActive(true);
-                remainingBlockArea.SetActive(false);
-            }
-            else
-            {
-                var remainingBlock = rewardBlockInterval - waitedBlockRange;
-                remainingBlockText.text = string.Format(
-                    RemainingBlockFormat,
-                    remainingBlock.ToString("N0"),
-                    remainingBlock.BlockRangeToTimeSpanString());
-
-                archiveButtonArea.SetActive(false);
-                remainingBlockArea.SetActive(true);
-            }
+            var remainingBlock = Math.Max(rewardBlockInterval - waitedBlockRange, 0);
+            remainingBlockText.text = string.Format(
+                RemainingBlockFormat,
+                remainingBlock.ToString("N0"),
+                remainingBlock.BlockRangeToTimeSpanString());
+            archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
         }
 
         private static bool TryGetWaitedBlockIndex(
@@ -302,14 +256,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var states = States.Instance;
-            var regularSheet = states.StakeRegularRewardSheet;
-            var regularFixedSheet = states.StakeRegularFixedRewardSheet;
+            var regularSheet = States.Instance.StakeRegularRewardSheet;
+            var regularFixedSheet = States.Instance.StakeRegularFixedRewardSheet;
             if (regularSheet is null || regularFixedSheet is null)
             {
                 return;
             }
 
+            _cachedModel[0] = new StakingBenefitsListView.Model();
             var stakingMultiplierSheet =
                 TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet;
             for (var level = 1; level <= 8; level++)
@@ -334,8 +288,16 @@ namespace Nekoyume.UI
                     model.CrystalBuff = row.Multiplier;
                 }
 
-                model.ActionPointBuff = 100 - TableSheets.Instance
-                    .StakeActionPointCoefficientSheet[level].Coefficient;
+                if (TableSheets.Instance.StakeActionPointCoefficientSheet
+                    .TryGetValue(level, out var coefficientRow))
+                {
+                    model.ActionPointBuff = 100 - coefficientRow.Coefficient;
+                }
+                else
+                {
+                    model.ActionPointBuff = 0;
+                }
+
                 model.ArenaRewardBuff = _arenaNcgBonus[level];
 
                 benefitsListViews[level].Set(level, model);
@@ -350,6 +312,11 @@ namespace Nekoyume.UI
             StakeRegularFixedRewardSheet.Row regularFixed,
             long deposit, int index)
         {
+            if (regular is null || regularFixed is null)
+            {
+                return 0;
+            }
+
             if (regular.Rewards.Count <= index || index < 0)
             {
                 return 0;

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -42,7 +43,9 @@ namespace Nekoyume
             if (!TryGetThisWeekAddress(blockIndex, out var address))
                 return null;
 
-            var state = await Game.Game.instance.Agent.GetStateAsync(address);
+            var state = await Game.Game.instance.Agent.GetStateAsync(
+                ReservedAddresses.LegacyAccount,
+                address);
             return state is null ? null : new WeeklyArenaState(state);
         }
 

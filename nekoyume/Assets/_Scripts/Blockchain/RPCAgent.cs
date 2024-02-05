@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Async;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,6 +15,7 @@ using Grpc.Core;
 using Ionic.Zlib;
 using Lib9c;
 using Lib9c.Renderers;
+using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
@@ -28,15 +28,15 @@ using MagicOnion.Unity;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
-using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Stake;
+using Nekoyume.Model;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
@@ -223,30 +223,31 @@ namespace Nekoyume.Blockchain
             Debug.Log($"[RPCAgent] Finish initialization");
         }
 
-        public IValue GetState(Address address)
+        public IValue GetState(Address accountAddress, Address address)
         {
-            var raw = _service.GetState(
-                address.ToByteArray(),
-                BlockTipHash.ToByteArray()
+            var raw = _service.GetStateByBlockHash(
+                BlockTipHash.ToByteArray(),
+                accountAddress.ToByteArray(),
+                address.ToByteArray()
             ).ResponseAsync.Result;
             return _codec.Decode(raw);
         }
 
-        public IValue GetState(Address address, HashDigest<SHA256> stateRootHash)
+        public IValue GetState(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address)
         {
-            var raw = _service.GetStateBySrh(
-                address.ToByteArray(),
-                stateRootHash.ToByteArray()
+            var raw = _service.GetStateByStateRootHash(
+                stateRootHash.ToByteArray(),
+                accountAddress.ToByteArray(),
+                address.ToByteArray()
             ).ResponseAsync.Result;
             return _codec.Decode(raw);
         }
 
-        public async Task<IValue> GetStateAsync(Address address, long? blockIndex = null)
+        public async Task<IValue> GetStateAsync(Address accountAddress, Address address)
         {
             var game = Game.Game.instance;
             // Check state & cached because force update state after rpc disconnected.
-            if (!blockIndex.HasValue &&
-                game.CachedStateAddresses.TryGetValue(address, out var cached) &&
+            if (game.CachedStateAddresses.TryGetValue(address, out var cached) &&
                 cached &&
                 game.CachedStates.TryGetValue(address, out var value) &&
                 value is not Null)
@@ -254,6 +255,18 @@ namespace Nekoyume.Blockchain
                 return value;
             }
 
+            var blockHash = await GetBlockHashAsync(null);
+            if (!blockHash.HasValue)
+            {
+                Debug.LogError("Failed to get tip block hash.");
+                return null;
+            }
+
+            return await GetStateAsync(blockHash.Value, accountAddress, address);
+        }
+
+        public async Task<IValue> GetStateAsync(long blockIndex, Address accountAddress, Address address)
+        {
             var blockHash = await GetBlockHashAsync(blockIndex);
             if (!blockHash.HasValue)
             {
@@ -261,12 +274,15 @@ namespace Nekoyume.Blockchain
                 return null;
             }
 
-            return await GetStateAsync(address, blockHash.Value);
+            return await GetStateAsync(blockHash.Value, accountAddress, address);
         }
 
-        public async Task<IValue> GetStateAsync(Address address, BlockHash blockHash)
+        public async Task<IValue> GetStateAsync(BlockHash blockHash, Address accountAddress, Address address)
         {
-            var bytes = await _service.GetState(address.ToByteArray(), blockHash.ToByteArray());
+            var bytes = await _service.GetStateByBlockHash(
+                blockHash.ToByteArray(),
+                accountAddress.ToByteArray(),
+                address.ToByteArray());
             var decoded = _codec.Decode(bytes);
             var game = Game.Game.instance;
             if (game.CachedStateAddresses.ContainsKey(address))
@@ -282,9 +298,12 @@ namespace Nekoyume.Blockchain
             return decoded;
         }
 
-        public async Task<IValue> GetStateAsync(Address address, HashDigest<SHA256> stateRootHash)
+        public async Task<IValue> GetStateAsync(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address)
         {
-            var bytes = await _service.GetStateBySrh(address.ToByteArray(), stateRootHash.ToByteArray());
+            var bytes = await _service.GetStateByStateRootHash(
+                stateRootHash.ToByteArray(),
+                accountAddress.ToByteArray(),
+                address.ToByteArray());
             var decoded = _codec.Decode(bytes);
             var game = Game.Game.instance;
             if (game.CachedStateAddresses.ContainsKey(address))
@@ -307,8 +326,44 @@ namespace Nekoyume.Blockchain
 
         public async Task<FungibleAssetValue> GetBalanceAsync(
             Address addr,
-            Currency currency,
-            long? blockIndex = null)
+            Currency currency)
+        {
+            var game = Game.Game.instance;
+            if (game.CachedBalance.TryGetValue(currency, out var cache) &&
+                cache.TryGetValue(addr, out var fav) &&
+                !fav.Equals(default))
+            {
+                await Task.CompletedTask;
+                return fav;
+            }
+
+            var blockHash = await GetBlockHashAsync(null);
+            if (blockHash is null)
+            {
+                Debug.LogError($"Failed to get tup block hash.");
+                return 0 * currency;
+            }
+
+            var balance = await GetBalanceAsync(blockHash.Value, addr, currency)
+                .ConfigureAwait(false);
+            if (addr.Equals(Address))
+            {
+                if (!game.CachedBalance.ContainsKey(currency))
+                {
+                    game.CachedBalance[currency] =
+                        new LruCache<Address, FungibleAssetValue>(2);
+                }
+
+                game.CachedBalance[currency][addr] = balance;
+            }
+
+            return balance;
+        }
+
+        public async Task<FungibleAssetValue> GetBalanceAsync(
+            long blockIndex,
+            Address addr,
+            Currency currency)
         {
             var game = Game.Game.instance;
             if (game.CachedBalance.TryGetValue(currency, out var cache) &&
@@ -326,7 +381,7 @@ namespace Nekoyume.Blockchain
                 return 0 * currency;
             }
 
-            var balance = await GetBalanceAsync(addr, currency, blockHash.Value)
+            var balance = await GetBalanceAsync(blockHash.Value, addr, currency)
                 .ConfigureAwait(false);
             if (addr.Equals(Address))
             {
@@ -343,14 +398,14 @@ namespace Nekoyume.Blockchain
         }
 
         public async Task<FungibleAssetValue> GetBalanceAsync(
+            BlockHash blockHash,
             Address address,
-            Currency currency,
-            BlockHash blockHash)
+            Currency currency)
         {
-            var raw = await _service.GetBalance(
+            var raw = await _service.GetBalanceByBlockHash(
+                BlockTipHash.ToByteArray(),
                 address.ToByteArray(),
-                _codec.Encode(currency.Serialize()),
-                BlockTipHash.ToByteArray());
+                _codec.Encode(currency.Serialize()));
             var serialized = (List) _codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
@@ -358,23 +413,100 @@ namespace Nekoyume.Blockchain
         }
 
         public async Task<FungibleAssetValue> GetBalanceAsync(
+            HashDigest<SHA256> stateRootHash,
             Address address,
-            Currency currency,
-            HashDigest<SHA256> stateRootHash)
+            Currency currency)
         {
-            var raw = await _service.GetBalanceBySrh(
+            var raw = await _service.GetBalanceByStateRootHash(
+                stateRootHash.ToByteArray(),
                 address.ToByteArray(),
-                _codec.Encode(currency.Serialize()),
-                stateRootHash.ToByteArray());
+                _codec.Encode(currency.Serialize()));
             var serialized = (List) _codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
         }
 
+        public async Task<AgentState> GetAgentStateAsync(Address address)
+        {
+            var blockHash = await GetBlockHashAsync(null);
+            if (blockHash is not { } blockHashNotNull)
+            {
+                Debug.LogError($"Failed to get tip block hash.");
+                return null;
+            }
+
+            var raw = await _service.GetAgentStatesByBlockHash(
+                blockHashNotNull.ToByteArray(),
+                new[] { address.ToByteArray() });
+            return ResolveAgentState(raw.Values.First());
+        }
+
+        public async Task<AgentState> GetAgentStateAsync(long blockIndex, Address address)
+        {
+            var blockHash = await GetBlockHashAsync(blockIndex);
+            if (blockHash is not { } blockHashNotNull)
+            {
+                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                return null;
+            }
+
+            var raw = await _service.GetAgentStatesByBlockHash(
+                blockHashNotNull.ToByteArray(),
+                new[] { address.ToByteArray() });
+            return ResolveAgentState(raw.Values.First());
+        }
+
+        public async Task<AgentState> GetAgentStateAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            var raw = await _service.GetAgentStatesByStateRootHash(
+                stateRootHash.ToByteArray(),
+                new[] { address.ToByteArray() });
+            return ResolveAgentState(raw.Values.First());
+        }
+
+        private AgentState ResolveAgentState(byte[] raw)
+        {
+            IValue value = _codec.Decode(raw);
+            if (value is Dictionary dict)
+            {
+                return new AgentState(dict);
+            }
+            else if (value is List list)
+            {
+                return new AgentState(list);
+            }
+            else
+            {
+                Debug.LogError("Given raw is not a format of the AgentState.");
+                return null;
+            }
+        }
+
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
-            IEnumerable<Address> addressList,
-            long? blockIndex = null)
+            IEnumerable<Address> addressList)
+        {
+            var blockHash = await GetBlockHashAsync(null);
+            if (!blockHash.HasValue)
+            {
+                Debug.LogError($"Failed to get tip block hash.");
+                return null;
+            }
+
+            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesByBlockHash(
+                blockHash.Value.ToByteArray(),
+                addressList.Select(a => a.ToByteArray()));
+            var result = new Dictionary<Address, AvatarState>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = ResolveAvatarState(kv.Value);
+            }
+            return result;
+        }
+
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
+            long blockIndex,
+            IEnumerable<Address> addressList)
         {
             var blockHash = await GetBlockHashAsync(blockIndex);
             if (!blockHash.HasValue)
@@ -383,37 +515,107 @@ namespace Nekoyume.Blockchain
                 return null;
             }
 
-            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStates(
-                addressList.Select(a => a.ToByteArray()),
-                blockHash.Value.ToByteArray());
+            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesByBlockHash(
+                blockHash.Value.ToByteArray(),
+                addressList.Select(a => a.ToByteArray()));
             var result = new Dictionary<Address, AvatarState>();
             foreach (var kv in raw)
             {
-                result[new Address(kv.Key)] = new AvatarState((Dictionary)_codec.Decode(kv.Value));
+                result[new Address(kv.Key)] = ResolveAvatarState(kv.Value);
             }
             return result;
         }
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
-            IEnumerable<Address> addressList,
-            HashDigest<SHA256> stateRootHash)
+            HashDigest<SHA256> stateRootHash,
+            IEnumerable<Address> addressList)
         {
-            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesBySrh(
-                addressList.Select(a => a.ToByteArray()),
-                stateRootHash.ToByteArray());
+            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesByStateRootHash(
+                stateRootHash.ToByteArray(),
+                addressList.Select(a => a.ToByteArray()));
             var result = new Dictionary<Address, AvatarState>();
             foreach (var kv in raw)
             {
-                result[new Address(kv.Key)] = new AvatarState((Dictionary)_codec.Decode(kv.Value));
+                result[new Address(kv.Key)] = ResolveAvatarState(kv.Value);
             }
             return result;
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList)
+        private AvatarState ResolveAvatarState(byte[] raw)
+        {
+            AvatarState avatarState;
+            if (!(_codec.Decode(raw) is List full))
+            {
+                Debug.LogError("Given raw is not a format of the AvatarState.");
+                return null;
+            }
+
+            if (full.Count == 1)
+            {
+                if (full[0] is Dictionary dict)
+                {
+                    avatarState = new AvatarState(dict);
+                }
+                else
+                {
+                    Debug.LogError("Given raw is not a format of the AvatarState.");
+                    return null;
+                }
+            }
+            else if (full.Count == 4)
+            {
+                if (full[0] is Dictionary dict)
+                {
+                    avatarState = new AvatarState(dict);
+                }
+                else if (full[0] is List list)
+                {
+                    avatarState = new AvatarState(list);
+                }
+                else
+                {
+                    Debug.LogError("Given raw is not a format of the AvatarState.");
+                    return null;
+                }
+
+                if (full[1] is not List inventoryList)
+                {
+                    Debug.LogError("Given raw is not a format of the inventory.");
+                    return null;
+                }
+
+                if (full[2] is not Dictionary questListDict)
+                {
+                    Debug.LogError("Given raw is not a format of the questList.");
+                    return null;
+                }
+
+                if (full[3] is not Dictionary worldInformationDict)
+                {
+                    Debug.LogError("Given raw is not a format of the worldInformation.");
+                    return null;
+                }
+
+                avatarState.inventory = new Inventory(inventoryList);
+                avatarState.questList = new QuestList(questListDict);
+                avatarState.worldInformation = new WorldInformation(worldInformationDict);
+            }
+            else
+            {
+                Debug.LogError("Given raw is not a format of the AvatarState.");
+                return null;
+            }
+
+            return avatarState;
+        }
+
+        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
         {
             Dictionary<byte[], byte[]> raw =
-                await _service.GetStateBulk(addressList.Select(a => a.ToByteArray()),
-                    BlockTipHash.ToByteArray());
+                await _service.GetBulkStateByBlockHash(
+                    BlockTipHash.ToByteArray(),
+                    accountAddress.ToByteArray(),
+                    addressList.Select(a => a.ToByteArray()));
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in raw)
             {
@@ -423,13 +625,15 @@ namespace Nekoyume.Blockchain
         }
 
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
-            IEnumerable<Address> addressList,
-            HashDigest<SHA256> stateRootHash)
+            HashDigest<SHA256> stateRootHash,
+            Address accountAddress,
+            IEnumerable<Address> addressList)
         {
             Dictionary<byte[], byte[]> raw =
-                await _service.GetStateBulkBySrh(
-                    addressList.Select(a => a.ToByteArray()),
-                    stateRootHash.ToByteArray());
+                await _service.GetBulkStateByStateRootHash(
+                    stateRootHash.ToByteArray(),
+                    accountAddress.ToByteArray(),
+                    addressList.Select(a => a.ToByteArray()));
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in raw)
             {
@@ -453,8 +657,9 @@ namespace Nekoyume.Blockchain
                 .ParallelForEachAsync(async list =>
                 {
                     Dictionary<byte[], byte[]> raw =
-                        await _service.GetSheets(list.Select(a => a.ToByteArray()),
-                            BlockTipHash.ToByteArray());
+                        await _service.GetSheets(
+                            BlockTipHash.ToByteArray(),
+                            list.Select(a => a.ToByteArray()));
                     await raw.ParallelForEachAsync(async pair =>
                     {
                         cd.TryAdd(pair.Key, pair.Value);
@@ -582,14 +787,14 @@ namespace Nekoyume.Blockchain
             Task currencyTask = Task.Run(async () =>
             {
                 var goldCurrency = new GoldCurrencyState(
-                    (Dictionary)await GetStateAsync(GoldCurrencyState.Address)
+                    (Dictionary)await GetStateAsync(
+                        ReservedAddresses.LegacyAccount,
+                        GoldCurrencyState.Address)
                 ).Currency;
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
                 await States.Instance.SetAgentStateAsync(
-                    await GetStateAsync(Address) is Dictionary agentDict
-                        ? new AgentState(agentDict)
-                        : new AgentState(Address));
+                    await GetAgentStateAsync(Address) ?? new AgentState(Address));
                 States.Instance.SetGoldBalanceState(
                     new GoldBalanceState(
                         Address,
@@ -597,7 +802,9 @@ namespace Nekoyume.Blockchain
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, Currencies.Crystal));
 
-                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
+                if (await GetStateAsync(
+                        ReservedAddresses.LegacyAccount,
+                        GameConfigState.Address) is Dictionary configDict)
                 {
                     States.Instance.SetGameConfigState(new GameConfigState(configDict));
                 }
@@ -606,61 +813,13 @@ namespace Nekoyume.Blockchain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                // NOTE: Initialize staking states after setting GameConfigState.
-                var stakeAddr = StakeStateV2.DeriveAddress(Address);
-                if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
-                {
-                    if (!StakeStateUtilsForClient.TryMigrate(
-                            serializedStakeState,
-                            States.Instance.GameConfigState,
-                            out var stakeStateV2))
-                    {
-                        States.Instance.SetStakeState(null, null, 0, null, null);
-                    }
-                    else
-                    {
-                        var balance = new FungibleAssetValue(goldCurrency);
-                        var level = 0;
-                        var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
-                        var stakeRegularRewardSheet = new StakeRegularRewardSheet();
-                        try
-                        {
-                            balance = await GetBalanceAsync(stakeAddr, goldCurrency);
-                            var sheetAddrArr = new[]
-                            {
-                                Addresses.GetSheetAddress(
-                                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
-                                Addresses.GetSheetAddress(
-                                    stakeStateV2.Contract.StakeRegularRewardSheetTableName),
-                            };
-                            var sheetStates = await GetStateBulkAsync(sheetAddrArr);
-                            stakeRegularFixedRewardSheet.Set(
-                                sheetStates[sheetAddrArr[0]].ToDotnetString());
-                            stakeRegularRewardSheet.Set(
-                                sheetStates[sheetAddrArr[1]].ToDotnetString());
-                            level = stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
-                                Address,
-                                balance);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-
-                        States.Instance.SetStakeState(
-                            stakeStateV2,
-                            new GoldBalanceState(stakeAddr, balance),
-                            level,
-                            stakeRegularFixedRewardSheet,
-                            stakeRegularRewardSheet);
-                    }
-                }
-
                 var agentAddress = Address;
                 var pledgeAddress = agentAddress.GetPledgeAddress();
                 Address? patronAddress = null;
                 var approved = false;
-                if (await GetStateAsync(pledgeAddress) is List list)
+                if (await GetStateAsync(
+                        ReservedAddresses.LegacyAccount,
+                        pledgeAddress) is List list)
                 {
                     patronAddress = list[0].ToAddress();
                     approved = list[1].ToBoolean();
