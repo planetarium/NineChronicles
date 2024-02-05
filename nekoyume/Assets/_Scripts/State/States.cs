@@ -580,15 +580,12 @@ namespace Nekoyume.State
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
                     await SetPetStates(avatarState.address);
 
-                    var collectionAddress = CollectionState.Derive(avatarAddress);
-                    var collectionStateIValue =
-                        await Game.Game.instance.Agent.GetStateAsync(collectionAddress);
-                    var collectionState = collectionStateIValue is List collectionDict
-                        ? new CollectionState(collectionDict)
-                        : new CollectionState
-                        {
-                            Address = collectionAddress
-                        };
+                    var collectionStateIValue = await Game.Game.instance.Agent.GetStateAsync(
+                        Addresses.Collection,
+                        avatarAddress);
+                    var collectionState = collectionStateIValue is List list
+                        ? new CollectionState(list)
+                        : new CollectionState();
                     SetCollectionState(collectionState);
                 });
 

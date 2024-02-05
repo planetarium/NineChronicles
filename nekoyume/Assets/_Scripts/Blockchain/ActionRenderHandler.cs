@@ -3050,15 +3050,8 @@ namespace Nekoyume.Blockchain
         {
             UpdateCurrentAvatarStateAsync(eval).Forget();
 
-            var collectionAddress = CollectionState.Derive(eval.Action.AvatarAddress);
-            var collectionStateIValue = StateGetter.GetState(collectionAddress, eval.OutputState);
-            var collectionState = collectionStateIValue is List collectionDict
-                ? new CollectionState(collectionDict)
-                : new CollectionState
-                {
-                    Address = collectionAddress
-                };
-            States.Instance.SetCollectionState(collectionState);
+            States.Instance.SetCollectionState(
+                StateGetter.GetCollectionState(eval.OutputState, eval.Action.AvatarAddress));
 
             return eval;
         }
