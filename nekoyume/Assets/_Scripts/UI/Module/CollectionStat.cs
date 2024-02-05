@@ -2,7 +2,7 @@ using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 
-namespace Nekoyume.UI.Model
+namespace Nekoyume.UI.Module
 {
     public class CollectionStat : MonoBehaviour
     {
