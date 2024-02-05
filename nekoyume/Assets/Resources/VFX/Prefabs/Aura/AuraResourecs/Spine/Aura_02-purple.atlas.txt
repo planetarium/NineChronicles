@@ -1,76 +1,35 @@
-
 Aura_02-purple.png
-size: 512,512
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:290,844
+filter:Linear,Linear
+pma:true
 aura02_1
-  rotate: false
-  xy: 411, 418
-  size: 90, 90
-  orig: 92, 92
-  offset: 1, 1
-  index: -1
+bounds:121,29,90,90
+offsets:1,1,92,92
 aura02_2
-  rotate: true
-  xy: 105, 234
-  size: 274, 273
-  orig: 276, 275
-  offset: 1, 1
-  index: -1
+bounds:2,570,274,272
+offsets:1,1,276,275
 aura02_3
-  rotate: true
-  xy: 380, 359
-  size: 149, 29
-  orig: 151, 31
-  offset: 1, 1
-  index: -1
+bounds:174,143,148,26
+offsets:2,2,151,31
+rotate:90
 effect_02
-  rotate: true
-  xy: 51, 227
-  size: 281, 52
-  orig: 281, 52
-  offset: 0, 0
-  index: -1
+bounds:2,524,252,44
+offsets:18,4,281,52
 effect_circle03
-  rotate: false
-  xy: 380, 236
-  size: 121, 121
-  orig: 121, 121
-  offset: 0, 0
-  index: -1
+bounds:2,2,117,117
+offsets:2,2,121,121
 effect_dot01
-  rotate: false
-  xy: 47, 16
-  size: 30, 35
-  orig: 43, 47
-  offset: 7, 6
-  index: -1
+bounds:256,505,23,29
+offsets:11,9,43,47
+rotate:90
 effect_dot02
-  rotate: false
-  xy: 2, 4
-  size: 43, 47
-  orig: 43, 47
-  offset: 0, 0
-  index: -1
+bounds:256,530,32,38
+offsets:6,5,43,47
 effect_image (1)
-  rotate: false
-  xy: 223, 2
-  size: 234, 230
-  orig: 234, 230
-  offset: 0, 0
-  index: -1
+bounds:2,293,232,229
+offsets:1,1,234,230
 effect_image (2)
-  rotate: false
-  xy: 51, 55
-  size: 170, 170
-  orig: 170, 170
-  offset: 0, 0
-  index: -1
+bounds:2,121,170,170
 effect_line02
-  rotate: true
-  xy: 2, 53
-  size: 455, 47
-  orig: 455, 47
-  offset: 0, 0
-  index: -1
+bounds:236,48,455,47
+rotate:90

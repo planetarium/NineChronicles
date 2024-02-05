@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1b3b4b945939a54ea0b23d3396115fb, type: 3}
   m_Name: cutscene_40100002_SkeletonData
   m_EditorClassIdentifier: 
-  atlasAssets: []
+  atlasAssets:
+  - {fileID: 11400000, guid: 3503981080dd3d74ca416ef6242fa748, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: fd03abe909dbcd54aa63a2c71e1fa75d, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: b813d5a1e9597b945a1d5731f475d4c1, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
     requiresBlendModeMaterials: 0
@@ -26,5 +27,5 @@ MonoBehaviour:
   fromAnimation: []
   toAnimation: []
   duration: []
-  defaultMix: 0
+  defaultMix: 0.2
   controller: {fileID: 0}

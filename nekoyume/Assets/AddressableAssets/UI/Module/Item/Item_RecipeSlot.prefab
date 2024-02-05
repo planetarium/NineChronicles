@@ -4164,7 +4164,7 @@ MonoBehaviour:
       m_Calls: []
 --- !u!95 &5407224977007566879
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -4181,7 +4181,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8880300712082927897
 GameObject:
   m_ObjectHideFlags: 0
@@ -4601,17 +4602,17 @@ PrefabInstance:
     - target: {fileID: 5038344582823747716, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5038344582823747716, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5038344582823747716, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5459733835396260896, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
@@ -4857,17 +4858,17 @@ PrefabInstance:
     - target: {fileID: 3200752997128584033, guid: feb9b77b2718d457db0aa446ad50517a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3200752997128584033, guid: feb9b77b2718d457db0aa446ad50517a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3200752997128584033, guid: feb9b77b2718d457db0aa446ad50517a,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3200752997128584033, guid: feb9b77b2718d457db0aa446ad50517a,
         type: 3}

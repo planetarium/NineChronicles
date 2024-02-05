@@ -1,76 +1,37 @@
-
 Aura_02-blue.png
-size: 512,512
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:506,490
+filter:Linear,Linear
+pma:true
 aura02_1
-  rotate: false
-  xy: 411, 420
-  size: 90, 90
-  orig: 92, 92
-  offset: 1, 1
-  index: -1
+bounds:121,73,90,90
+offsets:1,1,92,92
 aura02_2
-  rotate: true
-  xy: 105, 236
-  size: 274, 273
-  orig: 276, 275
-  offset: 1, 1
-  index: -1
+bounds:2,165,274,272
+offsets:1,1,276,275
+rotate:90
 aura02_3
-  rotate: true
-  xy: 380, 361
-  size: 149, 29
-  orig: 151, 31
-  offset: 1, 1
-  index: -1
+bounds:276,241,148,26
+offsets:2,2,151,31
 effect_02
-  rotate: true
-  xy: 51, 229
-  size: 281, 52
-  orig: 281, 52
-  offset: 0, 0
-  index: -1
+bounds:459,236,252,44
+offsets:18,4,281,52
+rotate:90
 effect_circle03
-  rotate: false
-  xy: 380, 238
-  size: 121, 121
-  orig: 121, 121
-  offset: 0, 0
-  index: -1
+bounds:2,46,117,117
+offsets:2,2,121,121
 effect_dot01
-  rotate: false
-  xy: 47, 14
-  size: 33, 39
-  orig: 43, 47
-  offset: 6, 4
-  index: -1
+bounds:2,18,26,33
+offsets:10,7,43,47
+rotate:90
 effect_dot02
-  rotate: false
-  xy: 2, 6
-  size: 43, 47
-  orig: 43, 47
-  offset: 0, 0
-  index: -1
+bounds:121,39,32,38
+offsets:6,5,43,47
+rotate:90
 effect_image (1)
-  rotate: true
-  xy: 223, 2
-  size: 232, 230
-  orig: 234, 230
-  offset: 1, 0
-  index: -1
+bounds:276,2,232,228
+offsets:1,2,234,230
+rotate:90
 effect_image (2)
-  rotate: false
-  xy: 51, 57
-  size: 170, 170
-  orig: 170, 170
-  offset: 0, 0
-  index: -1
+bounds:276,269,170,170
 effect_line02
-  rotate: true
-  xy: 2, 55
-  size: 455, 47
-  orig: 455, 47
-  offset: 0, 0
-  index: -1
+bounds:2,441,455,47
