@@ -41,11 +41,7 @@ namespace Nekoyume.UI.Model
             CollectionSheet.CollectionMaterial row,
             int grade) : this(row, grade, true, true, true)
         {
-            Row = row;
-            Grade = grade;
             Active = true;
-            Selected = new ReactiveProperty<bool>(false);
-            Focused = new ReactiveProperty<bool>(false);
         }
     }
 }
