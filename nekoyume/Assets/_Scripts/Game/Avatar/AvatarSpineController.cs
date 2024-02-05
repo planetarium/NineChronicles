@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Avatar
 
         private Shader _shader;
         private Spine.Animation _targetAnimation;
-        private Sequence _doFadeSequence;
+        private DG.Tweening.Sequence _doFadeSequence;
         private GameObject _cachedWeaponVFX;
         private GameObject _cachedAuraVFX;
         private readonly List<Tweener> _fadeTweener = new();
