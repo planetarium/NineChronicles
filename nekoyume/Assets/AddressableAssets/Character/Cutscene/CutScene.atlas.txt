@@ -1,13 +1,23 @@
-
-CutScene.png
-size: 1024,1024
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+cutScene.png
+size:1700,1548
+filter:Linear,Linear
+pma:true
+181120_stage01_00_F
+bounds:2,906,1244,640
+character_0001
+bounds:678,8,220,268
+offsets:0,3,220,271
+rotate:90
 cutscene_01
-  rotate: false
-  xy: 2, 226
-  size: 674, 450
-  orig: 674, 450
-  offset: 0, 0
-  index: -1
+bounds:2,454,674,450
+cutscene_02
+bounds:2,2,674,450
+cutscene_03
+bounds:678,230,674,450
+rotate:90
+cutscene_04
+bounds:1248,872,674,450
+rotate:90
+cutscene_05
+bounds:1130,196,674,450
+rotate:90

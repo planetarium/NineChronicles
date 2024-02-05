@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1b3b4b945939a54ea0b23d3396115fb, type: 3}
   m_Name: 900001_illust_SkeletonData
   m_EditorClassIdentifier: 
-  atlasAssets: []
+  atlasAssets:
+  - {fileID: 11400000, guid: ba8bf391dd3f04d36b2bb3dd30ce6e8b, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: b214978e3f5d44c30989aabeb374141f, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: 44ab198ddacf3a648993d7526157b13a, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
     requiresBlendModeMaterials: 0
@@ -26,5 +27,5 @@ MonoBehaviour:
   fromAnimation: []
   toAnimation: []
   duration: []
-  defaultMix: 0
+  defaultMix: 0.2
   controller: {fileID: 0}
