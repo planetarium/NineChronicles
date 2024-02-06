@@ -48,15 +48,8 @@ namespace Nekoyume.UI
         private TMP_InputField stakingNcgInputField;
 
         private readonly ReactiveProperty<BigInteger> _deposit = new();
-        private readonly Module.ToggleGroup _toggleGroup = new ();
+        private readonly Module.ToggleGroup _toggleGroup = new();
 
-        // hard-coded constant values. it is arena ncg bonus.
-        private readonly Dictionary<int, int> _arenaNcgBonus = new()
-        {
-            {1, 0}, {2, 100}, {3, 200}, {4, 200}, {5, 200}, {6, 200}, {7, 200}, {8, 200}
-        };
-
-        public const string StakingUrl = "ninechronicles-launcher://open/monster-collection";
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
