@@ -56,9 +56,6 @@ namespace Nekoyume.UI
             {1, 0}, {2, 100}, {3, 200}, {4, 200}, {5, 200}, {6, 200}, {7, 200}, {8, 200}
         };
 
-        private readonly StakingBenefitsListView.Model[] _cachedModel =
-            new StakingBenefitsListView.Model[9];
-
         public const string StakingUrl = "ninechronicles-launcher://open/monster-collection";
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
@@ -156,15 +153,16 @@ namespace Nekoyume.UI
             }
 
             depositText.text = deposit.ToString("N0");
+            // TODO: get data from external source or table sheet
             buffBenefitsViews[0].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("ARENA_REWARD_BONUS"),
-                    _cachedModel[level].ArenaRewardBuff));
+                    0));
             buffBenefitsViews[1].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("GRINDING_CRYSTAL_BONUS"),
-                    _cachedModel[level].CrystalBuff));
+                    0));
             buffBenefitsViews[2].Set(
                 string.Format(ActionPointBuffFormat, L10nManager.Localize("STAGE_AP_BONUS"),
-                    _cachedModel[level].ActionPointBuff));
+                    0));
         }
 
         private void OnBlockUpdated(long blockIndex)
@@ -273,45 +271,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _cachedModel[0] = new StakingBenefitsListView.Model();
-            var stakingMultiplierSheet =
-                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet;
-            for (var level = 1; level <= 8; level++)
-            {
-                var model = new StakingBenefitsListView.Model();
-
-                if (regularSheet.TryGetValue(level, out var regular)
-                    && regularFixedSheet.TryGetValue(level, out var regularFixed))
-                {
-                    model.RequiredDeposit = regular.RequiredGold;
-                    model.HourGlassInterest = GetReward(regular, regularFixed, regular.RequiredGold, 0);
-                    model.ApPotionInterest = GetReward(regular, regularFixed, regular.RequiredGold, 1);
-                    model.RuneInterest = GetReward(regular, regularFixed, regular.RequiredGold, 2);
-
-                    model.CrystalInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetCrystalRewardIndex(regular));
-                    model.GoldenPowderInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetGoldenPowderRewardIndex(regular));
-                    model.GoldenMeatInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetGoldenMeatRewardIndex(regular));
-                }
-
-                if (stakingMultiplierSheet.TryGetValue(level, out var row))
-                {
-                    model.CrystalBuff = row.Multiplier;
-                }
-
-                if (TableSheets.Instance.StakeActionPointCoefficientSheet
-                    .TryGetValue(level, out var coefficientRow))
-                {
-                    model.ActionPointBuff = 100 - coefficientRow.Coefficient;
-                }
-                else
-                {
-                    model.ActionPointBuff = 0;
-                }
-
-                model.ArenaRewardBuff = _arenaNcgBonus[level];
-                _cachedModel[level] = model;
-            }
-
             _benefitListViewsInitialized = true;
         }
 
@@ -335,36 +294,6 @@ namespace Nekoyume.UI
                 reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
 
             return result + levelBonus;
-        }
-
-        private static int GetCrystalRewardIndex(StakeRegularRewardSheet.Row regular)
-        {
-            for (int i = 0; i < regular.Rewards.Count; i++)
-            {
-                if (regular.Rewards[i].CurrencyTicker == "CRYSTAL")
-                    return i;
-            }
-            return -1;
-        }
-
-        private static int GetGoldenPowderRewardIndex(StakeRegularRewardSheet.Row regular)
-        {
-            for (int i = 0; i < regular.Rewards.Count; i++)
-            {
-                if (regular.Rewards[i].ItemId == 600201)
-                    return i;
-            }
-            return -1;
-        }
-
-        private static int GetGoldenMeatRewardIndex(StakeRegularRewardSheet.Row regular)
-        {
-            for (int i = 0; i < regular.Rewards.Count; i++)
-            {
-                if (regular.Rewards[i].ItemId == 800202)
-                    return i;
-            }
-            return -1;
         }
     }
 }
