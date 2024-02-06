@@ -29,6 +29,8 @@ namespace Nekoyume.UI
         [SerializeField] private Image[] levelImages;
         [SerializeField] private TextMeshProUGUI depositText;
         [SerializeField] private Button closeButton;
+        [SerializeField] private Button ncgEditButton;
+        [SerializeField] private TextMeshProUGUI editButtonText;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
@@ -87,7 +89,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 Close();
             });
-
+            ncgEditButton.onClick.AddListener(OnClickEditButton);
             // TODO: 여기를 ClaimStakeReward action 보내는 버튼으로 바꿔야함
             archiveButton.OnSubmitSubject.Subscribe(_ =>
             {
@@ -132,6 +134,50 @@ namespace Nekoyume.UI
             var selectedTabButton = deposit > 0 ? currentBenefitsTabButton : levelBenefitsTabButton;
             selectedTabButton.OnClick.OnNext(selectedTabButton);
             selectedTabButton.SetToggledOn();
+            stakingNcgInputField.interactable = false;
+        }
+
+        private void OnClickEditButton()
+        {
+            // it means States.Instance.StakeStateV2.HasValue is true.
+            if (HasStakeState)
+            {
+                // ReSharper disable once PossibleInvalidOperationException
+                var stakeState = States.Instance.StakeStateV2.Value;
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                var cancellableBlockIndex =
+                    stakeState.CancellableBlockIndex;
+                if (cancellableBlockIndex > currentBlockIndex)
+                {
+                    // TODO: adjust l10n
+                    OneLineSystem.Push(MailType.System,
+                        $"can not modify until tip {cancellableBlockIndex}",
+                        NotificationCell.NotificationType.UnlockCondition);
+                    return;
+                }
+
+                if (stakeState.ClaimableBlockIndex <= currentBlockIndex)
+                {
+                    // TODO: adjust l10n
+                    OneLineSystem.Push(MailType.System,
+                        "claim reward first.",
+                        NotificationCell.NotificationType.UnlockCondition);
+                    return;
+                }
+            }
+            else
+            {
+                if (States.Instance.GoldBalanceState.Gold.RawValue < 50)
+                {
+                    // TODO: adjust l10n
+                    OneLineSystem.Push(MailType.System,
+                        "You can only do Stake if you have more than 50 NCG.",
+                        NotificationCell.NotificationType.UnlockCondition);
+                    return;
+                }
+            }
+
+            stakingNcgInputField.interactable = true;
         }
 
         private void OnDepositEdited(BigInteger deposit)
@@ -221,6 +267,8 @@ namespace Nekoyume.UI
             // can not category UI toggle when user has not StakeState.
             currentBenefitsTabButton.Toggleable = HasStakeState;
             levelBenefitsTabButton.Toggleable = HasStakeState;
+            // TODO: adjust l10n
+            editButtonText.text = HasStakeState ? "Edit" : "Start";
         }
 
         private static bool TryGetWaitedBlockIndex(
