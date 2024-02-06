@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Collection;
 using Nekoyume.Model.Item;
@@ -129,7 +130,7 @@ namespace Nekoyume.UI
                 var material = model.Row.Materials[i];
                 var itemRow = itemSheet[material.ItemId];
 
-                var requiredItem = new CollectionMaterial(material, itemRow.Grade);
+                var requiredItem = new CollectionMaterial(material, itemRow.Grade, itemRow.ItemType);
                 collectionItemViews[i].Set(requiredItem, OnClickItem);
                 _registeredItems.Add(requiredItem, null);
             }

@@ -1,7 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -9,44 +13,70 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
     using UniRx;
     public class Collection : Widget
     {
-        public class Model
+        public class Model // Todo : 캐싱하고 변하는 값만 rx 붙이기
         {
-            public CollectionSheet.Row Row;
-            public bool Active;
+            public CollectionSheet.Row Row { get; }
+            public ItemType ItemType { get; }
+            public bool Active { get; } // todo : rx
             // search tags
-        }
 
-        public static List<Model> GetModels()
-        {
-            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
-            var collectionState = Game.Game.instance.States.CollectionState;
-            var models = new List<Model>();
-            foreach (var row in collectionSheet.Values)
+            public Model(CollectionSheet.Row row, ItemType itemType, bool active)
             {
-                var active = collectionState.Ids.Contains(row.Id);
-                models.Add(new Model
-                {
-                    Row = row,
-                    Active = active
-                });
+                Row = row;
+                ItemType = itemType;
+                Active = active;
             }
 
-            return models;
+            public static List<Model> GetModels()
+            {
+                var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+                var collectionState = Game.Game.instance.States.CollectionState;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                var models = new List<Model>();
+                foreach (var row in collectionSheet.Values)
+                {
+                    var itemType = itemSheet[row.Materials.First().ItemId].ItemType;
+                    var active = collectionState.Ids.Contains(row.Id);
+                    models.Add(new Model(row, itemType, active));
+                }
+
+                return models;
+            }
+        }
+
+        [Serializable]
+        private struct ItemTypeToggle
+        {
+            public ItemType type;
+            public Toggle toggle;
+        }
+
+        [Serializable]
+        private struct StatToggle
+        {
+            public StatType stat;
+            public Toggle toggle;
         }
 
         [SerializeField] private Button backButton;
+        [SerializeField] private ItemTypeToggle[] itemTypeToggles;
+        [SerializeField] private StatToggle[] statToggles;
         [SerializeField] private CollectionEffect collectionEffect;
         [SerializeField] private CollectionScroll scroll;
         // Todo : Item Info View
 
         private CollectionMaterial _selectedMaterial;
         private bool _initialized;
+
+        private ItemType _currentItemType;
+        private StatType _currentStatType;
 
         protected override void Awake()
         {
@@ -78,14 +108,44 @@ namespace Nekoyume.UI
             {
                 _initialized = true;
                 ReactiveAvatarState.Inventory.Subscribe(_ => UpdateView()).AddTo(gameObject);
+
+                foreach (var itemTypeToggle in itemTypeToggles)
+                {
+                    itemTypeToggle.toggle.OnValueChangedAsObservable()
+                        .Where(isOn => isOn)
+                        .Subscribe(_ => Set(itemTypeToggle.type))
+                        .AddTo(gameObject);
+                }
+
+                foreach (var statToggle in statToggles)
+                {
+                    statToggle.toggle.OnValueChangedAsObservable()
+                        .Where(isOn => isOn)
+                        .Subscribe(_ => Set(_currentItemType, statToggle.stat))
+                        .AddTo(gameObject);
+                }
             }
+        }
+
+        private void Set(
+            ItemType itemType = ItemType.Equipment,
+            StatType statType = StatType.NONE)
+        {
+            _currentItemType = itemType;
+            _currentStatType = statType;
+
+            UpdateView();
         }
 
         private void UpdateView()
         {
-            var models = GetModels();
+            var models = Model.GetModels()
+                .Where(model =>
+                    model.ItemType == _currentItemType &&
+                    model.Row.StatModifiers.Any(stat => _currentStatType == StatType.NONE || stat.StatType == _currentStatType))
+                .ToArray();
             scroll.UpdateData(models, true);
-            collectionEffect.Set(models.ToArray());
+            collectionEffect.Set(models);
         }
 
         private void OnClickMaterial(CollectionMaterial viewModel)

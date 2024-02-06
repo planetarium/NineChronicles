@@ -28,7 +28,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            collectionEffect.Set(Collection.GetModels().ToArray());
+            collectionEffect.Set(Collection.Model.GetModels().ToArray());
         }
     }
 }

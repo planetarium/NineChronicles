@@ -1,4 +1,5 @@
 using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -54,28 +55,36 @@ namespace Nekoyume.UI.Scroller
 
                 var material = itemData.Row.Materials[i];
                 var itemRow = itemSheet[material.ItemId];
+
                 CollectionMaterial requiredItem;
                 if (itemData.Active)
                 {
-                     requiredItem = new CollectionMaterial(material, itemRow.Grade);
+                    requiredItem = new CollectionMaterial(material, itemRow.Grade, itemRow.ItemType);
                 }
                 else
                 {
                     var items = inventory.Items.Where(item => item.item.Id == material.ItemId).ToArray();
-                    var checkLevel = itemRow.ItemType == ItemType.Equipment;
+                    var hasItem = items.Any();
+
                     bool enoughCount;
-                    if (checkLevel)
+                    switch (itemRow.ItemType)
                     {
-                        var equipments = items.Select(item => item.item).OfType<Equipment>().ToArray();
-                        enoughCount = !equipments.Any() || equipments.Any(item => item.level == material.Level);
-                    }
-                    else
-                    {
-                        enoughCount = !items.Any() || items.Length > material.Count;
+                        case ItemType.Equipment:
+                            enoughCount = !hasItem || items
+                                .Select(item => item.item).OfType<Equipment>()
+                                .Any(item => item.level == material.Level);
+                            break;
+                        case ItemType.Material:
+                        case ItemType.Consumable:
+                            enoughCount = items.Length > material.Count || !hasItem;
+                            break;
+                        default:
+                            enoughCount = hasItem;
+                            break;
                     }
 
                     requiredItem = new CollectionMaterial(
-                        material, itemRow.Grade, items.Any(), checkLevel, enoughCount);
+                        material, itemRow.Grade, hasItem, itemRow.ItemType, enoughCount);
                 }
 
                 collectionItemViews[i].Set(

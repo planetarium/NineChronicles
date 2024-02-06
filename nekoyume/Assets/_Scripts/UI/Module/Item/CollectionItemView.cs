@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using UnityEngine;
 
@@ -38,13 +39,14 @@ namespace Nekoyume.UI.Module
             baseItemView.TouchHandler.OnClick.Select(_ => model).Subscribe(onClick).AddTo(_disposables);
             baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.ItemId);
 
-            baseItemView.EnhancementText.gameObject.SetActive(model.CheckLevel);
+            baseItemView.EnhancementText.gameObject.SetActive(model.ItemType == ItemType.Equipment);
             var level = model.Row.Level;
             baseItemView.EnhancementText.text = level > 0 ? $"+{level}" : string.Empty;
             baseItemView.EnhancementText.color = model.EnoughCount ? Color.white : requiredColor;
             baseItemView.EnhancementText.enableVertexGradient = model.EnoughCount;
 
-            baseItemView.CountText.gameObject.SetActive(!model.CheckLevel);
+            baseItemView.CountText.gameObject.SetActive(model.ItemType == ItemType.Consumable ||
+                                                        model.ItemType == ItemType.Material);
             baseItemView.CountText.text = model.Row.Count.ToString();
             baseItemView.CountText.color = model.EnoughCount ? Color.white : requiredColor;
 

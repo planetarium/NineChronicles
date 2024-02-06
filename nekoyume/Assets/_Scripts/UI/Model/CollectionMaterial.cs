@@ -1,3 +1,4 @@
+using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using UniRx;
 
@@ -8,7 +9,7 @@ namespace Nekoyume.UI.Model
         public CollectionSheet.CollectionMaterial Row { get; }
         public int Grade { get; }
         public bool HasItem { get; }
-        public bool CheckLevel { get; } // Todo : Check with ItemType
+        public ItemType ItemType { get; }
         public bool EnoughCount { get; }
         public bool Active { get; }
 
@@ -23,13 +24,13 @@ namespace Nekoyume.UI.Model
             CollectionSheet.CollectionMaterial row,
             int grade,
             bool hasItem,
-            bool checkLevel,
+            ItemType itemType,
             bool enoughCount)
         {
             Row = row;
             Grade = grade;
             HasItem = hasItem;
-            CheckLevel = checkLevel;
+            ItemType = itemType;
             EnoughCount = enoughCount;
             Active = false;
             Selected = new ReactiveProperty<bool>(false);
@@ -39,7 +40,8 @@ namespace Nekoyume.UI.Model
         // when collection is active - set default (no need to check level and enough count)
         public CollectionMaterial(
             CollectionSheet.CollectionMaterial row,
-            int grade) : this(row, grade, true, true, true)
+            int grade,
+            ItemType itemType) : this(row, grade, true, itemType, true)
         {
             Active = true;
         }
