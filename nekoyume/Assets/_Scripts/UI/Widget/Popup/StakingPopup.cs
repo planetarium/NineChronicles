@@ -8,10 +8,12 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,8 +36,6 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
 
-        [SerializeField] private StakingBenefitsListView[] benefitsListViews;
-
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
         [SerializeField] private CategoryTabButton levelBenefitsTabButton;
@@ -56,13 +56,12 @@ namespace Nekoyume.UI
             {1, 0}, {2, 100}, {3, 200}, {4, 200}, {5, 200}, {6, 200}, {7, 200}, {8, 200}
         };
 
-        private readonly StakingBenefitsListView.Model[] _cachedModel =
-            new StakingBenefitsListView.Model[9];
-
         public const string StakingUrl = "ninechronicles-launcher://open/monster-collection";
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
+
+        private bool HasStakeState => _deposit.Value > 0;
 
         private bool _benefitListViewsInitialized;
 
@@ -74,8 +73,16 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(levelBenefitsTabButton);
             currentBenefitsTabButton.OnClick.Subscribe(_ =>
             {
-                currentBenefitsTab.SetActive(true);
-                levelBenefitsTab.SetActive(false);
+                if (HasStakeState)
+                {
+                    currentBenefitsTab.SetActive(true);
+                    levelBenefitsTab.SetActive(false);
+                }
+                else
+                {
+                    // TODO: change "asdgf" to localized system message.
+                    OneLineSystem.Push(MailType.System, "asdgf", NotificationCell.NotificationType.UnlockCondition);
+                }
             }).AddTo(gameObject);
             levelBenefitsTabButton.OnClick.Subscribe(_ =>
             {
@@ -129,8 +136,9 @@ namespace Nekoyume.UI
             _deposit.Value = deposit;
             OnBlockUpdated(blockIndex);
             _toggleGroup.SetToggledOffAll();
-            currentBenefitsTabButton.OnClick.OnNext(currentBenefitsTabButton);
-            currentBenefitsTabButton.SetToggledOn();
+            var selectedTabButton = deposit > 0 ? currentBenefitsTabButton : levelBenefitsTabButton;
+            selectedTabButton.OnClick.OnNext(selectedTabButton);
+            selectedTabButton.SetToggledOn();
         }
 
         private void OnDepositEdited(BigInteger deposit)
@@ -145,20 +153,16 @@ namespace Nekoyume.UI
             }
 
             depositText.text = deposit.ToString("N0");
+            // TODO: get data from external source or table sheet
             buffBenefitsViews[0].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("ARENA_REWARD_BONUS"),
-                    _cachedModel[level].ArenaRewardBuff));
+                    0));
             buffBenefitsViews[1].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("GRINDING_CRYSTAL_BONUS"),
-                    _cachedModel[level].CrystalBuff));
+                    0));
             buffBenefitsViews[2].Set(
                 string.Format(ActionPointBuffFormat, L10nManager.Localize("STAGE_AP_BONUS"),
-                    _cachedModel[level].ActionPointBuff));
-
-            for (int i = 0; i <= 7; i++)
-            {
-                benefitsListViews[i].Set(i, level);
-            }
+                    0));
         }
 
         private void OnBlockUpdated(long blockIndex)
@@ -220,6 +224,10 @@ namespace Nekoyume.UI
                 remainingBlock.ToString("N0"),
                 remainingBlock.BlockRangeToTimeSpanString());
             archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
+
+            // can not category UI toggle when user has not StakeState.
+            currentBenefitsTabButton.Toggleable = HasStakeState;
+            levelBenefitsTabButton.Toggleable = HasStakeState;
         }
 
         private static bool TryGetWaitedBlockIndex(
@@ -263,47 +271,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _cachedModel[0] = new StakingBenefitsListView.Model();
-            var stakingMultiplierSheet =
-                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet;
-            for (var level = 1; level <= 8; level++)
-            {
-                var model = new StakingBenefitsListView.Model();
-
-                if (regularSheet.TryGetValue(level, out var regular)
-                    && regularFixedSheet.TryGetValue(level, out var regularFixed))
-                {
-                    model.RequiredDeposit = regular.RequiredGold;
-                    model.HourGlassInterest = GetReward(regular, regularFixed, regular.RequiredGold, 0);
-                    model.ApPotionInterest = GetReward(regular, regularFixed, regular.RequiredGold, 1);
-                    model.RuneInterest = GetReward(regular, regularFixed, regular.RequiredGold, 2);
-
-                    model.CrystalInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetCrystalRewardIndex(regular));
-                    model.GoldenPowderInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetGoldenPowderRewardIndex(regular));
-                    model.GoldenMeatInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetGoldenMeatRewardIndex(regular));
-                }
-
-                if (stakingMultiplierSheet.TryGetValue(level, out var row))
-                {
-                    model.CrystalBuff = row.Multiplier;
-                }
-
-                if (TableSheets.Instance.StakeActionPointCoefficientSheet
-                    .TryGetValue(level, out var coefficientRow))
-                {
-                    model.ActionPointBuff = 100 - coefficientRow.Coefficient;
-                }
-                else
-                {
-                    model.ActionPointBuff = 0;
-                }
-
-                model.ArenaRewardBuff = _arenaNcgBonus[level];
-
-                benefitsListViews[level].Set(level, model);
-                _cachedModel[level] = model;
-            }
-
             _benefitListViewsInitialized = true;
         }
 
@@ -327,36 +294,6 @@ namespace Nekoyume.UI
                 reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
 
             return result + levelBonus;
-        }
-
-        private static int GetCrystalRewardIndex(StakeRegularRewardSheet.Row regular)
-        {
-            for (int i = 0; i < regular.Rewards.Count; i++)
-            {
-                if (regular.Rewards[i].CurrencyTicker == "CRYSTAL")
-                    return i;
-            }
-            return -1;
-        }
-
-        private static int GetGoldenPowderRewardIndex(StakeRegularRewardSheet.Row regular)
-        {
-            for (int i = 0; i < regular.Rewards.Count; i++)
-            {
-                if (regular.Rewards[i].ItemId == 600201)
-                    return i;
-            }
-            return -1;
-        }
-
-        private static int GetGoldenMeatRewardIndex(StakeRegularRewardSheet.Row regular)
-        {
-            for (int i = 0; i < regular.Rewards.Count; i++)
-            {
-                if (regular.Rewards[i].ItemId == 800202)
-                    return i;
-            }
-            return -1;
         }
     }
 }
