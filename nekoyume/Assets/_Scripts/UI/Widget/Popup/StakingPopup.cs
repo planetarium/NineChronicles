@@ -152,7 +152,7 @@ namespace Nekoyume.UI
                 levelImages[i].enabled = i < level;
             }
 
-            depositText.text = deposit.ToString("N0");
+            depositText.text = $"/ Hold NCG <Style=G0>{deposit.ToString("N0")}";
             // TODO: get data from external source or table sheet
             buffBenefitsViews[0].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("ARENA_REWARD_BONUS"),
