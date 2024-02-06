@@ -23,6 +23,12 @@ namespace Nekoyume.UI
         {
             public ItemType type;
             public Toggle toggle;
+            public Image hasNotificationImage;
+
+            public void SetNotification(bool hasNotification)
+            {
+                hasNotificationImage.enabled = hasNotification;
+            }
         }
 
         [Serializable]
@@ -30,6 +36,12 @@ namespace Nekoyume.UI
         {
             public StatType stat;
             public Toggle toggle;
+            public Image hasNotificationImage;
+
+            public void SetNotification(bool hasNotification)
+            {
+                hasNotificationImage.enabled = hasNotification;
+            }
         }
 
         [SerializeField] private Button backButton;
@@ -80,7 +92,11 @@ namespace Nekoyume.UI
                 {
                     itemTypeToggle.toggle.OnValueChangedAsObservable()
                         .Where(isOn => isOn)
-                        .Subscribe(_ => Set(itemTypeToggle.type))
+                        .Subscribe(_ =>
+                        {
+                            SetFilter(itemTypeToggle.type);
+                            statToggles.First().toggle.isOn = true;
+                        })
                         .AddTo(gameObject);
                 }
 
@@ -88,13 +104,13 @@ namespace Nekoyume.UI
                 {
                     statToggle.toggle.OnValueChangedAsObservable()
                         .Where(isOn => isOn)
-                        .Subscribe(_ => Set(_currentItemType, statToggle.stat))
+                        .Subscribe(_ => SetFilter(_currentItemType, statToggle.stat))
                         .AddTo(gameObject);
                 }
             }
         }
 
-        private void Set(
+        private void SetFilter(
             ItemType itemType = ItemType.Equipment,
             StatType statType = StatType.NONE)
         {
@@ -106,14 +122,26 @@ namespace Nekoyume.UI
 
         private void UpdateView()
         {
-            var models = CollectionModel.GetModels()
-                .Where(model =>
-                    model.ItemType == _currentItemType &&
-                    model.Row.StatModifiers.Any(stat => _currentStatType == StatType.NONE || stat.StatType == _currentStatType))
-                .OrderByDescending(model => model.Active)
-                .ToArray();
-            scroll.UpdateData(models, true);
+            var models = CollectionModel.GetModels();
             collectionEffect.Set(models);
+
+            foreach (var itemTypeToggle in itemTypeToggles)
+            {
+                itemTypeToggle.SetNotification(models.Any(model =>
+                    model.ItemType == itemTypeToggle.type &&
+                    model.CanActivate));
+            }
+
+            foreach (var statToggle in statToggles)
+            {
+                statToggle.SetNotification(models.Any(model =>
+                    model.ItemType == _currentItemType &&
+                    model.Row.StatModifiers.Any(stat => stat.StatType == statToggle.stat) &&
+                    model.CanActivate));
+            }
+
+            models = models.Sort(_currentItemType, _currentStatType);
+            scroll.UpdateData(models, true);
         }
 
         private void OnClickMaterial(CollectionMaterial viewModel)

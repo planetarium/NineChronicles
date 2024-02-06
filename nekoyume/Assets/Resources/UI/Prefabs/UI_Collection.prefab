@@ -434,7 +434,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 174166220318408702}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -3048,7 +3048,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6243410392179424086
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3084,7 +3084,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1529977735380269142}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -3805,27 +3805,38 @@ MonoBehaviour:
   itemTypeToggles:
   - type: 2
     toggle: {fileID: 6665450858532223189}
+    hasNotificationImage: {fileID: 8549257076760748990}
   - type: 0
     toggle: {fileID: 8262428610346276483}
+    hasNotificationImage: {fileID: 6163333877676658609}
   - type: 1
     toggle: {fileID: 7578618893708686642}
+    hasNotificationImage: {fileID: 5666748316343796677}
   - type: 3
     toggle: {fileID: 9182390350148181173}
+    hasNotificationImage: {fileID: 1577185994157536752}
   statToggles:
   - stat: 0
     toggle: {fileID: 7870716356461819024}
+    hasNotificationImage: {fileID: 6866321380397391837}
   - stat: 1
     toggle: {fileID: 4982501894475257761}
+    hasNotificationImage: {fileID: 2591147634961684648}
   - stat: 2
     toggle: {fileID: 1469815484389793239}
+    hasNotificationImage: {fileID: 1119315052828455267}
   - stat: 3
     toggle: {fileID: 652896638714886235}
+    hasNotificationImage: {fileID: 6308246280173033208}
   - stat: 4
     toggle: {fileID: 1725192102810774713}
+    hasNotificationImage: {fileID: 6917312867034167086}
   - stat: 5
     toggle: {fileID: 3708660547146764397}
+    hasNotificationImage: {fileID: 724339258518246958}
   - stat: 6
     toggle: {fileID: 2957840295749014119}
+    hasNotificationImage: {fileID: 1900332131572981172}
   collectionEffect: {fileID: 2910211704707782105}
   scroll: {fileID: 5197950029209217649}
 --- !u!1 &1716475420388685582
@@ -7194,7 +7205,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4440495277536477294}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 

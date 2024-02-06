@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Collection;
 using Nekoyume.Model.Item;
@@ -9,6 +8,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI
 {
@@ -50,25 +50,43 @@ namespace Nekoyume.UI
         private void RegisterItem(InventoryItem item)
         {
             ICollectionMaterial collectionMaterialItem;
-            if (item.ItemBase is Equipment equipment)  // Todo : check if it's a non-fungible item
+            switch (item.ItemBase)
             {
-                collectionMaterialItem = new NonFungibleCollectionMaterial
-                {
-                    ItemId = equipment.Id,
-                    ItemCount = 1,
-                    NonFungibleId = equipment.NonFungibleId,
-                    Level = equipment.level,
-                    OptionCount = equipment.GetOptionCount(),
-                    SkillContains = equipment.Skills.Any()
-                };
-            }
-            else
-            {
-                collectionMaterialItem = new FungibleCollectionMaterial
-                {
-                    ItemId = item.ItemBase.Id,
-                    ItemCount = item.Count.Value,
-                };
+                case Equipment equipment:
+                    collectionMaterialItem = new NonFungibleCollectionMaterial
+                    {
+                        ItemId = equipment.Id,
+                        ItemCount = 1,
+                        NonFungibleId = equipment.NonFungibleId,
+                        Level = equipment.level,
+                        SkillContains = equipment.Skills.Any()
+                    };
+                    break;
+                case Consumable consumable:
+                    collectionMaterialItem = new FungibleCollectionMaterial
+                    {
+                        ItemId = consumable.Id,
+                        ItemCount = _focusedRequiredItem.Row.Count,
+                    };
+                    break;
+                case Material material:
+                    collectionMaterialItem = new FungibleCollectionMaterial
+                    {
+                        ItemId = material.Id,
+                        ItemCount = _focusedRequiredItem.Row.Count,
+                    };
+                    break;
+                case Costume costume:
+                    collectionMaterialItem = new NonFungibleCollectionMaterial
+                    {
+                        ItemId = item.ItemBase.Id,
+                        ItemCount = 1,
+                        NonFungibleId = costume.NonFungibleId,
+                        SkillContains = false,
+                    };
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             _registeredItems[_focusedRequiredItem] = collectionMaterialItem;
@@ -116,7 +134,6 @@ namespace Nekoyume.UI
             _registerMaterials = register;
 
             var materialCount = model.Row.Materials.Count;
-            var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
 
             _registeredItems.Clear();
             for (var i = 0; i < collectionItemViews.Length; i++)
@@ -127,12 +144,9 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var material = model.Row.Materials[i];
-                var itemRow = itemSheet[material.ItemId];
-
-                var requiredItem = new CollectionMaterial(material, itemRow.Grade, itemRow.ItemType);
-                collectionItemViews[i].Set(requiredItem, OnClickItem);
-                _registeredItems.Add(requiredItem, null);
+                var material = model.Materials[i];
+                collectionItemViews[i].Set(material, OnClickItem);
+                _registeredItems.Add(material, null);
             }
 
             OnClickItem(_registeredItems.Keys.First());

@@ -1,6 +1,4 @@
-using System.Linq;
 using Nekoyume.Helper;
-using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -40,10 +38,7 @@ namespace Nekoyume.UI.Scroller
             cellBackground.Set(itemData);
 
             var materialCount = itemData.Row.Materials.Count;
-            var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
-            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
 
-            var canActive = true;
             for (var i = 0; i < collectionItemViews.Length; i++)
             {
                 collectionItemViews[i].gameObject.SetActive(i < materialCount);
@@ -52,48 +47,12 @@ namespace Nekoyume.UI.Scroller
                     continue;
                 }
 
-                var material = itemData.Row.Materials[i];
-                var itemRow = itemSheet[material.ItemId];
-
-                CollectionMaterial requiredItem;
-                if (itemData.Active)
-                {
-                    requiredItem = new CollectionMaterial(material, itemRow.Grade, itemRow.ItemType);
-                }
-                else
-                {
-                    var items = inventory.Items.Where(item => item.item.Id == material.ItemId).ToArray();
-                    var hasItem = items.Any();
-
-                    bool enoughCount;
-                    switch (itemRow.ItemType)
-                    {
-                        case ItemType.Equipment:
-                            enoughCount = !hasItem || items
-                                .Select(item => item.item).OfType<Equipment>()
-                                .Any(item => item.level == material.Level);
-                            break;
-                        case ItemType.Material:
-                        case ItemType.Consumable:
-                            enoughCount = items.Length > material.Count || !hasItem;
-                            break;
-                        default:
-                            enoughCount = hasItem;
-                            break;
-                    }
-
-                    requiredItem = new CollectionMaterial(
-                        material, itemRow.Grade, hasItem, itemRow.ItemType, enoughCount);
-                }
-
                 collectionItemViews[i].Set(
-                    requiredItem,
+                    itemData.Materials[i],
                     model => Context.OnClickMaterial.OnNext(model));
-
-                canActive &= requiredItem.Enough;
             }
 
-            activeButton.SetCondition(() => canActive);
+            activeButton.SetCondition(() => itemData.CanActivate);
             activeButton.Interactable = !itemData.Active;
         }
     }

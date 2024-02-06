@@ -8,10 +8,10 @@ namespace Nekoyume.UI.Model
     {
         public CollectionSheet.CollectionMaterial Row { get; }
         public int Grade { get; }
-        public bool HasItem { get; }
+        public bool HasItem { get; } // todo : rx
         public ItemType ItemType { get; }
-        public bool EnoughCount { get; }
-        public bool Active { get; }
+        public bool EnoughCount { get; } // todo : rx
+        public bool Active { get; } // todo : rx
 
         // enough condition for active
         public bool Enough => HasItem && EnoughCount && !Active;
@@ -23,14 +23,14 @@ namespace Nekoyume.UI.Model
         public CollectionMaterial(
             CollectionSheet.CollectionMaterial row,
             int grade,
-            bool hasItem,
             ItemType itemType,
+            bool hasItem,
             bool enoughCount)
         {
             Row = row;
             Grade = grade;
-            HasItem = hasItem;
             ItemType = itemType;
+            HasItem = hasItem;
             EnoughCount = enoughCount;
             Active = false;
             Selected = new ReactiveProperty<bool>(false);
@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Model
         public CollectionMaterial(
             CollectionSheet.CollectionMaterial row,
             int grade,
-            ItemType itemType) : this(row, grade, true, itemType, true)
+            ItemType itemType) : this(row, grade, itemType, true, true)
         {
             Active = true;
         }

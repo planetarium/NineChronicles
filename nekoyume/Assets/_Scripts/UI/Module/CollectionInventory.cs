@@ -73,6 +73,18 @@ namespace Nekoyume.UI.Module
             switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
+                    var consumable = (Consumable)itemBase;
+                    if (TryGetConsumable(consumable, out inventoryItem))
+                    {
+                        inventoryItem.Count.Value += count;
+                    }
+                    else
+                    {
+                        inventoryItem = new InventoryItem(itemBase, count, false, true);
+                        _items.Add(inventoryItem);
+                    }
+
+                    break;
                 case ItemType.Costume:
                 case ItemType.Equipment:
                     inventoryItem = new InventoryItem(
@@ -90,13 +102,10 @@ namespace Nekoyume.UI.Module
                     }
                     else
                     {
-                        inventoryItem = new InventoryItem(
-                            itemBase,
-                            count,
-                            false,
-                            false);
+                        inventoryItem = new InventoryItem(itemBase, count, false, false);
                         _items.Add(inventoryItem);
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -107,6 +116,14 @@ namespace Nekoyume.UI.Module
         {
             model = _items.FirstOrDefault(item =>
                 item.ItemBase is Material m && m.ItemId.Equals(material.ItemId));
+
+            return model != null;
+        }
+
+        private bool TryGetConsumable(Consumable consumable, out InventoryItem model)
+        {
+            model = _items.FirstOrDefault(item => item.ItemBase.Id.Equals(consumable.Id) &&
+                                                  item.ItemBase.ItemType == ItemType.Consumable);
 
             return model != null;
         }

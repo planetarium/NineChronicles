@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Stat;
@@ -37,11 +38,11 @@ namespace Nekoyume.UI.Module
             });
         }
 
-        public void Set(CollectionModel[] models)
+        public void Set(List<CollectionModel> models, bool displayEmpty = false)
         {
             var activeCount = models.Count(model => model.Active);
             contentContainer.SetActive(activeCount > 0);
-            emptyContainer.SetActive(activeCount == 0);
+            emptyContainer.SetActive(activeCount == 0 && displayEmpty);
 
             foreach (var view in statViews)
             {
@@ -69,7 +70,7 @@ namespace Nekoyume.UI.Module
             }
 
             countText.text = activeCount.ToString();
-            maxCountText.text = $"/{models.Length.ToString()}";
+            maxCountText.text = $"/{models.Count}";
         }
     }
 }
