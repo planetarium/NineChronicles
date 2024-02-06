@@ -22,7 +22,7 @@ namespace Nekoyume.UI
 
         private readonly Dictionary<CollectionMaterial, ICollectionMaterial> _registeredItems = new();
         private CollectionMaterial _focusedRequiredItem;
-        private Action<List<ICollectionMaterial>> _activate;
+        private Action<List<ICollectionMaterial>> _registerMaterials;
 
         protected override void Awake()
         {
@@ -82,7 +82,7 @@ namespace Nekoyume.UI
             else
             {
                 var registeredItems = _registeredItems.Values.ToList();
-                _activate?.Invoke(registeredItems);
+                _registerMaterials?.Invoke(registeredItems);
                 CloseWidget.Invoke();
             }
         }
@@ -112,7 +112,7 @@ namespace Nekoyume.UI
             bool ignoreShowAnimation = false)
         {
             collectionStat.Set(model);
-            _activate = register;
+            _registerMaterials = register;
 
             var materialCount = model.Row.Materials.Count;
             var itemSheet = Game.Game.instance.TableSheets.ItemSheet;

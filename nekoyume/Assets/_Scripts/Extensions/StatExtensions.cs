@@ -18,6 +18,14 @@ namespace Nekoyume
             return $"{stat.StatType} +{(float)value}";
         }
 
+        /// <param name="statModifier"> StatModifier contains StatType, Operation, Value
+        /// <br/> ex1. SPD, Add, 314
+        /// <br/> ex2. SPD, Percentage, 314
+        /// </param>
+        /// <returns> Formatted string of StatModifier
+        /// <br/> ex1. "SPD +3.14"
+        /// <br/> ex2. "SPD +314%"
+        /// </returns>
         public static string StatModifierToString(this StatModifier statModifier)
         {
             var value = statModifier.Operation == StatModifier.OperationType.Percentage

@@ -50,19 +50,20 @@ namespace Nekoyume.UI.Module
             var data = models
                 .Where(model => model.Active)
                 .SelectMany(model => model.Row.StatModifiers)
-                .GroupBy(stat => stat.StatType);
+                .GroupBy(stat => stat.StatType)
+                .Select(grouping => (
+                    StatType: grouping.Key,
+                    AddValue: grouping
+                        .Where(stat => stat.Operation == StatModifier.OperationType.Add)
+                        .Sum(stat => stat.Value),
+                    PercentageValue: grouping
+                        .Where(stat => stat.Operation == StatModifier.OperationType.Percentage)
+                        .Sum(stat => stat.Value)
+                ));
 
             var i = 0;
-            foreach (var grouping in data)
+            foreach (var (statType, addValue, percentageValue) in data)
             {
-                var statType = grouping.Key;
-                var addValue = grouping
-                    .Where(stat => stat.Operation == StatModifier.OperationType.Add)
-                    .Sum(s => s.Value);
-                var percentageValue = grouping
-                    .Where(stat => stat.Operation == StatModifier.OperationType.Percentage)
-                    .Sum(s => s.Value);
-
                 statViews[i++].ShowModify(statType, addValue, percentageValue);
             }
 

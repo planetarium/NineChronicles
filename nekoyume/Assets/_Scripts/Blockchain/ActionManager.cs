@@ -1558,7 +1558,7 @@ namespace Nekoyume.Blockchain
             var agentAddress = States.Instance.AgentState.address;
             var materialsType = materials.First().Type;
 
-            var sentryTrace = Analyzer.Instance.Track("Unity/ActivateCollection",
+            var sentryTrace = Analyzer.Instance.Track($"Unity/{nameof(ActivateCollection)}",
                 new Dictionary<string, Value>()
                 {
                     ["AvatarAddress"] = avatarAddress.ToString(),
@@ -1567,7 +1567,7 @@ namespace Nekoyume.Blockchain
                     ["MaterialsType"] = materialsType.ToString(),
                 }, true);
 
-            var evt = new AirbridgeEvent("ActivateCollection");
+            var evt = new AirbridgeEvent(nameof(ActivateCollection));
             evt.SetValue(collectionId);
             evt.AddCustomAttribute("materials-type", materialsType.ToString());
             evt.AddCustomAttribute("agent-address", avatarAddress.ToString());

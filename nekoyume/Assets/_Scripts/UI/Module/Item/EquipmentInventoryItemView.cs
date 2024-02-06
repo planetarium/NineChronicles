@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Module
             baseItemView.NotificationObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
             baseItemView.GrindingCountObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
             baseItemView.RuneSelectMove.SetActive(false);
             baseItemView.SelectCollectionObject.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);
