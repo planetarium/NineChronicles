@@ -1,6 +1,7 @@
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Stat;
+using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +37,7 @@ namespace Nekoyume.UI.Module
             });
         }
 
-        public void Set(Collection.Model[] models)
+        public void Set(CollectionModel[] models)
         {
             var activeCount = models.Count(model => model.Active);
             contentContainer.SetActive(activeCount > 0);

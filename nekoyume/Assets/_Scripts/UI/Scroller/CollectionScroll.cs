@@ -4,11 +4,11 @@ using UniRx;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class CollectionScroll : RectScroll<Collection.Model, CollectionScroll.ContextModel>
+    public class CollectionScroll : RectScroll<CollectionModel, CollectionScroll.ContextModel>
     {
         public class ContextModel : RectScrollDefaultContext
         {
-            public readonly Subject<Collection.Model> OnClickActiveButton = new Subject<Collection.Model>();
+            public readonly Subject<CollectionModel> OnClickActiveButton = new Subject<CollectionModel>();
             public readonly Subject<CollectionMaterial> OnClickMaterial = new Subject<CollectionMaterial>();
 
             public override void Dispose()
@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        public IObservable<Collection.Model> OnClickActiveButton => Context.OnClickActiveButton;
+        public IObservable<CollectionModel> OnClickActiveButton => Context.OnClickActiveButton;
         public IObservable<CollectionMaterial> OnClickMaterial => Context.OnClickMaterial;
     }
 }

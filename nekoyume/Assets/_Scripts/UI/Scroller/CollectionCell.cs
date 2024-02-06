@@ -1,5 +1,4 @@
 using System.Linq;
-using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -9,7 +8,7 @@ using UnityEngine;
 namespace Nekoyume.UI.Scroller
 {
     using UniRx;
-    public class CollectionCell : RectCell<Collection.Model, CollectionScroll.ContextModel>
+    public class CollectionCell : RectCell<CollectionModel, CollectionScroll.ContextModel>
     {
         [SerializeField] private CollectionStat complete;
         [SerializeField] private CollectionStat incomplete;
@@ -17,7 +16,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField] private ConditionalButton activeButton;
         [SerializeField] private GameObject activeButtonLoadingObject;
 
-        private Collection.Model _itemData;
+        private CollectionModel _itemData;
 
         private void Awake()
         {
@@ -30,7 +29,7 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        public override void UpdateContent(Collection.Model itemData)
+        public override void UpdateContent(CollectionModel itemData)
         {
             _itemData = itemData;
 

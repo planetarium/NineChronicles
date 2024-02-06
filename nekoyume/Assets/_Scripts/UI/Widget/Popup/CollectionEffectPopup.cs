@@ -1,4 +1,5 @@
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,7 +29,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            collectionEffect.Set(Collection.Model.GetModels().ToArray());
+            collectionEffect.Set(CollectionModel.GetModels().ToArray());
         }
     }
 }

@@ -108,7 +108,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(
-            Collection.Model model,
+            CollectionModel model,
             Action<List<ICollectionMaterial>> register,
             bool ignoreShowAnimation = false)
         {

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
@@ -7,7 +6,6 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
@@ -20,37 +18,6 @@ namespace Nekoyume.UI
     using UniRx;
     public class Collection : Widget
     {
-        public class Model // Todo : 캐싱하고 변하는 값만 rx 붙이기
-        {
-            public CollectionSheet.Row Row { get; }
-            public ItemType ItemType { get; }
-            public bool Active { get; } // todo : rx
-            // search tags
-
-            public Model(CollectionSheet.Row row, ItemType itemType, bool active)
-            {
-                Row = row;
-                ItemType = itemType;
-                Active = active;
-            }
-
-            public static List<Model> GetModels()
-            {
-                var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
-                var collectionState = Game.Game.instance.States.CollectionState;
-                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
-                var models = new List<Model>();
-                foreach (var row in collectionSheet.Values)
-                {
-                    var itemType = itemSheet[row.Materials.First().ItemId].ItemType;
-                    var active = collectionState.Ids.Contains(row.Id);
-                    models.Add(new Model(row, itemType, active));
-                }
-
-                return models;
-            }
-        }
-
         [Serializable]
         private struct ItemTypeToggle
         {
@@ -139,10 +106,11 @@ namespace Nekoyume.UI
 
         private void UpdateView()
         {
-            var models = Model.GetModels()
+            var models = CollectionModel.GetModels()
                 .Where(model =>
                     model.ItemType == _currentItemType &&
                     model.Row.StatModifiers.Any(stat => _currentStatType == StatType.NONE || stat.StatType == _currentStatType))
+                .OrderByDescending(model => model.Active)
                 .ToArray();
             scroll.UpdateData(models, true);
             collectionEffect.Set(models);
@@ -170,7 +138,7 @@ namespace Nekoyume.UI
             // Todo : Show Item Info
         }
 
-        private void ActivateCollectionAction(Model model)
+        private void ActivateCollectionAction(CollectionModel model)
         {
             // check collection - is active
             var collectionState = Game.Game.instance.States.CollectionState;
