@@ -229,6 +229,8 @@ namespace Nekoyume.Game
 
         public CreateAvatarFavSheet CreateAvatarFavSheet { get; private set; }
 
+        public CollectionSheet CollectionSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();

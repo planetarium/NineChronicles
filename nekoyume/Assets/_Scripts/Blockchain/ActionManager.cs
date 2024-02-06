@@ -17,6 +17,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Collection;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -1549,6 +1550,47 @@ namespace Nekoyume.Blockchain
                 }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
+        public IObservable<ActionEvaluation<ActivateCollection>> ActivateCollection(
+            int collectionId,
+            List<ICollectionMaterial> materials)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var agentAddress = States.Instance.AgentState.address;
+            var materialsType = materials.First().Type;
+
+            var sentryTrace = Analyzer.Instance.Track($"Unity/{nameof(ActivateCollection)}",
+                new Dictionary<string, Value>()
+                {
+                    ["AvatarAddress"] = avatarAddress.ToString(),
+                    ["AgentAddress"] = agentAddress.ToString(),
+                    ["CollectionId"] = collectionId,
+                    ["MaterialsType"] = materialsType.ToString(),
+                }, true);
+
+            var evt = new AirbridgeEvent(nameof(ActivateCollection));
+            evt.SetValue(collectionId);
+            evt.AddCustomAttribute("materials-type", materialsType.ToString());
+            evt.AddCustomAttribute("agent-address", avatarAddress.ToString());
+            evt.AddCustomAttribute("avatar-address", agentAddress.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
+            var action = new ActivateCollection
+            {
+                AvatarAddress = avatarAddress,
+                CollectionId = collectionId,
+                Materials = materials,
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ActivateCollection>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+        }
 
         public IObservable<ActionEvaluation<ApprovePledge>> ApprovePledge(Address patronAddress)
         {

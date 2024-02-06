@@ -129,8 +129,8 @@ UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop dverg]</color>
 Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 미안하네, {0} 강화를 실패했다네.","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[ドヴェルグ]</color>
-申し訳ない、{0}の強化に失敗した。","<color=#FFA78B>[Workshop Dvergr]</color> 
-Lo siento, no logré mejorar {0}","<color=#FFA78B>[เวิร์กชอป Dvergr]</color> 
+申し訳ない、{0}の強化に失敗した。","<color=#FFA78B>[Workshop Dvergr]</color>
+Lo siento, no logré mejorar {0}","<color=#FFA78B>[เวิร์กชอป Dvergr]</color>
 ขออภัยการอัพเกรดล้มเหลว {0}","<color=#FFA78B>[Workshop dverg]</color>
 Maaf, gagal untuk mengupgrade {0}","<color=#FFA78B>[Практикум Cat]</color>
 Извините, я не смог обновить {0}","<color=#FFA78B>[车间猫]</color>
@@ -676,8 +676,8 @@ Los artículos comprados se enviarán por correo.
 No se deducirá NCG por objetos de compra fallidos.
 Si los NCG son insuficientes, la transacción fallará.","<color=#FF9983><b>พยายามที่จะซื้อ {0} รายการและจ่าย {1}</b></color>
 
-รายการที่ซื้อจะถูกส่งทางไปรษณีย์ 
-NCG ไม่ได้หักรายการซื้อล้มเหลว หาก 
+รายการที่ซื้อจะถูกส่งทางไปรษณีย์
+NCG ไม่ได้หักรายการซื้อล้มเหลว หาก
 NCG ไม่เพียงพอการทำธุรกรรมที่จะล้มเหลว","<color=#FF9983><b>Cobalah untuk pembelian {0} item dan membayar {1}.</b></color>
 
 Barang yang dibeli akan dikirim melalui pos.
@@ -692,12 +692,12 @@ NCG не вычитаются невыполненных пунктов поку
 不扣除未能购买物品NCG。
 如果NCG不足，交易失败。","<color=＃ff9983> <b>嘗試購買{0}項目並付費{1}。</b></color>
 
-購買的項目將通過郵件發送。 
+購買的項目將通過郵件發送。
 NCG不會因購買失敗而被扣除。
-如果NCG不足，則交易將失敗。","<color=#FF9983><b>Subukang bumili ng {0} na kagamitan at magbayad ng {1}.</b></color> 
+如果NCG不足，則交易將失敗。","<color=#FF9983><b>Subukang bumili ng {0} na kagamitan at magbayad ng {1}.</b></color>
 
-Ang biniling kagamitan ay ipapadala sa pamamagitan ng liham. 
-Ang iyong NCG ay hindi mababwasan tuwing hindi matagumpay ang pagbili. 
+Ang biniling kagamitan ay ipapadala sa pamamagitan ng liham.
+Ang iyong NCG ay hindi mababwasan tuwing hindi matagumpay ang pagbili.
 Kapag naman hindi sapat ang NCG ang transakyon ay hindi matutuloy.","<color=#ff9983> Thử mua {0} trang bị và trả {1}.</color>
 
 Các mặt hàng đã được mua sẽ được gửi qua thư.
@@ -1043,7 +1043,7 @@ Apakah Anda ingin membeli tiket dengan NCG dan mulai?","Недостаточно
 Хотели бы вы купить билет с NCG и начать?","不够{0}门票。
 您想和NCG一起购买票吗？",不夠{0}門票。您想用NCG購買票嗎？,Hindi sapat ang {0} tickets. Gusto mo bang bumili ng ticket gamit ang ncg at magsimula?,"Không đủ {0} vé.
 Bạn có muốn mua vé bằng NCG và bắt đầu không?"
-UI_REACHED_TICKET_BUY_LIMIT,"Not enough {0} tickets. 
+UI_REACHED_TICKET_BUY_LIMIT,"Not enough {0} tickets.
 You have reached the purchase limit and can no longer buy tickets.","{0} 티켓이 부족합니다.
 구매 횟수를 모두 소진하여 추가 구매를 할 수 없습니다.","Ingressos não suficientes {0}.
 Você atingiu seu limite de compra e não pode mais comprar ingressos.","{0}チケットが足りません。
@@ -1052,7 +1052,7 @@ Anda telah mencapai batas beli Anda dan tidak bisa lagi membeli tiket.","Нед�
 Вы достигли своего лимита покупки и больше не можете покупать билеты.","不够{0}门票。
 您已经达到了购买限额，无法再购买门票。",不夠{0}門票。您已經達到了購買限額，無法再購買門票。,Hindi sapat ang {0} tickets. Naabot na ang sukdulan ng limitasyon para sa pagbili at hindi na pwede pang bumili ulit ng tickets.,"Không đủ {0} vé.
 Bạn đã đạt đến giới hạn mua vé và không thể mua thêm vé."
-UI_REACHED_TICKET_BUY_INTERVAL_LIMIT,"Not enough {0} tickets. 
+UI_REACHED_TICKET_BUY_INTERVAL_LIMIT,"Not enough {0} tickets.
 You have reached the purchase limit and can no longer buy tickets during the reset interval.","{0} 티켓이 부족합니다.
 이번 티켓 리필 구간에 최대로 구매가능한 수량을 구매하셨습니다.","Ingressos não suficientes {0}.
 Você atingiu o limite de compra e não pode mais comprar ingressos durante o intervalo de redefinição.","{0}チケットが足りません。
@@ -1677,7 +1677,7 @@ Pelancong Paket
 Petualang Paket
 Aura Paket Spesial
 Pemula Paket
-Pandai Besi Paket 
+Pandai Besi Paket
 Debu Emas 20
 Debu Emas 40
 Debu Emas 60
@@ -1756,7 +1756,7 @@ Lingguhang Golden Dust Package
 Paglunsad ng Pagdiriwang","Gói Tăng Trưởng
  Hàng Ngày
 Gói Tăng Trưởng
- Hàng Tuần 
+ Hàng Tuần
 Bình thuốc AP
 Đồng hồ cát
 Gói Lữ Hành Gia
@@ -1766,11 +1766,11 @@ Gói Tân Thủ
 Gói Thợ Rèn
 20 Bụi Vàng
 40 Bụi Vàng
-60 Bụi Vàng 
-100 Bụi Vàng 
-200 Bụi Vàng 
-300 Bụi Vàng 
-600 Bụi Vàng 
+60 Bụi Vàng
+100 Bụi Vàng
+200 Bụi Vàng
+300 Bụi Vàng
+600 Bụi Vàng
 Giấy thông hành mùa Premium
 Giấy thông hành mùa Premium Plus
 Giấy thông hành mùa Premium All
@@ -1792,7 +1792,7 @@ UI_GRADE,Grade,등급,Aula,グレード,Clase,ระดับ,Kelas,,班级,班�
 UI_REQUIRED_UPDATE_TITLE,Information,안내,Informação,インフォメーション,Información,ข้อมูล,Informasi,,信息,信息,Impormasyon,Thông tin
 UI_REQUIRED_UPDATE_CONTENT,"<size=16>The new version has been updated!
 Update now and enjoy 'Nine Chronicles M’.</size>","<size=16>새로운 버전이 업데이트 되었습니다!
-지금 바로 업데이트 하고 Nine Chronicles M을 즐기세요.</size>","<size=16> A nova versão foi atualizada! 
+지금 바로 업데이트 하고 Nine Chronicles M을 즐기세요.</size>","<size=16> A nova versão foi atualizada!
 Atualize agora e aproveite o Nine Chronicles M.</size>","<size=16>新しいバージョンが更新されました！
 今すぐアップデートしてNine Chronicles Mをお楽しみください。</size>","<size=16>¡La nueva versión se ha actualizado!
 Actualiza ahora y disfruta de Nine Chronicles M.</size>","<size=16>เวอร์ชันใหม่ได้รับการอัปเดตแล้ว!
@@ -1812,7 +1812,7 @@ UI_SUMMON_CATEGORY_NORMAL,NORMAL,일반,普通,ノーマル,NORMAL,ปกติ,
 UI_SUMMON_CATEGORY_ADVANCED,ADVANCED,고급,Avançado,高級,AVANZADO,ขั้นสูง,CANGGIH,ПЕРЕДОВОЙ,先进的,先進的,Advanced,TRÌNH ĐỘ CAO
 UI_FORGOT_PRIVATE_KEY,Forgot Private Key,키를 잃어버렸습니다.,Esqueceu a chave privada,プライベートキーを忘れました,Olvidé la clave privada,ลืมรหัสส่วนตัว,Lupa Kunci Pribadi,Забыл личный ключ,忘记了私钥,忘記了私鑰,Nakalimutan ang pribadong susi,Quên chìa khóa riêng
 UI_FORGOT_PRIVATE_KEY_POPUP_INFORMATION,"If you do not enter the key, the existing account will be deleted.
-Would you really initialize it?","키를 입력하지 않으면 기존의 계정이 삭제됩니다. 
+Would you really initialize it?","키를 입력하지 않으면 기존의 계정이 삭제됩니다.
 정말 초기화 하시겠습니까?","Se você não entrar na chave, a conta existente será excluída.
 Você realmente inicializaria?","キーを入力しないと、既存のアカウントが削除されます。
 本当に初期化しますか？","Si no ingresa la clave, la cuenta existente se eliminará.
@@ -1829,7 +1829,7 @@ UI_SETTINGS_DELETE_ACCOUNT_TITLE,Delete Account,탈퇴,Deletar conta,アカウ�
 UI_SETTINGS_DELETE_ACCOUNT_DESCRIPTION,"<color=#FFEF0F> Would you like to withdraw? </color>
 After 30 days, the account will be deleted, and you can use the game for the period for that period.
 You can cancel your request for deletion at any time within that period.","<color=#FFEF0F> 정말 탈퇴하시겠습니까? </color>
-30일 후 계정이 삭제되며, 해당 기간 동안은 정상 게임 이용이 가능합니다. 
+30일 후 계정이 삭제되며, 해당 기간 동안은 정상 게임 이용이 가능합니다.
 해당 기간 내에는 언제든지 삭제 요청을 취소할 수 있습니다.","<color=#FFEF0F> Você gostaria de retirar? </color>
 Após 30 dias, a conta será excluída e você poderá usar o jogo para o período para esse período.
 Você pode cancelar sua solicitação de exclusão a qualquer momento dentro desse período.","<color=#FFEF0F> 本当に退会しますか？ </color>
@@ -1877,3 +1877,18 @@ Paket baru segera hadir.","Товаров на витрине нет.
 新套裝即將推出。","Walang mga produkto na naka-display.
 Malapit na ang mga bagong package.","Hiện không có sản phẩm trưng bày.
 Gói mới sắp ra mắt."
+UI_COLLECTION,Collection,도감,,,,,,,,,,
+UI_COLLECTION_REGISTRATION,Collection Registration,도감 등록,,,,,,,,,,
+UI_COLLECTION_REGISTRATION_PHRASE,"Select the item you want to apply to the collection.
+<color=#FE5151>Registered items will disappear.</color>","도감에 적용하고자 하는 아이템을 고르세요.
+<color=#FE5151>등록된 아이템은 사라집니다.</color>",,,,,,,,,,
+UI_COLLECTION_EFFECT,Collection Effect,도감 효과,,,,,,,,,,
+UI_COLLECTION_EFFECT_PHRASE,You can acquire stats by collecting collections.,콜렉션을 수집하여 스탯을 획득할 수 있습니다.,,,,,,,,,,
+UI_GO_TO_COLLECTION,Go to Collection,도감으로 가기,,,,,,,,,,
+UI_COLLECTION_REGISTRATION_CAUTION_PHRASE,"When registering the equipment you are wearing.
+It is removed from wearing.
+Would you like to register in the collection?",,,,,,,,,,,
+UI_COLLECTION_SEARCH_INPUT_FIELD_PLACE_HOLDER,Please enter the collection name!,도감의 이름을 입력하세요!,,,,,,,,,,
+UI_COMPLETION_RATE,Completion Rate,완성도,,,,,,,,,,
+UI_ACTIVATE,Activate,활성화,,,,,,,,,,
+UI_REGISTER,Register,등록,,,,,,,,,,
