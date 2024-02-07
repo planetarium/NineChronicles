@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Spine.Unity.Playables;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -135,7 +136,35 @@ namespace Nekoyume
                 }
 
                 var avatarPartsType = ((AvatarPartsType)(i + 1));
-                director.SetGenericBinding(tracks[i], appearance.SpineController.GetSkeletonAnimation(avatarPartsType));
+                var skeletonAnimation = appearance.SpineController.GetSkeletonAnimation(avatarPartsType);
+                foreach (var timelineClip in tracks[i].GetClips())
+                {
+                    var runtimeAsset = ScriptableObject.CreateInstance<AnimationReferenceAssetWrapper>();
+                    var spineClip = timelineClip.asset as SpineAnimationStateClip;
+                    if (spineClip == null)
+                        continue;
+
+                    var animationName    = string.Empty;
+                    var defaultAnimation = spineClip.template.animationReference;
+                    if (defaultAnimation == null || string.IsNullOrEmpty(defaultAnimation.name))
+                    {
+                        if (string.IsNullOrEmpty(timelineClip.displayName))
+                        {
+                            spineClip.template.animationReference = null;
+                            continue;
+                        }
+                        animationName = timelineClip.displayName;
+                    }
+                    else
+                    {
+                        animationName = defaultAnimation.name;
+                    }
+
+                    runtimeAsset.SetReference(animationName, skeletonAnimation.skeletonDataAsset);
+                    spineClip.template.animationReference = runtimeAsset;
+                }
+
+                director.SetGenericBinding(tracks[i], skeletonAnimation);
             }
 
             if (asset.markerTrack)
