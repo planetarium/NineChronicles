@@ -207,8 +207,25 @@ namespace Nekoyume.UI
 
         private void OnClickSaveButton()
         {
-            var inputBigInt = BigInteger.Parse(stakingNcgInputField.text);
-            if (inputBigInt < 50)
+            if (!BigInteger.TryParse(stakingNcgInputField.text, out var inputBigInt))
+            {
+                // TODO: adjust l10n
+                OneLineSystem.Push(MailType.System,
+                    $"wrong value: {stakingNcgInputField.text}",
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            if (inputBigInt == States.Instance.StakedBalanceState.Gold.RawValue)
+            {
+                // TODO: adjust l10n
+                OneLineSystem.Push(MailType.System,
+                    "Cannot be set to the same as the existing value.",
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            if (inputBigInt != 0 && inputBigInt < 50)
             {
                 // TODO: adjust l10n
                 OneLineSystem.Push(MailType.System,
