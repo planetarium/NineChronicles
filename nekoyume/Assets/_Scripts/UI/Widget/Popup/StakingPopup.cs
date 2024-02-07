@@ -130,6 +130,11 @@ namespace Nekoyume.UI
 
             _deposit.Value = deposit;
             OnBlockUpdated(blockIndex);
+            foreach (var toggleable in _toggleGroup.Toggleables)
+            {
+                toggleable.Toggleable = true;
+            }
+
             _toggleGroup.SetToggledOffAll();
             var selectedTabButton = deposit > 0 ? currentBenefitsTabButton : levelBenefitsTabButton;
             selectedTabButton.OnClick.OnNext(selectedTabButton);
