@@ -120,11 +120,20 @@ namespace Nekoyume
             yield return new WaitWhile(() => player.IsActing);
             yield return new WaitWhile(() => boss.IsActing);
 
+            // don't modify project asset in runtime
+            var deepCopyAsset = Instantiate(asset);
+
             director.GetGenericBinding(this);
-            var tracks = asset.GetRootTracks()
-                .FirstOrDefault(x => x.name.Equals("Spine_Player"))
-                .GetChildTracks()
-                .ToList();
+            var tracks = deepCopyAsset.GetRootTracks()?
+                                      .FirstOrDefault(x => x.name.Equals("Spine_Player"))?
+                                      .GetChildTracks()
+                                      .ToList();
+
+            if (tracks is null)
+            {
+                Debug.LogError($"[{nameof(RaidTimelineContainer)}] No Spine_Player track found");
+                yield break;
+            }
 
             var appearance = player.GetComponent<CharacterAppearance>();
             for (int i = 0; i < 11; i++)
@@ -144,16 +153,30 @@ namespace Nekoyume
                     if (spineClip == null)
                         continue;
 
-                    var animationName    = string.Empty;
-                    var defaultAnimation = spineClip.template.animationReference;
+                    string animationName;
+                    var    defaultAnimation = spineClip.template.animationReference;
                     if (defaultAnimation == null || string.IsNullOrEmpty(defaultAnimation.name))
                     {
+                        Debug.LogWarning($"[{nameof(RaidTimelineContainer)}] AnimationReferenceAsset is null or empty");
                         if (string.IsNullOrEmpty(timelineClip.displayName))
                         {
                             spineClip.template.animationReference = null;
                             continue;
                         }
-                        animationName = timelineClip.displayName;
+
+                        if (timelineClip.displayName == "idle")
+                        {
+                            animationName = "Idle";
+                        }
+                        else if (timelineClip.displayName == "SpineAnimationStateClip")
+                        {
+                            spineClip.template.animationReference = null;
+                            continue;
+                        }
+                        else
+                        {
+                            animationName = timelineClip.displayName;
+                        }
                     }
                     else
                     {
@@ -167,9 +190,9 @@ namespace Nekoyume
                 director.SetGenericBinding(tracks[i], skeletonAnimation);
             }
 
-            if (asset.markerTrack)
+            if (deepCopyAsset.markerTrack)
             {
-                var markers = asset.markerTrack.GetMarkers().OfType<SkipMarker>();
+                var markers = deepCopyAsset.markerTrack.GetMarkers().OfType<SkipMarker>();
                 _currentSkipMarker = markers.FirstOrDefault();
                 if (_currentSkipMarker != null)
                 {
@@ -177,8 +200,8 @@ namespace Nekoyume
                 }
             }
 
-            IsCutscenePlaying = true;
-            director.playableAsset = asset;
+            IsCutscenePlaying      = true;
+            director.playableAsset = deepCopyAsset;
             director.RebuildGraph();
             director.Play();
             yield return new WaitWhile(() => director.state == PlayState.Playing);
