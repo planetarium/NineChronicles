@@ -77,8 +77,8 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    // TODO: change "asdgf" to localized system message.
-                    OneLineSystem.Push(MailType.System, "asdgf", NotificationCell.NotificationType.UnlockCondition);
+                    // TODO: adjust l10n
+                    OneLineSystem.Push(MailType.System, "stake first", NotificationCell.NotificationType.UnlockCondition);
                 }
             }).AddTo(gameObject);
             levelBenefitsTabButton.OnClick.Subscribe(_ =>
@@ -102,22 +102,7 @@ namespace Nekoyume.UI
                 archiveButton.Interactable = false;
                 LoadingHelper.ClaimStakeReward.Value = true;
             }).AddTo(gameObject);
-            editSaveButton.onClick.AddListener(() =>
-            {
-                var inputBigInt = BigInteger.Parse(stakingNcgInputField.text);
-                if (inputBigInt <= States.Instance.GoldBalanceState.Gold.RawValue)
-                {
-                    ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text)).Subscribe();
-                    stakingNcgInputField.interactable = false;
-                }
-                else
-                {
-                    // TODO: adjust l10n
-                    OneLineSystem.Push(MailType.System,
-                        "can not stake over than your NCG.",
-                        NotificationCell.NotificationType.Alert);
-                }
-            });
+            editSaveButton.onClick.AddListener(OnClickSaveButton);
             editCancelButton.onClick.AddListener(() => stakingNcgInputField.interactable = false);
         }
 
@@ -204,6 +189,30 @@ namespace Nekoyume.UI
             }
 
             stakingNcgInputField.interactable = true;
+        }
+
+        private void OnClickSaveButton()
+        {
+            var inputBigInt = BigInteger.Parse(stakingNcgInputField.text);
+            if (inputBigInt <= States.Instance.GoldBalanceState.Gold.RawValue)
+            {
+                var confirmUI = Find<IconAndButtonSystem>();
+                // TODO: adjust l10n
+                confirmUI.ShowWithTwoButton("staking", "r u ok?", localize:false, type: IconAndButtonSystem.SystemType.Information);
+                confirmUI.ConfirmCallback = () =>
+                {
+                    ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
+                        .Subscribe();
+                    stakingNcgInputField.interactable = false;
+                };
+            }
+            else
+            {
+                // TODO: adjust l10n
+                OneLineSystem.Push(MailType.System,
+                    "can not stake over than your NCG.",
+                    NotificationCell.NotificationType.Alert);
+            }
         }
 
         private void OnDepositEdited(BigInteger deposit)
