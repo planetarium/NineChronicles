@@ -21,6 +21,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Model;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace Nekoyume.UI
@@ -278,7 +279,8 @@ namespace Nekoyume.UI
                 consumables,
                 runeStates,
                 tableSheets.GetRaidSimulatorSheets(),
-                tableSheets.CostumeStatSheet
+                tableSheets.CostumeStatSheet,
+                CollectionModel.GetEffect()
             );
             var log = simulator.Simulate();
             var digest = new ArenaPlayerDigest(avatarState,

@@ -94,6 +94,17 @@ namespace Nekoyume.UI.Model
 
             return models;
         }
+
+        public static List<StatModifier> GetEffect()
+        {
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var data = collectionSheet.Values
+                .Where(row => collectionState.Ids.Contains(row.Id))
+                .SelectMany(row => row.StatModifiers);
+
+            return data.ToList();
+        }
     }
 
     public static class CollectionModelExtension

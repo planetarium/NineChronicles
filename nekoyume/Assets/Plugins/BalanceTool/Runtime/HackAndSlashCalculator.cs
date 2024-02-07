@@ -18,6 +18,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Module;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.UI.Model;
 
 namespace BalanceTool
 {
@@ -203,7 +204,8 @@ namespace BalanceTool
                 StageSimulator.GetWaveRewards(
                     random,
                     stageRow,
-                    materialItemSheet));
+                    materialItemSheet),
+                CollectionModel.GetEffect());
             simulator.Simulate();
 
             if (simulator.Log.IsClear)

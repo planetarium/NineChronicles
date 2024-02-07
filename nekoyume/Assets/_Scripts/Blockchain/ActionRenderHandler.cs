@@ -36,6 +36,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -2683,7 +2684,8 @@ namespace Nekoyume.Blockchain
                         myDigest.Value,
                         enemyDigest.Value,
                         arenaSheets,
-                        true);
+                        CollectionModel.GetEffect(),
+                        CollectionModel.GetEffect());
 
                     var reward = RewardSelector.Select(
                         random,
@@ -2883,7 +2885,8 @@ namespace Nekoyume.Blockchain
                 eval.Action.FoodIds,
                 runeStates,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
-                TableSheets.Instance.CostumeStatSheet
+                TableSheets.Instance.CostumeStatSheet,
+                CollectionModel.GetEffect()
             );
             simulator.Simulate();
             var log = simulator.Log;

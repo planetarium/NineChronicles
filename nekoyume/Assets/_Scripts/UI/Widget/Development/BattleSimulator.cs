@@ -13,6 +13,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI;
 using Skill = Nekoyume.Model.Skill.Skill;
@@ -216,7 +217,8 @@ public class BattleSimulator : Widget
             tableSheets.GetStageSimulatorSheets(),
             tableSheets.EnemySkillSheet,
             tableSheets.CostumeStatSheet,
-            StageSimulatorV2.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet)
+            StageSimulatorV2.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet),
+            CollectionModel.GetEffect()
         );
 
         simulator.Simulate();
