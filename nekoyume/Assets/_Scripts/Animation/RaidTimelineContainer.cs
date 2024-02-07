@@ -146,6 +146,7 @@ namespace Nekoyume
 
                 var avatarPartsType = ((AvatarPartsType)(i + 1));
                 var skeletonAnimation = appearance.SpineController.GetSkeletonAnimation(avatarPartsType);
+                // TODO: Separate function in helper classes, or made into timeline track assets
                 foreach (var timelineClip in tracks[i].GetClips())
                 {
                     var runtimeAsset = ScriptableObject.CreateInstance<AnimationReferenceAssetWrapper>();
