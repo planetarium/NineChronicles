@@ -147,10 +147,9 @@ namespace Nekoyume.UI.Module
             var row = requiredItem.Row;
             var items = _items.Where(item => item.ItemBase.Id == row.ItemId);
             items = items.First().ItemBase.ItemType == ItemType.Equipment
-                ? items.Where(item => ((Equipment)item.ItemBase).level == row.Level)
+                ? items.Where(item => ((Equipment)item.ItemBase).level == row.Level &&
+                                      (((Equipment)item.ItemBase).Skills.Any() || !row.SkillContains))
                 : items.Where(item => item.Count.Value >= row.Count);
-            // items = items.Where(item => ((Equipment)item.ItemBase).GetOptionCount() == row.OptionCount);
-            // items = items.Where(item => ((Equipment)item.ItemBase).Skills.Any() == row.SkillContains);
 
             var usableItems = new List<InventoryItem>();
             var unusableItems = new List<InventoryItem>();

@@ -51,8 +51,11 @@ namespace Nekoyume.UI.Module
             baseItemView.CountText.text = model.Row.Count.ToString();
             baseItemView.CountText.color = required ? requiredColor : Color.white;
 
-            baseItemView.OptionTag.gameObject.SetActive(false);
-            // baseItemView.OptionTag.Set(itemBase);
+            baseItemView.OptionTag.gameObject.SetActive(model.Row.SkillContains);
+            if (model.Row.SkillContains)
+            {
+                baseItemView.OptionTag.Set(model.Grade);
+            }
 
             baseItemView.EnoughObject.SetActive(model.Enough);
             baseItemView.TradableObject.SetActive(!model.HasItem);

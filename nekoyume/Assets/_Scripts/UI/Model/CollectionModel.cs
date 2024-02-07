@@ -67,7 +67,8 @@ namespace Nekoyume.UI.Model
                             case ItemType.Equipment:
                                 enoughCount = items
                                     .Select(item => item.item).OfType<Equipment>()
-                                    .Any(item => item.level == material.Level);
+                                    .Any(item => item.level == material.Level &&
+                                                 (item.Skills.Any() || !material.SkillContains));
                                 break;
                             case ItemType.Material:
                                 enoughCount = items.Sum(item => item.count) >= material.Count;
