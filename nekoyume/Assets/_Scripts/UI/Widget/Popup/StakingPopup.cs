@@ -32,6 +32,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI editButtonText;
         [SerializeField] private Button editCancelButton;
         [SerializeField] private Button editSaveButton;
+        [SerializeField] private GameObject edittingUIParent;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
@@ -103,7 +104,12 @@ namespace Nekoyume.UI
                 LoadingHelper.ClaimStakeReward.Value = true;
             }).AddTo(gameObject);
             editSaveButton.onClick.AddListener(OnClickSaveButton);
-            editCancelButton.onClick.AddListener(() => stakingNcgInputField.interactable = false);
+            editCancelButton.onClick.AddListener(() =>
+            {
+                edittingUIParent.SetActive(false);
+                ncgEditButton.gameObject.SetActive(true);
+                stakingNcgInputField.interactable = false;
+            });
         }
 
         public override void Initialize()
@@ -150,6 +156,8 @@ namespace Nekoyume.UI
             selectedTabButton.OnClick.OnNext(selectedTabButton);
             selectedTabButton.SetToggledOn();
             stakingNcgInputField.interactable = false;
+            ncgEditButton.gameObject.SetActive(true);
+            edittingUIParent.SetActive(false);
         }
 
         private void OnClickEditButton()
@@ -193,30 +201,42 @@ namespace Nekoyume.UI
             }
 
             stakingNcgInputField.interactable = true;
+            ncgEditButton.gameObject.SetActive(false);
+            edittingUIParent.SetActive(true);
         }
 
         private void OnClickSaveButton()
         {
             var inputBigInt = BigInteger.Parse(stakingNcgInputField.text);
-            if (inputBigInt <= States.Instance.GoldBalanceState.Gold.RawValue)
+            if (inputBigInt < 50)
             {
-                var confirmUI = Find<IconAndButtonSystem>();
                 // TODO: adjust l10n
-                confirmUI.ShowWithTwoButton("staking", "r u ok?", localize:false, type: IconAndButtonSystem.SystemType.Information);
-                confirmUI.ConfirmCallback = () =>
-                {
-                    ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
-                        .Subscribe();
-                    stakingNcgInputField.interactable = false;
-                };
+                OneLineSystem.Push(MailType.System,
+                    "You can only do Stake if you have more than 50 NCG.",
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
             }
-            else
+
+            if (inputBigInt > States.Instance.GoldBalanceState.Gold.RawValue)
             {
                 // TODO: adjust l10n
                 OneLineSystem.Push(MailType.System,
                     "can not stake over than your NCG.",
                     NotificationCell.NotificationType.Alert);
+                return;
             }
+
+            var confirmUI = Find<IconAndButtonSystem>();
+            // TODO: adjust l10n
+            confirmUI.ShowWithTwoButton("staking", "r u ok?", localize:false, type: IconAndButtonSystem.SystemType.Information);
+            confirmUI.ConfirmCallback = () =>
+            {
+                ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
+                    .Subscribe();
+                edittingUIParent.SetActive(false);
+                stakingNcgInputField.interactable = false;
+                ncgEditButton.gameObject.SetActive(true);
+            };
         }
 
         private void OnDepositEdited(BigInteger deposit)
