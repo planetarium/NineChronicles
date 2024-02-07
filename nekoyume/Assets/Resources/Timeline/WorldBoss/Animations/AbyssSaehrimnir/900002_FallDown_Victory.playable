@@ -21,9 +21,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-8826174408042335690
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -45,9 +49,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!74 &-8760357417069489677
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -201,9 +209,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-8629171515314965802
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -465,6 +477,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-8619169908062973757
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -486,9 +499,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-8490076143592043984
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -510,9 +527,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-8469923032786943215
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -534,9 +555,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-8182875441457233708
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -839,6 +864,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-7999746384401774505
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1100,6 +1126,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-7748184551842663745
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1121,9 +1148,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-7685917091842820491
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1186,9 +1217,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-7061053493899936434
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1210,9 +1245,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-7056422256623151486
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1234,9 +1273,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-6958984361250287942
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1282,9 +1325,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-6572758748566322147
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1481,25 +1528,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -1526,25 +1555,7 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -1594,6 +1605,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!74 &-6571068135973936308
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -2962,9 +2974,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-6385812625282535096
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2998,9 +3014,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-5861633035547943057
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3022,9 +3042,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-5493129677169528935
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3046,9 +3070,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-5221617516545023302
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3070,9 +3098,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-5162469164155909280
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3227,9 +3259,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-4501155885282877598
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3587,6 +3623,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-3648128093800045919
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3608,9 +3645,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-3573516095444189836
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3632,9 +3673,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-3549188962977625016
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3896,6 +3941,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-3505064835174949867
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3917,9 +3963,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-3352430815653907735
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3941,9 +3991,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-2927538315604445668
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4061,9 +4115,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-2277553088420649072
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4085,9 +4143,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-2093251576962645877
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4109,9 +4171,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-2031002246200802322
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4133,9 +4199,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-1966466213064941021
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4157,9 +4227,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-1954772546292933197
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4181,9 +4255,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-1884250525931443563
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4205,9 +4283,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-1511163215168886307
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4229,9 +4311,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-1455004802350031264
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4318,9 +4404,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-1175280832024832284
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4342,9 +4432,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-758186644025145459
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4366,9 +4460,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-744555575768418581
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4390,9 +4488,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-611065705100324154
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4414,9 +4516,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-608127306056768306
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4475,9 +4581,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-292085879494451525
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4542,9 +4652,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &318555068701638766
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4806,6 +4920,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &369864820206322474
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5164,9 +5279,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &1095116649783330831
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5445,6 +5564,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &2011029007119397617
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5466,9 +5586,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &2565483394314083475
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5634,9 +5758,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &3975920250556058959
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5750,9 +5878,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &4272359035405676973
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6041,6 +6173,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &4547074271091352537
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6054,7 +6187,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: 1f1762fbb8d376a4f82a59e8c1c166c6,
+    animationReference: {fileID: 11400000, guid: 1f60c7940c11442efb6253d2d9c7d5be,
       type: 2}
     loop: 0
     customDuration: 0
@@ -6062,9 +6195,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.36666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &4785392050164856813
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6179,9 +6316,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &5658984389122234428
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6195,7 +6336,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: 10ecc81c33e39b74e894e5cad647d23d,
+    animationReference: {fileID: 11400000, guid: 4b3f6a2081e554a9a8f7366cf660946f,
       type: 2}
     loop: 0
     customDuration: 0
@@ -6203,9 +6344,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 1
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &5790412614488387598
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6219,7 +6364,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: 49e83cab2bfe6354da3087d5d233de5d,
+    animationReference: {fileID: 11400000, guid: 3e359247f3d334c3fb3099604f25d5c0,
       type: 2}
     loop: 0
     customDuration: 0
@@ -6227,9 +6372,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.1
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &6214688370138656578
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6491,6 +6640,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &6274622534389115555
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6512,9 +6662,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &6761988063806151165
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6536,9 +6690,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &6901503466419453283
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6560,9 +6718,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &7099599792550521251
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6608,9 +6770,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &7281704328940557669
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6632,9 +6798,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &7657879412592397097
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6656,9 +6826,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &7906548907488277992
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6680,9 +6854,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!74 &8062566486935678024
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -7250,17 +7428,21 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: 49e83cab2bfe6354da3087d5d233de5d,
+    animationReference: {fileID: 11400000, guid: 3e359247f3d334c3fb3099604f25d5c0,
       type: 2}
     loop: 0
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
-    mixDuration: 0.15000004
+    mixDuration: 0.43333334
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &8158255108863842892
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7282,9 +7464,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &8246019090322021195
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7306,9 +7492,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &8260179688688630601
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7570,6 +7760,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &8333456315285847107
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7591,9 +7782,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.016666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &8605315180588861057
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7855,6 +8050,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &8644782121022174990
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7876,9 +8072,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &8722407109368145479
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7941,9 +8141,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.53319997
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &9039885055241638685
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7965,9 +8169,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.65
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &9121344230255605013
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7989,9 +8197,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &9137344754854538005
 MonoBehaviour:
   m_ObjectHideFlags: 1
