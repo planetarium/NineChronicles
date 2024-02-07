@@ -111,6 +111,7 @@ MonoBehaviour:
   - {fileID: 4958869853488201148}
   remainingBlockText: {fileID: 1953768218953515660}
   archiveButton: {fileID: 3841732456986124063}
+  scrollableRewardsRectTransform: {fileID: 8475548908103802339}
   currentBenefitsTabButton: {fileID: 164475490579377487}
   levelBenefitsTabButton: {fileID: 1352374952083609231}
   currentBenefitsTab: {fileID: 1277203160402406578}
@@ -896,8 +897,8 @@ RectTransform:
   m_Father: {fileID: 8475548908103802339}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1186, y: 416}
   m_Pivot: {x: 0, y: 1}

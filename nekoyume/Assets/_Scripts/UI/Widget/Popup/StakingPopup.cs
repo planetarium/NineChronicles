@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Nekoyume.Blockchain;
@@ -39,6 +38,7 @@ namespace Nekoyume.UI
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
+        [SerializeField] private RectTransform scrollableRewardsRectTransform;
 
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
@@ -123,7 +123,6 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
-            SetBenefitsListViews();
             _deposit.Subscribe(OnDepositEdited).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Where(_ => gameObject.activeSelf).Subscribe(OnBlockUpdated)
@@ -144,7 +143,6 @@ namespace Nekoyume.UI
 
         public void SetView()
         {
-            SetBenefitsListViews();
             var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
 
@@ -160,6 +158,9 @@ namespace Nekoyume.UI
             selectedTabButton.OnClick.OnNext(selectedTabButton);
             selectedTabButton.SetToggledOn();
             stakingNcgInputField.interactable = false;
+            var anchoredPosition = scrollableRewardsRectTransform.anchoredPosition;
+            anchoredPosition.x = 0;
+            scrollableRewardsRectTransform.anchoredPosition = anchoredPosition;
         }
 
         private void OnClickEditButton()
@@ -321,23 +322,6 @@ namespace Nekoyume.UI
             }
 
             return true;
-        }
-
-        private void SetBenefitsListViews()
-        {
-            if (_benefitListViewsInitialized)
-            {
-                return;
-            }
-
-            var regularSheet = States.Instance.StakeRegularRewardSheet;
-            var regularFixedSheet = States.Instance.StakeRegularFixedRewardSheet;
-            if (regularSheet is null || regularFixedSheet is null)
-            {
-                return;
-            }
-
-            _benefitListViewsInitialized = true;
         }
 
         private static long GetReward(
