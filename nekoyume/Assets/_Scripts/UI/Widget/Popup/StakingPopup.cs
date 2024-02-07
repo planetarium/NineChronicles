@@ -190,7 +190,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                if (States.Instance.GoldBalanceState.Gold.RawValue < 50)
+                if (States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
                 {
                     // TODO: adjust l10n
                     OneLineSystem.Push(MailType.System,
@@ -216,7 +216,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inputBigInt == States.Instance.StakedBalanceState.Gold.RawValue)
+            if (inputBigInt == States.Instance.StakedBalanceState.Gold.MajorUnit)
             {
                 // TODO: adjust l10n
                 OneLineSystem.Push(MailType.System,
@@ -234,7 +234,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inputBigInt > States.Instance.GoldBalanceState.Gold.RawValue)
+            if (inputBigInt > States.Instance.GoldBalanceState.Gold.MajorUnit)
             {
                 // TODO: adjust l10n
                 OneLineSystem.Push(MailType.System,
