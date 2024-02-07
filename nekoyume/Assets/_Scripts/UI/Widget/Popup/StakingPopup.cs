@@ -31,6 +31,8 @@ namespace Nekoyume.UI
         [SerializeField] private Button closeButton;
         [SerializeField] private Button ncgEditButton;
         [SerializeField] private TextMeshProUGUI editButtonText;
+        [SerializeField] private Button editCancelButton;
+        [SerializeField] private Button editSaveButton;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
@@ -100,11 +102,23 @@ namespace Nekoyume.UI
                 archiveButton.Interactable = false;
                 LoadingHelper.ClaimStakeReward.Value = true;
             }).AddTo(gameObject);
-
-            stakingNcgInputField.onEndEdit.AddListener(value =>
+            editSaveButton.onClick.AddListener(() =>
             {
-                ActionManager.Instance.Stake(BigInteger.Parse(value)).Subscribe();
+                var inputBigInt = BigInteger.Parse(stakingNcgInputField.text);
+                if (inputBigInt <= States.Instance.GoldBalanceState.Gold.RawValue)
+                {
+                    ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text)).Subscribe();
+                    stakingNcgInputField.interactable = false;
+                }
+                else
+                {
+                    // TODO: adjust l10n
+                    OneLineSystem.Push(MailType.System,
+                        "can not stake over than your NCG.",
+                        NotificationCell.NotificationType.Alert);
+                }
             });
+            editCancelButton.onClick.AddListener(() => stakingNcgInputField.interactable = false);
         }
 
         public override void Initialize()
@@ -119,6 +133,12 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreStartAnimation = false)
         {
             SetView();
+            if (!HasStakeState)
+            {
+                // TODO: change hard-coded id and json data
+                HelpTooltip.HelpMe(123);
+            }
+
             base.Show(ignoreStartAnimation);
         }
 
