@@ -6,7 +6,7 @@ namespace Nekoyume.UI.Model
 {
     public class CollectionMaterial
     {
-        public CollectionSheet.CollectionMaterial Row { get; }
+        public CollectionSheet.RequiredMaterial Row { get; }
         public int Grade { get; }
         public bool HasItem { get; } // todo : rx
         public ItemType ItemType { get; }
@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Model
         public ReactiveProperty<bool> Focused { get; }
 
         public CollectionMaterial(
-            CollectionSheet.CollectionMaterial row,
+            CollectionSheet.RequiredMaterial row,
             int grade,
             ItemType itemType,
             bool hasItem,
@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Model
 
         // when collection is active - set default (no need to check level and enough count)
         public CollectionMaterial(
-            CollectionSheet.CollectionMaterial row,
+            CollectionSheet.RequiredMaterial row,
             int grade,
             ItemType itemType) : this(row, grade, itemType, true, true)
         {

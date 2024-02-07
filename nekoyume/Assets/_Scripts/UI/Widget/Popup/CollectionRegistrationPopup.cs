@@ -157,8 +157,9 @@ namespace Nekoyume.UI
                 }
 
                 var material = model.Materials[i];
-                collectionItemViews[i].Set(material, OnClickItem);
-                _registeredItems.Add(material, null);
+                var data = new CollectionMaterial(material.Row, material.Grade, material.ItemType);
+                collectionItemViews[i].Set(data ,OnClickItem);
+                _registeredItems.Add(data, null);
             }
 
             OnClickItem(_registeredItems.Keys.First());

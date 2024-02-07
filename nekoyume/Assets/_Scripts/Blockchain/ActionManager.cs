@@ -1577,8 +1577,10 @@ namespace Nekoyume.Blockchain
             var action = new ActivateCollection
             {
                 AvatarAddress = avatarAddress,
-                CollectionId = collectionId,
-                Materials = materials,
+                CollectionData = new List<(int collectionId, List<ICollectionMaterial> materials)>
+                {
+                    (collectionId, materials)
+                },
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ActivateCollection>()
