@@ -116,14 +116,21 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreStartAnimation = false)
         {
+            base.Show(ignoreStartAnimation);
             SetView();
+
             if (!HasStakeState)
             {
                 // TODO: change hard-coded id and json data
                 HelpTooltip.HelpMe(123);
             }
+        }
 
-            base.Show(ignoreStartAnimation);
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            var anchoredPosition = scrollableRewardsRectTransform.anchoredPosition;
+            anchoredPosition.x = 0;
+            scrollableRewardsRectTransform.anchoredPosition = anchoredPosition;
         }
 
         public void SetView()
@@ -143,9 +150,6 @@ namespace Nekoyume.UI
             selectedTabButton.OnClick.OnNext(selectedTabButton);
             selectedTabButton.SetToggledOn();
             stakingNcgInputField.interactable = false;
-            var anchoredPosition = scrollableRewardsRectTransform.anchoredPosition;
-            anchoredPosition.x = 0;
-            scrollableRewardsRectTransform.anchoredPosition = anchoredPosition;
         }
 
         private void OnClickEditButton()
