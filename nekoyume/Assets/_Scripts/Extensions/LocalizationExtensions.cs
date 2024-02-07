@@ -538,6 +538,17 @@ namespace Nekoyume
                 : name;
         }
 
+        public static string GetLocalizedName(this CollectionMaterial material)
+        {
+            var itemName = L10nManager.Localize($"ITEM_NAME_{material.Row.ItemId}");
+            if (material.Row.Level > 0)
+            {
+                itemName = $"+{material.Row.Level} {itemName}";
+            }
+
+            return $"<color=#{GetColorHexByGrade(material.Grade)}>{itemName}</color>";
+        }
+
         public static string GetLocalizedNonColoredName(ElementalType elementalType,
             int equipmentId, bool useElementalIcon)
         {
@@ -732,6 +743,18 @@ namespace Nekoyume
 
             Debug.LogWarning($"This Currency is not defined in 9c! {asset.Currency.ToString()}");
             return string.Empty;
+        }
+
+        public static (Color gradeColor, string gradeText, string subTypeText) GetCollectionMaterialData(this CollectionMaterial material)
+        {
+            var gradeColor = GetItemGradeColor(material.Grade);
+
+            var grade = material.Grade >= 1 ? material.Grade : 1;
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+
+            var subTypeText = string.Empty;
+
+            return (gradeColor, gradeText, subTypeText);
         }
     }
 }

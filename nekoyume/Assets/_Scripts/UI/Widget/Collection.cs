@@ -49,7 +49,7 @@ namespace Nekoyume.UI
         [SerializeField] private StatToggle[] statToggles;
         [SerializeField] private CollectionEffect collectionEffect;
         [SerializeField] private CollectionScroll scroll;
-        // Todo : Item Info View
+        [SerializeField] private CollectionMaterialInfo collectionMaterialInfo;
 
         private CollectionMaterial _selectedMaterial;
         private bool _initialized;
@@ -163,7 +163,7 @@ namespace Nekoyume.UI
                 _selectedMaterial.Selected.SetValueAndForceNotify(true);
             }
 
-            // Todo : Show Item Info
+            // collectionMaterialInfo.Show(viewModel);
         }
 
         private void ActivateCollectionAction(CollectionModel model)
