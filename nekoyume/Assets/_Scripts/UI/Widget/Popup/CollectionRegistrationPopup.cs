@@ -20,6 +20,7 @@ namespace Nekoyume.UI
         [SerializeField] private CollectionItemView[] collectionItemViews;
         [SerializeField] private ConditionalButton registrationButton;
         [SerializeField] private CollectionInventory collectionInventory;
+        [SerializeField] private EquipmentTooltip equipmentTooltip;
 
         private readonly Dictionary<CollectionMaterial, ICollectionMaterial> _registeredItems = new();
         private CollectionMaterial _focusedRequiredItem;
@@ -108,7 +109,18 @@ namespace Nekoyume.UI
 
         private void OnClickInventoryItem(InventoryItem item)
         {
-            // Todo : Show item info
+            ShowItemTooltip(item);
+        }
+
+        private void ShowItemTooltip(InventoryItem item)
+        {
+            if (item.ItemBase is null)
+            {
+                return;
+            }
+
+            equipmentTooltip.Show(item, string.Empty, false, null);
+            equipmentTooltip.OnEnterButtonArea(true);
         }
 
         private void OnClickItem(CollectionMaterial collectionMaterial)
