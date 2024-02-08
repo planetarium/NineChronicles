@@ -40,6 +40,8 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
         [SerializeField] private RectTransform scrollableRewardsRectTransform;
+        [SerializeField] private Image stakingLevelImage;
+        [SerializeField] private Image stakingRewardImage;
 
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
@@ -93,7 +95,6 @@ namespace Nekoyume.UI
                 Close();
             });
             ncgEditButton.onClick.AddListener(OnClickEditButton);
-            // TODO: 여기를 ClaimStakeReward action 보내는 버튼으로 바꿔야함
             archiveButton.OnSubmitSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -158,6 +159,19 @@ namespace Nekoyume.UI
             stakingNcgInputField.interactable = false;
             ncgEditButton.gameObject.SetActive(true);
             edittingUIParent.SetActive(false);
+
+            var liveAssetManager = Game.LiveAsset.LiveAssetManager.instance;
+            if (liveAssetManager.StakingLevelSprite != null)
+            {
+                stakingLevelImage.overrideSprite = liveAssetManager.StakingLevelSprite;
+                stakingLevelImage.SetNativeSize();
+            }
+
+            if (liveAssetManager.StakingRewardSprite != null)
+            {
+                stakingRewardImage.overrideSprite = liveAssetManager.StakingRewardSprite;
+                stakingLevelImage.SetNativeSize();
+            }
         }
 
         private void OnClickEditButton()
