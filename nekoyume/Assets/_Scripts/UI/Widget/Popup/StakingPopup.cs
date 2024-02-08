@@ -258,26 +258,36 @@ namespace Nekoyume.UI
 
         private void OnDepositEdited(BigInteger deposit)
         {
-            var states = States.Instance;
-            var level = states.StakingLevel;
-
+            var level = States.Instance.StakingLevel;
             levelIconImage.sprite = stakeIconData.GetIcon(level, IconType.Small);
             for (var i = 0; i < levelImages.Length; i++)
             {
                 levelImages[i].enabled = i < level;
             }
 
+            var grindingBonus = 0;
+            if (TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level, out var crystalRow))
+            {
+                grindingBonus = crystalRow.Multiplier;
+            }
+
+            var apUsingPercent = 100;
+            if (TableSheets.Instance.StakeActionPointCoefficientSheet.TryGetValue(level, out var apRow))
+            {
+                apUsingPercent = apRow.Coefficient;
+            }
+
             depositText.text = $"/ Hold NCG <Style=G0>{deposit.ToString("N0")}";
-            // TODO: get data from external source or table sheet
+            // TODO: get data from external source
             buffBenefitsViews[0].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("ARENA_REWARD_BONUS"),
                     0));
             buffBenefitsViews[1].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("GRINDING_CRYSTAL_BONUS"),
-                    0));
+                    grindingBonus));
             buffBenefitsViews[2].Set(
                 string.Format(ActionPointBuffFormat, L10nManager.Localize("STAGE_AP_BONUS"),
-                    0));
+                    100 - apUsingPercent));
         }
 
         private void OnBlockUpdated(long blockIndex)
