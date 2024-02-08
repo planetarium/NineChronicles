@@ -1,18 +1,17 @@
-using Nekoyume.Game;
-using Nekoyume.Game.Character;
-using Spine.Unity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
+using Nekoyume.Game.Character;
 using Spine.Unity.Playables;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using UnityEngine.UI;
 
-namespace Nekoyume
+namespace Nekoyume.Director
 {
     public class RaidTimelineContainer : MonoBehaviour
     {
