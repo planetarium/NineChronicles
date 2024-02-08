@@ -5,7 +5,7 @@ using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
-using Spine.Unity.Playables;
+using Spine.Unity;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -113,6 +113,10 @@ namespace Nekoyume.Director
             yield return CoPlayCutscene(info.Playable);
         }
 
+        #region PlayTimelineCutscene
+        private const int NumOfCharacterSlots = 11;
+        private const int NumOfBossSlots      = 1;
+
         private IEnumerator CoPlayCutscene(TimelineAsset asset)
         {
             yield return new WaitForEndOfFrame();
@@ -121,84 +125,11 @@ namespace Nekoyume.Director
 
             // don't modify project asset in runtime
             var deepCopyAsset = Instantiate(asset);
-
             director.GetGenericBinding(this);
-            var tracks = deepCopyAsset.GetRootTracks()?
-                                      .FirstOrDefault(x => x.name.Equals("Spine_Player"))?
-                                      .GetChildTracks()
-                                      .ToList();
 
-            if (tracks is null)
-            {
-                Debug.LogError($"[{nameof(RaidTimelineContainer)}] No Spine_Player track found");
-                yield break;
-            }
-
-            var appearance = player.GetComponent<CharacterAppearance>();
-            for (int i = 0; i < 11; i++)
-            {
-                if (tracks[i] is null)
-                {
-                    OnAttackPoint = null;
-                    continue;
-                }
-
-                var avatarPartsType = ((AvatarPartsType)(i + 1));
-                var skeletonAnimation = appearance.SpineController.GetSkeletonAnimation(avatarPartsType);
-                // TODO: Separate function in helper classes, or made into timeline track assets
-                foreach (var timelineClip in tracks[i].GetClips())
-                {
-                    var runtimeAsset = ScriptableObject.CreateInstance<AnimationReferenceAssetWrapper>();
-                    var spineClip = timelineClip.asset as SpineAnimationStateClip;
-                    if (spineClip == null)
-                        continue;
-
-                    string animationName;
-                    var    defaultAnimation = spineClip.template.animationReference;
-                    if (defaultAnimation == null || string.IsNullOrEmpty(defaultAnimation.name))
-                    {
-                        Debug.LogWarning($"[{nameof(RaidTimelineContainer)}] AnimationReferenceAsset is null or empty");
-                        if (string.IsNullOrEmpty(timelineClip.displayName))
-                        {
-                            spineClip.template.animationReference = null;
-                            continue;
-                        }
-
-                        if (timelineClip.displayName == "idle")
-                        {
-                            animationName = "Idle";
-                        }
-                        else if (timelineClip.displayName == "SpineAnimationStateClip")
-                        {
-                            spineClip.template.animationReference = null;
-                            continue;
-                        }
-                        else
-                        {
-                            animationName = timelineClip.displayName;
-                        }
-                    }
-                    else
-                    {
-                        animationName = defaultAnimation.name;
-                    }
-
-                    runtimeAsset.SetReference(animationName, skeletonAnimation.skeletonDataAsset);
-                    spineClip.template.animationReference = runtimeAsset;
-                }
-
-                director.SetGenericBinding(tracks[i], skeletonAnimation);
-            }
-
-            if (deepCopyAsset.markerTrack)
-            {
-                var markers = deepCopyAsset.markerTrack.GetMarkers().OfType<SkipMarker>();
-                _currentSkipMarker = markers.FirstOrDefault();
-                if (_currentSkipMarker != null)
-                {
-                    skipButton.gameObject.SetActive(true);
-                }
-            }
+            EnableSkipMarker(deepCopyAsset);
+            BindCharacterToTimeline(deepCopyAsset);
+            BindBossToTimeline(deepCopyAsset);
 
             IsCutscenePlaying      = true;
             director.playableAsset = deepCopyAsset;
@@ -210,6 +141,82 @@ namespace Nekoyume.Director
             IsCutscenePlaying = false;
             skipButton.gameObject.SetActive(false);
         }
+
+        private void BindCharacterToTimeline(TimelineAsset timelineAsset)
+        {
+            var tracks = timelineAsset.GetRootTracks()?
+                                      .FirstOrDefault(x => x.name.Equals("Spine_Player"))?
+                                      .GetChildTracks()
+                                      .ToList();
+
+            if (tracks == null)
+            {
+                Debug.LogError($"[{nameof(RaidTimelineContainer)}] No Spine_Player track found");
+                return;
+            }
+
+            var appearance = player.GetComponent<CharacterAppearance>();
+            for (int i = 0; i < NumOfCharacterSlots; i++)
+            {
+                if (tracks[i] == null)
+                {
+                    OnAttackPoint = null;
+                    continue;
+                }
+
+                var avatarPartsType = ((AvatarPartsType)(i + 1));
+                var skeletonAnimation = appearance.SpineController.GetSkeletonAnimation(avatarPartsType);
+                TimelineHelper.BindingSpineInstanceToTrack(tracks[i], skeletonAnimation);
+
+                director.SetGenericBinding(tracks[i], skeletonAnimation);
+            }
+
+            if (!timelineAsset.markerTrack) return;
+
+            var markers = timelineAsset.markerTrack.GetMarkers().OfType<SkipMarker>();
+            _currentSkipMarker = markers.FirstOrDefault();
+            if (_currentSkipMarker != null)
+                skipButton.gameObject.SetActive(true);
+        }
+
+        private void BindBossToTimeline(TimelineAsset timelineAsset)
+        {
+            var tracks = timelineAsset.GetRootTracks()?
+                                      .FirstOrDefault(x => x.name.Equals("Spine_Boss"))?
+                                      .GetChildTracks()
+                                      .ToList();
+
+            if (tracks == null)
+            {
+                Debug.LogError($"[{nameof(RaidTimelineContainer)}] No Spine_Boss track found");
+                return;
+            }
+
+            var skeletonAnimation = boss.GetComponent<SkeletonAnimation>();
+            for (int i = 0; i < NumOfBossSlots; i++)
+            {
+                if (tracks[i] == null)
+                {
+                    continue;
+                }
+
+                TimelineHelper.BindingSpineInstanceToTrack(tracks[i], skeletonAnimation);
+                director.SetGenericBinding(tracks[i], skeletonAnimation);
+            }
+        }
+
+        private void EnableSkipMarker(TimelineAsset timelineAsset)
+        {
+            if (!timelineAsset.markerTrack) return;
+
+            var markers = timelineAsset.markerTrack.GetMarkers().OfType<SkipMarker>();
+            _currentSkipMarker = markers.FirstOrDefault();
+            if (_currentSkipMarker != null)
+            {
+                skipButton.gameObject.SetActive(true);
+            }
+        }
+        #endregion PlayTimelineCutscene
 
         public void ReverseX()
         {
