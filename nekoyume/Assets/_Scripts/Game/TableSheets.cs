@@ -21,7 +21,7 @@ namespace Nekoyume.Game
 
         private TableSheets() { }
 
-        public async UniTask<TableSheets> MakeTableSheetsAsync(IDictionary<string, string> sheets)
+        public static async UniTask<TableSheets> MakeTableSheetsAsync(IDictionary<string, string> sheets)
         {
             var previousContext = SynchronizationContext.Current;
             await UniTask.SwitchToThreadPool();
@@ -42,12 +42,6 @@ namespace Nekoyume.Game
 
         private void Initialize(IDictionary<string, string> sheets)
         {
-            Debug.LogError("@@@@@@@@@@@???");
-            if (Instance != null)
-            {
-                Debug.LogError("TableSheets.Instance != null");
-            }
-
             var type    = typeof(TableSheets);
             var started = DateTime.UtcNow;
             var sw      = new Stopwatch();

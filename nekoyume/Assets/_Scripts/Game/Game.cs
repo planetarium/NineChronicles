@@ -416,8 +416,6 @@ namespace Nekoyume.Game
             settingPopup.UpdateSoundSettings();
 
             // Initialize TableSheets. This should be done before initialize the Agent.
-            yield return StartCoroutine(CoInitializeTableSheets());
-            Debug.Log("[Game] Start()... TableSheets initialized");
             ResourcesHelper.Initialize();
             Debug.Log("[Game] Start()... ResourcesHelper initialized");
             AudioController.instance.Initialize();
@@ -485,7 +483,6 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
@@ -596,6 +593,8 @@ namespace Nekoyume.Game
             StartCoroutine(InitializeIAP());
 
             yield return StartCoroutine(InitializeWithAgent());
+
+            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             yield return createSecondWidgetCoroutine;
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
@@ -1156,29 +1155,6 @@ namespace Nekoyume.Game
                     yield return new WaitUntil(() => clickRetry);
                 }
             }
-        }
-
-        // FIXME: Leave one between this or CoSyncTableSheets()
-        private IEnumerator CoInitializeTableSheets()
-        {
-            yield return null;
-            var request =
-                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-            {
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
-                    AddressableAssetsContainerPath);
-            }
-
-            var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            var csv = new Dictionary<string, string>();
-            foreach (var asset in csvAssets)
-            {
-                csv[asset.name] = asset.text;
-            }
-
-            TableSheets = TableSheets.MakeTableSheets(csv);
         }
 
         // FIXME: Return some of exceptions when table csv is `Null` in the chain.
