@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.UI.Module;
+using Nekoyume.AddressablesHelper;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -124,7 +125,7 @@ namespace Nekoyume.UI
             var type = typeof(T);
             var names = type.ToString().Split('.');
             var resName = $"UI/Prefabs/UI_{names[names.Length - 1]}";
-            var res = Resources.Load<GameObject>(resName);
+            var res = AddressablesLoader.Load<GameObject>(resName);
             if (res is null)
                 throw new FailedToLoadResourceException<GameObject>(resName);
 

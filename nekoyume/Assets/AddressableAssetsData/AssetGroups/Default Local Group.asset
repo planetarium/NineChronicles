@@ -17,18 +17,31 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 1dab2f912ddcf8747b78fea0e5749e2d
   m_SerializeEntries:
-  - m_GUID: dd64384594d81984590de444eda4ff92
-    m_Address: VFX/Prefabs/Aura/AuraResourecs/Spine/Aura_01-yellow_Material
+  - m_GUID: b2554a2115178ec4ba77d6c3b51424d2
+    m_Address: Assets/Resources_moved/VFX
     m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 523aff75b43e274468bf23d8085c6eb3
-    m_Address: VFX/Prefabs/Aura/AuraResourecs/Spine/Aura_01-yellow_Material-Additive
+    m_SerializedLabels:
+    - vfx
+  - m_GUID: 36df45cf67b8a4587b8f242b5d03fcda
+    m_Address: Assets/Resources_moved/Audio/Music
     m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: a6ab6623c8fcde2449143b9c87a15756
-    m_Address: VFX/Prefabs/Aura/AuraResourecs/Spine/Aura_01-yellow_Material-Screen
+    m_SerializedLabels:
+    - audio/music
+  - m_GUID: 25f9b01d15d7f427cadc89d6c2bc18cf
+    m_Address: Assets/Resources_moved/Audio/Sfx
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - audio/sfx
+  - m_GUID: f8e7a8eba974949dc8f45af7efabb926
+    m_Address: Assets/Resources_moved/Character
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - character
+  - m_GUID: cd726555c36af2c4d8aa39b31b960a20
+    m_Address: Assets/Resources_moved/Video
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - video
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ac541e2ce40a4e441b1e4fe7bb752ac7, type: 2}
   m_SchemaSet:

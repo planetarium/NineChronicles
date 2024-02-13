@@ -8,6 +8,7 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Controller
@@ -122,8 +123,8 @@ namespace Nekoyume.Game.Controller
             Idle
         }
 
-        private const string MusicContainerPath = "Audio/Music/Prefabs";
-        private const string SfxContainerPath = "Audio/Sfx/Prefabs";
+        private const string MusicContainerPath = "audio/music";
+        private const string SfxContainerPath = "audio/sfx";
 
         private State CurrentState { get; set; }
 
@@ -220,29 +221,34 @@ namespace Nekoyume.Game.Controller
 
         #region Initialize & Validate
 
-        public void Initialize()
+        public IEnumerator Initialize()
         {
             AudioListener.volume = Settings.Instance.MasterVolume;
 
             if (CurrentState != State.None)
             {
                 Debug.LogError("Already initialized.");
-                return;
+                yield break;
             }
 
             CurrentState = State.InInitializing;
-            InitializeInternal(MusicContainerPath, typeof(MusicCode), _musicPrefabs, _musicPool);
-            InitializeInternal(SfxContainerPath, typeof(SfxCode), _sfxPrefabs, _sfxPool);
+            yield return InitializeInternal(MusicContainerPath, typeof(MusicCode), _musicPrefabs,
+                _musicPool);
+            yield return InitializeInternal(SfxContainerPath, typeof(SfxCode), _sfxPrefabs,
+                _sfxPool);
             CurrentState = State.Idle;
         }
 
-        private void InitializeInternal(
+        private IEnumerator InitializeInternal(
             string containerPath,
             Type codeType,
             IDictionary<string, AudioSource> prefabs,
             IDictionary<string, Stack<AudioInfo>> pool)
         {
-            var assets = Resources.LoadAll<GameObject>(containerPath);
+            var handle = Addressables.LoadAssetsAsync<GameObject>(containerPath, null);
+            yield return handle;
+
+            var assets = handle.Result;
             foreach (var asset in assets)
             {
                 var audioSource = asset.GetComponent<AudioSource>();
@@ -268,7 +274,7 @@ namespace Nekoyume.Game.Controller
             var fields = codeType.GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var fieldInfo in fields)
             {
-                var code = (string) fieldInfo.GetRawConstantValue();
+                var code = (string)fieldInfo.GetRawConstantValue();
                 if (prefabs.ContainsKey(code))
                     continue;
 
@@ -395,8 +401,8 @@ namespace Nekoyume.Game.Controller
             }
 
             foreach (var audioInfo in _sfxPlaylist
-                .Where(pair => pair.Key.Equals(audioName))
-                .SelectMany(pair => pair.Value))
+                         .Where(pair => pair.Key.Equals(audioName))
+                         .SelectMany(pair => pair.Value))
             {
                 audioInfo.source.Stop();
             }
@@ -454,7 +460,7 @@ namespace Nekoyume.Game.Controller
             }
             else
             {
-                var list = new List<AudioInfo> {audioInfo};
+                var list = new List<AudioInfo> { audioInfo };
                 pool.Add(audioName, list);
             }
         }
@@ -488,9 +494,9 @@ namespace Nekoyume.Game.Controller
             {
                 deltaTime += Time.deltaTime;
                 audioInfo.source.volume += audioInfo.volume
-                    * Settings.Instance.volumeMusic
-                    * Time.deltaTime
-                    / duration;
+                                           * Settings.Instance.volumeMusic
+                                           * Time.deltaTime
+                                           / duration;
 
                 yield return null;
             }

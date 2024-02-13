@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
+using Nekoyume.AddressablesHelper;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -22,80 +23,96 @@ namespace Nekoyume.Helper
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
 
-        private const string PlayerSpineTextureWeaponPathFormat = "Character/PlayerSpineTexture/Weapon/{0}";
-        private const string AreaAttackCutscenePath = "Character/PlayerSpineTexture/AreaAttackCutscene/";
+        private const string PlayerSpineTextureWeaponPathFormat =
+            "Character/PlayerSpineTexture/Weapon/{0}";
+
+        private const string AreaAttackCutscenePath =
+            "Character/PlayerSpineTexture/AreaAttackCutscene/";
 
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
         private const string MailIconPathFormat = "UI/Icons/Mail/{0}";
+
         private static readonly string MailIconDefaultPath =
             string.Format(MailIconPathFormat, "icon_mail_system");
 
-        private const string WorldmapBackgroundPathFormat = "UI/Textures/00_WorldMap/battle_UI_BG_{0}_{1:D2}";
-        private const string WorldmapBackgroundDefaultPathFormat = "UI/Textures/00_WorldMap/battle_UI_BG_01_{0:D2}";
+        private const string WorldmapBackgroundPathFormat =
+            "UI/Textures/00_WorldMap/battle_UI_BG_{0}_{1:D2}";
+
+        private const string WorldmapBackgroundDefaultPathFormat =
+            "UI/Textures/00_WorldMap/battle_UI_BG_01_{0:D2}";
 
         private const string DialogNPCPortaitPathFormat = "Images/npc/NPC_{0}";
         private const string DialogCharacterPortaitPathFormat = "Images/character_{0}";
 
         private const string FavIconPathFormat = "UI/Icons/FungibleAssetValue/{0}";
-        private const string DefaultFavIconPathFormat = "UI/Icons/FungibleAssetValue/RUNE_ADVENTURER";
+
+        private const string DefaultFavIconPathFormat =
+            "UI/Icons/FungibleAssetValue/RUNE_ADVENTURER";
 
         public static Sprite GetCharacterIcon(int characterId)
         {
-            return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
-                   Resources.Load<Sprite>(CharacterIconDefaultPath);
+            return AddressablesLoader.Load<Sprite>(string.Format(CharacterIconPathFormat,
+                       characterId)) ??
+                   AddressablesLoader.Load<Sprite>(CharacterIconDefaultPath);
         }
 
         public static Sprite GetItemIcon(int itemId)
         {
-            return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
-                   Resources.Load<Sprite>(ItemIconDefaultPath);
+            return AddressablesLoader.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
+                   AddressablesLoader.Load<Sprite>(ItemIconDefaultPath);
         }
 
         public static Sprite GetDccProfileIcon(int dccId)
         {
-            return Resources.Load<Sprite>(string.Format(DccIconPathFormat, dccId)) ??
-                   Resources.Load<Sprite>(CharacterIconDefaultPath);
+            return AddressablesLoader.Load<Sprite>(string.Format(DccIconPathFormat, dccId)) ??
+                   AddressablesLoader.Load<Sprite>(CharacterIconDefaultPath);
         }
 
         public static Sprite GetProfileFrameIcon(string frameName)
         {
-            return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, frameName)) ??
-                   Resources.Load<Sprite>(ProfileFrameDefaultPath);
+            return AddressablesLoader.Load<Sprite>(string.Format(ItemIconPathFormat, frameName)) ??
+                   AddressablesLoader.Load<Sprite>(ProfileFrameDefaultPath);
         }
 
         public static Sprite GetItemBackground(int grade)
         {
-            return Resources.Load<Sprite>(string.Format(ItemBackgroundPathFormat, grade)) ??
-                   Resources.Load<Sprite>(ItemBackgroundDefaultPath);
+            return AddressablesLoader.Load<Sprite>(string.Format(ItemBackgroundPathFormat,
+                       grade)) ??
+                   AddressablesLoader.Load<Sprite>(ItemBackgroundDefaultPath);
         }
 
         public static Sprite GetBuffIcon(string iconResource)
         {
             if (string.IsNullOrEmpty(iconResource))
             {
-                return Resources.Load<Sprite>(BuffIconDefaultPath);
+                return AddressablesLoader.Load<Sprite>(BuffIconDefaultPath);
             }
 
-            return Resources.Load<Sprite>(string.Format(BuffIconPathFormat, iconResource)) ??
-                   Resources.Load<Sprite>(BuffIconDefaultPath);
+            return AddressablesLoader.Load<Sprite>(string.Format(BuffIconPathFormat,
+                       iconResource)) ??
+                   AddressablesLoader.Load<Sprite>(BuffIconDefaultPath);
         }
 
         public static Sprite GetPlayerSpineTextureWeapon(int equipmentId)
         {
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat, equipmentId)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat, GameConfig.DefaultAvatarWeaponId));
+            return AddressablesLoader.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat,
+                       equipmentId)) ??
+                   AddressablesLoader.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat,
+                       GameConfig.DefaultAvatarWeaponId));
         }
 
         public static Sprite GetAreaAttackCutsceneSprite(int id)
         {
-            return Resources.Load<Sprite>($"{AreaAttackCutscenePath}{id}") ??
-                   Resources.Load<Sprite>($"{AreaAttackCutscenePath}{GameConfig.DefaultAvatarArmorId}");
+            return AddressablesLoader.Load<Sprite>($"{AreaAttackCutscenePath}{id}") ??
+                   AddressablesLoader.Load<Sprite>(
+                       $"{AreaAttackCutscenePath}{GameConfig.DefaultAvatarArmorId}");
         }
 
         public static Sprite GetRankIcon(int rank)
         {
-            return Resources.Load<Sprite>(string.Format(RankIconPath, rank.ToString("D2")));
+            return AddressablesLoader.Load<Sprite>(string.Format(RankIconPath,
+                rank.ToString("D2")));
         }
 
         public static Sprite GetMailIcon(MailType mailType)
@@ -119,8 +136,9 @@ namespace Nekoyume.Helper
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
             }
 
-            var result = Resources.Load<Sprite>(string.Format(MailIconPathFormat, fileName));
-            return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
+            var result =
+                AddressablesLoader.Load<Sprite>(string.Format(MailIconPathFormat, fileName));
+            return result ? result : AddressablesLoader.Load<Sprite>(MailIconDefaultPath);
         }
 
         /// <summary>
@@ -132,7 +150,7 @@ namespace Nekoyume.Helper
         {
             return mail switch
             {
-                RaidRewardMail => Resources.Load<Sprite>(
+                RaidRewardMail => AddressablesLoader.Load<Sprite>(
                     string.Format(MailIconPathFormat, "icon_mail_worldBoss")),
                 _ => null
             };
@@ -141,28 +159,29 @@ namespace Nekoyume.Helper
         public static Sprite GetWorldMapBackground(string imageKey, int pageIndex)
         {
             var path = string.Format(WorldmapBackgroundPathFormat, imageKey, pageIndex);
-            var sprite = Resources.Load<Sprite>(path);
+            var sprite = AddressablesLoader.Load<Sprite>(path);
             if (sprite)
             {
                 return sprite;
             }
 
             var defaultPath = string.Format(WorldmapBackgroundDefaultPathFormat, pageIndex);
-            var defaultSprite = Resources.Load<Sprite>(defaultPath);
+            var defaultSprite = AddressablesLoader.Load<Sprite>(defaultPath);
             return defaultSprite;
         }
 
         public static Sprite GetDialogPortrait(string key, bool isNPC = true)
         {
-            var path = string.Format(isNPC ?
-                DialogNPCPortaitPathFormat : DialogCharacterPortaitPathFormat, key);
-            return Resources.Load<Sprite>(path);
+            var path =
+                string.Format(isNPC ? DialogNPCPortaitPathFormat : DialogCharacterPortaitPathFormat,
+                    key);
+            return AddressablesLoader.Load<Sprite>(path);
         }
 
         public static Sprite GetFavIcon(string ticker)
         {
-            return Resources.Load<Sprite>(string.Format(FavIconPathFormat, ticker)) ??
-                   Resources.Load<Sprite>(DefaultFavIconPathFormat);
+            return AddressablesLoader.Load<Sprite>(string.Format(FavIconPathFormat, ticker)) ??
+                   AddressablesLoader.Load<Sprite>(DefaultFavIconPathFormat);
         }
     }
 }
