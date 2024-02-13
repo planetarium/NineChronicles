@@ -351,6 +351,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scroll: {fileID: 263816843220620264}
+  scrollCanvasGroup: {fileID: 4216822561195098488}
+--- !u!225 &4216822561195098488
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953666356139684148}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1200138227773250935
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,6 +970,7 @@ MonoBehaviour:
   tutorialActions: 
   closeButton: {fileID: 6240922507212636315}
   collectionStat: {fileID: 2241213664105741317}
+  collectionStatCanvasGroup: {fileID: 1665013397896047060}
   collectionItemViews:
   - {fileID: 1877358397835569129}
   - {fileID: 1562829756248444203}
@@ -3598,6 +3612,7 @@ GameObject:
   - component: {fileID: 3913151363116242189}
   - component: {fileID: 3189052400666065021}
   - component: {fileID: 7960880289576198152}
+  - component: {fileID: 1665013397896047060}
   m_Layer: 5
   m_Name: CollectionCell
   m_TagString: Untagged
@@ -3665,6 +3680,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &1665013397896047060
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8542832145456116635}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &928634156700440253
 PrefabInstance:
   m_ObjectHideFlags: 0

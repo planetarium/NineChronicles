@@ -6,6 +6,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
+using NUnit.Framework;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
@@ -15,9 +16,13 @@ namespace Nekoyume.UI.Module
     public class CollectionInventory : MonoBehaviour
     {
         [SerializeField] private InventoryScroll scroll;
+        [SerializeField] private CanvasGroup scrollCanvasGroup;
 
         private CollectionMaterial _requiredItem;
         private Action<InventoryItem> _onClickItem;
+        private CollectionMaterial[] _requiredItems;
+        private bool canSelect = true;
+
         private readonly List<InventoryItem> _items = new List<InventoryItem>();
 
         public InventoryItem SelectedItem { get; private set; }
@@ -28,17 +33,91 @@ namespace Nekoyume.UI.Module
 
             ReactiveAvatarState.Inventory.Subscribe(UpdateInventory).AddTo(gameObject);
 
-            scroll.OnClick.Subscribe(OnClickItem).AddTo(gameObject);
+            scroll.OnClick.Subscribe(SelectItem).AddTo(gameObject);
         }
+
+        private void SetCanSelect(bool value)
+        {
+            canSelect = value;
+            scrollCanvasGroup.interactable = value;
+        }
+
+        #region NonFungibleItems (Equipment, Costume) - select one
 
         public void SetRequiredItem(CollectionMaterial requiredItem)
         {
             _requiredItem = requiredItem;
+            SetCanSelect(true);
 
             var models = GetModels(_requiredItem);
             scroll.UpdateData(models, true);
-            OnClickItem(models.FirstOrDefault());
+            SelectItem(models.FirstOrDefault());
         }
+
+        private List<InventoryItem> GetModels(CollectionMaterial requiredItem)
+        {
+            // get from _items by required item's condition
+            var row = requiredItem.Row;
+            var items = _items.Where(item => item.ItemBase.Id == row.ItemId).ToList();
+            if (items.First().ItemBase.ItemType == ItemType.Equipment)
+            {
+                items = items.Where(item =>
+                    item.ItemBase is Equipment equipment &&
+                    equipment.level == row.Level &&
+                    equipment.Skills.Any() || !row.SkillContains).ToList();
+            }
+
+            return items;
+        }
+
+        private void SelectItem(InventoryItem item)
+        {
+            if (item == null || !canSelect)
+            {
+                return;
+            }
+
+            SelectedItem?.CollectionSelected.SetValueAndForceNotify(false);
+            SelectedItem = item;
+            SelectedItem.CollectionSelected.SetValueAndForceNotify(true);
+            _onClickItem?.Invoke(SelectedItem);
+        }
+
+        #endregion
+
+        #region FungibleItems (Consumable, Material) - select auto
+
+        public void SetRequiredItems(CollectionMaterial[] requiredItem)
+        {
+            _requiredItems = requiredItem;
+            SetCanSelect(false);
+
+            var models = GetModels(_requiredItems);
+            scroll.UpdateData(models, true);
+
+            // Select All
+            foreach (var model in models)
+            {
+                model.CollectionSelected.SetValueAndForceNotify(true);
+            }
+        }
+
+        private List<InventoryItem> GetModels(CollectionMaterial[] requiredItems)
+        {
+            var models = new List<InventoryItem>();
+            foreach (var requiredItem in requiredItems)
+            {
+                // Todo : 걍 first로?
+                var items = _items.Where(item => item.ItemBase.Id == requiredItem.Row.ItemId);
+                models.AddRange(items);
+            }
+
+            return models;
+        }
+
+        #endregion
+
+        #region Update Inventory
 
         private void UpdateInventory(Nekoyume.Model.Item.Inventory inventory)
         {
@@ -53,9 +132,14 @@ namespace Nekoyume.UI.Module
                 AddItem(item.item, item.count);
             }
 
-            var models = GetModels(_requiredItem);
-            scroll.UpdateData(models, true);
-            OnClickItem(models.FirstOrDefault());
+            if (canSelect)
+            {
+                SetRequiredItem(_requiredItem);
+            }
+            else
+            {
+                SetRequiredItems(_requiredItems);
+            }
         }
 
         private void AddItem(ItemBase itemBase, int count = 1)
@@ -128,45 +212,6 @@ namespace Nekoyume.UI.Module
             return model != null;
         }
 
-        private void OnClickItem(InventoryItem item)
-        {
-            if (item == null)
-            {
-                return;
-            }
-
-            SelectedItem?.CollectionSelected.SetValueAndForceNotify(false);
-            SelectedItem = item;
-            SelectedItem.CollectionSelected.SetValueAndForceNotify(true);
-            _onClickItem?.Invoke(SelectedItem);
-        }
-
-        private List<InventoryItem> GetModels(CollectionMaterial requiredItem)
-        {
-            // get from _items by required item's condition
-            var row = requiredItem.Row;
-            var items = _items.Where(item => item.ItemBase.Id == row.ItemId);
-            items = items.First().ItemBase.ItemType == ItemType.Equipment
-                ? items.Where(item => ((Equipment)item.ItemBase).level == row.Level &&
-                                      (((Equipment)item.ItemBase).Skills.Any() || !row.SkillContains))
-                : items.Where(item => item.Count.Value >= row.Count);
-
-            var usableItems = new List<InventoryItem>();
-            var unusableItems = new List<InventoryItem>();
-            foreach (var item in items)
-            {
-                if (Util.IsUsableItem(item.ItemBase))
-                {
-                    usableItems.Add(item);
-                }
-                else
-                {
-                    unusableItems.Add(item);
-                }
-            }
-
-            usableItems.AddRange(unusableItems);
-            return usableItems;
-        }
+        #endregion
     }
 }

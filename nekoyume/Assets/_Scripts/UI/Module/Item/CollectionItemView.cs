@@ -86,6 +86,9 @@ namespace Nekoyume.UI.Module
             model.Focused
                 .Subscribe(b => baseItemView.SelectArrowObject.SetActive(b))
                 .AddTo(_disposables);
+            model.Registered
+                .Subscribe(_ => baseItemView.EnoughObject.SetActive(model.Enough))
+                .AddTo(_disposables);
         }
     }
 }

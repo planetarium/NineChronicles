@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.Model.Collection;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
@@ -72,7 +74,7 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             };
 
-            scroll.OnClickActiveButton.Subscribe(ActivateCollectionAction).AddTo(gameObject);
+            scroll.OnClickActiveButton.Subscribe(OnClickActiveButton).AddTo(gameObject);
             scroll.OnClickMaterial.Subscribe(OnClickMaterial).AddTo(gameObject);
         }
 
@@ -80,8 +82,8 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
-            UpdateView();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+            SetFilter();
 
             if (!_initialized)
             {
@@ -166,28 +168,42 @@ namespace Nekoyume.UI
             // collectionMaterialInfo.Show(viewModel);
         }
 
-        private void ActivateCollectionAction(CollectionModel model)
+        private void OnClickActiveButton(CollectionModel model)
         {
             // check collection - is active
+            var collectionId = model.Row.Id;
             var collectionState = Game.Game.instance.States.CollectionState;
-            if (collectionState.Ids.Contains(model.Row.Id))
+            if (collectionState.Ids.Contains(collectionId))
             {
                 Debug.LogError("collection already active");
                 return;
             }
 
-            // set materials
-            Find<CollectionRegistrationPopup>().Show(model, materials =>
+            void Action(List<ICollectionMaterial> materials)
             {
-                ActionManager.Instance.ActivateCollection(model.Row.Id, materials)
+                ActionManager.Instance.ActivateCollection(collectionId, materials)
                     .Subscribe(_ => LoadingHelper.ActivateCollection.Value = false);
+
                 LoadingHelper.ActivateCollection.Value = true;
-            });
+            }
+
+            switch (model.ItemType)
+            {
+                case ItemType.Equipment:
+                case ItemType.Costume:
+                    Find<CollectionRegistrationPopup>().ShowForNonFungibleMaterial(model, Action);
+                    break;
+                case ItemType.Consumable:
+                case ItemType.Material:
+                    Find<CollectionRegistrationPopup>().ShowForFungibleMaterial(model, Action);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public void OnActionRender()
         {
-            LoadingHelper.ActivateCollection.Value = false;
             UpdateView();
         }
     }

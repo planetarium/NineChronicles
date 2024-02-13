@@ -11,21 +11,20 @@ namespace Nekoyume.UI.Model
         public CollectionSheet.Row Row { get; }
         public ItemType ItemType { get; }
 
-        public bool Active { get; private set; } // todo : rx
-        public bool CanActivate { get; private set; } // todo : rx
+        public bool Active { get; private set; }
         public List<CollectionMaterial> Materials { get; }
+
+        public bool CanActivate => Materials.All(material => material.Enough);
 
         public CollectionModel(
             CollectionSheet.Row row,
             ItemType itemType,
             bool active,
-            bool canActivate,
             List<CollectionMaterial> materials)
         {
             Row = row;
             ItemType = itemType;
             Active = active;
-            CanActivate = canActivate;
             Materials = materials;
         }
 
@@ -48,48 +47,18 @@ namespace Nekoyume.UI.Model
                 foreach (var material in row.Materials)
                 {
                     var itemRow = itemSheet[material.ItemId];
-
-                    CollectionMaterial collectionMaterial;
-                    if (active)
+                    var collectionMaterial =
+                        new CollectionMaterial(material, itemRow.Grade, itemRow.ItemType, active);
+                    if (canActive)
                     {
-                        collectionMaterial = new CollectionMaterial(
-                            material, itemRow.Grade, itemRow.ItemType);
-                    }
-                    else
-                    {
-                        var items = inventory.Items
-                            .Where(item => item.item.Id == material.ItemId).ToArray();
-
-                        var hasItem = items.Any();
-                        bool enoughCount;
-                        switch (itemRow.ItemType)
-                        {
-                            case ItemType.Equipment:
-                                enoughCount = items
-                                    .Select(item => item.item).OfType<Equipment>()
-                                    .Any(item => item.level == material.Level &&
-                                                 (item.Skills.Any() || !material.SkillContains));
-                                break;
-                            case ItemType.Material:
-                                enoughCount = items.Sum(item => item.count) >= material.Count;
-                                break;
-                            case ItemType.Consumable:
-                                enoughCount = items.Length >= material.Count;
-                                break;
-                            default:
-                                enoughCount = hasItem;
-                                break;
-                        }
-
-                        collectionMaterial = new CollectionMaterial(
-                            material, itemRow.Grade, itemRow.ItemType, hasItem, enoughCount);
-                        canActive &= hasItem && enoughCount;
+                        collectionMaterial.SetCondition(inventory);
+                        canActive &= collectionMaterial.Enough;
                     }
 
                     materials.Add(collectionMaterial);
                 }
 
-                models.Add(new CollectionModel(row, itemType, active, canActive, materials));
+                models.Add(new CollectionModel(row, itemType, active, materials));
             }
 
             return models;
