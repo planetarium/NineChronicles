@@ -1178,7 +1178,7 @@ namespace Nekoyume.Game
                 csv[asset.name] = asset.text;
             }
 
-            TableSheets = new TableSheets(csv);
+            TableSheets = TableSheets.MakeTableSheets(csv);
         }
 
         // FIXME: Return some of exceptions when table csv is `Null` in the chain.
@@ -1197,7 +1197,7 @@ namespace Nekoyume.Game
                     AddressableAssetsContainerPath);
             }
             sw.Stop();
-            Debug.Log($"[SyncTableSheets] load container: {sw.Elapsed}");
+            Debug.Log($"[{nameof(SyncTableSheetsAsync)}] load container: {sw.Elapsed}");
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
@@ -1206,24 +1206,16 @@ namespace Nekoyume.Game
                 asset => asset.name);
             var dict = await Agent.GetSheetsAsync(map.Keys);
             sw.Stop();
-            Debug.Log($"[SyncTableSheets] get state: {sw.Elapsed}");
+            Debug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
             sw.Restart();
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                pair =>
-                {
-                    if (pair.Value is Text)
-                    {
-                        return pair.Value.ToDotnetString();
-                    }
+                pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
 
-                    return null;
-                });
-
-            TableSheets = new TableSheets(csv);
+            TableSheets = await TableSheets.MakeTableSheetsAsync(csv);
             sw.Stop();
-            Debug.Log($"[SyncTableSheets] TableSheets cosntructor: {sw.Elapsed}");
+            Debug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()

@@ -49,7 +49,7 @@ namespace BalanceTool.Runtime.Util
 
             var tuple = InitializeTableSheets(states, isDevEx, sheetsOverride);
             states = tuple.states;
-            var tableSheets = new TableSheets(tuple.sheets);
+            var tableSheets     = TableSheets.MakeTableSheets(tuple.sheets);
             var gameConfigState = new GameConfigState(tuple.sheets[nameof(GameConfigSheet)]);
             states = states.SetLegacyState(gameConfigState.address, gameConfigState.Serialize());
 
