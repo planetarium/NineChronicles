@@ -32,7 +32,8 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI editButtonText;
         [SerializeField] private Button editCancelButton;
         [SerializeField] private Button editSaveButton;
-        [SerializeField] private GameObject edittingUIParent;
+        [SerializeField] private GameObject editingUIParent;
+        [SerializeField] private TMP_InputField stakingNcgInputField;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
@@ -50,9 +51,6 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject levelBenefitsTab;
 
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
-
-        [SerializeField]
-        private TMP_InputField stakingNcgInputField;
 
         private readonly ReactiveProperty<BigInteger> _deposit = new();
         private readonly Module.ToggleGroup _toggleGroup = new();
@@ -109,9 +107,7 @@ namespace Nekoyume.UI
             editSaveButton.onClick.AddListener(OnClickSaveButton);
             editCancelButton.onClick.AddListener(() =>
             {
-                edittingUIParent.SetActive(false);
-                ncgEditButton.gameObject.SetActive(true);
-                stakingNcgInputField.interactable = false;
+                OnChangeEditingState(false);
             });
         }
 
@@ -158,9 +154,7 @@ namespace Nekoyume.UI
             var selectedTabButton = deposit > 0 ? currentBenefitsTabButton : levelBenefitsTabButton;
             selectedTabButton.OnClick.OnNext(selectedTabButton);
             selectedTabButton.SetToggledOn();
-            stakingNcgInputField.interactable = false;
-            ncgEditButton.gameObject.SetActive(true);
-            edittingUIParent.SetActive(false);
+            OnChangeEditingState(false);
 
             var liveAssetManager = Game.LiveAsset.LiveAssetManager.instance;
             if (liveAssetManager.StakingLevelSprite != null)
@@ -213,9 +207,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            stakingNcgInputField.interactable = true;
-            ncgEditButton.gameObject.SetActive(false);
-            edittingUIParent.SetActive(true);
+            OnChangeEditingState(true);
         }
 
         private void OnClickSaveButton()
@@ -261,9 +253,7 @@ namespace Nekoyume.UI
             {
                 ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
                     .Subscribe();
-                edittingUIParent.SetActive(false);
-                stakingNcgInputField.interactable = false;
-                ncgEditButton.gameObject.SetActive(true);
+                OnChangeEditingState(false);
             };
         }
 
@@ -414,6 +404,13 @@ namespace Nekoyume.UI
                 reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
 
             return result + levelBonus;
+        }
+
+        private void OnChangeEditingState(bool isEdit)
+        {
+            editingUIParent.SetActive(isEdit);
+            stakingNcgInputField.interactable = isEdit;
+            ncgEditButton.gameObject.SetActive(!isEdit);
         }
     }
 }
