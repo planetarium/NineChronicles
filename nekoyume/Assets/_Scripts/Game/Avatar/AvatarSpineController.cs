@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Avatar
 
         private Shader _shader;
         private Spine.Animation _targetAnimation;
-        private Sequence _doFadeSequence;
+        private DG.Tweening.Sequence _doFadeSequence;
         private GameObject _cachedWeaponVFX;
         private GameObject _cachedAuraVFX;
         private readonly List<Tweener> _fadeTweener = new();
@@ -217,9 +217,10 @@ namespace Nekoyume.Game.Avatar
             }
 
             var skeletonAnimation = _parts[AvatarPartsType.body_front];
-            var weaponSlotIndex = skeletonAnimation.Skeleton.FindSlotIndex(WeaponSlot);
-            var weaponSprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
-            var newWeapon = MakeAttachment(weaponSprite);
+            var weaponSlot        = skeletonAnimation.Skeleton.FindSlot(WeaponSlot);
+            var weaponSlotIndex   = weaponSlot == null ? -1 : weaponSlot.Data.Index;
+            var weaponSprite      = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
+            var newWeapon         = MakeAttachment(weaponSprite);
             skeletonAnimation.Skeleton.Data.DefaultSkin
                 .SetAttachment(weaponSlotIndex, WeaponSlot, newWeapon);
             skeletonAnimation.Skeleton.SetSlotsToSetupPose();
@@ -243,8 +244,7 @@ namespace Nekoyume.Game.Avatar
             var boneFollower = parent.AddComponent<BoneFollower>();
             parent.transform.SetParent(transform);
             Instantiate(weaponVFXPrefab, parent.transform);
-            var weaponSlot = skeletonAnimation.Skeleton.FindSlot(WeaponSlot);
-            var boneName = weaponSlot.Bone.Data.Name;
+            var boneName = weaponSlot?.Bone.Data.Name ?? string.Empty;
             boneFollower.SkeletonRenderer = skeletonAnimation;
             boneFollower.SetBone(boneName);
             _cachedWeaponVFX = parent;
@@ -543,7 +543,6 @@ namespace Nekoyume.Game.Avatar
 
             skeletonAnimation.Skeleton.SetSkin(skinName);
             skeletonAnimation.Skeleton.SetSlotsToSetupPose();
-            skeletonAnimation.Skeleton.Update(0);
             return true;
         }
 

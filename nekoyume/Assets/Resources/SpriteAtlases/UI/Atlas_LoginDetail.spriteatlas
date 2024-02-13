@@ -69,6 +69,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ef5ce465b5dce7845bdf707d9abd8e11, type: 3}
   - {fileID: 21300000, guid: 3d1d97a5f0bfa8d43b9828c6453122b1, type: 3}
   - {fileID: 21300000, guid: 901817d50b6854b4691a49a1b42099de, type: 3}
+  - {fileID: 21300000, guid: 23db2de5c9929e44a9f8b18799267744, type: 3}
   - {fileID: 21300000, guid: 7f2828f54cff1e34d986b9c19dfc810a, type: 3}
   - {fileID: 21300000, guid: c81cbb06f93c7ec4a8f96ed89887a729, type: 3}
   - {fileID: 21300000, guid: b8240a36c8cf48642ac720a2909a413e, type: 3}
@@ -90,6 +91,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 062bcff8bbe031442bb1e3c7b4ca7a33, type: 3}
   - {fileID: 21300000, guid: 42b50f0957a2fd1469d7e41db2cf43c2, type: 3}
   - {fileID: 21300000, guid: 42d370593facd4f2384d20d3b889b1bf, type: 3}
+  - {fileID: 21300000, guid: e475af5994c36e042b7686f35071dfc8, type: 3}
+  - {fileID: 21300000, guid: 2e64b5892d2fae142931f88e5d281121, type: 3}
   - {fileID: 21300000, guid: d627ea8947aca434abbd8b609b731310, type: 3}
   - {fileID: 21300000, guid: fe36c0b9f6e92fa45b7cb9dea6b7e215, type: 3}
   - {fileID: 21300000, guid: 434a57f964276774897e163780704f27, type: 3}
@@ -135,6 +138,7 @@ SpriteAtlas:
   - bg_character_select_02
   - UI_Btn_bg_03
   - UI_main_icon_quest_02_Login
+  - Guide_QRcode_1
   - Icon_Planet
   - UI_popup_title_bg_03_Login
   - Dot
@@ -156,6 +160,8 @@ SpriteAtlas:
   - bg_character_select_01
   - Icon_Twitter
   - UI_bg_Start_01
+  - Common_Gradiant_bg_02
+  - Guide_QRcode_2
   - bg_character_select_06
   - Icon_Apple
   - bg_character_effect_01

@@ -1,111 +1,46 @@
-
 204012.png
-size: 128,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:188,78
+filter:Linear,Linear
+pma:true
 face_01
-  rotate: false
-  xy: 39, 21
-  size: 40, 27
-  orig: 40, 27
-  offset: 0, 0
-  index: -1
+bounds:80,3,39,26
+offsets:0,0,40,27
 face_02
-  rotate: false
-  xy: 39, 2
-  size: 36, 17
-  orig: 36, 17
-  offset: 0, 0
-  index: -1
+bounds:168,24,36,17
+rotate:90
 face_03
-  rotate: false
-  xy: 73, 61
-  size: 40, 18
-  orig: 40, 18
-  offset: 0, 0
-  index: -1
+bounds:108,36,40,18
+rotate:90
 face_04
-  rotate: true
-  xy: 101, 86
-  size: 40, 18
-  orig: 40, 18
-  offset: 0, 0
-  index: -1
+bounds:128,36,40,18
+rotate:90
 fire
-  rotate: false
-  xy: 2, 50
-  size: 69, 76
-  orig: 69, 76
-  offset: 0, 0
-  index: -1
+bounds:2,7,69,76
+rotate:90
 fire_02
-  rotate: true
-  xy: 101, 81
-  size: 3, 5
-  orig: 3, 5
-  offset: 0, 0
-  index: -1
+bounds:2,2,3,5
+rotate:90
 glow
-  rotate: false
-  xy: 2, 15
-  size: 35, 33
-  orig: 36, 34
-  offset: 1, 0
-  index: -1
+bounds:121,2,32,30
+offsets:2,1,36,34
+rotate:90
 head
-  rotate: true
-  xy: 73, 81
-  size: 45, 26
-  orig: 45, 26
-  offset: 0, 0
-  index: -1
+bounds:80,31,45,26
+rotate:90
 shadow
-  rotate: true
-  xy: 81, 19
-  size: 40, 16
-  orig: 41, 17
-  offset: 1, 0
-  index: -1
+bounds:148,62,38,14
+offsets:2,1,41,17
 wood_01
-  rotate: false
-  xy: 2, 8
-  size: 5, 5
-  orig: 5, 5
-  offset: 0, 0
-  index: -1
+bounds:176,10,5,5
 wood_02
-  rotate: false
-  xy: 99, 36
-  size: 18, 23
-  orig: 18, 23
-  offset: 0, 0
-  index: -1
+bounds:148,37,18,23
 wood_03
-  rotate: false
-  xy: 77, 5
-  size: 12, 12
-  orig: 12, 12
-  offset: 0, 0
-  index: -1
+bounds:153,23,12,12
 wood_04
-  rotate: false
-  xy: 99, 13
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+bounds:153,5,16,21
+rotate:90
 wood_05
-  rotate: false
-  xy: 73, 54
-  size: 6, 5
-  orig: 6, 5
-  offset: 0, 0
-  index: -1
+bounds:176,17,6,5
 wood_06
-  rotate: false
-  xy: 108, 82
-  size: 3, 2
-  orig: 3, 2
-  offset: 0, 0
-  index: -1
+bounds:9,2,3,2
+rotate:90

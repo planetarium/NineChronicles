@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: Aura_01-green_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: bc447edf5c7a8b24cba250e3dbb355c6, type: 3}
   materials:
   - {fileID: 2100000, guid: 4a42caa7b29c9c746b9a5957107fbcf9, type: 2}

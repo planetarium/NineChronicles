@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Character
         private Material _material;
         private AtlasPage _atlasPage;
 
-        private Sequence _doFadeSequence;
+        private DG.Tweening.Sequence _doFadeSequence;
         private Tweener _fadeTweener;
         private System.Action _callback;
 

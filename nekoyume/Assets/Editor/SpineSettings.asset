@@ -18,15 +18,20 @@ MonoBehaviour:
   defaultZSpacing: 0
   defaultInstantiateLoop: 1
   showHierarchyIcons: 1
+  reloadAfterPlayMode: 1
   setTextureImporterSettings: 1
-  textureSettingsReference: 
+  textureSettingsReference: Packages/com.esotericsoftware.spine.spine-unity/Editor/spine-unity/Editor/ImporterPresets/PMATexturePreset.preset
+  fixPrefabOverrideViaMeshFilter: 0
+  removePrefabPreviewMeshes: 0
   blendModeMaterialMultiply: {fileID: 0}
   blendModeMaterialScreen: {fileID: 0}
   blendModeMaterialAdditive: {fileID: 0}
   atlasTxtImportWarning: 1
   textureImporterWarning: 1
   componentMaterialWarning: 1
+  skeletonDataAssetNoFileError: 1
   autoReloadSceneSkeletons: 1
   handleScale: 1
   mecanimEventIncludeFolderName: 1
+  timelineDefaultMixDuration: 0
   timelineUseBlendDuration: 1

@@ -88,9 +88,12 @@ namespace Nekoyume.Game.Character
         {
             base.Awake();
 
-            _clonedSkin = SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
+            var defaultSkin = SkeletonAnimation.skeleton.Data.DefaultSkin;
+            _clonedSkin = new Skin($"{defaultSkin.Name} Clone");
+            _clonedSkin.CopySkin(defaultSkin);
 
-            _weaponSlotIndex = SkeletonAnimation.skeleton.FindSlotIndex(WeaponSlot);
+            var weaponSlot = SkeletonAnimation.Skeleton.FindSlot(WeaponSlot);
+            _weaponSlotIndex = weaponSlot == null ? -1 : weaponSlot.Data.Index;
             var weaponSprite =
                 SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId);
             _weaponAttachmentDefault = MakeAttachment(weaponSprite);
@@ -133,7 +136,7 @@ namespace Nekoyume.Game.Character
                 return false;
             }
 
-            var slotIndex = SkeletonAnimation.skeleton.FindSlotIndex(slotName);
+            var slotIndex  = slot.Data.Index;
             slotAndAttachment = new SlotAndAttachment(slotName, slot, slotIndex, slot.Attachment);
             return true;
         }
