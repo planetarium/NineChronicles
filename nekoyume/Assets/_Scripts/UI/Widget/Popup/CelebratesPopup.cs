@@ -42,6 +42,13 @@ namespace Nekoyume.UI
             public GameObject MenuObject => menu;
         }
 
+        [Serializable]
+        private class CollectionEffectStat
+        {
+            public GameObject gameObject;
+            public TextMeshProUGUI text;
+        }
+
         private const float ContinueTime = 3f;
 
         [SerializeField]
@@ -50,13 +57,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI continueText = null;
 
-        [SerializeField]
+        [SerializeField] [Header("Quest")]
         private GameObject questRewards = null;
 
         [SerializeField]
         private SimpleCountableItemView[] questRewardViews = null;
 
-        [SerializeField]
+        [SerializeField] [Header("Recipe")]
         private GameObject recipeAreaParent = null;
 
         [SerializeField]
@@ -71,7 +78,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI recipeOptionText = null;
 
-        [SerializeField]
+        [SerializeField] [Header("Menu")]
         private GameObject menuContainer = null;
 
         [SerializeField]
@@ -88,6 +95,18 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private List<Menu> menuList = new();
+
+        [SerializeField] [Header("Collection")]
+        private GameObject collectionContainer = null;
+
+        [SerializeField]
+        private TextMeshProUGUI collectionText = null;
+
+        [SerializeField]
+        private CollectionEffectStat[] collectionEffectStats = null;
+
+        [SerializeField]
+        private TextMeshProUGUI collectionCountText = null;
 
         private readonly List<Tweener> _tweeners = new List<Tweener>();
         private readonly WaitForSeconds _waitItemInterval = new WaitForSeconds(0.4f);
@@ -127,6 +146,7 @@ namespace Nekoyume.UI
             menuContainer.SetActive(true);
             questRewards.SetActive(false);
             recipeAreaParent.SetActive(false);
+            collectionContainer.SetActive(false);
 
             _rewards = null;
 
@@ -197,6 +217,7 @@ namespace Nekoyume.UI
             menuContainer.SetActive(false);
             questRewards.SetActive(true);
             recipeAreaParent.SetActive(false);
+            collectionContainer.SetActive(false);
 
             _rewards = rewards;
 
@@ -238,6 +259,7 @@ namespace Nekoyume.UI
 
             menuContainer.SetActive(false);
             questRewards.SetActive(false);
+            collectionContainer.SetActive(false);
             recipeCell.Show(row, false);
 
             var resultItem = row.GetResultEquipmentItemRow();
@@ -253,6 +275,48 @@ namespace Nekoyume.UI
             _rewards = null;
 
             PlayAnimation(NPCAnimation.Type.Emotion);
+            base.Show(ignoreShowAnimation);
+            PlayEffects();
+        }
+
+        #endregion
+
+        #region Show with Collection
+
+        public void Show(CollectionSheet.Row row, int count, bool ignoreShowAnimation = false)
+        {
+            if (row is null)
+            {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(row)} is null.");
+                Debug.LogError(sb.ToString());
+                return;
+            }
+
+            titleText.text = L10nManager.Localize("UI_CELEBRATE_COLLECTION");
+            continueText.alpha = 0f;
+
+            menuContainer.SetActive(false);
+            questRewards.SetActive(false);
+            recipeAreaParent.SetActive(false);
+            collectionContainer.SetActive(true);
+
+            collectionText.text = L10nManager.Localize($"COLLECTION_NAME_{row.Id}");
+
+            var statModifiers = row.StatModifiers;
+            for (var i = 0; i < collectionEffectStats.Length; i++)
+            {
+                collectionEffectStats[i].gameObject.SetActive(i < statModifiers.Count);
+                if (i < statModifiers.Count)
+                {
+                    collectionEffectStats[i].text.text = statModifiers[i].StatModifierToString();
+                }
+            }
+
+            collectionCountText.text =
+                L10nManager.Localize("UI_COLLECTION_ACTIVE_COUNT", count.ToOrdinal());
+
+            PlayAnimation(NPCAnimation.Type.Emotion_03);
             base.Show(ignoreShowAnimation);
             PlayEffects();
         }
@@ -294,6 +358,11 @@ namespace Nekoyume.UI
             if (recipeCell.gameObject.activeSelf)
             {
                 _coShowSomethingCoroutine = StartCoroutine(CoShowEquipmentRecipe());
+            }
+
+            if (collectionContainer.activeSelf)
+            {
+                _coShowSomethingCoroutine = StartCoroutine(CoShowCollection());
             }
 
             base.OnCompleteOfShowAnimationInternal();
@@ -376,6 +445,16 @@ namespace Nekoyume.UI
         private IEnumerator CoShowMenu()
         {
             // 메뉴 연출을 재생합니다.
+
+            graphicAlphaTweener.PlayReverse();
+            yield return _waitForDisappear;
+            StartContinueTimer();
+            _coShowSomethingCoroutine = null;
+        }
+
+        private IEnumerator CoShowCollection()
+        {
+            // 컬렉션 연출을 재생합니다.
 
             graphicAlphaTweener.PlayReverse();
             yield return _waitForDisappear;

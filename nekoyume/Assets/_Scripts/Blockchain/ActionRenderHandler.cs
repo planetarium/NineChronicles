@@ -3062,6 +3062,11 @@ namespace Nekoyume.Blockchain
         private void ResponseActivateCollection(ActionEvaluation<ActivateCollection> eval)
         {
             Widget.Find<Collection>().OnActionRender();
+
+            var collectionId = eval.Action.CollectionData.First().collectionId;
+            var collectionRow = TableSheets.Instance.CollectionSheet[collectionId];
+            var count = States.Instance.CollectionState.Ids.Count;
+            Widget.Find<CelebratesPopup>().Show(collectionRow, count);
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
