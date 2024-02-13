@@ -1877,3 +1877,10 @@ Paket baru segera hadir.","Товаров на витрине нет.
 新套裝即將推出。","Walang mga produkto na naka-display.
 Malapit na ang mga bagong package.","Hiện không có sản phẩm trưng bày.
 Gói mới sắp ra mắt."
+UI_REQUIRE_STAKE,Stake first please.,스테이킹을 먼저 해주세요.,,,,,,,,,,
+UI_STAKING_LOCK_BLOCK_TIP_FORMAT,can not modify until tip {0}.,{0} 블록 전까진 스테이킹한 NCG를 출금할 수 없습니다.,,,,,,,,,,
+UI_REQUIRE_CLAIM_STAKE_REWARD,Claim reward first please.,보상을 먼저 받아주세요.,,,,,,,,,,
+UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT,You can only do Stake if you have more than {0} NCG.,{0} NCG 이상 스테이킹해야합니다.,,,,,,,,,,
+UI_REQUIRE_DIFF_VALUE_WITH_EXIST,Cannot be set to the same as the existing value.,기존과 같은 값으로는 변경할 수 없습니다.,,,,,,,,,,
+UI_INTRODUCE_STAKING,Can not edit staked ncg in 4 weeks. it is ok?,4주간 출금할 수 없습니다. 괜찮나요?,,,,,,,,,,
+UI_CHANGE,Change,변경,,,,,,,,,,

@@ -80,8 +80,10 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    // TODO: adjust l10n
-                    OneLineSystem.Push(MailType.System, "stake first", NotificationCell.NotificationType.UnlockCondition);
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_REQUIRE_STAKE"),
+                        NotificationCell.NotificationType.UnlockCondition);
                 }
             }).AddTo(gameObject);
             levelBenefitsTabButton.OnClick.Subscribe(_ =>
@@ -186,18 +188,16 @@ namespace Nekoyume.UI
                     stakeState.CancellableBlockIndex;
                 if (cancellableBlockIndex > currentBlockIndex)
                 {
-                    // TODO: adjust l10n
                     OneLineSystem.Push(MailType.System,
-                        $"can not modify until tip {cancellableBlockIndex}",
+                        L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT", cancellableBlockIndex),
                         NotificationCell.NotificationType.UnlockCondition);
                     return;
                 }
 
                 if (stakeState.ClaimableBlockIndex <= currentBlockIndex)
                 {
-                    // TODO: adjust l10n
                     OneLineSystem.Push(MailType.System,
-                        "claim reward first.",
+                        L10nManager.Localize("UI_REQUIRE_CLAIM_STAKE_REWARD"),
                         NotificationCell.NotificationType.UnlockCondition);
                     return;
                 }
@@ -206,9 +206,8 @@ namespace Nekoyume.UI
             {
                 if (States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
                 {
-                    // TODO: adjust l10n
                     OneLineSystem.Push(MailType.System,
-                        "You can only do Stake if you have more than 50 NCG.",
+                        L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
                         NotificationCell.NotificationType.UnlockCondition);
                     return;
                 }
@@ -232,18 +231,16 @@ namespace Nekoyume.UI
 
             if (inputBigInt == States.Instance.StakedBalanceState.Gold.MajorUnit)
             {
-                // TODO: adjust l10n
                 OneLineSystem.Push(MailType.System,
-                    "Cannot be set to the same as the existing value.",
+                    L10nManager.Localize("UI_REQUIRE_DIFF_VALUE_WITH_EXIST"),
                     NotificationCell.NotificationType.UnlockCondition);
                 return;
             }
 
             if (inputBigInt != 0 && inputBigInt < 50)
             {
-                // TODO: adjust l10n
                 OneLineSystem.Push(MailType.System,
-                    "You can only do Stake if you have more than 50 NCG.",
+                    L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
                     NotificationCell.NotificationType.UnlockCondition);
                 return;
             }
@@ -258,8 +255,8 @@ namespace Nekoyume.UI
             }
 
             var confirmUI = Find<IconAndButtonSystem>();
-            // TODO: adjust l10n
-            confirmUI.ShowWithTwoButton("staking", "r u ok?", localize:false, type: IconAndButtonSystem.SystemType.Information);
+            // TODO: adjust l10n, UI_WARNING_STAKING_REDUCE
+            confirmUI.ShowWithTwoButton("UI_ITEM_INFORMATION", "UI_INTRODUCE_STAKING", localize:true, type: IconAndButtonSystem.SystemType.Information);
             confirmUI.ConfirmCallback = () =>
             {
                 ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
@@ -367,8 +364,7 @@ namespace Nekoyume.UI
             // can not category UI toggle when user has not StakeState.
             currentBenefitsTabButton.Toggleable = HasStakeState;
             levelBenefitsTabButton.Toggleable = HasStakeState;
-            // TODO: adjust l10n
-            editButtonText.text = HasStakeState ? "Edit" : "Start";
+            editButtonText.text = L10nManager.Localize(HasStakeState ? "UI_CHANGE" : "UI_START");
         }
 
         private static bool TryGetWaitedBlockIndex(
