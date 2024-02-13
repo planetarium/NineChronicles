@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Collection;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -133,8 +134,8 @@ namespace Nekoyume.UI
 
             var canRegister = _registeredItems.Any(registeredItem => registeredItem.Value == null);
             registrationButton.Text = canRegister
-                ? "Register"
-                : "Activate";
+                ? L10nManager.Localize("UI_REGISTER")
+                : L10nManager.Localize("UI_ACTIVATE");
         }
 
         public void Show(

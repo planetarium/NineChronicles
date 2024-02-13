@@ -3839,7 +3839,7 @@ MonoBehaviour:
     hasNotificationImage: {fileID: 1900332131572981172}
   collectionEffect: {fileID: 2910211704707782105}
   scroll: {fileID: 5197950029209217649}
-  collectionMaterialInfo: {fileID: 0}
+  collectionMaterialInfo: {fileID: 4377978448742164360}
 --- !u!1 &1716475420388685582
 GameObject:
   m_ObjectHideFlags: 0
@@ -17141,7 +17141,7 @@ PrefabInstance:
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 243
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -17186,7 +17186,7 @@ PrefabInstance:
     - target: {fileID: 6679572050248287148, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: helpId
-      value: 0
+      value: 100030
       objectReference: {fileID: 0}
     - target: {fileID: 6950815306001856415, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
