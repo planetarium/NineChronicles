@@ -15,7 +15,6 @@ namespace Nekoyume
         public static string DecimalStatToString(this DecimalStat stat)
         {
             var value =
-                stat.StatType == StatType.SPD ||
                 stat.StatType == StatType.DRR ||
                 stat.StatType == StatType.CDMG ?
                 (stat.BaseValue / 100m) : stat.BaseValue;
