@@ -1,153 +1,58 @@
-
 204013.png
-size: 128,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:110,142
+filter:Linear,Linear
+pma:true
 eye_00
-  rotate: true
-  xy: 2, 50
-  size: 35, 33
-  orig: 35, 33
-  offset: 0, 0
-  index: -1
+bounds:2,2,30,29
+offsets:2,1,35,33
 eye_01
-  rotate: false
-  xy: 33, 2
-  size: 24, 13
-  orig: 24, 13
-  offset: 0, 0
-  index: -1
+bounds:41,34,24,13
+rotate:90
 face_01
-  rotate: false
-  xy: 60, 6
-  size: 38, 26
-  orig: 38, 26
-  offset: 0, 0
-  index: -1
+bounds:2,33,37,25
+offsets:0,0,38,26
 face_02
-  rotate: true
-  xy: 37, 56
-  size: 29, 24
-  orig: 29, 24
-  offset: 0, 0
-  index: -1
+bounds:56,35,27,22
+offsets:2,1,29,24
 face_03
-  rotate: true
-  xy: 37, 17
-  size: 37, 21
-  orig: 37, 21
-  offset: 0, 0
-  index: -1
+bounds:67,59,36,20
+offsets:1,0,37,21
 face_04
-  rotate: true
-  xy: 100, 4
-  size: 30, 12
-  orig: 30, 12
-  offset: 0, 0
-  index: -1
+bounds:50,3,29,12
+offsets:0,0,30,12
+rotate:90
 head_01
-  rotate: true
-  xy: 2, 18
-  size: 30, 28
-  orig: 30, 28
-  offset: 0, 0
-  index: -1
+bounds:67,81,30,28
 head_02
-  rotate: true
-  xy: 63, 34
-  size: 42, 29
-  orig: 42, 29
-  offset: 0, 0
-  index: -1
+bounds:63,111,42,29
 head_03
-  rotate: false
-  xy: 2, 87
-  size: 59, 38
-  orig: 59, 38
-  offset: 0, 0
-  index: -1
+bounds:2,102,59,38
 head_04
-  rotate: true
-  xy: 63, 78
-  size: 47, 40
-  orig: 47, 40
-  offset: 0, 0
-  index: -1
+bounds:2,60,47,40
 head_05
-  rotate: false
-  xy: 2, 2
-  size: 29, 14
-  orig: 29, 14
-  offset: 0, 0
-  index: -1
+bounds:34,2,29,14
+rotate:90
 shadow
-  rotate: true
-  xy: 94, 36
-  size: 40, 15
-  orig: 40, 17
-  offset: 0, 1
-  index: -1
+bounds:51,63,37,14
+offsets:2,1,40,17
+rotate:90
 wood_01
-  rotate: true
-  xy: 115, 81
-  size: 4, 5
-  orig: 4, 5
-  offset: 0, 0
-  index: -1
+bounds:104,52,4,5
 wood_02
-  rotate: true
-  xy: 105, 78
-  size: 7, 8
-  orig: 7, 8
-  offset: 0, 0
-  index: -1
+bounds:99,101,7,8
 wood_03
-  rotate: false
-  xy: 111, 60
-  size: 13, 16
-  orig: 13, 16
-  offset: 0, 0
-  index: -1
+bounds:85,23,13,16
+rotate:90
 wood_04
-  rotate: false
-  xy: 111, 43
-  size: 13, 15
-  orig: 13, 15
-  offset: 0, 0
-  index: -1
+bounds:82,8,13,15
+rotate:90
 wood_05
-  rotate: false
-  xy: 114, 31
-  size: 8, 10
-  orig: 8, 10
-  offset: 0, 0
-  index: -1
+bounds:64,4,8,10
 wood_06
-  rotate: false
-  xy: 114, 21
-  size: 8, 8
-  orig: 8, 8
-  offset: 0, 0
-  index: -1
+bounds:99,91,8,8
 wood_07
-  rotate: false
-  xy: 105, 106
-  size: 17, 19
-  orig: 17, 19
-  offset: 0, 0
-  index: -1
+bounds:85,38,17,19
 wood_08
-  rotate: false
-  xy: 114, 11
-  size: 8, 8
-  orig: 8, 8
-  offset: 0, 0
-  index: -1
+bounds:99,81,8,8
 wood_09
-  rotate: false
-  xy: 105, 87
-  size: 16, 17
-  orig: 16, 17
-  offset: 0, 0
-  index: -1
+bounds:64,16,16,17

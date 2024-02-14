@@ -1,125 +1,59 @@
-
 204000.png
-size: 256,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:182,142
+filter:Linear,Linear
+pma:true
 body
-  rotate: true
-  xy: 2, 40
-  size: 86, 65
-  orig: 86, 65
-  offset: 0, 0
-  index: -1
+bounds:2,54,86,65
+rotate:90
 face_01
-  rotate: true
-  xy: 190, 19
-  size: 27, 17
-  orig: 29, 19
-  offset: 1, 1
-  index: -1
+bounds:149,3,27,17
+offsets:1,1,29,19
 face_02
-  rotate: false
-  xy: 172, 48
-  size: 28, 22
-  orig: 30, 24
-  offset: 1, 1
-  index: -1
+bounds:143,66,28,21
+offsets:1,1,30,24
 face_03
-  rotate: false
-  xy: 152, 72
-  size: 26, 15
-  orig: 28, 17
-  offset: 1, 1
-  index: -1
+bounds:154,30,26,15
+offsets:1,1,28,17
 face_04
-  rotate: true
-  xy: 190, 100
-  size: 26, 17
-  orig: 28, 19
-  offset: 1, 1
-  index: -1
+bounds:154,47,26,17
+offsets:1,1,28,19
 leg_L
-  rotate: true
-  xy: 139, 52
-  size: 17, 31
-  orig: 19, 33
-  offset: 1, 1
-  index: -1
+bounds:116,3,17,31
+offsets:1,1,19,33
+rotate:90
 leg_R
-  rotate: true
-  xy: 106, 48
-  size: 21, 31
-  orig: 23, 33
-  offset: 1, 1
-  index: -1
+bounds:143,89,21,31
+offsets:1,1,23,33
+rotate:90
 shadow
-  rotate: false
-  xy: 2, 13
-  size: 79, 25
-  orig: 79, 25
-  offset: 0, 0
-  index: -1
+bounds:116,61,79,25
+rotate:90
 sweat
-  rotate: true
-  xy: 2, 2
-  size: 9, 26
-  orig: 11, 28
-  offset: 1, 1
-  index: -1
+bounds:59,2,9,26
+offsets:1,1,11,28
+rotate:90
 sweat2
-  rotate: true
-  xy: 118, 71
-  size: 10, 27
-  orig: 10, 27
-  offset: 0, 0
-  index: -1
+bounds:103,113,10,27
 tear
-  rotate: false
-  xy: 30, 4
-  size: 11, 7
-  orig: 13, 9
-  offset: 1, 1
-  index: -1
+bounds:87,4,11,7
+offsets:1,1,13,9
 wood_01
-  rotate: false
-  xy: 152, 89
-  size: 36, 37
-  orig: 38, 39
-  offset: 1, 1
-  index: -1
+bounds:116,22,36,37
+offsets:1,1,38,39
 wood_02
-  rotate: false
-  xy: 118, 83
-  size: 32, 43
-  orig: 34, 45
-  offset: 1, 1
-  index: -1
+bounds:69,58,32,43
+offsets:1,1,34,45
+rotate:90
 wood_03
-  rotate: true
-  xy: 83, 7
-  size: 32, 48
-  orig: 34, 50
-  offset: 1, 1
-  index: -1
+bounds:69,92,32,48
+offsets:1,1,34,50
 wood_04
-  rotate: false
-  xy: 69, 41
-  size: 35, 28
-  orig: 37, 30
-  offset: 1, 1
-  index: -1
+bounds:143,112,35,28
+offsets:1,1,37,30
 wood_05
-  rotate: true
-  xy: 69, 71
-  size: 55, 47
-  orig: 57, 49
-  offset: 1, 1
-  index: -1
+bounds:2,5,55,47
+offsets:1,1,57,49
 wood_06
-  rotate: true
-  xy: 133, 7
-  size: 39, 55
-  orig: 41, 57
-  offset: 1, 1
-  index: -1
+bounds:59,13,39,55
+offsets:1,1,41,57
+rotate:90

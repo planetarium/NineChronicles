@@ -1,48 +1,22 @@
-
 201001.png
-size: 128,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:112,131
+filter:Linear,Linear
+pma:true
 acc_01
-  rotate: true
-  xy: 2, 3
-  size: 55, 50
-  orig: 55, 50
-  offset: 0, 0
-  index: -1
+bounds:2,7,54,50
+offsets:0,0,55,50
 body
-  rotate: false
-  xy: 2, 60
-  size: 70, 64
-  orig: 70, 64
-  offset: 0, 0
-  index: -1
+bounds:2,59,70,64
+rotate:90
 eye_01
-  rotate: true
-  xy: 102, 6
-  size: 29, 17
-  orig: 29, 17
-  offset: 0, 0
-  index: -1
+bounds:58,2,29,17
 eye_02
-  rotate: true
-  xy: 54, 29
-  size: 29, 18
-  orig: 29, 18
-  offset: 0, 0
-  index: -1
+bounds:92,18,29,18
+rotate:90
 eye_03
-  rotate: true
-  xy: 74, 2
-  size: 33, 26
-  orig: 33, 26
-  offset: 0, 0
-  index: -1
+bounds:58,21,32,26
+offsets:1,0,33,26
 shadow
-  rotate: true
-  xy: 74, 37
-  size: 87, 46
-  orig: 87, 46
-  offset: 0, 0
-  index: -1
+bounds:68,49,80,37
+offsets:4,5,87,46
+rotate:90

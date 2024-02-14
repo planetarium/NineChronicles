@@ -1,41 +1,20 @@
-
 201004.png
-size: 128,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:114,112
+filter:Linear,Linear
+pma:true
 acc
-  rotate: false
-  xy: 75, 26
-  size: 45, 48
-  orig: 45, 48
-  offset: 0, 0
-  index: -1
+bounds:2,2,45,47
+offsets:0,0,45,48
+rotate:90
 body
-  rotate: false
-  xy: 2, 13
-  size: 71, 61
-  orig: 71, 61
-  offset: 0, 0
-  index: -1
+bounds:2,49,71,61
 eye_01
-  rotate: false
-  xy: 91, 81
-  size: 31, 16
-  orig: 31, 16
-  offset: 0, 0
-  index: -1
+bounds:75,12,31,16
 eye_02
-  rotate: false
-  xy: 91, 99
-  size: 31, 23
-  orig: 31, 23
-  offset: 0, 0
-  index: -1
+bounds:51,16,31,22
+offsets:0,1,31,23
+rotate:90
 shadow
-  rotate: false
-  xy: 2, 76
-  size: 87, 46
-  orig: 87, 46
-  offset: 0, 0
-  index: -1
+bounds:75,30,80,37
+offsets:4,5,87,46
+rotate:90

@@ -15,14 +15,12 @@ MonoBehaviour:
   atlasAssets:
   - {fileID: 11400000, guid: 53471cd7e4db498408c4f9b8d0e089fd, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: e4fe321e29ca8cf46879ca07f6b76858, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: 3eae0d1e8e6f69949b3b0d0e9b82e32e, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 1
-    applyAdditiveMaterial: 1
-    additiveMaterials:
-    - pageName: 40100023.png
-      material: {fileID: 2100000, guid: 6002541b84b801044993667ee05ed571, type: 2}
+    requiresBlendModeMaterials: 0
+    applyAdditiveMaterial: 0
+    additiveMaterials: []
     multiplyMaterials: []
     screenMaterials: []
   skeletonDataModifiers: []

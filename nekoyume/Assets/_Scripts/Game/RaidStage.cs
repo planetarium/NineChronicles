@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Director;
 using Nekoyume.Model.Skill;
 using UnityEngine;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
