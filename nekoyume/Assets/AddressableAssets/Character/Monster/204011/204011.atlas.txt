@@ -1,118 +1,51 @@
-
 204011.png
-size: 128,64
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:100,78
+filter:Linear,Linear
+pma:true
 arm_L
-  rotate: false
-  xy: 115, 37
-  size: 11, 10
-  orig: 11, 10
-  offset: 0, 0
-  index: -1
+bounds:84,14,11,10
+rotate:90
 arm_R
-  rotate: false
-  xy: 96, 11
-  size: 17, 15
-  orig: 17, 15
-  offset: 0, 0
-  index: -1
+bounds:38,3,17,15
+rotate:90
 body_01
-  rotate: false
-  xy: 2, 16
-  size: 54, 46
-  orig: 54, 46
-  offset: 0, 0
-  index: -1
+bounds:2,22,54,46
+rotate:90
 body_02
-  rotate: true
-  xy: 115, 49
-  size: 13, 11
-  orig: 13, 11
-  offset: 0, 0
-  index: -1
+bounds:50,22,13,11
+rotate:90
 body_03
-  rotate: false
-  xy: 96, 2
-  size: 9, 7
-  orig: 9, 7
-  offset: 0, 0
-  index: -1
+bounds:84,3,9,7
+rotate:90
 body_04
-  rotate: false
-  xy: 123, 27
-  size: 3, 3
-  orig: 3, 3
-  offset: 0, 0
-  index: -1
+bounds:55,2,3,3
 face_01
-  rotate: false
-  xy: 58, 5
-  size: 36, 14
-  orig: 36, 14
-  offset: 0, 0
-  index: -1
+bounds:62,40,36,14
+rotate:90
 face_02
-  rotate: false
-  xy: 58, 42
-  size: 35, 20
-  orig: 35, 20
-  offset: 0, 0
-  index: -1
+bounds:63,3,35,19
+offsets:0,0,35,20
+rotate:90
 face_03
-  rotate: true
-  xy: 95, 28
-  size: 34, 18
-  orig: 34, 18
-  offset: 0, 0
-  index: -1
+bounds:2,2,34,18
 face_04
-  rotate: false
-  xy: 58, 21
-  size: 35, 19
-  orig: 35, 19
-  offset: 0, 0
-  index: -1
+bounds:78,41,35,19
+rotate:90
 rock_1
-  rotate: false
-  xy: 115, 32
-  size: 8, 3
-  orig: 8, 3
-  offset: 0, 0
-  index: -1
+bounds:93,4,8,3
+rotate:90
 rock_2
-  rotate: true
-  xy: 45, 2
-  size: 12, 8
-  orig: 12, 8
-  offset: 0, 0
-  index: -1
+bounds:84,27,12,8
+rotate:90
 rock_3
-  rotate: false
-  xy: 115, 26
-  size: 6, 4
-  orig: 6, 4
-  offset: 0, 0
-  index: -1
+bounds:55,16,6,4
 rock_4
-  rotate: true
-  xy: 114, 2
-  size: 7, 4
-  orig: 7, 4
-  offset: 0, 0
-  index: -1
+bounds:94,32,7,4
+rotate:90
 rock_5
-  rotate: true
-  xy: 107, 2
-  size: 7, 5
-  orig: 7, 5
-  offset: 0, 0
-  index: -1
+bounds:55,7,7,5
+rotate:90
 shadow
-  rotate: false
-  xy: 2, 4
-  size: 41, 10
-  orig: 41, 12
-  offset: 0, 1
-  index: -1
+bounds:50,37,39,10
+offsets:1,1,41,12
+rotate:90

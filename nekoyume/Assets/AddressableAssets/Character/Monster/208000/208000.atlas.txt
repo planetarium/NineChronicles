@@ -1,34 +1,16 @@
-
 208000.png
-size: 128,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:108,122
+filter:Linear,Linear
+pma:true
 acc
-  rotate: false
-  xy: 2, 2
-  size: 68, 58
-  orig: 68, 58
-  offset: 0, 0
-  index: -1
+bounds:2,62,68,58
 body
-  rotate: false
-  xy: 2, 62
-  size: 68, 60
-  orig: 68, 60
-  offset: 0, 0
-  index: -1
+bounds:2,2,64,58
+offsets:2,2,68,60
 eye
-  rotate: false
-  xy: 72, 5
-  size: 35, 30
-  orig: 35, 30
-  offset: 0, 0
-  index: -1
+bounds:68,16,34,28
+offsets:1,2,35,30
 shadow
-  rotate: true
-  xy: 72, 37
-  size: 85, 46
-  orig: 85, 46
-  offset: 0, 0
-  index: -1
+bounds:72,46,74,34
+offsets:6,7,85,46
+rotate:90

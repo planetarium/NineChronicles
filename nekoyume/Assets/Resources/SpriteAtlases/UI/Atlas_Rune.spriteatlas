@@ -59,6 +59,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 67408a906b2fa4a70a373d337e76c56b, type: 3}
   - {fileID: 21300000, guid: 89fa96a0c6f24e647822a23dda315e70, type: 3}
   - {fileID: 21300000, guid: 44f317d0df36bb54d82683fe84aa74f1, type: 3}
+  - {fileID: 21300000, guid: 14f95dd0f7fd6144f8da2013afeded48, type: 3}
   - {fileID: 21300000, guid: 1e5ceaf0dbee4b34ca478b930a086100, type: 3}
   - {fileID: 21300000, guid: 5bf82501c3c5abe42babbab274af4f80, type: 3}
   - {fileID: 21300000, guid: b79266015aaca415cae370462ef89a95, type: 3}
@@ -76,8 +77,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6f86f6d1eb4ac0446b4493b69f43db06, type: 3}
   - {fileID: 21300000, guid: ab164702f374d764fbd2767f2c345bb2, type: 3}
   - {fileID: 21300000, guid: 33e1be0265aaa4040bc75c9f744c1794, type: 3}
+  - {fileID: 21300000, guid: b8dd0032e3845854f889bf5ab93644d1, type: 3}
   - {fileID: 21300000, guid: f0b38232b61014adfa66c545872360e1, type: 3}
   - {fileID: 21300000, guid: 2ca4e332521dd4678a899db56f0e581e, type: 3}
+  - {fileID: 21300000, guid: 26ba8252e549c624092542959d6b9419, type: 3}
   - {fileID: 21300000, guid: 1dd52c625e931c8419bd680c998ec26b, type: 3}
   - {fileID: 21300000, guid: 2f183c62cc23f56488cada258bdc5ac0, type: 3}
   - {fileID: 21300000, guid: b82e967278150dc43ad7f00072f47fff, type: 3}
@@ -304,6 +307,7 @@ SpriteAtlas:
   - button_gold_close
   - bubble_talk_03
   - UI_scroll_bg1
+  - Button_i
   - PatrolGauge_02
   - UI_main_icon_Courage
   - UI_Combination_bg_08
@@ -321,8 +325,10 @@ SpriteAtlas:
   - Button_Tab_bg_Press_04
   - icon_combination_03_black
   - Common_Gradiant_bg_02
+  - EventMark
   - UI_Common_Slot
   - Common_gradiant_64
+  - Button_Plus
   - icon_combination_01_black
   - DailyBonusGauge_Bg
   - ui_dialog_name_bg

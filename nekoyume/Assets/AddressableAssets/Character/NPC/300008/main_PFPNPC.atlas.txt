@@ -1,230 +1,107 @@
-
 main_PFPNPC.png
-size: 1024,256
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:427,523
+filter:Linear,Linear
+pma:true
 arm_L_1
-  rotate: false
-  xy: 605, 56
-  size: 19, 36
-  orig: 21, 38
-  offset: 1, 1
-  index: -1
+bounds:356,49,19,36
+offsets:1,1,21,38
 arm_L_2
-  rotate: true
-  xy: 342, 2
-  size: 17, 33
-  orig: 19, 35
-  offset: 1, 1
-  index: -1
+bounds:356,14,17,33
+offsets:1,1,19,35
 arm_R_1
-  rotate: true
-  xy: 628, 212
-  size: 42, 41
-  orig: 44, 43
-  offset: 1, 1
-  index: -1
+bounds:377,81,42,41
+offsets:1,1,44,43
 arm_R_2
-  rotate: false
-  xy: 559, 42
-  size: 23, 46
-  orig: 25, 48
-  offset: 1, 1
-  index: -1
+bounds:279,28,23,46
+offsets:1,1,25,48
 body_1
-  rotate: false
-  xy: 472, 10
-  size: 85, 74
-  orig: 87, 76
-  offset: 1, 1
-  index: -1
+bounds:219,76,85,74
+offsets:1,1,87,76
 body_2
-  rotate: false
-  xy: 83, 126
-  size: 94, 128
-  orig: 94, 128
-  offset: 0, 0
-  index: -1
+bounds:146,206,94,128
+card_R1
+bounds:377,124,39,50
+offsets:3,2,49,58
+card_R2
+bounds:2,7,16,50
+offsets:4,4,23,57
+rotate:90
+card_R3
+bounds:384,356,28,37
+offsets:3,3,33,46
+rotate:90
 cloth_1
-  rotate: true
-  xy: 342, 21
-  size: 56, 128
-  orig: 56, 128
-  offset: 0, 0
-  index: -1
+bounds:242,206,56,128
 cloth_2
-  rotate: true
-  xy: 396, 127
-  size: 48, 124
-  orig: 48, 124
-  offset: 0, 0
-  index: -1
+bounds:79,29,48,124
 cloth_3
-  rotate: true
-  xy: 397, 86
-  size: 39, 90
-  orig: 39, 90
-  offset: 0, 0
-  index: -1
+bounds:129,30,39,90
+rotate:90
 cloth_back_1
-  rotate: true
-  xy: 585, 140
-  size: 43, 29
-  orig: 45, 31
-  offset: 1, 1
-  index: -1
+bounds:229,2,43,29
+offsets:1,1,45,31
 cloth_back_2
-  rotate: true
-  xy: 83, 72
-  size: 52, 167
-  orig: 52, 167
-  offset: 0, 0
-  index: -1
+bounds:146,152,52,167
+rotate:90
+dcc_bg
+bounds:2,336,316,185
 ear_L
-  rotate: true
-  xy: 489, 88
-  size: 37, 50
-  orig: 37, 50
-  offset: 0, 0
-  index: -1
+bounds:304,24,37,50
+rotate:90
 ear_R
-  rotate: true
-  xy: 570, 213
-  size: 41, 56
-  orig: 41, 56
-  offset: 0, 0
-  index: -1
+bounds:221,33,41,56
+rotate:90
 eye_1
-  rotate: true
-  xy: 584, 43
-  size: 45, 19
-  orig: 47, 21
-  offset: 1, 1
-  index: -1
+bounds:79,10,43,17
+offsets:1,3,47,21
 eye_2
-  rotate: false
-  xy: 587, 22
-  size: 45, 19
-  orig: 47, 21
-  offset: 1, 1
-  index: -1
+bounds:377,34,43,17
+offsets:1,3,47,21
 eye_3
-  rotate: true
-  xy: 589, 94
-  size: 44, 19
-  orig: 46, 21
-  offset: 1, 1
-  index: -1
+bounds:375,15,42,17
+offsets:1,3,46,21
 eyebrow
-  rotate: false
-  xy: 377, 12
-  size: 46, 7
-  orig: 48, 9
-  offset: 1, 1
-  index: -1
+bounds:418,129,45,7
+offsets:1,1,48,9
+rotate:90
 face
-  rotate: true
-  xy: 522, 127
-  size: 52, 61
-  orig: 54, 63
-  offset: 1, 1
-  index: -1
+bounds:315,153,52,60
+offsets:1,2,54,63
+rotate:90
 feet
-  rotate: false
-  xy: 541, 90
-  size: 46, 35
-  orig: 48, 37
-  offset: 1, 1
-  index: -1
+bounds:379,176,46,35
+offsets:1,1,48,37
 hair_1
-  rotate: true
-  xy: 466, 181
-  size: 26, 98
-  orig: 26, 98
-  offset: 0, 0
-  index: -1
+bounds:129,2,26,98
+rotate:90
 hair_2
-  rotate: true
-  xy: 566, 185
-  size: 22, 64
-  orig: 22, 64
-  offset: 0, 0
-  index: -1
+bounds:353,87,22,64
 hair_3
-  rotate: true
-  xy: 256, 129
-  size: 35, 138
-  orig: 35, 138
-  offset: 0, 0
-  index: -1
+bounds:379,213,35,138
 hair_4
-  rotate: true
-  xy: 337, 177
-  size: 30, 127
-  orig: 30, 127
-  offset: 0, 0
-  index: -1
+bounds:300,207,30,127
 hair_5
-  rotate: true
-  xy: 252, 79
-  size: 45, 143
-  orig: 45, 143
-  offset: 0, 0
-  index: -1
+bounds:332,208,45,143
 hair_back_2
-  rotate: true
-  xy: 172, 9
-  size: 61, 168
-  orig: 61, 168
-  offset: 0, 0
-  index: -1
+bounds:83,166,61,168
 hair_back_3
-  rotate: false
-  xy: 2, 72
-  size: 79, 182
-  orig: 79, 182
-  offset: 0, 0
-  index: -1
+bounds:2,155,79,179
+offsets:0,0,79,182
 hair_back_4
-  rotate: true
-  xy: 2, 8
-  size: 62, 168
-  orig: 62, 168
-  offset: 0, 0
-  index: -1
+bounds:320,353,62,168
 hand
-  rotate: true
-  xy: 559, 5
-  size: 35, 26
-  orig: 37, 28
-  offset: 1, 1
-  index: -1
+bounds:377,53,35,26
+offsets:1,1,37,28
 head_1
-  rotate: false
-  xy: 481, 209
-  size: 87, 45
-  orig: 89, 47
-  offset: 1, 1
-  index: -1
+bounds:306,63,87,45
+offsets:1,1,89,47
+rotate:90
 head_2
-  rotate: true
-  xy: 256, 166
-  size: 88, 79
-  orig: 90, 81
-  offset: 1, 1
-  index: -1
+bounds:129,71,88,79
+offsets:1,1,90,81
 shadow
-  rotate: false
-  xy: 337, 209
-  size: 142, 45
-  orig: 144, 47
-  offset: 1, 1
-  index: -1
+bounds:384,386,135,39
+offsets:4,5,144,47
+rotate:90
 tail
-  rotate: false
-  xy: 179, 126
-  size: 75, 128
-  orig: 75, 128
-  offset: 0, 0
-  index: -1
+bounds:2,25,75,128

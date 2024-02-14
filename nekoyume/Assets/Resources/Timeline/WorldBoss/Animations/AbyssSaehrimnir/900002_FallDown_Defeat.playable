@@ -134,6 +134,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-8168947709390479550
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -276,6 +277,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-7121825895447355372
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -351,6 +353,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-6416811960012709785
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -376,7 +379,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: acb23f67dba0b4747b0a76f33114ceca,
+    animationReference: {fileID: 11400000, guid: 54a43c895d3c34c209996e5568a7dac9,
       type: 2}
     loop: 1
     customDuration: 0
@@ -384,9 +387,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.38333333
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-5438534537158202155
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -412,17 +419,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-4835973673112681136
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -436,17 +446,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-4729935221399091979
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -522,6 +535,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-4414006308016763372
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -579,17 +593,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-4061710634502893906
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -652,9 +669,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.36666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!74 &-3419500816484564567
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -1280,17 +1301,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-2934968825073518064
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1304,7 +1328,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a44dbbdc1548a3f4b87290e49cd875f9,
+    animationReference: {fileID: 11400000, guid: e51f02a1861a6427294b1829b2f34fab,
       type: 2}
     loop: 0
     customDuration: 0
@@ -1312,9 +1336,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.26666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-2894811499640927560
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1486,6 +1514,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-2460565532839156316
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2110,6 +2139,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &-1084012135092136228
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2147,17 +2177,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-856401087335750934
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2203,9 +2236,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.36666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-236141926932549006
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2227,9 +2264,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.26666668
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-103134457086639726
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2305,6 +2346,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2480,17 +2522,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &1225147752952937706
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2566,6 +2611,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &2198030332163809537
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2579,7 +2625,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: dba5577637b832742a5aa322b198db53,
+    animationReference: {fileID: 11400000, guid: ea5dcb56dd36b424abecb79c035ab678,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2587,9 +2633,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.38366744
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &2587358534098677329
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2665,6 +2715,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &2624534484687635548
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2678,17 +2729,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &2767131723266199479
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2726,17 +2780,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &3087832190680685934
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2812,6 +2869,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!74 &4021231893466045893
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -2974,17 +3032,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &4599035422543121583
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2998,17 +3059,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &4703917793841646169
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3104,17 +3168,20 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
-      type: 2}
+    animationReference: {fileID: 0}
     loop: 1
     customDuration: 0
     useBlendDuration: 1
     isInitialized: 1
     mixDuration: 0.6666667
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &6225413280941499801
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3288,7 +3355,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: dba5577637b832742a5aa322b198db53,
+    animationReference: {fileID: 11400000, guid: ea5dcb56dd36b424abecb79c035ab678,
       type: 2}
     loop: 1
     customDuration: 0
@@ -3296,9 +3363,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.35
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &8049353694998242582
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3398,6 +3469,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &8125455639780774923
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3490,6 +3562,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &8496669094873093765
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -1,146 +1,62 @@
-
 201003.png
-size: 512,512
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:332,524
+filter:Linear,Linear
+pma:true
 acc_01
-  rotate: true
-  xy: 357, 277
-  size: 85, 46
-  orig: 85, 46
-  offset: 0, 0
-  index: -1
+bounds:245,174,85,46
 acc_02
-  rotate: false
-  xy: 148, 367
-  size: 74, 53
-  orig: 74, 53
-  offset: 0, 0
-  index: -1
+bounds:175,134,74,53
+rotate:90
 acc_03
-  rotate: true
-  xy: 353, 157
-  size: 118, 54
-  orig: 118, 54
-  offset: 0, 0
-  index: -1
+bounds:74,2,118,54
+rotate:90
 acc_04
-  rotate: false
-  xy: 223, 256
-  size: 128, 70
-  orig: 128, 70
-  offset: 0, 0
-  index: -1
+bounds:2,3,128,70
+rotate:90
 acc_05
-  rotate: true
-  xy: 214, 151
-  size: 103, 122
-  orig: 103, 122
-  offset: 0, 0
-  index: -1
+bounds:95,304,103,122
+rotate:90
 acc_06
-  rotate: true
-  xy: 224, 328
-  size: 89, 131
-  orig: 89, 131
-  offset: 0, 0
-  index: -1
+bounds:241,391,89,131
 body
-  rotate: false
-  xy: 2, 307
-  size: 144, 113
-  orig: 144, 113
-  offset: 0, 0
-  index: -1
+bounds:95,409,144,113
 body_02
-  rotate: true
-  xy: 224, 419
-  size: 91, 185
-  orig: 91, 185
-  offset: 0, 0
-  index: -1
+bounds:2,337,91,185
 body_03
-  rotate: true
-  xy: 148, 317
-  size: 48, 73
-  orig: 48, 73
-  offset: 0, 0
-  index: -1
+bounds:194,36,48,72
+offsets:0,0,48,73
 body_04
-  rotate: true
-  xy: 124, 150
-  size: 43, 53
-  orig: 43, 53
-  offset: 0, 0
-  index: -1
+bounds:244,55,43,53
 effect01
-  rotate: false
-  xy: 357, 364
-  size: 52, 53
-  orig: 52, 53
-  offset: 0, 0
-  index: -1
+bounds:244,9,44,44
+offsets:4,4,52,53
 eye_01
-  rotate: true
-  xy: 148, 195
-  size: 120, 64
-  orig: 120, 64
-  offset: 0, 0
-  index: -1
+bounds:130,17,103,62
+offsets:6,2,120,64
+rotate:90
 eye_02
-  rotate: false
-  xy: 2, 241
-  size: 120, 64
-  orig: 120, 64
-  offset: 0, 0
-  index: -1
+bounds:181,210,92,62
+offsets:17,2,120,64
+rotate:90
 eye_03
-  rotate: false
-  xy: 2, 177
-  size: 120, 62
-  orig: 120, 62
-  offset: 0, 0
-  index: -1
+bounds:230,110,92,62
+offsets:17,0,120,62
 eye_04
-  rotate: false
-  xy: 411, 365
-  size: 97, 71
-  orig: 97, 71
-  offset: 0, 0
-  index: -1
+bounds:245,222,95,69
+offsets:1,1,97,71
+rotate:90
 eye_05
-  rotate: false
-  xy: 411, 438
-  size: 97, 72
-  orig: 97, 72
-  offset: 0, 0
-  index: -1
+bounds:219,319,95,70
+offsets:1,1,97,72
 flower_01
-  rotate: true
-  xy: 411, 274
-  size: 89, 96
-  orig: 89, 96
-  offset: 0, 0
-  index: -1
+bounds:77,122,89,96
+rotate:90
 flower_02
-  rotate: true
-  xy: 409, 170
-  size: 102, 89
-  orig: 102, 89
-  offset: 0, 0
-  index: -1
+bounds:77,213,102,89
 shadow
-  rotate: false
-  xy: 2, 422
-  size: 220, 88
-  orig: 220, 88
-  offset: 0, 0
-  index: -1
+bounds:2,133,202,73
+offsets:9,10,220,88
+rotate:90
 tear
-  rotate: false
-  xy: 500, 255
-  size: 10, 17
-  orig: 10, 17
-  offset: 0, 0
-  index: -1
+bounds:175,122,10,17
+rotate:90

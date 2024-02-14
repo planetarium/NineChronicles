@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: cutscene_40100003_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: 7b86d2fcd1ada1b4faf2bfa35ee3f22b, type: 3}
   materials:
-  - {fileID: 2100000, guid: aaeecfcf7a518204fbde26c6c68a2629, type: 2}
-  - {fileID: 2100000, guid: 4e7bc313c03c3f148a025a0b93b457e2, type: 2}
+  - {fileID: 2100000, guid: 51c3c294fc3eedc4ead7bc15f53376c1, type: 2}

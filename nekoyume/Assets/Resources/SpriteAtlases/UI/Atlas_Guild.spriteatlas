@@ -51,10 +51,14 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 6a13fdea163cb6f4bad564d84ee95a78, type: 3}
+  - {fileID: 21300000, guid: 2ce64b1d130ca7049b6070f21acd458a, type: 3}
+  - {fileID: 21300000, guid: 7c09a3cd310c80d468e4c517974028a2, type: 3}
   - {fileID: 21300000, guid: 65c92d3f7e297fc4a857ff428f9f42cb, type: 3}
   m_PackedSpriteNamesToIndex:
   - GuildEmpty
-  - GuildMark
+  - GuildMark_1
+  - GuildMark_2
+  - GuildMark_0
   m_RenderDataMap: {}
   m_Tag: Atlas_Guild
   m_IsVariant: 0
