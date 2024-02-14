@@ -42,9 +42,9 @@ namespace Nekoyume.Game
 
         private void Initialize(IDictionary<string, string> sheets)
         {
-            var type    = typeof(TableSheets);
+            var type = typeof(TableSheets);
             var started = DateTime.UtcNow;
-            var sw      = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
             foreach (var pair in sheets)
             {
@@ -57,7 +57,7 @@ namespace Nekoyume.Game
                     throw new Exception(sb.ToString());
                 }
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
-                var iSheet      = (ISheet)sheetObject;
+                var iSheet = (ISheet)sheetObject;
                 if (iSheet is null)
                 {
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
