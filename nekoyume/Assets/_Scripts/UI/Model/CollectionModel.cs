@@ -26,17 +26,6 @@ namespace Nekoyume.UI.Model
             Active = false;
             Materials = new List<CollectionMaterial>();
         }
-
-        public static List<StatModifier> GetEffect()
-        {
-            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
-            var collectionState = Game.Game.instance.States.CollectionState;
-            var data = collectionSheet.Values
-                .Where(row => collectionState.Ids.Contains(row.Id))
-                .SelectMany(row => row.StatModifiers);
-
-            return data.ToList();
-        }
     }
 
     public static class CollectionModelExtension
@@ -106,12 +95,6 @@ namespace Nekoyume.UI.Model
                     collectionMaterial.SetCondition(inventory);
                 }
             }
-        }
-
-        public static (int activeCount, List<StatModifier> stats) GetEffect(this List<CollectionModel> models)
-        {
-            models = models.Where(model => model.Active).ToList();
-            return (models.Count, models.SelectMany(model => model.Row.StatModifiers).ToList());
         }
 
         public static IEnumerable<CollectionModel> Sort(

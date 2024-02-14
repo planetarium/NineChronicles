@@ -73,7 +73,6 @@ namespace Nekoyume.UI
         private bool _initialized;
 
         private readonly List<CollectionModel> _models = new List<CollectionModel>();
-        public List<CollectionModel> Models => _models;
 
         private readonly Dictionary<ItemType, Dictionary<StatType, bool>> _filter = new();
         private static readonly StatType[] TabStatTypes =
@@ -238,8 +237,12 @@ namespace Nekoyume.UI
         {
             _models.SetModels();
 
-            var (activeCount, stats) = _models.GetEffect();
-            collectionEffect.Set(activeCount, _models.Count, stats);
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            collectionEffect.Set(
+                collectionState.Ids.Count,
+                collectionSheet.Count,
+                collectionState.GetEffects(collectionSheet));
 
             OnUpdateInventory();
         }

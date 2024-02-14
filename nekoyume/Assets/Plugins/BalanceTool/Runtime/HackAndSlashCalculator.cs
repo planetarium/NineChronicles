@@ -18,7 +18,6 @@ using Nekoyume.Model.State;
 using Nekoyume.Module;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
-using Nekoyume.UI.Model;
 
 namespace BalanceTool
 {
@@ -123,6 +122,7 @@ namespace BalanceTool
                 .Select(addr => new RuneState((List)states.GetAccount(
                     ReservedAddresses.LegacyAccount).GetState(addr)!))
                 .ToList();
+            var collectionState = states.GetCollectionState(avatarAddr);
             var skillsOnWaveStart = new List<Nekoyume.Model.Skill.Skill>();
             if (has.StageBuffId.HasValue)
             {
@@ -157,6 +157,8 @@ namespace BalanceTool
                     sheets.GetSheet<EnemySkillSheet>(),
                     sheets.GetSheet<CostumeStatSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
+                    collectionState,
+                    sheets.GetSheet<CollectionSheet>(),
                     sheets.GetSheet<WorldSheet>(),
                     sheets.GetSheet<WorldUnlockSheet>(),
                     exp);
@@ -182,6 +184,8 @@ namespace BalanceTool
             EnemySkillSheet enemySkillSheet,
             CostumeStatSheet costumeStatSheet,
             MaterialItemSheet materialItemSheet,
+            CollectionState collectionState,
+            CollectionSheet collectionSheet,
             WorldSheet worldSheet,
             WorldUnlockSheet worldUnlockSheet,
             int exp)
@@ -205,7 +209,7 @@ namespace BalanceTool
                     random,
                     stageRow,
                     materialItemSheet),
-                CollectionModel.GetEffect());
+                collectionState.GetEffects(collectionSheet));
             simulator.Simulate();
 
             if (simulator.Log.IsClear)

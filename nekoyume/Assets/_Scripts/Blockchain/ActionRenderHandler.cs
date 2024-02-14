@@ -8,7 +8,6 @@ using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -36,7 +35,6 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -1947,6 +1945,7 @@ namespace Nekoyume.Blockchain
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
                 States.Instance.GetEquippedRuneStates(BattleType.Adventure),
+                States.Instance.CollectionState,
                 skillsOnWaveStart,
                 tableSheets,
                 out var simulator,
@@ -2609,6 +2608,8 @@ namespace Nekoyume.Blockchain
             var tableSheets = TableSheets.Instance;
             ArenaPlayerDigest? myDigest = null;
             ArenaPlayerDigest? enemyDigest = null;
+            CollectionState myCollectionState = null;
+            CollectionState enemyCollectionState = null;
 
             var championshipId = eval.Action.championshipId;
             var round = eval.Action.round;
@@ -2659,6 +2660,8 @@ namespace Nekoyume.Blockchain
                     eval.OutputState,
                     eval.Action.myAvatarAddress,
                     eval.Action.enemyAvatarAddress);
+                myCollectionState = StateGetter.GetCollectionState(eval.OutputState, eval.Action.myAvatarAddress);
+                enemyCollectionState = StateGetter.GetCollectionState(eval.OutputState, eval.Action.enemyAvatarAddress);
             }).ToObservable().ObserveOnMainThread();
 
 
@@ -2684,8 +2687,8 @@ namespace Nekoyume.Blockchain
                         myDigest.Value,
                         enemyDigest.Value,
                         arenaSheets,
-                        CollectionModel.GetEffect(),
-                        CollectionModel.GetEffect());
+                        myCollectionState.GetEffects(tableSheets.CollectionSheet),
+                        enemyCollectionState.GetEffects(tableSheets.CollectionSheet));
 
                     var reward = RewardSelector.Select(
                         random,
@@ -2886,7 +2889,7 @@ namespace Nekoyume.Blockchain
                 runeStates,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
-                CollectionModel.GetEffect()
+                States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet)
             );
             simulator.Simulate();
             var log = simulator.Log;

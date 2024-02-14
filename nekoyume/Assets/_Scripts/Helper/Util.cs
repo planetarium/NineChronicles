@@ -14,7 +14,6 @@ using Libplanet.Action.State;
 using Libplanet.KeyStore;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
-using Nekoyume.Game.LiveAsset;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -270,7 +269,11 @@ namespace Nekoyume.Helper
             var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
             var runeStated = States.Instance.GetEquippedRuneStates(battleType);
             var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
-            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
+
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
+            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet, collectionStatModifiers);
         }
 
         public static List<RuneOptionSheet.Row.RuneOptionInfo> GetRuneOptions(

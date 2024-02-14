@@ -268,6 +268,7 @@ namespace Nekoyume.UI
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
             var tableSheets = Game.Game.instance.TableSheets;
             var avatarState = States.Instance.CurrentAvatarState;
+            var collectionState = Game.Game.instance.States.CollectionState;
             var items = new List<Guid>();
             items.AddRange(equipments);
             items.AddRange(costumes);
@@ -280,7 +281,7 @@ namespace Nekoyume.UI
                 runeStates,
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet,
-                CollectionModel.GetEffect()
+                collectionState.GetEffects(tableSheets.CollectionSheet)
             );
             var log = simulator.Simulate();
             var digest = new ArenaPlayerDigest(avatarState,

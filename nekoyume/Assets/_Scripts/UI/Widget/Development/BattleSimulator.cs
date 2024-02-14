@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
+using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
@@ -13,7 +14,6 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
-using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI;
 using Skill = Nekoyume.Model.Skill.Skill;
@@ -160,6 +160,10 @@ public class BattleSimulator : Widget
             equipment.Unequip();
         }
 
+        var collectionState = Game.instance.States.CollectionState;
+        var collectionSheet = Game.instance.TableSheets.CollectionSheet;
+        var collectionModifiers = collectionState.GetEffects(collectionSheet);
+
         var random = new DebugRandom();
         // weapon
         AddCustomEquipment(avatarState: avatarState, random: random,
@@ -218,7 +222,7 @@ public class BattleSimulator : Widget
             tableSheets.EnemySkillSheet,
             tableSheets.CostumeStatSheet,
             StageSimulatorV2.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet),
-            CollectionModel.GetEffect()
+            collectionModifiers
         );
 
         simulator.Simulate();

@@ -1,7 +1,10 @@
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 
 namespace Nekoyume
 {
@@ -124,6 +127,41 @@ namespace Nekoyume
                 default:
                     return "NONE";
             }
+        }
+
+        public static void SetAll(
+            this CharacterStats stats,
+            int level,
+            IReadOnlyCollection<Equipment> equipments,
+            IReadOnlyCollection<Costume> costumes,
+            IReadOnlyCollection<Consumable> consumables,
+            IReadOnlyCollection<StatModifier> runeStats,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
+            CostumeStatSheet costumeStatSheet,
+            IEnumerable<StatModifier> collectionStatModifiers)
+        {
+            stats.SetStats(level);
+            stats.SetEquipments(equipments, equipmentItemSetEffectSheet);
+            stats.SetCostumeStat(costumes, costumeStatSheet);
+            stats.SetConsumables(consumables);
+            stats.SetRunes(runeStats);
+            stats.SetCollections(collectionStatModifiers);
+        }
+
+        public static List<StatModifier> GetEffects(
+            this CollectionState collectionState,
+            CollectionSheet collectionSheet)
+        {
+            var result = new List<StatModifier>();
+            foreach (var id in collectionState.Ids)
+            {
+                if (collectionSheet.TryGetValue(id, out var row))
+                {
+                    result.AddRange(row.StatModifiers);
+                }
+            }
+
+            return result;
         }
     }
 }

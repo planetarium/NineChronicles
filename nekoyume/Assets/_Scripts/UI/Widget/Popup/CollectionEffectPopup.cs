@@ -1,5 +1,4 @@
 using Nekoyume.Game.Controller;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,9 +29,12 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
-            var models = Find<Collection>().Models;
-            var (activeCount, stats) = models.GetEffect();
-            collectionEffect.Set(activeCount, models.Count, stats, true);
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            collectionEffect.Set(
+                collectionState.Ids.Count,
+                collectionSheet.Count,
+                collectionState.GetEffects(collectionSheet));
         }
     }
 }
