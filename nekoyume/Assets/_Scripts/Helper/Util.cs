@@ -276,6 +276,28 @@ namespace Nekoyume.Helper
             return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet, collectionStatModifiers);
         }
 
+        public static (int previousCP, int currentCP) GetCpChanged(CollectionState previousState,
+            CollectionState currentState)
+        {
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var level = avatarState.level;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var row = characterSheet[avatarState.characterId];
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
+            var runeStated = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+            var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
+
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var previousCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
+                costumeSheet, previousState.GetEffects(collectionSheet));
+            var currentCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
+                costumeSheet, currentState.GetEffects(collectionSheet));
+            return (previousCp, currentCp);
+        }
+
         public static List<RuneOptionSheet.Row.RuneOptionInfo> GetRuneOptions(
             List<RuneState> runeStates,
             RuneOptionSheet sheet)

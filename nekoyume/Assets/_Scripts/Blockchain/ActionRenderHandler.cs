@@ -3070,6 +3070,19 @@ namespace Nekoyume.Blockchain
             var collectionRow = TableSheets.Instance.CollectionSheet[collectionId];
             var count = States.Instance.CollectionState.Ids.Count;
             Widget.Find<CelebratesPopup>().Show(collectionRow, count);
+
+            CollectionState previousState = null;
+            UniTask.RunOnThreadPool(() =>
+            {
+                previousState =
+                    StateGetter.GetCollectionState(eval.PreviousState, eval.Action.AvatarAddress);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var (previousCp, currentCp) =
+                    Util.GetCpChanged(previousState, States.Instance.CollectionState);
+
+                Widget.Find<CPScreen>().Show(previousCp, currentCp);
+            });
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
