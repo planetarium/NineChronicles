@@ -10,12 +10,13 @@ namespace Nekoyume.UI.Model
         public CollectionSheet.RequiredMaterial Row { get; }
         public int Grade { get; }
         public ItemType ItemType { get; }
-        public bool HasItem { get; private set; }
-        public bool EnoughCount { get; private set; }
         public bool Active { get; }
 
+        public bool HasItem { get; private set; }
+        public bool EnoughCount { get; private set; }
+
         // enough condition for active
-        public bool Enough => HasItem && EnoughCount && !Active && !Registered.Value;
+        public bool Enough => !Active && HasItem && EnoughCount && !Registered.Value;
 
         public ReactiveProperty<bool> Selected { get; }
 
@@ -33,7 +34,11 @@ namespace Nekoyume.UI.Model
             Row = row;
             Grade = grade;
             ItemType = itemType;
+
             Active = active;
+            HasItem = true;
+            EnoughCount = true;
+
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             Registered = new ReactiveProperty<bool>(false);
@@ -49,9 +54,9 @@ namespace Nekoyume.UI.Model
             Grade = grade;
             ItemType = itemType;
 
+            Active = false;
             HasItem = true;
             EnoughCount = true;
-            Active = false;
 
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);

@@ -95,8 +95,7 @@ namespace Nekoyume.UI.Module
             baseItemView.OptionTag.gameObject.SetActive(true);
             baseItemView.OptionTag.Set(model.ItemBase);
 
-            baseItemView.CountText.gameObject.SetActive(
-                model.ItemBase.ItemType == ItemType.Material);
+            baseItemView.CountText.gameObject.SetActive(model.Count.Value > 1);
             baseItemView.CountText.text = model.Count.Value.ToString();
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b))

@@ -29,7 +29,10 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            collectionEffect.Set(CollectionModel.GetModels(), true);
+
+            var models = Find<Collection>().Models;
+            var (activeCount, stats) = models.GetEffect();
+            collectionEffect.Set(activeCount, models.Count, stats, true);
         }
     }
 }

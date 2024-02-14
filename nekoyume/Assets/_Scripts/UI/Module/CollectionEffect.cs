@@ -38,9 +38,8 @@ namespace Nekoyume.UI.Module
             });
         }
 
-        public void Set(List<CollectionModel> models, bool displayEmpty = false)
+        public void Set(int activeCount, int maxCount, IEnumerable<StatModifier> stats, bool displayEmpty = false)
         {
-            var activeCount = models.Count(model => model.Active);
             contentContainer.SetActive(activeCount > 0);
             emptyContainer.SetActive(activeCount == 0 && displayEmpty);
 
@@ -49,9 +48,7 @@ namespace Nekoyume.UI.Module
                 view.Hide();
             }
 
-            var data = models
-                .Where(model => model.Active)
-                .SelectMany(model => model.Row.StatModifiers)
+            var data = stats
                 .GroupBy(stat => stat.StatType)
                 .Select(grouping => (
                     StatType: grouping.Key,
@@ -70,7 +67,7 @@ namespace Nekoyume.UI.Module
             }
 
             countText.text = activeCount.ToString();
-            maxCountText.text = $"/{models.Count}";
+            maxCountText.text = $"/{maxCount}";
         }
     }
 }

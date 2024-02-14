@@ -31,7 +31,9 @@ namespace Nekoyume.UI.Module
         {
             _onClickItem = onClickItem;
 
-            ReactiveAvatarState.Inventory.Subscribe(UpdateInventory).AddTo(gameObject);
+            ReactiveAvatarState.Inventory
+                .Subscribe(UpdateInventory)
+                .AddTo(gameObject);
 
             scroll.OnClick.Subscribe(SelectItem).AddTo(gameObject);
         }
@@ -56,10 +58,15 @@ namespace Nekoyume.UI.Module
 
         private List<InventoryItem> GetModels(CollectionMaterial requiredItem)
         {
+            if (requiredItem == null)
+            {
+                return new List<InventoryItem>();
+            }
+
             // get from _items by required item's condition
             var row = requiredItem.Row;
             var items = _items.Where(item => item.ItemBase.Id == row.ItemId).ToList();
-            if (items.First().ItemBase.ItemType == ItemType.Equipment)
+            if (items.Any() && items.First().ItemBase.ItemType == ItemType.Equipment)
             {
                 items = items.Where(item =>
                     item.ItemBase is Equipment equipment &&
@@ -87,12 +94,15 @@ namespace Nekoyume.UI.Module
 
         #region FungibleItems (Consumable, Material) - select auto
 
-        public void SetRequiredItems(CollectionMaterial[] requiredItem)
+        public void SetRequiredItems(CollectionMaterial[] requiredItems)
         {
-            _requiredItems = requiredItem;
+            _requiredItems = requiredItems;
             SetCanSelect(false);
 
-            var models = GetModels(_requiredItems);
+            // Get Models
+            var models = _requiredItems.Select(requiredItem =>
+                _items.First(item => item.ItemBase.Id == requiredItem.Row.ItemId)).ToList();
+
             scroll.UpdateData(models, true);
 
             // Select All
@@ -100,19 +110,6 @@ namespace Nekoyume.UI.Module
             {
                 model.CollectionSelected.SetValueAndForceNotify(true);
             }
-        }
-
-        private List<InventoryItem> GetModels(CollectionMaterial[] requiredItems)
-        {
-            var models = new List<InventoryItem>();
-            foreach (var requiredItem in requiredItems)
-            {
-                // Todo : 걍 first로?
-                var items = _items.Where(item => item.ItemBase.Id == requiredItem.Row.ItemId);
-                models.AddRange(items);
-            }
-
-            return models;
         }
 
         #endregion

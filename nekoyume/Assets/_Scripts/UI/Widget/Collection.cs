@@ -18,6 +18,7 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class Collection : Widget
     {
         [Serializable]
@@ -46,18 +47,43 @@ namespace Nekoyume.UI
             }
         }
 
-        [SerializeField] private Button backButton;
-        [SerializeField] private ItemTypeToggle[] itemTypeToggles;
-        [SerializeField] private StatToggle[] statToggles;
-        [SerializeField] private CollectionEffect collectionEffect;
-        [SerializeField] private CollectionScroll scroll;
-        [SerializeField] private CollectionMaterialInfo collectionMaterialInfo;
+        [SerializeField]
+        private Button backButton;
+
+        [SerializeField]
+        private ItemTypeToggle[] itemTypeToggles;
+
+        [SerializeField]
+        private StatToggle[] statToggles;
+
+        [SerializeField]
+        private CollectionEffect collectionEffect;
+
+        [SerializeField]
+        private CollectionScroll scroll;
+
+        [SerializeField]
+        private CollectionMaterialInfo collectionMaterialInfo;
 
         private CollectionMaterial _selectedMaterial;
-        private bool _initialized;
 
         private ItemType _currentItemType;
         private StatType _currentStatType;
+
+        private bool _initialized;
+
+        private readonly List<CollectionModel> _models = new List<CollectionModel>();
+        public List<CollectionModel> Models => _models;
+
+        private readonly Dictionary<ItemType, Dictionary<StatType, bool>> _filter = new();
+        private static readonly StatType[] TabStatTypes =
+        {
+            StatType.NONE,
+            StatType.HP, StatType.ATK, StatType.DEF, StatType.HIT, StatType.SPD,
+            StatType.CRI
+        };
+
+        public bool HasNotification => _filter.Values.Any(dict => dict.Values.Any(value => value));
 
         protected override void Awake()
         {
@@ -74,6 +100,40 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             };
 
+            foreach (var itemType in Enum.GetValues(typeof(ItemType)).OfType<ItemType>())
+            {
+                _filter[itemType] = new Dictionary<StatType, bool>();
+                foreach (var statType in TabStatTypes)
+                {
+                    _filter[itemType][statType] = false;
+                }
+            }
+
+            foreach (var itemTypeToggle in itemTypeToggles)
+            {
+                itemTypeToggle.toggle.OnValueChangedAsObservable()
+                    .Where(isOn => isOn)
+                    .Subscribe(_ =>
+                    {
+                        SetFilter(itemTypeToggle.type);
+
+                        statToggles.First().toggle.isOn = true;
+                        foreach (var statToggle in statToggles)
+                        {
+                            statToggle.SetNotification(_filter[_currentItemType][statToggle.stat]);
+                        }
+                    })
+                    .AddTo(gameObject);
+            }
+
+            foreach (var statToggle in statToggles)
+            {
+                statToggle.toggle.OnValueChangedAsObservable()
+                    .Where(isOn => isOn)
+                    .Subscribe(_ => SetFilter(_currentItemType, statToggle.stat))
+                    .AddTo(gameObject);
+            }
+
             scroll.OnClickActiveButton.Subscribe(OnClickActiveButton).AddTo(gameObject);
             scroll.OnClickMaterial.Subscribe(OnClickMaterial).AddTo(gameObject);
         }
@@ -83,33 +143,22 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+
+
             SetFilter();
+        }
 
-            if (!_initialized)
+        public void TryInitialize()
+        {
+            if (_initialized)
             {
-                _initialized = true;
-                ReactiveAvatarState.Inventory.Subscribe(_ => UpdateView()).AddTo(gameObject);
-
-                foreach (var itemTypeToggle in itemTypeToggles)
-                {
-                    itemTypeToggle.toggle.OnValueChangedAsObservable()
-                        .Where(isOn => isOn)
-                        .Subscribe(_ =>
-                        {
-                            SetFilter(itemTypeToggle.type);
-                            statToggles.First().toggle.isOn = true;
-                        })
-                        .AddTo(gameObject);
-                }
-
-                foreach (var statToggle in statToggles)
-                {
-                    statToggle.toggle.OnValueChangedAsObservable()
-                        .Where(isOn => isOn)
-                        .Subscribe(_ => SetFilter(_currentItemType, statToggle.stat))
-                        .AddTo(gameObject);
-                }
+                return;
             }
+
+            _initialized = true;
+
+            OnUpdateState();
+            ReactiveAvatarState.Inventory.Subscribe(_ => OnUpdateInventory()).AddTo(gameObject);
         }
 
         private void SetFilter(
@@ -119,31 +168,7 @@ namespace Nekoyume.UI
             _currentItemType = itemType;
             _currentStatType = statType;
 
-            UpdateView();
-        }
-
-        private void UpdateView()
-        {
-            var models = CollectionModel.GetModels();
-            collectionEffect.Set(models);
-
-            foreach (var itemTypeToggle in itemTypeToggles)
-            {
-                itemTypeToggle.SetNotification(models.Any(model =>
-                    model.ItemType == itemTypeToggle.type &&
-                    model.CanActivate));
-            }
-
-            foreach (var statToggle in statToggles)
-            {
-                statToggle.SetNotification(models.Any(model =>
-                    model.ItemType == _currentItemType &&
-                    model.Row.StatModifiers.Any(stat => stat.StatType == statToggle.stat) &&
-                    model.CanActivate));
-            }
-
-            models = models.Sort(_currentItemType, _currentStatType);
-            scroll.UpdateData(models, true);
+            scroll.UpdateData(_models.Sort(_currentItemType, _currentStatType), true);
         }
 
         private void OnClickMaterial(CollectionMaterial viewModel)
@@ -204,7 +229,44 @@ namespace Nekoyume.UI
 
         public void OnActionRender()
         {
-            UpdateView();
+            OnUpdateState();
+
+            scroll.UpdateData(_models.Sort(_currentItemType, _currentStatType), true);
+        }
+
+        private void OnUpdateState()
+        {
+            _models.SetModels();
+
+            var (activeCount, stats) = _models.GetEffect();
+            collectionEffect.Set(activeCount, _models.Count, stats);
+
+            OnUpdateInventory();
+        }
+
+        // 원래 inventory를 구독했어야 하는데 임시로 state를 구독
+        private void OnUpdateInventory()
+        {
+            // update collection models - materials 값을 정의
+            _models.UpdateMaterials();
+
+            // materials.Select(material => material.Active)로 전체 토글값을 Dict로 캐싱
+            foreach (var (itemType, dict) in _filter)
+            {
+                foreach (var statType in TabStatTypes)
+                {
+                    dict[statType] = _models.Any(model =>
+                        model.ItemType == itemType &&
+                        model.Row.StatModifiers.Any(stat => stat.CheckStat(statType)) &&
+                        model.CanActivate);
+                }
+            }
+
+            // update toggle view
+            foreach (var itemTypeToggle in itemTypeToggles)
+            {
+                itemTypeToggle.SetNotification(_filter[itemTypeToggle.type].Values.Any(value => value));
+            }
         }
     }
 }
