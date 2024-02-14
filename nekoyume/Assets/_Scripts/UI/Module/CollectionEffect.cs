@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Stat;
-using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,18 +24,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private GameObject emptyContainer;
-
-        [SerializeField]
-        private Button goToCollectionButton;
-
-        private void Awake()
-        {
-            goToCollectionButton.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                // shortcut to Collection
-            });
-        }
 
         public void Set(int activeCount, int maxCount, IEnumerable<StatModifier> stats, bool displayEmpty = false)
         {
