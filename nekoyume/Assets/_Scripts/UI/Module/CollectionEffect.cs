@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game.Controller;
 using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -25,10 +23,10 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject emptyContainer;
 
-        public void Set(int activeCount, int maxCount, IEnumerable<StatModifier> stats, bool displayEmpty = false)
+        public void Set(int activeCount, int maxCount, IEnumerable<StatModifier> stats)
         {
             contentContainer.SetActive(activeCount > 0);
-            emptyContainer.SetActive(activeCount == 0 && displayEmpty);
+            emptyContainer.SetActive(activeCount == 0);
 
             foreach (var view in statViews)
             {
