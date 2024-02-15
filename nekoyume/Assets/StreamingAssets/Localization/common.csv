@@ -1884,3 +1884,4 @@ UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT,You can only do Stake if you have more than 
 UI_REQUIRE_DIFF_VALUE_WITH_EXIST,Cannot be set to the same as the existing value.,기존과 같은 값으로는 변경할 수 없습니다.,,,,,,,,,,
 UI_INTRODUCE_STAKING,Can not edit staked ncg in 4 weeks. it is ok?,4주간 출금할 수 없습니다. 괜찮나요?,,,,,,,,,,
 UI_CHANGE,Change,변경,,,,,,,,,,
+UI_WARNING_STAKING_REDUCE,Reward will reduce than now. It is ok?,스테이킹할 NCG를 줄이면 보상 또한 줄어듭니다. 괜찮나요?,,,,,,,,,,

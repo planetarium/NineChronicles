@@ -236,26 +236,35 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var confirmUI = Find<IconAndButtonSystem>();
+            var confirmTitle = "UI_ITEM_INFORMATION";
+            var confirmContent = "UI_INTRODUCE_STAKING";
+            var confirmIcon = IconAndButtonSystem.SystemType.Information;
             var nullableStakeState = States.Instance.StakeStateV2;
             if (nullableStakeState.HasValue)
             {
                 var stakeState = nullableStakeState.Value;
                 var cancellableBlockIndex =
                     stakeState.CancellableBlockIndex;
-                var decrease = inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit;
-                if (decrease && cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
+                if (inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit)
                 {
-                    OneLineSystem.Push(MailType.System,
-                        L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
-                            cancellableBlockIndex),
-                        NotificationCell.NotificationType.UnlockCondition);
-                    return;
+                    if (cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
+                                cancellableBlockIndex),
+                            NotificationCell.NotificationType.UnlockCondition);
+                        return;
+                    }
+
+                    confirmTitle = "UI_WARNING";
+                    confirmContent = "UI_WARNING_STAKING_REDUCE";
+                    confirmIcon = IconAndButtonSystem.SystemType.Error;
                 }
             }
 
-            var confirmUI = Find<IconAndButtonSystem>();
             // TODO: adjust l10n, UI_WARNING_STAKING_REDUCE
-            confirmUI.ShowWithTwoButton("UI_ITEM_INFORMATION", "UI_INTRODUCE_STAKING", localize:true, type: IconAndButtonSystem.SystemType.Information);
+            confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize:true, type: confirmIcon);
             confirmUI.ConfirmCallback = () =>
             {
                 ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
