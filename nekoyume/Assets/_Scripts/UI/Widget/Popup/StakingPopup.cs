@@ -242,8 +242,8 @@ namespace Nekoyume.UI
                 var stakeState = nullableStakeState.Value;
                 var cancellableBlockIndex =
                     stakeState.CancellableBlockIndex;
-                if (inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit &&
-                    cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
+                var decrease = inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit;
+                if (decrease && cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
                 {
                     OneLineSystem.Push(MailType.System,
                         L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
