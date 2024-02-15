@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
-using NUnit.Framework;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
@@ -66,12 +66,23 @@ namespace Nekoyume.UI.Module
             // get from _items by required item's condition
             var row = requiredItem.Row;
             var items = _items.Where(item => item.ItemBase.Id == row.ItemId).ToList();
-            if (items.Any() && items.First().ItemBase.ItemType == ItemType.Equipment)
+            if (!items.Any())
             {
-                items = items.Where(item =>
-                    item.ItemBase is Equipment equipment &&
-                    equipment.level == row.Level &&
-                    equipment.Skills.Any() || !row.SkillContains).ToList();
+                return items;
+            }
+
+            switch (items.First().ItemBase.ItemType)
+            {
+                case ItemType.Equipment:
+                    items = items.Where(item =>
+                        item.ItemBase is Equipment equipment &&
+                        equipment.level == row.Level &&
+                        equipment.Skills.Any() || !row.SkillContains).ToList();
+                    UpdateEquipmentEquipped(items);
+                    break;
+                case ItemType.Costume:
+                    UpdateCostumeEquipped(items);
+                    break;
             }
 
             return items;
@@ -88,6 +99,38 @@ namespace Nekoyume.UI.Module
             SelectedItem = item;
             SelectedItem.CollectionSelected.SetValueAndForceNotify(true);
             _onClickItem?.Invoke(SelectedItem);
+        }
+
+        private static void UpdateEquipmentEquipped(List<InventoryItem> equipments)
+        {
+            var equippedEquipments = new List<Guid>();
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                equippedEquipments.AddRange(States.Instance.CurrentItemSlotStates[(BattleType)i].Equipments);
+            }
+
+            foreach (var equipment in equipments)
+            {
+                var equipped =
+                    equippedEquipments.Exists(x => x == ((Equipment)equipment.ItemBase).ItemId);
+                equipment.Equipped.SetValueAndForceNotify(equipped);
+            }
+        }
+
+        private static void UpdateCostumeEquipped(List<InventoryItem> costumes)
+        {
+            var equippedCostumes = new List<Guid>();
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                equippedCostumes.AddRange(States.Instance.CurrentItemSlotStates[(BattleType)i].Costumes);
+            }
+
+            foreach (var costume in costumes)
+            {
+                var equipped =
+                    equippedCostumes.Exists(x => x == ((Costume)costume.ItemBase).ItemId);
+                costume.Equipped.SetValueAndForceNotify(equipped);
+            }
         }
 
         #endregion

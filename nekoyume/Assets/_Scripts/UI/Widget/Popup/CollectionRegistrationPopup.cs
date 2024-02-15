@@ -9,7 +9,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
-using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI
 {
@@ -55,7 +54,12 @@ namespace Nekoyume.UI
         {
             if (canRegister)
             {
-                RegisterItem(collectionInventory.SelectedItem);
+                var confirm = Find<IconAndButtonSystem>();
+                confirm.ShowWithTwoButton("UI_CONFIRM", "UI_COLLECTION_REGISTRATION_CAUTION_PHRASE",
+                    "UI_OK", "UI_CANCEL",
+                    true, IconAndButtonSystem.SystemType.Information);
+                confirm.ConfirmCallback = () => RegisterItem(collectionInventory.SelectedItem);
+                confirm.CancelCallback = () => confirm.Close();
             }
             else
             {
