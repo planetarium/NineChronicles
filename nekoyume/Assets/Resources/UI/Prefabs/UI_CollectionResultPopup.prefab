@@ -332,6 +332,7 @@ GameObject:
   - component: {fileID: 5489148644408070566}
   - component: {fileID: 8751514393599974233}
   - component: {fileID: 1389866133597697932}
+  - component: {fileID: 8637889800845076647}
   m_Layer: 5
   m_Name: CompletionRateArea
   m_TagString: Untagged
@@ -396,6 +397,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
   m_ReverseArrangement: 0
+--- !u!225 &8637889800845076647
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1861038686621219348}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2004960108529793995
 GameObject:
   m_ObjectHideFlags: 0
@@ -5473,6 +5486,7 @@ GameObject:
   - component: {fileID: 3338016346711720351}
   - component: {fileID: 3338016346711720348}
   - component: {fileID: 3338016346711720349}
+  - component: {fileID: 3842126579731467305}
   m_Layer: 5
   m_Name: SuccessText
   m_TagString: Untagged
@@ -5628,6 +5642,18 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!225 &3842126579731467305
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3338016346711720347}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3338016346958867506
 GameObject:
   m_ObjectHideFlags: 0
@@ -5961,6 +5987,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3338016348186742454}
   - component: {fileID: 1938380871693389806}
+  - component: {fileID: 3786611527604296245}
   m_Layer: 5
   m_Name: UI_CollectionResultPopup
   m_TagString: Untagged
@@ -6004,6 +6031,26 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!95 &3786611527604296245
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3338016348186742455}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cdac0742841abb4458b0babc5a0d42d4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3338016348412345920
 GameObject:
   m_ObjectHideFlags: 0
@@ -6016,6 +6063,7 @@ GameObject:
   - component: {fileID: 3338016348412345925}
   - component: {fileID: 3338016348412345922}
   - component: {fileID: 7472891140747851065}
+  - component: {fileID: 7132718208772550140}
   m_Layer: 5
   m_Name: ItemNameText
   m_TagString: Untagged
@@ -6174,6 +6222,18 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!225 &7132718208772550140
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3338016348412345920}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3382258793143795012
 GameObject:
   m_ObjectHideFlags: 0
@@ -8146,6 +8206,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7110516944921210649}
   - component: {fileID: 8837271333929609123}
+  - component: {fileID: 8622332033261808972}
   m_Layer: 5
   m_Name: Bg_Obj_2
   m_TagString: Untagged
@@ -8173,7 +8234,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.000030517578}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 902, y: 204}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &8837271333929609123
@@ -8184,6 +8245,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7312726726310935217}
   m_CullTransparentMesh: 1
+--- !u!225 &8622332033261808972
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7312726726310935217}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8114817685508971450
 GameObject:
   m_ObjectHideFlags: 0
@@ -8194,6 +8267,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7733631497534341593}
   - component: {fileID: 5094403781889223256}
+  - component: {fileID: 4125144346644497922}
+  - component: {fileID: 608594488074850773}
   m_Layer: 5
   m_Name: BookObj
   m_TagString: Untagged
@@ -8232,6 +8307,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8114817685508971450}
   m_CullTransparentMesh: 1
+--- !u!225 &4125144346644497922
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8114817685508971450}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!95 &608594488074850773
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8114817685508971450}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 456f5725b0cfcea4680aed1b698a2672, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8660784521259719597
 GameObject:
   m_ObjectHideFlags: 0
