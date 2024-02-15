@@ -53,10 +53,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            closeButton.onClick.AddListener(() =>
-            {
-                gameObject.SetActive(false);
-            });
+            closeButton.onClick.AddListener(Close);
         }
 
         public void Show(ItemBase itemBase, int itemCount, bool levelLimit, bool skillRequired)
@@ -94,6 +91,11 @@ namespace Nekoyume.UI.Module
             iconArea.itemDescriptionText.text = itemBase.GetLocalizedDescription();
 
             SetAcquisitionPlaceButtons(itemBase);
+        }
+
+        public void Close()
+        {
+            gameObject.SetActive(false);
         }
 
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)

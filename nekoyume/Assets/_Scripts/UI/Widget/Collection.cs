@@ -134,7 +134,7 @@ namespace Nekoyume.UI
             }
 
             scroll.OnClickActiveButton.Subscribe(OnClickActiveButton).AddTo(gameObject);
-            scroll.OnClickMaterial.Subscribe(OnClickMaterial).AddTo(gameObject);
+            scroll.OnClickMaterial.Subscribe(SelectMaterial).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -168,14 +168,15 @@ namespace Nekoyume.UI
             _currentStatType = statType;
 
             scroll.UpdateData(_models.Sort(_currentItemType, _currentStatType), true);
+            SelectMaterial(null);
         }
 
-        private void OnClickMaterial(CollectionMaterial viewModel)
+        private void SelectMaterial(CollectionMaterial viewModel)
         {
             if (_selectedMaterial == null)
             {
                 _selectedMaterial = viewModel;
-                _selectedMaterial.Selected.SetValueAndForceNotify(true);
+                _selectedMaterial?.Selected.SetValueAndForceNotify(true);
             }
             else if (_selectedMaterial.Equals(viewModel))
             {
@@ -186,10 +187,17 @@ namespace Nekoyume.UI
             {
                 _selectedMaterial.Selected.SetValueAndForceNotify(false);
                 _selectedMaterial = viewModel;
-                _selectedMaterial.Selected.SetValueAndForceNotify(true);
+                _selectedMaterial?.Selected.SetValueAndForceNotify(true);
             }
 
-            // collectionMaterialInfo.Show(viewModel);
+            if (_selectedMaterial != null)
+            {
+                // collectionMaterialInfo.Show(_selectedMaterial);
+            }
+            else
+            {
+                collectionMaterialInfo.Close();
+            }
         }
 
         private void OnClickActiveButton(CollectionModel model)
