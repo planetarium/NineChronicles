@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.UI.Model;
+using TMPro;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -20,5 +23,15 @@ namespace Nekoyume.UI.Scroller
 
         public IObservable<CollectionModel> OnClickActiveButton => Context.OnClickActiveButton;
         public IObservable<CollectionMaterial> OnClickMaterial => Context.OnClickMaterial;
+
+        [SerializeField]
+        private TextMeshProUGUI noneText;
+
+        protected override void UpdateContents(IList<CollectionModel> items)
+        {
+            base.UpdateContents(items);
+
+            noneText.gameObject.SetActive(items.Count == 0);
+        }
     }
 }
