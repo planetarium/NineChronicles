@@ -3260,7 +3260,7 @@ MonoBehaviour:
   btnCombination: {fileID: 553648110939848765}
   btnShop: {fileID: 1227858067435832074}
   btnRanking: {fileID: 6173878186417666925}
-  btnStaking: {fileID: 4668462009012549301}
+  btnStaking: {fileID: 2776351705376011568}
   btnWorldBoss: {fileID: 7762838806554388014}
   btnDcc: {fileID: 3151286348115748959}
   btnPatrolReward: {fileID: 5635383302461121711}
@@ -12609,6 +12609,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: StakingClick
       objectReference: {fileID: 0}
+    - target: {fileID: 6394411223580427994, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
+        type: 3}
+      propertyPath: speechBubble
+      value: 
+      objectReference: {fileID: 2894346975772333054}
     - target: {fileID: 6592697976263503019, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -12678,16 +12683,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4668462009012549301 stripped
+--- !u!114 &2776351705376011568 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4536149002758751583, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
+  m_CorrespondingSourceObject: {fileID: 6394411223580427994, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
     type: 3}
   m_PrefabInstance: {fileID: 9095606631432254442}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
+  m_Script: {fileID: 11500000, guid: 531e1edd405e46ada547f9d0e381b280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &6567669439055401715 stripped
