@@ -1373,9 +1373,8 @@ GameObject:
   - component: {fileID: 9083188137598242028}
   - component: {fileID: 9080915850922071876}
   - component: {fileID: 8953329451478283100}
-  - component: {fileID: 2097738214126505603}
   m_Layer: 5
-  m_Name: UI_StakingInfoPopup
+  m_Name: StakingInfoPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1431,54 +1430,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2097738214126505603
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9012881842372670150}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ffcf928684cd2e4e9532b233209f4a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
-  isPremiumObj:
-  - {fileID: 0}
-  notPremiumObj:
-  - {fileID: 0}
-  isPremiumPlusObj:
-  - {fileID: 0}
-  notPremiumPlusObj:
-  - {fileID: 0}
-  premiumPurchaseButtonDisabledObj: {fileID: 0}
-  premiumPurchaseButtonPriceObj: {fileID: 0}
-  premiumPurchaseButtonLoadingObj: {fileID: 0}
-  premiumPlusPurchaseButtonDisabledObj: {fileID: 0}
-  premiumPlusPurchaseButtonPriceObj: {fileID: 0}
-  premiumPlusPurchaseButtonLoadingObj: {fileID: 0}
-  premiumRewards:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  premiumPlusRewards:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  premiumPrices:
-  - {fileID: 0}
-  - {fileID: 0}
-  premiumPlusPrices:
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!1001 &7315891065121327221
 PrefabInstance:
   m_ObjectHideFlags: 0

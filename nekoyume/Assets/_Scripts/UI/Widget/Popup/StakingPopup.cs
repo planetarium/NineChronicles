@@ -15,6 +15,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -53,6 +54,8 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject levelBenefitsTab;
 
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
+        [SerializeField] private GameObject stakingInformationObject;
+        [SerializeField] private UIBackground informationBg;
 
         private readonly Module.ToggleGroup _toggleGroup = new();
 
@@ -109,6 +112,10 @@ namespace Nekoyume.UI
             {
                 OnChangeEditingState(false);
             });
+            informationBg.OnClick = () =>
+            {
+                stakingInformationObject.SetActive(false);
+            };
         }
 
         public override void Initialize()
@@ -126,8 +133,7 @@ namespace Nekoyume.UI
 
             if (!States.Instance.StakeStateV2.HasValue)
             {
-                // TODO: change hard-coded id and json data
-                HelpTooltip.HelpMe(123);
+                stakingInformationObject.SetActive(true);
             }
         }
 
