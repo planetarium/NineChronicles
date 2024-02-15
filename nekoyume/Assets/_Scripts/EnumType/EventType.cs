@@ -7,5 +7,6 @@ namespace Nekoyume.EnumType
 	Valentine,
 	EventSummer,
 	EventWinter,
+	EventSpring,
     }
 }
