@@ -121,6 +121,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreStartAnimation = false)
         {
             base.Show(ignoreStartAnimation);
+            OnChangeEditingState(false);
             SetView();
 
             if (!States.Instance.StakeStateV2.HasValue)
@@ -144,16 +145,29 @@ namespace Nekoyume.UI
 
             OnDepositEdited(deposit);
             OnBlockUpdated(blockIndex);
+
+            // can not category UI toggle when user has not StakeState.
+            var hasStakeState = deposit > 0;
+            stakingStartButton.gameObject.SetActive(!hasStakeState);
+            ncgEditButton.gameObject.SetActive(hasStakeState);
+
             foreach (var toggleable in _toggleGroup.Toggleables)
             {
                 toggleable.Toggleable = true;
             }
 
             _toggleGroup.SetToggledOffAll();
-            var selectedTabButton = deposit > 0 ? currentBenefitsTabButton : levelBenefitsTabButton;
+            var selectedTabButton = hasStakeState ? currentBenefitsTabButton : levelBenefitsTabButton;
             selectedTabButton.OnClick.OnNext(selectedTabButton);
             selectedTabButton.SetToggledOn();
-            OnChangeEditingState(false);
+
+            if (!hasStakeState)
+            {
+                foreach (var toggleable in _toggleGroup.Toggleables)
+                {
+                    toggleable.Toggleable = false;
+                }
+            }
 
             var liveAssetManager = Game.LiveAsset.LiveAssetManager.instance;
             if (liveAssetManager.StakingLevelSprite != null)
@@ -367,12 +381,6 @@ namespace Nekoyume.UI
                 remainingBlock.ToString("N0"),
                 remainingBlock.BlockRangeToTimeSpanString());
             archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
-
-            // can not category UI toggle when user has not StakeState.
-            currentBenefitsTabButton.Toggleable = stakeStateV2.HasValue;
-            levelBenefitsTabButton.Toggleable = stakeStateV2.HasValue;
-            stakingStartButton.gameObject.SetActive(!stakeStateV2.HasValue);
-            ncgEditButton.gameObject.SetActive(stakeStateV2.HasValue);
         }
 
         private static bool TryGetWaitedBlockIndex(
