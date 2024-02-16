@@ -3064,10 +3064,12 @@ namespace Nekoyume.Blockchain
         {
             Widget.Find<Collection>().OnActionRender();
 
+            var collectionSheet = TableSheets.Instance.CollectionSheet;
             var collectionId = eval.Action.CollectionData.First().collectionId;
-            var collectionRow = TableSheets.Instance.CollectionSheet[collectionId];
+            var collectionRow = collectionSheet[collectionId];
             var count = States.Instance.CollectionState.Ids.Count;
-            Widget.Find<CelebratesPopup>().Show(collectionRow, count);
+            var maxCount = collectionSheet.Count;
+            Widget.Find<CollectionResultPopup>().Show(collectionRow, count, maxCount);
 
             CollectionState previousState = null;
             UniTask.RunOnThreadPool(() =>

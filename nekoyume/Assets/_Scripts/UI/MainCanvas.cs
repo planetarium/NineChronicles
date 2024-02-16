@@ -457,6 +457,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionRegistrationPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CollectionResultPopup>());
+            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
