@@ -254,16 +254,8 @@ namespace Nekoyume.UI
         public void OnActionRender()
         {
             _models.UpdateActive(); // on action render
-            UpdateToggleDictionary(); // on update model.CanActivate
 
             UpdateEffectView(); // on update model.Active
-            if (gameObject.activeSelf)
-            {
-                UpdateToggleView(); // on update toggleDictionary
-                UpdateStatToggleView(); // on update toggleDictionary
-
-                UpdateScrollView(); // on update
-            }
         }
 
         private void OnUpdateInventory()
