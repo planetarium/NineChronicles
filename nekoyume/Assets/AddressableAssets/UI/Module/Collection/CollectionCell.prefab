@@ -3925,11 +3925,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4848288152372119207}
     m_Modifications:
-    - target: {fileID: 355461153799763971, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 861949034201126773, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: l10nKey
@@ -3959,11 +3954,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1812226212806546222, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1925281264920820847, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
@@ -4093,7 +4083,7 @@ PrefabInstance:
     - target: {fileID: 4508914646000692639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: m_text
-      value: Received
+      value: Activated
       objectReference: {fileID: 0}
     - target: {fileID: 4508914646000692639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
@@ -4120,11 +4110,6 @@ PrefabInstance:
       propertyPath: m_fontSizeMax
       value: 16
       objectReference: {fileID: 0}
-    - target: {fileID: 4508914646000692639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
     - target: {fileID: 4508914646000692639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: m_fontColor32.rgba
@@ -4155,22 +4140,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConditionalButton_Type3
       objectReference: {fileID: 0}
-    - target: {fileID: 5782339841865873676, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5782339841865873676, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 45179b48ce56c4ed18b4c1f9ef4e72b2,
-        type: 3}
-    - target: {fileID: 5782339841865873676, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5915177305648263639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: m_text
@@ -4203,23 +4172,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5915177305648263639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: 53f9eb695801246ddb3ba6f0b8ac1677, type: 2}
-    - target: {fileID: 5915177305648263639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 6022025817023840083, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6278566912089420281, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: l10nKey
-      value: UI_RECEIVED
+      value: UI_ACTIVATED
       objectReference: {fileID: 0}
     - target: {fileID: 6378403036447978670, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
@@ -4230,16 +4189,6 @@ PrefabInstance:
         type: 3}
       propertyPath: l10nKey
       value: UI_ACTIVATE
-      objectReference: {fileID: 0}
-    - target: {fileID: 7856570142292137824, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8313786517335402731, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4bc425b6a451d495a87d6ff37b4a1029, type: 3}
