@@ -229,9 +229,9 @@ namespace Nekoyume.UI
             void Action(List<ICollectionMaterial> materials)
             {
                 ActionManager.Instance.ActivateCollection(collectionId, materials)
-                    .Subscribe(_ => LoadingHelper.ActivateCollection.Value = false);
+                    .Subscribe(_ => LoadingHelper.ActivateCollection.Value = 0);
 
-                LoadingHelper.ActivateCollection.Value = true;
+                LoadingHelper.ActivateCollection.Value = collectionId;
             }
 
             switch (model.ItemType)
