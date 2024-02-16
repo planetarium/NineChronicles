@@ -54,12 +54,20 @@ namespace Nekoyume.UI
         {
             if (canRegister)
             {
-                var confirm = Find<IconAndButtonSystem>();
-                confirm.ShowWithTwoButton("UI_CONFIRM", "UI_COLLECTION_REGISTRATION_CAUTION_PHRASE",
-                    "UI_OK", "UI_CANCEL",
-                    true, IconAndButtonSystem.SystemType.Information);
-                confirm.ConfirmCallback = () => RegisterItem(collectionInventory.SelectedItem);
-                confirm.CancelCallback = () => confirm.Close();
+                if (collectionInventory.SelectedItem.Equipped.Value)
+                {
+                    var confirm = Find<IconAndButtonSystem>();
+                    confirm.ShowWithTwoButton(
+                        "UI_CONFIRM", "UI_COLLECTION_REGISTRATION_CAUTION_PHRASE",
+                        "UI_OK", "UI_CANCEL",
+                        true, IconAndButtonSystem.SystemType.Information);
+                    confirm.ConfirmCallback = () => RegisterItem(collectionInventory.SelectedItem);
+                    confirm.CancelCallback = () => confirm.Close();
+                }
+                else
+                {
+                    RegisterItem(collectionInventory.SelectedItem);
+                }
             }
             else
             {
