@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Model
         public CollectionSheet.RequiredMaterial Row { get; }
         public int Grade { get; }
         public ItemType ItemType { get; }
-        public bool Active { get; }
+        public bool Active { get; set; }
 
         public bool HasItem { get; private set; }
         public bool EnoughCount { get; private set; }

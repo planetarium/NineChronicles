@@ -3054,8 +3054,6 @@ namespace Nekoyume.Blockchain
 
         private ActionEvaluation<ActivateCollection> PrepareActivateCollection(ActionEvaluation<ActivateCollection> eval)
         {
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-
             States.Instance.SetCollectionState(
                 StateGetter.GetCollectionState(eval.OutputState, eval.Action.AvatarAddress));
 
@@ -3076,6 +3074,7 @@ namespace Nekoyume.Blockchain
             {
                 previousState =
                     StateGetter.GetCollectionState(eval.PreviousState, eval.Action.AvatarAddress);
+                UpdateCurrentAvatarStateAsync(eval).Forget();
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
                 var (previousCp, currentCp) =

@@ -114,13 +114,12 @@ namespace Nekoyume.UI
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
                     {
-                        SetFilter(itemTypeToggle.type);
+                        _currentItemType = itemTypeToggle.type;
 
-                        statToggles.First().toggle.isOn = true;
-                        foreach (var statToggle in statToggles)
-                        {
-                            statToggle.SetNotification(_filter[_currentItemType][statToggle.stat]);
-                        }
+                        var toggle = statToggles.First().toggle;
+                        toggle.isOn = !toggle.isOn;
+
+                        UpdateStatToggleView();
                     })
                     .AddTo(gameObject);
             }
@@ -129,7 +128,12 @@ namespace Nekoyume.UI
             {
                 statToggle.toggle.OnValueChangedAsObservable()
                     .Where(isOn => isOn)
-                    .Subscribe(_ => SetFilter(_currentItemType, statToggle.stat))
+                    .Subscribe(_ =>
+                    {
+                        _currentStatType = statToggle.stat;
+
+                        UpdateScrollView();
+                    })
                     .AddTo(gameObject);
             }
 
@@ -143,8 +147,12 @@ namespace Nekoyume.UI
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
 
+            var toggle = itemTypeToggles.First().toggle;
+            toggle.isOn = !toggle.isOn;
 
-            SetFilter();
+            UpdateToggleView();
+            UpdateStatToggleView();
+            UpdateScrollView();
         }
 
         public void TryInitialize()
@@ -156,18 +164,25 @@ namespace Nekoyume.UI
 
             _initialized = true;
 
-            OnUpdateState();
+            _models.GenerateModels();
+
+            UpdateEffectView();
+            UpdateToggleDictionary();
+
             ReactiveAvatarState.Inventory.Subscribe(_ => OnUpdateInventory()).AddTo(gameObject);
         }
 
-        private void SetFilter(
-            ItemType itemType = ItemType.Equipment,
-            StatType statType = StatType.NONE)
-        {
-            _currentItemType = itemType;
-            _currentStatType = statType;
+        #region ScrollView
 
-            scroll.UpdateData(_models.Sort(_currentItemType, _currentStatType), true);
+        private void UpdateScrollView()
+        {
+            var items = _models
+                .Where(model =>
+                    model.ItemType == _currentItemType &&
+                    model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
+                .OrderByDescending(model => model.CanActivate).ToList();
+
+            scroll.UpdateData(items,true);
             SelectMaterial(null);
         }
 
@@ -234,50 +249,112 @@ namespace Nekoyume.UI
             }
         }
 
+        #endregion
+
         public void OnActionRender()
         {
-            OnUpdateState();
+            _models.UpdateActive(); // on action render
+            UpdateToggleDictionary(); // on update model.CanActivate
 
-            scroll.UpdateData(_models.Sort(_currentItemType, _currentStatType), true);
+            UpdateEffectView(); // on update model.Active
+            if (gameObject.activeSelf)
+            {
+                UpdateToggleView(); // on update toggleDictionary
+                UpdateStatToggleView(); // on update toggleDictionary
+
+                UpdateScrollView(); // on update
+            }
         }
 
-        private void OnUpdateState()
+        private void OnUpdateInventory()
         {
-            _models.SetModels();
+            _models.UpdateMaterials(); // on update inventory
 
+            UpdateToggleDictionary(); // on update model.CanActivate
+            if (gameObject.activeSelf)
+            {
+                UpdateToggleView(); // on update toggleDictionary
+                UpdateStatToggleView(); // on update toggleDictionary
+
+                UpdateScrollView(); // on update model.CanActivate
+            }
+        }
+
+        // on update model.Active
+        private void UpdateEffectView()
+        {
             var collectionState = Game.Game.instance.States.CollectionState;
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
             collectionEffect.Set(
                 collectionState.Ids.Count,
                 collectionSheet.Count,
                 collectionState.GetEffects(collectionSheet));
-
-            OnUpdateInventory();
         }
 
-        // 원래 inventory를 구독했어야 하는데 임시로 state를 구독
-        private void OnUpdateInventory()
+        // on update model.CanActivate
+        private void UpdateToggleDictionary()
         {
-            // update collection models - materials 값을 정의
-            _models.UpdateMaterials();
-
             // materials.Select(material => material.Active)로 전체 토글값을 Dict로 캐싱
             foreach (var (itemType, dict) in _filter)
             {
-                foreach (var statType in TabStatTypes)
+                foreach (var toggleStat in TabStatTypes)
                 {
-                    dict[statType] = _models.Any(model =>
+                    dict[toggleStat] = _models.Any(model =>
                         model.ItemType == itemType &&
-                        model.Row.StatModifiers.Any(stat => stat.CheckStat(statType)) &&
+                        model.Row.StatModifiers.Any(stat => IsInToggle(stat, toggleStat)) &&
                         model.CanActivate);
                 }
             }
+        }
 
-            // update toggle view
+        #region ToggleView
+
+        private void UpdateToggleView()
+        {
             foreach (var itemTypeToggle in itemTypeToggles)
             {
-                itemTypeToggle.SetNotification(_filter[itemTypeToggle.type].Values.Any(value => value));
+                itemTypeToggle.SetNotification(
+                    _filter[itemTypeToggle.type].Values.Any(value => value));
             }
         }
+
+        private void UpdateStatToggleView()
+        {
+            foreach (var statToggle in statToggles)
+            {
+                statToggle.SetNotification(_filter[_currentItemType][statToggle.stat]);
+            }
+        }
+
+        private static bool IsInToggle(StatModifier stat, StatType toggleStatType)
+        {
+            StatType[] etcTypes =
+            {
+                StatType.CRI,
+                StatType.DRV, StatType.DRR, StatType.CDMG,
+                StatType.ArmorPenetration, StatType.Thorn,
+            };
+
+            switch (toggleStatType)
+            {
+                // All
+                case StatType.NONE:
+                    return true;
+
+                // StatTypes in Tab
+                case StatType.HP:
+                case StatType.ATK:
+                case StatType.DEF:
+                case StatType.HIT:
+                case StatType.SPD:
+                    return toggleStatType == stat.StatType;
+
+                // Etc
+                default:
+                    return etcTypes.Contains(stat.StatType);
+            }
+        }
+
+        #endregion
     }
 }
