@@ -70,7 +70,7 @@ namespace Nekoyume.UI
         private ItemType _currentItemType;
         private StatType _currentStatType;
 
-        private bool _initialized;
+        private int _initializedAvatarIndex;
 
         private readonly List<CollectionModel> _models = new List<CollectionModel>();
 
@@ -157,13 +157,15 @@ namespace Nekoyume.UI
 
         public void TryInitialize()
         {
-            if (_initialized)
+            var index = Game.Game.instance.States.CurrentAvatarKey;
+            if (_initializedAvatarIndex == index)
             {
                 return;
             }
 
-            _initialized = true;
+            _initializedAvatarIndex = index;
 
+            _models.Clear();
             _models.GenerateModels();
 
             UpdateEffectView();
