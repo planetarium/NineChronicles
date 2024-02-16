@@ -5151,7 +5151,7 @@ PrefabInstance:
     - target: {fileID: 4395017125806338240, guid: bacece2d1e65f7c4abc1692bc5ec74ff,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 485
       objectReference: {fileID: 0}
     - target: {fileID: 4395017125806338240, guid: bacece2d1e65f7c4abc1692bc5ec74ff,
         type: 3}
@@ -6033,6 +6033,7 @@ PrefabInstance:
     - {fileID: 5883554724835311287, guid: bacece2d1e65f7c4abc1692bc5ec74ff, type: 3}
     - {fileID: 7601040425982112974, guid: bacece2d1e65f7c4abc1692bc5ec74ff, type: 3}
     - {fileID: 430249674776748732, guid: bacece2d1e65f7c4abc1692bc5ec74ff, type: 3}
+    - {fileID: 1323790320328293089, guid: bacece2d1e65f7c4abc1692bc5ec74ff, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: bacece2d1e65f7c4abc1692bc5ec74ff, type: 3}
 --- !u!114 &470528428464238496 stripped
 MonoBehaviour:
