@@ -302,6 +302,7 @@ GameObject:
   - component: {fileID: 5995486879075017998}
   - component: {fileID: 1810197979859827456}
   - component: {fileID: 1108863888569618961}
+  - component: {fileID: 4216822561195098488}
   m_Layer: 5
   m_Name: CollectionInventory
   m_TagString: Untagged
@@ -697,7 +698,7 @@ RectTransform:
   - {fileID: 5811078145860991215}
   - {fileID: 7561785581816405530}
   m_Father: {fileID: 1065580947757427755}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1785,8 +1786,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8403830291261484695}
   - {fileID: 4248898152289632631}
+  - {fileID: 8403830291261484695}
   m_Father: {fileID: 2019621497025696227}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4660,7 +4661,7 @@ PrefabInstance:
     - target: {fileID: 1791623239129641053, guid: bacece2d1e65f7c4abc1692bc5ec74ff,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1791623239129641053, guid: bacece2d1e65f7c4abc1692bc5ec74ff,
         type: 3}
@@ -5950,7 +5951,7 @@ PrefabInstance:
     - target: {fileID: 8643892690817879014, guid: bacece2d1e65f7c4abc1692bc5ec74ff,
         type: 3}
       propertyPath: m_Size
-      value: 0.57963306
+      value: 0.5796331
       objectReference: {fileID: 0}
     - target: {fileID: 8705347718562795121, guid: bacece2d1e65f7c4abc1692bc5ec74ff,
         type: 3}
