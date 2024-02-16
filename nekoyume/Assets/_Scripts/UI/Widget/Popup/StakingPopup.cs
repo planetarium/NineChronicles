@@ -218,6 +218,9 @@ namespace Nekoyume.UI
             }
 
             OnChangeEditingState(true);
+            currentBenefitsTabButton.SetToggledOff();
+            levelBenefitsTabButton.OnClick.OnNext(levelBenefitsTabButton);
+            levelBenefitsTabButton.SetToggledOn();
         }
 
         private void OnClickSaveButton()
