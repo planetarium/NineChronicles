@@ -77,7 +77,7 @@ namespace Nekoyume.UI.Module
                     items = items.Where(item =>
                         item.ItemBase is Equipment equipment &&
                         equipment.level == row.Level &&
-                        equipment.Skills.Any() || !row.SkillContains).ToList();
+                        equipment.HasSkill() == row.SkillContains).ToList();
                     UpdateEquipmentEquipped(items);
                     break;
                 case ItemType.Costume:

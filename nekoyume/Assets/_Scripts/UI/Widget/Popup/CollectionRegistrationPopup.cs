@@ -98,7 +98,7 @@ namespace Nekoyume.UI
                         ItemCount = 1,
                         NonFungibleId = equipment.NonFungibleId,
                         Level = equipment.level,
-                        SkillContains = equipment.Skills.Any()
+                        SkillContains = equipment.HasSkill()
                     };
                     break;
                 case Costume costume:

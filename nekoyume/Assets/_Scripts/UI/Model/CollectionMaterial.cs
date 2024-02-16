@@ -78,12 +78,9 @@ namespace Nekoyume.UI.Model
             switch (ItemType)
             {
                 case ItemType.Equipment:
-                    var equipments = items
-                        .Select(item => item.item).OfType<Equipment>().ToArray();
-                    hasItem &= equipments
-                        .Any(item => item.Skills.Any() || !Row.SkillContains);
-                    enoughCount = equipments
-                        .Any(item => item.level == Row.Level);
+                    var equipments = items.Select(item => item.item).OfType<Equipment>().ToArray();
+                    hasItem &= equipments.Any(equipment => equipment.HasSkill() == Row.SkillContains);
+                    enoughCount = equipments.Any(equipment => equipment.level == Row.Level);
                     break;
                 case ItemType.Material:
                     enoughCount = items.Sum(item => item.count) >= Row.Count;
