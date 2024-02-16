@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -49,6 +50,11 @@ namespace Nekoyume.UI.Module
         public void SetRequiredItem(CollectionMaterial requiredItem)
         {
             _requiredItem = requiredItem;
+            if (_requiredItem == null)
+            {
+                return;
+            }
+
             SetCanSelect(true);
 
             var models = GetModels(_requiredItem);
@@ -74,10 +80,12 @@ namespace Nekoyume.UI.Module
             switch (items.First().ItemBase.ItemType)
             {
                 case ItemType.Equipment:
-                    items = items.Where(item =>
-                        item.ItemBase is Equipment equipment &&
-                        equipment.level == row.Level &&
-                        equipment.HasSkill() == row.SkillContains).ToList();
+                    items = items
+                        .Where(item =>
+                            item.ItemBase is Equipment equipment &&
+                            equipment.level == row.Level &&
+                            equipment.HasSkill() == row.SkillContains)
+                        .OrderBy(item => CPHelper.GetCP(item.ItemBase as Equipment)).ToList();
                     UpdateEquipmentEquipped(items);
                     break;
                 case ItemType.Costume:
@@ -90,7 +98,7 @@ namespace Nekoyume.UI.Module
 
         private void SelectItem(InventoryItem item)
         {
-            if (item == null || !canSelect)
+            if (!canSelect)
             {
                 return;
             }

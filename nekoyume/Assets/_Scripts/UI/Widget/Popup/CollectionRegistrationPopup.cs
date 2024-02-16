@@ -254,5 +254,14 @@ namespace Nekoyume.UI
             canRegister = value;
             collectionStatCanvasGroup.interactable = value;
         }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+
+            _registerMaterials = null;
+            _registeredItems.Clear();
+            collectionInventory.SetRequiredItem(null);
+        }
     }
 }
