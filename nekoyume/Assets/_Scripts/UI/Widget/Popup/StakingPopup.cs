@@ -387,8 +387,8 @@ namespace Nekoyume.UI
             var remainingBlock = Math.Max(rewardBlockInterval - waitedBlockRange, 0);
             remainingBlockText.text = string.Format(
                 RemainingBlockFormat,
-                remainingBlock.ToString("N0"),
-                remainingBlock.BlockRangeToTimeSpanString());
+                remainingBlock.BlockRangeToTimeSpanString(),
+                remainingBlock.ToString("N0"));
             archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
         }
 
