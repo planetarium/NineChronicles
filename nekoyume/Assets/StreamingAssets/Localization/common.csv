@@ -1877,27 +1877,51 @@ Paket baru segera hadir.","Товаров на витрине нет.
 新套裝即將推出。","Walang mga produkto na naka-display.
 Malapit na ang mga bagong package.","Hiện không có sản phẩm trưng bày.
 Gói mới sắp ra mắt."
-UI_COLLECTION,Collection,수집,,コレクション,,,,,,,,
-UI_COLLECTION_REGISTRATION,Activation,활성화,,アクティベーション,,,,,,,,
-UI_COLLECTION_REGISTRATION_PHRASE,"Select the item you want to register.
-<color=#FE5151>Registered items will be destroyed.</color>","등록할 아이템을 고르세요.
-<color=#FE5151>등록된 아이템은 파괴됩니다.</color>",,"登録したいアイテムを選択してください。
-<color=#FE5151>登録されたアイテムは破壊されます。</color>",,,,,,,,
-UI_COLLECTION_EFFECT,Collection Effect,수집 효과,,コレクション効果,,,,,,,,
-UI_COLLECTION_EFFECT_PHRASE,You can collect items to gain additional stats.,아이템을 수집하여 추가 스탯을 획득할 수 있습니다.,,アイテムを集めることで追加ステータスを得ることができます。,,,,,,,,
-UI_GO_TO_COLLECTION,Go to Collection,수집하러 가기,,コレクションへ,,,,,,,,
+UI_COLLECTION,Collection,수집,Coleção,収集,Colección,คอลเลกชัน,Koleksi,,收藏,收藏,Koleksyon,Bộ sưu tập
+UI_COLLECTION_REGISTRATION,Activation,활성화,Ativação,活性化,Activación,การเปิดใช้งาน,Aktivasi,,激活,啟動,Aktibasyon,Kích hoạt
+UI_COLLECTION_REGISTRATION_PHRASE,"Register the items needed for activaion
+<color=#FE5151>Registered items will be destroyed.</color>","활성화에 사용할 아이템을 등록하세요.
+<color=#FE5151>등록된 아이템은 파괴됩니다.</color>","Registre os itens necessários para ativação
+<color=#FE5151>Os itens registrados serão destruídos.</color>","活性化に使用するアイテムを登録してください。 
+<color=#FE5151>登録されたアイテムは破壊されます。</color>","Registra los artículos necesarios para la activación
+<color=#FE5151>Los artículos registrados serán destruidos.</color>","ลงทะเบียนไอเท็มที่ต้องการเพื่อการเปิดใช้งาน 
+<color=#FE5151>ไอเท็มที่ลงทะเบียนจะถูกทำลาย.</color>","Daftarkan item yang diperlukan untuk aktivasi 
+<color=#FE5151>Item yang didaftarkan akan dihancurkan.</color>",,"注册所需的激活物品 
+<color=#FE5151>注册的物品将被销毁。</color>","登記所需的啟動物品 
+<color=#FE5151>登記的物品將被銷毀。</color>","Irehistro ang mga item na kailangan para sa aktibasyon 
+<color=#FE5151>Ang mga nirehistrong item ay sisirain.</color>","Đăng ký các vật phẩm cần thiết để kích hoạt
+<color=#FE5151>Các vật phẩm đã đăng ký sẽ bị hủy bỏ.</color>"
+UI_COLLECTION_EFFECT,Collection Effect,수집 효과,Efeito da Coleção,収集効果,Efecto de la Colección,ผลของคอลเลกชัน,Efek Koleksi,,收藏效果,收藏效果,Epekto ng Koleksyon,Hiệu ứng Bộ sưu tập
+UI_COLLECTION_EFFECT_PHRASE,Collect items to gain stats.,아이템을 수집하고 스탯을 획득하세요..,Colete itens para ganhar estatísticas.,アイテムを収集してステータスを獲得してください。,Recolecta artículos para ganar estadísticas.,สะสมไอเท็มเพื่อได้รับสถิติ,Kumpulkan item untuk mendapatkan statistik.,,收集物品以获得属性。,收集物品以獲得屬性。,Mangolekta ng mga item para makakuha ng stats.,Thu thập các vật phẩm để nhận chỉ số.
+UI_GO_TO_COLLECTION,Go to Collection,수집하러 가기,Ir para Coleção,収集に行く,Ir a la Colección,ไปที่คอลเลกชัน,Pergi ke Koleksi,,前往收藏,前往收藏,Pumunta sa Koleksyon,Đi đến Bộ sưu tập
 UI_COLLECTION_REGISTRATION_CAUTION_PHRASE,"If you register the equipment you are wearing,
-it will be removed.
-Would you like to proceed?","착용중인 장비를 등록하면
+it will be removed. 
+Would you like to proceed?","착용중인 장비를 등록하면 
 벗겨지게 됩니다.
-진행하시겠습니까",,"着用している装備を登録すると、
-それは取り外されます。
-続行しますか？",,,,,,,,
-UI_COLLECTION_SEARCH_INPUT_FIELD_PLACE_HOLDER,Enter the name.,이름을 입력하세요.,,名前を入力してください。,,,,,,,,
-UI_COMPLETION_RATE,Completion Rate,완성도,,完成率,,,,,,,,
-UI_ACTIVATE,Activate,활성화,,アクティベート,,,,,,,,
-UI_ACTIVATED,Activated,활성화 완료,,,,,,,,,,
-UI_REGISTER,Register,등록,,登録,,,,,,,,
-UI_CELEBRATE_COLLECTION,Collection Activated.,수집 활성화 완료,,コレクションがアクティベートされました。,,,,,,,,
-UI_COLLECTION_LIST_NONE,A list is being prepared.,,,,,,,,,,,
-UI_COLLECTION_ACTIVE_COUNT,{0} collection activated,{0}개의 수집 완료,,{0} コレクションがアクティベートされました。,,,,,,,,
+진행하시겠습니까","Se você registrar o equipamento que está usando, 
+ele será removido. 
+Gostaria de prosseguir?","装備中の装備を登録すると脱がされます。
+進行しますか？","Si registras el equipo que estás usando, 
+será eliminado. 
+Deseas proceder?","หากคุณลงทะเบียนอุปกรณ์ที่คุณกำลังใส่, 
+มันจะถูกนำออก 
+คุณต้องการดำเนินการต่อหรือไม่?","Jika Anda mendaftarkan perlengkapan yang Anda kenakan, 
+itu akan dilepas. 
+Apakah Anda ingin melanjutkan?",,"如果您注册您正在穿着的装备，
+它将被移除。
+您想继续吗？","如果您登記您正在穿著的裝備，
+它將被移除。
+您想繼續嗎？","Kung irehistro mo ang kagamitang iyong suot, 
+ito ay aalisin. 
+Nais mo bang magpatuloy?","Nếu bạn đăng ký trang bị bạn đang mặc, 
+nó sẽ được gỡ bỏ. 
+Bạn có muốn tiếp tục không?"
+UI_COLLECTION_SEARCH_INPUT_FIELD_PLACE_HOLDER,Enter the name.,이름을 입력하세요,Insira o nome,名前を入力してください,Ingresa el nombre.,ป้อนชื่อ,Masukkan nama.,,输入名称。,輸入名稱。,Ilagay ang pangalan.,Nhập tên.
+UI_COMPLETION_RATE,Completion,완성도,Conclusão,完成度,Finalización,การเสร็จสมบูรณ์,Penyelesaian,,完成,完成,Pagkumpleto,Hoàn thành
+UI_ACTIVATE,Activate,활성화하기,Ativar,活性化する,Activar,เปิดใช้งาน,Aktifkan,,激活,啟動,Aktibahin,Kích hoạt
+UI_REGISTER,Register,등록하기,Registrar,登録する,Registrar,ลงทะเบียน,Daftar,,注册,登記,Magrehistro,Đăng ký
+UI_CELEBRATE_COLLECTION,Collection Activated,수집 활성화 완료,Coleção Ativada.,収集活性化完了,Colección Activada.,คอลเลกชันถูกเปิดใช้งาน,Koleksi Diaktifkan,,收藏已激活,收藏已啟動,Aktibado na ang Koleksyon,Bộ sưu tập đã được kích hoạt
+UI_COLLECTION_ACTIVE_COUNT,{0} collection activated,{0} 수집 활성화 완료,Coleção {0} ativada,{0} 収集活性化完了,Colección {0} activada,คอลเลกชัน {0} ถูกเปิดใช้งาน,Koleksi {0} diaktifkan,,{0} 收藏已激活,{0} 收藏已啟動,Aktibado na ang koleksyon na {0},Bộ sưu tập {0} đã được kích hoạt
+UI_ACTIVATED,Activated,활성화 완료,Ativado,活性化完了,Activado,เปิดใช้งานแล้ว,Diaktifkan,,已激活,已啟動,Aktibado,Đã kích hoạt
+UI_COLLECTION_LIST_NONE,There is no corresponding list.,해당하는 리스트가 없습니다.,Não há uma lista correspondente.,該当するリストがありません。,No hay una lista correspondiente.,ไม่มีรายการที่สอดคล้องกัน,Tidak ada daftar yang sesuai.,,没有相应的列表。,沒有相應的列表。,Walang katumbas na listahan.,Không có danh sách tương ứng.
+UI_SKILL_CONTAINS,skill required,스킬 필수,habilidade necessária,スキル必須,habilidad requerida,ต้องการทักษะ,keahlian diperlukan,,需要技能,需要技能,kailangan ang kasanayan,yêu cầu kỹ năng
