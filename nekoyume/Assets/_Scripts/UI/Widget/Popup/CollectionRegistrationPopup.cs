@@ -164,8 +164,8 @@ namespace Nekoyume.UI
 
             var count = _registeredItems.Count(registeredItem => registeredItem.Value == null);
             registrationButton.Text = count == 1
-                ? L10nManager.Localize("UI_REGISTER")
-                : L10nManager.Localize("UI_ACTIVATE");
+                ? L10nManager.Localize("UI_ACTIVATE")
+                : L10nManager.Localize("UI_REGISTER");
         }
 
         #endregion
