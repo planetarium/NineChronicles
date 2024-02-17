@@ -253,6 +253,7 @@ namespace Nekoyume.UI
         {
             canRegister = value;
             collectionStatCanvasGroup.interactable = value;
+            collectionStatCanvasGroup.blocksRaycasts = value;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
