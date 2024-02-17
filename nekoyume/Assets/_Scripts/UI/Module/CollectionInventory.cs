@@ -212,7 +212,7 @@ namespace Nekoyume.UI.Module
                     }
                     else
                     {
-                        inventoryItem = new InventoryItem(itemBase, count, false, true);
+                        inventoryItem = new InventoryItem(itemBase, count, false, false);
                         _items.Add(inventoryItem);
                     }
 
