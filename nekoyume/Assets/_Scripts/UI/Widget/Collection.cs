@@ -211,7 +211,7 @@ namespace Nekoyume.UI
 
             if (_selectedMaterial != null)
             {
-                // collectionMaterialInfo.Show(_selectedMaterial);
+                collectionMaterialInfo.Show(_selectedMaterial.Row);
             }
             else
             {

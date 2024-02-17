@@ -538,17 +538,6 @@ namespace Nekoyume
                 : name;
         }
 
-        public static string GetLocalizedName(this CollectionMaterial material)
-        {
-            var itemName = L10nManager.Localize($"ITEM_NAME_{material.Row.ItemId}");
-            if (material.Row.Level > 0)
-            {
-                itemName = $"+{material.Row.Level} {itemName}";
-            }
-
-            return $"<color=#{GetColorHexByGrade(material.Grade)}>{itemName}</color>";
-        }
-
         public static string GetLocalizedNonColoredName(ElementalType elementalType,
             int equipmentId, bool useElementalIcon)
         {
@@ -579,7 +568,12 @@ namespace Nekoyume
 
         public static Color GetElementalTypeColor(this ItemBase item)
         {
-            return item.ElementalType switch
+            return GetElementalTypeColor(item.ElementalType);
+        }
+
+        public static Color GetElementalTypeColor(this ElementalType elementalType)
+        {
+            return elementalType switch
             {
                 ElementalType.Normal => Palette.GetColor(EnumType.ColorType.TextElement00),
                 ElementalType.Fire => Palette.GetColor(EnumType.ColorType.TextElement01),
@@ -745,14 +739,25 @@ namespace Nekoyume
             return string.Empty;
         }
 
-        public static (Color gradeColor, string gradeText, string subTypeText) GetCollectionMaterialData(this CollectionMaterial material)
+        public static string GetLocalizedName(this ItemSheet.Row row, int level)
         {
-            var gradeColor = GetItemGradeColor(material.Grade);
+            var itemName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
+            if (level > 0)
+            {
+                itemName = $"+{level} {itemName}";
+            }
 
-            var grade = material.Grade >= 1 ? material.Grade : 1;
+            return $"<color=#{GetColorHexByGrade(row.Grade)}>{itemName}</color>";
+        }
+
+        public static (Color gradeColor, string gradeText, string subTypeText)
+            GetGradeData(this ItemSheet.Row row)
+        {
+            var gradeColor = GetItemGradeColor(row.Grade);
+
+            var grade = row.Grade >= 1 ? row.Grade : 1;
             var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
-
-            var subTypeText = string.Empty;
+            var subTypeText = GetLocalizedItemSubTypeText(row.ItemSubType);
 
             return (gradeColor, gradeText, subTypeText);
         }

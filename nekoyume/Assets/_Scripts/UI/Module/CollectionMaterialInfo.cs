@@ -1,9 +1,7 @@
 using System;
-using System.Linq;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
-using Nekoyume.UI.Model;
+using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,15 +24,12 @@ namespace Nekoyume.UI.Module
 
             [Space]
             public GameObject skillRequiredObject;
+            public TextMeshProUGUI countText;
 
             [Space]
             public GameObject elementalTypeObject;
             public Image elementalTypeImage;
             public TextMeshProUGUI elementalTypeText;
-
-            [Space]
-            public GameObject countObject;
-            public TextMeshProUGUI countText;
 
             [Space]
             public TextMeshProUGUI itemDescriptionText;
@@ -56,41 +51,52 @@ namespace Nekoyume.UI.Module
             closeButton.onClick.AddListener(Close);
         }
 
-        public void Show(ItemBase itemBase, int itemCount, bool levelLimit, bool skillRequired)
+        public void Show(CollectionSheet.RequiredMaterial material)
         {
-            iconArea.itemName.text = itemBase.GetLocalizedName(false);
-            iconArea.itemView.Set(itemBase, itemCount, levelLimit);
-
-            var gradeColor = itemBase.GetItemGradeColor();
-            iconArea.gradeText.text = itemBase.GetGradeText();
-            iconArea.gradeText.color = gradeColor;
-            iconArea.subTypeText.text = itemBase.GetSubTypeText();
-            iconArea.subTypeText.color = gradeColor;
-            iconArea.gradeAndSubTypeSpacer.color = gradeColor;
-
-            iconArea.skillRequiredObject.SetActive(skillRequired);
-
-            var sprite = itemBase.ElementalType.GetSprite();
-            if (sprite is null || !itemBase.ItemType.HasElementType())
+            var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+            if (!itemSheet.TryGetValue(material.ItemId, out var row))
             {
-                iconArea.elementalTypeObject.SetActive(false);
                 return;
             }
 
-            iconArea.elementalTypeText.text = itemBase.ElementalType.GetLocalizedString();
-            iconArea.elementalTypeText.color = itemBase.GetElementalTypeColor();
-            iconArea.elementalTypeImage.overrideSprite = sprite;
-            iconArea.elementalTypeObject.SetActive(true);
+            iconArea.itemName.text = row.GetLocalizedName(material.Level);
+            iconArea.itemView.Set(row, material);
 
-            if (itemBase.ItemType == ItemType.Material)
+            var (gradeColor, gradeText, subTypeText) = row.GetGradeData();
+            iconArea.gradeText.text = gradeText;
+            iconArea.gradeText.color = gradeColor;
+            iconArea.subTypeText.text = subTypeText;
+            iconArea.subTypeText.color = gradeColor;
+            iconArea.gradeAndSubTypeSpacer.color = gradeColor;
+
+            iconArea.skillRequiredObject.SetActive(material.SkillContains);
+            iconArea.countText.gameObject.SetActive(material.Count > 1);
+            if (material.Count > 1)
             {
-                iconArea.countText.text = L10nManager.Localize("UI_COUNT_FORMAT", itemCount);
-                iconArea.countObject.SetActive(itemCount > 0);
+                iconArea.countText.text = L10nManager.Localize("UI_COUNT_FORMAT", material.Count);
             }
 
-            iconArea.itemDescriptionText.text = itemBase.GetLocalizedDescription();
+            if (row.ItemType.HasElementType())
+            {
+                iconArea.elementalTypeText.text = row.ElementalType.GetLocalizedString();
+                iconArea.elementalTypeText.color = row.ElementalType.GetElementalTypeColor();
+                var sprite = row.ElementalType.GetSprite();
+                if (sprite is not null)
+                {
+                    iconArea.elementalTypeImage.overrideSprite = sprite;
+                    iconArea.elementalTypeObject.SetActive(true);
+                }
+            }
+            else
+            {
+                iconArea.elementalTypeObject.SetActive(false);
+            }
 
-            SetAcquisitionPlaceButtons(itemBase);
+            iconArea.itemDescriptionText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
+
+            // SetAcquisitionPlaceButtons(itemBase);
+
+            gameObject.SetActive(true);
         }
 
         public void Close()
