@@ -254,9 +254,8 @@ namespace Nekoyume.UI
                                   States.Instance.StakedBalanceState.Gold;
             if (inputBigInt > totalDepositNcg.MajorUnit)
             {
-                // TODO: adjust l10n
                 OneLineSystem.Push(MailType.System,
-                    "can not stake over than your NCG.",
+                    L10nManager.Localize("UI_STAKING_AMOUNT_LIMIT"),
                     NotificationCell.NotificationType.Alert);
                 return;
             }
@@ -282,13 +281,12 @@ namespace Nekoyume.UI
                         return;
                     }
 
-                    confirmTitle = "UI_WARNING";
+                    confirmTitle = "UI_CAUTION";
                     confirmContent = "UI_WARNING_STAKING_REDUCE";
                     confirmIcon = IconAndButtonSystem.SystemType.Error;
                 }
             }
 
-            // TODO: adjust l10n, UI_WARNING_STAKING_REDUCE
             confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize:true, type: confirmIcon);
             confirmUI.ConfirmCallback = () =>
             {
