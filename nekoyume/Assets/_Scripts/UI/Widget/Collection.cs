@@ -110,6 +110,7 @@ namespace Nekoyume.UI
 
             foreach (var itemTypeToggle in itemTypeToggles)
             {
+                itemTypeToggle.toggle.onClickToggle.AddListener(AudioController.PlayClick);
                 itemTypeToggle.toggle.OnValueChangedAsObservable()
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
@@ -126,6 +127,7 @@ namespace Nekoyume.UI
 
             foreach (var statToggle in statToggles)
             {
+                statToggle.toggle.onClickToggle.AddListener(AudioController.PlayClick);
                 statToggle.toggle.OnValueChangedAsObservable()
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
@@ -234,6 +236,7 @@ namespace Nekoyume.UI
                     .Subscribe(_ => LoadingHelper.ActivateCollection.Value = 0);
 
                 LoadingHelper.ActivateCollection.Value = collectionId;
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
             }
 
             switch (model.ItemType)
