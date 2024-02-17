@@ -250,7 +250,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inputBigInt > States.Instance.GoldBalanceState.Gold.MajorUnit)
+            var totalDepositNcg = States.Instance.GoldBalanceState.Gold +
+                                  States.Instance.StakedBalanceState.Gold;
+            if (inputBigInt > totalDepositNcg.MajorUnit)
             {
                 // TODO: adjust l10n
                 OneLineSystem.Push(MailType.System,
@@ -298,7 +300,8 @@ namespace Nekoyume.UI
 
         private void OnDepositEdited(BigInteger stakedDeposit)
         {
-            var level = States.Instance.StakingLevel;
+            var states = States.Instance;
+            var level = states.StakingLevel;
             levelIconImage.sprite = stakeIconData.GetIcon(level, IconType.Small);
             for (var i = 0; i < levelImages.Length; i++)
             {
@@ -317,7 +320,8 @@ namespace Nekoyume.UI
                 apUsingPercent = apRow.Coefficient;
             }
 
-            depositText.text = $"<Style=G0>{States.Instance.GoldBalanceState.Gold.GetQuantityString()}";
+            var totalDepositNcg = states.StakedBalanceState.Gold + states.GoldBalanceState.Gold;
+            depositText.text = $"<Style=G0>{totalDepositNcg.GetQuantityString()}";
             stakedNcgValueText.text = stakedDeposit.ToString();
             // TODO: get data from external source
             buffBenefitsViews[0].Set(
