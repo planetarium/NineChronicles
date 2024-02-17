@@ -3082,7 +3082,7 @@ namespace Nekoyume.Blockchain
                 var (previousCp, currentCp) =
                     Util.GetCpChanged(previousState, States.Instance.CollectionState);
 
-                Widget.Find<CPScreen>().Show(previousCp, currentCp);
+                Widget.Find<CollectionResultPopup>().ShowCPScreen(previousCp, currentCp);
             });
         }
 

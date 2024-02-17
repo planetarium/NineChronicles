@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class CollectionResultPopup : PopupWidget
     {
         [Serializable]
@@ -32,6 +33,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI collectionCountMaxText;
+
+        [SerializeField]
+        private CPScreen cpScreen;
 
         [SerializeField]
         private Button closeButton;
@@ -71,22 +75,32 @@ namespace Nekoyume.UI
             }
 
             collectionCountText.text = count.ToString();
-            collectionCountMaxText.text = $"/{maxCount}";
+            collectionCountMaxText.text = $"/ {maxCount}";
 
             base.Show(ignoreShowAnimation);
 
             StartContinueTimer();
         }
 
+        public void ShowCPScreen(int previousCp, int currentCp)
+        {
+            cpScreen.Show(previousCp, currentCp);
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
+        {
+            StopContinueTimer();
+
+            base.Close(ignoreCloseAnimation);
+        }
+
+        private void StopContinueTimer()
         {
             if (_timerCoroutine is not null)
             {
                 StopCoroutine(_timerCoroutine);
                 _timerCoroutine = null;
             }
-
-            base.Close(ignoreCloseAnimation);
         }
 
         private void StartContinueTimer()
@@ -103,6 +117,8 @@ namespace Nekoyume.UI
         {
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
             continueText.alpha = 1f;
+
+            yield return new WaitForSeconds(1.5f);
 
             var prevFlooredTime = Mathf.Round(timer);
             while (timer >= .3f)

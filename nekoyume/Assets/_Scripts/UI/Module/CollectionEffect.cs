@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Module
             }
 
             countText.text = activeCount.ToString();
-            maxCountText.text = $"/{maxCount}";
+            maxCountText.text = $"/ {maxCount}";
         }
     }
 }
