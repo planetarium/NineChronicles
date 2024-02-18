@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
+using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
@@ -20,23 +21,24 @@ namespace Nekoyume.Blockchain
 {
     public static partial class StateGetter
     {
-        public static IValue GetState(Address address, HashDigest<SHA256> hash) =>
-            Game.Game.instance.Agent.GetStateAsync(address, hash).ConfigureAwait(false).GetAwaiter().GetResult();
+        public static IValue GetState(HashDigest<SHA256> hash, Address accountAddress, Address address) =>
+            Game.Game.instance.Agent.GetStateAsync(hash, accountAddress, address).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public static IReadOnlyList<IValue> GetStates(
-            IReadOnlyList<Address> addresses,
-            HashDigest<SHA256> hash) =>
-            Game.Game.instance.Agent.GetStateBulkAsync(addresses, hash).Result.Values.ToArray();
+            HashDigest<SHA256> hash,
+            Address accountAddress,
+            IReadOnlyList<Address> addresses) =>
+            Game.Game.instance.Agent.GetStateBulkAsync(hash, accountAddress, addresses).Result.Values.ToArray();
 
         public static FungibleAssetValue GetBalance(
+            HashDigest<SHA256> hash,
             Address address,
-            Currency currency,
-            HashDigest<SHA256> hash) =>
-            Game.Game.instance.Agent.GetBalanceAsync(address, currency, hash).Result;
+            Currency currency) =>
+            Game.Game.instance.Agent.GetBalanceAsync(hash, address, currency).Result;
 
         public static GameConfigState GetGameConfigState(HashDigest<SHA256> hash)
         {
-            var value = GetState(GameConfigState.Address, hash);
+            var value = GetState(hash, ReservedAddresses.LegacyAccount, GameConfigState.Address);
             if (value is null or Null)
             {
                 Log.Warning("No game config state ({GameConfigStateAddress})", GameConfigState.Address.ToHex());
@@ -54,15 +56,10 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        public static AvatarState GetAvatarState(Address avatarAddress, HashDigest<SHA256> hash)
+        public static AvatarState GetAvatarState(HashDigest<SHA256> hash, Address avatarAddress)
         {
-            var result = Game.Game.instance.Agent.GetAvatarStatesAsync(
-                    new[]
-                    {
-                        avatarAddress,
-                    },
-                    hash)
-                .Result;
+            var result = Game.Game.instance.Agent
+                .GetAvatarStatesAsync(hash, new[] { avatarAddress }).Result;
 
             if (result.TryGetValue(avatarAddress, out AvatarState value))
             {
@@ -72,44 +69,26 @@ namespace Nekoyume.Blockchain
             throw new StateNullException(avatarAddress);
         }
 
-        public static AgentState GetAgentState(Address address, HashDigest<SHA256> hash)
+        public static AgentState GetAgentState(HashDigest<SHA256> hash, Address address)
         {
-            var serializedAgent = Game.Game.instance.Agent.GetState(address, hash);
-            if (serializedAgent is null or Null)
-            {
-                Log.Warning("No agent state ({Address})", address.ToHex());
-                return null;
-            }
-
-            try
-            {
-                return new AgentState((Dictionary)serializedAgent);
-            }
-            catch (InvalidCastException e)
-            {
-                Log.Error(
-                    e,
-                    "Invalid agent state ({Address}): {SerializedAgent}",
-                    address.ToHex(),
-                    serializedAgent
-                );
-
-                return null;
-            }
+            return Game.Game.instance.Agent.GetAgentStateAsync(hash, address).Result;
         }
 
         public static GoldBalanceState GetGoldBalanceState(
+            HashDigest<SHA256> hash,
             Address address,
-            Currency currency,
-            HashDigest<SHA256> hash) =>
+            Currency currency) =>
             new GoldBalanceState(
                 address,
-                Game.Game.instance.Agent.GetBalanceAsync(address, currency, hash).Result);
+                Game.Game.instance.Agent.GetBalanceAsync(hash, address, currency).Result);
 
-        public static StakeStateV2? GetStakeStateV2(Address address, HashDigest<SHA256> hash)
+        public static StakeStateV2? GetStakeStateV2(HashDigest<SHA256> hash, Address address)
         {
             var stakeStateAddr = StakeStateV2.DeriveAddress(address);
-            IValue serialized = Game.Game.instance.Agent.GetState(stakeStateAddr, hash);
+            IValue serialized = Game.Game.instance.Agent.GetState(
+                hash,
+                ReservedAddresses.LegacyAccount,
+                stakeStateAddr);
             if (serialized is null or Null)
             {
                 Log.Warning("No stake state ({Address})", address.ToHex());
@@ -133,11 +112,12 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        // Caution: This method assumes that the inventory is migrated to V2.
         public static Inventory GetInventory(
-            Address inventoryAddr,
-            HashDigest<SHA256> hash)
+            HashDigest<SHA256> hash,
+            Address inventoryAddr)
         {
-            var inventoryState = GetState(inventoryAddr, hash);
+            var inventoryState = GetState(hash, Addresses.Inventory, inventoryAddr);
             if (inventoryState is null or Null)
             {
                 throw new StateNullException(inventoryAddr);
@@ -147,9 +127,9 @@ namespace Nekoyume.Blockchain
         }
 
         public static CombinationSlotState GetCombinationSlotState(
+            HashDigest<SHA256> hash,
             Address avatarAddress,
-            int index,
-            HashDigest<SHA256> hash)
+            int index)
         {
             var address = avatarAddress.Derive(
                 string.Format(
@@ -158,7 +138,10 @@ namespace Nekoyume.Blockchain
                     index
                 )
             );
-            var value = Game.Game.instance.Agent.GetState(address, hash);
+            var value = Game.Game.instance.Agent.GetState(
+                hash,
+                ReservedAddresses.LegacyAccount,
+                address);
             if (value is null or Null)
             {
                 throw new StateNullException(address);
@@ -181,7 +164,10 @@ namespace Nekoyume.Blockchain
 
         public static RedeemCodeState GetRedeemCodeState(HashDigest<SHA256> hash)
         {
-            var value = Game.Game.instance.Agent.GetState(RedeemCodeState.Address, hash);
+            var value = Game.Game.instance.Agent.GetState(
+                hash,
+                ReservedAddresses.LegacyAccount,
+                RedeemCodeState.Address);
             if (value is null or Null)
             {
                 Log.Warning(
@@ -205,10 +191,13 @@ namespace Nekoyume.Blockchain
         }
 
         public static ArenaScore GetArenaScore(
-            Address arenaScoreAddress,
-            HashDigest<SHA256> hash)
+            HashDigest<SHA256> hash,
+            Address arenaScoreAddress)
         {
-            var value = Game.Game.instance.Agent.GetState(arenaScoreAddress, hash);
+            var value = Game.Game.instance.Agent.GetState(
+                hash,
+                ReservedAddresses.LegacyAccount,
+                arenaScoreAddress);
             if (value is List list)
             {
                 return new ArenaScore(list);
@@ -218,12 +207,12 @@ namespace Nekoyume.Blockchain
         }
 
         public static ItemSlotState GetItemSlotState(
+            HashDigest<SHA256> hash,
             Address avatarAddress,
-            BattleType battleType,
-            HashDigest<SHA256> hash)
+            BattleType battleType)
         {
             var itemSlotAddress = ItemSlotState.DeriveAddress(avatarAddress, battleType);
-            var value = GetState(itemSlotAddress,hash);
+            var value = GetState(hash, ReservedAddresses.LegacyAccount, itemSlotAddress);
             if (value is List list)
             {
                 return new ItemSlotState(list);
@@ -233,12 +222,12 @@ namespace Nekoyume.Blockchain
         }
 
         public static RuneSlotState GetRuneSlotState(
+            HashDigest<SHA256> hash,
             Address avatarAddress,
-            BattleType battleType,
-            HashDigest<SHA256> hash)
+            BattleType battleType)
         {
             var runeSlotAddress = RuneSlotState.DeriveAddress(avatarAddress, battleType);
-            var value = GetState(runeSlotAddress, hash);
+            var value = GetState(hash, ReservedAddresses.LegacyAccount, runeSlotAddress);
             if (value is List list)
             {
                 return new RuneSlotState(list);

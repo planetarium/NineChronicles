@@ -66,8 +66,9 @@ namespace Nekoyume.UI.Scroller
                     {
                         // remove "0x"
                         var address = new Address(_model.AvatarAddress.Substring(2));
-                        var (exist, state) = await States.TryGetAvatarStateAsync(address);
-                        avatarState = exist ? state : null;
+                        avatarState =
+                            (await Game.Game.instance.Agent.GetAvatarStatesAsync(
+                                new[] { address }))[address];
                     }
                     Widget.Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Adventure).Forget();
                     loadingScreen.Close();

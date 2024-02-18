@@ -127,29 +127,14 @@ namespace Nekoyume.UI
             Game.Game.instance.IsInWorld = true;
             _stage.IsShowHud = true;
 
-            if (_stageId >= GameConfig.MimisbrunnrStartStageId)
-            {
-                ObservableExtensions.Subscribe(Game.Game.instance.ActionManager.MimisbrunnrBattle(
-                    _costumes,
-                    _equipments,
-                    _consumables,
-                    _runes,
-                    _worldId,
-                    _stageId,
-                    (int)apSlider.value
-                ));
-            }
-            else
-            {
-                ObservableExtensions.Subscribe(Game.Game.instance.ActionManager.HackAndSlash(
-                    _costumes,
-                    _equipments,
-                    _consumables,
-                    _runes,
-                    _worldId,
-                    _stageId
-                ));
-            }
+            ObservableExtensions.Subscribe(Game.Game.instance.ActionManager.HackAndSlash(
+                _costumes,
+                _equipments,
+                _consumables,
+                _runes,
+                _worldId,
+                _stageId
+            ));
         }
 
         private int GetCostOfStage()

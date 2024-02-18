@@ -506,13 +506,8 @@ namespace Nekoyume.UI
                     1,
                     false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
-                var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);
-                if (!exist)
-                {
-                    return null;
-                }
-
-                return avatarState;
+                return (await Game.Game.instance.Agent.GetAvatarStatesAsync(
+                    new[] { avatarAddress }))[avatarAddress];
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
                 Debug.Log("CombinationMail LocalLayer task completed");
@@ -715,13 +710,8 @@ namespace Nekoyume.UI
 
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id,
                     false);
-                var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);
-                if (!exist)
-                {
-                    return null;
-                }
-
-                return avatarState;
+                return (await Game.Game.instance.Agent.GetAvatarStatesAsync(
+                    new[] { avatarAddress }))[avatarAddress];
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
                 Debug.Log("ItemEnhanceMail LocalLayer task completed");

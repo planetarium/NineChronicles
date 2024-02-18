@@ -8,6 +8,7 @@ using Bencodex.Types;
 using CsvHelper;
 using Lib9cCommonTool.Runtime;
 using Libplanet.Crypto;
+using Nekoyume;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
@@ -90,6 +91,7 @@ namespace StateViewer.Editor.Features
                 _inventory = CreateInventory(_itemDataCsv, tableSheets);
                 _inventoryValue = _inventory.Serialize();
                 stateTreeView.SetData(
+                    accountAddr: null,
                     addr: null,
                     data: _inventoryValue);
             }
@@ -111,9 +113,10 @@ namespace StateViewer.Editor.Features
                 _inventoryValue.Kind != ValueKind.Null &&
                 !string.IsNullOrEmpty(_addrStr))
             {
-                Address addr;
+                Address accountAddr, addr;
                 try
                 {
+                    accountAddr = Addresses.Inventory;
                     addr = new Address(_addrStr);
                 }
                 catch (Exception e)
@@ -122,9 +125,9 @@ namespace StateViewer.Editor.Features
                     return;
                 }
 
-                var stateList = new List<(Address addr, IValue value)>
+                var stateList = new List<(Address accountAddr, Address addr, IValue value)>
                 {
-                    (addr, _inventoryValue),
+                    (accountAddr, addr, _inventoryValue),
                 };
                 ActionManager.Instance?.ManipulateState(stateList, null);
             }

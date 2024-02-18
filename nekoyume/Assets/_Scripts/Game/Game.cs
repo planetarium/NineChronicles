@@ -23,6 +23,7 @@ using Cysharp.Threading.Tasks;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Lib9c.Formatters;
+using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
@@ -1129,7 +1130,9 @@ namespace Nekoyume.Game
                         Address? patronAddress = null;
                         var approved = false;
 
-                        if (await Agent.GetStateAsync(pledgeAddress) is List list)
+                        if (await Agent.GetStateAsync(
+                                ReservedAddresses.LegacyAccount,
+                                pledgeAddress) is List list)
                         {
                             patronAddress = list[0].ToAddress();
                             approved = list[1].ToBoolean();

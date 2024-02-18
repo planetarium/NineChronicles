@@ -15,15 +15,16 @@ using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
+using Nekoyume.Module;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 
-namespace BalanceTool.Runtime
+namespace BalanceTool
 {
     public static partial class HackAndSlashCalculator
     {
         public static async UniTask<IEnumerable<PlayData>> CalculateAsync(
-            IAccount prevStates,
+            IWorld prevStates,
             int? randomSeed,
             long blockIndex,
             Address agentAddr,
@@ -68,7 +69,7 @@ namespace BalanceTool.Runtime
         }
 
         private static async UniTask<PlayData> ExecuteHackAndSlashAsync(
-            IAccount states,
+            IWorld states,
             int? randomSeed,
             long blockIndex,
             Address agentAddr,
@@ -97,7 +98,7 @@ namespace BalanceTool.Runtime
 
             // Execute HackAndSlash and apply to playData.Result.
             var avatarAddr = Addresses.GetAvatarAddress(agentAddr, avatarIndex);
-            var avatarState = states.GetAvatarStateV2(avatarAddr);
+            var avatarState = states.GetAvatarState(avatarAddr);
             var inventory = avatarState.inventory;
             var has = new HackAndSlash
             {
@@ -118,7 +119,8 @@ namespace BalanceTool.Runtime
             };
             var runeStates = playData.Runes
                 .Select(tuple => RuneState.DeriveAddress(avatarAddr, tuple.runeId))
-                .Select(addr => new RuneState((List)states.GetState(addr)!))
+                .Select(addr => new RuneState((List)states.GetAccount(
+                    ReservedAddresses.LegacyAccount).GetState(addr)!))
                 .ToList();
             var skillsOnWaveStart = new List<Nekoyume.Model.Skill.Skill>();
             if (has.StageBuffId.HasValue)

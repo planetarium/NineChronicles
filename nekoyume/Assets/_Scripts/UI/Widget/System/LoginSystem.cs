@@ -288,12 +288,10 @@ namespace Nekoyume.UI
                 Debug.Log($"[LoginSystem] CheckLogin... success");
                 if (Platform.IsMobilePlatform())
                 {
-                    Debug.Log($"[LoginSystem] CheckLogin... set pass phrase because platform is mobile" +
-                              $" {loginField.text}");
+                    Debug.Log($"[LoginSystem] CheckLogin... cache passphrase");
                     KeyManager.Instance.CachePassphrase(
                         KeyManager.Instance.SignedInAddress,
                         loginField.text);
-
                 }
 
                 success?.Invoke();

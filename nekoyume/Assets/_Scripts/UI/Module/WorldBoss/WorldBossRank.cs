@@ -237,10 +237,11 @@ namespace Nekoyume.UI.Module.WorldBoss
             lastUpdatedText.text = $"{items.LastUpdatedBlockIndex:#,0}";
         }
 
-        private async UniTaskVoid ShowAsync(string address)
+        private async UniTaskVoid ShowAsync(string addressString)
         {
-            var (exist, state) = await States.TryGetAvatarStateAsync(new Address(address));
-            var avatarState = exist ? state : null;
+            var address = new Address(addressString);
+            var avatarState = (await Game.Game.instance.Agent.GetAvatarStatesAsync(
+                new[] { address }))[address];
             var popup = Widget.Find<FriendInfoPopup>();
             if (popup.isActiveAndEnabled)
             {

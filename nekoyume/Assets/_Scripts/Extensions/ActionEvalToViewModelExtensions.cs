@@ -43,7 +43,7 @@ namespace Nekoyume
             var stageRow = sheets.StageSheet[eval.Action.StageId];
             for (var i = 0; i < eval.Action.TotalPlayCount; i++)
             {
-                var prevSerializedAvatarState = (Dictionary)avatarState.Serialize();
+                var prevAvatarState = (AvatarState)avatarState.Clone();
                 var prevExp = avatarState.exp;
                 var simulator = new StageSimulator(
                     random,
@@ -66,7 +66,7 @@ namespace Nekoyume
                 {
                     if (outAvatarForRendering is null)
                     {
-                        outAvatarForRendering = new AvatarState(prevSerializedAvatarState);
+                        outAvatarForRendering = prevAvatarState;
                         outSimulator = simulator;
                     }
 

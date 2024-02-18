@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Arena;
@@ -175,6 +176,7 @@ namespace Nekoyume.State
                     nextRoundData.Round)
                 : default;
             var dict = await _agent.GetStateBulkAsync(
+                ReservedAddresses.LegacyAccount,
                 new[]
                 {
                     currentArenaInfoAddress,
@@ -231,7 +233,8 @@ namespace Nekoyume.State
                 purchasedCountAddress,
                 arenaAvatarAddress,
             };
-            var stateBulk = await agent.GetStateBulkAsync(addrBulk);
+            var stateBulk =
+                await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addrBulk);
             var purchasedCountDuringInterval = stateBulk[purchasedCountAddress] is Integer iValue
                 ? (int)iValue
                 : 0;

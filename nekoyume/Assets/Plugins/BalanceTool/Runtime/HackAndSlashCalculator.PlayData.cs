@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using CsvHelper;
 
-namespace BalanceTool.Runtime
+namespace BalanceTool
 {
     public static partial class HackAndSlashCalculator
     {
@@ -85,29 +85,47 @@ namespace BalanceTool.Runtime
                 var level = csv.GetField<int>("avatar_level");
                 var equipments = Enumerable.Range(0, EquipmentCount)
                     .Select<int, (int equipmentId, int level)>(i => (
-                        csv.GetField<int>($"equipment_{i:00}_id"),
-                        csv.GetField<int>($"equipment_{i:00}_level")))
+                        csv.TryGetField<int>($"equipment_{i:00}_id", out var equipmentId)
+                            ? equipmentId
+                            : 0,
+                        csv.TryGetField<int>($"equipment_{i:00}_level", out var level)
+                            ? level
+                            : 0))
                     .Where(tuple => tuple.equipmentId > 0)
                     .ToArray();
                 var foods = Enumerable.Range(0, FoodCount)
                     .Select<int, (int consumableId, int count)>(i => (
-                        csv.GetField<int>($"food_{i:00}_id"),
-                        csv.GetField<int>($"food_{i:00}_count")))
+                        csv.TryGetField<int>($"food_{i:00}_id", out var consumableId)
+                            ? consumableId
+                            : 0,
+                        csv.TryGetField<int>($"food_{i:00}_count", out var count)
+                            ? count
+                            : 0))
                     .Where(tuple => tuple is { consumableId: > 0, count: > 0 })
                     .ToArray();
                 var costumeIds = Enumerable.Range(0, CostumeCount)
-                    .Select(i => csv.GetField<int>($"costume_{i:00}_id"))
+                    .Select(i => csv.TryGetField<int>($"costume_{i:00}_id", out var costumeId)
+                        ? costumeId
+                        : 0)
                     .Where(costumeId => costumeId > 0)
                     .ToArray();
                 var runes = Enumerable.Range(0, RuneCount)
                     .Select<int, (int runeSlotIndex, int runeId, int level)>(i => (
                         i,
-                        csv.GetField<int>($"rune_{i:00}_id"),
-                        csv.GetField<int>($"rune_{i:00}_level")))
+                        csv.TryGetField<int>($"rune_{i:00}_id", out var runeId)
+                            ? runeId
+                            : 0,
+                        csv.TryGetField<int>($"rune_{i:00}_level", out var level)
+                            ? level
+                            : 0))
                     .Where(tuple => tuple.runeId > 0)
                     .ToArray();
-                var crystalRandomBuffId = csv.GetField<int>("crystal_random_buff_id");
-                var playCount = csv.GetField<int>("play_count");
+                var crystalRandomBuffId = csv.TryGetField<int>("crystal_random_buff_id", out var buffId)
+                    ? buffId
+                    : 0;
+                var playCount = csv.TryGetField<int>("play_count", out var count)
+                    ? count
+                    : 0;
 
                 PlayResult? result = null;
                 if (csv.TryGetField<int>("wave_01_cleared", out _))
