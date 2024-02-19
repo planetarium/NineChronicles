@@ -3052,38 +3052,30 @@ namespace Nekoyume.Blockchain
             Game.Game.instance.SavedPetId = action.PetId;
         }
 
-        private ActionEvaluation<ActivateCollection> PrepareActivateCollection(ActionEvaluation<ActivateCollection> eval)
+        private (ActionEvaluation<ActivateCollection> eval, CollectionState previousState) PrepareActivateCollection(ActionEvaluation<ActivateCollection> eval)
         {
+            var previousState = States.Instance.CollectionState;
             States.Instance.SetCollectionState(
                 StateGetter.GetCollectionState(eval.OutputState, eval.Action.AvatarAddress));
 
-            return eval;
+            return (eval, previousState);
         }
 
-        private void ResponseActivateCollection(ActionEvaluation<ActivateCollection> eval)
+        private void ResponseActivateCollection((ActionEvaluation<ActivateCollection> eval, CollectionState previousState) prepared)
         {
             Widget.Find<Collection>().OnActionRender();
 
+            var (eval, previousState) = prepared;
             var collectionSheet = TableSheets.Instance.CollectionSheet;
             var collectionId = eval.Action.CollectionData.First().collectionId;
             var collectionRow = collectionSheet[collectionId];
-            var count = States.Instance.CollectionState.Ids.Count;
-            var maxCount = collectionSheet.Count;
-            Widget.Find<CollectionResultPopup>().Show(collectionRow, count, maxCount);
 
-            CollectionState previousState = null;
-            UniTask.RunOnThreadPool(() =>
-            {
-                previousState =
-                    StateGetter.GetCollectionState(eval.PreviousState, eval.Action.AvatarAddress);
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
-                var (previousCp, currentCp) =
-                    Util.GetCpChanged(previousState, States.Instance.CollectionState);
+            var completionRate = (States.Instance.CollectionState.Ids.Count, collectionSheet.Count);
+            var cp = Util.GetCpChanged(previousState, States.Instance.CollectionState);
+            Widget.Find<CollectionResultPopup>().Show(collectionRow, completionRate, cp);
 
-                Widget.Find<CollectionResultPopup>().ShowCPScreen(previousCp, currentCp);
-            });
+
+            UniTask.RunOnThreadPool(() => UpdateCurrentAvatarStateAsync(eval).Forget());
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR

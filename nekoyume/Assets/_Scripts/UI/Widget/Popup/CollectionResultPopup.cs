@@ -50,7 +50,10 @@ namespace Nekoyume.UI
         }
 
         public void Show(
-            CollectionSheet.Row row, int count, int maxCount, bool ignoreShowAnimation = false)
+            CollectionSheet.Row row,
+            (int count, int maxCount) completionRate,
+            (int previousCp, int currentCp) cp,
+            bool ignoreShowAnimation = false)
         {
             if (row is null)
             {
@@ -74,17 +77,16 @@ namespace Nekoyume.UI
                 }
             }
 
+            var (count, maxCount) = completionRate;
             collectionCountText.text = count.ToString();
             collectionCountMaxText.text = $"/ {maxCount}";
+
+            var (previousCp, currentCp) = cp;
+            cpScreen.Show(previousCp, currentCp);
 
             base.Show(ignoreShowAnimation);
 
             StartContinueTimer();
-        }
-
-        public void ShowCPScreen(int previousCp, int currentCp)
-        {
-            cpScreen.Show(previousCp, currentCp);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
