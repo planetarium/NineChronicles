@@ -171,7 +171,7 @@ namespace Nekoyume.UI
         {
             var crystalReward = rewards
                 .Where(x => x.Currency.Ticker == "CRYSTAL")
-                .Sum(x => Convert.ToInt32(x.GetQuantityString()));
+                .Sum(x => MathematicsExtensions.ConvertToInt32(x.GetQuantityString()));
             crystalCountText.text = $"{crystalReward:#,0}";
 
             foreach (var rune in runes)
@@ -188,7 +188,7 @@ namespace Nekoyume.UI
                     totalRuneRewards.Add(key, 0);
                 }
 
-                var count = Convert.ToInt32(runeReward.GetQuantityString());
+                var count = MathematicsExtensions.ConvertToInt32(runeReward.GetQuantityString());
                 totalRuneRewards[key] += count;
             }
 

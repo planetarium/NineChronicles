@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -34,7 +34,7 @@ namespace Nekoyume.UI
                 var ticker = model.Runes[i].Currency.Ticker;
                 if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
                 {
-                    var count = Convert.ToInt32(model.Runes[i].GetQuantityString());
+                    var count = MathematicsExtensions.ConvertToInt32(model.Runes[i].GetQuantityString());
                     runeStones[i].Set(runeData, count);
                 }
             }
