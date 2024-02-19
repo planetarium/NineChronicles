@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using Lib9c;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -378,9 +379,11 @@ namespace Nekoyume.UI
                                 (int) result);
                             break;
                         case StakeRegularRewardSheet.StakeRewardType.Currency:
+                            var ticker = regular.Rewards[i].CurrencyTicker;
                             interestBenefitsViews[i].Set(
-                                regular.Rewards[i].CurrencyTicker,
-                                (int) result);
+                                ticker,
+                                (int) result,
+                                ticker.Equals(Currencies.Crystal.Ticker));
                             break;
                     }
                 }
