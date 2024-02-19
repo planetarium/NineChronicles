@@ -8,6 +8,7 @@ using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -861,6 +862,9 @@ namespace Nekoyume.UI
 
         private IEnumerator CoGoToNextStageClose(BattleLog log)
         {
+            Game.Event.OnStageStart.Invoke(log);
+
+            BattleRenderManager.Instance.IsWaitingBattleLog = true;
             if (Find<Menu>().IsActive())
             {
                 yield break;
@@ -876,25 +880,7 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(stageLoadingEffect.CoClose());
 
-            Game.Event.OnStageStart.Invoke(log);
-            Close();
-        }
-
-        public void NextMimisbrunnrStage(BattleLog log)
-        {
-            StartCoroutine(CoGoToNextMimisbrunnrStageClose(log));
-        }
-
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(BattleLog log)
-        {
-            if (Find<Menu>().IsActive())
-            {
-                yield break;
-            }
-
-            yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
-            yield return StartCoroutine(CoFadeOut());
-            Game.Event.OnStageStart.Invoke(log);
+            BattleRenderManager.Instance.IsWaitingBattleLog = false;
             Close();
         }
 

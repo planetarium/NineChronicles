@@ -34,6 +34,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Model.Skill;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -136,7 +137,13 @@ namespace Nekoyume.Game
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
-            Event.OnStageStart.AddListener(OnStageStart);
+
+            BattleRenderManager.Instance.OnStageStart += OnStageStart;
+        }
+
+        protected void OnDestroy()
+        {
+            BattleRenderManager.Instance.OnStageStart -= OnStageStart;
         }
 
         public void Initialize()
@@ -170,6 +177,13 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(OnStageStart)}() enter");
 #endif
+            ProcessStageStartAsync(log).Forget();
+        }
+
+        private async UniTask ProcessStageStartAsync(BattleLog log)
+        {
+            await UniTask.WaitUntil(IsFinishBattleLoading);
+
             if (_battleLog is null)
             {
                 if (!(_battleCoroutine is null))
@@ -186,6 +200,11 @@ namespace Nekoyume.Game
             {
                 Debug.Log("Skip incoming battle. Battle is already simulating.");
             }
+        }
+
+        private bool IsFinishBattleLoading()
+        {
+            return !BattleRenderManager.Instance.IsOnLoading;
         }
 
         private void OnNestEnter()

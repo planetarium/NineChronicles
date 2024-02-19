@@ -6,6 +6,7 @@ using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -116,7 +117,7 @@ public class BattleSimulator : Widget
     public void OnClickGoStage()
     {
         var log = Simulate();
-        Nekoyume.Game.Event.OnStageStart.Invoke(log);
+        BattleRenderManager.Instance.StartStage(log);
         SaveField();
         content.SetActive(false);
     }
