@@ -1490,7 +1490,6 @@ MonoBehaviour:
   maxCountText: {fileID: 132733696010730087}
   contentContainer: {fileID: 5409477412280316272}
   emptyContainer: {fileID: 7917186823004296386}
-  goToCollectionButton: {fileID: 3361272763284082730}
 --- !u!1 &7917186823004296386
 GameObject:
   m_ObjectHideFlags: 0
@@ -3845,6 +3844,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConditionalButton_Type5
       objectReference: {fileID: 0}
+    - target: {fileID: 8393857624628101227, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8744405165787708639, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: m_text
@@ -3867,18 +3871,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 543ea58faa96c47bea69a87c29ba0ce7, type: 3}
---- !u!114 &3361272763284082730 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4670086213380171865, guid: 543ea58faa96c47bea69a87c29ba0ce7,
-    type: 3}
-  m_PrefabInstance: {fileID: 7956410758211254387}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &5762983108097980648 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2418683638863790235, guid: 543ea58faa96c47bea69a87c29ba0ce7,

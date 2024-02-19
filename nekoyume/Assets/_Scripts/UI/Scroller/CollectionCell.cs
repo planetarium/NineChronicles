@@ -1,6 +1,8 @@
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using Nekoyume.Helper;
-using Nekoyume.Model.Item;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -8,28 +10,41 @@ using UnityEngine;
 namespace Nekoyume.UI.Scroller
 {
     using UniRx;
-    public class CollectionCell : RectCell<Collection.Model, CollectionScroll.ContextModel>
+    public class CollectionCell : RectCell<CollectionModel, CollectionScroll.ContextModel>
     {
+        [Serializable]
+        private struct ActiveButtonLoading
+        {
+            public GameObject container;
+            public GameObject indicator;
+            public GameObject text;
+        }
+
         [SerializeField] private CollectionStat complete;
         [SerializeField] private CollectionStat incomplete;
         [SerializeField] private CollectionItemView[] collectionItemViews;
         [SerializeField] private ConditionalButton activeButton;
-        [SerializeField] private GameObject activeButtonLoadingObject;
+        [SerializeField] private ActiveButtonLoading activeButtonLoading;
 
-        private Collection.Model _itemData;
+        private CollectionModel _itemData;
+        private readonly List<IDisposable> _disposables = new();
 
         private void Awake()
         {
-            LoadingHelper.ActivateCollection
-                .Subscribe(activeButtonLoadingObject.SetActive)
-                .AddTo(gameObject);
-
             activeButton.OnSubmitSubject
                 .Subscribe(_=> Context.OnClickActiveButton.OnNext(_itemData))
                 .AddTo(gameObject);
+            activeButton.OnClickDisabledSubject
+                .Where(_ => LoadingHelper.ActivateCollection.Value != 0)
+                .Subscribe(_ =>
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("NOTIFICATION_COLLECTION_DISABLED_ACTIVATING"),
+                        NotificationCell.NotificationType.Information))
+                .AddTo(gameObject);
         }
 
-        public override void UpdateContent(Collection.Model itemData)
+        public override void UpdateContent(CollectionModel itemData)
         {
             _itemData = itemData;
 
@@ -40,10 +55,7 @@ namespace Nekoyume.UI.Scroller
             cellBackground.Set(itemData);
 
             var materialCount = itemData.Row.Materials.Count;
-            var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
-            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
 
-            var canActive = true;
             for (var i = 0; i < collectionItemViews.Length; i++)
             {
                 collectionItemViews[i].gameObject.SetActive(i < materialCount);
@@ -52,41 +64,28 @@ namespace Nekoyume.UI.Scroller
                     continue;
                 }
 
-                var material = itemData.Row.Materials[i];
-                var itemRow = itemSheet[material.ItemId];
-                CollectionMaterial requiredItem;
-                if (itemData.Active)
-                {
-                     requiredItem = new CollectionMaterial(material, itemRow.Grade);
-                }
-                else
-                {
-                    var items = inventory.Items.Where(item => item.item.Id == material.ItemId).ToArray();
-                    var checkLevel = itemRow.ItemType == ItemType.Equipment;
-                    bool enoughCount;
-                    if (checkLevel)
-                    {
-                        var equipments = items.Select(item => item.item).OfType<Equipment>().ToArray();
-                        enoughCount = !equipments.Any() || equipments.Any(item => item.level == material.Level);
-                    }
-                    else
-                    {
-                        enoughCount = !items.Any() || items.Length > material.Count;
-                    }
-
-                    requiredItem = new CollectionMaterial(
-                        material, itemRow.Grade, items.Any(), checkLevel, enoughCount);
-                }
-
                 collectionItemViews[i].Set(
-                    requiredItem,
+                    itemData.Materials[i],
                     model => Context.OnClickMaterial.OnNext(model));
-
-                canActive &= requiredItem.Enough;
             }
 
-            activeButton.SetCondition(() => canActive);
+            activeButton.SetCondition(() => itemData.CanActivate);
             activeButton.Interactable = !itemData.Active;
+
+            _disposables.DisposeAllAndClear();
+            LoadingHelper.ActivateCollection.Subscribe(collectionId =>
+            {
+                var loading = collectionId != 0;
+                if (loading)
+                {
+                    var inProgress = collectionId == _itemData.Row.Id;
+                    activeButtonLoading.indicator.SetActive(inProgress);
+                    activeButtonLoading.text.SetActive(!inProgress);
+                }
+
+                activeButton.Interactable = !loading && !_itemData.Active;
+                activeButtonLoading.container.SetActive(loading);
+            }).AddTo(_disposables);
         }
     }
 }

@@ -1,4 +1,5 @@
 using Nekoyume.L10n;
+using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 
@@ -9,10 +10,10 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI[] statTexts;
 
-        public void Set(Collection.Model itemData)
+        public void Set(CollectionModel itemData)
         {
             gameObject.SetActive(true);
-            nameText.text = L10nManager.Localize($"COLLECTION_NAME_{itemData.Row.Id}");
+            nameText.text = L10nManager.LocalizeCollectionName(itemData.Row.Id);
 
             var stat = itemData.Row.StatModifiers;
             for (var i = 0; i < statTexts.Length; i++)

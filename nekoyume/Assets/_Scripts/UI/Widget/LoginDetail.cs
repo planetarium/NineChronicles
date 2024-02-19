@@ -177,7 +177,14 @@ namespace Nekoyume.UI
                     tableSheets.EquipmentItemSetEffectSheet
                 );
                 var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                player.SetCostumeStat(costumeStatSheet);
+                var collectionState = States.Instance.CollectionState;
+                var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+                player.ConfigureStats(
+                    costumeStatSheet,
+                    null,
+                    tableSheets.RuneOptionSheet,
+                    tableSheets.SkillSheet,
+                    collectionState.GetEffects(collectionSheet));
             }
 
             // create new or login

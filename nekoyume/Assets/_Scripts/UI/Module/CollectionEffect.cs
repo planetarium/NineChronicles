@@ -1,9 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game.Controller;
 using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -24,21 +23,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject emptyContainer;
 
-        [SerializeField]
-        private Button goToCollectionButton;
-
-        private void Awake()
+        public void Set(int activeCount, int maxCount, IEnumerable<StatModifier> stats)
         {
-            goToCollectionButton.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                // shortcut to Collection
-            });
-        }
-
-        public void Set(Collection.Model[] models)
-        {
-            var activeCount = models.Count(model => model.Active);
             contentContainer.SetActive(activeCount > 0);
             emptyContainer.SetActive(activeCount == 0);
 
@@ -47,9 +33,7 @@ namespace Nekoyume.UI.Module
                 view.Hide();
             }
 
-            var data = models
-                .Where(model => model.Active)
-                .SelectMany(model => model.Row.StatModifiers)
+            var data = stats
                 .GroupBy(stat => stat.StatType)
                 .Select(grouping => (
                     StatType: grouping.Key,
@@ -68,7 +52,7 @@ namespace Nekoyume.UI.Module
             }
 
             countText.text = activeCount.ToString();
-            maxCountText.text = $"/{models.Length.ToString()}";
+            maxCountText.text = $"/ {maxCount}";
         }
     }
 }

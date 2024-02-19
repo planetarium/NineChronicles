@@ -159,6 +159,17 @@ public class BattleSimulator : Widget
             equipment.Unequip();
         }
 
+        var collectionState = Game.instance.States.CollectionState;
+        var collectionSheet = Game.instance.TableSheets.CollectionSheet;
+        var collectionModifiers = new List<StatModifier>();
+        foreach (var id in collectionState.Ids)
+        {
+            if (collectionSheet.TryGetValue(id, out var row))
+            {
+                collectionModifiers.AddRange(row.StatModifiers);
+            }
+        }
+
         var random = new DebugRandom();
         // weapon
         AddCustomEquipment(avatarState: avatarState, random: random,
@@ -216,7 +227,8 @@ public class BattleSimulator : Widget
             tableSheets.GetStageSimulatorSheets(),
             tableSheets.EnemySkillSheet,
             tableSheets.CostumeStatSheet,
-            StageSimulatorV2.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet)
+            StageSimulatorV2.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet),
+            collectionModifiers
         );
 
         simulator.Simulate();

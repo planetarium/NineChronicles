@@ -10,6 +10,6 @@ namespace Nekoyume.Helper
         public static readonly ReactiveProperty<int> PetEnhancement = new(0);
         public static readonly ReactiveProperty<Tuple<int, int>> Summon = new();
         public static readonly ReactiveProperty<bool> ClaimStakeReward = new();
-        public static readonly ReactiveProperty<bool> ActivateCollection = new(false);
+        public static readonly ReactiveProperty<int> ActivateCollection = new(0);
     }
 }

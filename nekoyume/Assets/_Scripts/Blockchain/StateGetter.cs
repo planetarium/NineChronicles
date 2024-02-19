@@ -246,7 +246,7 @@ namespace Nekoyume.Blockchain
                 return new CollectionState(list);
             }
 
-            throw new StateNullException(avatarAddress);
+            return new CollectionState();
         }
     }
 }
