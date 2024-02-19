@@ -13,7 +13,6 @@ namespace Nekoyume
         public static string DecimalStatToString(this DecimalStat stat)
         {
             var value =
-                stat.StatType == StatType.SPD ||
                 stat.StatType == StatType.DRR ||
                 stat.StatType == StatType.CDMG ?
                 (stat.BaseValue / 100m) : stat.BaseValue;
@@ -64,6 +63,7 @@ namespace Nekoyume
                 case StatType.DRV:
                 case StatType.ArmorPenetration:
                 case StatType.Thorn:
+                case StatType.SPD:
                     return isSigned
                         ? value.ToString("+0.##;-0.##")
                         : (value).ToString();
@@ -71,7 +71,6 @@ namespace Nekoyume
                     return isSigned
                         ? value.ToString("+0.##\\%;-0.##\\%")
                         : $"{value:0.#\\%}";
-                case StatType.SPD:
                 case StatType.DRR:
                 case StatType.CDMG:
                     return isSigned
@@ -93,10 +92,10 @@ namespace Nekoyume
                 case StatType.DRV:
                 case StatType.ArmorPenetration:
                 case StatType.Thorn:
+                case StatType.SPD:
                     return value.ToCurrencyNotation();
                 case StatType.CRI:
                     return $"{value:0.#\\%}";
-                case StatType.SPD:
                 case StatType.DRR:
                 case StatType.CDMG:
                     return ((long)(value / 100m)).ToCurrencyNotation();

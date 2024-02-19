@@ -1,0 +1,100 @@
+name: Bug Report
+description: bug report
+title: "[Bug]: "
+labels: ["bug"]
+projects: ["planetarium/97"]
+assignees:
+  - ipdae
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: apv-version
+    attributes:
+      label: APV version info
+      description: network version info
+      placeholder: ex. v200160
+    validations:
+      required: true
+  - type: input
+    id: client-version
+    attributes:
+      label: Client version info
+      description: client version info
+      placeholder: ex. v150.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      description: What device did you running?
+      multiple: true
+      options:
+        - Windows
+        - macOS
+        - linux
+        - Android
+        - iOS
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: device-optional
+    attributes:
+      label: detailed device info
+      description: detailed device version info
+      placeholder: ex. Windows10, Android14
+    validations:
+      required: false
+  - type: input
+    id: account-address-info
+    attributes:
+      label: account address info
+      description: 9c account(agent) address info
+      placeholder: ex. 0xa1ef9701f151244f9aa7131639990c4664d2aeef
+    validations:
+      required: true
+  - type: input
+    id: avatar-address-info
+    attributes:
+      label: avatar address info
+      description: 9c avatar address info
+      placeholder: ex. 0xa1ef9701f151244f9aa7131639990c4664d2aeef
+    validations:
+      required: false
+  - type: input
+    id: purchase-info
+    attributes:
+      label: purchase receipt info
+      description: shop purchase info
+      placeholder: receipt no.
+    validations:
+      required: false      
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: "A bug happened!"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce-step
+    attributes:
+      label: How to reproduce the issue
+      description: How to reproduce the issue, with detailed descriptions of each step
+      value: |
+        1. Click Button
+        2. Crash
+    validations:
+      required: true      
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell      

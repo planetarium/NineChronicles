@@ -3,6 +3,7 @@ using Nekoyume.Model.Item;
 using System.Collections.Generic;
 using Coffee.UIEffects;
 using Nekoyume.TableData;
+using Spine.Unity;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -94,6 +95,13 @@ namespace Nekoyume.UI.Module
                         var particle = gradeEffect.main;
                         particle.startColor = tooltipData.GradeColor;
                         _costumeSpineObject.SetActive(true);
+
+                        if(_costumeSpineObject.TryGetComponent(out SkeletonGraphic skeletonGraphic))
+                        {
+                            var currentAnim = skeletonGraphic.AnimationState.GetCurrent(0).Animation.Name;
+                            var isLoop = skeletonGraphic.AnimationState.GetCurrent(0).Loop;
+                            skeletonGraphic.AnimationState.SetAnimation(0, currentAnim, isLoop);
+                        }
 
                         baseItemView.ItemImage.gameObject.SetActive(false);
                         baseItemView.SpineItemImage.gameObject.SetActive(true);

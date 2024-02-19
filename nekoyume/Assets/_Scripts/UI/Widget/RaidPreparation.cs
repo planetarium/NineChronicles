@@ -188,7 +188,7 @@ namespace Nekoyume.UI
             var row = worldBossListSheet.FindRowByBlockIndex(currentBlockIndex);
             var fee = CrystalCalculator.CalculateEntranceFee(
                 currentAvatarState.level, row.EntranceFee);
-            var cost = Convert.ToInt32(fee.GetQuantityString());
+            var cost = MathematicsExtensions.ConvertToInt32(fee.GetQuantityString());
             return cost;
         }
 

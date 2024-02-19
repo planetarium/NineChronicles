@@ -239,7 +239,7 @@ public class BattleSimulator : Widget
 
     private static int TextToInt(string text)
     {
-        return text.Equals(string.Empty) ? 1 : Convert.ToInt32(text);
+        return text.Equals(string.Empty) ? 1 : Nekoyume.MathematicsExtensions.ConvertToInt32(text);
     }
 
     private int[] GetOptions(string first, string second)

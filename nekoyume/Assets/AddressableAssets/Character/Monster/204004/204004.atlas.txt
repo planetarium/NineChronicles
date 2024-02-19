@@ -1,132 +1,65 @@
-
 204004.png
-size: 256,128
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:372,78
+filter:Linear,Linear
+pma:true
 body
-  rotate: true
-  xy: 34, 35
-  size: 91, 71
-  orig: 91, 71
-  offset: 0, 0
-  index: -1
+bounds:2,5,91,71
 die
-  rotate: true
-  xy: 2, 17
-  size: 109, 30
-  orig: 109, 30
-  offset: 0, 0
-  index: -1
+bounds:262,46,108,30
+offsets:0,0,109,30
 face_01
-  rotate: true
-  xy: 183, 13
-  size: 36, 25
-  orig: 38, 27
-  offset: 1, 1
-  index: -1
+bounds:218,2,34,25
+offsets:1,1,38,27
+rotate:90
 face_02
-  rotate: false
-  xy: 134, 49
-  size: 38, 28
-  orig: 40, 30
-  offset: 1, 1
-  index: -1
+bounds:154,5,34,26
+offsets:1,2,40,30
 face_03
-  rotate: true
-  xy: 210, 16
-  size: 35, 21
-  orig: 37, 23
-  offset: 1, 1
-  index: -1
+bounds:241,41,35,19
+offsets:1,2,37,23
+rotate:90
 face_04
-  rotate: true
-  xy: 184, 87
-  size: 39, 26
-  orig: 41, 28
-  offset: 1, 1
-  index: -1
+bounds:216,38,38,23
+offsets:1,1,41,28
+rotate:90
 leg_L
-  rotate: true
-  xy: 24, 4
-  size: 11, 20
-  orig: 13, 22
-  offset: 1, 1
-  index: -1
+bounds:293,6,11,20
+offsets:1,1,13,22
+rotate:90
 leg_R
-  rotate: true
-  xy: 2, 3
-  size: 12, 20
-  orig: 14, 22
-  offset: 1, 1
-  index: -1
+bounds:271,5,12,20
+offsets:1,1,14,22
+rotate:90
 shadow
-  rotate: true
-  xy: 107, 47
-  size: 79, 25
-  orig: 79, 25
-  offset: 0, 0
-  index: -1
+bounds:271,19,79,25
 sweat2
-  rotate: false
-  xy: 174, 51
-  size: 10, 27
-  orig: 10, 27
-  offset: 0, 0
-  index: -1
+bounds:142,4,10,27
 tear
-  rotate: true
-  xy: 34, 30
-  size: 3, 7
-  orig: 3, 7
-  offset: 0, 0
-  index: -1
+bounds:245,2,3,7
+rotate:90
 wood_01
-  rotate: false
-  xy: 117, 2
-  size: 40, 43
-  orig: 42, 45
-  offset: 1, 1
-  index: -1
+bounds:117,33,40,43
+offsets:1,1,42,45
 wood_02
-  rotate: true
-  xy: 89, 2
-  size: 31, 26
-  orig: 33, 28
-  offset: 1, 1
-  index: -1
+bounds:190,2,31,26
+offsets:1,1,33,28
+rotate:90
 wood_03
-  rotate: true
-  xy: 186, 53
-  size: 32, 24
-  orig: 34, 26
-  offset: 1, 1
-  index: -1
+bounds:245,7,32,24
+offsets:1,1,34,26
+rotate:90
 wood_04
-  rotate: true
-  xy: 162, 80
-  size: 46, 20
-  orig: 48, 22
-  offset: 1, 1
-  index: -1
+bounds:95,30,46,20
+offsets:1,1,48,22
+rotate:90
 wood_05
-  rotate: true
-  xy: 159, 7
-  size: 40, 22
-  orig: 42, 24
-  offset: 1, 1
-  index: -1
+bounds:192,36,40,22
+offsets:1,1,42,24
+rotate:90
 wood_06
-  rotate: false
-  xy: 46, 2
-  size: 41, 31
-  orig: 41, 31
-  offset: 0, 0
-  index: -1
+bounds:159,35,41,31
+rotate:90
 wood_07
-  rotate: false
-  xy: 134, 79
-  size: 26, 47
-  orig: 26, 47
-  offset: 0, 0
-  index: -1
+bounds:95,2,26,45
+offsets:0,2,26,47
+rotate:90

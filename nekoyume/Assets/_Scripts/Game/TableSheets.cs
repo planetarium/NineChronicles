@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
@@ -9,6 +11,7 @@ using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.Pet;
 using Nekoyume.TableData.Stake;
 using Nekoyume.TableData.Summon;
+using UniRx.Diagnostics;
 using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.Game
@@ -17,7 +20,28 @@ namespace Nekoyume.Game
     {
         public static TableSheets Instance => Game.instance.TableSheets;
 
-        public TableSheets(IDictionary<string, string> sheets)
+        private TableSheets() { }
+
+        public static async UniTask<TableSheets> MakeTableSheetsAsync(IDictionary<string, string> sheets)
+        {
+            var previousContext = SynchronizationContext.Current;
+            await UniTask.SwitchToThreadPool();
+
+            var tableSheets = new TableSheets();
+            tableSheets.Initialize(sheets);
+            await UniTask.SwitchToSynchronizationContext(previousContext);
+
+            return tableSheets;
+        }
+
+        public static TableSheets MakeTableSheets(IDictionary<string, string> sheets)
+        {
+            var tableSheets = new TableSheets();
+            tableSheets.Initialize(sheets);
+            return tableSheets;
+        }
+
+        private void Initialize(IDictionary<string, string> sheets)
         {
             var type = typeof(TableSheets);
             var started = DateTime.UtcNow;
@@ -52,7 +76,7 @@ namespace Nekoyume.Game
             ItemSheetInitialize();
             QuestSheetInitialize();
             sw.Stop();
-            Debug.Log($"[TableSheets] Constructor Total: {DateTime.UtcNow - started}");
+            Debug.Log($"[{nameof(TableSheets)}] Initialize Total: {DateTime.UtcNow - started}");
         }
 
         public WorldSheet WorldSheet { get; private set; }

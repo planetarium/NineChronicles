@@ -1,125 +1,47 @@
-
 204010.png
-size: 256,64
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:110,142
+filter:Linear,Linear
+pma:true
 arm_L
-  rotate: true
-  xy: 164, 5
-  size: 10, 9
-  orig: 10, 9
-  offset: 0, 0
-  index: -1
+bounds:71,2,10,9
 arm_R
-  rotate: true
-  xy: 226, 31
-  size: 8, 12
-  orig: 8, 12
-  offset: 0, 0
-  index: -1
+bounds:50,38,8,12
+rotate:90
 body
-  rotate: false
-  xy: 2, 11
-  size: 68, 51
-  orig: 68, 51
-  offset: 0, 0
-  index: -1
+bounds:2,89,68,51
 face_01
-  rotate: false
-  xy: 206, 6
-  size: 27, 22
-  orig: 27, 22
-  offset: 0, 0
-  index: -1
+bounds:42,2,27,22
 face_02
-  rotate: false
-  xy: 175, 5
-  size: 29, 23
-  orig: 29, 23
-  offset: 0, 0
-  index: -1
+bounds:72,75,29,22
+offsets:0,0,29,23
 face_03
-  rotate: true
-  xy: 94, 2
-  size: 35, 19
-  orig: 35, 19
-  offset: 0, 0
-  index: -1
+bounds:72,99,30,19
+offsets:0,0,35,19
 face_04
-  rotate: true
-  xy: 115, 7
-  size: 30, 17
-  orig: 30, 17
-  offset: 0, 0
-  index: -1
+bounds:19,29,29,17
+offsets:0,0,30,17
 leaf_01
-  rotate: false
-  xy: 228, 41
-  size: 24, 21
-  orig: 24, 21
-  offset: 0, 0
-  index: -1
+bounds:19,2,24,21
+rotate:90
 leaf_02
-  rotate: false
-  xy: 134, 2
-  size: 28, 13
-  orig: 28, 13
-  offset: 0, 0
-  index: -1
+bounds:71,13,28,13
 leg_R
-  rotate: false
-  xy: 240, 29
-  size: 11, 10
-  orig: 11, 10
-  offset: 0, 0
-  index: -1
+bounds:50,26,11,10
 shadow
-  rotate: false
-  xy: 181, 47
-  size: 45, 15
-  orig: 45, 16
-  offset: 0, 0
-  index: -1
+bounds:19,48,43,14
+offsets:1,1,45,16
 tear
-  rotate: true
-  xy: 2, 2
-  size: 7, 4
-  orig: 7, 4
-  offset: 0, 0
-  index: -1
+bounds:104,111,7,4
+rotate:90
 wood_01
-  rotate: false
-  xy: 72, 39
-  size: 63, 23
-  orig: 63, 23
-  offset: 0, 0
-  index: -1
+bounds:2,64,63,23
 wood_02
-  rotate: false
-  xy: 137, 37
-  size: 42, 25
-  orig: 42, 25
-  offset: 0, 0
-  index: -1
+bounds:64,28,42,25
 wood_03
-  rotate: false
-  xy: 134, 17
-  size: 39, 18
-  orig: 39, 18
-  offset: 0, 0
-  index: -1
+bounds:67,55,39,18
 wood_04
-  rotate: false
-  xy: 72, 2
-  size: 20, 35
-  orig: 20, 35
-  offset: 0, 0
-  index: -1
+bounds:72,120,20,35
+rotate:90
 wood_05
-  rotate: false
-  xy: 181, 30
-  size: 43, 15
-  orig: 43, 15
-  offset: 0, 0
-  index: -1
+bounds:2,10,43,15
+rotate:90

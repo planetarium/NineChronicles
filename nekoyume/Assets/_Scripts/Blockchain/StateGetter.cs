@@ -66,7 +66,7 @@ namespace Nekoyume.Blockchain
                 return value;
             }
 
-            throw new StateNullException(avatarAddress);
+            throw new StateNullException(Addresses.Avatar, avatarAddress);
         }
 
         public static AgentState GetAgentState(HashDigest<SHA256> hash, Address address)
@@ -92,7 +92,7 @@ namespace Nekoyume.Blockchain
             if (serialized is null or Null)
             {
                 Log.Warning("No stake state ({Address})", address.ToHex());
-                return null;
+                throw new StateNullException(ReservedAddresses.LegacyAccount, address);
             }
 
             try
@@ -120,7 +120,7 @@ namespace Nekoyume.Blockchain
             var inventoryState = GetState(hash, Addresses.Inventory, inventoryAddr);
             if (inventoryState is null or Null)
             {
-                throw new StateNullException(inventoryAddr);
+                throw new StateNullException(Addresses.Inventory, inventoryAddr);
             }
 
             return new Inventory((List)inventoryState);
@@ -144,7 +144,7 @@ namespace Nekoyume.Blockchain
                 address);
             if (value is null or Null)
             {
-                throw new StateNullException(address);
+                throw new StateNullException(ReservedAddresses.LegacyAccount, address);
             }
 
             try
@@ -173,7 +173,7 @@ namespace Nekoyume.Blockchain
                 Log.Warning(
                     "RedeemCodeState is null or Null. ({RedeemCodeStateAddress})",
                     RedeemCodeState.Address.ToHex());
-                throw new StateNullException(RedeemCodeState.Address);
+                throw new StateNullException(ReservedAddresses.LegacyAccount, RedeemCodeState.Address);
             }
 
             try
@@ -203,7 +203,7 @@ namespace Nekoyume.Blockchain
                 return new ArenaScore(list);
             }
 
-            throw new StateNullException(arenaScoreAddress);
+            throw new StateNullException(ReservedAddresses.LegacyAccount, arenaScoreAddress);
         }
 
         public static ItemSlotState GetItemSlotState(
@@ -218,7 +218,7 @@ namespace Nekoyume.Blockchain
                 return new ItemSlotState(list);
             }
 
-            throw new StateNullException(itemSlotAddress);
+            throw new StateNullException(ReservedAddresses.LegacyAccount, itemSlotAddress);
         }
 
         public static RuneSlotState GetRuneSlotState(
@@ -233,7 +233,7 @@ namespace Nekoyume.Blockchain
                 return new RuneSlotState(list);
             }
 
-            throw new StateNullException(runeSlotAddress);
+            throw new StateNullException(ReservedAddresses.LegacyAccount, runeSlotAddress);
         }
 
         public static CollectionState GetCollectionState(
