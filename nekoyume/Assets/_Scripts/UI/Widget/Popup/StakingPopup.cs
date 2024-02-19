@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Lib9c;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -16,6 +16,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -27,14 +28,25 @@ namespace Nekoyume.UI
         [Header("Top")]
         [SerializeField] private Image levelIconImage;
         [SerializeField] private Image[] levelImages;
-        [SerializeField] private TextMeshProUGUI depositText;
+        [SerializeField] private TextMeshProUGUI depositText; // it shows having NCG, not staked.
+        [SerializeField] private TextMeshProUGUI stakedNcgValueText; // it shows staked NCG, not having.
         [SerializeField] private Button closeButton;
+        [SerializeField] private Button ncgEditButton;
+        [SerializeField] private Button stakingStartButton;
+        [SerializeField] private Button editCancelButton;
+        [SerializeField] private Button editSaveButton;
+        [SerializeField] private GameObject editingUIParent;
+        [SerializeField] private GameObject defaultUIParent;
+        [SerializeField] private TMP_InputField stakingNcgInputField;
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
+        [SerializeField] private RectTransform scrollableRewardsRectTransform;
+        [SerializeField] private Image stakingLevelImage;
+        [SerializeField] private Image stakingRewardImage;
 
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
@@ -43,25 +55,14 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject levelBenefitsTab;
 
         [SerializeField] private StakeIconDataScriptableObject stakeIconData;
+        [SerializeField] private GameObject stakingInformationObject;
+        [SerializeField] private UIBackground informationBg;
 
-        [SerializeField]
-        private TMP_InputField stakingNcgInputField;
+        private readonly Module.ToggleGroup _toggleGroup = new();
 
-        private readonly ReactiveProperty<BigInteger> _deposit = new();
-        private readonly Module.ToggleGroup _toggleGroup = new ();
-
-        // hard-coded constant values. it is arena ncg bonus.
-        private readonly Dictionary<int, int> _arenaNcgBonus = new()
-        {
-            {1, 0}, {2, 100}, {3, 200}, {4, 200}, {5, 200}, {6, 200}, {7, 200}, {8, 200}
-        };
-
-        public const string StakingUrl = "ninechronicles-launcher://open/monster-collection";
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
-
-        private bool HasStakeState => _deposit.Value > 0;
 
         private bool _benefitListViewsInitialized;
 
@@ -73,15 +74,17 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(levelBenefitsTabButton);
             currentBenefitsTabButton.OnClick.Subscribe(_ =>
             {
-                if (HasStakeState)
+                if (States.Instance.StakeStateV2.HasValue)
                 {
                     currentBenefitsTab.SetActive(true);
                     levelBenefitsTab.SetActive(false);
                 }
                 else
                 {
-                    // TODO: change "asdgf" to localized system message.
-                    OneLineSystem.Push(MailType.System, "asdgf", NotificationCell.NotificationType.UnlockCondition);
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_REQUIRE_STAKE"),
+                        NotificationCell.NotificationType.UnlockCondition);
                 }
             }).AddTo(gameObject);
             levelBenefitsTabButton.OnClick.Subscribe(_ =>
@@ -94,8 +97,8 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 Close();
             });
-
-            // TODO: 여기를 ClaimStakeReward action 보내는 버튼으로 바꿔야함
+            ncgEditButton.onClick.AddListener(OnClickEditButton);
+            stakingStartButton.onClick.AddListener(OnClickEditButton);
             archiveButton.OnSubmitSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -105,17 +108,19 @@ namespace Nekoyume.UI
                 archiveButton.Interactable = false;
                 LoadingHelper.ClaimStakeReward.Value = true;
             }).AddTo(gameObject);
-
-            stakingNcgInputField.onEndEdit.AddListener(value =>
+            editSaveButton.onClick.AddListener(OnClickSaveButton);
+            editCancelButton.onClick.AddListener(() =>
             {
-                ActionManager.Instance.Stake(BigInteger.Parse(value)).Subscribe();
+                OnChangeEditingState(false);
             });
+            informationBg.OnClick = () =>
+            {
+                stakingInformationObject.SetActive(false);
+            };
         }
 
         public override void Initialize()
         {
-            SetBenefitsListViews();
-            _deposit.Subscribe(OnDepositEdited).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Where(_ => gameObject.activeSelf).Subscribe(OnBlockUpdated)
                 .AddTo(gameObject);
@@ -123,46 +128,210 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            SetView();
             base.Show(ignoreStartAnimation);
+            OnChangeEditingState(false);
+            SetView();
+
+            if (!States.Instance.StakeStateV2.HasValue)
+            {
+                stakingInformationObject.SetActive(true);
+            }
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            var anchoredPosition = scrollableRewardsRectTransform.anchoredPosition;
+            anchoredPosition.x = 0;
+            scrollableRewardsRectTransform.anchoredPosition = anchoredPosition;
         }
 
         public void SetView()
         {
-            SetBenefitsListViews();
             var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
 
-            _deposit.Value = deposit;
+            OnDepositEdited(deposit);
             OnBlockUpdated(blockIndex);
+
+            // can not category UI toggle when user has not StakeState.
+            var hasStakeState = deposit > 0;
+            stakingStartButton.gameObject.SetActive(!hasStakeState);
+            ncgEditButton.gameObject.SetActive(hasStakeState);
+
+            foreach (var toggleable in _toggleGroup.Toggleables)
+            {
+                toggleable.Toggleable = true;
+            }
+
             _toggleGroup.SetToggledOffAll();
-            var selectedTabButton = deposit > 0 ? currentBenefitsTabButton : levelBenefitsTabButton;
+            var selectedTabButton = hasStakeState ? currentBenefitsTabButton : levelBenefitsTabButton;
             selectedTabButton.OnClick.OnNext(selectedTabButton);
             selectedTabButton.SetToggledOn();
+
+            if (!hasStakeState)
+            {
+                foreach (var toggleable in _toggleGroup.Toggleables)
+                {
+                    toggleable.Toggleable = false;
+                }
+            }
+
+            var liveAssetManager = Game.LiveAsset.LiveAssetManager.instance;
+            if (liveAssetManager.StakingLevelSprite != null)
+            {
+                stakingLevelImage.overrideSprite = liveAssetManager.StakingLevelSprite;
+                stakingLevelImage.SetNativeSize();
+            }
+
+            if (liveAssetManager.StakingRewardSprite != null)
+            {
+                stakingRewardImage.overrideSprite = liveAssetManager.StakingRewardSprite;
+                stakingLevelImage.SetNativeSize();
+            }
         }
 
-        private void OnDepositEdited(BigInteger deposit)
+        private void OnClickEditButton()
+        {
+            // it means States.Instance.StakeStateV2.HasValue is true.
+            if (States.Instance.StakeStateV2.HasValue)
+            {
+                // ReSharper disable once PossibleInvalidOperationException
+                var stakeState = States.Instance.StakeStateV2.Value;
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+
+                if (stakeState.ClaimableBlockIndex <= currentBlockIndex)
+                {
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_REQUIRE_CLAIM_STAKE_REWARD"),
+                        NotificationCell.NotificationType.UnlockCondition);
+                    return;
+                }
+            }
+            else
+            {
+                if (States.Instance.GoldBalanceState.Gold.MajorUnit < 50)
+                {
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
+                        NotificationCell.NotificationType.UnlockCondition);
+                    return;
+                }
+            }
+
+            OnChangeEditingState(true);
+            currentBenefitsTabButton.SetToggledOff();
+            levelBenefitsTabButton.OnClick.OnNext(levelBenefitsTabButton);
+            levelBenefitsTabButton.SetToggledOn();
+        }
+
+        private void OnClickSaveButton()
+        {
+            if (!BigInteger.TryParse(stakingNcgInputField.text, out var inputBigInt))
+            {
+                // TODO: adjust l10n
+                OneLineSystem.Push(MailType.System,
+                    $"wrong value: {stakingNcgInputField.text}",
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            if (inputBigInt == States.Instance.StakedBalanceState.Gold.MajorUnit)
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_REQUIRE_DIFF_VALUE_WITH_EXIST"),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            if (inputBigInt != 0 && inputBigInt < 50)
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT", 50),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            var totalDepositNcg = States.Instance.GoldBalanceState.Gold +
+                                  States.Instance.StakedBalanceState.Gold;
+            if (inputBigInt > totalDepositNcg.MajorUnit)
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_STAKING_AMOUNT_LIMIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
+            var confirmUI = Find<IconAndButtonSystem>();
+            var confirmTitle = "UI_ITEM_INFORMATION";
+            var confirmContent = "UI_INTRODUCE_STAKING";
+            var confirmIcon = IconAndButtonSystem.SystemType.Information;
+            var nullableStakeState = States.Instance.StakeStateV2;
+            if (nullableStakeState.HasValue)
+            {
+                var stakeState = nullableStakeState.Value;
+                var cancellableBlockIndex =
+                    stakeState.CancellableBlockIndex;
+                if (inputBigInt < States.Instance.StakedBalanceState.Gold.MajorUnit)
+                {
+                    if (cancellableBlockIndex > Game.Game.instance.Agent.BlockIndex)
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_STAKING_LOCK_BLOCK_TIP_FORMAT",
+                                cancellableBlockIndex),
+                            NotificationCell.NotificationType.UnlockCondition);
+                        return;
+                    }
+
+                    confirmTitle = "UI_CAUTION";
+                    confirmContent = "UI_WARNING_STAKING_REDUCE";
+                    confirmIcon = IconAndButtonSystem.SystemType.Error;
+                }
+            }
+
+            confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize:true, type: confirmIcon);
+            confirmUI.ConfirmCallback = () =>
+            {
+                ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
+                    .Subscribe();
+                OnChangeEditingState(false);
+            };
+        }
+
+        private void OnDepositEdited(BigInteger stakedDeposit)
         {
             var states = States.Instance;
             var level = states.StakingLevel;
-
             levelIconImage.sprite = stakeIconData.GetIcon(level, IconType.Small);
             for (var i = 0; i < levelImages.Length; i++)
             {
                 levelImages[i].enabled = i < level;
             }
 
-            depositText.text = deposit.ToString("N0");
-            // TODO: get data from external source or table sheet
+            var grindingBonus = 0;
+            if (TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level, out var crystalRow))
+            {
+                grindingBonus = crystalRow.Multiplier;
+            }
+
+            var apUsingPercent = 100;
+            if (TableSheets.Instance.StakeActionPointCoefficientSheet.TryGetValue(level, out var apRow))
+            {
+                apUsingPercent = apRow.Coefficient;
+            }
+
+            var totalDepositNcg = states.StakedBalanceState.Gold + states.GoldBalanceState.Gold;
+            depositText.text = $"<Style=G0>{totalDepositNcg.GetQuantityString()}";
+            stakedNcgValueText.text = stakedDeposit.ToString();
+            // TODO: get data from external source
             buffBenefitsViews[0].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("ARENA_REWARD_BONUS"),
                     0));
             buffBenefitsViews[1].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("GRINDING_CRYSTAL_BONUS"),
-                    0));
+                    grindingBonus));
             buffBenefitsViews[2].Set(
                 string.Format(ActionPointBuffFormat, L10nManager.Localize("STAGE_AP_BONUS"),
-                    0));
+                    100 - apUsingPercent));
         }
 
         private void OnBlockUpdated(long blockIndex)
@@ -210,9 +379,11 @@ namespace Nekoyume.UI
                                 (int) result);
                             break;
                         case StakeRegularRewardSheet.StakeRewardType.Currency:
+                            var ticker = regular.Rewards[i].CurrencyTicker;
                             interestBenefitsViews[i].Set(
-                                regular.Rewards[i].CurrencyTicker,
-                                (int) result);
+                                ticker,
+                                (int) result,
+                                ticker.Equals(Currencies.Crystal.Ticker));
                             break;
                     }
                 }
@@ -221,13 +392,9 @@ namespace Nekoyume.UI
             var remainingBlock = Math.Max(rewardBlockInterval - waitedBlockRange, 0);
             remainingBlockText.text = string.Format(
                 RemainingBlockFormat,
-                remainingBlock.ToString("N0"),
-                remainingBlock.BlockRangeToTimeSpanString());
+                remainingBlock.BlockRangeToTimeSpanString(),
+                remainingBlock.ToString("N0"));
             archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
-
-            // can not category UI toggle when user has not StakeState.
-            currentBenefitsTabButton.Toggleable = HasStakeState;
-            levelBenefitsTabButton.Toggleable = HasStakeState;
         }
 
         private static bool TryGetWaitedBlockIndex(
@@ -236,7 +403,7 @@ namespace Nekoyume.UI
             out long waitedBlockRange)
         {
             var stakeState = States.Instance.StakeStateV2;
-            if (stakeState is null)
+            if (!stakeState.HasValue)
             {
                 waitedBlockRange = 0;
                 return false;
@@ -255,23 +422,6 @@ namespace Nekoyume.UI
             }
 
             return true;
-        }
-
-        private void SetBenefitsListViews()
-        {
-            if (_benefitListViewsInitialized)
-            {
-                return;
-            }
-
-            var regularSheet = States.Instance.StakeRegularRewardSheet;
-            var regularFixedSheet = States.Instance.StakeRegularFixedRewardSheet;
-            if (regularSheet is null || regularFixedSheet is null)
-            {
-                return;
-            }
-
-            _benefitListViewsInitialized = true;
         }
 
         private static long GetReward(
@@ -294,6 +444,13 @@ namespace Nekoyume.UI
                 reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
 
             return result + levelBonus;
+        }
+
+        private void OnChangeEditingState(bool isEdit)
+        {
+            editingUIParent.SetActive(isEdit);
+            defaultUIParent.SetActive(!isEdit);
+            stakingNcgInputField.interactable = isEdit;
         }
     }
 }

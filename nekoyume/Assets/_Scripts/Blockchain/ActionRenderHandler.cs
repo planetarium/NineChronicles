@@ -2460,6 +2460,7 @@ namespace Nekoyume.Blockchain
             UniTask.RunOnThreadPool(async () =>
             {
                 await UpdateStakeStateAsync(eval);
+                await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
