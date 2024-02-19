@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
+using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
@@ -227,7 +228,7 @@ public class BattleSimulator : Widget
 
     private static int TextToInt(string text)
     {
-        return text.Equals(string.Empty) ? 1 : Convert.ToInt32(text);
+        return text.Equals(string.Empty) ? 1 : MathematicsExtensions.ConvertToInt32(text);
     }
 
     private int[] GetOptions(string first, string second)

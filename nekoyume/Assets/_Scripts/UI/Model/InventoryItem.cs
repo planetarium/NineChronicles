@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Libplanet.Types.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -56,7 +57,7 @@ namespace Nekoyume.UI.Model
         public InventoryItem(FungibleAssetValue fungibleAssetValue)
         {
             FungibleAssetValue = fungibleAssetValue;
-            var count = Convert.ToInt32(fungibleAssetValue.GetQuantityString());
+            var count = MathematicsExtensions.ConvertToInt32(fungibleAssetValue.GetQuantityString());
             Count = new ReactiveProperty<int>(count);
             Equipped = new ReactiveProperty<bool>(false);
             LevelLimited = new ReactiveProperty<bool>(false);
