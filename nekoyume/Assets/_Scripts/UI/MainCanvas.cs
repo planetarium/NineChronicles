@@ -330,6 +330,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<SeasonPass>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<Collection>());
+            yield return null;
 
             // loading
             _secondWidgets.Add(Widget.Create<StageLoadingEffect>());
@@ -450,6 +452,11 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<SeasonPassPremiumPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<InviteFriendsPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CollectionEffectPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CollectionRegistrationPopup>());
+            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());

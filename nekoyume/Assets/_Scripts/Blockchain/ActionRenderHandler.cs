@@ -189,6 +189,9 @@ namespace Nekoyume.Blockchain
 
             PetEnhancement();
 
+            // Collection
+            ActivateCollection();
+
             // GARAGE
             UnloadFromMyGarages();
 
@@ -619,6 +622,19 @@ namespace Nekoyume.Blockchain
                 .Select(PreparePetEnhancement)
                 .ObserveOnMainThread()
                 .Subscribe(ResponsePetEnhancement)
+                .AddTo(_disposables);
+        }
+
+        private void ActivateCollection()
+        {
+            _actionRenderer.EveryRender<ActivateCollection>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(eval => eval.Action.AvatarAddress == States.Instance.CurrentAvatarState.address)
+                .Select(PrepareActivateCollection)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseActivateCollection)
                 .AddTo(_disposables);
         }
 
@@ -3029,6 +3045,21 @@ namespace Nekoyume.Blockchain
 
             Widget.Find<DccCollection>().UpdateView();
             Game.Game.instance.SavedPetId = action.PetId;
+        }
+
+        private ActionEvaluation<ActivateCollection> PrepareActivateCollection(ActionEvaluation<ActivateCollection> eval)
+        {
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            States.Instance.SetCollectionState(
+                StateGetter.GetCollectionState(eval.OutputState, eval.Action.AvatarAddress));
+
+            return eval;
+        }
+
+        private void ResponseActivateCollection(ActionEvaluation<ActivateCollection> eval)
+        {
+            Widget.Find<Collection>().OnActionRender();
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
