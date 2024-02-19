@@ -62,7 +62,7 @@ namespace Nekoyume.UI
 
             continueText.alpha = 0f;
 
-            collectionText.text = L10nManager.Localize($"COLLECTION_NAME_{row.Id}");
+            collectionText.text = L10nManager.LocalizeCollectionName(row.Id);
 
             var statModifiers = row.StatModifiers;
             for (var i = 0; i < collectionEffectStats.Length; i++)
