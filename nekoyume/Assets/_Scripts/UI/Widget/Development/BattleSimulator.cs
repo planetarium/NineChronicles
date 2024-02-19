@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
-using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
@@ -162,7 +161,14 @@ public class BattleSimulator : Widget
 
         var collectionState = Game.instance.States.CollectionState;
         var collectionSheet = Game.instance.TableSheets.CollectionSheet;
-        var collectionModifiers = collectionState.GetEffects(collectionSheet);
+        var collectionModifiers = new List<StatModifier>();
+        foreach (var id in collectionState.Ids)
+        {
+            if (collectionSheet.TryGetValue(id, out var row))
+            {
+                collectionModifiers.AddRange(row.StatModifiers);
+            }
+        }
 
         var random = new DebugRandom();
         // weapon

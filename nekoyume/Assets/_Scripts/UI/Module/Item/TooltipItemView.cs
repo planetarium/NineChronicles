@@ -39,31 +39,7 @@ namespace Nekoyume.UI.Module
 
         public void Set(ItemBase itemBase, int count, bool levelLimit)
         {
-            baseItemView.Container.SetActive(true);
-            baseItemView.EmptyObject.SetActive(false);
-            baseItemView.EnoughObject.SetActive(false);
-            baseItemView.MinusObject.SetActive(false);
-            baseItemView.FocusObject.SetActive(false);
-            baseItemView.ExpiredObject.SetActive(false);
-            baseItemView.TradableObject.SetActive(false);
-            baseItemView.DimObject.SetActive(false);
-            baseItemView.SelectObject.SetActive(false);
-            baseItemView.SelectBaseItemObject.SetActive(false);
-            baseItemView.SelectMaterialItemObject.SetActive(false);
-            baseItemView.LockObject.SetActive(false);
-            baseItemView.ShadowObject.SetActive(false);
-            baseItemView.PriceText.gameObject.SetActive(false);
-            baseItemView.EquippedObject.SetActive(false);
-            baseItemView.NotificationObject.SetActive(false);
-            baseItemView.ItemGradeParticle.gameObject.SetActive(false);
-            baseItemView.ItemImage.gameObject.SetActive(true);
-            baseItemView.SpineItemImage.gameObject.SetActive(false);
-            baseItemView.LoadingObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActiveSafe(false);
-            baseItemView.RuneSelectMove.SetActive(false);
-            baseItemView.SelectCollectionObject.SetActive(false);
-            baseItemView.SelectArrowObject.SetActive(false);
+            InitTooltipItemView();
 
             baseItemView.ItemImage.overrideSprite = BaseItemView.GetItemIcon(itemBase);
 
@@ -142,31 +118,7 @@ namespace Nekoyume.UI.Module
 
         public void Set(ItemSheet.Row row, CollectionSheet.RequiredMaterial material)
         {
-            baseItemView.Container.SetActive(true);
-            baseItemView.EmptyObject.SetActive(false);
-            baseItemView.EnoughObject.SetActive(false);
-            baseItemView.MinusObject.SetActive(false);
-            baseItemView.FocusObject.SetActive(false);
-            baseItemView.ExpiredObject.SetActive(false);
-            baseItemView.TradableObject.SetActive(false);
-            baseItemView.DimObject.SetActive(false);
-            baseItemView.SelectObject.SetActive(false);
-            baseItemView.SelectBaseItemObject.SetActive(false);
-            baseItemView.SelectMaterialItemObject.SetActive(false);
-            baseItemView.LockObject.SetActive(false);
-            baseItemView.ShadowObject.SetActive(false);
-            baseItemView.PriceText.gameObject.SetActive(false);
-            baseItemView.EquippedObject.SetActive(false);
-            baseItemView.NotificationObject.SetActive(false);
-            baseItemView.ItemGradeParticle.gameObject.SetActive(false);
-            baseItemView.ItemImage.gameObject.SetActive(true);
-            baseItemView.SpineItemImage.gameObject.SetActive(false);
-            baseItemView.LoadingObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActiveSafe(false);
-            baseItemView.RuneSelectMove.SetActive(false);
-            baseItemView.SelectCollectionObject.SetActive(false);
-            baseItemView.SelectArrowObject.SetActive(false);
+            InitTooltipItemView();
             baseItemView.OptionTag.gameObject.SetActive(false);
             baseItemView.CountText.gameObject.SetActive(false);
             baseItemView.LevelLimitObject.SetActive(false);
@@ -241,6 +193,35 @@ namespace Nekoyume.UI.Module
             }
 
             uiShiny.Play();
+        }
+
+        private void InitTooltipItemView()
+        {
+            baseItemView.Container.SetActive(true);
+            baseItemView.EmptyObject.SetActive(false);
+            baseItemView.EnoughObject.SetActive(false);
+            baseItemView.MinusObject.SetActive(false);
+            baseItemView.FocusObject.SetActive(false);
+            baseItemView.ExpiredObject.SetActive(false);
+            baseItemView.TradableObject.SetActive(false);
+            baseItemView.DimObject.SetActive(false);
+            baseItemView.SelectObject.SetActive(false);
+            baseItemView.SelectBaseItemObject.SetActive(false);
+            baseItemView.SelectMaterialItemObject.SetActive(false);
+            baseItemView.LockObject.SetActive(false);
+            baseItemView.ShadowObject.SetActive(false);
+            baseItemView.PriceText.gameObject.SetActive(false);
+            baseItemView.EquippedObject.SetActive(false);
+            baseItemView.NotificationObject.SetActive(false);
+            baseItemView.ItemGradeParticle.gameObject.SetActive(false);
+            baseItemView.ItemImage.gameObject.SetActive(true);
+            baseItemView.SpineItemImage.gameObject.SetActive(false);
+            baseItemView.LoadingObject.SetActive(false);
+            baseItemView.GrindingCountObject.SetActive(false);
+            baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectCollectionObject.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
         }
 
         private void CreateSkeletonPool()

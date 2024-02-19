@@ -111,6 +111,7 @@ namespace Nekoyume.UI.Module
                 button.gameObject.SetActive(false);
             }
 
+            // Todo: Implement
             // var acquisitionPlaceList = ShortcutHelper.GetAcquisitionPlaceList(, itemBase);
             // if (acquisitionPlaceList.Any())
             // {
