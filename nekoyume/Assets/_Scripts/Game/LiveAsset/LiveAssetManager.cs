@@ -25,6 +25,10 @@ namespace Nekoyume.Game.LiveAsset
         private const string KoreanImagePostfix = "_KR";
         private const string JapaneseImagePostfix = "_JP";
 
+        // TODO: this is temporary url and file.
+        private const string StakingLevelImageUrl = "https://9c-media.s3.ap-northeast-2.amazonaws.com/images/NcgStaking.png";
+        private const string StakingRewardImageUrl = "https://9c-media.s3.ap-northeast-2.amazonaws.com/images/StakingReward.png";
+
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
         private Notices _notices;
@@ -54,6 +58,8 @@ namespace Nekoyume.Game.LiveAsset
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
+        public Sprite StakingLevelSprite { get; private set; }
+        public Sprite StakingRewardSprite { get; private set; }
         public bool IsInitialized { get; private set; }
 
         public void InitializeData()
@@ -70,6 +76,7 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
             StartCoroutine(RequestManager.instance.GetJson(noticeUrl, SetNotices));
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
+            InitializeStakingResource().Forget();
         }
 
         public IEnumerator InitializeApplicationCLO()
@@ -168,9 +175,9 @@ namespace Nekoyume.Game.LiveAsset
                 };
                 _bannerData.Add(newData);
 
-                var bannerTask = GetTexture("Banner", banner.BannerImageName)
+                var bannerTask = GetNoticeTexture("Banner", banner.BannerImageName)
                     .ContinueWith(sprite => newData.BannerImage = sprite);
-                var popupTask = GetTexture("Notice", banner.PopupImageName)
+                var popupTask = GetNoticeTexture("Notice", banner.PopupImageName)
                     .ContinueWith(sprite => newData.PopupImage = sprite);
                 tasks.Add(bannerTask);
                 tasks.Add(popupTask);
@@ -196,7 +203,7 @@ namespace Nekoyume.Game.LiveAsset
             }
         }
 
-        private async UniTask<Sprite> GetTexture(string textureType, string imageName)
+        private async UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
         {
             var postfix = L10nManager.CurrentLanguage switch
             {
@@ -206,8 +213,18 @@ namespace Nekoyume.Game.LiveAsset
                 LanguageType.Japanese => JapaneseImagePostfix,
                 _ => string.Empty
             };
-            var www = UnityWebRequestTexture.GetTexture(
+            return await GetTexture(
                 $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
+        }
+
+        private async UniTaskVoid InitializeStakingResource()
+        {
+            StakingLevelSprite = await GetTexture(StakingLevelImageUrl);
+            StakingRewardSprite = await GetTexture(StakingRewardImageUrl);
+        }
+        private async UniTask<Sprite> GetTexture(string url)
+        {
+            var www = UnityWebRequestTexture.GetTexture(url);
             await www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success)

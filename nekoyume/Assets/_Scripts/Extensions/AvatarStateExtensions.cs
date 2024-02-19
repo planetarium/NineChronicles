@@ -1,19 +1,12 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action.State;
-using Libplanet.Common;
 using Libplanet.Crypto;
-using Nekoyume.Action;
-using Nekoyume.Blockchain;
-using Nekoyume.Model;
 using Nekoyume.Model.EnumType;
-using Nekoyume.Model.Item;
-using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume
 {
@@ -81,6 +74,17 @@ namespace Nekoyume
             }
 
             return runeStates;
+        }
+
+        public static async Task<CollectionState> GetCollectionStateAsync(this AvatarState avatarState)
+        {
+            var value = await Game.Game.instance.Agent.GetStateAsync(Addresses.Collection, avatarState.address);
+            if (value is List list)
+            {
+                return new CollectionState(list);
+            }
+
+            return new CollectionState();
         }
     }
 }

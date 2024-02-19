@@ -484,6 +484,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!222 &7881626463285047701
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1931,6 +1935,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   allowSwitchOffWhenIsOn: 1
+  obsolete: 0
+  onClickObsoletedToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5941903642481794473
 GameObject:
   m_ObjectHideFlags: 0
@@ -4276,6 +4284,26 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1683202711049789107, guid: ea5ea545114c7784a8dc5248da82ebc7,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 66
+      objectReference: {fileID: 0}
+    - target: {fileID: 1683202711049789107, guid: ea5ea545114c7784a8dc5248da82ebc7,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 58
+      objectReference: {fileID: 0}
+    - target: {fileID: 1683202711049789107, guid: ea5ea545114c7784a8dc5248da82ebc7,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1683202711049789107, guid: ea5ea545114c7784a8dc5248da82ebc7,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1793081711239016014, guid: ea5ea545114c7784a8dc5248da82ebc7,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -5038,6 +5066,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 913546573442967576, guid: 73750b63d109a0a49b8f61418fcee5ae,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 66
+      objectReference: {fileID: 0}
+    - target: {fileID: 913546573442967576, guid: 73750b63d109a0a49b8f61418fcee5ae,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 58
       objectReference: {fileID: 0}
     - target: {fileID: 1164208421250849611, guid: 73750b63d109a0a49b8f61418fcee5ae,
         type: 3}
