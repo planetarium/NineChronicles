@@ -193,7 +193,7 @@ namespace Nekoyume.UI.Module
                         var stageModel = new WorldMapStage.ViewModel(
                             SharedViewModel.StageType,
                             stageTuple.stageId,
-                            GetBossType(stageTuple.stageId, stageTuple.hasBoss),
+                            GetBossType(stageTuple.stageId, stageTuple.hasBoss, eventType),
                             eventType,
                             WorldMapStage.State.Normal);
 
@@ -224,11 +224,18 @@ namespace Nekoyume.UI.Module
                     nextPageShouldHide = true;
                 }
 
-                BossType GetBossType(int stageId, bool hasBoss)
+                BossType GetBossType(int stageId, bool hasBoss, EventType eventType)
                 {
                     if (!hasBoss)
                     {
                         return BossType.None;
+                    }
+
+                    if (stageType == StageType.EventDungeon)
+                    {
+                        return stageId % 20 == 0
+                            ? BossType.LastBoss
+                            : BossType.MiddleBoss;
                     }
 
                     return stageId % 50 == 0
