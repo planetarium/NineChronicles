@@ -193,7 +193,7 @@ namespace Nekoyume.UI.Module
                         var stageModel = new WorldMapStage.ViewModel(
                             SharedViewModel.StageType,
                             stageTuple.stageId,
-                            GetBossType(stageTuple.stageId, stageTuple.hasBoss, eventType),
+                            GetBossType(stageTuple.stageId, stageTuple.hasBoss),
                             eventType,
                             WorldMapStage.State.Normal);
 
@@ -224,7 +224,8 @@ namespace Nekoyume.UI.Module
                     nextPageShouldHide = true;
                 }
 
-                BossType GetBossType(int stageId, bool hasBoss, EventType eventType)
+                // todo: Remove this method, Read data from sheet
+                BossType GetBossType(int stageId, bool hasBoss)
                 {
                     if (!hasBoss)
                     {
