@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
@@ -9,6 +8,7 @@ namespace Nekoyume.UI.Module
     public class DetailedStatView : StatView
     {
         public TextMeshProUGUI additionalText;
+        public TextMeshProUGUI valueText2;
 
         public void Show(StatType statType, long statValue, long additionalStatValue)
         {
@@ -52,6 +52,21 @@ namespace Nekoyume.UI.Module
             }
 
             gameObject.SetActive(true);
+        }
+
+        public void ShowModify(StatType statType, long addValue, long percentageValue)
+        {
+            const string none = "-";
+            statTypeText.text = statType.ToString();
+            valueText.text = addValue > 0 ? $"+{statType.ValueToString(addValue)}" : none;
+            valueText2.text = percentageValue > 0 ? $"+{percentageValue:0.#\\%}" : none;
+
+            gameObject.SetActive(true);
+        }
+
+        public override void Hide()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

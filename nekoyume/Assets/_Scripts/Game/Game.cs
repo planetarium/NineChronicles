@@ -32,6 +32,7 @@ using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Extensions;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -764,6 +765,8 @@ namespace Nekoyume.Game
                         .ToList();
                     SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
                 }).AddTo(gameObject);
+
+                yield return InitializeStakeStateAsync().ToCoroutine();
             }
 
             IEnumerator CoInitializeSecondWidget()
@@ -1192,6 +1195,71 @@ namespace Nekoyume.Game
             TableSheets = await TableSheets.MakeTableSheetsAsync(csv);
             sw.Stop();
             Debug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
+        }
+
+        private async UniTask InitializeStakeStateAsync()
+        {
+            // NOTE: Initialize staking states after setting GameConfigState.
+            var stakeAddr = Model.Stake.StakeStateV2.DeriveAddress(Agent.Address);
+            var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
+            var goldCurrency = States.GoldBalanceState.Gold.Currency;
+            var balance = goldCurrency * 0;
+            var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+            var stakeRegularRewardSheet = new StakeRegularRewardSheet();
+            var policySheet = TableSheets.StakePolicySheet;
+            Address[] sheetAddr;
+            Model.Stake.StakeStateV2? stakeState = null;
+            if (!StakeStateUtilsForClient.TryMigrate(
+                    stakeStateIValue,
+                    States.Instance.GameConfigState,
+                    out var stakeStateV2))
+            {
+                if (Agent is RPCAgent)
+                {
+                    sheetAddr = new[]
+                    {
+                        Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
+                        Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                    };
+                }
+                // It is local play. local genesis block not has Stake***Sheet_V*.
+                // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
+                else
+                {
+                    sheetAddr = new[]
+                    {
+                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
+                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
+                    };
+                }
+            }
+            else
+            {
+                stakeState = stakeStateV2;
+                balance = await Agent.GetBalanceAsync(stakeAddr, goldCurrency);
+                sheetAddr = new[]
+                {
+                    Addresses.GetSheetAddress(
+                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                    Addresses.GetSheetAddress(
+                        stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                };
+            }
+
+            var sheets = await Agent.GetSheetsAsync(sheetAddr);
+            stakeRegularFixedRewardSheet.Set(sheets[sheetAddr[0]].ToDotnetString());
+            stakeRegularRewardSheet.Set(sheets[sheetAddr[1]].ToDotnetString());
+            var level = balance.RawValue > 0
+                ? stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
+                    Agent.Address,
+                    balance)
+                : 0;
+            States.Instance.SetStakeState(
+                stakeState,
+                new GoldBalanceState(stakeAddr, balance),
+                level,
+                stakeRegularFixedRewardSheet,
+                stakeRegularRewardSheet);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()

@@ -23,8 +23,8 @@ namespace Nekoyume.Helper
 
         public static WorldMapData.StageIcon GetStageIcon(EnumType.BossType bossType, EnumType.EventType eventType)
         {
-            return WorldMapData.bossStageIcons.FirstOrDefault(icon => icon.bossType == bossType) ??
-                   WorldMapData.eventStageIcons.FirstOrDefault(icon => icon.eventType == eventType) ??
+            return WorldMapData.eventStageIcons.FirstOrDefault(icon => icon.eventType == eventType) ??
+                   WorldMapData.bossStageIcons.FirstOrDefault(icon => icon.bossType == bossType) ??
                    WorldMapData.defaultStageIcon;
         }
 

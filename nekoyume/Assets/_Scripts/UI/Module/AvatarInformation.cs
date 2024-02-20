@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Lib9c;
 using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
@@ -19,7 +18,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
-using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
@@ -955,6 +953,10 @@ namespace Nekoyume.UI.Module
                             x.stat.TotalValueAsLong)));
             }
 
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
+
             characterStats.SetAll(
                 avatarState.level,
                 equipments,
@@ -962,7 +964,8 @@ namespace Nekoyume.UI.Module
                 consumables,
                 runeStatModifiers,
                 equipmentSetEffectSheet,
-                costumeSheet);
+                costumeSheet,
+                collectionStatModifiers);
 
             UpdateCp();
             stats.SetData(characterStats);

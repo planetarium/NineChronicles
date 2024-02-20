@@ -10,7 +10,6 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
@@ -76,6 +75,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Sprite dccSlotDefaultSprite;
+
+        [SerializeField]
+        private Button collectionEffectButton;
 
         private Image _activeDcc;
         private Image _activeCostume;
@@ -151,6 +153,12 @@ namespace Nekoyume.UI
             {
                 Dcc.instance.SetVisible(_isVisibleDcc.Value ? 0 : 1);
                 _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
+            });
+
+            collectionEffectButton.onClick.AddListener(() =>
+            {
+                Find<CollectionEffectPopup>().Show();
+                AudioController.PlayClick();
             });
 
             base.Awake();

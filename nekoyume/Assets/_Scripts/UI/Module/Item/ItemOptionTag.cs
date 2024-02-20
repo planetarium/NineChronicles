@@ -84,8 +84,6 @@ namespace Nekoyume.UI.Module
             background.saturation = data.GradeHsvSaturation;
             background.value = data.GradeHsvValue;
             background.gameObject.SetActive(true);
-
-
         }
     }
 }

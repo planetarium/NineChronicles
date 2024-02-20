@@ -201,7 +201,7 @@ namespace Nekoyume.Helper
                     shortcutAction = () =>
                     {
                         caller.Close();
-                        Application.OpenURL(StakingPopup.StakingUrl);
+                        Widget.Find<StakingPopup>().Show();
                     };
                     guideText = L10nManager.Localize("UI_PLACE_STAKING");
                     break;

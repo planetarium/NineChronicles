@@ -8,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -50,13 +49,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI continueText = null;
 
-        [SerializeField]
+        [SerializeField] [Header("Quest")]
         private GameObject questRewards = null;
 
         [SerializeField]
         private SimpleCountableItemView[] questRewardViews = null;
 
-        [SerializeField]
+        [SerializeField] [Header("Recipe")]
         private GameObject recipeAreaParent = null;
 
         [SerializeField]
@@ -71,7 +70,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI recipeOptionText = null;
 
-        [SerializeField]
+        [SerializeField] [Header("Menu")]
         private GameObject menuContainer = null;
 
         [SerializeField]

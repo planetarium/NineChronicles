@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> HasNotification;
         public readonly ReactiveProperty<bool> Disabled;
         public readonly ReactiveProperty<bool> GrindingCountEnabled;
+        public readonly ReactiveProperty<bool> CollectionSelected;
 
         public InventoryItem(ItemBase itemBase, int count, bool limited, bool tradable)
         {
@@ -37,6 +38,7 @@ namespace Nekoyume.UI.Model
             HasNotification = new ReactiveProperty<bool>(false);
             Disabled = new ReactiveProperty<bool>(false);
             GrindingCountEnabled = new ReactiveProperty<bool>(false);
+            CollectionSelected = new ReactiveProperty<bool>(false);
         }
 
         public InventoryItem(RuneState runeState)
@@ -52,6 +54,7 @@ namespace Nekoyume.UI.Model
             HasNotification = new ReactiveProperty<bool>(false);
             Disabled = new ReactiveProperty<bool>(false);
             GrindingCountEnabled = new ReactiveProperty<bool>(false);
+            CollectionSelected = new ReactiveProperty<bool>(false);
         }
 
         public InventoryItem(FungibleAssetValue fungibleAssetValue)
@@ -68,6 +71,7 @@ namespace Nekoyume.UI.Model
             HasNotification = new ReactiveProperty<bool>(false);
             Disabled = new ReactiveProperty<bool>(false);
             GrindingCountEnabled = new ReactiveProperty<bool>(false);
+            CollectionSelected = new ReactiveProperty<bool>(false);
         }
     }
 

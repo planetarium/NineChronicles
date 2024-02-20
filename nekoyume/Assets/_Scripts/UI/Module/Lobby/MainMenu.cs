@@ -19,6 +19,7 @@ namespace Nekoyume.UI.Module.Lobby
         Dcc,
         PatrolReward,
         SeasonPass,
+        Collection,
     }
 
     public class MainMenu : MonoBehaviour
@@ -81,6 +82,7 @@ namespace Nekoyume.UI.Module.Lobby
                 case MenuType.Staking:
                 case MenuType.Dcc:
                 case MenuType.PatrolReward:
+                case MenuType.Collection:
                     _requireStage = TutorialEndStage;
                     break;
                 default:

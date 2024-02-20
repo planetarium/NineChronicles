@@ -59,6 +59,9 @@ namespace Nekoyume.UI.Module
                 ItemView.LevelLimitObject.SetActive(false);
                 ItemView.RewardReceived.SetActive(false);
                 ItemView.RuneNotificationObj.SetActiveSafe(false);
+                ItemView.RuneSelectMove.SetActive(false);
+                ItemView.SelectCollectionObject.SetActive(false);
+                ItemView.SelectArrowObject.SetActive(false);
 
                 disposable?.Dispose();
 
@@ -71,7 +74,7 @@ namespace Nekoyume.UI.Module
                     {
                         var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemInfo.Id];
                         ItemView.GradeImage.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
-                        
+
                         var dummyItem = ItemFactory.CreateItem(itemSheetData, new Cheat.DebugRandom());
                         itemBaseForToolTip = dummyItem;
                     }

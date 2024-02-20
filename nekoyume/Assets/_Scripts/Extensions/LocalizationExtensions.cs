@@ -568,7 +568,12 @@ namespace Nekoyume
 
         public static Color GetElementalTypeColor(this ItemBase item)
         {
-            return item.ElementalType switch
+            return GetElementalTypeColor(item.ElementalType);
+        }
+
+        public static Color GetElementalTypeColor(this ElementalType elementalType)
+        {
+            return elementalType switch
             {
                 ElementalType.Normal => Palette.GetColor(EnumType.ColorType.TextElement00),
                 ElementalType.Fire => Palette.GetColor(EnumType.ColorType.TextElement01),
@@ -732,6 +737,29 @@ namespace Nekoyume
 
             Debug.LogWarning($"This Currency is not defined in 9c! {asset.Currency.ToString()}");
             return string.Empty;
+        }
+
+        public static string GetLocalizedName(this ItemSheet.Row row, int level)
+        {
+            var itemName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
+            if (level > 0)
+            {
+                itemName = $"+{level} {itemName}";
+            }
+
+            return $"<color=#{GetColorHexByGrade(row.Grade)}>{itemName}</color>";
+        }
+
+        public static (Color gradeColor, string gradeText, string subTypeText)
+            GetGradeData(this ItemSheet.Row row)
+        {
+            var gradeColor = GetItemGradeColor(row.Grade);
+
+            var grade = row.Grade >= 1 ? row.Grade : 1;
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subTypeText = GetLocalizedItemSubTypeText(row.ItemSubType);
+
+            return (gradeColor, gradeText, subTypeText);
         }
     }
 }

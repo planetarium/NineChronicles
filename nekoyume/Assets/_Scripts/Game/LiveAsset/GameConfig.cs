@@ -20,6 +20,7 @@ namespace Nekoyume.Game.LiveAsset
             public const int ChargeAP = 23;
             public const int ShowPopupRoomEntering = 51;
             public const int Sweep = 23;
+            public const int Collection = WorkShop;
         }
 
         public const string DiscordLink = "https://discord.com/invite/planetarium";

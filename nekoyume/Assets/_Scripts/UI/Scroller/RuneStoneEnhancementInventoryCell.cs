@@ -40,6 +40,9 @@ namespace Nekoyume.UI.Scroller
             view.TradableObject.SetActive(false);
             view.GrindingCountObject.SetActive(false);
             view.RuneNotificationObj.SetActiveSafe(false);
+            view.RuneSelectMove.SetActive(false);
+            view.SelectCollectionObject.SetActive(false);
+            view.SelectArrowObject.SetActive(false);
 
             if (RuneFrontHelper.TryGetRuneIcon(viewModel.SheetData.Id, out var icon))
             {

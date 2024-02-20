@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: EventDungeon_04_Back
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    - serializedVersion: 3
+      m_BuildTarget: Android
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 47
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: iPhone
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 50
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 6ee76c0085269014092eac19a70cc0d3, type: 3}
+    - {fileID: 2800000, guid: 4284d2e32f19c6d4baa818713112777b, type: 3}
+    - {fileID: 2800000, guid: 91f186994595802409aacfbd6bc51d9d, type: 3}
+    - {fileID: 2800000, guid: fb4b874570dafbb448579e9a6c99f851, type: 3}
+    - {fileID: 2800000, guid: 88f3b2c050784db4d94a14cc3a20b2cd, type: 3}
+    - {fileID: 2800000, guid: fcd3aa2b5f34a474eaf30b6332dd12b5, type: 3}
+    - {fileID: 2800000, guid: 3c39f5a1597316d4eb9396b028956b3c, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 88f3b2c050784db4d94a14cc3a20b2cd, type: 3}
+  - {fileID: 21300000, guid: 4684897164ed3794bb0cb3dab70fd408, type: 3}
+  - {fileID: 21300000, guid: 3c39f5a1597316d4eb9396b028956b3c, type: 3}
+  - {fileID: 21300000, guid: 4284d2e32f19c6d4baa818713112777b, type: 3}
+  - {fileID: 21300000, guid: 3582ca445f5c2e845a5609779ef64075, type: 3}
+  - {fileID: 21300000, guid: fb4b874570dafbb448579e9a6c99f851, type: 3}
+  - {fileID: 21300000, guid: e04f8e88ea8a2ee4f9463fab4c69943c, type: 3}
+  - {fileID: 21300000, guid: 6848f839219bc494da9d18d448a79883, type: 3}
+  - {fileID: 21300000, guid: 91f186994595802409aacfbd6bc51d9d, type: 3}
+  - {fileID: 21300000, guid: fcd3aa2b5f34a474eaf30b6332dd12b5, type: 3}
+  - {fileID: 21300000, guid: 48dc9d2d6383ab546a2dbcf94a6bc5d0, type: 3}
+  - {fileID: 21300000, guid: 833d6abfa28dfe646b12a8c415166664, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - eventdungeon_04_02_02
+  - bg_eventdungeon_04_03_02
+  - eventdungeon_04_03_02
+  - eventdungeon_04_01_01
+  - bg_eventdungeon_04_02_02
+  - eventdungeon_04_02_01
+  - bg_eventdungeon_04_02_01
+  - bg_eventdungeon_04_03_01
+  - eventdungeon_04_01_02
+  - eventdungeon_04_03_01
+  - bg_eventdungeon_04_01_02
+  - bg_eventdungeon_04_01_01
+  m_RenderDataMap: {}
+  m_Tag: EventDungeon_04_Back
+  m_IsVariant: 0

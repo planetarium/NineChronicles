@@ -13930,7 +13930,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7379591848111655637
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17667,7 +17667,7 @@ PrefabInstance:
     - target: {fileID: 6886844363117198241, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 83
       objectReference: {fileID: 0}
     - target: {fileID: 8032470372960620389, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
@@ -17677,47 +17677,47 @@ PrefabInstance:
     - target: {fileID: 8168542379690985217, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8168542379690985217, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8168542379690985217, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 8168542379690985217, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 8168542379690985217, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -83
       objectReference: {fileID: 0}
     - target: {fileID: 8738969020597575139, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8738969020597575139, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8738969020597575139, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 8738969020597575139, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 40
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0e42ee2c34e70f4d96fc2f58c308010, type: 3}

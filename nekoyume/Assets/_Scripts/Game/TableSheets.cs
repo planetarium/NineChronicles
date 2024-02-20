@@ -9,6 +9,7 @@ using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.Pet;
+using Nekoyume.TableData.Stake;
 using Nekoyume.TableData.Summon;
 using UniRx.Diagnostics;
 using Debug = UnityEngine.Debug;
@@ -197,7 +198,7 @@ namespace Nekoyume.Game
         public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
-
+        public StakePolicySheet StakePolicySheet { get; private set; }
         public CrystalHammerPointSheet CrystalHammerPointSheet { get; private set; }
 
         public EventScheduleSheet EventScheduleSheet { get; private set; }
@@ -251,6 +252,8 @@ namespace Nekoyume.Game
         public CreateAvatarItemSheet CreateAvatarItemSheet { get; private set; }
 
         public CreateAvatarFavSheet CreateAvatarFavSheet { get; private set; }
+
+        public CollectionSheet CollectionSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

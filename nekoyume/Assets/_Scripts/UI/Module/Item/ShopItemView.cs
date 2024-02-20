@@ -40,7 +40,11 @@ namespace Nekoyume.UI.Module
             baseItemView.DimObject.SetActive(false);
             baseItemView.EquippedObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
+            baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectCollectionObject.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
 
             if (model.ItemBase is not null)
             {

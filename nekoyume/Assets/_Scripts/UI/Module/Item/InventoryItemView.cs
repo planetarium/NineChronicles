@@ -57,7 +57,10 @@ namespace Nekoyume.UI.Module
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
+            baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite =
                 BaseItemView.GetItemIcon(model.ItemBase);
@@ -92,8 +95,7 @@ namespace Nekoyume.UI.Module
             baseItemView.OptionTag.gameObject.SetActive(true);
             baseItemView.OptionTag.Set(model.ItemBase);
 
-            baseItemView.CountText.gameObject.SetActive(
-                model.ItemBase.ItemType == ItemType.Material);
+            baseItemView.CountText.gameObject.SetActive(model.Count.Value > 1);
             baseItemView.CountText.text = model.Count.Value.ToString();
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b))
@@ -111,6 +113,9 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
             model.GrindingCountEnabled
                 .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
+                .AddTo(_disposables);
+            model.CollectionSelected
+                .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b))
                 .AddTo(_disposables);
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)
@@ -138,6 +143,8 @@ namespace Nekoyume.UI.Module
             baseItemView.TradableObject.SetActive(false);
             baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
 
             if (RuneFrontHelper.TryGetRuneIcon(model.RuneState.RuneId, out var icon))
             {
@@ -185,6 +192,9 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b))
                 .AddTo(_disposables);
+            model.CollectionSelected
+                .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b))
+                .AddTo(_disposables);
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)
                 .Subscribe(context.OnClick.OnNext).AddTo(_disposables);
@@ -214,6 +224,8 @@ namespace Nekoyume.UI.Module
             baseItemView.OptionTag.gameObject.SetActive(false);
             baseItemView.CountText.gameObject.SetActive(true);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
 
             baseItemView.CountText.text = model.FungibleAssetValue.GetQuantityString();
             baseItemView.ItemImage.overrideSprite = model.FungibleAssetValue.GetIconSprite();
@@ -252,6 +264,9 @@ namespace Nekoyume.UI.Module
             model.DimObjectEnabled.Subscribe(b => baseItemView.DimObject.SetActive(b))
                 .AddTo(_disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b))
+                .AddTo(_disposables);
+            model.CollectionSelected
+                .Subscribe(b => baseItemView.SelectCollectionObject.SetActive(b))
                 .AddTo(_disposables);
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)

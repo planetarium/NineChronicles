@@ -235,5 +235,18 @@ namespace Nekoyume.Blockchain
 
             throw new StateNullException(ReservedAddresses.LegacyAccount, runeSlotAddress);
         }
+
+        public static CollectionState GetCollectionState(
+            HashDigest<SHA256> hash,
+            Address avatarAddress)
+        {
+            var value = GetState(hash, Addresses.Collection, avatarAddress);
+            if (value is List list)
+            {
+                return new CollectionState(list);
+            }
+
+            return new CollectionState();
+        }
     }
 }
