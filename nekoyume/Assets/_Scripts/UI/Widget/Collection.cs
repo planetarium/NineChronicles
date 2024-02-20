@@ -70,7 +70,7 @@ namespace Nekoyume.UI
         private ItemType _currentItemType;
         private StatType _currentStatType;
 
-        private int _initializedAvatarIndex;
+        private int? _initializedAvatarIndex = null;
 
         private readonly List<CollectionModel> _models = new List<CollectionModel>();
 
