@@ -11,6 +11,7 @@ using Nekoyume.TableData.Event;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
+using EventType = Nekoyume.EnumType.EventType;
 
 namespace Nekoyume.UI.Module
 {
@@ -153,7 +154,7 @@ namespace Nekoyume.UI.Module
             StageType stageType,
             List<(int stageId, bool hasBoss)> stageTuples)
         {
-            var eventType = EventManager.GetEventInfo().EventType;
+            var eventType = stageType == StageType.EventDungeon ? EventManager.GetEventInfo().EventType : EventType.Default;
 
             var stageWaveRowsCount = stageTuples.Count;
             var stageOffset = 0;
