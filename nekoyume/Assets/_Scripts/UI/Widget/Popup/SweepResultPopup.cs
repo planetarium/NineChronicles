@@ -267,7 +267,6 @@ namespace Nekoyume.UI
         private void ApplySpeed(float speed)
         {
             playableDirector.playableGraph.GetRootPlayable(0).SetSpeed(speed);
-            spine.timeScale = speed;
             background.speed = speed;
         }
 
