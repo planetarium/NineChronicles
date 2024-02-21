@@ -5,6 +5,7 @@ using Lib9c;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -66,6 +67,8 @@ namespace Nekoyume.UI
 
         private bool _benefitListViewsInitialized;
 
+        private int[] _tempArenaBonusValues = { 0, 0, 100, 200, 200, 200, 200, 200, 200 };
+
         protected override void Awake()
         {
             base.Awake();
@@ -124,6 +127,11 @@ namespace Nekoyume.UI
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Where(_ => gameObject.activeSelf).Subscribe(OnBlockUpdated)
                 .AddTo(gameObject);
+            var arenaBonusValues = LiveAssetManager.instance.StakingArenaBonusValues;
+            if (arenaBonusValues.Length > 0)
+            {
+                _tempArenaBonusValues = arenaBonusValues;
+            }
         }
 
         public override void Show(bool ignoreStartAnimation = false)
@@ -322,10 +330,10 @@ namespace Nekoyume.UI
             var totalDepositNcg = states.StakedBalanceState.Gold + states.GoldBalanceState.Gold;
             depositText.text = $"<Style=G0>{totalDepositNcg.GetQuantityString()}";
             stakedNcgValueText.text = stakedDeposit.ToString();
-            // TODO: get data from external source
+
             buffBenefitsViews[0].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("ARENA_REWARD_BONUS"),
-                    0));
+                    _tempArenaBonusValues[level]));
             buffBenefitsViews[1].Set(
                 string.Format(BuffBenefitRateFormat, L10nManager.Localize("GRINDING_CRYSTAL_BONUS"),
                     grindingBonus));
