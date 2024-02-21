@@ -559,6 +559,11 @@ namespace Nekoyume.Game.Character
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
                 var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
+
+#if TEST_LOG
+                Debug.Log($"[TEST_LOG][ProcessBuff] {effect.name} {buff.BuffInfo.Id} ");
+#endif
+
                 effect.Play();
                 if (effect.IsPersisting)
                 {
