@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: TestbedCreateAvatar
   m_EditorClassIdentifier: 
   Data:
-    BlockDifficulty: 32768
-    TradableMaterialCount: 9999999
-    MaterialCount: 999999
+    Level: 400
+    TradableMaterialCount: 6000
+    MaterialCount: 5000
+    RuneStoneCount: 4000
+    SoulStoneCount: 3000
+    AddPet: 0
     FoodCount: 50
+    FullOptionEquipmentRecipeIds: 150000003e00000067000000800000009400000098000000aa000000a5000000a00000009d000000470000001e000000
     CustomEquipmentItems:
     - ID: 10143001
       Level: 10
@@ -114,6 +118,9 @@ MonoBehaviour:
     - ID: 10540000
       Level: 12
       OptionIds: 95c3d23e96c3d23e97c3d23e98c3d23e
-    - ID: 10540000
-      Level: 12
-      OptionIds: 8bc3d23e8cc3d23e8dc3d23e
+    - ID: 10254001
+      Level: 30
+      OptionIds: 968a4f3e4d20e83e4d20e83e
+    - ID: 10354001
+      Level: 30
+      OptionIds: 6120e83e6120e83ea49e7a3f
