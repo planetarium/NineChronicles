@@ -554,17 +554,12 @@ namespace Nekoyume.UI
 
         public void StakingClick()
         {
-#if UNITY_ANDROID || UNITY_IOS
-            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-#else
             if (!btnStaking.IsUnlocked)
             {
                 return;
             }
 
             Find<StakingPopup>().Show();
-#endif
         }
 
         public void WorldBossClick()
