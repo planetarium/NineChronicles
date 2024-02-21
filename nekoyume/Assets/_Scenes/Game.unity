@@ -374,6 +374,13 @@ MonoBehaviour:
       type: 3}
     InitCount: 8
     AddCount: 8
+  - Prefab: {fileID: 6480292753974600568, guid: 837736bf1d83a0545b2e6dd3548f0ed1,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 567492925472903853, guid: d7a82287ca7c1cb429791e364b7831a7, type: 3}
+    InitCount: 1
+    AddCount: 1
 --- !u!114 &76869998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -519,7 +526,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 50
@@ -865,7 +871,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 20
@@ -1070,7 +1075,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 1092445747
   m_SortingOrder: 0
@@ -1847,7 +1851,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 1092445747
   m_SortingOrder: 10
@@ -2405,7 +2408,6 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 0
@@ -2649,7 +2651,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 0
@@ -3203,7 +3204,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 10
@@ -3259,7 +3259,6 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 1001
@@ -3804,6 +3803,13 @@ MonoBehaviour:
       type: 3}
     InitCount: 2
     AddCount: 2
+  - Prefab: {fileID: 567492925472903853, guid: d7a82287ca7c1cb429791e364b7831a7, type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 6480292753974600568, guid: 837736bf1d83a0545b2e6dd3548f0ed1,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
 --- !u!114 &1333831685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3928,7 +3934,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 30
@@ -4022,7 +4027,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 60
@@ -4308,7 +4312,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 70
@@ -4694,7 +4697,6 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
   m_SortingOrder: 40
@@ -5211,7 +5213,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
