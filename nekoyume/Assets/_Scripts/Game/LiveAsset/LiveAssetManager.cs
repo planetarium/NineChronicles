@@ -26,8 +26,8 @@ namespace Nekoyume.Game.LiveAsset
         private const string JapaneseImagePostfix = "_JP";
 
         // TODO: this is temporary url and file.
-        private const string StakingLevelImageUrl = "https://9c-media.s3.ap-northeast-2.amazonaws.com/images/NcgStaking.png";
-        private const string StakingRewardImageUrl = "https://9c-media.s3.ap-northeast-2.amazonaws.com/images/StakingReward.png";
+        private const string StakingLevelImageUrl = "Etc/NcgStaking.png";
+        private const string StakingRewardImageUrl = "Etc/StakingReward.png";
         private const string StakingArenaBonusUrl = "https://rawcdn.githack.com/planetarium/NineChronicles.LiveAssets/Release/Assets/Json/arena-bonus-values";
 
         private readonly List<EventNoticeData> _bannerData = new();
@@ -221,8 +221,8 @@ namespace Nekoyume.Game.LiveAsset
 
         private async UniTaskVoid InitializeStakingResource()
         {
-            StakingLevelSprite = await GetTexture(StakingLevelImageUrl);
-            StakingRewardSprite = await GetTexture(StakingRewardImageUrl);
+            StakingLevelSprite = await GetTexture($"{_endpoint.ImageRootUrl}/{StakingLevelImageUrl}");
+            StakingRewardSprite = await GetTexture($"{_endpoint.ImageRootUrl}/{StakingRewardImageUrl}");
             RequestManager.instance
                 .GetJson(StakingArenaBonusUrl, response =>
                 {
