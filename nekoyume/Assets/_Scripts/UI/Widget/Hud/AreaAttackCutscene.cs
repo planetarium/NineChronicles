@@ -29,7 +29,7 @@ namespace Nekoyume.UI
         {
             var sprite = SpriteHelper.GetAreaAttackCutsceneSprite(armorId);
 
-            var shader = Shader.Find("Sprites/Default");
+            var shader = Shader.Find("Spine/Skeleton");
             var material = new Material(shader);
 
             var slot       = cutscene.SkeletonAnimation.skeleton.FindSlot(SlotName);
