@@ -31,6 +31,7 @@ using Nekoyume.Arena;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
@@ -1987,6 +1988,9 @@ namespace Nekoyume.Blockchain
                 AirbridgeUnity.TrackEvent(evt);
             }
 
+            BattleRenderManager.Instance.StartStage(log);
+
+
             if (Widget.Find<LoadingScreen>().IsActive())
             {
                 if (Widget.Find<BattlePreparation>().IsActive())
@@ -2134,6 +2138,8 @@ namespace Nekoyume.Blockchain
             var stage = Game.Game.instance.Stage;
             stage.StageType = StageType.EventDungeon;
             stage.PlayCount = playCount;
+
+            BattleRenderManager.Instance.StartStage(log);
 
             if (Widget.Find<LoadingScreen>().IsActive())
             {
