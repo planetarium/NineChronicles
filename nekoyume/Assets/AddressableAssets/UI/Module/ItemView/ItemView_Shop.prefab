@@ -47,6 +47,11 @@ PrefabInstance:
       propertyPath: m_EffectFactor
       value: 0.17767578
       objectReference: {fileID: 0}
+    - target: {fileID: 8748351491366425857, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8953210588604891776, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_Pivot.x
