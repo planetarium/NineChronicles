@@ -384,8 +384,6 @@ namespace Nekoyume.Game.Character
 
         protected override void ShowCutscene()
         {
-            // TODO: Change this after fixing the cutscene resource
-            return;
             AreaAttackCutscene.Show(Helper.Util.GetArmorId());
         }
 
