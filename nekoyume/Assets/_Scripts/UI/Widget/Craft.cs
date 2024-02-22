@@ -446,6 +446,7 @@ namespace Nekoyume.UI
             if (Animator.GetBool(FirstClicked))
             {
                 Animator.SetTrigger(EquipmentClick);
+                Animator.ResetTrigger(ConsumableClick);
             }
         }
 
