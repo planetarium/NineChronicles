@@ -87,12 +87,10 @@ namespace Nekoyume.Game.Character
             battle.BossStatus.SetBuff(CharacterModel.Buffs);
         }
 
-        public override IEnumerator CoProcessDamage(Model.BattleStatus.Skill.SkillInfo info,
-            bool isConsiderDie,
+        public override IEnumerator CoProcessDamage(Model.BattleStatus.Skill.SkillInfo info, bool isConsiderDie,
             bool isConsiderElementalType)
         {
-            yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie,
-                isConsiderElementalType));
+            yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
 
             if (!IsDead)
                 ShowSpeech("ENEMY_DAMAGE");
@@ -129,8 +127,7 @@ namespace Nekoyume.Game.Character
             var center = HitPointBoxCollider.center;
             var size = HitPointBoxCollider.size;
             HitPointLocalOffset = new Vector3(center.x - size.x / 2, center.y - size.y / 2);
-            attackPoint.transform.localPosition =
-                new Vector3(HitPointLocalOffset.x - CharacterModel.attackRange, 0f);
+            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - CharacterModel.attackRange, 0f);
         }
 
         #endregion
@@ -172,18 +169,17 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        protected override void ProcessAttack(CharacterBase target,
-            Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
+        protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
-            ShowSpeech("ENEMY_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
+            ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("ENEMY_ATTACK");
         }
 
         protected override IEnumerator CoAnimationCast(Model.BattleStatus.Skill.SkillInfo info)
         {
-            ShowSpeech("ENEMY_SKILL", (int)info.ElementalType, (int)info.SkillCategory);
+            ShowSpeech("ENEMY_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 

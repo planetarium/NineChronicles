@@ -57,7 +57,6 @@ namespace Nekoyume.Game.Character
             {
                 Animator.Idle();
             }
-
             _target = target;
         }
 
@@ -80,8 +79,7 @@ namespace Nekoyume.Game.Character
         public IEnumerator CoNormalAttack(int dmg, bool critical)
         {
             yield return StartCoroutine(CoAnimationAttack(critical));
-            Prologue.PopupDmg(dmg, _target.gameObject, false, critical, ElementalType.Normal,
-                false);
+            Prologue.PopupDmg(dmg, _target.gameObject, false, critical, ElementalType.Normal, false);
             _target.Animator.Hit();
         }
 
@@ -125,15 +123,13 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationCastBlow(elementalType));
 
-            var dmgMap = new[] { 1374, 2748, 4122, 8244, 16488 };
-            var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(_target.gameObject,
-                elementalType, SkillCategory.BlowAttack, SkillTargetType.Enemies);
+            var dmgMap = new[] {1374, 2748, 4122, 8244, 16488};
+            var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(_target.gameObject, elementalType, SkillCategory.BlowAttack, SkillTargetType.Enemies);
             effect.Play();
             for (var i = 0; i < 5; i++)
             {
                 var sec = i == 0 ? 0 : i / 10f;
-                Prologue.PopupDmg(dmgMap[i], _target.gameObject, false, i == 4, elementalType,
-                    false);
+                Prologue.PopupDmg(dmgMap[i], _target.gameObject, false, i == 4, elementalType, false);
                 _target.Animator.Hit();
                 yield return new WaitForSeconds(sec);
             }
@@ -195,8 +191,7 @@ namespace Nekoyume.Game.Character
         public IEnumerator CoDoubleAttack(int[] damageMap, bool[] criticalMap)
         {
             var go = _target.gameObject;
-            var effect = Game.instance.Stage.SkillController.Get<SkillDoubleVFX>(go,
-                ElementalType.Fire, SkillCategory.DoubleAttack, SkillTargetType.Enemy);
+            var effect = Game.instance.Stage.SkillController.Get<SkillDoubleVFX>(go, ElementalType.Fire, SkillCategory.DoubleAttack, SkillTargetType.Enemy);
             for (var i = 0; i < 2; i++)
             {
                 var first = i == 0;
@@ -210,9 +205,7 @@ namespace Nekoyume.Game.Character
                 {
                     effect.SecondStrike();
                 }
-
-                Prologue.PopupDmg(damageMap[i], go, false, criticalMap[i], ElementalType.Fire,
-                    false);
+                Prologue.PopupDmg(damageMap[i], go, false, criticalMap[i], ElementalType.Fire, false);
                 _target.Animator.Hit();
                 yield return new WaitUntil(() => _target.Animator.IsIdle());
             }
@@ -244,7 +237,7 @@ namespace Nekoyume.Game.Character
         {
             AttackEndCalled = false;
             var position = ActionCamera.instance.Cam.ScreenToWorldPoint(
-                new Vector2((float)Screen.width / 2, (float)Screen.height / 2));
+                new Vector2((float) Screen.width / 2, (float) Screen.height / 2));
             position.z = 0f;
             var effect = Game.instance.Stage.objectPool.Get<FenrirSkillVFX>(position);
             effect.Stop();
@@ -265,9 +258,7 @@ namespace Nekoyume.Game.Character
                 {
                     Time.timeScale = 0.4f;
                 }
-
-                Prologue.PopupDmg(damageMap[i], _target.gameObject, false, criticalMap[i],
-                    ElementalType.Normal, false);
+                Prologue.PopupDmg(damageMap[i], _target.gameObject, false, criticalMap[i], ElementalType.Normal, false);
                 _target.Animator.Hit();
                 if (first)
                 {

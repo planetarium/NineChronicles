@@ -75,28 +75,39 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        [SerializeField] private Stage stage;
+        [SerializeField]
+        private Stage stage;
 
-        [SerializeField] private Arena arena;
+        [SerializeField]
+        private Arena arena;
 
-        [SerializeField] private RaidStage raidStage;
+        [SerializeField]
+        private RaidStage raidStage;
 
-        [SerializeField] private Lobby lobby;
+        [SerializeField]
+        private Lobby lobby;
 
-        [SerializeField] private bool useSystemLanguage = true;
+        [SerializeField]
+        private bool useSystemLanguage = true;
 
-        [SerializeField] private bool useLocalHeadless;
+        [SerializeField]
+        private bool useLocalHeadless;
 
-        [SerializeField] private bool useLocalMarketService;
+        [SerializeField]
+        private bool useLocalMarketService;
 
-        [SerializeField] private string marketDbConnectionString =
+        [SerializeField]
+        private string marketDbConnectionString =
             "Host=localhost;Username=postgres;Database=market";
 
-        [SerializeField] private LanguageTypeReactiveProperty languageType;
+        [SerializeField]
+        private LanguageTypeReactiveProperty languageType;
 
-        [SerializeField] private Prologue prologue;
+        [SerializeField]
+        private Prologue prologue;
 
-        [SerializeField] private GameObject debugConsolePrefab;
+        [SerializeField]
+        private GameObject debugConsolePrefab;
 
         public PlanetId? CurrentPlanetId { get; private set; }
 
@@ -207,8 +218,7 @@ namespace Nekoyume.Game
 
 #if !UNITY_EDITOR && UNITY_IOS
             AppTrackingTransparency.OnAuthorizationStatusReceived += OnAuthorizationStatusReceived;
-            AppTrackingTransparency.AuthorizationStatus status =
- AppTrackingTransparency.TrackingAuthorizationStatus();
+            AppTrackingTransparency.AuthorizationStatus status = AppTrackingTransparency.TrackingAuthorizationStatus();
             if (status == AppTrackingTransparency.AuthorizationStatus.NotDetermined)
             {
                 AppTrackingTransparency.RequestTrackingAuthorization();
@@ -291,7 +301,7 @@ namespace Nekoyume.Game
                 KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
             {
                 Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty in mobile." +
-                          " Set cached private key instead.");
+                                  " Set cached private key instead.");
                 _commandLineOptions.PrivateKey =
                     KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             }
@@ -380,11 +390,11 @@ namespace Nekoyume.Game
             {
                 var popup = Widget.Find<IconAndButtonSystem>();
                 popup.Show(
-                    "UI_REQUIRED_UPDATE_TITLE",
-                    "UI_REQUIRED_UPDATE_CONTENT",
-                    "UI_OK",
-                    true,
-                    IconAndButtonSystem.SystemType.Information);
+                        "UI_REQUIRED_UPDATE_TITLE",
+                        "UI_REQUIRED_UPDATE_CONTENT",
+                        "UI_OK",
+                        true,
+                        IconAndButtonSystem.SystemType.Information);
                 popup.ConfirmCallback = popup.CancelCallback = () =>
                 {
 #if UNITY_ANDROID
@@ -475,8 +485,7 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-            var createSecondWidgetCoroutine =
-                StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
+            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
@@ -534,8 +543,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                MarketServiceClient =
-                    new MarketServiceClient(_commandLineOptions.MarketServiceHost);
+                MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
                 Debug.Log("[Game] Start()... MarketServiceClient initialized." +
                           $" host: {_commandLineOptions.MarketServiceHost}");
             }
@@ -544,9 +552,8 @@ namespace Nekoyume.Game
             if (string.IsNullOrEmpty(_commandLineOptions.PatrolRewardServiceHost))
             {
                 PatrolRewardServiceClient = new NineChroniclesAPIClient(string.Empty);
-                Debug.Log(
-                    "[Game] Start()... PatrolRewardServiceClient initialized with empty host url" +
-                    " because of no PatrolRewardServiceHost");
+                Debug.Log("[Game] Start()... PatrolRewardServiceClient initialized with empty host url" +
+                          " because of no PatrolRewardServiceHost");
             }
             else
             {
@@ -561,13 +568,11 @@ namespace Nekoyume.Game
             {
                 Debug.Log("[Game] Start()... SeasonPassServiceManager not initialized" +
                           " because of no SeasonPassServiceHost");
-                SeasonPassServiceManager =
-                    new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
+                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
             }
             else
             {
-                SeasonPassServiceManager =
-                    new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
+                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
                 if (!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
                 {
                     SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
@@ -634,20 +639,17 @@ namespace Nekoyume.Game
             sw.Start();
             Stage.Initialize();
             sw.Stop();
-            Debug.Log(
-                $"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            Debug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             sw.Reset();
             sw.Start();
             Arena.Initialize();
             sw.Stop();
-            Debug.Log(
-                $"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            Debug.Log($"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             sw.Reset();
             sw.Start();
             RaidStage.Initialize();
             sw.Stop();
-            Debug.Log(
-                $"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            Debug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             Helper.Util.TryGetAppProtocolVersionFromToken(
@@ -703,12 +705,10 @@ namespace Nekoyume.Game
                 innerSw.Reset();
                 innerSw.Start();
 #if UNITY_IOS
-                IAPServiceManager =
- new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Apple);
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Apple);
 #else
                 //pc has to find iap product for mail box system
-                IAPServiceManager =
-                    new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
 #endif
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
 
@@ -724,17 +724,13 @@ namespace Nekoyume.Game
                             continue;
                         }
 
-                        await Helper.Util.DownloadTextureRaw(
-                            $"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
 
                         foreach (var product in category.ProductList)
                         {
-                            await Helper.Util.DownloadTextureRaw(
-                                $"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
-                            await Helper.Util.DownloadTextureRaw(
-                                $"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
-                            await Helper.Util.DownloadTextureRaw(
-                                $"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
                         }
                     }
                 });
@@ -753,12 +749,10 @@ namespace Nekoyume.Game
                 innerSw.Start();
                 yield return SyncTableSheetsAsync().ToCoroutine();
                 innerSw.Stop();
-                Debug.Log(
-                    $"[Game/SyncTableSheets] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log($"[Game/SyncTableSheets] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
                 Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
 
-                var tableSheetsInitializedEvt =
-                    new AirbridgeEvent("Intro_Start_TableSheetsInitialized");
+                var tableSheetsInitializedEvt = new AirbridgeEvent("Intro_Start_TableSheetsInitialized");
                 AirbridgeUnity.TrackEvent(tableSheetsInitializedEvt);
 
                 RxProps.Start(Agent, States, TableSheets);
@@ -781,8 +775,7 @@ namespace Nekoyume.Game
                 innerSw.Start();
                 yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
                 innerSw.Stop();
-                Debug.Log(
-                    $"[Game] Start()... SecondWidgets initialized in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log($"[Game] Start()... SecondWidgets initialized in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
             }
         }
 
@@ -817,8 +810,7 @@ namespace Nekoyume.Game
             if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
                 Debug.Log("[Game] InGameDebugConsole enabled");
-                Util.IngameDebugConsoleCommands.IngameDebugConsoleObj =
-                    Instantiate(debugConsolePrefab);
+                Util.IngameDebugConsoleCommands.IngameDebugConsoleObj = Instantiate(debugConsolePrefab);
                 Util.IngameDebugConsoleCommands.Initailize();
             }
 
@@ -846,8 +838,7 @@ namespace Nekoyume.Game
 
             Debug.Log("[Game] CommandLineOptions loaded");
             Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
-            Debug.Log(
-                $"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
+            Debug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
         }
 
         private void SubscribeRPCAgent()
@@ -1114,7 +1105,6 @@ namespace Nekoyume.Game
 
                 Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.EndPledge);
             }
-
             yield break;
 
             IEnumerator SetTimeOut(Func<bool> condition)
@@ -1206,7 +1196,6 @@ namespace Nekoyume.Game
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(
                     AddressableAssetsContainerPath);
             }
-
             sw.Stop();
             Debug.Log($"[SyncTableSheets] load container: {sw.Elapsed}");
             sw.Restart();
@@ -1316,7 +1305,7 @@ namespace Nekoyume.Game
             Event.OnNestEnter.Invoke();
         }
 
-        #endregion
+#endregion
 
         protected override void OnApplicationQuit()
         {
@@ -1517,8 +1506,7 @@ namespace Nekoyume.Game
                     KeyManager.Instance.SignedInPrivateKey,
                     callback);
                 sw.Stop();
-                Debug.Log(
-                    $"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 yield break;
             }
 
@@ -1531,8 +1519,7 @@ namespace Nekoyume.Game
                     Debug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
                     if (!KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
                     {
-                        Debug.Log(
-                            "[Game] CoLogin()... LoginSystem.TryLoginWithLocalPpk() is false.");
+                        Debug.Log("[Game] CoLogin()... LoginSystem.TryLoginWithLocalPpk() is false.");
                         introScreen.Show(
                             _commandLineOptions.KeyStorePath,
                             _commandLineOptions.PrivateKey,
@@ -1541,18 +1528,15 @@ namespace Nekoyume.Game
 
                     Debug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
                     yield return new WaitUntil(() => KeyManager.Instance.IsSignedIn);
-                    Debug.Log(
-                        "[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
+                    Debug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
 
                     // NOTE: Update CommandlineOptions.PrivateKey finally.
-                    _commandLineOptions.PrivateKey =
-                        KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
+                    _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
                     Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                               $" to ({KeyManager.Instance.SignedInAddress}).");
                 }
 
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType
-                    .WaitingForConnectingToPlanet);
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
                 sw.Reset();
                 sw.Start();
                 yield return Agent.Initialize(
@@ -1560,8 +1544,7 @@ namespace Nekoyume.Game
                     KeyManager.Instance.SignedInPrivateKey,
                     callback);
                 sw.Stop();
-                Debug.Log(
-                    $"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 dimmedLoadingScreen.Close();
                 yield break;
             }
@@ -1571,8 +1554,7 @@ namespace Nekoyume.Game
             sw.Start();
             planetContext = PlanetSelector.InitializeSelectedPlanetInfo(planetContext);
             sw.Stop();
-            Debug.Log(
-                $"[Game] CoLogin()... PlanetInfo selected in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            Debug.Log($"[Game] CoLogin()... PlanetInfo selected in {sw.ElapsedMilliseconds}ms.(elapsed)");
             if (planetContext.HasError)
             {
                 callback?.Invoke(false);
@@ -1594,12 +1576,10 @@ namespace Nekoyume.Game
 
                 // NOTE: Check PlanetContext.CanSkipPlanetSelection.
                 //       If true, then update planet account infos for IntroScreen.
-                if (planetContext.CanSkipPlanetSelection.HasValue &&
-                    planetContext.CanSkipPlanetSelection.Value)
+                if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
                 {
                     Debug.Log("[Game] CoLogin()... PlanetContext.CanSkipPlanetSelection is true.");
-                    dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType
-                        .WaitingForPlanetAccountInfoSyncing);
+                    dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                     yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                         planetContext,
                         pk.Address,
@@ -1647,8 +1627,7 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                           $" to ({pk.Address}).");
 
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType
-                    .WaitingForConnectingToPlanet);
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
                 sw.Reset();
                 sw.Start();
                 yield return Agent.Initialize(
@@ -1657,8 +1636,7 @@ namespace Nekoyume.Game
                     callback);
                 sw.Stop();
                 dimmedLoadingScreen.Close();
-                Debug.Log(
-                    $"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 yield break;
             }
 
@@ -1679,15 +1657,13 @@ namespace Nekoyume.Game
                 introScreen.OnClickStart.AsObservable()
                     .First()
                     .Subscribe(_ => startClicked = true);
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType
-                    .WaitingForPortalAuthenticating);
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
                 sw.Reset();
                 sw.Start();
                 var getTokensTask = PortalConnect.GetTokensSilentlyAsync();
                 yield return new WaitUntil(() => getTokensTask.IsCompleted);
                 sw.Stop();
-                Debug.Log(
-                    $"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 dimmedLoadingScreen.Close();
                 (email, _, agentAddrInPortal) = getTokensTask.Result;
                 if (!startClicked)
@@ -1717,10 +1693,8 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
 
                 // NOTE: Portal login flow.
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType
-                    .WaitingForPortalAuthenticating);
-                Debug.Log(
-                    "[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+                Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
                 sw.Reset();
                 sw.Start();
                 var portalSigninTask = socialType == SigninContext.SocialType.Apple
@@ -1728,10 +1702,8 @@ namespace Nekoyume.Game
                     : PortalConnect.SendGoogleIdTokenAsync(idToken);
                 yield return new WaitUntil(() => portalSigninTask.IsCompleted);
                 sw.Stop();
-                Debug.Log(
-                    $"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-                Debug.Log(
-                    "[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
+                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
                 dimmedLoadingScreen.Close();
 
                 agentAddrInPortal = portalSigninTask.Result;
@@ -1747,9 +1719,8 @@ namespace Nekoyume.Game
                     loginSystem.Show(connectedAddress: null);
                     // NOTE: Don't set the autoGeneratedAgentAddress to agentAddr.
                     var autoGeneratedAgentAddress = KeyManager.Instance.SignedInAddress;
-                    Debug.Log(
-                        $"[Game] CoLogin()... auto generated agent address: {autoGeneratedAgentAddress}." +
-                        " And Update planet account infos w/ empty agent address.");
+                    Debug.Log($"[Game] CoLogin()... auto generated agent address: {autoGeneratedAgentAddress}." +
+                              " And Update planet account infos w/ empty agent address.");
                 }
 
                 // NOTE: Initialize planet account infos as default(empty) value
@@ -1766,8 +1737,7 @@ namespace Nekoyume.Game
                 var requiredAddress = agentAddrInPortal.Value;
                 Debug.Log($"[Game] CoLogin()... AgentAddress({requiredAddress}) in portal" +
                           $" is not null. Try to update planet account infos.");
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType
-                    .WaitingForPlanetAccountInfoSyncing);
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
                     requiredAddress,
@@ -1783,15 +1753,12 @@ namespace Nekoyume.Game
             // NOTE: Check if the planets have at least one agent.
             if (planetContext.HasPledgedAccount)
             {
-                Debug.Log(
-                    "[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
-                introScreen.ShowPlanetAccountInfosPopup(planetContext,
-                    !KeyManager.Instance.IsSignedIn);
+                Debug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
+                introScreen.ShowPlanetAccountInfosPopup(planetContext, !KeyManager.Instance.IsSignedIn);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
                           " is not null.");
-                yield return new WaitUntil(
-                    () => planetContext.SelectedPlanetAccountInfo is not null);
+                yield return new WaitUntil(() => planetContext.SelectedPlanetAccountInfo is not null);
                 Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
                           $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
 
@@ -1875,9 +1842,8 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... Player have to make a pledge.");
                 Debug.Log("[Game] CoLogin()... Set planetContext.SelectedPlanetAccountInfo" +
                           " w/ planetContext.SelectedPlanetInfo.ID.");
-                planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos!.First(
-                    e =>
-                        e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
+                planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos!.First(e =>
+                    e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
             }
 
             CurrentSocialEmail = email == null ? string.Empty : email;
@@ -1887,8 +1853,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
 
             // NOTE: Update CommandlineOptions.PrivateKey finally.
-            _commandLineOptions.PrivateKey =
-                KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
+            _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                       $" to ({KeyManager.Instance.SignedInAddress}).");
 
@@ -1901,8 +1866,7 @@ namespace Nekoyume.Game
                 callback);
             sw.Stop();
             dimmedLoadingScreen.Close();
-            Debug.Log(
-                $"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         public void ResetStore()
@@ -2065,8 +2029,7 @@ namespace Nekoyume.Game
                 },
                 timeOut: Dcc.TimeOut);
             sw.Stop();
-            Debug.Log(
-                $"[Game] CoInitDccAvatar()... DCC Avatar initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            Debug.Log($"[Game] CoInitDccAvatar()... DCC Avatar initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         private IEnumerator CoInitDccConnecting()

@@ -232,10 +232,8 @@ namespace Nekoyume.Game.Controller
             }
 
             CurrentState = State.InInitializing;
-            yield return InitializeInternal(MusicContainerPath, typeof(MusicCode), _musicPrefabs,
-                _musicPool);
-            yield return InitializeInternal(SfxContainerPath, typeof(SfxCode), _sfxPrefabs,
-                _sfxPool);
+            yield return InitializeInternal(MusicContainerPath, typeof(MusicCode), _musicPrefabs, _musicPool);
+            yield return InitializeInternal(SfxContainerPath, typeof(SfxCode), _sfxPrefabs, _sfxPool);
             CurrentState = State.Idle;
         }
 
@@ -274,7 +272,7 @@ namespace Nekoyume.Game.Controller
             var fields = codeType.GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var fieldInfo in fields)
             {
-                var code = (string)fieldInfo.GetRawConstantValue();
+                var code = (string) fieldInfo.GetRawConstantValue();
                 if (prefabs.ContainsKey(code))
                     continue;
 
@@ -401,8 +399,8 @@ namespace Nekoyume.Game.Controller
             }
 
             foreach (var audioInfo in _sfxPlaylist
-                         .Where(pair => pair.Key.Equals(audioName))
-                         .SelectMany(pair => pair.Value))
+                .Where(pair => pair.Key.Equals(audioName))
+                .SelectMany(pair => pair.Value))
             {
                 audioInfo.source.Stop();
             }
@@ -460,7 +458,7 @@ namespace Nekoyume.Game.Controller
             }
             else
             {
-                var list = new List<AudioInfo> { audioInfo };
+                var list = new List<AudioInfo> {audioInfo};
                 pool.Add(audioName, list);
             }
         }
@@ -494,9 +492,9 @@ namespace Nekoyume.Game.Controller
             {
                 deltaTime += Time.deltaTime;
                 audioInfo.source.volume += audioInfo.volume
-                                           * Settings.Instance.volumeMusic
-                                           * Time.deltaTime
-                                           / duration;
+                    * Settings.Instance.volumeMusic
+                    * Time.deltaTime
+                    / duration;
 
                 yield return null;
             }
