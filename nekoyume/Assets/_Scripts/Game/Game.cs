@@ -286,6 +286,9 @@ namespace Nekoyume.Game
             OnLoadCommandlineOptions();
 #endif
 
+            Widget.Create<DccMain>();
+            Widget.Find<DccMain>().gameObject.SetActive(true);
+
             // NOTE: Initialize KeyManager after load CommandLineOptions.
             if (!KeyManager.Instance.IsInitialized)
             {
