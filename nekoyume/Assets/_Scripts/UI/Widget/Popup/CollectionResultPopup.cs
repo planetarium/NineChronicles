@@ -93,7 +93,7 @@ namespace Nekoyume.UI
         {
             StopContinueTimer();
 
-            base.Close(ignoreCloseAnimation);
+            base.Close(true);
         }
 
         private void StopContinueTimer()

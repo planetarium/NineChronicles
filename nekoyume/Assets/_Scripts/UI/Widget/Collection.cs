@@ -4,8 +4,10 @@ using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Collection;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -233,7 +235,18 @@ namespace Nekoyume.UI
             void Action(List<ICollectionMaterial> materials)
             {
                 ActionManager.Instance.ActivateCollection(collectionId, materials)
-                    .Subscribe(_ => LoadingHelper.ActivateCollection.Value = 0);
+                    .Subscribe(eval =>
+                    {
+                        if (eval.Exception is not null)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("NOTIFICATION_COLLECTION_FAIL"),
+                                NotificationCell.NotificationType.Alert);
+                        }
+
+                        LoadingHelper.ActivateCollection.Value = 0;
+                    });
 
                 LoadingHelper.ActivateCollection.Value = collectionId;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);

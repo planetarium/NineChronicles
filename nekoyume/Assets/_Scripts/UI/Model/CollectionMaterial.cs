@@ -70,17 +70,23 @@ namespace Nekoyume.UI.Model
 
         public void SetCondition(Inventory inventory)
         {
-            var items = inventory.Items
-                .Where(item => item.item.Id == Row.ItemId).ToArray();
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var items = inventory.Items.Where(item =>
+                item.item.Id == Row.ItemId && !item.Locked &&
+                (item.item is not ITradableItem tradableItem ||
+                 tradableItem.RequiredBlockIndex <= blockIndex)).ToArray();
 
             var hasItem = items.Any();
             bool enoughCount;
             switch (ItemType)
             {
                 case ItemType.Equipment:
-                    var equipments = items.Select(item => item.item).OfType<Equipment>().ToArray();
-                    hasItem &= equipments.Any(equipment => equipment.HasSkill() == Row.SkillContains);
-                    enoughCount = equipments.Any(equipment => equipment.level == Row.Level);
+                    var equipments = items.Select(item => item.item).OfType<Equipment>()
+                        .Where(equipment => equipment.HasSkill() == Row.SkillContains).ToArray();
+                    hasItem &= equipments.Any();
+
+                    equipments = equipments.Where(equipment => equipment.level == Row.Level).ToArray();
+                    enoughCount = equipments.Any();
                     break;
                 case ItemType.Material:
                     enoughCount = items.Sum(item => item.count) >= Row.Count;
