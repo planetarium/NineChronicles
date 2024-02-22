@@ -59,6 +59,7 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
+                SetMaterialAssets();
             });
             CloseWidget = () =>
             {
@@ -288,6 +289,11 @@ namespace Nekoyume.UI
             {
                 mobileShop.Show();
             }
+        }
+
+        private static void SetMaterialAssets()
+        {
+            Find<Summon>().SetMaterialAssets();
         }
     }
 }
