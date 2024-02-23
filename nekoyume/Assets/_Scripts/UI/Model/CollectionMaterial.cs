@@ -82,7 +82,8 @@ namespace Nekoyume.UI.Model
             {
                 case ItemType.Equipment:
                     var equipments = items.Select(item => item.item).OfType<Equipment>()
-                        .Where(equipment => equipment.HasSkill() == Row.SkillContains).ToArray();
+                        .Where(equipment => equipment.HasSkill() == Row.SkillContains &&
+                                            equipment.level <= Row.Level).ToArray();
                     hasItem &= equipments.Any();
 
                     equipments = equipments.Where(equipment => equipment.level == Row.Level).ToArray();
