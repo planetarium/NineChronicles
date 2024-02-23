@@ -73,7 +73,7 @@ namespace Nekoyume.UI.Module
             iconArea.countText.gameObject.SetActive(material.Count > 1);
             if (material.Count > 1)
             {
-                iconArea.countText.text = L10nManager.Localize("UI_COUNT_FORMAT", material.Count);
+                iconArea.countText.text = L10nManager.Localize("UI_REQUIRED_COUNT_FORMAT", material.Count);
             }
 
             if (row.ItemType.HasElementType())
