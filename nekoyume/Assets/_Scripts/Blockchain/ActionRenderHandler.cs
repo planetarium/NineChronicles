@@ -678,7 +678,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
                 .AddTo(_disposables);
@@ -691,7 +690,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Select(PrepareRuneSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneSummon)
                 .AddTo(_disposables);
@@ -1415,46 +1413,46 @@ namespace Nekoyume.Blockchain
             Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
-        private ActionEvaluation<AuraSummon> PrepareAuraSummon(ActionEvaluation<AuraSummon> eval)
-        {
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            return eval;
-        }
-
-        private ActionEvaluation<RuneSummon> PrepareRuneSummon(ActionEvaluation<RuneSummon> eval)
-        {
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            UpdateCurrentAvatarRuneStoneBalance(eval);
-
-            return eval;
-        }
-
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var action = eval.Action;
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
 
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[action.GroupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-            var count = summonRow.CostMaterialCount * action.SummonCount;
-            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var action = eval.Action;
 
-            Widget.Find<Summon>().OnActionRender(eval);
+                var tableSheets = Game.Game.instance.TableSheets;
+                var summonRow = tableSheets.SummonSheet[action.GroupId];
+                var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+                var count = summonRow.CostMaterialCount * action.SummonCount;
+                LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+
+                Widget.Find<Summon>().OnActionRender(eval);
+            });
         }
 
         private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
         {
-            var action = eval.Action;
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[action.GroupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-            var count = summonRow.CostMaterialCount * action.SummonCount;
-            LocalLayerModifier.AddItem(eval.Action.AvatarAddress, materialRow.ItemId, count);
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var action = eval.Action;
+                var tableSheets = Game.Game.instance.TableSheets;
+                var summonRow = tableSheets.SummonSheet[action.GroupId];
+                var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+                var count = summonRow.CostMaterialCount * action.SummonCount;
+                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, materialRow.ItemId, count);
 
-            Widget.Find<Summon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval);
+            });
         }
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
