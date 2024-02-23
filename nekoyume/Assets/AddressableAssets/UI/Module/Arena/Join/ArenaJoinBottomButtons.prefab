@@ -1366,11 +1366,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 352dfb0af9c0491099ed4fae1b7c8184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _progressBarBackgroundGO: {fileID: 8441018078711687884}
-  _progressBarGO: {fileID: 3364216890290586682}
-  _progressRectMask: {fileID: 1831193608576715588}
-  _progressText: {fileID: 4785695156778257525}
-  _completedObject: {fileID: 660114234198070767}
+  progressObject: {fileID: 2536140291605958318}
+  progressBarBackgroundGO: {fileID: 8441018078711687884}
+  progressBarGO: {fileID: 3364216890290586682}
+  progressRectMask: {fileID: 1831193608576715588}
+  progressText: {fileID: 4785695156778257525}
+  completedObject: {fileID: 660114234198070767}
 --- !u!1 &6054943178903544939
 GameObject:
   m_ObjectHideFlags: 0
@@ -3938,6 +3939,21 @@ PrefabInstance:
     - target: {fileID: 355461153799763971, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1120710072116123999, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1120710072116123999, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1120710072116123999, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: m_LocalScale.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1904100163664661687, guid: 5423cf792096944a3884ee1f4b0d4183,
