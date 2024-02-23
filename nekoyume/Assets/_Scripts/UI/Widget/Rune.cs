@@ -208,25 +208,12 @@ namespace Nekoyume.UI
 
         public void OnActionRender(IRandom random, FungibleAssetValue fav)
         {
-            if (_selectedRuneItem.Level == 0)
-            {
-                if (!RuneFrontHelper.TryGetRuneIcon(_selectedRuneItem.Row.Id, out var runeIcon))
-                {
-                    return;
-                }
-
-                var quote = L10nManager.Localize("UI_RUNE_COMBINE_START");
-                Find<RuneCombineResultScreen>().Show(runeIcon, quote);
-            }
-            else
-            {
-                Find<RuneEnhancementResultScreen>().Show(
-                    _selectedRuneItem,
-                    States.Instance.GoldBalanceState.Gold,
-                    States.Instance.CrystalBalance,
-                    TryCount.Value,
-                    random);
-            }
+            Find<RuneEnhancementResultScreen>().Show(
+                _selectedRuneItem,
+                States.Instance.GoldBalanceState.Gold,
+                States.Instance.CrystalBalance,
+                TryCount.Value,
+                random);
 
             States.Instance.UpdateRuneSlotState();
             _selectedRuneItem.RuneStone = fav;
