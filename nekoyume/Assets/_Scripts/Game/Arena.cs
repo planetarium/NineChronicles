@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
@@ -21,7 +22,7 @@ namespace Nekoyume.Game
 {
     using UniRx;
 
-    public class Arena : MonoBehaviour, IArena
+    public class Arena : MonoBehaviour, IArena, IBattleRender
     {
         [SerializeField]
         private ObjectPool objectPool;
@@ -154,7 +155,7 @@ namespace Nekoyume.Game
             AudioController.instance.PlayMusic(AudioController.MusicCode.PVPBattle);
             me.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             Widget.Find<ArenaBattleLoadingScreen>().Close();
-            Game.instance.IsInWorld = true;
+            BattleRenderManager.Instance.IsOnBattle = true;
         }
 
         private IEnumerator CoEnd(
@@ -186,7 +187,7 @@ namespace Nekoyume.Game
             me.gameObject.SetActive(false);
             enemy.gameObject.SetActive(false);
             objectPool.ReleaseAll();
-            Game.instance.IsInWorld = false;
+            BattleRenderManager.Instance.IsOnBattle = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
             Widget.Find<ArenaBoard>().ShowAsync().Forget();

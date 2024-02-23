@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -329,12 +330,13 @@ namespace Nekoyume.Helper
         /// </summary>
         public static bool CheckUIStateForUsingShortcut(PlaceType type)
         {
+            var isOnBattle = BattleRenderManager.Instance.IsOnBattle;
             return type switch
             {
-                PlaceType.Stage => !Game.Game.instance.IsInWorld,
-                PlaceType.EventDungeonStage => !Game.Game.instance.IsInWorld,
-                PlaceType.Shop => !Game.Game.instance.IsInWorld,
-                PlaceType.Arena => !Game.Game.instance.IsInWorld,
+                PlaceType.Stage             => !isOnBattle,
+                PlaceType.EventDungeonStage => !isOnBattle,
+                PlaceType.Shop              => !isOnBattle,
+                PlaceType.Arena             => !isOnBattle,
                 PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
                                    !Widget.Find<RankingBattleResultPopup>().IsActive(),
                 PlaceType.Staking => true,

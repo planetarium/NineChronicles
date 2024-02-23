@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -316,7 +317,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            return !Game.Game.instance.IsInWorld;
+            return !BattleRenderManager.Instance.IsOnBattle;
         }
 
         public static void ShowRefillConfirmPopup(System.Action confirmCallback)

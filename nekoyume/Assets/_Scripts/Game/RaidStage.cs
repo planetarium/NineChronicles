@@ -14,6 +14,7 @@ using System.Linq;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Director;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Model.Skill;
 using UnityEngine;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
@@ -25,7 +26,7 @@ namespace Nekoyume.Game
     using Nekoyume.UI.Scroller;
     using UniRx;
 
-    public class RaidStage : MonoBehaviour, IStage
+    public class RaidStage : MonoBehaviour, IStage, IBattleRender
     {
         [SerializeField]
         private ObjectPool objectPool;
@@ -209,7 +210,7 @@ namespace Nekoyume.Game
             }
 
             Widget.Find<LoadingScreen>().Close();
-            Game.instance.IsInWorld = true;
+            BattleRenderManager.Instance.IsOnBattle = true;
             _waveTurn = 1;
             _wave = 0;
             _currentScore = 0;
@@ -260,7 +261,7 @@ namespace Nekoyume.Game
             }
             _isPlaying = false;
             ActionRenderHandler.Instance.Pending = false;
-            Game.instance.IsInWorld = false;
+            BattleRenderManager.Instance.IsOnBattle = false;
             Widget.Find<WorldBossBattle>().Close();
 
             container.Close();

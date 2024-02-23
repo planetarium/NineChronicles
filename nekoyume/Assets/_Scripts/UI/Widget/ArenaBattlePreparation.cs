@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.Model.Item;
@@ -116,7 +117,7 @@ namespace Nekoyume.UI
             information.Initialize();
             startButton.SetCost(CostType.ArenaTicket, TicketCountToUse);
             startButton.OnSubmitSubject
-                .Where(_ => !Game.Game.instance.IsInWorld)
+                .Where(_ => !BattleRenderManager.Instance.IsOnBattle)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
@@ -182,7 +183,7 @@ namespace Nekoyume.UI
         {
             AudioController.PlayClick();
 
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderManager.Instance.IsOnBattle)
             {
                 return;
             }
@@ -222,7 +223,7 @@ namespace Nekoyume.UI
         {
             coverToBlockClick.SetActive(true);
             var game = Game.Game.instance;
-            game.IsInWorld = true;
+            BattleRenderManager.Instance.IsOnBattle = true;
             game.Stage.IsShowHud = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();

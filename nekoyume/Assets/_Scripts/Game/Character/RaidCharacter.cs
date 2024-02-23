@@ -9,6 +9,7 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Elemental;
 using System.Linq;
 using System;
+using Nekoyume.Game.BattleRender;
 
 namespace Nekoyume.Game.Character
 {
@@ -119,7 +120,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateHpBar()
         {
-            if (!Game.instance.IsInWorld)
+            if (!BattleRenderManager.Instance.IsOnBattle)
                 return;
 
             if (!HPBar)
@@ -181,7 +182,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateStatusUI()
         {
-            if (!Game.instance.IsInWorld)
+            if (!BattleRenderManager.Instance.IsOnBattle)
                 return;
 
             UpdateHpBar();

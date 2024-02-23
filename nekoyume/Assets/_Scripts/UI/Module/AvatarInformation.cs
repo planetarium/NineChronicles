@@ -6,6 +6,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -24,6 +25,7 @@ namespace Nekoyume.UI.Module
     using Scroller;
     using UniRx;
 
+    // TODO: Battle중인지 체크해서 렌더링을 막는 코드가 필요할까? 호출되는 곳들을 먼저 확인 필요할듯
     public class AvatarInformation : MonoBehaviour
     {
         [SerializeField]
@@ -238,7 +240,7 @@ namespace Nekoyume.UI.Module
         {
             if (slot.RuneSlot.IsLock)
             {
-                if (Game.Game.instance.IsInWorld)
+                if (BattleRenderManager.Instance.IsOnBattle)
                 {
                     return;
                 }
@@ -335,7 +337,7 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClickRuneSlot(RuneSlotView slot)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderManager.Instance.IsOnBattle)
             {
                 return;
             }
@@ -375,7 +377,7 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClickSlot(EquipmentSlot slot)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderManager.Instance.IsOnBattle)
             {
                 return;
             }
@@ -393,7 +395,7 @@ namespace Nekoyume.UI.Module
 
         private void EquipItem(InventoryItem inventoryItem)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderManager.Instance.IsOnBattle)
             {
                 return;
             }
@@ -557,7 +559,7 @@ namespace Nekoyume.UI.Module
 
         private void UnequipItem(InventoryItem inventoryItem)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderManager.Instance.IsOnBattle)
             {
                 return;
             }
@@ -665,7 +667,7 @@ namespace Nekoyume.UI.Module
 
         private void UnequipRune(InventoryItem item)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderManager.Instance.IsOnBattle)
             {
                 return;
             }
@@ -725,11 +727,11 @@ namespace Nekoyume.UI.Module
                 Show(
                 model,
                 L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
-                !Game.Game.instance.IsInWorld && !model.DimObjectEnabled.Value,
+                !BattleRenderManager.Instance.IsOnBattle && !model.DimObjectEnabled.Value,
                 () => EquipOrUnequip(model),
                 () =>
                 {
-                    if (Game.Game.instance.IsInWorld)
+                    if (BattleRenderManager.Instance.IsOnBattle)
                     {
                         return;
                     }
@@ -783,7 +785,7 @@ namespace Nekoyume.UI.Module
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    if (!Game.Game.instance.IsInWorld)
+                    if (!BattleRenderManager.Instance.IsOnBattle)
                     {
                         if (model.DimObjectEnabled.Value)
                         {
@@ -806,7 +808,7 @@ namespace Nekoyume.UI.Module
                     {
                         enhancement = () =>
                         {
-                            if (Game.Game.instance.IsInWorld)
+                            if (BattleRenderManager.Instance.IsOnBattle)
                             {
                                 return;
                             }
@@ -823,7 +825,7 @@ namespace Nekoyume.UI.Module
                         };
                     }
 
-                    if (Game.Game.instance.IsInWorld)
+                    if (BattleRenderManager.Instance.IsOnBattle)
                     {
                         blocked = () => NotificationSystem.Push(MailType.System,
                             L10nManager.Localize("UI_BLOCK_EQUIP"),
@@ -854,7 +856,7 @@ namespace Nekoyume.UI.Module
                             submit = () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe();
                         }
 
-                        if (Game.Game.instance.IsInWorld)
+                        if (BattleRenderManager.Instance.IsOnBattle)
                         {
                             blocked = () => NotificationSystem.Push(MailType.System,
                                 L10nManager.Localize("UI_BLOCK_CHARGE_AP"),
@@ -886,7 +888,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    if (Game.Game.instance.IsInWorld)
+                    if (BattleRenderManager.Instance.IsOnBattle)
                     {
                         return;
                     }

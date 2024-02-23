@@ -16,6 +16,7 @@ using UnityEngine.Rendering;
 using Nekoyume.Model.Buff;
 using DG.Tweening.Plugins.Options;
 using Cysharp.Threading.Tasks.Triggers;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume.Game.Character
@@ -205,7 +206,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateHpBar()
         {
-            if (!Game.instance.IsInWorld)
+            if (!BattleRenderManager.Instance.IsOnBattle)
                 return;
 
             if (!HPBar)

@@ -1,6 +1,7 @@
 ﻿using System;
 using Coffee.UIEffects;
 using Nekoyume.EnumType;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -236,7 +237,7 @@ namespace Nekoyume.UI
                     buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
                     callback = () =>
                     {
-                        if (Game.Game.instance.IsInWorld)
+                        if (BattleRenderManager.Instance.IsOnBattle)
                         {
                             return;
                         }
@@ -252,7 +253,7 @@ namespace Nekoyume.UI
                     buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
                     callback = () =>
                     {
-                        if (Game.Game.instance.IsInWorld)
+                        if (BattleRenderManager.Instance.IsOnBattle)
                         {
                             return;
                         }
@@ -283,7 +284,7 @@ namespace Nekoyume.UI
                         buttonText = L10nManager.Localize("UI_PATROL_REWARD");
                         callback = () =>
                         {
-                            if (Game.Game.instance.IsInWorld)
+                            if (BattleRenderManager.Instance.IsOnBattle)
                             {
                                 return;
                             }
@@ -299,7 +300,7 @@ namespace Nekoyume.UI
                         buttonText = L10nManager.Localize("UI_SHOP");
                         callback = () =>
                         {
-                            if (Game.Game.instance.IsInWorld)
+                            if (BattleRenderManager.Instance.IsOnBattle)
                             {
                                 return;
                             }

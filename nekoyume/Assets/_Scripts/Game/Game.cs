@@ -33,6 +33,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
+using Nekoyume.Game.BattleRender;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -142,7 +143,6 @@ namespace Nekoyume.Game
         public ActionManager ActionManager { get; private set; }
 
         public bool IsInitialized { get; private set; }
-        public bool IsInWorld { get; set; }
 
         public int? SavedPetId { get; set; }
 
@@ -1404,7 +1404,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoInitDccAvatar());
             yield return StartCoroutine(CoInitDccConnecting());
 
-            if (IsInWorld)
+            if (BattleRenderManager.Instance.IsOnBattle)
             {
                 NotificationSystem.Push(
                     Model.Mail.MailType.System,

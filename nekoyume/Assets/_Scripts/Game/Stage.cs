@@ -49,7 +49,7 @@ namespace Nekoyume.Game
 {
     using UniRx;
 
-    public class Stage : MonoBehaviour, IStage
+    public class Stage : MonoBehaviour, IStage, IBattleRender
     {
         public const float DefaultAnimationTimeScaleWeight = 1f;
         public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
@@ -273,7 +273,7 @@ namespace Nekoyume.Game
 #endif
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
-            Game.instance.IsInWorld = false;
+            BattleRenderManager.Instance.IsOnBattle = false;
         }
 
         // todo: 배경 캐싱.
@@ -363,7 +363,7 @@ namespace Nekoyume.Game
                 .Select(r => r.Id)
                 .ToList();
 
-            Game.instance.IsInWorld = true;
+            BattleRenderManager.Instance.IsOnBattle = true;
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
             {
