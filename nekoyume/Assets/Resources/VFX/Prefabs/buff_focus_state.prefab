@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2932557048619913964}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4727,7 +4727,7 @@ GameObject:
   - component: {fileID: 3364848166760675903}
   - component: {fileID: 5903710224839879286}
   - component: {fileID: 3344181947194708296}
-  - component: {fileID: 4533436598656682678}
+  - component: {fileID: 7006705554742475199}
   m_Layer: 0
   m_Name: buff_focus_state
   m_TagString: Untagged
@@ -4742,7 +4742,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6480292753974600568}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4752,7 +4752,7 @@ Transform:
   - {fileID: 6739775329294335643}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &5903710224839879286
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -9472,7 +9472,7 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &4533436598656682678
+--- !u!114 &7006705554742475199
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9481,12 +9481,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6480292753974600568}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f351a36e8acd4e569c95f702b4c5006c, type: 3}
+  m_Script: {fileID: 11500000, guid: ff9c74dc6c9aeb2428066d24d9a6763f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _initializeSortingProbsOfChildren: 0
   <Target>k__BackingField: {fileID: 0}
-  <IsPersisting>k__BackingField: 0
+  <IsPersisting>k__BackingField: 1
 --- !u!1 &7503485762252004376
 GameObject:
   m_ObjectHideFlags: 0
@@ -14341,7 +14341,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8840417722529426211}
   m_LocalRotation: {x: -0.12186931, y: -0, z: -0, w: 0.9925462}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
