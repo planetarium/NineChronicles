@@ -269,7 +269,11 @@ namespace Nekoyume.UI
             Animator.Play(HashToMaterialUse);
             ActionManager.Instance.RuneEnhancement(runeId, TryCount.Value);
             LoadingHelper.RuneEnhancement.Value = true;
-            StartCoroutine(CoShowLoadingScreen());
+            if (RuneFrontHelper.TryGetRuneIcon(_selectedRuneItem.Row.Id, out var runeIcon))
+            {
+                var quote = L10nManager.Localize("UI_RUNE_COMBINE_START");
+                Find<RuneCombineResultScreen>().Show(runeIcon, quote);
+            }
         }
 
         private void Set(RuneItem item)
@@ -486,22 +490,6 @@ namespace Nekoyume.UI
                     },
                     _maxTryCount > 0,
                     true);
-            }
-        }
-
-        private IEnumerator CoShowLoadingScreen()
-        {
-            if (RuneFrontHelper.TryGetRuneIcon(_selectedRuneItem.Row.Id, out var runeIcon))
-            {
-                var loadingScreen = Find<CombinationLoadingScreen>();
-                loadingScreen.Show();
-                loadingScreen.SpeechBubbleWithItem.SetRune(runeIcon);
-                loadingScreen.SetCloseAction(null);
-                yield return new WaitForSeconds(.5f);
-
-                var format = L10nManager.Localize("UI_COST_BLOCK");
-                var quote = string.Format(format, 1);
-                loadingScreen.AnimateNPC(CombinationLoadingScreen.SpeechBubbleItemType.Rune, quote);
             }
         }
 
