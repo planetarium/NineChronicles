@@ -1052,7 +1052,7 @@ namespace Nekoyume.Game
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
+            Debug.Log($"[CoRemoveBuffs][{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
 #endif
             var character = GetCharacter(caster);
             if (character)

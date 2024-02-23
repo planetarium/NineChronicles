@@ -561,7 +561,7 @@ namespace Nekoyume.Game.Character
                 var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
 
 #if TEST_LOG
-                Debug.Log($"[TEST_LOG][ProcessBuff] {effect.name} {buff.BuffInfo.Id} ");
+                Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} ");
 #endif
 
                 effect.Play();
@@ -713,6 +713,9 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             var effect = Game.instance.Stage.BuffController.Get(pos, info.Buff);
             effect.Play();
+#if TEST_LOG
+                Debug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
+#endif
             yield return new WaitForSeconds(0.6f);
 
             PostAnimationForTheKindOfAttack();
