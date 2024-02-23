@@ -175,6 +175,11 @@ namespace Nekoyume.UI.Module
 
             foreach (var item in inventory.Items)
             {
+                if (item.Locked)
+                {
+                    continue;
+                }
+
                 AddItem(item.item, item.count);
             }
 
