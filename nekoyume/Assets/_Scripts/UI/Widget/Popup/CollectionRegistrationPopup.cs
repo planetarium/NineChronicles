@@ -58,9 +58,7 @@ namespace Nekoyume.UI
                 {
                     var confirm = Find<IconAndButtonSystem>();
                     confirm.ShowWithTwoButton(
-                        "UI_CONFIRM", "UI_COLLECTION_REGISTRATION_CAUTION_PHRASE",
-                        "UI_OK", "UI_CANCEL",
-                        true, IconAndButtonSystem.SystemType.Information);
+                        "UI_WARNING", "UI_COLLECTION_REGISTRATION_CAUTION_PHRASE");
                     confirm.ConfirmCallback = () => RegisterItem(collectionInventory.SelectedItem);
                     confirm.CancelCallback = () => confirm.Close();
                 }
