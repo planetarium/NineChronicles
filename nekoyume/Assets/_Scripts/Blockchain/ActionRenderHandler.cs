@@ -1989,24 +1989,6 @@ namespace Nekoyume.Blockchain
             }
 
             BattleRenderManager.Instance.StartStage(log);
-
-
-            if (Widget.Find<LoadingScreen>().IsActive())
-            {
-                if (Widget.Find<BattlePreparation>().IsActive())
-                {
-                    Widget.Find<BattlePreparation>().GoToStage(log);
-                }
-                else if (Widget.Find<Menu>().IsActive())
-                {
-                    Widget.Find<Menu>().GoToStage(log);
-                }
-            }
-            else if (Widget.Find<StageLoadingEffect>().IsActive() &&
-                     Widget.Find<BattleResultPopup>().IsActive())
-            {
-                Widget.Find<BattleResultPopup>().NextStage(log);
-            }
         }
 
         private void ExceptionHackAndSlash(ActionEvaluation<HackAndSlash> eval)
@@ -2140,23 +2122,6 @@ namespace Nekoyume.Blockchain
             stage.PlayCount = playCount;
 
             BattleRenderManager.Instance.StartStage(log);
-
-            if (Widget.Find<LoadingScreen>().IsActive())
-            {
-                if (Widget.Find<BattlePreparation>().IsActive())
-                {
-                    Widget.Find<BattlePreparation>().GoToStage(log);
-                }
-                else if (Widget.Find<Menu>().IsActive())
-                {
-                    Widget.Find<Menu>().GoToStage(log);
-                }
-            }
-            else if (Widget.Find<StageLoadingEffect>().IsActive() &&
-                     Widget.Find<BattleResultPopup>().IsActive())
-            {
-                Widget.Find<BattleResultPopup>().NextStage(log);
-            }
         }
 
         private void ExceptionEventDungeonBattle(ActionEvaluation<EventDungeonBattle> eval)

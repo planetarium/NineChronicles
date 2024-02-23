@@ -243,6 +243,14 @@ namespace Nekoyume.UI
             SubmitWidget = nextButton.onClick.Invoke;
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
+
+            BattleRenderManager.Instance.OnStageStart += NextStage;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            BattleRenderManager.Instance.OnStageStart -= NextStage;
         }
 
         private IEnumerator OnClickClose()
@@ -855,15 +863,16 @@ namespace Nekoyume.UI
             };
         }
 
-        public void NextStage(BattleLog log)
+        private void NextStage(BattleLog log)
         {
+            if (!IsActive() || !Find<StageLoadingEffect>().IsActive())
+                return;
+
             StartCoroutine(CoGoToNextStageClose(log));
         }
 
         private IEnumerator CoGoToNextStageClose(BattleLog log)
         {
-            Game.Event.OnStageStart.Invoke(log);
-
             BattleRenderManager.Instance.IsWaitingBattleLog = true;
             if (Find<Menu>().IsActive())
             {
