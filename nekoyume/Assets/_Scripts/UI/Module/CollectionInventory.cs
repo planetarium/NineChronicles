@@ -71,7 +71,9 @@ namespace Nekoyume.UI.Module
 
             // get from _items by required item's condition
             var row = requiredItem.Row;
-            var items = _items.Where(item => item.ItemBase.Id == row.ItemId).ToList();
+            var items = _items.Where(item =>
+                item.ItemBase is not INonFungibleItem nonFungibleItem ||
+                row.Validate(nonFungibleItem)).ToList();
             if (!items.Any())
             {
                 return items;
@@ -81,10 +83,6 @@ namespace Nekoyume.UI.Module
             {
                 case ItemType.Equipment:
                     items = items
-                        .Where(item =>
-                            item.ItemBase is Equipment equipment &&
-                            equipment.level == row.Level &&
-                            equipment.HasSkill() == row.SkillContains)
                         .OrderBy(item => CPHelper.GetCP(item.ItemBase as Equipment)).ToList();
                     UpdateEquipmentEquipped(items);
                     break;
