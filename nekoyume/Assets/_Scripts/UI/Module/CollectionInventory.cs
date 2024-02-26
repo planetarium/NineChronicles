@@ -72,7 +72,8 @@ namespace Nekoyume.UI.Module
             // get from _items by required item's condition
             var row = requiredItem.Row;
             var items = _items.Where(item =>
-                item.ItemBase is not INonFungibleItem nonFungibleItem ||
+                item.ItemBase.ItemType == requiredItem.ItemType &&
+                item.ItemBase is INonFungibleItem nonFungibleItem &&
                 row.Validate(nonFungibleItem)).ToList();
             if (!items.Any())
             {

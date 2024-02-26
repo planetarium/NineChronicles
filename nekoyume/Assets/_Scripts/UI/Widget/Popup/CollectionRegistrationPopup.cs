@@ -198,9 +198,9 @@ namespace Nekoyume.UI
                 collectionItemViews[i].Set(requiredItems[i], FocusItem);
             }
 
-            FocusItem(requiredItems.First());
-
             base.Show(ignoreShowAnimation);
+
+            FocusItem(requiredItems.First());
         }
 
         // For FungibleCollectionMaterial (Consumable, Material)
