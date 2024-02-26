@@ -1419,18 +1419,8 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                var action = eval.Action;
-
-                var tableSheets = Game.Game.instance.TableSheets;
-                var summonRow = tableSheets.SummonSheet[action.GroupId];
-                var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-                var count = summonRow.CostMaterialCount * action.SummonCount;
-                LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
-
                 Widget.Find<Summon>().OnActionRender(eval);
             });
         }
@@ -1449,7 +1439,6 @@ namespace Nekoyume.Blockchain
                 var summonRow = tableSheets.SummonSheet[action.GroupId];
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
-                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, materialRow.ItemId, count);
 
                 Widget.Find<Summon>().OnActionRender(eval);
             });
