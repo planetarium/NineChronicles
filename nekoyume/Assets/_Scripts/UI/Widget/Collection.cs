@@ -143,6 +143,8 @@ namespace Nekoyume.UI
 
             scroll.OnClickActiveButton.Subscribe(OnClickActiveButton).AddTo(gameObject);
             scroll.OnClickMaterial.Subscribe(SelectMaterial).AddTo(gameObject);
+            collectionMaterialInfo.OnClickCloseButton
+                .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
