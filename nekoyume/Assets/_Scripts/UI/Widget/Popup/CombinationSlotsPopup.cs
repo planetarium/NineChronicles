@@ -36,6 +36,9 @@ namespace Nekoyume.UI
             petInventory.OnSelectedSubject
                 .Subscribe(_ =>
                 {
+                    if (Game.Game.instance.IsInWorld)
+                        return;
+
                     Find<DccCollection>().Show();
                     Close(true);
                 })
