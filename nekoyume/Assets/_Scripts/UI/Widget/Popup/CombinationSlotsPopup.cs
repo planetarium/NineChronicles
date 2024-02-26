@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using Libplanet;
 using Libplanet.Crypto;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -37,7 +39,13 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     if (Game.Game.instance.IsInWorld)
+                    {
+                        NotificationSystem.Push(
+                            Nekoyume.Model.Mail.MailType.System,
+                            L10nManager.Localize("UI_BLOCK_EXIT"),
+                            NotificationCell.NotificationType.Alert);
                         return;
+                    }
 
                     Find<DccCollection>().Show();
                     Close(true);
