@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 573067601
   m_SortingLayer: 1
   m_SortingOrder: -9
-  m_Sprite: {fileID: 21300000, guid: aee390ae839bc4b99ac4d5d2c8a847d7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2a9dd2ffc5fb16046894c663de671b07, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.05
+  childSizeAdjust: 1
 --- !u!1 &1461120247514626
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +162,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4656877397846236}
   m_RootOrder: 0
@@ -207,7 +208,7 @@ SpriteRenderer:
   m_SortingLayerID: 573067601
   m_SortingLayer: 1
   m_SortingOrder: -30
-  m_Sprite: {fileID: 21300000, guid: e03ddb586d139467586724b7c94b3379, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9927180291c66b54fba3c2a5f8f2d801, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -231,6 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.3
+  childSizeAdjust: 2
 --- !u!1 &217378296522079581
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,7 +259,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 217378296522079581}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.5, z: 2}
+  m_LocalPosition: {x: 0, y: -2.07, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -305,7 +307,7 @@ SpriteRenderer:
   m_SortingLayerID: -1432510589
   m_SortingLayer: 5
   m_SortingOrder: 1002
-  m_Sprite: {fileID: 21300000, guid: e76114ca10dfa4c6cac1a860d5c7d8a2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ec2163da4b2457a4d905cf1a41e2d538, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -329,6 +331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.09
+  childSizeAdjust: 1
 --- !u!1 &3224140697789375043
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,7 +406,7 @@ SpriteRenderer:
   m_SortingLayerID: 573067601
   m_SortingLayer: 1
   m_SortingOrder: -20
-  m_Sprite: {fileID: 21300000, guid: 4aa32035436e543108628ff49cc6d253, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2d3f7e58fc16f4a4db814357857e5d91, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -427,3 +430,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.25
+  childSizeAdjust: 1
