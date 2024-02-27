@@ -1,132 +1,60 @@
-
 UI_SweepBG.png
-size: 1024,1024
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
+size:1368,775
+filter:Linear,Linear
+pma:true
+BG
+bounds:2,432,678,341
+offsets:1,1,680,343
 grass_01
-  rotate: false
-  xy: 490, 912
-  size: 84, 69
-  orig: 84, 69
-  offset: 0, 0
-  index: -1
+bounds:1235,115,84,69
+rotate:90
 grass_02
-  rotate: false
-  xy: 389, 924
-  size: 99, 57
-  orig: 99, 57
-  offset: 0, 0
-  index: -1
+bounds:1235,201,99,57
+rotate:90
 grass_F
-  rotate: false
-  xy: 2, 720
-  size: 679, 68
-  orig: 679, 68
-  offset: 0, 0
-  index: -1
+bounds:2,212,681,62
+offsets:0,0,681,63
+ground_00
+bounds:2,276,678,154
 ground_01
-  rotate: false
-  xy: 32, 953
-  size: 141, 28
-  orig: 141, 28
-  offset: 0, 0
-  index: -1
+bounds:1312,361,139,25
+offsets:1,2,141,28
+rotate:90
 ground_02
-  rotate: false
-  xy: 175, 953
-  size: 141, 28
-  orig: 141, 28
-  offset: 0, 0
-  index: -1
+bounds:701,28,139,25
+offsets:1,2,141,28
 leaves_01
-  rotate: false
-  xy: 783, 858
-  size: 198, 123
-  orig: 198, 123
-  offset: 0, 0
-  index: -1
+bounds:1187,302,198,123
+rotate:90
 leaves_02
-  rotate: false
-  xy: 2, 828
-  size: 198, 123
-  orig: 198, 123
-  offset: 0, 0
-  index: -1
+bounds:1110,44,198,123
+rotate:90
 leaves_03
-  rotate: false
-  xy: 202, 790
-  size: 206, 132
-  orig: 206, 132
-  offset: 0, 0
-  index: -1
+bounds:902,110,206,132
 leaves_04
-  rotate: false
-  xy: 2, 273
-  size: 289, 188
-  orig: 289, 188
-  offset: 0, 0
-  index: -1
+bounds:410,22,289,188
 leaves_05
-  rotate: false
-  xy: 684, 511
-  size: 199, 187
-  orig: 199, 187
-  offset: 0, 0
-  index: -1
+bounds:701,55,199,187
 leaves_06
-  rotate: false
-  xy: 683, 700
-  size: 199, 156
-  orig: 199, 156
-  offset: 0, 0
-  index: -1
+bounds:1182,502,199,156
+rotate:90
 leaves_07
-  rotate: false
-  xy: 576, 878
-  size: 205, 103
-  orig: 205, 103
-  offset: 0, 0
-  index: -1
+bounds:902,5,205,103
 leaves_B01
-  rotate: false
-  xy: 401, 346
-  size: 467, 163
-  orig: 467, 163
-  offset: 0, 0
-  index: -1
+bounds:685,244,500,221
 leaves_B02
-  rotate: false
-  xy: 2, 463
-  size: 397, 161
-  orig: 397, 161
-  offset: 0, 0
-  index: -1
+bounds:2,2,406,208
+offsets:0,0,424,208
 stone_01
-  rotate: false
-  xy: 2, 967
-  size: 28, 14
-  orig: 28, 14
-  offset: 0, 0
-  index: -1
+bounds:1340,689,26,12
+offsets:1,1,28,14
 stone_02
-  rotate: false
-  xy: 318, 952
-  size: 69, 29
-  orig: 69, 29
-  offset: 0, 0
-  index: -1
+bounds:1339,440,60,27
+offsets:1,1,69,29
+rotate:90
 tree_01
-  rotate: false
-  xy: 2, 626
-  size: 680, 72
-  orig: 680, 72
-  offset: 0, 0
-  index: -1
+bounds:682,703,678,70
+offsets:1,1,680,72
 tree_02
-  rotate: false
-  xy: 293, 100
-  size: 500, 244
-  orig: 500, 244
-  offset: 0, 0
-  index: -1
+bounds:682,467,498,234
+offsets:1,2,500,244

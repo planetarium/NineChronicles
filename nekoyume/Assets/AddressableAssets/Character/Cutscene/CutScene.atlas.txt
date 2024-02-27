@@ -1,13 +1,6 @@
-
 CutScene.png
-size: 1024,1024
-format: RGBA8888
-filter: Linear,Linear
-repeat: none
-cutscene_01
-  rotate: false
-  xy: 2, 226
-  size: 674, 450
-  orig: 674, 450
-  offset: 0, 0
-  index: -1
+size:678,454
+filter:Linear,Linear
+pma:true
+cutScene
+bounds:2,2,674,450

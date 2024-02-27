@@ -32,6 +32,7 @@ using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Extensions;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -169,6 +170,8 @@ namespace Nekoyume.Game
             CachedBalance = new();
 
         public string CurrentSocialEmail { get; private set; }
+
+        public bool IsGuestLogin { get; set; }
 
         public string GuildBucketUrl => _guildBucketUrl;
 
@@ -416,8 +419,6 @@ namespace Nekoyume.Game
             settingPopup.UpdateSoundSettings();
 
             // Initialize TableSheets. This should be done before initialize the Agent.
-            yield return StartCoroutine(CoInitializeTableSheets());
-            Debug.Log("[Game] Start()... TableSheets initialized");
             ResourcesHelper.Initialize();
             Debug.Log("[Game] Start()... ResourcesHelper initialized");
             AudioController.instance.Initialize();
@@ -485,7 +486,6 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
@@ -596,22 +596,27 @@ namespace Nekoyume.Game
             StartCoroutine(InitializeIAP());
 
             yield return StartCoroutine(InitializeWithAgent());
+
+            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             yield return createSecondWidgetCoroutine;
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if RUN_ON_MOBILE
-            var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
-            yield return checkTokensTask.AsCoroutine();
-            if (!checkTokensTask.Result)
+            if (!IsGuestLogin)
             {
-                QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
-                yield break;
-            }
+                var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
+                yield return checkTokensTask.AsCoroutine();
+                if (!checkTokensTask.Result)
+                {
+                    QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
+                    yield break;
+                }
 
-            if (!planetContext.IsSelectedPlanetAccountPledged)
-            {
-                yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
+                if (!planetContext.IsSelectedPlanetAccountPledged)
+                {
+                    yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
+                }
             }
 #endif
 
@@ -765,6 +770,8 @@ namespace Nekoyume.Game
                         .ToList();
                     SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
                 }).AddTo(gameObject);
+
+                yield return InitializeStakeStateAsync().ToCoroutine();
             }
 
             IEnumerator CoInitializeSecondWidget()
@@ -1158,29 +1165,6 @@ namespace Nekoyume.Game
             }
         }
 
-        // FIXME: Leave one between this or CoSyncTableSheets()
-        private IEnumerator CoInitializeTableSheets()
-        {
-            yield return null;
-            var request =
-                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-            {
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
-                    AddressableAssetsContainerPath);
-            }
-
-            var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            var csv = new Dictionary<string, string>();
-            foreach (var asset in csvAssets)
-            {
-                csv[asset.name] = asset.text;
-            }
-
-            TableSheets = new TableSheets(csv);
-        }
-
         // FIXME: Return some of exceptions when table csv is `Null` in the chain.
         //        And if it is `Null` in the chain, then it should be handled in the caller.
         //        Show a popup with error message and quit the application.
@@ -1197,7 +1181,7 @@ namespace Nekoyume.Game
                     AddressableAssetsContainerPath);
             }
             sw.Stop();
-            Debug.Log($"[SyncTableSheets] load container: {sw.Elapsed}");
+            Debug.Log($"[{nameof(SyncTableSheetsAsync)}] load container: {sw.Elapsed}");
             sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
@@ -1206,24 +1190,81 @@ namespace Nekoyume.Game
                 asset => asset.name);
             var dict = await Agent.GetSheetsAsync(map.Keys);
             sw.Stop();
-            Debug.Log($"[SyncTableSheets] get state: {sw.Elapsed}");
+            Debug.Log($"[{nameof(SyncTableSheetsAsync)}] get state: {sw.Elapsed}");
             sw.Restart();
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
-                pair =>
-                {
-                    if (pair.Value is Text)
-                    {
-                        return pair.Value.ToDotnetString();
-                    }
+                pair => pair.Value is Text ? pair.Value.ToDotnetString() : null);
 
-                    return null;
-                });
-
-            TableSheets = new TableSheets(csv);
+            TableSheets = await TableSheets.MakeTableSheetsAsync(csv);
             sw.Stop();
-            Debug.Log($"[SyncTableSheets] TableSheets cosntructor: {sw.Elapsed}");
+            Debug.Log($"[{nameof(SyncTableSheetsAsync)}] TableSheets Constructor: {sw.Elapsed}");
+        }
+
+        private async UniTask InitializeStakeStateAsync()
+        {
+            // NOTE: Initialize staking states after setting GameConfigState.
+            var stakeAddr = Model.Stake.StakeStateV2.DeriveAddress(Agent.Address);
+            var stakeStateIValue = await Agent.GetStateAsync(ReservedAddresses.LegacyAccount, stakeAddr);
+            var goldCurrency = States.GoldBalanceState.Gold.Currency;
+            var balance = goldCurrency * 0;
+            var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+            var stakeRegularRewardSheet = new StakeRegularRewardSheet();
+            var policySheet = TableSheets.StakePolicySheet;
+            Address[] sheetAddr;
+            Model.Stake.StakeStateV2? stakeState = null;
+            if (!StakeStateUtilsForClient.TryMigrate(
+                    stakeStateIValue,
+                    States.Instance.GameConfigState,
+                    out var stakeStateV2))
+            {
+                if (Agent is RPCAgent)
+                {
+                    sheetAddr = new[]
+                    {
+                        Addresses.GetSheetAddress(policySheet.StakeRegularFixedRewardSheetValue),
+                        Addresses.GetSheetAddress(policySheet.StakeRegularRewardSheetValue)
+                    };
+                }
+                // It is local play. local genesis block not has Stake***Sheet_V*.
+                // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
+                else
+                {
+                    sheetAddr = new[]
+                    {
+                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
+                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
+                    };
+                }
+            }
+            else
+            {
+                stakeState = stakeStateV2;
+                balance = await Agent.GetBalanceAsync(stakeAddr, goldCurrency);
+                sheetAddr = new[]
+                {
+                    Addresses.GetSheetAddress(
+                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                    Addresses.GetSheetAddress(
+                        stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                };
+            }
+
+            var sheets = await Agent.GetSheetsAsync(sheetAddr);
+            stakeRegularFixedRewardSheet.Set(sheets[sheetAddr[0]].ToDotnetString());
+            stakeRegularRewardSheet.Set(sheets[sheetAddr[1]].ToDotnetString());
+            var level = balance.RawValue > 0
+                ? stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
+                    Agent.Address,
+                    balance)
+                : 0;
+            States.Instance.SetStakeState(
+                stakeState,
+                new GoldBalanceState(stakeAddr, balance),
+                level,
+                stakeRegularFixedRewardSheet,
+                stakeRegularRewardSheet);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
@@ -1689,24 +1730,36 @@ namespace Nekoyume.Game
                     });
 
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn.");
-                yield return new WaitUntil(() => idToken is not null);
+                yield return new WaitUntil(() => idToken is not null || KeyManager.Instance.IsSignedIn);
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
 
-                // NOTE: Portal login flow.
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-                Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
-                sw.Reset();
-                sw.Start();
-                var portalSigninTask = socialType == SigninContext.SocialType.Apple
-                    ? PortalConnect.SendAppleIdTokenAsync(idToken)
-                    : PortalConnect.SendGoogleIdTokenAsync(idToken);
-                yield return new WaitUntil(() => portalSigninTask.IsCompleted);
-                sw.Stop();
-                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-                Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
-                dimmedLoadingScreen.Close();
+                // Guest private key login flow
+                if (KeyManager.Instance.IsSignedIn)
+                {
+                    yield return Agent.Initialize(
+                        _commandLineOptions,
+                        KeyManager.Instance.SignedInPrivateKey,
+                        callback);
+                    yield break;
+                }
+                else
+                {
+                    // NOTE: Portal login flow.
+                    dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+                    Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
+                    sw.Reset();
+                    sw.Start();
+                    var portalSigninTask = socialType == SigninContext.SocialType.Apple
+                        ? PortalConnect.SendAppleIdTokenAsync(idToken)
+                        : PortalConnect.SendGoogleIdTokenAsync(idToken);
+                    yield return new WaitUntil(() => portalSigninTask.IsCompleted);
+                    sw.Stop();
+                    Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
+                    dimmedLoadingScreen.Close();
 
-                agentAddrInPortal = portalSigninTask.Result;
+                    agentAddrInPortal = portalSigninTask.Result;
+                }
             }
 
             // NOTE: Update PlanetContext.PlanetAccountInfos.

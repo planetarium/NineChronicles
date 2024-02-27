@@ -23,10 +23,10 @@ namespace Nekoyume.UI.Module
             countText.text = $"+{count}";
         }
 
-        public void Set(string ticker, int count)
+        public void Set(string ticker, int count, bool useCurrencyNotation = false)
         {
             iconImage.sprite = SpriteHelper.GetFavIcon(ticker);
-            countText.text = $"+{count}";
+            countText.text = $"+{(useCurrencyNotation ? count.ToCurrencyNotation() : count)}";
         }
     }
 }
