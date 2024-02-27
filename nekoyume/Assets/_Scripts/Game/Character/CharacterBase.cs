@@ -796,6 +796,53 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public IEnumerator CoDoubleAttackWithCombo(
+            IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
+        {
+            if (skillInfos is null ||
+                skillInfos.Count == 0)
+                yield break;
+
+            var skillInfosFirst = skillInfos.First();
+            var skillInfosCount = skillInfos.Count;
+
+            var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
+
+            for (var i = 0; i < skillInfosCount; i++)
+            {
+                var info = skillInfos[i];
+                var target = Game.instance.Stage.GetCharacter(info.Target);
+                if (target is null)
+                    continue;
+
+                Vector3 effectPos = target.transform.position;
+                effectPos.x += 0.3f;
+                effectPos.y = Stage.StageStartPosition + 0.32f;
+
+                var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_0{i+1}", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
+                var effect = effectObj.GetComponent<VFX.VFX>();
+                if (effect is null)
+                    continue;
+
+                var first = skillInfosFirst == info;
+
+                yield return StartCoroutine(CoAnimationAttack(info.Critical));
+                if (first)
+                {
+                    effect.Play();
+                }
+                else
+                {
+                    effect.Play();
+                }
+
+                ProcessAttack(target, info, !first, true);
+                if (this is Player && !(this is EnemyPlayer))
+                    battleWidget.ShowComboText(info.Effect > 0);
+            }
+        }
+
         public IEnumerator CoDoubleAttack(
             IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
         {

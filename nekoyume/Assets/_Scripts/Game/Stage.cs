@@ -863,10 +863,22 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
-                character.actions.Add(actionParams);
+                var tableSheets = TableSheets.Instance;
+                var skillSheet = tableSheets.SkillSheet;
+                if(skillSheet.TryGetValue(skillId, out var skillSheetRow) && skillSheetRow.Combo)
+                {
+                    var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttackWithCombo);
+                    character.actions.Add(actionParams);
 
-                yield return null;
+                    yield return null;
+                }
+                else
+                {
+                    var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
+                    character.actions.Add(actionParams);
+
+                    yield return null;
+                }
             }
         }
 

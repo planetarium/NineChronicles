@@ -381,6 +381,14 @@ MonoBehaviour:
   - Prefab: {fileID: 567492925472903853, guid: d7a82287ca7c1cb429791e364b7831a7, type: 3}
     InitCount: 1
     AddCount: 1
+  - Prefab: {fileID: 7286801775248321354, guid: 1d004fbd4b7d62e4fac635013da10eae,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 1083884083727875659, guid: 5b2a7e88390101c4db6f37d87cb4e57e,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
 --- !u!114 &76869998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3807,6 +3815,14 @@ MonoBehaviour:
     InitCount: 1
     AddCount: 1
   - Prefab: {fileID: 6480292753974600568, guid: 837736bf1d83a0545b2e6dd3548f0ed1,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 7286801775248321354, guid: 1d004fbd4b7d62e4fac635013da10eae,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 1083884083727875659, guid: 5b2a7e88390101c4db6f37d87cb4e57e,
       type: 3}
     InitCount: 1
     AddCount: 1
