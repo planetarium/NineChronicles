@@ -422,7 +422,7 @@ namespace Nekoyume.UI
                 AirbridgeUnity.TrackEvent(evt);
 
                 startButtonContainer.SetActive(false);
-                Find<LoginSystem>().Show(privateKeyString: pk);
+                KeyManager.Instance.SignIn(pk);
             });
             guestButton.interactable = true;
         }

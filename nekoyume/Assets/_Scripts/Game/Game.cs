@@ -1725,11 +1725,11 @@ namespace Nekoyume.Game
                     });
 
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn.");
-                yield return new WaitUntil(() => idToken is not null || KeyManager.Instance.SignedInPrivateKey != null);
+                yield return new WaitUntil(() => idToken is not null || KeyManager.Instance.IsSignedIn);
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
 
                 // Guest private key login flow
-                if (KeyManager.Instance.SignedInPrivateKey != null)
+                if (KeyManager.Instance.IsSignedIn)
                 {
                     agentAddrInPortal = KeyManager.Instance.SignedInPrivateKey.Address;
                 }
