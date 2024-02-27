@@ -422,7 +422,8 @@ namespace Nekoyume.UI
                 AirbridgeUnity.TrackEvent(evt);
 
                 startButtonContainer.SetActive(false);
-                Find<LoginSystem>().Show(privateKeyString: pk);
+                KeyManager.Instance.SignIn(pk);
+                Game.Game.instance.IsGuestLogin = true;
             });
             guestButton.interactable = true;
         }

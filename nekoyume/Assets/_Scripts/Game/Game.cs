@@ -171,6 +171,8 @@ namespace Nekoyume.Game
 
         public string CurrentSocialEmail { get; private set; }
 
+        public bool IsGuestLogin { get; set; }
+
         public string GuildBucketUrl => _guildBucketUrl;
 
         public GuildServiceClient.GuildModel[] GuildModels { get; private set; } = { };
@@ -601,17 +603,20 @@ namespace Nekoyume.Game
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if RUN_ON_MOBILE
-            var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
-            yield return checkTokensTask.AsCoroutine();
-            if (!checkTokensTask.Result)
+            if (!IsGuestLogin)
             {
-                QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
-                yield break;
-            }
+                var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
+                yield return checkTokensTask.AsCoroutine();
+                if (!checkTokensTask.Result)
+                {
+                    QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
+                    yield break;
+                }
 
-            if (!planetContext.IsSelectedPlanetAccountPledged)
-            {
-                yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
+                if (!planetContext.IsSelectedPlanetAccountPledged)
+                {
+                    yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
+                }
             }
 #endif
 
@@ -1725,24 +1730,36 @@ namespace Nekoyume.Game
                     });
 
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn.");
-                yield return new WaitUntil(() => idToken is not null);
+                yield return new WaitUntil(() => idToken is not null || KeyManager.Instance.IsSignedIn);
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
 
-                // NOTE: Portal login flow.
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-                Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
-                sw.Reset();
-                sw.Start();
-                var portalSigninTask = socialType == SigninContext.SocialType.Apple
-                    ? PortalConnect.SendAppleIdTokenAsync(idToken)
-                    : PortalConnect.SendGoogleIdTokenAsync(idToken);
-                yield return new WaitUntil(() => portalSigninTask.IsCompleted);
-                sw.Stop();
-                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-                Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
-                dimmedLoadingScreen.Close();
+                // Guest private key login flow
+                if (KeyManager.Instance.IsSignedIn)
+                {
+                    yield return Agent.Initialize(
+                        _commandLineOptions,
+                        KeyManager.Instance.SignedInPrivateKey,
+                        callback);
+                    yield break;
+                }
+                else
+                {
+                    // NOTE: Portal login flow.
+                    dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+                    Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
+                    sw.Reset();
+                    sw.Start();
+                    var portalSigninTask = socialType == SigninContext.SocialType.Apple
+                        ? PortalConnect.SendAppleIdTokenAsync(idToken)
+                        : PortalConnect.SendGoogleIdTokenAsync(idToken);
+                    yield return new WaitUntil(() => portalSigninTask.IsCompleted);
+                    sw.Stop();
+                    Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
+                    dimmedLoadingScreen.Close();
 
-                agentAddrInPortal = portalSigninTask.Result;
+                    agentAddrInPortal = portalSigninTask.Result;
+                }
             }
 
             // NOTE: Update PlanetContext.PlanetAccountInfos.
