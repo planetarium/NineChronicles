@@ -171,6 +171,8 @@ namespace Nekoyume.Game
 
         public string CurrentSocialEmail { get; private set; }
 
+        public bool IsGuestLogin { get; set; }
+
         public string GuildBucketUrl => _guildBucketUrl;
 
         public GuildServiceClient.GuildModel[] GuildModels { get; private set; } = { };
@@ -601,17 +603,20 @@ namespace Nekoyume.Game
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if RUN_ON_MOBILE
-            var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
-            yield return checkTokensTask.AsCoroutine();
-            if (!checkTokensTask.Result)
+            if (!IsGuestLogin)
             {
-                QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
-                yield break;
-            }
+                var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
+                yield return checkTokensTask.AsCoroutine();
+                if (!checkTokensTask.Result)
+                {
+                    QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
+                    yield break;
+                }
 
-            if (!planetContext.IsSelectedPlanetAccountPledged)
-            {
-                yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
+                if (!planetContext.IsSelectedPlanetAccountPledged)
+                {
+                    yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
+                }
             }
 #endif
 
@@ -1731,7 +1736,11 @@ namespace Nekoyume.Game
                 // Guest private key login flow
                 if (KeyManager.Instance.IsSignedIn)
                 {
-                    agentAddrInPortal = KeyManager.Instance.SignedInPrivateKey.Address;
+                    yield return Agent.Initialize(
+                        _commandLineOptions,
+                        KeyManager.Instance.SignedInPrivateKey,
+                        callback);
+                    yield break;
                 }
                 else
                 {

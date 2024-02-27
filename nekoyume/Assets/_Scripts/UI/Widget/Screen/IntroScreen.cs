@@ -423,6 +423,7 @@ namespace Nekoyume.UI
 
                 startButtonContainer.SetActive(false);
                 KeyManager.Instance.SignIn(pk);
+                Game.Game.instance.IsGuestLogin = true;
             });
             guestButton.interactable = true;
         }
