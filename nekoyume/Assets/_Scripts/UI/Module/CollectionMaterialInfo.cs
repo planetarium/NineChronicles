@@ -3,6 +3,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -46,10 +47,7 @@ namespace Nekoyume.UI.Module
 
         private const int MaxCountOfAcquisitionPlace = 4;
 
-        private void Awake()
-        {
-            closeButton.onClick.AddListener(Close);
-        }
+        public IObservable<Unit> OnClickCloseButton => closeButton.OnClickAsObservable();
 
         public void Show(CollectionSheet.RequiredMaterial material)
         {
@@ -73,7 +71,7 @@ namespace Nekoyume.UI.Module
             iconArea.countText.gameObject.SetActive(material.Count > 1);
             if (material.Count > 1)
             {
-                iconArea.countText.text = L10nManager.Localize("UI_COUNT_FORMAT", material.Count);
+                iconArea.countText.text = L10nManager.Localize("UI_REQUIRED_COUNT_FORMAT", material.Count);
             }
 
             if (row.ItemType.HasElementType())

@@ -8329,7 +8329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d85b887af7e6c3f45a2e2d2920d641bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: cfcea0e11aa80bb4b8d05790b905fc31, type: 2}
+  m_Material: {fileID: 2100000, guid: b66cf7a186d13054989b33a5c90044e4, type: 2}
   m_Color: {r: 0.5176471, g: 0.5176471, b: 0.5176471, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -8367,9 +8367,9 @@ MonoBehaviour:
     settings:
       useClipping: 0
       zSpacing: -0.1
-      pmaVertexColors: 0
-      tintBlack: 1
-      canvasGroupTintBlack: 1
+      pmaVertexColors: 1
+      tintBlack: 0
+      canvasGroupTintBlack: 0
       calculateTangents: 0
       addNormals: 0
       immutableTriangles: 0

@@ -4,8 +4,10 @@ using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Collection;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -70,7 +72,7 @@ namespace Nekoyume.UI
         private ItemType _currentItemType;
         private StatType _currentStatType;
 
-        private int _initializedAvatarIndex;
+        private int? _initializedAvatarIndex = null;
 
         private readonly List<CollectionModel> _models = new List<CollectionModel>();
 
@@ -141,6 +143,8 @@ namespace Nekoyume.UI
 
             scroll.OnClickActiveButton.Subscribe(OnClickActiveButton).AddTo(gameObject);
             scroll.OnClickMaterial.Subscribe(SelectMaterial).AddTo(gameObject);
+            collectionMaterialInfo.OnClickCloseButton
+                .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -233,7 +237,18 @@ namespace Nekoyume.UI
             void Action(List<ICollectionMaterial> materials)
             {
                 ActionManager.Instance.ActivateCollection(collectionId, materials)
-                    .Subscribe(_ => LoadingHelper.ActivateCollection.Value = 0);
+                    .Subscribe(eval =>
+                    {
+                        if (eval.Exception is not null)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("NOTIFICATION_COLLECTION_FAIL"),
+                                NotificationCell.NotificationType.Alert);
+                        }
+
+                        LoadingHelper.ActivateCollection.Value = 0;
+                    });
 
                 LoadingHelper.ActivateCollection.Value = collectionId;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);

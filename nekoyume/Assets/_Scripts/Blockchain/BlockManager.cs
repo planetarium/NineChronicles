@@ -28,7 +28,7 @@ namespace Nekoyume.Blockchain
         public static string GenesisBlockPath()
         {
             // Android should use correct path.
-#if UNITY_ANDROID
+#if UNITY_ANDROID && RUN_ON_MOBILE
             String dataPath = Platform.GetPersistentDataPath(GenesisBlockName);
             return dataPath;
 #endif

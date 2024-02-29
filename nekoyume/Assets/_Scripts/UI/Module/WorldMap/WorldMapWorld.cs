@@ -11,6 +11,7 @@ using Nekoyume.TableData.Event;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
+using EventType = Nekoyume.EnumType.EventType;
 
 namespace Nekoyume.UI.Module
 {
@@ -153,7 +154,7 @@ namespace Nekoyume.UI.Module
             StageType stageType,
             List<(int stageId, bool hasBoss)> stageTuples)
         {
-            var eventType = EventManager.GetEventInfo().EventType;
+            var eventType = stageType == StageType.EventDungeon ? EventManager.GetEventInfo().EventType : EventType.Default;
 
             var stageWaveRowsCount = stageTuples.Count;
             var stageOffset = 0;
@@ -223,11 +224,19 @@ namespace Nekoyume.UI.Module
                     nextPageShouldHide = true;
                 }
 
+                // todo: Remove this method, Read data from sheet
                 BossType GetBossType(int stageId, bool hasBoss)
                 {
                     if (!hasBoss)
                     {
                         return BossType.None;
+                    }
+
+                    if (stageType == StageType.EventDungeon)
+                    {
+                        return stageId % 20 == 0
+                            ? BossType.LastBoss
+                            : BossType.MiddleBoss;
                     }
 
                     return stageId % 50 == 0

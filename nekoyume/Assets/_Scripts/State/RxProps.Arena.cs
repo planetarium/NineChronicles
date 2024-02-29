@@ -311,9 +311,11 @@ namespace Nekoyume.State
             var playerArenaInfo = arenaInfo.FirstOrDefault(p => p.AvatarAddr == currentAvatarAddr);
             if (playerArenaInfo is null)
             {
-                playerArenaInf.Rank = arenaInfo.Max(r => r.Rank);
+                var maxRank = arenaInfo.Max(r => r.Rank);
+                var firstMaxRankIndex = arenaInfo.FindIndex(info => info.Rank == maxRank);
+                playerArenaInf.Rank = maxRank;
                 playerArenaInfo = playerArenaInf;
-                arenaInfo.Add(playerArenaInfo);
+                arenaInfo.Insert(firstMaxRankIndex, playerArenaInfo);
             }
             else
             {

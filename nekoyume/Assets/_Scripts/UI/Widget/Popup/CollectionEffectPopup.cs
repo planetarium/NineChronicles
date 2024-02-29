@@ -1,5 +1,7 @@
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,6 +53,15 @@ namespace Nekoyume.UI
 
         private void GoToCollection()
         {
+            if (Game.Game.instance.IsInWorld)
+            {
+                NotificationSystem.Push(
+                    Nekoyume.Model.Mail.MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
             CloseWithOtherWidgets();
             Find<Collection>().Show();
         }
