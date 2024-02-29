@@ -48,10 +48,24 @@ MonoBehaviour:
     scale: {x: 0.35, y: 0.35, z: 1}
     rotation: {x: 0, y: 0, z: 0}
     gradeColor: {r: 0.69803923, g: 0.20392157, b: 0.7372549, a: 1}
+  - resourceID: 40100008
+    prefab: {fileID: 8880211598473905565, guid: 16998a2fa33d6c14ab4b4d3be284a844,
+      type: 3}
+    position: {x: -32.39, y: -95, z: 0}
+    scale: {x: 0.23, y: 0.23, z: 1}
+    rotation: {x: 0, y: 0, z: 0}
+    gradeColor: {r: 0.83137256, g: 0.74509805, b: 0.18431373, a: 1}
   - resourceID: 40100010
     prefab: {fileID: 8972405577410727509, guid: 5c4f787c77cad4e42bc7cc8f2dab2900,
       type: 3}
     position: {x: -166, y: -283, z: 0}
+    scale: {x: 0.23, y: 0.23, z: 1}
+    rotation: {x: 0, y: 0, z: 0}
+    gradeColor: {r: 0.69803923, g: 0.20392157, b: 0.7372549, a: 1}
+  - resourceID: 40100011
+    prefab: {fileID: 8880211598473905565, guid: 4f80a769e1b238f4db7b5c691d794f91,
+      type: 3}
+    position: {x: -152.4, y: -242, z: 0}
     scale: {x: 0.23, y: 0.23, z: 1}
     rotation: {x: 0, y: 0, z: 0}
     gradeColor: {r: 0.69803923, g: 0.20392157, b: 0.7372549, a: 1}
