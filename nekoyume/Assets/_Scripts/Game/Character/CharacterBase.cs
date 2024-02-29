@@ -819,23 +819,24 @@ namespace Nekoyume.Game.Character
                 effectPos.x += 0.3f;
                 effectPos.y = Stage.StageStartPosition + 0.32f;
 
-                var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_0{i+1}", false, effectPos) ??
-                            Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
-                var effect = effectObj.GetComponent<VFX.VFX>();
-                if (effect is null)
-                    continue;
-
                 var first = skillInfosFirst == info;
 
                 yield return StartCoroutine(CoAnimationAttack(info.Critical));
-                if (first)
+
+                var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
+                var effect = effectObj.GetComponent<VFX.VFX>();
+                if (effect != null)
                 {
-                    effect.Play();
-                }
-                else
-                {
-                    effect.Play();
-                }
+                    if (first)
+                    {
+                        effect.Play();
+                    }
+                    else
+                    {
+                        effect.Play();
+                    }
+                }                    
 
                 ProcessAttack(target, info, !first, true);
                 if (this is Player && !(this is EnemyPlayer))
