@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Model
                 buffStatTypeText.text = skillName;
                 debuffObject.SetActive(false);
                 cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {coolDown}";
-                contentText.text = L10nManager.Localize($"SKILL_DESCRIPTION_{skillId}", chanceText, valueText);
+                contentText.text = L10nManager.Localize($"SKILL_DESCRIPTION_{skillId}", chanceText, coolDown.ToString(), valueText);
                 return;
             }
 

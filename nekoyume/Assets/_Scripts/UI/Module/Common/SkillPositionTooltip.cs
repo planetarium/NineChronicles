@@ -167,6 +167,7 @@ namespace Nekoyume.UI.Module.Common
             else if(sheets.SkillActionBuffSheet.TryGetValue(skillRow.Id, out var skillActionBuffRow))
             {
                 arg.Add(skillChance.ToString());
+                arg.Add(skillRow.Cooldown.ToString());
                 arg.Add(skillValue.ToString());
                 var buffIcon = BuffHelper.GetBuffOverrideIcon(skillActionBuffRow.BuffIds.First());
                 buffIconImage.overrideSprite = buffIcon;
@@ -176,6 +177,7 @@ namespace Nekoyume.UI.Module.Common
             else
             {
                 arg.Add(skillChance.ToString());
+                arg.Add(skillRow.Cooldown.ToString());
                 arg.Add(skillValue.ToString());
                 buffObject.SetActive(false);
                 debuffObject.SetActive(false);
