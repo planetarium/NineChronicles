@@ -91,7 +91,7 @@ namespace Nekoyume.UI
                     if (RuneFrontHelper.TryGetRuneData(ticker, out var data))
                     {
                         var view = rewardViews.First(x => !x.gameObject.activeSelf);
-                        var count = Convert.ToInt32(reward.GetQuantityString());
+                        var count = MathematicsExtensions.ConvertToInt32(reward.GetQuantityString());
                         view.Set(data, count);
                         view.gameObject.SetActive(true);
                     }

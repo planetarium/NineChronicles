@@ -129,8 +129,8 @@ UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop dverg]</color>
 Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 미안하네, {0} 강화를 실패했다네.","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[ドヴェルグ]</color>
-申し訳ない、{0}の強化に失敗した。","<color=#FFA78B>[Workshop Dvergr]</color> 
-Lo siento, no logré mejorar {0}","<color=#FFA78B>[เวิร์กชอป Dvergr]</color> 
+申し訳ない、{0}の強化に失敗した。","<color=#FFA78B>[Workshop Dvergr]</color>
+Lo siento, no logré mejorar {0}","<color=#FFA78B>[เวิร์กชอป Dvergr]</color>
 ขออภัยการอัพเกรดล้มเหลว {0}","<color=#FFA78B>[Workshop dverg]</color>
 Maaf, gagal untuk mengupgrade {0}","<color=#FFA78B>[Практикум Cat]</color>
 Извините, я не смог обновить {0}","<color=#FFA78B>[车间猫]</color>
@@ -650,7 +650,7 @@ UI_MIMISBRUNNR,MIMISBRUNNR,미미르의 샘,mímisbrunnr,ミーミルの泉,Mimi
 UI_MIMISBRUNNR_START_FAILED,Your equipment must match the dungeon's elemental type.,던전 속성에 맞는 장비를 착용하세요.,Você deve usar o equipamento para combinar o elemento calabouço,ダンジョンの属性と一致する装備を着用してください。,Es recomendable que tu equipo coincida con el tipo elemental del calabozo.,คุณต้องสวมเครื่องให้ตรงกับองค์ประกอบดันเจี้ยน,Anda harus memakai peralatan untuk mencocokkan elemen penjara bawah tanah,"Вы должны иметь оборудование, чтобы соответствовать элементу подземелий",你必须穿装备的地牢匹配元素,您的裝備必須與地下城的元素類型相匹配。,Ang iyong kagamitan ay dapat tumugma sa elementong uri ng dungeon.,Trang bị của bạn phải phù hợp với loại nguyên tố của địa lao.
 UI_DAILY_REWARD_MAIL_FORMAT,The Daily Rewards have arrived as a result of increased prosperity!,번영도가 증가하여 데일리 보상을 수령합니다!,As recompensas diárias chegou devido ao aumento da prosperidade!,プロスペリティーが増加し、デイリーリワードが届きました！,¡Las recompensas diarias han llegado debido al aumento de las bendiciones!,รางวัลประจำวันได้มาเนื่องจากความเจริญรุ่งเรืองที่เพิ่มขึ้น!,Rewards Harian telah tiba karena peningkatan kemakmuran!,Ежедневные награды прибыли из-за возросшее благосостояние!,每日奖励已经来临，由于日益繁荣！,由於繁榮增加，每日獎勵已經到來！,Ang Pang-arawang Gantimpala ay dumating dahil umangat ang kasaganaan.,Nhận phần thưởng hàng ngày nhờ điểm Danh vọng ngày càng tăng!
 UI_DAILY_REWARD_POPUP_TITLE,Daily Rewards,데일리 보상,Recompensas diárias,デイリーリワード,Recompensas diarias,รางวัลประจำวัน,Hadiah harian,Ежедневные награды,每日奖励,每日獎勵,Arawang Gantimpala,Phần thưởng hàng ngày
-UI_BUY_MULTIPLE,Basket purchase,일괄 구매,compra Basket,一括購入,Cesta de compras,ซื้อตะกร้า,Keranjang belanja akan dikosongkan. Apakah Anda ingin melanjutkan?,Корзина покупки,篮购买,購物籃購買,Basket ng PInamilihan,Mua giỏ
+UI_BUY_MULTIPLE,Basket purchase,일괄 구매,compra Basket,一括購入,Cesta de compras,ซื้อตะกร้า,Pembelian keranjang,Корзина покупки,篮购买,購物籃購買,Basket ng PInamilihan,Mua giỏ
 UI_TRANSACTION_HISTORY,History,거래 내역,História,取引履歴,Historia,ประวัติศาสตร์,Sejarah,история,历史,歷史記錄,Kasaysayan ng Binili,Lịch sử
 UI_NOT_ENOUGH_NCG,Insufficient balance.,잔액이 부족합니다.,Saldo insuficiente.,残高が不足しています。,Saldo insuficiente,ยอดเงินไม่เพียงพอ,mencukupi.,Недостаточный баланс.,余额不足。,餘額不足。,Kulang ang pambili.,Số dư NCG không đủ.
 UI_NOT_ENOUGH_AP,Insufficient action points.,행동력이 부족합니다.,Insufficient action point.,アクションポイントが不足しています。,Puntos de Acción insuficientes,จำนวน AP ไม่เพียงพอ,Insufficient action point.,Insufficient action point.,Insufficient action point.,行動點不足。,Kulang ang action point.,AP không đủ.
@@ -676,8 +676,8 @@ Los artículos comprados se enviarán por correo.
 No se deducirá NCG por objetos de compra fallidos.
 Si los NCG son insuficientes, la transacción fallará.","<color=#FF9983><b>พยายามที่จะซื้อ {0} รายการและจ่าย {1}</b></color>
 
-รายการที่ซื้อจะถูกส่งทางไปรษณีย์ 
-NCG ไม่ได้หักรายการซื้อล้มเหลว หาก 
+รายการที่ซื้อจะถูกส่งทางไปรษณีย์
+NCG ไม่ได้หักรายการซื้อล้มเหลว หาก
 NCG ไม่เพียงพอการทำธุรกรรมที่จะล้มเหลว","<color=#FF9983><b>Cobalah untuk pembelian {0} item dan membayar {1}.</b></color>
 
 Barang yang dibeli akan dikirim melalui pos.
@@ -692,12 +692,12 @@ NCG не вычитаются невыполненных пунктов поку
 不扣除未能购买物品NCG。
 如果NCG不足，交易失败。","<color=＃ff9983> <b>嘗試購買{0}項目並付費{1}。</b></color>
 
-購買的項目將通過郵件發送。 
+購買的項目將通過郵件發送。
 NCG不會因購買失敗而被扣除。
-如果NCG不足，則交易將失敗。","<color=#FF9983><b>Subukang bumili ng {0} na kagamitan at magbayad ng {1}.</b></color> 
+如果NCG不足，則交易將失敗。","<color=#FF9983><b>Subukang bumili ng {0} na kagamitan at magbayad ng {1}.</b></color>
 
-Ang biniling kagamitan ay ipapadala sa pamamagitan ng liham. 
-Ang iyong NCG ay hindi mababwasan tuwing hindi matagumpay ang pagbili. 
+Ang biniling kagamitan ay ipapadala sa pamamagitan ng liham.
+Ang iyong NCG ay hindi mababwasan tuwing hindi matagumpay ang pagbili.
 Kapag naman hindi sapat ang NCG ang transakyon ay hindi matutuloy.","<color=#ff9983> Thử mua {0} trang bị và trả {1}.</color>
 
 Các mặt hàng đã được mua sẽ được gửi qua thư.
@@ -1017,8 +1017,8 @@ ng 20 Blocks","Dùng tinh thể
 trong vòng 20 khối"
 UI_STAKING_NCG,Staking NCG,스테이킹 NCG,NCG,ステーキングNCG,Staking NCG,ฝากเหรียญ NCG,Mempertaruhkan NCG,,Staging NCG,Staging NCG,Staking NCG,NCG đặt cược
 UI_REMAINING_NCG_TO_NEXT_LEVEL,{0} remain to the next level,다음 레벨까지 {0} 남음,{0} permanecem no próximo nível,次のレベルまで残り{0},Quedan {0} para alcanzar el siguiente nivel de staking.,คงเหลืออีก {0} สู่ระดับต่อไป,{0} tetap ke level berikutnya,,{0}保持到一个新的级别,{0}保持到一個新的水平,{0} naiwang magagamit para sa susunod,Còn {0} để đạt tới cấp độ tiếp theo
-UI_CURRENT_BENEFITS,Current Benefits,현재 혜택,Benefícios atuais,現在の特典,Beneficios actuales.,สิทธิประโยชน์ปัจจุบัน,Manfaat saat ini,,当前的好处,當前的好處,Kasalukuyang Benepisyo,Lợi tức hiện tại
-UI_ALL_BENEFITS,All Benefits,레벨별 혜택,Todos os benefícios,レベル別特典,Todos los beneficios.,สิทธิประโยชน์ทั้งหมด,Semua manfaat,,所有好处,所有好處,Lahat ng Benepisyo,Tất cả lợi tức
+UI_CURRENT_BENEFITS,Current Rewards,현재 레벨 보상,Recompensas Atuais,現在の報酬,Recompensas Actuales,รางวัลปัจจุบัน,Hadiah Saat Ini,,当前奖励,當前獎勵,Kasalukuyang Gantimpala,Phần Thưởng Hiện Tại
+UI_ALL_BENEFITS,All Rewards,전체 보상,Todas as Recompensas,全ての報酬,Todas las Recompensas,รางวัลทั้งหมด,Semua Hadiah,,所有奖励,所有獎勵,Lahat ng Gantimpala,Tất Cả Phần Thưởng
 UI_STAKING_BENEFITS_DESCRIPTION,"As the amount of storage increases, the buff & interest benefits increase.",스테이킹 NCG를 늘릴 수록 버프&이자 혜택이 증가합니다.,,ステーキングしたNCGが増えるほどバフ&リワードの特典が増加します。,A medida que aumenta la cantidad de NCG almacenado se incrementan los beneficios y recompensas.,เมื่อปริมาณเก็บเพิ่มขึ้น บัฟและผลประโยชน์เพิ่มขึ้น,"Ketika jumlah penyimpanan meningkat, manfaat buff & bunga meningkat.",,随着存储量的增加，增益和利息收益也会增加。,隨著存儲量的增加，增益和利息收益也會增加。,"Habang tumataas ang dami ng imbakan, lumalaki rin ang mga benepisyo ng buff at interes.","Khi lượng đặt cược NCG tăng lên, buff & lãi suất tăng."
 UI_CLAIMABLE_BENEFITS,Claimable Benefits,오늘까지 쌓인 이자,Benefícios reivindicáveis,獲得できる特典,Beneficios reclamables,ผลประโยชน์ที่เรียกร้องได้,Manfaat yang dapat diklaim,,可声称的好处,可認領的好處,Makukuhang benepisyo.,Lợi tức có thể lấy được
 UI_REMAINING_TIME_TO_CLAIM,Remaining Time to Claim,다음 수령까지 남은 시간,Tempo restante para reivindicar,次回の受け取りまでの残り時間,Tiempo restante para reclamar,เวลาที่เหลือในการเรียกร้อง,Sisa waktu untuk mengklaim,,剩余的索赔时间,剩餘的認領時間,Nalalabing Panahon para Magclaim,Thời gian còn lại để thu
@@ -1043,7 +1043,7 @@ Apakah Anda ingin membeli tiket dengan NCG dan mulai?","Недостаточно
 Хотели бы вы купить билет с NCG и начать?","不够{0}门票。
 您想和NCG一起购买票吗？",不夠{0}門票。您想用NCG購買票嗎？,Hindi sapat ang {0} tickets. Gusto mo bang bumili ng ticket gamit ang ncg at magsimula?,"Không đủ {0} vé.
 Bạn có muốn mua vé bằng NCG và bắt đầu không?"
-UI_REACHED_TICKET_BUY_LIMIT,"Not enough {0} tickets. 
+UI_REACHED_TICKET_BUY_LIMIT,"Not enough {0} tickets.
 You have reached the purchase limit and can no longer buy tickets.","{0} 티켓이 부족합니다.
 구매 횟수를 모두 소진하여 추가 구매를 할 수 없습니다.","Ingressos não suficientes {0}.
 Você atingiu seu limite de compra e não pode mais comprar ingressos.","{0}チケットが足りません。
@@ -1052,7 +1052,7 @@ Anda telah mencapai batas beli Anda dan tidak bisa lagi membeli tiket.","Нед�
 Вы достигли своего лимита покупки и больше не можете покупать билеты.","不够{0}门票。
 您已经达到了购买限额，无法再购买门票。",不夠{0}門票。您已經達到了購買限額，無法再購買門票。,Hindi sapat ang {0} tickets. Naabot na ang sukdulan ng limitasyon para sa pagbili at hindi na pwede pang bumili ulit ng tickets.,"Không đủ {0} vé.
 Bạn đã đạt đến giới hạn mua vé và không thể mua thêm vé."
-UI_REACHED_TICKET_BUY_INTERVAL_LIMIT,"Not enough {0} tickets. 
+UI_REACHED_TICKET_BUY_INTERVAL_LIMIT,"Not enough {0} tickets.
 You have reached the purchase limit and can no longer buy tickets during the reset interval.","{0} 티켓이 부족합니다.
 이번 티켓 리필 구간에 최대로 구매가능한 수량을 구매하셨습니다.","Ingressos não suficientes {0}.
 Você atingiu o limite de compra e não pode mais comprar ingressos durante o intervalo de redefinição.","{0}チケットが足りません。
@@ -1677,7 +1677,7 @@ Pelancong Paket
 Petualang Paket
 Aura Paket Spesial
 Pemula Paket
-Pandai Besi Paket 
+Pandai Besi Paket
 Debu Emas 20
 Debu Emas 40
 Debu Emas 60
@@ -1756,7 +1756,7 @@ Lingguhang Golden Dust Package
 Paglunsad ng Pagdiriwang","Gói Tăng Trưởng
  Hàng Ngày
 Gói Tăng Trưởng
- Hàng Tuần 
+ Hàng Tuần
 Bình thuốc AP
 Đồng hồ cát
 Gói Lữ Hành Gia
@@ -1766,11 +1766,11 @@ Gói Tân Thủ
 Gói Thợ Rèn
 20 Bụi Vàng
 40 Bụi Vàng
-60 Bụi Vàng 
-100 Bụi Vàng 
-200 Bụi Vàng 
-300 Bụi Vàng 
-600 Bụi Vàng 
+60 Bụi Vàng
+100 Bụi Vàng
+200 Bụi Vàng
+300 Bụi Vàng
+600 Bụi Vàng
 Giấy thông hành mùa Premium
 Giấy thông hành mùa Premium Plus
 Giấy thông hành mùa Premium All
@@ -1792,7 +1792,7 @@ UI_GRADE,Grade,등급,Aula,グレード,Clase,ระดับ,Kelas,,班级,班�
 UI_REQUIRED_UPDATE_TITLE,Information,안내,Informação,インフォメーション,Información,ข้อมูล,Informasi,,信息,信息,Impormasyon,Thông tin
 UI_REQUIRED_UPDATE_CONTENT,"<size=16>The new version has been updated!
 Update now and enjoy 'Nine Chronicles M’.</size>","<size=16>새로운 버전이 업데이트 되었습니다!
-지금 바로 업데이트 하고 Nine Chronicles M을 즐기세요.</size>","<size=16> A nova versão foi atualizada! 
+지금 바로 업데이트 하고 Nine Chronicles M을 즐기세요.</size>","<size=16> A nova versão foi atualizada!
 Atualize agora e aproveite o Nine Chronicles M.</size>","<size=16>新しいバージョンが更新されました！
 今すぐアップデートしてNine Chronicles Mをお楽しみください。</size>","<size=16>¡La nueva versión se ha actualizado!
 Actualiza ahora y disfruta de Nine Chronicles M.</size>","<size=16>เวอร์ชันใหม่ได้รับการอัปเดตแล้ว!
@@ -1812,7 +1812,7 @@ UI_SUMMON_CATEGORY_NORMAL,NORMAL,일반,普通,ノーマル,NORMAL,ปกติ,
 UI_SUMMON_CATEGORY_ADVANCED,ADVANCED,고급,Avançado,高級,AVANZADO,ขั้นสูง,CANGGIH,ПЕРЕДОВОЙ,先进的,先進的,Advanced,TRÌNH ĐỘ CAO
 UI_FORGOT_PRIVATE_KEY,Forgot Private Key,키를 잃어버렸습니다.,Esqueceu a chave privada,プライベートキーを忘れました,Olvidé la clave privada,ลืมรหัสส่วนตัว,Lupa Kunci Pribadi,Забыл личный ключ,忘记了私钥,忘記了私鑰,Nakalimutan ang pribadong susi,Quên chìa khóa riêng
 UI_FORGOT_PRIVATE_KEY_POPUP_INFORMATION,"If you do not enter the key, the existing account will be deleted.
-Would you really initialize it?","키를 입력하지 않으면 기존의 계정이 삭제됩니다. 
+Would you really initialize it?","키를 입력하지 않으면 기존의 계정이 삭제됩니다.
 정말 초기화 하시겠습니까?","Se você não entrar na chave, a conta existente será excluída.
 Você realmente inicializaria?","キーを入力しないと、既存のアカウントが削除されます。
 本当に初期化しますか？","Si no ingresa la clave, la cuenta existente se eliminará.
@@ -1829,7 +1829,7 @@ UI_SETTINGS_DELETE_ACCOUNT_TITLE,Delete Account,탈퇴,Deletar conta,アカウ�
 UI_SETTINGS_DELETE_ACCOUNT_DESCRIPTION,"<color=#FFEF0F> Would you like to withdraw? </color>
 After 30 days, the account will be deleted, and you can use the game for the period for that period.
 You can cancel your request for deletion at any time within that period.","<color=#FFEF0F> 정말 탈퇴하시겠습니까? </color>
-30일 후 계정이 삭제되며, 해당 기간 동안은 정상 게임 이용이 가능합니다. 
+30일 후 계정이 삭제되며, 해당 기간 동안은 정상 게임 이용이 가능합니다.
 해당 기간 내에는 언제든지 삭제 요청을 취소할 수 있습니다.","<color=#FFEF0F> Você gostaria de retirar? </color>
 Após 30 dias, a conta será excluída e você poderá usar o jogo para o período para esse período.
 Você pode cancelar sua solicitação de exclusão a qualquer momento dentro desse período.","<color=#FFEF0F> 本当に退会しますか？ </color>
@@ -1877,3 +1877,62 @@ Paket baru segera hadir.","Товаров на витрине нет.
 新套裝即將推出。","Walang mga produkto na naka-display.
 Malapit na ang mga bagong package.","Hiện không có sản phẩm trưng bày.
 Gói mới sắp ra mắt."
+UI_COLLECTION,Collection,컬렉션,Coleção,コレクション,Colección,คอลเลกชัน,Koleksi,,收藏,收藏,Koleksyon,Bộ sưu tập
+UI_COLLECTION_REGISTRATION,Activation,활성화,Ativação,活性化,Activación,การเปิดใช้งาน,Aktivasi,,激活,啟動,Aktibasyon,Kích hoạt
+UI_COLLECTION_REGISTRATION_PHRASE,"Register the items needed for activaion
+<color=#FE5151>Registered items will be destroyed.</color>","활성화에 사용할 아이템을 등록하세요.
+<color=#FE5151>등록된 아이템은 파괴됩니다.</color>","Registre os itens necessários para ativação
+<color=#FE5151>Os itens registrados serão destruídos.</color>","活性化に使用するアイテムを登録してください。 
+<color=#FE5151>登録されたアイテムは破壊されます。</color>","Registra los artículos necesarios para la activación
+<color=#FE5151>Los artículos registrados serán destruidos.</color>","ลงทะเบียนไอเท็มที่ต้องการเพื่อการเปิดใช้งาน 
+<color=#FE5151>ไอเท็มที่ลงทะเบียนจะถูกทำลาย.</color>","Daftarkan item yang diperlukan untuk aktivasi 
+<color=#FE5151>Item yang didaftarkan akan dihancurkan.</color>",,"注册所需的激活物品 
+<color=#FE5151>注册的物品将被销毁。</color>","登記所需的啟動物品 
+<color=#FE5151>登記的物品將被銷毀。</color>","Irehistro ang mga item na kailangan para sa aktibasyon 
+<color=#FE5151>Ang mga nirehistrong item ay sisirain.</color>","Đăng ký các vật phẩm cần thiết để kích hoạt
+<color=#FE5151>Các vật phẩm đã đăng ký sẽ bị hủy bỏ.</color>"
+UI_COLLECTION_EFFECT,Collection Effect,컬렉션 효과,Efeito da Coleção,コレクション効果,Efecto de la Colección,ผลของคอลเลกชัน,Efek Koleksi,,收藏效果,收藏效果,Epekto ng Koleksyon,Hiệu ứng Bộ sưu tập
+UI_COLLECTION_EFFECT_PHRASE,Collect items to gain stats.,아이템을 컬렉션하고 스탯을 획득하세요..,Colete itens para ganhar estatísticas.,アイテムをコレクションしてステータスを獲得してください。,Recolecta artículos para ganar estadísticas.,สะสมไอเท็มเพื่อได้รับสถิติ,Kumpulkan item untuk mendapatkan statistik.,,收集物品以获得属性。,收集物品以獲得屬性。,Mangolekta ng mga item para makakuha ng stats.,Thu thập các vật phẩm để nhận chỉ số.
+UI_GO_TO_COLLECTION,Go to Collection,컬렉션 가기,Ir para Coleção,コレクションに行く,Ir a la Colección,ไปที่คอลเลกชัน,Pergi ke Koleksi,,前往收藏,前往收藏,Pumunta sa Koleksyon,Đi đến Bộ sưu tập
+UI_COLLECTION_REGISTRATION_CAUTION_PHRASE,"If you register the equipment you are wearing,
+it will be removed. 
+Would you like to proceed?","착용중인 장비를 등록하면 
+벗겨지게 됩니다.
+진행하시겠습니까","Se você registrar o equipamento que está usando, 
+ele será removido. 
+Gostaria de prosseguir?","装備中の装備を登録すると脱がされます。
+進行しますか？","Si registras el equipo que estás usando, 
+será eliminado. 
+Deseas proceder?","หากคุณลงทะเบียนอุปกรณ์ที่คุณกำลังใส่, 
+มันจะถูกนำออก 
+คุณต้องการดำเนินการต่อหรือไม่?","Jika Anda mendaftarkan perlengkapan yang Anda kenakan, 
+itu akan dilepas. 
+Apakah Anda ingin melanjutkan?",,"如果您注册您正在穿着的装备，
+它将被移除。
+您想继续吗？","如果您登記您正在穿著的裝備，
+它將被移除。
+您想繼續嗎？","Kung irehistro mo ang kagamitang iyong suot, 
+ito ay aalisin. 
+Nais mo bang magpatuloy?","Nếu bạn đăng ký trang bị bạn đang mặc, 
+nó sẽ được gỡ bỏ. 
+Bạn có muốn tiếp tục không?"
+UI_COLLECTION_SEARCH_INPUT_FIELD_PLACE_HOLDER,Enter the name.,이름을 입력하세요,Insira o nome,名前を入力してください,Ingresa el nombre.,ป้อนชื่อ,Masukkan nama.,,输入名称。,輸入名稱。,Ilagay ang pangalan.,Nhập tên.
+UI_COMPLETION_RATE,Completion,완성도,Conclusão,完成度,Finalización,การเสร็จสมบูรณ์,Penyelesaian,,完成,完成,Pagkumpleto,Hoàn thành
+UI_ACTIVATE,Activate,활성화하기,Ativar,活性化する,Activar,เปิดใช้งาน,Aktifkan,,激活,啟動,Aktibahin,Kích hoạt
+UI_REGISTER,Register,등록하기,Registrar,登録する,Registrar,ลงทะเบียน,Daftar,,注册,登記,Magrehistro,Đăng ký
+UI_CELEBRATE_COLLECTION,Collection Activated,컬렉션 활성화 완료,Coleção Ativada.,コレクション活性化完了,Colección Activada.,คอลเลกชันถูกเปิดใช้งาน,Koleksi Diaktifkan,,收藏已激活,收藏已啟動,Aktibado na ang Koleksyon,Bộ sưu tập đã được kích hoạt
+UI_COLLECTION_ACTIVE_COUNT,{0} collection activated,{0} 컬렉션 활성화 완료,Coleção {0} ativada,{0} コレクション活性化完了,Colección {0} activada,คอลเลกชัน {0} ถูกเปิดใช้งาน,Koleksi {0} diaktifkan,,{0} 收藏已激活,{0} 收藏已啟動,Aktibado na ang koleksyon na {0},Bộ sưu tập {0} đã được kích hoạt
+UI_ACTIVATED,Activated,활성화 완료,Ativado,活性化完了,Activado,เปิดใช้งานแล้ว,Diaktifkan,,已激活,已啟動,Aktibado,Đã kích hoạt
+UI_COLLECTION_LIST_NONE,There is no corresponding list.,해당하는 리스트가 없습니다.,Não há uma lista correspondente.,該当するリストがありません。,No hay una lista correspondiente.,ไม่มีรายการที่สอดคล้องกัน,Tidak ada daftar yang sesuai.,,没有相应的列表。,沒有相應的列表。,Walang katumbas na listahan.,Không có danh sách tương ứng.
+UI_SKILL_CONTAINS,skill required,스킬 필수,habilidade necessária,スキル必須,habilidad requerida,ต้องการทักษะ,keahlian diperlukan,,需要技能,需要技能,kailangan ang kasanayan,yêu cầu kỹ năng
+UI_REQUIRE_STAKE,You can check it after starting the staing.,스테이킹을 시작하면 보상을 확인가능합니다.,Você pode verificar isso após iniciar o staking.,ステーキングを開始した後で確認できます。,Puedes verificarlo después de iniciar el staking.,คุณสามารถตรวจสอบได้หลังจากเริ่ม staking,Anda dapat memeriksanya setelah memulai staking.,,您可以在开始质押后检查。,您可以在開始質押後檢查。,Maaari mo itong i-check pagkatapos simulan ang staking.,Bạn có thể kiểm tra sau khi bắt đầu staking.
+UI_STAKING_LOCK_BLOCK_TIP_FORMAT,You cannot decrease NCG before it becomes block {0}.,{0} 블록이 되기 전에는 스테이킹한 NCG를 줄일 수 없습니다.,Você não pode diminuir o NCG antes de alcançar o bloco {0}.,ブロック{0}になる前にNCGを減らすことはできません。,No puedes disminuir NCG antes de que alcance el bloque {0}.,คุณไม่สามารถลด NCG ก่อนที่จะถึงบล็อก {0},Anda tidak dapat mengurangi NCG sebelum mencapai blok {0}.,,在达到{0}块之前，您不能减少NCG。,在達到{0}塊之前，您不能減少NCG。,Hindi mo mababawasan ang NCG bago ito umabot sa block {0}.,Bạn không thể giảm NCG trước khi nó đạt đến khối {0}.
+UI_REQUIRE_CLAIM_STAKE_REWARD,Please claim your rewards first.,스테이킹 보상을 먼저 받아주세요.,"Por favor, reivindique suas recompensas primeiro.",まず報酬を請求してください。,"Por favor, reclama tus recompensas primero.",กรุณาเรียกร้องรางวัลของคุณก่อน,Silakan klaim hadiah Anda terlebih dahulu.,,请先领取您的奖励。,請先領取您的獎勵。,Paki-claim muna ang iyong mga gantimpala.,Vui lòng yêu cầu phần thưởng của bạn trước.
+UI_REQUIRE_STAKE_MINIMUM_NCG_FORMAT,You can stake with more than {0} NCG.,{0} NCG 이상으로만 스테이킹할 수 있습니다.,Você pode fazer staking com mais de {0} NCG.,{0} NCG以上でステーキングできます。,Puedes hacer staking con más de {0} NCG.,คุณสามารถทำ staking ด้วย NCG มากกว่า {0},Anda dapat melakukan staking dengan lebih dari {0} NCG.,,您可以用超过{0} NCG进行质押。,您可以用超過{0} NCG進行質押。,Maaari kang mag-stake ng higit sa {0} NCG.,Bạn có thể stake với số NCG nhiều hơn {0}.
+UI_REQUIRE_DIFF_VALUE_WITH_EXIST,Staking can only proceed with a value different from the existing one.,기존 값과 다른 값을 입력해주세요.,O staking só pode prosseguir com um valor diferente do existente.,ステーキングは、既存の値と異なる値でのみ進めることができます。,El staking solo puede proceder con un valor diferente al existente.,Staking สามารถดำเนินการได้เฉพาะกับค่าที่แตกต่างจากค่าที่มีอยู่,Staking hanya dapat dilanjutkan dengan nilai yang berbeda dari yang ada.,,质押只能以与现有值不同的值进行。,質押只能以與現有值不同的值進行。,Ang staking ay maaari lamang magpatuloy sa isang halaga na naiiba sa umiiral na.,Staking chỉ có thể tiến hành với một giá trị khác biệt so với giá trị hiện tại.
+UI_STAKING_AMOUNT_LIMIT,You cannot stake more NCG than you possess.,갖고있는 NCG보다 많이 스테이킹 할 수는 없습니다.,Você não pode fazer staking de mais NCG do que possui.,所持しているNCGより多くをステーキングすることはできません。,No puedes hacer staking de más NCG de los que posees.,คุณไม่สามารถทำ staking NCG มากกว่าที่คุณมี,Anda tidak dapat melakukan staking lebih banyak NCG dari yang Anda miliki.,,您不能质押超过您所拥有的NCG。,您不能質押超過您所擁有的NCG。,Hindi ka maaaring mag-stake ng higit pang NCG kaysa sa iyong pag-aari.,Bạn không thể stake nhiều NCG hơn số bạn sở hữu.
+UI_INTRODUCE_STAKING,"The NCG you have staked cannot be withdrawn for 4 weeks, and you can receive rewards every week as it passes.","스테이킹한 NCG는 4주간 출금할 수 없으며, 일주일이 지날때마다 보상을 받을 수 있습니다.","O NCG que você fez staking não pode ser retirado por 4 semanas, e você pode receber recompensas a cada semana que passa.",ステーキングしたNCGは4週間引き出すことができず、週が経過するごとに報酬を受け取ることができます。,"El NCG que has hecho en staking no puede ser retirado durante 4 semanas, y puedes recibir recompensas cada semana que pasa.",NCG ที่คุณทำ staking ไม่สามารถถอนได้เป็นเวลา 4 สัปดาห์ และคุณสามารถรับรางวัลทุกสัปดาห์ที่ผ่านไป,"NCG yang Anda staking tidak dapat ditarik selama 4 minggu, dan Anda dapat menerima hadiah setiap minggu berlalu.",,您质押的NCG不能在4周内提取，每过一周您可以收到奖励。,您質押的NCG不能在4週內提取，每過一週您可以收到獎勵。,"Ang NCG na iyong na-stake ay hindi maaaring i-withdraw sa loob ng 4 na linggo, at maaari kang makatanggap ng gantimpala bawat linggo na lumipas.","NCG bạn đã stake không thể rút trong 4 tuần, và bạn có thể nhận phần thưởng mỗi tuần trôi qua."
+UI_WARNING_STAKING_REDUCE,"If you reduce the NCG currently staked, your rewards will decrease. Additionally, the reward interval will be reset. Would you like to proceed?",스테이킹 진행중인 NCG를 줄이면 보상이 줄어듭니다. 또한 보상 인터벌이 초기화됩니다. 진행 하시겠습니까?,"Se você reduzir o NCG atualmente em staking, suas recompensas diminuirão. Além disso, o intervalo de recompensa será reiniciado. Deseja prosseguir?",現在ステーキングしているNCGを減らすと、報酬が減少します。さらに、報酬の間隔がリセットされます。進行しますか？,"Si reduces el NCG actualmente en staking, tus recompensas disminuirán. Además, el intervalo de recompensa se reiniciará. ¿Deseas proceder?",หากคุณลด NCG ที่กำลัง staking อยู่ รางวัลของคุณจะลดลง นอกจากนี้ ช่วงเวลารางวัลจะถูกรีเซ็ต คุณต้องการดำเนินการต่อหรือไม่?,"Jika Anda mengurangi NCG yang sedang di-stake, hadiah Anda akan berkurang. Selain itu, interval hadiah akan direset. Apakah Anda ingin melanjutkan?",,如果您减少了当前质押的NCG，您的奖励会减少。此外，奖励间隔将被重置。您要继绀吗？,如果您減少了當前質押的NCG，您的獎勵會減少。此外，獎勵間隔將被重置。您要繼續嗎？,"Kung babawasan mo ang kasalukuyang na-stake na NCG, bababa ang iyong mga gantimpala. Bilang karagdagan, ang interval ng gantimpala ay i-reset. Nais mo bang magpatuloy?","Nếu bạn giảm số NCG hiện tại đã stake, phần thưởng của bạn sẽ giảm. Ngoài ra, khoảng thời gian nhận thưởng sẽ được thiết lập lại. Bạn có muốn tiếp tục không?"
+UI_CHANGE,edit,변경,editar,編集,editar,แก้ไข,sunting,,编辑,編輯,i-edit,chỉnh sửa
+UI_CAUTION,CAUTION,주의,CUIDADO,注意,ATENCIÓN,คำเตือน,PERHATIAN,,注意,注意,MAG-INGAT,CẢNH BÁO
+UI_REQUIRED_COUNT_FORMAT,Required count : {0},필요 수량 : {0},Contagem necessária :{0},必要な数 :{0},Cantidad requerida :{0},จำนวนที่ต้องการ :{0},Jumlah yang dibutuhkan :{0},Необходимое количество :{0},所需数量 :{0},所需數量 :{0},Kinakailangang bilang :{0},Số lượng cần :{0}

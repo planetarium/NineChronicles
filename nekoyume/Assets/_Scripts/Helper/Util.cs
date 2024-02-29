@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Libplanet.Action.State;
 using Libplanet.KeyStore;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
-using Nekoyume.Game.LiveAsset;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -47,7 +47,9 @@ namespace Nekoyume.Helper
             var address = Order.DeriveAddress(orderId);
             return await UniTask.RunOnThreadPool(async () =>
             {
-                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                var state = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    address);
                 if (state is Dictionary dictionary)
                 {
                     return OrderFactory.Deserialize(dictionary);
@@ -68,7 +70,9 @@ namespace Nekoyume.Helper
             var address = Addresses.GetItemAddress(order.TradableId);
             return await UniTask.RunOnThreadPool(async () =>
             {
-                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                var state = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    address);
                 if (state is Dictionary dictionary)
                 {
                     var itemBase = ItemFactory.Deserialize(dictionary);
@@ -86,7 +90,9 @@ namespace Nekoyume.Helper
             var address = Addresses.GetItemAddress(tradableId);
             return await UniTask.RunOnThreadPool(async () =>
             {
-                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                var state = await Game.Game.instance.Agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    address);
                 if (state is Dictionary dictionary)
                 {
                     var itemBase = ItemFactory.Deserialize(dictionary);
@@ -263,7 +269,33 @@ namespace Nekoyume.Helper
             var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
             var runeStated = States.Instance.GetEquippedRuneStates(battleType);
             var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
-            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet);
+
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
+            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet, collectionStatModifiers);
+        }
+
+        public static (int previousCP, int currentCP) GetCpChanged(CollectionState previousState,
+            CollectionState currentState)
+        {
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var level = avatarState.level;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var row = characterSheet[avatarState.characterId];
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
+            var runeStated = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+            var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
+
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var previousCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
+                costumeSheet, previousState.GetEffects(collectionSheet));
+            var currentCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
+                costumeSheet, currentState.GetEffects(collectionSheet));
+            return (previousCp, currentCp);
         }
 
         public static List<RuneOptionSheet.Row.RuneOptionInfo> GetRuneOptions(

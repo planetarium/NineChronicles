@@ -15,6 +15,7 @@ using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
+using Nekoyume.Module;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 
@@ -23,7 +24,7 @@ namespace BalanceTool
     public static partial class HackAndSlashCalculator
     {
         public static async UniTask<IEnumerable<PlayData>> CalculateAsync(
-            IAccount prevStates,
+            IWorld prevStates,
             int? randomSeed,
             long blockIndex,
             Address agentAddr,
@@ -68,7 +69,7 @@ namespace BalanceTool
         }
 
         private static async UniTask<PlayData> ExecuteHackAndSlashAsync(
-            IAccount states,
+            IWorld states,
             int? randomSeed,
             long blockIndex,
             Address agentAddr,
@@ -97,7 +98,7 @@ namespace BalanceTool
 
             // Execute HackAndSlash and apply to playData.Result.
             var avatarAddr = Addresses.GetAvatarAddress(agentAddr, avatarIndex);
-            var avatarState = states.GetAvatarStateV2(avatarAddr);
+            var avatarState = states.GetAvatarState(avatarAddr);
             var inventory = avatarState.inventory;
             var has = new HackAndSlash
             {
@@ -118,8 +119,10 @@ namespace BalanceTool
             };
             var runeStates = playData.Runes
                 .Select(tuple => RuneState.DeriveAddress(avatarAddr, tuple.runeId))
-                .Select(addr => new RuneState((List)states.GetState(addr)!))
+                .Select(addr => new RuneState((List)states.GetAccount(
+                    ReservedAddresses.LegacyAccount).GetState(addr)!))
                 .ToList();
+            var collectionState = states.GetCollectionState(avatarAddr);
             var skillsOnWaveStart = new List<Nekoyume.Model.Skill.Skill>();
             if (has.StageBuffId.HasValue)
             {
@@ -154,6 +157,8 @@ namespace BalanceTool
                     sheets.GetSheet<EnemySkillSheet>(),
                     sheets.GetSheet<CostumeStatSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
+                    collectionState,
+                    sheets.GetSheet<CollectionSheet>(),
                     sheets.GetSheet<WorldSheet>(),
                     sheets.GetSheet<WorldUnlockSheet>(),
                     exp);
@@ -179,6 +184,8 @@ namespace BalanceTool
             EnemySkillSheet enemySkillSheet,
             CostumeStatSheet costumeStatSheet,
             MaterialItemSheet materialItemSheet,
+            CollectionState collectionState,
+            CollectionSheet collectionSheet,
             WorldSheet worldSheet,
             WorldUnlockSheet worldUnlockSheet,
             int exp)
@@ -201,7 +208,8 @@ namespace BalanceTool
                 StageSimulator.GetWaveRewards(
                     random,
                     stageRow,
-                    materialItemSheet));
+                    materialItemSheet),
+                collectionState.GetEffects(collectionSheet));
             simulator.Simulate();
 
             if (simulator.Log.IsClear)

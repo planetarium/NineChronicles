@@ -7,6 +7,7 @@ using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
@@ -68,6 +69,9 @@ namespace StateViewer.Editor.Features
         private string encodedBencodexValue;
 
         private SearchField _addrSearchField;
+
+        [SerializeField]
+        private string searchingAccountAddrStr;
 
         [SerializeField]
         private string searchingAddrStr;
@@ -213,7 +217,7 @@ namespace StateViewer.Editor.Features
                         throw new ArgumentOutOfRangeException(),
                 };
                 var value = Codec.Decode(binary.ToByteArray());
-                stateTreeView.SetData(null, value);
+                stateTreeView.SetData(null, null, value);
             }
 
             EditorGUI.EndDisabledGroup();
@@ -245,6 +249,7 @@ namespace StateViewer.Editor.Features
             GUILayout.FlexibleSpace();
             EditorGUI.BeginDisabledGroup(
                 stateProxy is null ||
+                string.IsNullOrEmpty(searchingAccountAddrStr) ||
                 string.IsNullOrEmpty(searchingAddrStr) ||
                 _loadingSomething ||
                 !StateViewerWindow.IsSavable);
@@ -253,6 +258,7 @@ namespace StateViewer.Editor.Features
             {
                 GetStateAndUpdateStateTreeViewAsync(
                     stateProxy,
+                    searchingAccountAddrStr,
                     searchingAddrStr).Forget();
             }
 
@@ -294,7 +300,7 @@ namespace StateViewer.Editor.Features
                 var testValue = TestValues[i];
                 if (GUILayout.Button($"{i}: {testValue.Kind}"))
                 {
-                    stateTreeView.SetData(default, testValue);
+                    stateTreeView.SetData(default, default, testValue);
                 }
             }
 
@@ -321,16 +327,16 @@ namespace StateViewer.Editor.Features
                                          !StateViewerWindow.IsSavable);
             if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
             {
-                var (addr, value) = stateTreeView.Serialize();
-                if (addr is null)
+                var (accountAddr, addr, value) = stateTreeView.Serialize();
+                if (accountAddr is null || addr is null)
                 {
                     Debug.LogWarning("Address is null.");
                     return;
                 }
 
-                var stateList = new List<(Address addr, IValue value)>
+                var stateList = new List<(Address accountAddr, Address addr, IValue value)>
                 {
-                    (addr.Value, value),
+                    (accountAddr.Value, addr.Value, value),
                 };
                 ActionManager.Instance?.ManipulateState(stateList, null);
             }
@@ -406,9 +412,10 @@ namespace StateViewer.Editor.Features
 
         private async UniTaskVoid GetStateAndUpdateStateTreeViewAsync(
             StateProxy stateProxy,
+            string accountAddrStr,
             string addrStr)
         {
-            if (string.IsNullOrEmpty(addrStr))
+            if (string.IsNullOrEmpty(accountAddrStr) || string.IsNullOrEmpty(addrStr))
             {
                 ClearAll();
                 return;
@@ -424,67 +431,91 @@ namespace StateViewer.Editor.Features
             _loadingSomething = true;
             try
             {
+                Address? accountAddr;
                 Address? addr;
                 IValue? state;
-                FungibleAssetValue? ncgFav;
-                FungibleAssetValue? crystalFav;
-                FungibleAssetValue? itemTokenFav;
+                FungibleAssetValue? ncgFav = null;
+                FungibleAssetValue? crystalFav = null;
+                FungibleAssetValue? itemTokenFav = null;
                 if (string.IsNullOrEmpty(blockHashOrIndex))
                 {
-                    (addr, state) = await stateProxy.GetStateAsync(addrStr);
-                    (_, ncgFav) = stateProxy.GetBalance(addr!.Value, ncg.Value);
-                    (_, crystalFav) = stateProxy.GetBalance(addr.Value, Currencies.Crystal);
-                    (_, itemTokenFav) = stateProxy.GetBalance(
-                        addr.Value,
-                        Currency.Uncapped(
-                            ticker: itemTokenTicker,
-                            decimalPlaces: 0,
-                            minters: null));
+                    (accountAddr, addr, state) =
+                        await stateProxy.GetStateAsync(accountAddrStr, addrStr);
+                    if (accountAddr == ReservedAddresses.LegacyAccount)
+                    {
+                        (_, ncgFav) = stateProxy.GetBalance(addr!.Value, ncg.Value);
+                        (_, crystalFav) = stateProxy.GetBalance(addr.Value, Currencies.Crystal);
+                        (_, itemTokenFav) = stateProxy.GetBalance(
+                            addr.Value,
+                            Currency.Uncapped(
+                                ticker: itemTokenTicker,
+                                decimalPlaces: 0,
+                                minters: null));
+                    }
                 }
                 else if (long.TryParse(blockHashOrIndex, out var blockIndex))
                 {
-                    (addr, state) = await stateProxy.GetStateAsync(addrStr, blockIndex);
-                    (_, ncgFav) = await stateProxy.GetBalanceAsync(
-                        addr!.Value,
-                        ncg.Value,
-                        blockIndex);
-                    (_, crystalFav) = await stateProxy.GetBalanceAsync(
-                        addr.Value,
-                        Currencies.Crystal,
-                        blockIndex);
-                    (_, itemTokenFav) = await stateProxy.GetBalanceAsync(
-                        addr.Value,
-                        Currency.Uncapped(
-                            ticker: itemTokenTicker,
-                            decimalPlaces: 0,
-                            minters: null),
-                        blockIndex);
+                    (accountAddr, addr, state) =
+                        await stateProxy.GetStateAsync(blockIndex, accountAddrStr, addrStr);
+                    if (accountAddr == ReservedAddresses.LegacyAccount)
+                    {
+                        (_, ncgFav) = await stateProxy.GetBalanceAsync(
+                            blockIndex,
+                            addr!.Value,
+                            ncg.Value);
+                        (_, crystalFav) = await stateProxy.GetBalanceAsync(
+                            blockIndex,
+                            addr.Value,
+                            Currencies.Crystal);
+                        (_, itemTokenFav) = await stateProxy.GetBalanceAsync(
+                            blockIndex,
+                            addr.Value,
+                            Currency.Uncapped(
+                                ticker: itemTokenTicker,
+                                decimalPlaces: 0,
+                                minters: null));
+                    }
                 }
                 else
                 {
                     var blockHash = BlockHash.FromString(blockHashOrIndex);
-                    (addr, state) = await stateProxy.GetStateAsync(addrStr, blockHash);
-                    (_, ncgFav) = await stateProxy.GetBalanceAsync(
-                        addr!.Value,
-                        ncg.Value,
-                        blockHash);
-                    (_, crystalFav) = await stateProxy.GetBalanceAsync(
-                        addr.Value,
-                        Currencies.Crystal,
-                        blockHash);
-                    (_, itemTokenFav) = await stateProxy.GetBalanceAsync(
-                        addr.Value,
-                        Currency.Uncapped(
-                            ticker: itemTokenTicker,
-                            decimalPlaces: 0,
-                            minters: null),
-                        blockHash);
+                    (accountAddr, addr, state) =
+                        await stateProxy.GetStateAsync(blockHash, accountAddrStr, addrStr);
+                    if (accountAddr == ReservedAddresses.LegacyAccount)
+                    {
+                        (_, ncgFav) = await stateProxy.GetBalanceAsync(
+                            blockHash,
+                            addr!.Value,
+                            ncg.Value);
+                        (_, crystalFav) = await stateProxy.GetBalanceAsync(
+                            blockHash,
+                            addr.Value,
+                            Currencies.Crystal);
+                        (_, itemTokenFav) = await stateProxy.GetBalanceAsync(
+                            blockHash,
+                            addr.Value,
+                            Currency.Uncapped(
+                                ticker: itemTokenTicker,
+                                decimalPlaces: 0,
+                                minters: null));
+                    }
                 }
 
-                stateTreeView.SetData(addr, state);
-                ncgValue = $"{ncgFav.Value.MajorUnit}.{ncgFav.Value.MinorUnit}";
-                crystalValue = $"{crystalFav.Value.MajorUnit}.{crystalFav.Value.MinorUnit}";
-                itemTokenValue = itemTokenFav.Value.MajorUnit.ToString();
+                stateTreeView.SetData(accountAddr, addr, state);
+                if (ncgFav is not null)
+                {
+                    ncgValue = $"{ncgFav.Value.MajorUnit}.{ncgFav.Value.MinorUnit}";
+                }
+
+                if (crystalFav is not null)
+                {
+                    crystalValue = $"{crystalFav.Value.MajorUnit}.{crystalFav.Value.MinorUnit}";
+                }
+
+                if (itemTokenFav is not null)
+                {
+                    itemTokenValue = itemTokenFav.Value.MajorUnit.ToString();
+                }
             }
             catch (KeyNotFoundException)
             {

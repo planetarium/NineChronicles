@@ -162,8 +162,8 @@ namespace Nekoyume.UI
                         return;
                     }
 #endif
-                    var avatarStates = await Game.Game.instance.Agent.GetAvatarStatesAsync(new[]
-                        {_boundedData[index].AvatarAddr});
+                    var avatarStates = await Game.Game.instance.Agent.GetAvatarStatesAsync(
+                        new[] { _boundedData[index].AvatarAddr });
                     var avatarState = avatarStates.Values.First();
                     Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Arena).Forget();
                 })

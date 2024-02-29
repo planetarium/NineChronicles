@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Libplanet.Action.State;
 using Nekoyume.Extensions;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Model.Event;
@@ -219,7 +220,7 @@ namespace Nekoyume.State
             var addr = Nekoyume.Model.Event.EventDungeonInfo.DeriveAddress(
                 _currentAvatarAddr.Value,
                 EventDungeonRow.Id);
-            return await _agent.GetStateAsync(addr)
+            return await _agent.GetStateAsync(ReservedAddresses.LegacyAccount, addr)
                 is Bencodex.Types.List serialized
                 ? new EventDungeonInfo(serialized)
                 : null;

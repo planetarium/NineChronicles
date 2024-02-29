@@ -12,20 +12,24 @@ namespace Nekoyume.Blockchain
 {
     public static partial class StateGetter
     {
-        public static bool TryGetState(Address address, HashDigest<SHA256> hash, out IValue value)
+        public static bool TryGetState(
+            HashDigest<SHA256> hash,
+            Address accountAddress,
+            Address address,
+            out IValue value)
         {
-            value = Game.Game.instance.Agent.GetStateAsync(address, hash).Result;
+            value = Game.Game.instance.Agent.GetStateAsync(hash, accountAddress, address).Result;
             return value is not Null;
         }
 
         public static bool TryGetAvatarState(
-            Address avatarAddress,
             HashDigest<SHA256> hash,
+            Address avatarAddress,
             out AvatarState avatarState)
         {
             try
             {
-                avatarState = GetAvatarState(avatarAddress, hash);
+                avatarState = GetAvatarState(hash, avatarAddress);
                 return true;
             }
             catch (StateNullException e)
@@ -36,13 +40,13 @@ namespace Nekoyume.Blockchain
         }
 
         public static bool TryGetAvatarState(
+            HashDigest<SHA256> hash,
             Address agentAddress,
             Address avatarAddress,
-            HashDigest<SHA256> hash,
             out AvatarState avatarState)
         {
             avatarState = null;
-            if (!TryGetAvatarState(avatarAddress, hash, out var value))
+            if (!TryGetAvatarState(hash, avatarAddress, out var value))
             {
                 return false;
             }
@@ -51,9 +55,12 @@ namespace Nekoyume.Blockchain
             return avatarState.agentAddress == agentAddress;
         }
 
-        public static bool TryGetStakeStateV2(Address address, HashDigest<SHA256> hash, out StakeStateV2 stakeStateV2)
+        public static bool TryGetStakeStateV2(
+            HashDigest<SHA256> hash,
+            Address address,
+            out StakeStateV2 stakeStateV2)
         {
-            if(GetStakeStateV2(address, hash) is { } state)
+            if(GetStakeStateV2(hash, address) is { } state)
             {
                 stakeStateV2 = state;
                 return true;
@@ -64,14 +71,14 @@ namespace Nekoyume.Blockchain
         }
 
         public static bool TryGetCombinationSlotState(
+            HashDigest<SHA256> hash,
             Address avatarAddress,
             int index,
-            HashDigest<SHA256> hash,
             out CombinationSlotState combinationSlotState)
         {
             try
             {
-                combinationSlotState = GetCombinationSlotState(avatarAddress, index, hash);
+                combinationSlotState = GetCombinationSlotState(hash, avatarAddress, index);
                 return true;
             }
             catch (Exception)
@@ -82,13 +89,13 @@ namespace Nekoyume.Blockchain
         }
 
         public static bool TryGetArenaScore(
-            Address arenaScoreAddress,
             HashDigest<SHA256> hash,
+            Address arenaScoreAddress,
             out ArenaScore arenaScore)
         {
             try
             {
-                arenaScore = GetArenaScore(arenaScoreAddress, hash);
+                arenaScore = GetArenaScore(hash, arenaScoreAddress);
                 return true;
             }
             catch (Exception)

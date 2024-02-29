@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Libplanet.Types.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -22,6 +23,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> HasNotification;
         public readonly ReactiveProperty<bool> Disabled;
         public readonly ReactiveProperty<bool> GrindingCountEnabled;
+        public readonly ReactiveProperty<bool> CollectionSelected;
 
         public InventoryItem(ItemBase itemBase, int count, bool limited, bool tradable)
         {
@@ -36,6 +38,7 @@ namespace Nekoyume.UI.Model
             HasNotification = new ReactiveProperty<bool>(false);
             Disabled = new ReactiveProperty<bool>(false);
             GrindingCountEnabled = new ReactiveProperty<bool>(false);
+            CollectionSelected = new ReactiveProperty<bool>(false);
         }
 
         public InventoryItem(RuneState runeState)
@@ -51,12 +54,13 @@ namespace Nekoyume.UI.Model
             HasNotification = new ReactiveProperty<bool>(false);
             Disabled = new ReactiveProperty<bool>(false);
             GrindingCountEnabled = new ReactiveProperty<bool>(false);
+            CollectionSelected = new ReactiveProperty<bool>(false);
         }
 
         public InventoryItem(FungibleAssetValue fungibleAssetValue)
         {
             FungibleAssetValue = fungibleAssetValue;
-            var count = Convert.ToInt32(fungibleAssetValue.GetQuantityString());
+            var count = MathematicsExtensions.ConvertToInt32(fungibleAssetValue.GetQuantityString());
             Count = new ReactiveProperty<int>(count);
             Equipped = new ReactiveProperty<bool>(false);
             LevelLimited = new ReactiveProperty<bool>(false);
@@ -67,6 +71,7 @@ namespace Nekoyume.UI.Model
             HasNotification = new ReactiveProperty<bool>(false);
             Disabled = new ReactiveProperty<bool>(false);
             GrindingCountEnabled = new ReactiveProperty<bool>(false);
+            CollectionSelected = new ReactiveProperty<bool>(false);
         }
     }
 

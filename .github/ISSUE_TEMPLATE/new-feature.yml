@@ -1,0 +1,40 @@
+name: New feature
+description: new feature
+title: "[ENHANCEMENT]"
+labels: ["enhancement"]
+projects: ["planetarium/97"]
+assignees:
+  - ipdae
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: purpose
+    attributes:
+      label: Purpose
+      description: issue purpose
+      placeholder: ex. enhancement button
+    validations:
+      required: true
+  - type: textarea
+    id: document
+    attributes:
+      label: Document
+      description: feature document
+      value: |
+        -
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: issue description
+      description: what do you want to enhancement feature
+      value: |
+        -
+        -
+    validations:
+      required: true   

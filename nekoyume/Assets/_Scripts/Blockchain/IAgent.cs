@@ -50,12 +50,13 @@ namespace Nekoyume.Blockchain
 
         void EnqueueAction(ActionBase actionBase);
 
-        IValue GetState(Address address);
-        IValue GetState(Address address, HashDigest<SHA256> stateRootHash);
+        IValue GetState(Address accountAddress, Address address);
+        IValue GetState(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address);
 
-        Task<IValue> GetStateAsync(Address address, long? blockIndex = null);
-        Task<IValue> GetStateAsync(Address address, BlockHash blockHash);
-        Task<IValue> GetStateAsync(Address address, HashDigest<SHA256> stateRootHash);
+        Task<IValue> GetStateAsync(Address accountAddress, Address address);
+        Task<IValue> GetStateAsync(long blockIndex, Address accountAddress, Address address);
+        Task<IValue> GetStateAsync(BlockHash blockHash, Address accountAddress, Address address);
+        Task<IValue> GetStateAsync(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address);
 
         void SendException(Exception exc);
 
@@ -67,32 +68,52 @@ namespace Nekoyume.Blockchain
 
         Task<FungibleAssetValue> GetBalanceAsync(
             Address address,
-            Currency currency,
-            long? blockIndex = null);
+            Currency currency);
 
         Task<FungibleAssetValue> GetBalanceAsync(
+            long blockIndex,
             Address address,
-            Currency currency,
-            BlockHash blockHash);
+            Currency currency);
 
         Task<FungibleAssetValue> GetBalanceAsync(
+            BlockHash blockHash,
             Address address,
-            Currency currency,
-            HashDigest<SHA256> stateRootHash);
+            Currency currency);
+
+        Task<FungibleAssetValue> GetBalanceAsync(
+            HashDigest<SHA256> stateRootHash,
+            Address address,
+            Currency currency);
+
+        Task<AgentState> GetAgentStateAsync(Address address);
+
+        Task<AgentState> GetAgentStateAsync(
+            long blockIndex,
+            Address address);
+
+        Task<AgentState> GetAgentStateAsync(
+            HashDigest<SHA256> stateRootHash,
+            Address address);
 
         Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
-            IEnumerable<Address> addressList,
-            long? blockIndex = null);
+            IEnumerable<Address> addressList);
 
         Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
-            IEnumerable<Address> addressList,
-            HashDigest<SHA256> stateRootHash);
+            long blockIndex,
+            IEnumerable<Address> addressList);
 
-        Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList);
+        Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
+            HashDigest<SHA256> stateRootHash,
+            IEnumerable<Address> addressList);
 
         Task<Dictionary<Address, IValue>> GetStateBulkAsync(
-            IEnumerable<Address> addressList,
-            HashDigest<SHA256> stateRootHash);
+            Address accountAddress,
+            IEnumerable<Address> addressList);
+
+        Task<Dictionary<Address, IValue>> GetStateBulkAsync(
+            HashDigest<SHA256> stateRootHash,
+            Address accountAddress,
+            IEnumerable<Address> addressList);
 
         Task<Dictionary<Address, IValue>> GetSheetsAsync(IEnumerable<Address> addressList);
     }

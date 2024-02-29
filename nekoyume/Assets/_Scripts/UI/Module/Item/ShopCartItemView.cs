@@ -44,7 +44,11 @@ namespace Nekoyume.UI.Module
             baseItemView.ExpiredObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
+            baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.RuneSelectMove.SetActive(false);
+            baseItemView.SelectCollectionObject.SetActive(false);
+            baseItemView.SelectArrowObject.SetActive(false);
 
             if (model.ItemBase is not null)
             {

@@ -12,6 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: 900001_illust_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: f6cc68d08067c42c48e59fc3647a2cf4, type: 3}
   materials:
-  - {fileID: 2100000, guid: d8d01c65cdd8340cdae8539b6211f97f, type: 2}
+  - {fileID: 2100000, guid: d1a04121f8f2c904483c563594ba68db, type: 2}
+  - {fileID: 2100000, guid: 64b93f90c8b6436449f8bb342621f8ae, type: 2}
+  - {fileID: 2100000, guid: 3d2fb0b2498dcd742bd80ef52503bf49, type: 2}
+  - {fileID: 2100000, guid: f7a08726de10c3048851c70a504d2127, type: 2}
+  - {fileID: 2100000, guid: 640daf886ce1b2b429fbeb39195f1a0e, type: 2}
+  - {fileID: 2100000, guid: 89595f86e62856f438dd7e13251b4b15, type: 2}
+  - {fileID: 2100000, guid: 667c0dcbaeb175e41900cf9ed53a4120, type: 2}
+  - {fileID: 2100000, guid: 29f55b33932f61142a770a24a517ba95, type: 2}

@@ -65,6 +65,11 @@ namespace Nekoyume
         public static bool HasElementType(this ItemType type) => type == ItemType.Costume ||
                                                                  type == ItemType.Equipment;
 
+        public static bool HasSkill(this Equipment equipment)
+        {
+            return equipment.Skills.Any() || equipment.BuffSkills.Any();
+        }
+
         public static int GetOptionCountFromCombination(this Equipment equipment)
         {
             var additionalStats = equipment.StatsMap.GetAdditionalStats(true).ToList();

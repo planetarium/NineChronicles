@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Bencodex.Types;
 using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Battle;
@@ -21,6 +20,7 @@ namespace Nekoyume
         /// <param name="eval"></param>
         /// <param name="avatarState"></param>
         /// <param name="runeStates"></param>
+        /// <param name="collectionState"></param>
         /// <param name="skillsOnWaveStart"></param>
         /// <param name="sheets"></param>
         /// <param name="outSimulator">First simulator or first winning simulator.</param>
@@ -31,6 +31,7 @@ namespace Nekoyume
             this ActionEvaluation<HackAndSlash> eval,
             AvatarState avatarState,
             List<RuneState> runeStates,
+            CollectionState collectionState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
             out StageSimulator outSimulator,
@@ -43,7 +44,7 @@ namespace Nekoyume
             var stageRow = sheets.StageSheet[eval.Action.StageId];
             for (var i = 0; i < eval.Action.TotalPlayCount; i++)
             {
-                var prevSerializedAvatarState = (Dictionary)avatarState.Serialize();
+                var prevAvatarState = (AvatarState)avatarState.Clone();
                 var prevExp = avatarState.exp;
                 var simulator = new StageSimulator(
                     random,
@@ -60,13 +61,14 @@ namespace Nekoyume
                     sheets.GetStageSimulatorSheets(),
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
-                    StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet));
+                    StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet),
+                    collectionState.GetEffects(sheets.CollectionSheet));
                 simulator.Simulate();
                 if (simulator.Log.IsClear)
                 {
                     if (outAvatarForRendering is null)
                     {
-                        outAvatarForRendering = new AvatarState(prevSerializedAvatarState);
+                        outAvatarForRendering = prevAvatarState;
                         outSimulator = simulator;
                     }
 

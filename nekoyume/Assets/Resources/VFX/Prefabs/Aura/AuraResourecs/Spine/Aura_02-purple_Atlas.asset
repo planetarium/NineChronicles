@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
   m_Name: Aura_02-purple_Atlas
   m_EditorClassIdentifier: 
+  textureLoadingMode: 0
+  onDemandTextureLoader: {fileID: 0}
   atlasFile: {fileID: 4900000, guid: 5de2ee4b9c7592a48a581a3145b5c6d4, type: 3}
   materials:
   - {fileID: 2100000, guid: ded9ffe6ca39d9944990a71fc316748b, type: 2}

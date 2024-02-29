@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Libplanet.Action;
+using Libplanet.Action.State;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
@@ -314,7 +315,9 @@ namespace Nekoyume
             foreach (var name in tableNames)
             {
                 var value = string.Empty;
-                var state = Game.Game.instance.Agent.GetState(Addresses.TableSheet.Derive(name));
+                var state = Game.Game.instance.Agent.GetState(
+                    ReservedAddresses.LegacyAccount,
+                    Addresses.TableSheet.Derive(name));
                 if (!(state is null))
                 {
                     value = state.ToDotnetString();

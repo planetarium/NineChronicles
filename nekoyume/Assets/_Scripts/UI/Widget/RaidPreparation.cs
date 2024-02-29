@@ -21,6 +21,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Model;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace Nekoyume.UI
@@ -187,7 +188,7 @@ namespace Nekoyume.UI
             var row = worldBossListSheet.FindRowByBlockIndex(currentBlockIndex);
             var fee = CrystalCalculator.CalculateEntranceFee(
                 currentAvatarState.level, row.EntranceFee);
-            var cost = Convert.ToInt32(fee.GetQuantityString());
+            var cost = MathematicsExtensions.ConvertToInt32(fee.GetQuantityString());
             return cost;
         }
 
@@ -267,6 +268,7 @@ namespace Nekoyume.UI
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
             var tableSheets = Game.Game.instance.TableSheets;
             var avatarState = States.Instance.CurrentAvatarState;
+            var collectionState = Game.Game.instance.States.CollectionState;
             var items = new List<Guid>();
             items.AddRange(equipments);
             items.AddRange(costumes);
@@ -278,7 +280,8 @@ namespace Nekoyume.UI
                 consumables,
                 runeStates,
                 tableSheets.GetRaidSimulatorSheets(),
-                tableSheets.CostumeStatSheet
+                tableSheets.CostumeStatSheet,
+                collectionState.GetEffects(tableSheets.CollectionSheet)
             );
             var log = simulator.Simulate();
             var digest = new ArenaPlayerDigest(avatarState,

@@ -22,7 +22,7 @@ namespace Nekoyume.Helper
         public static TableSheets MakeTableSheets()
         {
             var csv = ImportSheets();
-            return new TableSheets(csv);
+            return TableSheets.MakeTableSheets(csv);
         }
 
         public static Dictionary<string, string> ImportSheets()
@@ -50,7 +50,7 @@ namespace Nekoyume.Helper
                 csv[asset.name] = asset.text;
             }
 
-            var tableSheets = new TableSheets(csv);
+            var tableSheets = TableSheets.MakeTableSheets(csv);
             return tableSheets;
         }
     }

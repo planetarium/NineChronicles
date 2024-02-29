@@ -135,6 +135,13 @@ namespace Nekoyume.UI.Module
             recommended.SetActive(isRecommended);
         }
 
+        public void SetData(ProductSchema data)
+        {
+            _data = data;
+            _rect = GetComponent<RectTransform>();
+            Refresh();
+        }
+
         private void Refresh()
         {
             _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku);
