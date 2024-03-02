@@ -20,7 +20,7 @@ namespace Nekoyume.UI
             }
 
             _background = GetComponentInChildren<UIBackground>();
-            if (_background != null)
+            if (_background)
             {
                 _background.OnClick = CloseWidget;
             }

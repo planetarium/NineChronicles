@@ -6,7 +6,8 @@ using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class SelectPlanetCell : FancyScrollRectCell<SelectPlanetCell.ViewModel, SelectPlanetScroll.ContextModel>
+    public class SelectPlanetCell :
+        FancyScrollRectCell<SelectPlanetCell.ViewModel, SelectPlanetScroll.ContextModel>
     {
         public class ViewModel
         {

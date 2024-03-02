@@ -9,7 +9,8 @@ namespace Nekoyume.UI.Scroller
 {
     using UniRx;
 
-    public class SelectPlanetScroll : FancyScrollRect<SelectPlanetCell.ViewModel, SelectPlanetScroll.ContextModel>
+    public class SelectPlanetScroll :
+        FancyScrollRect<SelectPlanetCell.ViewModel, SelectPlanetScroll.ContextModel>
     {
         public class ContextModel : FancyScrollRectContext, IDisposable
         {
@@ -67,7 +68,8 @@ namespace Nekoyume.UI.Scroller
             }
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
-            var newItemsSource = planetRegistry.PlanetInfos.Select(e =>
+            var selectedIndex = 0;
+            var newItemsSource = planetRegistry.PlanetInfos.Select((e, index) =>
             {
                 if (e is null)
                 {
@@ -92,7 +94,7 @@ namespace Nekoyume.UI.Scroller
                     };
                 }
 
-                return new SelectPlanetCell.ViewModel
+                var vm = new SelectPlanetCell.ViewModel
                 {
                     PlanetId = e.ID,
                     PlanetName = textInfo.ToTitleCase(e.Name),
@@ -100,8 +102,15 @@ namespace Nekoyume.UI.Scroller
                     IsNew = !(e.ID.Equals(PlanetId.Odin) ||
                               e.ID.Equals(PlanetId.OdinInternal)),
                 };
+                if (vm.IsSelected)
+                {
+                    selectedIndex = index;
+                }
+
+                return vm;
             }).ToArray();
             UpdateContents(newItemsSource);
+            JumpTo(selectedIndex);
         }
 
         private void OnClickCell((
@@ -118,18 +127,7 @@ namespace Nekoyume.UI.Scroller
             var selectedPlanetId = viewModel.PlanetId;
             var newItemsSource = ItemsSource.Select(e =>
             {
-                if (e.IsSelected)
-                {
-                    e.IsSelected = false;
-                    return e;
-                }
-
-                if (e.PlanetId.Equals(selectedPlanetId))
-                {
-                    e.IsSelected = true;
-                    return e;
-                }
-
+                e.IsSelected = e.PlanetId.Equals(selectedPlanetId);
                 return e;
             }).ToArray();
             UpdateContents(newItemsSource);

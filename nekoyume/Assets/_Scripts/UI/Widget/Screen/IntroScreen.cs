@@ -19,6 +19,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Multiplanetary;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Multiplanetary;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
@@ -67,20 +68,12 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject[] qrCodeGuideImages;
         [SerializeField] private TextMeshProUGUI qrCodeGuideText;
         [SerializeField] private Button qrCodeGuideNextButton;
-        [SerializeField] private CodeReaderView codeReaderView;
 
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
 
-        [SerializeField] private GameObject selectPlanetPopup;
-        [SerializeField] private Button selectPlanetPopupBgButton;
-        [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
-        [SerializeField] private SelectPlanetScroll selectPlanetScroll;
-
-        [SerializeField] private GameObject planetAccountInfosPopup;
-        [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
-        [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
-        [SerializeField] private PlanetAccountInfoScroll planetAccountInfoScroll;
+        [SerializeField] private SelectPlanetPopup selectPlanetPopup;
+        [SerializeField] private PlanetAccountInfosPopup planetAccountInfosPopup;
 
         private const int GuideCount = 3;
         private const int GuideStartIndex = 1;
@@ -96,6 +89,10 @@ namespace Nekoyume.UI
         public Subject<IntroScreen> OnClickTabToStart { get; } = new();
         public Subject<IntroScreen> OnClickStart { get; } = new();
         public Subject<(SigninContext.SocialType socialType, string email, string idToken)> OnSocialSignedIn { get; } = new();
+
+        public Subject<PlanetAccountInfosPopup.SubmitState>
+            OnPlanetAccountInfosPopupSubmit
+        { get; } = new();
 
         protected override void Awake()
         {
@@ -193,32 +190,19 @@ namespace Nekoyume.UI
                 _guideIndex++;
                 ShowQrCodeGuide();
             });
-            yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
-            selectPlanetPopupBgButton.onClick.AddListener(() => selectPlanetPopup.SetActive(false));
-            selectPlanetScroll.OnChangeSelectedPlanetSubject
+            yourPlanetButton.onClick.AddListener(selectPlanetPopup.Show);
+            selectPlanetPopup.OnChangeSelectedPlanetSubject
                 .Subscribe(tuple =>
                 {
                     // NOTE: Do not handle the PlanetContext.Error now.
                     _planetContext = PlanetSelector.SelectPlanetById(
                         _planetContext,
                         tuple.selectedPlanetId);
-                    selectPlanetPopup.SetActive(false);
                 })
                 .AddTo(gameObject);
-            selectPlanetScroll.OnClickSelectedPlanetSubject
-                .Subscribe(_ => selectPlanetPopup.SetActive(false))
+            planetAccountInfosPopup.OnSubmitSubject
+                .Subscribe(OnPlanetAccountInfosPopupSubmit)
                 .AddTo(gameObject);
-            planetAccountInfoScroll.OnSelectedPlanetSubject.Subscribe(tuple =>
-            {
-                // NOTE: Do not handle the PlanetContext.Error now.
-                _planetContext = PlanetSelector.SelectPlanetById(
-                    _planetContext,
-                    tuple.selectedPlanetId);
-                _planetContext = PlanetSelector.SelectPlanetAccountInfo(
-                    _planetContext,
-                    tuple.selectedPlanetId);
-                planetAccountInfosPopup.SetActive(false);
-            }).AddTo(gameObject);
             PlanetSelector.SelectedPlanetInfoSubject
                 .Subscribe(tuple => ApplySelectedPlanetInfo(tuple.planetContext))
                 .AddTo(gameObject);
@@ -235,17 +219,18 @@ namespace Nekoyume.UI
         protected override void OnDestroy()
         {
             base.OnDestroy();
+            OnClickTabToStart.Dispose();
+            OnClickStart.Dispose();
             OnSocialSignedIn.Dispose();
+            OnPlanetAccountInfosPopupSubmit.Dispose();
         }
 
         public void ApplyL10n()
         {
             yourPlanetText.text = L10nManager.Localize("UI_YOUR_PLANET");
             // startButton
-            selectPlanetPopupTitleText.text = L10nManager.Localize("UI_SELECT_YOUR_PLANET");
-            planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
-            planetAccountInfosDescriptionText.text =
-                L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
+            selectPlanetPopup.ApplyL10n();
+            planetAccountInfosPopup.ApplyL10n();
         }
 
         public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
@@ -269,8 +254,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public void ShowTabToStart()
+        public void ShowTabToStart(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
+            SetData(keyStorePath, privateKey, planetContext);
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             logoAreaGO.SetActive(false);
@@ -325,7 +311,9 @@ namespace Nekoyume.UI
         /// <summary>
         /// The only way to update the planetAccountInfoScroll state.
         /// </summary>
-        public void ShowPlanetAccountInfosPopup(PlanetContext planetContext, bool needToImportKey)
+        public void ShowPlanetAccountInfosPopup(
+            PlanetContext planetContext,
+            PlanetAccountInfosPopup.SubmitState submitState)
         {
             Debug.Log("[IntroScreen] ShowPlanetAccountInfosPopup invoked");
             if (planetContext.PlanetAccountInfos is null)
@@ -333,11 +321,10 @@ namespace Nekoyume.UI
                 Debug.LogError("[IntroScreen] planetContext.PlanetAccountInfos is null");
             }
 
-            planetAccountInfoScroll.SetData(
+            planetAccountInfosPopup.Show(
                 planetContext.PlanetRegistry,
                 planetContext.PlanetAccountInfos,
-                needToImportKey);
-            planetAccountInfosPopup.SetActive(true);
+                submitState);
             startButtonContainer.SetActive(false);
         }
 
@@ -358,7 +345,7 @@ namespace Nekoyume.UI
             {
                 _guideIndex = GuideStartIndex;
                 qrCodeGuideContainer.SetActive(false);
-
+                var codeReaderView = FindOrCreate<BarcodeReaderSystem>();
                 codeReaderView.Show(res =>
                 {
                     var resultPpk = ProtectedPrivateKey.FromJson(res.Text);
@@ -440,7 +427,7 @@ namespace Nekoyume.UI
         private void ApplyPlanetContext(PlanetContext planetContext)
         {
             Debug.Log("[IntroScreen] ApplyPlanetRegistry invoked.");
-            selectPlanetScroll.SetData(
+            selectPlanetPopup.SetData(
                 planetContext?.PlanetRegistry,
                 planetContext?.SelectedPlanetInfo?.ID);
 

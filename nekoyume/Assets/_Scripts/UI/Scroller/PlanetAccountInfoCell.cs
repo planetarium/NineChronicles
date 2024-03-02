@@ -3,7 +3,6 @@ using Nekoyume.L10n;
 using Nekoyume.Multiplanetary;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Scroller
@@ -15,7 +14,6 @@ namespace Nekoyume.UI.Scroller
         {
             public string PlanetName;
             public PlanetAccountInfo PlanetAccountInfo;
-            public bool NeedToImportKey;
         }
 
         private const string AccountTextFormat =
@@ -33,22 +31,10 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI noAccountText;
 
         [SerializeField]
-        private Button noAccountCreateButton;
-
-        [SerializeField]
-        private TextMeshProUGUI noAccountCreateButtonText;
-
-        [SerializeField]
         private GameObject account;
 
         [SerializeField]
         private TextMeshProUGUI[] accountTexts;
-
-        [SerializeField]
-        private Button accountImportKeyButton;
-
-        [SerializeField]
-        private TextMeshProUGUI accountImportKeyButtonText;
 
         private ViewModel _viewModel;
 
@@ -56,19 +42,6 @@ namespace Nekoyume.UI.Scroller
         {
             base.Initialize();
             ApplyL10nOnce();
-            noAccountCreateButton.onClick.AddListener(() =>
-                Context.OnClickCreateAccountSubject.OnNext((this, _viewModel)));
-            accountImportKeyButton.onClick.AddListener(() =>
-            {
-                if (_viewModel.NeedToImportKey)
-                {
-                    Context.OnClickImportKeySubject.OnNext((this, _viewModel));
-                }
-                else
-                {
-                    Context.OnClickSelectPlanetSubject.OnNext((this, _viewModel));
-                }
-            });
         }
 
         public override void UpdateContent(ViewModel itemData)
@@ -144,9 +117,6 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
-            accountImportKeyButtonText.text = _viewModel.NeedToImportKey
-                ? L10nManager.Localize("BTN_IMPORT_KEY")
-                : L10nManager.Localize("BTN_SELECT");
             noAccount.SetActive(false);
             account.SetActive(true);
         }
@@ -160,8 +130,6 @@ namespace Nekoyume.UI.Scroller
 
             _isAppliedL10N = true;
             noAccountText.text = L10nManager.Localize("SDESC_NO_ACCOUNT");
-            noAccountCreateButtonText.text = L10nManager.Localize("BTN_CREATE_A_NEW_CHARACTER");
-            accountImportKeyButtonText.text = L10nManager.Localize("BTN_IMPORT_KEY");
         }
     }
 }

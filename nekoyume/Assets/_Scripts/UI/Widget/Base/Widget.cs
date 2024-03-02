@@ -202,32 +202,12 @@ namespace Nekoyume.UI
 
         public static T FindOrCreate<T>() where T : Widget
         {
-            var type = typeof(T);
-            var names = type.ToString().Split('.');
-            var widgetName = $"UI_{names[names.Length - 1]}";
-            var resName = $"UI/Prefabs/{widgetName}";
-            var pool = Game.Game.instance.Stage.objectPool;
-            var go = pool.Get(widgetName, false);
-            if (go)
+            if (TryFind(out T widget))
             {
-                var widget = go.GetComponent<T>();
-                go.transform.SetParent(
-                    MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
                 return widget;
             }
-            else
-            {
-                Debug.Log("create new");
-                var prefab = Resources.Load<GameObject>(resName);
-                go = Instantiate(prefab, MainCanvas.instance.RectTransform);
-                go.name = widgetName;
-                pool.Add(go, 1);
-                var widget = go.GetComponent<T>();
-                go.transform.SetParent(
-                    MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
 
-                return widget;
-            }
+            return Create<T>();
         }
 
         public static bool IsOpenAnyPopup()
