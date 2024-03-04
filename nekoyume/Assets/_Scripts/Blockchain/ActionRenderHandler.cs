@@ -2676,7 +2676,8 @@ namespace Nekoyume.Blockchain
                         enemyDigest.Value,
                         arenaSheets,
                         myCollectionState.GetEffects(tableSheets.CollectionSheet),
-                        enemyCollectionState.GetEffects(tableSheets.CollectionSheet));
+                        enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
+                        true);
 
                     var reward = RewardSelector.Select(
                         random,

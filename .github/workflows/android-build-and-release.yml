@@ -75,20 +75,21 @@ jobs:
             echo ${{ github.event.inputs.clo }} > ${{ matrix.projectPath }}/Assets/StreamingAssets/clo.json
           fi
 
-      - uses: game-ci/unity-builder@v2
+      - uses: game-ci/unity-builder@v4
         with:
           androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
           androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           androidKeyaliasName: ${{ secrets.ANDROID_KEY_ALIAS_NAME }}
           androidKeyaliasPass: ${{ secrets.ANDROID_KEY_ALIAS_PASS }}
-          androidAppBundle: true
+          androidExportType: 'androidAppBundle'
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
           buildName: ${{ matrix.targetPlatform }}
           androidVersionCode: ${{ github.event.inputs.version-code }}
           version: ${{ github.event.inputs.app-version }}
+          androidTargetSdkVersion: AndroidApiLevel33
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -113,10 +114,13 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Print file content
+        run: ls -R $GITHUB_WORKSPACE/build
+
       - name: Move Folder
         run: |
           sudo mv $GITHUB_WORKSPACE/build /tmp/player
-
+          
       - name: Convert AAB to APKS
         run: |
           sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/Nine Chronicles M.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/keyalias.pwd --mode=universal --local-testing
