@@ -1001,9 +1001,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.1
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &-1730277060748216157
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1379,9 +1383,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.1
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1538,6 +1546,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+  unscaledTime: 0
 --- !u!114 &671310986034305526
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1578,7 +1587,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f10dd60657c6004587f237a7e90f8e4, type: 3}
   m_Name: AudioPlayableAsset
   m_EditorClassIdentifier: 
-  m_Clip: {fileID: 8300000, guid: 15afd058cf1794d75b64fba414ce1ad6, type: 3}
+  m_Clip: {fileID: 0}
   m_Loop: 0
   m_bufferingTime: 0.1
   m_ClipProperties:
@@ -2047,9 +2056,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &4775397144088280765
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2270,9 +2283,13 @@ MonoBehaviour:
     isInitialized: 1
     mixDuration: 0.1
     holdPrevious: 0
+    dontPauseWithDirector: 0
+    dontEndWithClip: 0
+    endMixOutDuration: 0.1
     attachmentThreshold: 0.5
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
+    alpha: 1
 --- !u!114 &9074253320390305975
 MonoBehaviour:
   m_ObjectHideFlags: 1

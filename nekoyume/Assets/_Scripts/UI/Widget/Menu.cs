@@ -67,6 +67,9 @@ namespace Nekoyume.UI
         private MainMenu btnSeasonPass;
 
         [SerializeField]
+        private MainMenu btnCollection;
+
+        [SerializeField]
         private SpeechBubble[] speechBubbles;
 
         [SerializeField] private GameObject shopExclamationMark;
@@ -142,6 +145,7 @@ namespace Nekoyume.UI
                     btnDcc.GetComponent<Button>(),
                     btnPatrolReward.GetComponent<Button>(),
                     btnSeasonPass.GetComponent<Button>(),
+                    btnCollection.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -550,17 +554,12 @@ namespace Nekoyume.UI
 
         public void StakingClick()
         {
-#if UNITY_ANDROID || UNITY_IOS
-            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-#else
             if (!btnStaking.IsUnlocked)
             {
                 return;
             }
 
             Find<StakingPopup>().Show();
-#endif
         }
 
         public void WorldBossClick()
@@ -629,6 +628,19 @@ namespace Nekoyume.UI
                 return;
             }
             Find<SeasonPass>().Show();
+        }
+
+        public void CollectionClick()
+        {
+            if (!btnCollection.IsUnlocked)
+            {
+                return;
+            }
+
+            AudioController.PlayClick();
+
+            Close(true);
+            Find<Collection>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

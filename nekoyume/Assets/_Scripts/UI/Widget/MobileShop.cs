@@ -111,7 +111,7 @@ namespace Nekoyume.UI
                         {
                             if (_allProductObjs.TryGetValue(item.Sku, out var cellView))
                             {
-                                cellView.SetData(item, category.Name == RecommendedString);
+                                cellView.SetData(item);
                             }
                         }
                     }

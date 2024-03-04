@@ -8,7 +8,6 @@ using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -188,6 +187,9 @@ namespace Nekoyume.Blockchain
             UnlockRuneSlot();
 
             PetEnhancement();
+
+            // Collection
+            ActivateCollection();
 
             // GARAGE
             UnloadFromMyGarages();
@@ -500,6 +502,7 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<Stake>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
                 .Subscribe(ResponseStake)
                 .AddTo(_disposables);
         }
@@ -621,6 +624,19 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void ActivateCollection()
+        {
+            _actionRenderer.EveryRender<ActivateCollection>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(eval => eval.Action.AvatarAddress == States.Instance.CurrentAvatarState.address)
+                .Select(PrepareActivateCollection)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseActivateCollection)
+                .AddTo(_disposables);
+        }
+
         private void RequestPledge()
         {
             _actionRenderer.EveryRender<RequestPledge>()
@@ -662,7 +678,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
                 .AddTo(_disposables);
@@ -675,7 +690,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Select(PrepareRuneSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneSummon)
                 .AddTo(_disposables);
@@ -1399,46 +1413,35 @@ namespace Nekoyume.Blockchain
             Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
-        private ActionEvaluation<AuraSummon> PrepareAuraSummon(ActionEvaluation<AuraSummon> eval)
-        {
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            return eval;
-        }
-
-        private ActionEvaluation<RuneSummon> PrepareRuneSummon(ActionEvaluation<RuneSummon> eval)
-        {
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            UpdateCurrentAvatarRuneStoneBalance(eval);
-
-            return eval;
-        }
-
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var action = eval.Action;
-
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[action.GroupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-            var count = summonRow.CostMaterialCount * action.SummonCount;
-            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
-
-            Widget.Find<Summon>().OnActionRender(eval);
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                Widget.Find<Summon>().OnActionRender(eval);
+            });
         }
 
         private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
         {
-            var action = eval.Action;
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[action.GroupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-            var count = summonRow.CostMaterialCount * action.SummonCount;
-            LocalLayerModifier.AddItem(eval.Action.AvatarAddress, materialRow.ItemId, count);
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var action = eval.Action;
+                var tableSheets = Game.Game.instance.TableSheets;
+                var summonRow = tableSheets.SummonSheet[action.GroupId];
+                var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+                var count = summonRow.CostMaterialCount * action.SummonCount;
 
-            Widget.Find<Summon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval);
+            });
         }
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
@@ -1514,7 +1517,7 @@ namespace Nekoyume.Blockchain
                     case AssetInfo assetInfo:
                         await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
                         itemName = assetInfo.Asset.GetLocalizedName();
-                        count = Convert.ToInt32(assetInfo.Asset.GetQuantityString());
+                        count = MathematicsExtensions.ConvertToInt32(assetInfo.Asset.GetQuantityString());
                         break;
                 }
 
@@ -1929,6 +1932,7 @@ namespace Nekoyume.Blockchain
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
                 States.Instance.GetEquippedRuneStates(BattleType.Adventure),
+                States.Instance.CollectionState,
                 skillsOnWaveStart,
                 tableSheets,
                 out var simulator,
@@ -2440,33 +2444,44 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            NotificationSystem.Push(
-                MailType.System,
-                L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
-                NotificationCell.NotificationType.Information);
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateStakeStateAsync(eval);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                    NotificationCell.NotificationType.Information);
 
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateStakeStateAsync(eval).Forget();
+                Widget.Find<StakingPopup>().SetView();
+            });
         }
 
         private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
         {
+            LoadingHelper.ClaimStakeReward.Value = false;
             if (eval.Exception is not null)
             {
                 return;
             }
 
-            // Notification
-            NotificationSystem.Push(
-                MailType.System,
-                L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
-                NotificationCell.NotificationType.Information);
-
-            UniTask.RunOnThreadPool(() =>
+            UniTask.RunOnThreadPool(async () =>
             {
-                UpdateStakeStateAsync(eval).Forget();
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-            }).Forget();
+                await UpdateStakeStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                // Notification
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
+                    NotificationCell.NotificationType.Information);
+
+                Widget.Find<StakingPopup>().SetView();
+            });
         }
 
 
@@ -2581,6 +2596,8 @@ namespace Nekoyume.Blockchain
             var tableSheets = TableSheets.Instance;
             ArenaPlayerDigest? myDigest = null;
             ArenaPlayerDigest? enemyDigest = null;
+            CollectionState myCollectionState = null;
+            CollectionState enemyCollectionState = null;
 
             var championshipId = eval.Action.championshipId;
             var round = eval.Action.round;
@@ -2631,6 +2648,8 @@ namespace Nekoyume.Blockchain
                     eval.OutputState,
                     eval.Action.myAvatarAddress,
                     eval.Action.enemyAvatarAddress);
+                myCollectionState = StateGetter.GetCollectionState(eval.OutputState, eval.Action.myAvatarAddress);
+                enemyCollectionState = StateGetter.GetCollectionState(eval.OutputState, eval.Action.enemyAvatarAddress);
             }).ToObservable().ObserveOnMainThread();
 
 
@@ -2656,6 +2675,8 @@ namespace Nekoyume.Blockchain
                         myDigest.Value,
                         enemyDigest.Value,
                         arenaSheets,
+                        myCollectionState.GetEffects(tableSheets.CollectionSheet),
+                        enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
                         true);
 
                     var reward = RewardSelector.Select(
@@ -2856,7 +2877,8 @@ namespace Nekoyume.Blockchain
                 eval.Action.FoodIds,
                 runeStates,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
-                TableSheets.Instance.CostumeStatSheet
+                TableSheets.Instance.CostumeStatSheet,
+                States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet)
             );
             simulator.Simulate();
             var log = simulator.Log;
@@ -3017,6 +3039,32 @@ namespace Nekoyume.Blockchain
 
             Widget.Find<DccCollection>().UpdateView();
             Game.Game.instance.SavedPetId = action.PetId;
+        }
+
+        private (ActionEvaluation<ActivateCollection> eval, CollectionState previousState) PrepareActivateCollection(ActionEvaluation<ActivateCollection> eval)
+        {
+            var previousState = States.Instance.CollectionState;
+            States.Instance.SetCollectionState(
+                StateGetter.GetCollectionState(eval.OutputState, eval.Action.AvatarAddress));
+
+            return (eval, previousState);
+        }
+
+        private void ResponseActivateCollection((ActionEvaluation<ActivateCollection> eval, CollectionState previousState) prepared)
+        {
+            Widget.Find<Collection>().OnActionRender();
+
+            var (eval, previousState) = prepared;
+            var collectionSheet = TableSheets.Instance.CollectionSheet;
+            var collectionId = eval.Action.CollectionData.First().collectionId;
+            var collectionRow = collectionSheet[collectionId];
+
+            var completionRate = (States.Instance.CollectionState.Ids.Count, collectionSheet.Count);
+            var cp = Util.GetCpChanged(previousState, States.Instance.CollectionState);
+            Widget.Find<CollectionResultPopup>().Show(collectionRow, completionRate, cp);
+
+
+            UniTask.RunOnThreadPool(() => UpdateCurrentAvatarStateAsync(eval).Forget());
         }
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR

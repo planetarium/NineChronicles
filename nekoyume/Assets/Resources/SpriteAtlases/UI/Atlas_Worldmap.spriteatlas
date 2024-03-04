@@ -50,6 +50,7 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 0b49b110e09398245ad6fb2a70d911f2, type: 3}
   - {fileID: 21300000, guid: 2e310e10c96094d069f3a1e565f90219, type: 3}
   - {fileID: 21300000, guid: d5bba040384424598ab3223d98d114ba, type: 3}
   - {fileID: 21300000, guid: 23280f4056da05449b27b83fff36ffcb, type: 3}
@@ -64,6 +65,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: de8118239436c6545ba14b30532a9cd2, type: 3}
   - {fileID: 21300000, guid: 906a84532e21b4e4ab01cb00cebf4ddf, type: 3}
   - {fileID: 21300000, guid: fbcb61637b42a4b3b91a0bbfbebc6aff, type: 3}
+  - {fileID: 21300000, guid: d0740a7316321974082876f15f68627a, type: 3}
+  - {fileID: 21300000, guid: 2f345eb3278d6424aab446e6e606a3e2, type: 3}
   - {fileID: 21300000, guid: 00406794f40274ccdab1a2dbcf625bdf, type: 3}
   - {fileID: 21300000, guid: c181cb94f0589470eaaaac3b21fdb37c, type: 3}
   - {fileID: 21300000, guid: 8afa5f94b321b4e05b6867f90107ae15, type: 3}
@@ -78,6 +81,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a482e0a70db811043bf145f3bd8b814d, type: 3}
   - {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228, type: 3}
   - {fileID: 21300000, guid: 3079cbf7ac3ef44e3b704fe8269d90bf, type: 3}
+  - {fileID: 21300000, guid: 6b2243283d5b0b44f98515fb2b7722de, type: 3}
   - {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
   - {fileID: 21300000, guid: 833f5ac8afbf841a8afcb0bba773bb3a, type: 3}
   - {fileID: 21300000, guid: b8b531f80d8c54c8fa32aca4b1e0d131, type: 3}
@@ -109,6 +113,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 854fb0ff4786a460383fecc53d2aef82, type: 3}
   - {fileID: 21300000, guid: 4ba9c7ff7111fda41801b14ccee7f82c, type: 3}
   m_PackedSpriteNamesToIndex:
+  - battle_UI_icon_07
   - bg_worldmap_hardmode_icon_03
   - bg_worldmap_outline_01
   - bg_worldmap_helheimr_icon_01
@@ -123,6 +128,8 @@ SpriteAtlas:
   - battle_UI_icon_03
   - bg_worldmap_niflheim_icon_02
   - Worldmap_Tile_bg_01
+  - bg_worldmap_springevent_icon_02
+  - bg_worldmap_springevent_icon_01
   - Worldmap_bg_04
   - bg_worldmap_hardmode_icon_01
   - bg_worldmap_asgard_icon_01
@@ -137,6 +144,7 @@ SpriteAtlas:
   - battle_UI_icon_boss_02
   - battle_UI_icon_05
   - Worldmap_bg_03
+  - bg_worldmap_springevent_icon_03
   - battle_UI_icon_01
   - bg_worldmap_winterevent_icon_03
   - bg_worldmap_muspelheim_icon_03

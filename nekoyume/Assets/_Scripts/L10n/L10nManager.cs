@@ -522,6 +522,13 @@ namespace Nekoyume.L10n
             return TryLocalize($"UI_{ticker}", out var text) ? text : ticker;
         }
 
+        public static string LocalizeCollectionName(int id)
+        {
+            return TryLocalize($"COLLECTION_NAME_{id}", out var name)
+                ? name
+                : Localize("NEW_COLLECTION_NAME");
+        }
+
         #endregion
 
         private static void ValidateStateAndKey(string key)

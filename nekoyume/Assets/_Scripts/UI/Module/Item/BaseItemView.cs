@@ -1,8 +1,6 @@
 using Coffee.UIEffects;
-using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.ScriptableObject;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -113,6 +111,12 @@ namespace Nekoyume
         [SerializeField]
         private GameObject runeSelectMove;
 
+        [SerializeField]
+        private GameObject selectCollectionObject;
+
+        [SerializeField]
+        private GameObject selectArrowObject;
+
         public GameObject Container => container;
         public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
@@ -147,6 +151,8 @@ namespace Nekoyume
 
         public GameObject RuneNotificationObj => runeNotificationObj;
         public GameObject RuneSelectMove => runeSelectMove;
+        public GameObject SelectCollectionObject => selectCollectionObject;
+        public GameObject SelectArrowObject => selectArrowObject;
 
         public static Sprite GetItemIcon(ItemBase itemBase)
         {

@@ -1,6 +1,30 @@
 {
   "viewModels": [
     {
+      "id": 123,
+      "size": {
+        "x": 900,
+        "y": 620
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100000_PAGE_00_TITLE",
+          "images": [
+            {
+            "delay": 0,
+            "duration": -1,
+            "resourcePath":"HelpPopupData/Sprites/StakingInfo",
+            "anchoredPosition": {
+              "x": 0,
+              "y": 0
+            }
+            }
+          ],
+          "texts": []
+        }
+      ]
+    },
+    {
       "id": 100000,
       "size": {
         "x": 900,
@@ -690,6 +714,31 @@
               "delay": 1,
               "duration": -1,
               "textL10nKey": "HELP_POPUP_100029_PAGE_00_TEXT_00",
+              "fontSize": 16,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100030,
+      "size": {
+        "x": 900,
+        "y": 500
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100030_PAGE_00_TITLE",
+          "images": null,
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100030_PAGE_00_TEXT_00",
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,

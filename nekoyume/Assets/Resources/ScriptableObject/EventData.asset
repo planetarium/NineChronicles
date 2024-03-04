@@ -19,6 +19,7 @@ MonoBehaviour:
   - Valentine
   - EventSummer
   - EventWinter
+  - EventSpring
   defaultSettings:
     <EventType>k__BackingField: 0
     <Intro>k__BackingField: {fileID: 21300000, guid: 46a8a229bbe9b432d99a82b73c5c9c27,
@@ -65,4 +66,16 @@ MonoBehaviour:
       gradiantColor: {r: 0.48235294, g: 1, b: 0.3254902, a: 0.5294118}
     <EventRecipeGuidedQuest>k__BackingField:
       icon: {fileID: 21300000, guid: 5809096ebbef04aea8564d60ba43bb46, type: 3}
+      gradiantColor: {r: 1, g: 0.3647059, b: 0.3254902, a: 0.5294118}
+  - <EventType>k__BackingField: 5
+    <Intro>k__BackingField: {fileID: 21300000, guid: d66925166185a4c9499ebb9359b58649,
+      type: 3}
+    <MainBGM>k__BackingField: {fileID: 8300000, guid: 21010f9e194e4a14dab913c50f9d1caf,
+      type: 3}
+    <TargetDungeonIds>k__BackingField: 211d9a00
+    <EventDungeonGuidedQuest>k__BackingField:
+      icon: {fileID: 21300000, guid: 0b49b110e09398245ad6fb2a70d911f2, type: 3}
+      gradiantColor: {r: 0.48235294, g: 1, b: 0.3254902, a: 0.5294118}
+    <EventRecipeGuidedQuest>k__BackingField:
+      icon: {fileID: 21300000, guid: 02657f54c17575b4a92c7af7531834dd, type: 3}
       gradiantColor: {r: 1, g: 0.3647059, b: 0.3254902, a: 0.5294118}
