@@ -12,6 +12,8 @@ namespace Nekoyume.Game.LiveAsset
             public const int WorkShop = 0;
             public const int CraftConsumable = 0;
             public const int Enhancement = 35;
+            public const int Rune = 23;
+            public const int Grind = 40;
             public const int Shop = 17;
             public const int Arena = 15;
             public const int Mimisbrunnr = 100;
