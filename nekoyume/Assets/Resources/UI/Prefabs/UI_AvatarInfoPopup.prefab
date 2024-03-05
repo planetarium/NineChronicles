@@ -1228,7 +1228,7 @@ MonoBehaviour:
   hasNotificationImage: {fileID: 7349189614640521860}
 --- !u!95 &2022243608368422683
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1245,7 +1245,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1260366824549371208
 GameObject:
   m_ObjectHideFlags: 0
@@ -2107,7 +2108,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &3127166471197448394
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2124,7 +2125,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &5934210866031268061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2624,7 +2626,7 @@ AudioSource:
     m_RotationOrder: 4
 --- !u!95 &3139821391663944815
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2641,7 +2643,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2888735880904329123
 GameObject:
   m_ObjectHideFlags: 0
@@ -3235,7 +3238,7 @@ MonoBehaviour:
   hasNotificationImage: {fileID: 3934128884383464421}
 --- !u!95 &2352189511030272710
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3252,7 +3255,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4173925518313819454
 GameObject:
   m_ObjectHideFlags: 0
@@ -3331,7 +3335,7 @@ RectTransform:
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &6569154618443594617
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3348,7 +3352,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1758277756663240385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3664,8 +3669,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4286090211
-  m_fontColor: {r: 0.8901961, g: 0.54509807, b: 0.47058824, a: 1}
+    rgba: 4283854755
+  m_fontColor: {r: 0.6392157, g: 0.43529412, b: 0.3372549, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4625,7 +4630,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &681772593474527453
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -4642,7 +4647,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8532734119864130037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5307,7 +5313,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &8092265316606298803
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5324,7 +5330,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8959424214509072302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6477,7 +6484,7 @@ MonoBehaviour:
   hasNotificationImage: {fileID: 6378733684889906225}
 --- !u!95 &4519614057914438933
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6494,7 +6501,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7556048583076862962
 GameObject:
   m_ObjectHideFlags: 0
@@ -6943,7 +6951,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &5950309790451008077
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6960,7 +6968,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &7603365316258770464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7283,7 +7292,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &6194756731680708273
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -7300,7 +7309,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8928716795986177984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7462,7 +7472,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &3938542459185443015
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -7479,7 +7489,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3625700579005930210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11115,6 +11126,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 848847023461915088, guid: 5060e118ffa50f3458f8d1e9618943ea,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 973584287331925583, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: m_IsActive
@@ -11785,6 +11801,11 @@ PrefabInstance:
     - target: {fileID: 23775075865892222, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 848847023461915088, guid: 5060e118ffa50f3458f8d1e9618943ea,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4393673336786423274, guid: 5060e118ffa50f3458f8d1e9618943ea,
@@ -13473,6 +13494,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 848847023461915088, guid: 5060e118ffa50f3458f8d1e9618943ea,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 973584287331925583, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: m_IsActive
@@ -14520,6 +14546,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 848847023461915088, guid: 5060e118ffa50f3458f8d1e9618943ea,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 973584287331925583, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: m_IsActive
@@ -14807,6 +14838,11 @@ PrefabInstance:
     - target: {fileID: 23775075865892222, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 848847023461915088, guid: 5060e118ffa50f3458f8d1e9618943ea,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4393673336786423274, guid: 5060e118ffa50f3458f8d1e9618943ea,
@@ -16045,6 +16081,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 848847023461915088, guid: 5060e118ffa50f3458f8d1e9618943ea,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4393673336786423274, guid: 5060e118ffa50f3458f8d1e9618943ea,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -16536,17 +16577,17 @@ PrefabInstance:
     - target: {fileID: 8778039387153566611, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8778039387153566611, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8778039387153566611, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 387389212801572156, guid: 5d633949e6ef14b458c0199e45af34c7, type: 3}
