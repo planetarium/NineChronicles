@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject notificationObj;
 
-        private void Awake()
+        protected override void Awake()
         {
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(OnEveryUpdateBlockIndex)
                 .AddTo(gameObject);
