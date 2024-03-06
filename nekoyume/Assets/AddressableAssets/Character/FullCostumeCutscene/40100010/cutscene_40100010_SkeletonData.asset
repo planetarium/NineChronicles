@@ -24,6 +24,8 @@ MonoBehaviour:
     multiplyMaterials:
     - pageName: cutscene_40100010.png
       material: {fileID: 2100000, guid: 527cc44d80e2242cd9b999c456eee195, type: 2}
+    - pageName: cutscene_40100010_2.png
+      material: {fileID: 2100000, guid: 69259d8c18bf3594db28a1e41ce1023d, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []
