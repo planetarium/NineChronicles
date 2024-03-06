@@ -97,6 +97,12 @@ namespace Nekoyume.UI
             bool isNext,
             int clearedStageId)
         {
+            //background 값은 로딩뿐아니라 실제 BackGround에서 사용하고있고 로딩용 리소스는 1밖에 없기 때문에 예외처리.
+            if (background == "chapter_08_03" || background == "chapter_08_02")
+            {
+                background = "chapter_08_01";
+            }
+
             _shouldClose = false;
             _rects = new List<RectTransform>();
             var position = new Vector2(MainCanvas.instance.RectTransform.rect.width, 0f);
