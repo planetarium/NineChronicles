@@ -71,6 +71,7 @@ MonoBehaviour:
   - {fileID: 5905054512756240036}
   unlockObjects:
   - {fileID: 6111033432752570114}
+  - {fileID: 1383849742373655351}
   hoverScaleTweener: {fileID: 8949428033910089053}
   notification: {fileID: 1383849742373655351}
 --- !u!114 &1357701940013637878
@@ -506,7 +507,7 @@ MonoBehaviour:
     updateMode: 0
 --- !u!95 &6751769054890373650
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -523,7 +524,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2241237712454279790
 GameObject:
   m_ObjectHideFlags: 0
@@ -1660,14 +1662,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2087993648389431499, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2137773557489241220, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2137773557489241220, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2137810767982179214, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
         type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2137810767982179214, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
         type: 3}
-      propertyPath: m_Enabled
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2148304577323554292, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
@@ -1708,6 +1725,11 @@ PrefabInstance:
     - target: {fileID: 3299072944425104584, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3299072944425104584, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4476838404041052713, guid: 4aeb2a2c0a0fed24ea51d6a49c3d17d2,
