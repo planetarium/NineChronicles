@@ -10,6 +10,9 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject notificationObj;
 
+        [SerializeField]
+        private GameObject notStakingObj;
+
         protected override void Awake()
         {
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(OnEveryUpdateBlockIndex)
@@ -20,25 +23,23 @@ namespace Nekoyume.UI.Module.Lobby
         {
             var nullableStakeState = States.Instance.StakeStateV2;
             var hasStakeState = nullableStakeState.HasValue;
+            bool enableNotification;
+            var enableNotStaking = false;
             if (hasStakeState)
             {
-                if (nullableStakeState.Value.ClaimableBlockIndex <= tip)
-                {
-                    notificationObj.SetActive(true);
-                    return;
-                }
+                enableNotification = nullableStakeState.Value.ClaimableBlockIndex <= tip;
             }
             else
             {
                 var minimumNcg = States.Instance.StakeRegularRewardSheet
                         .First(pair => pair.Value.Level == 1)
                         .Value.RequiredGold;
-                notificationObj.SetActive(States.Instance.GoldBalanceState.Gold.MajorUnit >=
-                                          minimumNcg);
-                return;
+                enableNotification = enableNotStaking =
+                    States.Instance.GoldBalanceState.Gold.MajorUnit >= minimumNcg;
             }
 
-            notificationObj.SetActive(false);
+            notificationObj.SetActive(enableNotification);
+            notStakingObj.SetActive(enableNotStaking);
         }
     }
 }

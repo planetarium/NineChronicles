@@ -547,6 +547,7 @@ MonoBehaviour:
   - {fileID: 5582978022049418341}
   hoverScaleTweener: {fileID: 5305865071020006205}
   notificationObj: {fileID: 1065496651164662156}
+  notStakingObj: {fileID: 4812674883289709041}
 --- !u!1 &2127285318739861467
 GameObject:
   m_ObjectHideFlags: 0
@@ -1687,7 +1688,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &3343331068723035237
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1704,7 +1705,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5408358079773042243
 GameObject:
   m_ObjectHideFlags: 0
@@ -2789,6 +2791,11 @@ PrefabInstance:
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7937736088600402549, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
