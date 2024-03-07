@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -13,7 +14,9 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
@@ -136,7 +139,7 @@ namespace Nekoyume.UI
                     {
                         _currentStatType = statToggle.stat;
 
-                        UpdateScrollView();
+                        UpdateItems();
                     })
                     .AddTo(gameObject);
             }
@@ -145,6 +148,7 @@ namespace Nekoyume.UI
             scroll.OnClickMaterial.Subscribe(SelectMaterial).AddTo(gameObject);
             collectionMaterialInfo.OnClickCloseButton
                 .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
+            _searchInputField.onValueChanged.AddListener(UpdateSearchedItems);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -158,7 +162,7 @@ namespace Nekoyume.UI
 
             UpdateToggleView();
             UpdateStatToggleView();
-            UpdateScrollView();
+            UpdateItems();
         }
 
         public void TryInitialize()
@@ -182,15 +186,54 @@ namespace Nekoyume.UI
 
         #region ScrollView
 
+        [SerializeField]
+        private TMP_InputField _searchInputField;
+
+        private bool IsNeedFilter => _filteredItems != null || !string.IsNullOrWhiteSpace(_searchInputField.text);
+
+        private List<CollectionModel> _items;
+        private List<CollectionModel> _filteredItems;
+
+        private void UpdateItems()
+        {
+            _items = _models
+                     .Where(model =>
+                         model.ItemType == _currentItemType &&
+                         model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
+                     .OrderByDescending(model => model.CanActivate).ToList();
+            _filteredItems = null;
+
+            UpdateSearchedItems(_searchInputField.text);
+            UpdateScrollView();
+        }
+
+        // TODO: Filter옵션이 추가되면 필터링 로직을 다른 메소드로 분리
+        private void UpdateSearchedItems(string value)
+        {
+            bool IsMatched(CollectionModel model)
+            {
+                if (model == null)
+                    return false;
+
+                var itemName = L10nManager.LocalizeCollectionName(model.Row.Key);
+                var nameMatched = Regex.IsMatch(itemName, _searchInputField.text, RegexOptions.IgnoreCase);
+
+                var materialMatched = false;
+                foreach (var material in model.Materials)
+                {
+                    var materialName = L10nManager.LocalizeItemName(material.Row.ItemId);
+                    materialMatched |= Regex.IsMatch(materialName, _searchInputField.text, RegexOptions.IgnoreCase);
+                }
+                return nameMatched || materialMatched;
+            }
+
+            _filteredItems = _items.Where(IsMatched).ToList();
+            UpdateScrollView();
+        }
+
         private void UpdateScrollView()
         {
-            var items = _models
-                .Where(model =>
-                    model.ItemType == _currentItemType &&
-                    model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
-                .OrderByDescending(model => model.CanActivate).ToList();
-
-            scroll.UpdateData(items,true);
+            scroll.UpdateData(IsNeedFilter ? _filteredItems : _items, true);
             SelectMaterial(null);
         }
 
@@ -288,7 +331,7 @@ namespace Nekoyume.UI
                 UpdateToggleView(); // on update toggleDictionary
                 UpdateStatToggleView(); // on update toggleDictionary
 
-                UpdateScrollView(); // on update model.CanActivate
+                UpdateItems(); // on update model.CanActivate
             }
         }
 
