@@ -62,6 +62,7 @@ namespace Nekoyume.UI
         }
         #endregion Internal Types
 
+        private const int SortingGroupWeight = 10;
 
         [SerializeField]
         private Button backButton;
@@ -245,7 +246,7 @@ namespace Nekoyume.UI
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int ComputeSortingOrder(ESortingGroup sortingGroup)
         {
-            return ESortingGroup.All - sortingGroup;
+            return (ESortingGroup.All - sortingGroup) * SortingGroupWeight;
         }
 
         // TODO: Filter옵션이 추가되면 필터링 로직을 다른 메소드로 분리
