@@ -863,10 +863,22 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
-                character.actions.Add(actionParams);
+                var tableSheets = TableSheets.Instance;
+                var skillSheet = tableSheets.SkillSheet;
+                if(skillSheet.TryGetValue(skillId, out var skillSheetRow) && skillSheetRow.Combo)
+                {
+                    var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttackWithCombo);
+                    character.actions.Add(actionParams);
 
-                yield return null;
+                    yield return null;
+                }
+                else
+                {
+                    var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
+                    character.actions.Add(actionParams);
+
+                    yield return null;
+                }
             }
         }
 
@@ -1052,7 +1064,7 @@ namespace Nekoyume.Game
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
+            Debug.Log($"[CoRemoveBuffs][{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
 #endif
             var character = GetCharacter(caster);
             if (character)

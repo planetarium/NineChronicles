@@ -74,6 +74,8 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposables = new();
 
+        private int? _chooseAvatarCp;
+
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
             (startButton.Interactable || !EnoughToPlay);
@@ -137,20 +139,23 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             _roundData = roundData;
             _info = info;
-            enemyCp.text = chooseAvatarCp.ToString();
+
+            _chooseAvatarCp = chooseAvatarCp;
+            enemyCp.text = _chooseAvatarCp.ToString();
             UpdateStartButton();
-            information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
+            information.UpdateInventory(BattleType.Arena, _chooseAvatarCp);
             coverToBlockClick.SetActive(false);
             AgentStateSubject.Crystal.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
         }
 
         public void UpdateInventory()
         {
-            information.UpdateInventory(BattleType.Arena);
+            information.UpdateInventory(BattleType.Arena, _chooseAvatarCp);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _chooseAvatarCp = null;
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
         }

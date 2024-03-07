@@ -345,8 +345,18 @@ namespace Nekoyume.Game
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
-            _actionQueue.Enqueue(actionParams);
+            var tableSheets = TableSheets.Instance;
+            var skillSheet = tableSheets.SkillSheet;
+            if (skillSheet.TryGetValue(skillId, out var skillSheetRow) && skillSheetRow.Combo)
+            {
+                var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
+                _actionQueue.Enqueue(actionParams);
+            }
+            else
+            {
+                var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
+                _actionQueue.Enqueue(actionParams);
+            }
             yield break;
         }
 

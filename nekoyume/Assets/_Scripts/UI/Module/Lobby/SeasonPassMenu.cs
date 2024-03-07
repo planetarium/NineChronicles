@@ -23,11 +23,10 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject iconRoot;
 
-        private const int SeasonPassNewPopupLimitClearedStageId = 15;
-
-        private void Awake()
+        protected override void Awake()
         {
-            _requireStage = SeasonPassNewPopupLimitClearedStageId;
+            base.Awake();
+
             dim.SetActive(false);
             iconRoot.SetActive(true);
             var seasonPassService = Game.Game.instance.SeasonPassServiceManager;
