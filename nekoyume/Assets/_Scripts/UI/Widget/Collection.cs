@@ -481,10 +481,7 @@ namespace Nekoyume.UI
                 return ComputeSortingOrderInGroup(ESortingGroup.PartiallyActive) + sortingOptionValue;
 
             // 3. 재료 모두 미달성
-            if (model.Materials.All(material => !material.HasItem))
-                return ComputeSortingOrderInGroup(ESortingGroup.Inactive) + sortingOptionValue;
-
-            return -1;
+            return ComputeSortingOrderInGroup(ESortingGroup.Inactive) + sortingOptionValue;
         }
 
         private int ComputeSortingOrderInOption(CollectionModel model)
