@@ -869,14 +869,12 @@ namespace Nekoyume.Game
                 {
                     var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttackWithCombo);
                     character.actions.Add(actionParams);
-
                     yield return null;
                 }
                 else
                 {
                     var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
                     character.actions.Add(actionParams);
-
                     yield return null;
                 }
             }

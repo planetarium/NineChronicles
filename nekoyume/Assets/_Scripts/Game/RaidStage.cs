@@ -349,12 +349,12 @@ namespace Nekoyume.Game
             var skillSheet = tableSheets.SkillSheet;
             if (skillSheet.TryGetValue(skillId, out var skillSheetRow) && skillSheetRow.Combo)
             {
-                var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
+                var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
                 _actionQueue.Enqueue(actionParams);
             }
             else
             {
-                var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
+                var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
                 _actionQueue.Enqueue(actionParams);
             }
             yield break;

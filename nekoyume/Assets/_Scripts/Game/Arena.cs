@@ -243,11 +243,22 @@ namespace Nekoyume.Game
         public IEnumerator CoDoubleAttack(
             ArenaCharacter caster,
             IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
-            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos,
+            int skillId)
         {
             var target = caster.Id == me.Id ? me : enemy;
-            var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoDoubleAttack);
-            target.Actions.Add(actionParams);
+            var tableSheets = TableSheets.Instance;
+            var skillSheet = tableSheets.SkillSheet;
+            if (skillSheet.TryGetValue(skillId, out var skillSheetRow) && skillSheetRow.Combo)
+            {
+                var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
+                target.Actions.Add(actionParams);
+            }
+            else
+            {
+                var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoDoubleAttack);
+                target.Actions.Add(actionParams);
+            }
             yield return null;
         }
 
