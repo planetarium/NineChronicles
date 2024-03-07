@@ -85,7 +85,6 @@ namespace Nekoyume.UI
         private TMP_InputField _searchInputField;
 
         private List<CollectionModel> _items;
-        private List<CollectionModel> _filteredItems;
 
         private CollectionMaterial _selectedMaterial;
 
@@ -106,7 +105,10 @@ namespace Nekoyume.UI
 
         public bool HasNotification => _filter.Values.Any(dict => dict.Values.Any(value => value));
 
-        private bool IsNeedFilter => _filteredItems != null || !string.IsNullOrWhiteSpace(_searchInputField.text);
+        /// <summary>
+        /// 필터 옵션 중 하나라도 활성화되었으면 true, 아니면 false
+        /// </summary>
+        private bool IsNeedFilter => IsNeedSearch;
 
         protected override void Awake()
         {
@@ -215,8 +217,7 @@ namespace Nekoyume.UI
                      .Where(model =>
                          model.ItemType == _currentItemType &&
                          model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
-                     .OrderByDescending(ApplySortingOrder).ToList();
-            _filteredItems = null;
+                     .OrderByDescending(model => model.CanActivate).ToList();
 
             UpdateSearchedItems(_searchInputField.text);
             UpdateScrollView();
@@ -248,33 +249,9 @@ namespace Nekoyume.UI
             return ESortingGroup.All - sortingGroup;
         }
 
-        // TODO: Filter옵션이 추가되면 필터링 로직을 다른 메소드로 분리
-        private void UpdateSearchedItems(string value)
-        {
-            bool IsMatched(CollectionModel model)
-            {
-                if (model == null)
-                    return false;
-
-                var itemName = L10nManager.LocalizeCollectionName(model.Row.Key);
-                var nameMatched = Regex.IsMatch(itemName, _searchInputField.text, RegexOptions.IgnoreCase);
-
-                var materialMatched = false;
-                foreach (var material in model.Materials)
-                {
-                    var materialName = L10nManager.LocalizeItemName(material.Row.ItemId);
-                    materialMatched |= Regex.IsMatch(materialName, _searchInputField.text, RegexOptions.IgnoreCase);
-                }
-                return nameMatched || materialMatched;
-            }
-
-            _filteredItems = _items.Where(IsMatched).ToList();
-            UpdateScrollView();
-        }
-
         private void UpdateScrollView()
         {
-            scroll.UpdateData(IsNeedFilter ? _filteredItems : _items, true);
+            scroll.UpdateData(IsNeedFilter ? RefreshFilteredItems() : _items, true);
             SelectMaterial(null);
         }
 
@@ -452,5 +429,48 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        #region Filter
+        private readonly List<CollectionModel> _filteredItems = new();
+
+        private bool IsNeedSearch => !string.IsNullOrWhiteSpace(_searchInputField.text);
+
+        private List<CollectionModel> RefreshFilteredItems()
+        {
+            _filteredItems.Clear();
+
+            foreach (var model in _items)
+            {
+                bool isContained = !(IsNeedSearch && !IsMatchedSearch(model));
+
+                if (isContained)
+                    _filteredItems.Add(model);
+            }
+
+            return _filteredItems;
+        }
+
+        private void UpdateSearchedItems(string _)
+        {
+            UpdateScrollView();
+        }
+
+        private bool IsMatchedSearch(CollectionModel model)
+        {
+            if (model == null)
+                return false;
+
+            var itemName = L10nManager.LocalizeCollectionName(model.Row.Key);
+            var nameMatched = Regex.IsMatch(itemName, _searchInputField.text, RegexOptions.IgnoreCase);
+
+            var materialMatched = false;
+            foreach (var material in model.Materials)
+            {
+                var materialName = L10nManager.LocalizeItemName(material.Row.ItemId);
+                materialMatched |= Regex.IsMatch(materialName, _searchInputField.text, RegexOptions.IgnoreCase);
+            }
+            return nameMatched || materialMatched;
+        }
+        #endregion Filter
     }
 }
