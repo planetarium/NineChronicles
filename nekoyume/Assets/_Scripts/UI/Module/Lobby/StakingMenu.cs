@@ -23,6 +23,9 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private TextMeshProUGUI stakedNcgText;
 
+        [SerializeField]
+        private TimeBlock claimableTimeBlock;
+
         private readonly List<IDisposable> _disposables = new();
 
         protected override void Awake()
@@ -56,7 +59,9 @@ namespace Nekoyume.UI.Module.Lobby
             var enableNotStaking = false;
             if (hasStakeState)
             {
-                enableNotification = nullableStakeState.Value.ClaimableBlockIndex <= tip;
+                var remaining = nullableStakeState.Value.ClaimableBlockIndex - tip;
+                enableNotification = remaining <= 0;
+                claimableTimeBlock.SetTimeBlock($"{remaining:#,0}",remaining.BlockRangeToTimeSpanString());
             }
             else
             {
