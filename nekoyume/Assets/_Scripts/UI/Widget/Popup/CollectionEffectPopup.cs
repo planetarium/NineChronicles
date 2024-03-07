@@ -1,5 +1,7 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -53,10 +55,21 @@ namespace Nekoyume.UI
 
         private void GoToCollection()
         {
+            var clearedStageId = States.Instance.CurrentAvatarState
+                .worldInformation.TryGetLastClearedStageId(out var id) ? id : 1;
+            const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.TutorialEnd;
+            if (clearedStageId < requiredStage)
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
             if (Game.Game.instance.IsInWorld)
             {
                 NotificationSystem.Push(
-                    Nekoyume.Model.Mail.MailType.System,
+                    MailType.System,
                     L10nManager.Localize("UI_BLOCK_EXIT"),
                     NotificationCell.NotificationType.Alert);
                 return;
