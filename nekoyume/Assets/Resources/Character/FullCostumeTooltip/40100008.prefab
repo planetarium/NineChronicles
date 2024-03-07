@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1221883741746398010
+--- !u!1 &5152510469147071221
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 111167753308121156}
-  - component: {fileID: 3937019169465161902}
-  - component: {fileID: 1986336220853126138}
+  - component: {fileID: 1639091514721503057}
+  - component: {fileID: 3260334721222102991}
+  - component: {fileID: 4920451904765299879}
   m_Layer: 0
   m_Name: Renderer0
   m_TagString: Untagged
@@ -18,13 +18,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &111167753308121156
+--- !u!224 &1639091514721503057
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1221883741746398010}
+  m_GameObject: {fileID: 5152510469147071221}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -38,21 +38,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!222 &3937019169465161902
+--- !u!222 &3260334721222102991
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1221883741746398010}
+  m_GameObject: {fileID: 5152510469147071221}
   m_CullTransparentMesh: 1
---- !u!114 &1986336220853126138
+--- !u!114 &4920451904765299879
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1221883741746398010}
+  m_GameObject: {fileID: 5152510469147071221}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: deeb12332c062954093c24a3fab10b83, type: 3}
@@ -96,7 +96,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 111167753308121156}
+  - {fileID: 1639091514721503057}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -152,7 +152,7 @@ MonoBehaviour:
   updateWhenInvisible: 1
   allowMultipleCanvasRenderers: 1
   canvasRenderers:
-  - {fileID: 3937019169465161902}
+  - {fileID: 3260334721222102991}
   separatorSlotNames: []
   enableSeparatorSlots: 0
   separatorParts: []
