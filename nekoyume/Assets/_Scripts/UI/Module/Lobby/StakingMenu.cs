@@ -1,10 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.State;
-using UniRx;
+using Nekoyume.State.Subjects;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.Lobby
 {
+    using UniRx;
     public class StakingMenu : MainMenu
     {
         [SerializeField]
@@ -13,10 +17,35 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject notStakingObj;
 
+        [SerializeField]
+        private TextMeshProUGUI levelText;
+
+        [SerializeField]
+        private TextMeshProUGUI stakedNcgText;
+
+        private readonly List<IDisposable> _disposables = new();
+
         protected override void Awake()
         {
+            base.Awake();
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(OnEveryUpdateBlockIndex)
                 .AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            _disposables.DisposeAllAndClear();
+            StakingSubject.Level.Subscribe(level => levelText.text = $"Lv. {level}")
+                .AddTo(_disposables);
+            StakingSubject.StakedNCG.Subscribe(fav => stakedNcgText.text = fav.GetQuantityString())
+                .AddTo(_disposables);
+            levelText.text = $"Lv. {States.Instance.StakingLevel}";
+            stakedNcgText.text = States.Instance.StakedBalanceState.Gold.GetQuantityString();
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
         }
 
         private void OnEveryUpdateBlockIndex(long tip)

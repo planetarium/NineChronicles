@@ -548,6 +548,8 @@ MonoBehaviour:
   hoverScaleTweener: {fileID: 5305865071020006205}
   notificationObj: {fileID: 1065496651164662156}
   notStakingObj: {fileID: 4812674883289709041}
+  levelText: {fileID: 2083789808917942542}
+  stakedNcgText: {fileID: 5968809444132447497}
 --- !u!1 &2127285318739861467
 GameObject:
   m_ObjectHideFlags: 0
@@ -968,7 +970,6 @@ GameObject:
   - component: {fileID: 1389050858694492935}
   - component: {fileID: 5968809444132447497}
   - component: {fileID: 2113113542053185220}
-  - component: {fileID: 7299539124758325029}
   m_Layer: 5
   m_Name: NCG
   m_TagString: Untagged
@@ -1107,19 +1108,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
---- !u!114 &7299539124758325029
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3012158234343650040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a094161211d3f934cbab67e86077499c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  content: {fileID: 5968809444132447497}
 --- !u!1 &3184540298155346661
 GameObject:
   m_ObjectHideFlags: 0
@@ -2079,7 +2067,6 @@ GameObject:
   - component: {fileID: 7267066288731428682}
   - component: {fileID: 2083789808917942542}
   - component: {fileID: 6423033181276166412}
-  - component: {fileID: 752732658651100284}
   m_Layer: 5
   m_Name: Level
   m_TagString: Untagged
@@ -2218,19 +2205,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
---- !u!114 &752732658651100284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7084222561411378694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a094161211d3f934cbab67e86077499c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  content: {fileID: 2083789808917942542}
 --- !u!1 &7862555482539124012
 GameObject:
   m_ObjectHideFlags: 0
@@ -2673,6 +2647,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4681619970566438773, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2803,9 +2782,19 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7937736088600402549, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8114319135286425651, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8114319135286425651, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
