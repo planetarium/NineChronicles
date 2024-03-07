@@ -22,35 +22,42 @@ namespace Nekoyume.Helper
             // Assigned values are used to load sprites.
             // Not used values: 1, 2, 6, etc.
             Stage,
+            Craft = 1,
+            Upgrade, // Upgrade icon is same as Craft.
             Shop = 3,
             Arena = 4,
             Quest = 5,
             Staking = 7,
             EventDungeonStage = 8,
+            Summon = 12,
         }
 
         #region AcquisitionPlace
 
+        // For Material
         public static List<AcquisitionPlaceButton.Model> GetAcquisitionPlaceList(
             Widget caller,
-            ItemBase itemBase)
+            int itemId,
+            ItemSubType itemSubType,
+            bool? isTradable = null)
         {
             var acquisitionPlaceList = new List<AcquisitionPlaceButton.Model>();
 
+            // For FoodMaterial or Arena season medal
             if (TableSheets.Instance.WeeklyArenaRewardSheet.Values
-                .Any(row => row.Reward.ItemId == itemBase.Id))
+                .Any(row => row.Reward.ItemId == itemId))
             {
                 acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Arena));
             }
-            else switch (itemBase.ItemSubType)
+            else switch (itemSubType)
             {
                 case ItemSubType.EquipmentMaterial
                     or ItemSubType.MonsterPart
                     or ItemSubType.NormalMaterial:
                 {
                     var stages = TableSheets.Instance.StageSheet
-                        .GetStagesContainsReward(itemBase.Id)
-                        .OrderStagesByPriority(itemBase.Id)
+                        .GetStagesContainsReward(itemId)
+                        .OrderStagesByPriority(itemId)
                         .Select(stage =>
                         {
                             TableSheets.Instance.WorldSheet.TryGetByStageId(stage.Id, out var worldRow);
@@ -60,23 +67,39 @@ namespace Nekoyume.Helper
                     acquisitionPlaceList.AddRange(stages);
                     break;
                 }
-                case ItemSubType.Hourglass or ItemSubType.ApStone when itemBase is ITradableItem:
-                    acquisitionPlaceList.AddRange(new[]
-                    {
-                        GetAcquisitionPlace(caller, PlaceType.Shop),
-                        GetAcquisitionPlace(caller, PlaceType.Staking)
-                    });
-                    break;
                 case ItemSubType.Hourglass or ItemSubType.ApStone:
-                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
+                    if (!isTradable.HasValue)
+                    {
+                        acquisitionPlaceList.AddRange(new[]
+                        {
+                            GetAcquisitionPlace(caller, PlaceType.Shop),
+                            GetAcquisitionPlace(caller, PlaceType.Staking),
+                            GetAcquisitionPlace(caller, PlaceType.Quest)
+                        });
+                        break;
+                    }
+
+                    if (isTradable.Value)
+                    {
+                        acquisitionPlaceList.AddRange(new[]
+                        {
+                            GetAcquisitionPlace(caller, PlaceType.Shop),
+                            GetAcquisitionPlace(caller, PlaceType.Staking),
+                        });
+                    }
+                    else
+                    {
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
+                    }
+
                     break;
             }
 
             if (RxProps.EventScheduleRowForDungeon.HasValue)
             {
                 var stages = RxProps.EventDungeonStageRows
-                    .GetStagesContainsReward(itemBase.Id)
-                    .OrderStagesByPriority(itemBase.Id, true)
+                    .GetStagesContainsReward(itemId)
+                    .OrderStagesByPriority(itemId, true)
                     .Select(stage => GetAcquisitionPlace(caller, PlaceType.EventDungeonStage,
                         (RxProps.EventDungeonRow.Id, stage.Id)));
 
@@ -88,10 +111,48 @@ namespace Nekoyume.Helper
             {
                 // If can get this item from quest...
                 if (States.Instance.CurrentAvatarState.questList.Any(quest =>
-                        !quest.Complete && quest.Reward.ItemMap.Any(r => r.Item1 == itemBase.Id)))
+                        !quest.Complete && quest.Reward.ItemMap.Any(r => r.Item1 == itemId)))
                 {
                     acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
                 }
+            }
+
+            return acquisitionPlaceList;
+        }
+
+        public static List<AcquisitionPlaceButton.Model> GetAcquisitionPlaceList(
+            Widget caller,
+            ItemSheet.Row itemRow,
+            bool required)
+        {
+            var acquisitionPlaceList = new List<AcquisitionPlaceButton.Model>();
+
+            switch (itemRow.ItemType)
+            {
+                case ItemType.Equipment:
+                    var canCraft = itemRow.ItemSubType != ItemSubType.Aura;
+                    var firstPlaceType = required ? PlaceType.Upgrade :
+                        canCraft ? PlaceType.Craft : PlaceType.Summon;
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, firstPlaceType));
+                    if (canCraft)
+                    {
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Shop));
+                    }
+
+                    break;
+                case ItemType.Consumable:
+                    acquisitionPlaceList.AddRange(new[]
+                    {
+                        GetAcquisitionPlace(caller, PlaceType.Craft),
+                        GetAcquisitionPlace(caller, PlaceType.Shop),
+                    });
+                    break;
+                case ItemType.Costume:
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Shop));
+                    break;
+                case ItemType.Material:
+                    acquisitionPlaceList.AddRange(GetAcquisitionPlaceList(caller, itemRow.Id, itemRow.ItemSubType));
+                    break;
             }
 
             return acquisitionPlaceList;
@@ -166,6 +227,33 @@ namespace Nekoyume.Helper
                         Widget.Find<StakingPopup>().Show();
                     };
                     guideText = L10nManager.Localize("UI_PLACE_STAKING");
+                    break;
+                case PlaceType.Craft:
+                    shortcutAction = () =>
+                    {
+                        caller.CloseWithOtherWidgets();
+                        Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                        Widget.Find<Craft>().Show();
+                    };
+                    guideText = L10nManager.Localize("CRAFT");
+                    break;
+                case PlaceType.Upgrade:
+                    shortcutAction = () =>
+                    {
+                        caller.CloseWithOtherWidgets();
+                        Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                        Widget.Find<Enhancement>().Show();
+                    };
+                    guideText = L10nManager.Localize("UI_UPGRADE_EQUIPMENT");
+                    break;
+                case PlaceType.Summon:
+                    shortcutAction = () =>
+                    {
+                        caller.CloseWithOtherWidgets();
+                        Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+                        Widget.Find<Summon>().Show();
+                    };
+                    guideText = L10nManager.Localize("UI_SUMMON");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -342,6 +430,10 @@ namespace Nekoyume.Helper
                 case PlaceType.Quest:
                 case PlaceType.Staking:
                     return true;
+                case PlaceType.Craft:
+                case PlaceType.Upgrade:
+                case PlaceType.Summon:
+                    return true;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -361,6 +453,9 @@ namespace Nekoyume.Helper
                 PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
                                    !Widget.Find<RankingBattleResultPopup>().IsActive(),
                 PlaceType.Staking => true,
+                PlaceType.Craft => true,
+                PlaceType.Upgrade => true,
+                PlaceType.Summon => true,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }

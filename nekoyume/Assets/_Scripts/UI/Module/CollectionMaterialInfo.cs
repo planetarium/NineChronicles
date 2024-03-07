@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
@@ -45,17 +47,22 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private AcquisitionPlaceButton[] acquisitionPlaceButtons;
 
-        private const int MaxCountOfAcquisitionPlace = 4;
+        private const int MaxCountOfAcquisitionPlace = 3;
 
         public IObservable<Unit> OnClickCloseButton => closeButton.OnClickAsObservable();
 
-        public void Show(CollectionSheet.RequiredMaterial material)
+        public void Show(
+            Widget shortcutCaller,
+            CollectionSheet.RequiredMaterial material,
+            bool required)
         {
             var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
             if (!itemSheet.TryGetValue(material.ItemId, out var row))
             {
                 return;
             }
+
+            gameObject.SetActive(true);
 
             iconArea.itemName.text = row.GetLocalizedName(material.Level);
             iconArea.itemView.Set(row, material);
@@ -92,9 +99,7 @@ namespace Nekoyume.UI.Module
 
             iconArea.itemDescriptionText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
 
-            // SetAcquisitionPlaceButtons(itemBase);
-
-            gameObject.SetActive(true);
+            SetAcquisitionPlaceButtons(shortcutCaller, row, required);
         }
 
         public void Close()
@@ -102,24 +107,26 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        private void SetAcquisitionPlaceButtons(ItemBase itemBase)
+        private void SetAcquisitionPlaceButtons(
+            Widget shortcutCaller,
+            ItemSheet.Row row,
+            bool required)
         {
             foreach (var button in acquisitionPlaceButtons)
             {
                 button.gameObject.SetActive(false);
             }
 
-            // Todo: Implement
-            // var acquisitionPlaceList = ShortcutHelper.GetAcquisitionPlaceList(, itemBase);
-            // if (acquisitionPlaceList.Any())
-            // {
-            //     var repeatCount = Math.Min(acquisitionPlaceList.Count, MaxCountOfAcquisitionPlace);
-            //     for (var i = 0; i < repeatCount; i++)
-            //     {
-            //         acquisitionPlaceButtons[i].gameObject.SetActive(true);
-            //         acquisitionPlaceButtons[i].Set(acquisitionPlaceList[i]);
-            //     }
-            // }
+            var acquisitionPlaceList = ShortcutHelper.GetAcquisitionPlaceList(shortcutCaller, row, required);
+            if (acquisitionPlaceList.Any())
+            {
+                var repeatCount = Math.Min(acquisitionPlaceList.Count, MaxCountOfAcquisitionPlace);
+                for (var i = 0; i < repeatCount; i++)
+                {
+                    acquisitionPlaceButtons[i].gameObject.SetActive(true);
+                    acquisitionPlaceButtons[i].Set(acquisitionPlaceList[i]);
+                }
+            }
         }
     }
 }

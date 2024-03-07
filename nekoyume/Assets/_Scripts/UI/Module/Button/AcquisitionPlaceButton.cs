@@ -69,22 +69,14 @@ namespace Nekoyume.UI.Module
             enableObject.SetActive(false);
             disableObject.SetActive(false);
 
+            string iconName = string.Empty;
             switch (model.Type)
             {
                 case ShortcutHelper.PlaceType.Stage:
-                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(model.StageId,
-                        out var worldRow))
+                    if (Game.Game.instance.TableSheets.WorldSheet.
+                        TryGetByStageId(model.StageId, out var worldRow))
                     {
-                        if (_iconDictionary.TryGetValue(
-                            string.Format(
-                                IconNameFormat,
-                                worldRow.Id < 10000
-                                    ? (100 + worldRow.Id).ToString()
-                                    : MimisbrunnrIconIndex),
-                            out var icon))
-                        {
-                            iconImage.sprite = icon;
-                        }
+                        iconName = string.Format(IconNameFormat, (100 + worldRow.Id).ToString());
                     }
 
                     break;
@@ -93,16 +85,22 @@ namespace Nekoyume.UI.Module
                 case ShortcutHelper.PlaceType.Quest:
                 case ShortcutHelper.PlaceType.Staking:
                 case ShortcutHelper.PlaceType.EventDungeonStage:
-                    if (_iconDictionary.TryGetValue(
-                        string.Format(IconNameFormat, $"00{(int)model.Type}"),
-                        out var sprite))
-                    {
-                        iconImage.sprite = sprite;
-                    }
+                case ShortcutHelper.PlaceType.Craft:
+                case ShortcutHelper.PlaceType.Summon:
+                    iconName = string.Format(IconNameFormat, $"00{(int)model.Type}");
+
+                    break;
+                case ShortcutHelper.PlaceType.Upgrade:
+                    iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.Craft}");
 
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+
+            if (_iconDictionary.TryGetValue(iconName, out var sprite))
+            {
+                iconImage.sprite = sprite;
             }
 
             EnableSettingByPlaceType(model.Type, model);
