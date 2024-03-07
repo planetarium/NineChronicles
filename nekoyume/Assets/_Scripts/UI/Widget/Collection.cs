@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
@@ -25,6 +26,7 @@ namespace Nekoyume.UI
 
     public class Collection : Widget
     {
+        #region Internal Types
         [Serializable]
         private struct ItemTypeToggle
         {
@@ -50,6 +52,16 @@ namespace Nekoyume.UI
                 hasNotificationImage.enabled = hasNotification;
             }
         }
+
+        private enum ESortingOrder
+        {
+            CanActivate,
+            PartiallyActive,
+            Inactive,
+            All,
+        }
+        #endregion Internal Types
+
 
         [SerializeField]
         private Button backButton;
@@ -203,11 +215,37 @@ namespace Nekoyume.UI
                      .Where(model =>
                          model.ItemType == _currentItemType &&
                          model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
-                     .OrderByDescending(model => model.CanActivate).ToList();
+                     .OrderByDescending(ApplySortingOrder).ToList();
             _filteredItems = null;
 
             UpdateSearchedItems(_searchInputField.text);
             UpdateScrollView();
+        }
+
+        private int ApplySortingOrder(CollectionModel model)
+        {
+            if (model == null)
+                return -1;
+
+            // 1. 활성화 가능
+            if (model.CanActivate)
+                return ComputeSortingOrder(ESortingOrder.CanActivate);
+
+            // 2. 재료 일정 부분 달성
+            if (model.Materials.Any(material => material.HasItem && !material.Active))
+                return ComputeSortingOrder(ESortingOrder.PartiallyActive);
+
+            // 3. 재료 모두 미달성
+            if (model.Materials.All(material => !material.HasItem))
+                return ComputeSortingOrder(ESortingOrder.Inactive);
+
+            return -1;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int ComputeSortingOrder(ESortingOrder sortingOrder)
+        {
+            return ESortingOrder.All - sortingOrder;
         }
 
         // TODO: Filter옵션이 추가되면 필터링 로직을 다른 메소드로 분리
