@@ -217,7 +217,7 @@ namespace Nekoyume.UI
                      .Where(model =>
                          model.ItemType == _currentItemType &&
                          model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
-                     .OrderByDescending(model => model.CanActivate).ToList();
+                     .OrderByDescending(ApplySortingOrder).ToList();
 
             UpdateSearchedItems(_searchInputField.text);
             UpdateScrollView();
