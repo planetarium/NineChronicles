@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Coffee.UIEffects;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -60,9 +61,16 @@ namespace Nekoyume.UI
             Inactive,
             All,
         }
+
+        private enum ESortType
+        {
+            None,
+            Grade,
+            Level,
+        }
         #endregion Internal Types
 
-        private const int SortingGroupWeight = 10;
+        private const int SortingGroupWeight = 1000;
 
         [SerializeField]
         private Button backButton;
@@ -82,8 +90,23 @@ namespace Nekoyume.UI
         [SerializeField]
         private CollectionMaterialInfo collectionMaterialInfo;
 
+        [Header("Center bottom")]
         [SerializeField]
         private TMP_InputField _searchInputField;
+
+        [SerializeField]
+        private TMP_Dropdown _sortDropdown;
+
+        [SerializeField]
+        private Button _sortButton;
+
+        [SerializeField]
+        private UIFlip _sortFlip;
+
+        [SerializeField]
+        private ESortType _sortType = ESortType.None;
+
+        private bool _isSortDescending = true;
 
         private List<CollectionModel> _items;
 
@@ -174,7 +197,12 @@ namespace Nekoyume.UI
             scroll.OnClickMaterial.Subscribe(SelectMaterial).AddTo(gameObject);
             collectionMaterialInfo.OnClickCloseButton
                 .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
+
             _searchInputField.onValueChanged.AddListener(UpdateSearchedItems);
+            _sortButton.onClick.AddListener(OnClickSortButton);
+
+            InitializeSortDropdown();
+            RefreshDescendingUI();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -220,34 +248,7 @@ namespace Nekoyume.UI
                          model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
                      .OrderByDescending(ApplySortingOrder).ToList();
 
-            UpdateSearchedItems(_searchInputField.text);
             UpdateScrollView();
-        }
-
-        private int ApplySortingOrder(CollectionModel model)
-        {
-            if (model == null)
-                return -1;
-
-            // 1. 활성화 가능
-            if (model.CanActivate)
-                return ComputeSortingOrder(ESortingGroup.CanActivate);
-
-            // 2. 재료 일정 부분 달성
-            if (model.Materials.Any(material => material.HasItem && !material.Active))
-                return ComputeSortingOrder(ESortingGroup.PartiallyActive);
-
-            // 3. 재료 모두 미달성
-            if (model.Materials.All(material => !material.HasItem))
-                return ComputeSortingOrder(ESortingGroup.Inactive);
-
-            return -1;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int ComputeSortingOrder(ESortingGroup sortingGroup)
-        {
-            return (ESortingGroup.All - sortingGroup) * SortingGroupWeight;
         }
 
         private void UpdateScrollView()
@@ -430,6 +431,83 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        #region Sort
+        private void RefreshDescendingUI()
+        {
+            _sortFlip.vertical = _isSortDescending;
+        }
+
+        private void OnClickSortButton()
+        {
+            _isSortDescending = !_isSortDescending;
+            RefreshDescendingUI();
+            UpdateItems();
+        }
+
+        private void InitializeSortDropdown()
+        {
+            _sortDropdown.ClearOptions();
+
+            // TODO: Apply L10n
+            var options = new List<string>();
+            foreach (ESortType sortType in Enum.GetValues(typeof(ESortType)))
+                options.Add(sortType.ToString());
+                // options.Add(L10nManager.Localize($"COLLECTION_SORT_{sortType}"));
+            _sortDropdown.AddOptions(options);
+
+            _sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
+        }
+
+        private void OnSortDropdownValueChanged(int index)
+        {
+            _sortType = (ESortType)index;
+            UpdateItems();
+        }
+
+        private int ApplySortingOrder(CollectionModel model)
+        {
+            if (model == null)
+                return -1;
+
+            var sortingOptionValue = ComputeSortingOrderInOption(model);
+
+            // 1. 활성화 가능
+            if (model.CanActivate)
+                return ComputeSortingOrderInGroup(ESortingGroup.CanActivate) + sortingOptionValue;
+
+            // 2. 재료 일정 부분 달성
+            if (model.Materials.Any(material => material.HasItem && !material.Active))
+                return ComputeSortingOrderInGroup(ESortingGroup.PartiallyActive) + sortingOptionValue;
+
+            // 3. 재료 모두 미달성
+            if (model.Materials.All(material => !material.HasItem))
+                return ComputeSortingOrderInGroup(ESortingGroup.Inactive) + sortingOptionValue;
+
+            return -1;
+        }
+
+        private int ComputeSortingOrderInOption(CollectionModel model)
+        {
+            var weight = _isSortDescending ? 1 : -1;
+
+            switch (_sortType)
+            {
+                case ESortType.Grade:
+                    return model.Materials.Max(material => material.Grade) * weight;
+                case ESortType.Level:
+                    return model.Materials.Max(material => material.EnoughLevel) * weight;
+            }
+
+            return 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int ComputeSortingOrderInGroup(ESortingGroup sortingGroup)
+        {
+            return (ESortingGroup.All - sortingGroup) * SortingGroupWeight;
+        }
+        #endregion Sort
 
         #region Filter
         private readonly List<CollectionModel> _filteredItems = new();
