@@ -16,7 +16,6 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
@@ -100,6 +99,10 @@ namespace Nekoyume.UI
             });
             CloseWidget = () =>
             {
+                if (_searchInputField.isFocused)
+                    return;
+
+                _searchInputField.text = "";
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             };
