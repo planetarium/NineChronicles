@@ -53,7 +53,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private enum ESortingOrder
+        private enum ESortingGroup
         {
             CanActivate,
             PartiallyActive,
@@ -229,23 +229,23 @@ namespace Nekoyume.UI
 
             // 1. 활성화 가능
             if (model.CanActivate)
-                return ComputeSortingOrder(ESortingOrder.CanActivate);
+                return ComputeSortingOrder(ESortingGroup.CanActivate);
 
             // 2. 재료 일정 부분 달성
             if (model.Materials.Any(material => material.HasItem && !material.Active))
-                return ComputeSortingOrder(ESortingOrder.PartiallyActive);
+                return ComputeSortingOrder(ESortingGroup.PartiallyActive);
 
             // 3. 재료 모두 미달성
             if (model.Materials.All(material => !material.HasItem))
-                return ComputeSortingOrder(ESortingOrder.Inactive);
+                return ComputeSortingOrder(ESortingGroup.Inactive);
 
             return -1;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int ComputeSortingOrder(ESortingOrder sortingOrder)
+        private int ComputeSortingOrder(ESortingGroup sortingGroup)
         {
-            return ESortingOrder.All - sortingOrder;
+            return ESortingGroup.All - sortingGroup;
         }
 
         // TODO: Filter옵션이 추가되면 필터링 로직을 다른 메소드로 분리
