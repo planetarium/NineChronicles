@@ -69,6 +69,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private CollectionMaterialInfo collectionMaterialInfo;
 
+        [SerializeField]
+        private TMP_InputField _searchInputField;
+
+        private List<CollectionModel> _items;
+        private List<CollectionModel> _filteredItems;
+
         private CollectionMaterial _selectedMaterial;
 
         private ItemType _currentItemType;
@@ -87,6 +93,8 @@ namespace Nekoyume.UI
         };
 
         public bool HasNotification => _filter.Values.Any(dict => dict.Values.Any(value => value));
+
+        private bool IsNeedFilter => _filteredItems != null || !string.IsNullOrWhiteSpace(_searchInputField.text);
 
         protected override void Awake()
         {
@@ -188,14 +196,6 @@ namespace Nekoyume.UI
         }
 
         #region ScrollView
-
-        [SerializeField]
-        private TMP_InputField _searchInputField;
-
-        private bool IsNeedFilter => _filteredItems != null || !string.IsNullOrWhiteSpace(_searchInputField.text);
-
-        private List<CollectionModel> _items;
-        private List<CollectionModel> _filteredItems;
 
         private void UpdateItems()
         {
