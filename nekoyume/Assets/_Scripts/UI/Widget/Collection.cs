@@ -393,21 +393,23 @@ namespace Nekoyume.UI
         #endregion
 
         #region Filter
+        private readonly List<CollectionModel> _filteredItems = new();
+
         private bool IsNeedSearch => !string.IsNullOrWhiteSpace(_searchInputField.text);
 
         private List<CollectionModel> RefreshFilteredItems()
         {
-            var filteredItems = new List<CollectionModel>();
+            _filteredItems.Clear();
 
             foreach (var model in _items)
             {
                 bool isContained = !(IsNeedSearch && !IsMatchedSearch(model));
 
                 if (isContained)
-                    filteredItems.Add(model);
+                    _filteredItems.Add(model);
             }
 
-            return filteredItems;
+            return _filteredItems;
         }
 
         private void UpdateSearchedItems(string _)
