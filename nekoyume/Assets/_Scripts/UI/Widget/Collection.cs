@@ -460,6 +460,8 @@ namespace Nekoyume.UI
 
         private int SortCollection(CollectionModel a, CollectionModel b)
         {
+            if (a == null && b == null)
+                return 0;
             if (a == null) return 1;
             if (b == null) return -1;
 
@@ -473,9 +475,31 @@ namespace Nekoyume.UI
             if (aPartiallyActive != bPartiallyActive)
                 return aPartiallyActive ? -1 : 1;
 
-            // 3. 재료 모두 미달성 (id로 비교)
+            // 3. 재료 모두 미달성 (나머지)
+            var sortByTypeValue = SortByType(a, b, _sortType);
+            if (sortByTypeValue != 0)
+                return sortByTypeValue;
+
             if (a.Row.Id != b.Row.Id)
                 return a.Row.Id < b.Row.Id ? -1 : 1;
+
+            return 0;
+        }
+
+        private int SortByType(CollectionModel a, CollectionModel b, ESortType type)
+        {
+            var sortTypeWeight = _isSortDescending ? 1 : -1;
+            switch (_sortType)
+            {
+                case ESortType.Grade:
+                    var aGrade = a.Materials.Max(material => material.Grade);
+                    var bGrade = b.Materials.Max(material => material.Grade);
+                    return (bGrade - aGrade) * sortTypeWeight;
+                case ESortType.Level:
+                    var aLevel = a.Materials.Max(material => material.EnoughLevel);
+                    var bLevel = b.Materials.Max(material => material.EnoughLevel);
+                    return (bLevel - aLevel) * sortTypeWeight;
+            }
             return 0;
         }
 
@@ -485,21 +509,6 @@ namespace Nekoyume.UI
                 return false;
 
             return material.HasItem && !material.Active;
-        }
-
-        private int ComputeSortingOrderInOption(CollectionModel model)
-        {
-            var weight = _isSortDescending ? 1 : -1;
-
-            switch (_sortType)
-            {
-                case ESortType.Grade:
-                    return model.Materials.Max(material => material.Grade) * weight;
-                case ESortType.Level:
-                    return model.Materials.Max(material => material.EnoughLevel) * weight;
-            }
-
-            return 0;
         }
         #endregion Sort
 
