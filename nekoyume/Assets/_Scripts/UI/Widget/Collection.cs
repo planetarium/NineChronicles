@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Coffee.UIEffects;
 using Nekoyume.Blockchain;
@@ -52,14 +51,6 @@ namespace Nekoyume.UI
             {
                 hasNotificationImage.enabled = hasNotification;
             }
-        }
-
-        private enum ESortingGroup
-        {
-            CanActivate,
-            PartiallyActive,
-            Inactive,
-            All,
         }
 
         private enum ESortType
@@ -246,7 +237,9 @@ namespace Nekoyume.UI
                      .Where(model =>
                          model.ItemType == _currentItemType &&
                          model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
-                     .OrderByDescending(ApplySortingOrder).ToList();
+                     .ToList();
+
+            _items.Sort(SortCollection);
 
             UpdateScrollView();
         }
@@ -465,23 +458,33 @@ namespace Nekoyume.UI
             UpdateItems();
         }
 
-        private int ApplySortingOrder(CollectionModel model)
+        private int SortCollection(CollectionModel a, CollectionModel b)
         {
-            if (model == null)
-                return -1;
-
-            var sortingOptionValue = ComputeSortingOrderInOption(model);
+            if (a == null) return 1;
+            if (b == null) return -1;
 
             // 1. 활성화 가능
-            if (model.CanActivate)
-                return ComputeSortingOrderInGroup(ESortingGroup.CanActivate) + sortingOptionValue;
+            if (a.CanActivate != b.CanActivate)
+                return a.CanActivate ? -1 : 1;
 
             // 2. 재료 일정 부분 달성
-            if (model.Materials.Any(material => material.HasItem && !material.Active))
-                return ComputeSortingOrderInGroup(ESortingGroup.PartiallyActive) + sortingOptionValue;
+            var aPartiallyActive = a.Materials.Any(CheckHasMaterialWhenInactive);
+            var bPartiallyActive = b.Materials.Any(CheckHasMaterialWhenInactive);
+            if (aPartiallyActive != bPartiallyActive)
+                return aPartiallyActive ? -1 : 1;
 
-            // 3. 재료 모두 미달성
-            return ComputeSortingOrderInGroup(ESortingGroup.Inactive) + sortingOptionValue;
+            // 3. 재료 모두 미달성 (id로 비교)
+            if (a.Row.Id != b.Row.Id)
+                return a.Row.Id < b.Row.Id ? -1 : 1;
+            return 0;
+        }
+
+        private bool CheckHasMaterialWhenInactive(CollectionMaterial material)
+        {
+            if (material == null)
+                return false;
+
+            return material.HasItem && !material.Active;
         }
 
         private int ComputeSortingOrderInOption(CollectionModel model)
@@ -497,12 +500,6 @@ namespace Nekoyume.UI
             }
 
             return 0;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int ComputeSortingOrderInGroup(ESortingGroup sortingGroup)
-        {
-            return (ESortingGroup.All - sortingGroup) * SortingGroupWeight;
         }
         #endregion Sort
 
