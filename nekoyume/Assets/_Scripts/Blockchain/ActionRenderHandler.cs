@@ -2472,6 +2472,8 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateStakeStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
+                UpdateCrystalBalance(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
                 // Notification
