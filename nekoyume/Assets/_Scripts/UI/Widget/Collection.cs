@@ -108,6 +108,8 @@ namespace Nekoyume.UI
 
         private int? _initializedAvatarIndex = null;
 
+        private ItemFilterOptionType _itemFilterOptionType;
+
         private readonly List<CollectionModel> _models = new List<CollectionModel>();
 
         private readonly Dictionary<ItemType, Dictionary<StatType, bool>> _filter = new();
@@ -123,7 +125,7 @@ namespace Nekoyume.UI
         /// <summary>
         /// 필터 옵션 중 하나라도 활성화되었으면 true, 아니면 false
         /// </summary>
-        private bool IsNeedFilter => IsNeedSearch;
+        private bool IsNeedFilter => IsNeedSearch || _itemFilterOptionType.IsNeedFilter;
 
         protected override void Awake()
         {
@@ -596,6 +598,12 @@ namespace Nekoyume.UI
                 break;
             }
             return nameMatched || materialMatched;
+        }
+
+        public void SetItemFilterOption(ItemFilterOptionType type)
+        {
+            // TODO
+            _itemFilterOptionType = type;
         }
         #endregion Filter
     }

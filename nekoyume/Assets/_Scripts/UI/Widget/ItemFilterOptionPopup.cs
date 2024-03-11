@@ -13,14 +13,11 @@ namespace Nekoyume.UI
         public ItemFilterOptionPopup.UpgradeLevel UpgradeLevel;
         public ItemFilterOptionPopup.OptionCount OptionCount;
 
-        public bool IsNeedToFilter()
-        {
-            return Grade != ItemFilterOptionPopup.Grade.All ||
-                   Elemental != ItemFilterOptionPopup.Elemental.All ||
-                   ItemType != ItemFilterOptionPopup.ItemType.All ||
-                   UpgradeLevel != ItemFilterOptionPopup.UpgradeLevel.All ||
-                   OptionCount != ItemFilterOptionPopup.OptionCount.All;
-        }
+        public bool IsNeedFilter => Grade != ItemFilterOptionPopup.Grade.All ||
+                                      Elemental != ItemFilterOptionPopup.Elemental.All ||
+                                      ItemType != ItemFilterOptionPopup.ItemType.All ||
+                                      UpgradeLevel != ItemFilterOptionPopup.UpgradeLevel.All ||
+                                      OptionCount != ItemFilterOptionPopup.OptionCount.All;
     }
 
     public class ItemFilterOptionPopup : PopupWidget
