@@ -108,7 +108,7 @@ namespace Nekoyume.UI
 
         private int? _initializedAvatarIndex = null;
 
-        private ItemFilterOptionType _itemFilterOptionType;
+        private ItemFilterOptions itemFilterOptions;
 
         private readonly List<CollectionModel> _models = new List<CollectionModel>();
 
@@ -125,7 +125,7 @@ namespace Nekoyume.UI
         /// <summary>
         /// 필터 옵션 중 하나라도 활성화되었으면 true, 아니면 false
         /// </summary>
-        private bool IsNeedFilter => IsNeedSearch || _itemFilterOptionType.IsNeedFilter;
+        private bool IsNeedFilter => IsNeedSearch || itemFilterOptions.IsNeedFilter;
 
         protected override void Awake()
         {
@@ -568,11 +568,72 @@ namespace Nekoyume.UI
             {
                 bool isContained = !(IsNeedSearch && !IsMatchedSearch(model));
 
+
+
                 if (isContained)
                     _filteredItems.Add(model);
             }
 
             return _filteredItems;
+        }
+
+        private bool ApplyFilterOption(CollectionModel model)
+        {
+            if (itemFilterOptions.Grade != ItemFilterOptionPopup.Grade.All)
+            {
+                foreach (var material in model.Materials)
+                {
+                    var result = itemFilterOptions.Grade.HasFlag((ItemFilterOptionPopup.Grade)(1 << material.Grade));
+                    if (!result)
+                        return false;
+                }
+            }
+
+            if (model.ItemType != ItemType.Equipment)
+                return false;
+
+            if (itemFilterOptions.Elemental != ItemFilterOptionPopup.Elemental.All)
+            {
+                var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+                foreach (var material in model.Materials)
+                {
+                    if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
+                        return false;
+
+                    var result = itemFilterOptions.Elemental.HasFlag((ItemFilterOptionPopup.Elemental)(1 << (int)equipment.ElementalType));
+                    if (!result)
+                        return false;
+                }
+            }
+
+            if (itemFilterOptions.UpgradeLevel != ItemFilterOptionPopup.UpgradeLevel.All)
+            {
+                foreach (var material in model.Materials)
+                {
+                    var result = itemFilterOptions.UpgradeLevel.HasFlag((ItemFilterOptionPopup.UpgradeLevel)(1 << material.EnoughLevel));
+                    if (!result)
+                        return false;
+                }
+            }
+
+            if (itemFilterOptions.ItemType != ItemFilterOptionPopup.ItemType.All)
+            {
+                var result = itemFilterOptions.ItemType == (ItemFilterOptionPopup.ItemType)model.ItemType;
+                if (!result)
+                    return false;
+            }
+
+            if (itemFilterOptions.UpgradeLevel != ItemFilterOptionPopup.UpgradeLevel.All)
+            {
+                foreach (var material in model.Materials)
+                {
+                    var result = itemFilterOptions.UpgradeLevel.HasFlag((ItemFilterOptionPopup.UpgradeLevel)(1 << material.EnoughLevel));
+                    if (!result)
+                        return false;
+                }
+            }
+
+            return true;
         }
 
         private void UpdateSearchedItems(string _)
@@ -600,10 +661,10 @@ namespace Nekoyume.UI
             return nameMatched || materialMatched;
         }
 
-        public void SetItemFilterOption(ItemFilterOptionType type)
+        public void SetItemFilterOption(ItemFilterOptions type)
         {
             // TODO
-            _itemFilterOptionType = type;
+            itemFilterOptions = type;
         }
         #endregion Filter
     }

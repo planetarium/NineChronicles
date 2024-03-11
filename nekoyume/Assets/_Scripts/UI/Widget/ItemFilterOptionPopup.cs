@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public struct ItemFilterOptionType
+    public struct ItemFilterOptions
     {
         public ItemFilterOptionPopup.Grade Grade;
         public ItemFilterOptionPopup.Elemental Elemental;
@@ -219,9 +219,9 @@ namespace Nekoyume.UI
                 item.ResetToAll();
         }
 
-        private ItemFilterOptionType GetItemFilterOptionType()
+        private ItemFilterOptions GetItemFilterOptionType()
         {
-            var itemFilterOptionType = new ItemFilterOptionType();
+            var itemFilterOptionType = new ItemFilterOptions();
 
             foreach (var gradeToggle in gradeToggles)
                 itemFilterOptionType.Grade |= gradeToggle.toggle.isOn ? gradeToggle.grade : Grade.All;
