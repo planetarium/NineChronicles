@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Types.Assets;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using TMPro;
@@ -26,6 +27,9 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private TimeBlock claimableTimeBlock;
 
+        [SerializeField]
+        private GameObject levelTextParent;
+
         private readonly List<IDisposable> _disposables = new();
 
         protected override void Awake()
@@ -38,12 +42,12 @@ namespace Nekoyume.UI.Module.Lobby
         private void OnEnable()
         {
             _disposables.DisposeAllAndClear();
-            StakingSubject.Level.Subscribe(level => levelText.text = $"Lv. {level}")
+            StakingSubject.Level.Subscribe(OnUpdateStakingLevel)
                 .AddTo(_disposables);
-            StakingSubject.StakedNCG.Subscribe(fav => stakedNcgText.text = fav.GetQuantityString())
+            StakingSubject.StakedNCG.Subscribe(OnUpdateStakedBalance)
                 .AddTo(_disposables);
-            levelText.text = $"Lv. {States.Instance.StakingLevel}";
-            stakedNcgText.text = States.Instance.StakedBalanceState.Gold.GetQuantityString();
+            OnUpdateStakingLevel(States.Instance.StakingLevel);
+            OnUpdateStakedBalance(States.Instance.StakedBalanceState.Gold);
         }
 
         private void OnDisable()
@@ -59,8 +63,9 @@ namespace Nekoyume.UI.Module.Lobby
             var enableNotStaking = false;
             if (hasStakeState)
             {
-                var remaining = nullableStakeState.Value.ClaimableBlockIndex - tip;
+                var remaining = Math.Max(nullableStakeState.Value.ClaimableBlockIndex - tip, 0);
                 enableNotification = remaining <= 0;
+                claimableTimeBlock.gameObject.SetActive(true);
                 claimableTimeBlock.SetTimeBlock($"{remaining:#,0}",remaining.BlockRangeToTimeSpanString());
             }
             else
@@ -70,10 +75,22 @@ namespace Nekoyume.UI.Module.Lobby
                         .Value.RequiredGold;
                 enableNotification = enableNotStaking =
                     States.Instance.GoldBalanceState.Gold.MajorUnit >= minimumNcg;
+                claimableTimeBlock.gameObject.SetActive(false);
             }
 
             notificationObj.SetActive(enableNotification);
             notStakingObj.SetActive(enableNotStaking);
+        }
+
+        private void OnUpdateStakingLevel(int level)
+        {
+            levelText.text = $"Lv. {level}";
+        }
+
+        private void OnUpdateStakedBalance(FungibleAssetValue fav)
+        {
+            stakedNcgText.text = fav.GetQuantityString();
+            levelTextParent.gameObject.SetActive(fav.MajorUnit > 0);
         }
     }
 }
