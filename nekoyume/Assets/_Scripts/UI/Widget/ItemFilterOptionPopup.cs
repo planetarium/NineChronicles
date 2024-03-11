@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,8 @@ namespace Nekoyume.UI
         public ItemFilterOptionPopup.ItemType ItemType;
         public ItemFilterOptionPopup.UpgradeLevel UpgradeLevel;
         public ItemFilterOptionPopup.OptionCount OptionCount;
+
+        public string SearchText;
 
         public bool IsNeedFilter => Grade != ItemFilterOptionPopup.Grade.All ||
                                       Elemental != ItemFilterOptionPopup.Elemental.All ||
@@ -159,12 +162,22 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<OptionCountToggle> optionCountToggles;
 
+        [SerializeField]
+        private TMP_InputField _searchInputField;
+
         #region Popup
         protected override void Awake()
         {
             base.Awake();
 
             InitializeToggleGroup();
+
+            CloseWidget = () =>
+            {
+                if (_searchInputField.isFocused)
+                    return;
+                Close(true);
+            };
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -237,6 +250,8 @@ namespace Nekoyume.UI
 
             foreach (var optionCountToggle in optionCountToggles)
                 itemFilterOptionType.OptionCount |= optionCountToggle.toggle.isOn ? optionCountToggle.optionCount : OptionCount.All;
+
+            itemFilterOptionType.SearchText = _searchInputField.text;
 
             return itemFilterOptionType;
         }

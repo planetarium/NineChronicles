@@ -83,9 +83,6 @@ namespace Nekoyume.UI
 
         [Header("Center bottom")]
         [SerializeField]
-        private TMP_InputField _searchInputField;
-
-        [SerializeField]
         private TMP_Dropdown _sortDropdown;
 
         [SerializeField]
@@ -138,10 +135,6 @@ namespace Nekoyume.UI
             });
             CloseWidget = () =>
             {
-                if (_searchInputField.isFocused)
-                    return;
-
-                _searchInputField.text = "";
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             };
@@ -192,7 +185,6 @@ namespace Nekoyume.UI
             collectionMaterialInfo.OnClickCloseButton
                 .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
 
-            _searchInputField.onValueChanged.AddListener(UpdateSearchedItems);
             _sortButton.onClick.AddListener(OnClickSortButton);
 
             InitializeSortDropdown();
@@ -558,7 +550,7 @@ namespace Nekoyume.UI
         #region Filter
         private readonly List<CollectionModel> _filteredItems = new();
 
-        private bool IsNeedSearch => !string.IsNullOrWhiteSpace(_searchInputField.text);
+        private bool IsNeedSearch => !string.IsNullOrWhiteSpace(itemFilterOptions.SearchText);
 
         private List<CollectionModel> RefreshFilteredItems()
         {
@@ -567,9 +559,7 @@ namespace Nekoyume.UI
             foreach (var model in _items)
             {
                 bool isContained = !(IsNeedSearch && !IsMatchedSearch(model));
-
-
-
+                isContained &= ApplyFilterOption(model);
                 if (isContained)
                     _filteredItems.Add(model);
             }
@@ -636,24 +626,19 @@ namespace Nekoyume.UI
             return true;
         }
 
-        private void UpdateSearchedItems(string _)
-        {
-            UpdateScrollView();
-        }
-
         private bool IsMatchedSearch(CollectionModel model)
         {
             if (model == null)
                 return false;
 
             var itemName = L10nManager.LocalizeCollectionName(model.Row.Key);
-            var nameMatched = Regex.IsMatch(itemName, _searchInputField.text, RegexOptions.IgnoreCase);
+            var nameMatched = Regex.IsMatch(itemName, itemFilterOptions.SearchText, RegexOptions.IgnoreCase);
 
             var materialMatched = false;
             foreach (var material in model.Materials)
             {
                 var materialName = L10nManager.LocalizeItemName(material.Row.ItemId);
-                if (!Regex.IsMatch(materialName, _searchInputField.text, RegexOptions.IgnoreCase))
+                if (!Regex.IsMatch(materialName, itemFilterOptions.SearchText, RegexOptions.IgnoreCase))
                     continue;
                 materialMatched = true;
                 break;
