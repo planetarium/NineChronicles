@@ -165,6 +165,7 @@ namespace Nekoyume.UI
                         var toggle = statToggles.First().toggle;
                         toggle.isOn = !toggle.isOn;
 
+                        RefreshDropDownText();
                         UpdateStatToggleView();
                     })
                     .AddTo(gameObject);
@@ -227,6 +228,28 @@ namespace Nekoyume.UI
             UpdateToggleDictionary();
 
             ReactiveAvatarState.Inventory.Subscribe(_ => OnUpdateInventory()).AddTo(gameObject);
+        }
+
+        private void RefreshDropDownText()
+        {
+            if (_sortDropdown.options.Count == 0)
+                return;
+
+            switch (_currentItemType)
+            {
+                case ItemType.Consumable:
+                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_COUNT");
+                    break;
+                case ItemType.Costume:
+                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_LEVEL");
+                    break;
+                case ItemType.Equipment:
+                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_LEVEL");
+                    break;
+                case ItemType.Material:
+                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_COUNT");
+                    break;
+            }
         }
 
         #region ScrollView
@@ -445,11 +468,26 @@ namespace Nekoyume.UI
             // TODO: Apply L10n
             var options = new List<string>();
             foreach (ESortType sortType in Enum.GetValues(typeof(ESortType)))
-                options.Add(sortType.ToString());
-                // options.Add(L10nManager.Localize($"COLLECTION_SORT_{sortType}"));
+                options.Add(GetSortTypeString(sortType));
             _sortDropdown.AddOptions(options);
 
             _sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
+            RefreshDropDownText();
+        }
+
+        private string GetSortTypeString(ESortType sortType)
+        {
+            switch (sortType)
+            {
+                case ESortType.None:
+                    return L10nManager.Localize("UI_RESET");
+                case ESortType.Grade:
+                    return L10nManager.Localize("UI_GRADE");
+                case ESortType.Level:
+                    return L10nManager.Localize("UI_LEVEL");
+            }
+
+            return string.Empty;
         }
 
         private void OnSortDropdownValueChanged(int index)
@@ -476,10 +514,13 @@ namespace Nekoyume.UI
                 return aPartiallyActive ? -1 : 1;
 
             // 3. 재료 모두 미달성 (나머지)
+
+            // 설정된 타입별로 정렬
             var sortByTypeValue = SortByType(a, b, _sortType);
             if (sortByTypeValue != 0)
                 return sortByTypeValue;
 
+            // 다른 조건이 같다면 ID로 비교
             if (a.Row.Id != b.Row.Id)
                 return a.Row.Id < b.Row.Id ? -1 : 1;
 
