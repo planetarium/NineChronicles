@@ -590,7 +590,10 @@ namespace Nekoyume.UI
             foreach (var material in model.Materials)
             {
                 var materialName = L10nManager.LocalizeItemName(material.Row.ItemId);
-                materialMatched |= Regex.IsMatch(materialName, _searchInputField.text, RegexOptions.IgnoreCase);
+                if (!Regex.IsMatch(materialName, _searchInputField.text, RegexOptions.IgnoreCase))
+                    continue;
+                materialMatched = true;
+                break;
             }
             return nameMatched || materialMatched;
         }
