@@ -561,7 +561,14 @@ namespace Nekoyume.Game.Character
                 var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
 
 #if TEST_LOG
-                Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} ");
+                Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
+                if(info.DispelList != null)
+                {
+                    foreach (var item in info?.DispelList)
+                    {
+                        Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] [DispelList] {item.GetLocalizedName()}");
+                    }
+                }
 #endif
 
                 effect.Play();
