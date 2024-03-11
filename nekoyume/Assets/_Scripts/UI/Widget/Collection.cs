@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Coffee.UIEffects;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -53,15 +53,15 @@ namespace Nekoyume.UI
             }
         }
 
-        private enum ESortingGroup
+        private enum ESortType
         {
-            CanActivate,
-            PartiallyActive,
-            Inactive,
-            All,
+            None,
+            Grade,
+            Level,
         }
         #endregion Internal Types
 
+        private const int SortingGroupWeight = 1000;
 
         [SerializeField]
         private Button backButton;
@@ -81,8 +81,23 @@ namespace Nekoyume.UI
         [SerializeField]
         private CollectionMaterialInfo collectionMaterialInfo;
 
+        [Header("Center bottom")]
         [SerializeField]
         private TMP_InputField _searchInputField;
+
+        [SerializeField]
+        private TMP_Dropdown _sortDropdown;
+
+        [SerializeField]
+        private Button _sortButton;
+
+        [SerializeField]
+        private UIFlip _sortFlip;
+
+        [SerializeField]
+        private ESortType _sortType = ESortType.None;
+
+        private bool _isSortDescending = true;
 
         private List<CollectionModel> _items;
 
@@ -173,7 +188,12 @@ namespace Nekoyume.UI
             scroll.OnClickMaterial.Subscribe(SelectMaterial).AddTo(gameObject);
             collectionMaterialInfo.OnClickCloseButton
                 .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
+
             _searchInputField.onValueChanged.AddListener(UpdateSearchedItems);
+            _sortButton.onClick.AddListener(OnClickSortButton);
+
+            InitializeSortDropdown();
+            RefreshDescendingUI();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -217,33 +237,11 @@ namespace Nekoyume.UI
                      .Where(model =>
                          model.ItemType == _currentItemType &&
                          model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
-                     .OrderByDescending(ApplySortingOrder).ToList();
+                     .ToList();
 
-            UpdateSearchedItems(_searchInputField.text);
+            _items.Sort(SortCollection);
+
             UpdateScrollView();
-        }
-
-        private int ApplySortingOrder(CollectionModel model)
-        {
-            if (model == null)
-                return -1;
-
-            // 1. 활성화 가능
-            if (model.CanActivate)
-                return ComputeSortingOrder(ESortingGroup.CanActivate);
-
-            // 2. 재료 일정 부분 달성
-            if (model.Materials.Any(material => material.HasItem && !material.Active))
-                return ComputeSortingOrder(ESortingGroup.PartiallyActive);
-
-            // 3. 재료 모두 미달성
-            return ComputeSortingOrder(ESortingGroup.Inactive);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int ComputeSortingOrder(ESortingGroup sortingGroup)
-        {
-            return ESortingGroup.All - sortingGroup;
         }
 
         private void UpdateScrollView()
@@ -426,6 +424,93 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        #region Sort
+        private void RefreshDescendingUI()
+        {
+            _sortFlip.vertical = _isSortDescending;
+        }
+
+        private void OnClickSortButton()
+        {
+            _isSortDescending = !_isSortDescending;
+            RefreshDescendingUI();
+            UpdateItems();
+        }
+
+        private void InitializeSortDropdown()
+        {
+            _sortDropdown.ClearOptions();
+
+            // TODO: Apply L10n
+            var options = new List<string>();
+            foreach (ESortType sortType in Enum.GetValues(typeof(ESortType)))
+                options.Add(sortType.ToString());
+                // options.Add(L10nManager.Localize($"COLLECTION_SORT_{sortType}"));
+            _sortDropdown.AddOptions(options);
+
+            _sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
+        }
+
+        private void OnSortDropdownValueChanged(int index)
+        {
+            _sortType = (ESortType)index;
+            UpdateItems();
+        }
+
+        private int SortCollection(CollectionModel a, CollectionModel b)
+        {
+            if (a == null && b == null)
+                return 0;
+            if (a == null) return 1;
+            if (b == null) return -1;
+
+            // 1. 활성화 가능
+            if (a.CanActivate != b.CanActivate)
+                return a.CanActivate ? -1 : 1;
+
+            // 2. 재료 일정 부분 달성
+            var aPartiallyActive = a.Materials.Any(CheckHasMaterialWhenInactive);
+            var bPartiallyActive = b.Materials.Any(CheckHasMaterialWhenInactive);
+            if (aPartiallyActive != bPartiallyActive)
+                return aPartiallyActive ? -1 : 1;
+
+            // 3. 재료 모두 미달성 (나머지)
+            var sortByTypeValue = SortByType(a, b, _sortType);
+            if (sortByTypeValue != 0)
+                return sortByTypeValue;
+
+            if (a.Row.Id != b.Row.Id)
+                return a.Row.Id < b.Row.Id ? -1 : 1;
+
+            return 0;
+        }
+
+        private int SortByType(CollectionModel a, CollectionModel b, ESortType type)
+        {
+            var sortTypeWeight = _isSortDescending ? 1 : -1;
+            switch (_sortType)
+            {
+                case ESortType.Grade:
+                    var aGrade = a.Materials.Max(material => material.Grade);
+                    var bGrade = b.Materials.Max(material => material.Grade);
+                    return (bGrade - aGrade) * sortTypeWeight;
+                case ESortType.Level:
+                    var aLevel = a.Materials.Max(material => material.EnoughLevel);
+                    var bLevel = b.Materials.Max(material => material.EnoughLevel);
+                    return (bLevel - aLevel) * sortTypeWeight;
+            }
+            return 0;
+        }
+
+        private bool CheckHasMaterialWhenInactive(CollectionMaterial material)
+        {
+            if (material == null)
+                return false;
+
+            return material.HasItem && !material.Active;
+        }
+        #endregion Sort
 
         #region Filter
         private readonly List<CollectionModel> _filteredItems = new();
