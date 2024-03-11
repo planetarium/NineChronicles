@@ -7,11 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<<< HEAD:nekoyume/Assets/AddressableAssets/Character/Monster/209005/209005_Material.mat
-  m_Name: 209005_Material
-========
   m_Name: cutscene_40100008_Material
->>>>>>>> 5523276d04b1c42a5f3cd0305171da9c8d1bfff7:nekoyume/Assets/AddressableAssets/Character/FullCostumeCutscene/40100008/cutscene_40100008_Material.mat
   m_Shader: {fileID: 4800000, guid: 1e8a610c9e01c3648bac42585e5fc676, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
@@ -26,11 +22,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-<<<<<<<< HEAD:nekoyume/Assets/AddressableAssets/Character/Monster/209005/209005_Material.mat
         m_Texture: {fileID: 2800000, guid: f915dc66e26e1d34bac662cb3f71ebcd, type: 3}
-========
-        m_Texture: {fileID: 2800000, guid: e487005b36e6fad41bbf6ab63637090b, type: 3}
->>>>>>>> 5523276d04b1c42a5f3cd0305171da9c8d1bfff7:nekoyume/Assets/AddressableAssets/Character/FullCostumeCutscene/40100008/cutscene_40100008_Material.mat
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
