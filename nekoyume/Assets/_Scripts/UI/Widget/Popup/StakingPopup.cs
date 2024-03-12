@@ -17,7 +17,6 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -33,6 +32,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI stakedNcgValueText; // it shows staked NCG, not having.
         [SerializeField] private Button closeButton;
         [SerializeField] private Button ncgEditButton;
+        [SerializeField] private Button migrateButton;
         [SerializeField] private Button stakingStartButton;
         [SerializeField] private Button editCancelButton;
         [SerializeField] private Button editSaveButton;
@@ -101,6 +101,7 @@ namespace Nekoyume.UI
                 Close();
             });
             ncgEditButton.onClick.AddListener(OnClickEditButton);
+            migrateButton.onClick.AddListener(OnClickMigrateButton);
             stakingStartButton.onClick.AddListener(OnClickEditButton);
             archiveButton.OnSubmitSubject.Subscribe(_ =>
             {
@@ -162,9 +163,17 @@ namespace Nekoyume.UI
             OnBlockUpdated(blockIndex);
 
             // can not category UI toggle when user has not StakeState.
-            var hasStakeState = deposit > 0;
+            var hasStakeState = States.Instance.StakeStateV2.HasValue;
+
+            // if StakePolicySheet has diff with my StakeStateV2.Contract, require migration
+            var requiredMigrate = hasStakeState &&
+                                  States.Instance.StakeStateV2.Value.Contract
+                                      .StakeRegularRewardSheetTableName !=
+                                  TableSheets.Instance.StakePolicySheet
+                                      .StakeRegularRewardSheetValue;
             stakingStartButton.gameObject.SetActive(!hasStakeState);
-            ncgEditButton.gameObject.SetActive(hasStakeState);
+            migrateButton.gameObject.SetActive(requiredMigrate);
+            ncgEditButton.gameObject.SetActive(hasStakeState && !requiredMigrate);
 
             foreach (var toggleable in _toggleGroup.Toggleables)
             {
@@ -184,7 +193,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            var liveAssetManager = Game.LiveAsset.LiveAssetManager.instance;
+            var liveAssetManager = LiveAssetManager.instance;
             if (liveAssetManager.StakingLevelSprite != null)
             {
                 stakingLevelImage.overrideSprite = liveAssetManager.StakingLevelSprite;
@@ -200,10 +209,8 @@ namespace Nekoyume.UI
 
         private void OnClickEditButton()
         {
-            // it means States.Instance.StakeStateV2.HasValue is true.
             if (States.Instance.StakeStateV2.HasValue)
             {
-                // ReSharper disable once PossibleInvalidOperationException
                 var stakeState = States.Instance.StakeStateV2.Value;
                 var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
 
@@ -230,6 +237,39 @@ namespace Nekoyume.UI
             currentBenefitsTabButton.SetToggledOff();
             levelBenefitsTabButton.OnClick.OnNext(levelBenefitsTabButton);
             levelBenefitsTabButton.SetToggledOn();
+        }
+
+        private void OnClickMigrateButton()
+        {
+            if (!States.Instance.StakeStateV2.HasValue)
+            {
+                Debug.LogWarning("[StakingPopup] invoked OnClickMigrateButton(), but not has StakeState.");
+                return;
+            }
+
+            var stakeState = States.Instance.StakeStateV2.Value;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            if (stakeState.ClaimableBlockIndex <= currentBlockIndex)
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_REQUIRE_CLAIM_STAKE_REWARD"),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            // TODO: change l10n msg
+            var confirmUI = Find<IconAndButtonSystem>();
+            var confirmTitle = "UI_ITEM_INFORMATION";
+            var confirmContent = "UI_INTRODUCE_MIGRATION";
+            var confirmIcon = IconAndButtonSystem.SystemType.Information;
+
+            confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize:true, type: confirmIcon);
+            confirmUI.ConfirmCallback = () =>
+            {
+                ActionManager.Instance.Stake(States.Instance.StakedBalanceState.Gold.MajorUnit)
+                    .Subscribe();
+                OnChangeEditingState(false);
+            };
         }
 
         private void OnClickSaveButton()
