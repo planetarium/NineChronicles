@@ -552,6 +552,11 @@ namespace Nekoyume.UI
 
         private bool IsNeedSearch => !string.IsNullOrWhiteSpace(itemFilterOptions.SearchText);
 
+        private void OnClickFilterButton()
+        {
+            Find<CollectionItemFilterPopup>().Show(this);
+        }
+
         private List<CollectionModel> RefreshFilteredItems()
         {
             _filteredItems.Clear();
@@ -674,8 +679,8 @@ namespace Nekoyume.UI
 
         public void SetItemFilterOption(ItemFilterOptions type)
         {
-            // TODO
             itemFilterOptions = type;
+            UpdateItems();
         }
         #endregion Filter
     }
