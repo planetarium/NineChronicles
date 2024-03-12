@@ -52,6 +52,8 @@ namespace Nekoyume.UI
 
         public static L10NSchema MOBILE_L10N_SCHEMA;
 
+        public IReadOnlyList<CategorySchema> CachedCategorySchemas { get; private set; }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             ShowAsync(ignoreShowAnimation);
@@ -84,7 +86,7 @@ namespace Nekoyume.UI
 
             try
             {
-                var categorySchemas = await GetCategorySchemas();
+                var categorySchemas = await CacheCategorySchemas();
                 if (!_isInitializedObj)
                 {
                     if (categorySchemas.Count == 0)
@@ -99,6 +101,7 @@ namespace Nekoyume.UI
                             true,
                             IconAndButtonSystem.SystemType.Information);
                     }
+
                     await InitializeObj(categorySchemas);
 
                     _isInitializedObj = true;
@@ -220,6 +223,14 @@ namespace Nekoyume.UI
         {
             return await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
+        }
+
+        public async Task<IReadOnlyList<CategorySchema>> CacheCategorySchemas()
+        {
+            var categorySchemas = await Game.Game.instance.IAPServiceManager
+                .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
+            CachedCategorySchemas = categorySchemas;
+            return categorySchemas;
         }
 
         public void RefreshGrid()

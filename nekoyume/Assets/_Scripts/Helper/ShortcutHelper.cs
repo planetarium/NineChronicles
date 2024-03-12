@@ -120,12 +120,32 @@ namespace Nekoyume.Helper
             return acquisitionPlaceList;
         }
 
+        private static readonly int[] ShopItemIds =
+        {
+            800201, // Silver Dust
+            600201, // Golden Dust
+            600202, // Ruby Dust
+        };
+
         public static List<AcquisitionPlaceButton.Model> GetAcquisitionPlaceList(
             Widget caller,
             ItemSheet.Row itemRow,
             bool required)
         {
             var acquisitionPlaceList = new List<AcquisitionPlaceButton.Model>();
+
+            if (ShopItemIds.Contains(itemRow.Id))
+            {
+#if UNITY_ANDROID || UNITY_IOS
+                var categorySchemas = Widget.Find<MobileShop>().CachedCategorySchemas;
+                var canBuyInMobileShop = categorySchemas
+                    .Where(c => c.Active && c.Name != "NoShow")
+                    .Any(c => c.ProductList
+                        .Where(p => p.Active && p.Buyable)
+                        .Any(p => p.FungibleItemList
+                            .Any(fi => fi.SheetItemId == itemRow.Id)));
+#endif
+            }
 
             switch (itemRow.ItemType)
             {
