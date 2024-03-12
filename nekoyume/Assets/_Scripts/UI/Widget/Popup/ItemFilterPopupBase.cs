@@ -8,24 +8,24 @@ namespace Nekoyume.UI
 {
     public struct ItemFilterOptions
     {
-        public ItemFilterOptionPopup.Grade Grade;
-        public ItemFilterOptionPopup.Elemental Elemental;
-        public ItemFilterOptionPopup.ItemType ItemType;
-        public ItemFilterOptionPopup.UpgradeLevel UpgradeLevel;
-        public ItemFilterOptionPopup.OptionCount OptionCount;
-        public ItemFilterOptionPopup.WithSkill WithSkill;
+        public ItemFilterPopupBase.Grade Grade;
+        public ItemFilterPopupBase.Elemental Elemental;
+        public ItemFilterPopupBase.ItemType ItemType;
+        public ItemFilterPopupBase.UpgradeLevel UpgradeLevel;
+        public ItemFilterPopupBase.OptionCount OptionCount;
+        public ItemFilterPopupBase.WithSkill WithSkill;
 
         public string SearchText;
 
-        public bool IsNeedFilter => Grade != ItemFilterOptionPopup.Grade.All ||
-                                      Elemental != ItemFilterOptionPopup.Elemental.All ||
-                                      ItemType != ItemFilterOptionPopup.ItemType.All ||
-                                      UpgradeLevel != ItemFilterOptionPopup.UpgradeLevel.All ||
-                                      OptionCount != ItemFilterOptionPopup.OptionCount.All ||
-                                      WithSkill != ItemFilterOptionPopup.WithSkill.All;
+        public bool IsNeedFilter => Grade != ItemFilterPopupBase.Grade.All ||
+                                      Elemental != ItemFilterPopupBase.Elemental.All ||
+                                      ItemType != ItemFilterPopupBase.ItemType.All ||
+                                      UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All ||
+                                      OptionCount != ItemFilterPopupBase.OptionCount.All ||
+                                      WithSkill != ItemFilterPopupBase.WithSkill.All;
     }
 
-    public class ItemFilterOptionPopup : PopupWidget
+    public abstract class ItemFilterPopupBase : PopupWidget
     {
         #region Internal Type
         /// <summary>

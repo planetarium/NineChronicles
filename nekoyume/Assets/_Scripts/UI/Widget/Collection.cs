@@ -569,11 +569,11 @@ namespace Nekoyume.UI
 
         private bool ApplyFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.Grade != ItemFilterOptionPopup.Grade.All)
+            if (itemFilterOptions.Grade != ItemFilterPopupBase.Grade.All)
             {
                 foreach (var material in model.Materials)
                 {
-                    var result = itemFilterOptions.Grade.HasFlag((ItemFilterOptionPopup.Grade)(1 << material.Grade));
+                    var result = itemFilterOptions.Grade.HasFlag((ItemFilterPopupBase.Grade)(1 << material.Grade));
                     if (!result)
                         return false;
                 }
@@ -583,47 +583,47 @@ namespace Nekoyume.UI
                 return false;
             var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
 
-            if (itemFilterOptions.Elemental != ItemFilterOptionPopup.Elemental.All)
+            if (itemFilterOptions.Elemental != ItemFilterPopupBase.Elemental.All)
             {
                 foreach (var material in model.Materials)
                 {
                     if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
                         return false;
 
-                    var result = itemFilterOptions.Elemental.HasFlag((ItemFilterOptionPopup.Elemental)(1 << (int)equipment.ElementalType));
+                    var result = itemFilterOptions.Elemental.HasFlag((ItemFilterPopupBase.Elemental)(1 << (int)equipment.ElementalType));
                     if (!result)
                         return false;
                 }
             }
 
-            if (itemFilterOptions.UpgradeLevel != ItemFilterOptionPopup.UpgradeLevel.All)
+            if (itemFilterOptions.UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All)
             {
                 foreach (var material in model.Materials)
                 {
-                    var result = itemFilterOptions.UpgradeLevel.HasFlag((ItemFilterOptionPopup.UpgradeLevel)(1 << material.EnoughLevel));
+                    var result = itemFilterOptions.UpgradeLevel.HasFlag((ItemFilterPopupBase.UpgradeLevel)(1 << material.EnoughLevel));
                     if (!result)
                         return false;
                 }
             }
 
-            if (itemFilterOptions.ItemType != ItemFilterOptionPopup.ItemType.All)
+            if (itemFilterOptions.ItemType != ItemFilterPopupBase.ItemType.All)
             {
-                var result = itemFilterOptions.ItemType == (ItemFilterOptionPopup.ItemType)model.ItemType;
+                var result = itemFilterOptions.ItemType == (ItemFilterPopupBase.ItemType)model.ItemType;
                 if (!result)
                     return false;
             }
 
-            if (itemFilterOptions.UpgradeLevel != ItemFilterOptionPopup.UpgradeLevel.All)
+            if (itemFilterOptions.UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All)
             {
                 foreach (var material in model.Materials)
                 {
-                    var result = itemFilterOptions.UpgradeLevel.HasFlag((ItemFilterOptionPopup.UpgradeLevel)(1 << material.EnoughLevel));
+                    var result = itemFilterOptions.UpgradeLevel.HasFlag((ItemFilterPopupBase.UpgradeLevel)(1 << material.EnoughLevel));
                     if (!result)
                         return false;
                 }
             }
 
-            if (itemFilterOptions.WithSkill != ItemFilterOptionPopup.WithSkill.All)
+            if (itemFilterOptions.WithSkill != ItemFilterPopupBase.WithSkill.All)
             {
                 // Collection에서 스킬 유무는 패스, 모든 아이템이 스킬이 있어야하기 때문에 필터링이 의미 없음
                 return true;
