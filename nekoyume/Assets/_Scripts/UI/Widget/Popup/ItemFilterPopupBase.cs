@@ -102,6 +102,8 @@ namespace Nekoyume.UI
 
             public abstract bool IsAll { get; }
 
+            public abstract string GetOptionName { get; }
+
             public void ResetToAll()
             {
                 if (toggle.isOn != IsAll)
@@ -121,6 +123,7 @@ namespace Nekoyume.UI
             public Grade grade;
 
             public override bool IsAll => grade == Grade.All;
+            public override string GetOptionName => grade.ToString();
         }
 
         [Serializable]
@@ -129,6 +132,7 @@ namespace Nekoyume.UI
             public Elemental elemental;
 
             public override bool IsAll => elemental == Elemental.All;
+            public override string GetOptionName => elemental.ToString();
         }
 
         [Serializable]
@@ -137,6 +141,7 @@ namespace Nekoyume.UI
             public ItemType itemType;
 
             public override bool IsAll => itemType == ItemType.All;
+            public override string GetOptionName => itemType.ToString();
         }
 
         [Serializable]
@@ -145,6 +150,7 @@ namespace Nekoyume.UI
             public UpgradeLevel upgradeLevel;
 
             public override bool IsAll => upgradeLevel == UpgradeLevel.All;
+            public override string GetOptionName => upgradeLevel.ToString();
         }
 
         [Serializable]
@@ -153,6 +159,7 @@ namespace Nekoyume.UI
             public OptionCount optionCount;
 
             public override bool IsAll => optionCount == OptionCount.All;
+            public override string GetOptionName => optionCount.ToString();
         }
 
         [Serializable]
@@ -161,6 +168,7 @@ namespace Nekoyume.UI
             public WithSkill withSkill;
 
             public override bool IsAll => withSkill == WithSkill.All;
+            public override string GetOptionName => withSkill.ToString();
         }
 
         #endregion Internal Type
@@ -230,6 +238,11 @@ namespace Nekoyume.UI
         {
             foreach (var item in toggles)
             {
+                item.toggle.name = item.GetOptionName;
+                var textComponent = item.toggle.GetComponentInChildren<Text>();
+                if (textComponent != null)
+                    textComponent.text = item.GetOptionName;
+
                 if (item.IsAll)
                 {
                     item.toggle.onValueChanged.AddListener(isOn =>
