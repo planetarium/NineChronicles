@@ -205,6 +205,7 @@ namespace Nekoyume.UI
             UpdateItems();
         }
 
+        // TODO: UI 작업 후 삭제할 테스트 코드입니다
         protected override void Update()
         {
             base.Update();
