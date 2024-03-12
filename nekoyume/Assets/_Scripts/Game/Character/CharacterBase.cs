@@ -561,7 +561,7 @@ namespace Nekoyume.Game.Character
                 var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
 
 #if TEST_LOG
-                Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} ");
+                Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
 #endif
 
                 effect.Play();
@@ -994,13 +994,35 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
 
+            HashSet<CharacterBase> dispeledTargets = new HashSet<CharacterBase>();
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessBuff(target, info);
+                if (!info.Affected || (info.DispelList != null && info.DispelList.Count() > 0))
+                {
+                    dispeledTargets.Add(target);
+                }
             }
 
             Animator.Idle();
+
+            if(dispeledTargets.Count > 0)
+            {
+                yield return new WaitForSeconds(.4f);
+            }
+            foreach (var item in dispeledTargets)
+            {
+                Vector3 effectPos = item.transform.position;
+
+                var effectObj = Game.instance.Stage.objectPool.Get("buff_dispel_success", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get("buff_dispel_success", true, effectPos);
+                var dispellEffect = effectObj.GetComponent<VFX.VFX>();
+                if (dispellEffect != null)
+                {
+                    dispellEffect.Play();
+                }
+            }
         }
 
         #endregion
