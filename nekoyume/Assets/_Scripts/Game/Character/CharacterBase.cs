@@ -828,14 +828,7 @@ namespace Nekoyume.Game.Character
                 var effect = effectObj.GetComponent<VFX.VFX>();
                 if (effect != null)
                 {
-                    if (first)
-                    {
-                        effect.Play();
-                    }
-                    else
-                    {
-                        effect.Play();
-                    }
+                    effect.Play();
                 }                    
 
                 ProcessAttack(target, info, !first, true);
