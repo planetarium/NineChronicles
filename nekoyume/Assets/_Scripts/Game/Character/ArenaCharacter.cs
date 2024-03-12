@@ -698,7 +698,6 @@ namespace Nekoyume.Game.Character
             foreach (var item in dispeledTargets)
             {
                 Vector3 effectPos = item.transform.position;
-                effectPos.y = Stage.StageStartPosition + 0.32f;
 
                 var effectObj = Game.instance.Stage.objectPool.Get("buff_dispel_success", false, effectPos) ??
                             Game.instance.Stage.objectPool.Get("buff_dispel_success", true, effectPos);
