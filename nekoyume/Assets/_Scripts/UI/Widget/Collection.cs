@@ -24,7 +24,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class Collection : Widget
+    public class Collection : Widget, IItemFilterOptionWidget
     {
         #region Internal Types
         [Serializable]
@@ -581,10 +581,10 @@ namespace Nekoyume.UI
 
             if (model.ItemType != ItemType.Equipment)
                 return false;
+            var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
 
             if (itemFilterOptions.Elemental != ItemFilterOptionPopup.Elemental.All)
             {
-                var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
                 foreach (var material in model.Materials)
                 {
                     if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
@@ -621,6 +621,12 @@ namespace Nekoyume.UI
                     if (!result)
                         return false;
                 }
+            }
+
+            if (itemFilterOptions.WithSkill != ItemFilterOptionPopup.WithSkill.All)
+            {
+                // Collection에서 스킬 유무는 패스, 모든 아이템이 스킬이 있어야하기 때문에 필터링이 의미 없음
+                return true;
             }
 
             return true;

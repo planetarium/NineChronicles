@@ -210,6 +210,7 @@ namespace Nekoyume.UI
         {
             base.Close(ignoreCloseAnimation);
 
+            // TODO: IItemFilterOptionWidget로 대체
             var collectionWidget = Find<Collection>();
             collectionWidget.SetItemFilterOption(GetItemFilterOptionType());
         }
@@ -270,6 +271,9 @@ namespace Nekoyume.UI
 
             foreach (var optionCountToggle in optionCountToggles)
                 itemFilterOptionType.OptionCount |= optionCountToggle.toggle.isOn ? optionCountToggle.optionCount : OptionCount.All;
+
+            foreach (var withSkillToggle in withSkillToggles)
+                itemFilterOptionType.WithSkill |= withSkillToggle.toggle.isOn ? withSkillToggle.withSkill : WithSkill.All;
 
             itemFilterOptionType.SearchText = _searchInputField.text;
 
