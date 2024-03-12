@@ -124,6 +124,15 @@ MonoBehaviour:
   scrollableRewardsRectTransform: {fileID: 8475548908103802339}
   stakingLevelImage: {fileID: 6637482716725540419}
   stakingRewardImage: {fileID: 1028178262922361327}
+  myLevelHighlightObjects:
+  - {fileID: 7715113105885665035}
+  - {fileID: 8469111794538118538}
+  - {fileID: 8474851109692503452}
+  - {fileID: 7097887850419302648}
+  - {fileID: 6414899897292920618}
+  - {fileID: 8435065260766897715}
+  - {fileID: 7811448946667959763}
+  - {fileID: 3448132892838324483}
   currentBenefitsTabButton: {fileID: 164475490579377487}
   levelBenefitsTabButton: {fileID: 1352374952083609231}
   currentBenefitsTab: {fileID: 1277203160402406578}
@@ -11990,7 +11999,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6780950458000097561
 RectTransform:
   m_ObjectHideFlags: 0

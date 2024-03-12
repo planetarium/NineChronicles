@@ -48,6 +48,7 @@ namespace Nekoyume.UI
         [SerializeField] private RectTransform scrollableRewardsRectTransform;
         [SerializeField] private Image stakingLevelImage;
         [SerializeField] private Image stakingRewardImage;
+        [SerializeField] private GameObject[] myLevelHighlightObjects;
 
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
@@ -160,7 +161,7 @@ namespace Nekoyume.UI
             var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
 
-            OnDepositEdited(deposit);
+            OnDepositSet(deposit);
             OnBlockUpdated(blockIndex);
 
             // can not category UI toggle when user has not StakeState.
@@ -361,7 +362,7 @@ namespace Nekoyume.UI
             };
         }
 
-        private void OnDepositEdited(BigInteger stakedDeposit)
+        private void OnDepositSet(BigInteger stakedDeposit)
         {
             var states = States.Instance;
             var level = states.StakingLevel;
@@ -369,6 +370,11 @@ namespace Nekoyume.UI
             for (var i = 0; i < levelImages.Length; i++)
             {
                 levelImages[i].enabled = i < level;
+            }
+
+            for (int i = 0; i < myLevelHighlightObjects.Length; i++)
+            {
+                myLevelHighlightObjects[i].SetActive(i + 1 == level);
             }
 
             var grindingBonus = 0;
