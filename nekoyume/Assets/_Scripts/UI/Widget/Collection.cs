@@ -53,7 +53,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private enum ESortType
+        private enum SortType
         {
             None,
             Grade,
@@ -83,16 +83,16 @@ namespace Nekoyume.UI
 
         [Header("Center bottom")]
         [SerializeField]
-        private TMP_Dropdown _sortDropdown;
+        private TMP_Dropdown sortDropdown;
 
         [SerializeField]
-        private Button _sortButton;
+        private Button sortButton;
 
         [SerializeField]
-        private UIFlip _sortFlip;
+        private UIFlip sortFlip;
 
         [SerializeField]
-        private ESortType _sortType = ESortType.None;
+        private SortType sortType = SortType.None;
 
         private bool _isSortDescending = true;
 
@@ -185,7 +185,7 @@ namespace Nekoyume.UI
             collectionMaterialInfo.OnClickCloseButton
                 .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
 
-            _sortButton.onClick.AddListener(OnClickSortButton);
+            sortButton.onClick.AddListener(OnClickSortButton);
 
             InitializeSortDropdown();
             RefreshDescendingUI();
@@ -235,22 +235,22 @@ namespace Nekoyume.UI
 
         private void RefreshDropDownText()
         {
-            if (_sortDropdown.options.Count == 0)
+            if (sortDropdown.options.Count == 0)
                 return;
 
             switch (_currentItemType)
             {
                 case ItemType.Consumable:
-                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_COUNT");
+                    sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_COUNT");
                     break;
                 case ItemType.Costume:
-                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_LEVEL");
+                    sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_LEVEL");
                     break;
                 case ItemType.Equipment:
-                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_LEVEL");
+                    sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_LEVEL");
                     break;
                 case ItemType.Material:
-                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_COUNT");
+                    sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_COUNT");
                     break;
             }
         }
@@ -454,7 +454,7 @@ namespace Nekoyume.UI
         #region Sort
         private void RefreshDescendingUI()
         {
-            _sortFlip.vertical = _isSortDescending;
+            sortFlip.vertical = _isSortDescending;
         }
 
         private void OnClickSortButton()
@@ -466,27 +466,27 @@ namespace Nekoyume.UI
 
         private void InitializeSortDropdown()
         {
-            _sortDropdown.ClearOptions();
+            sortDropdown.ClearOptions();
 
             // TODO: Apply L10n
             var options = new List<string>();
-            foreach (ESortType sortType in Enum.GetValues(typeof(ESortType)))
+            foreach (SortType sortType in Enum.GetValues(typeof(SortType)))
                 options.Add(GetSortTypeString(sortType));
-            _sortDropdown.AddOptions(options);
+            sortDropdown.AddOptions(options);
 
-            _sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
+            sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
             RefreshDropDownText();
         }
 
-        private string GetSortTypeString(ESortType sortType)
+        private string GetSortTypeString(SortType sortType)
         {
             switch (sortType)
             {
-                case ESortType.None:
+                case SortType.None:
                     return L10nManager.Localize("UI_RESET");
-                case ESortType.Grade:
+                case SortType.Grade:
                     return L10nManager.Localize("UI_GRADE");
-                case ESortType.Level:
+                case SortType.Level:
                     return L10nManager.Localize("UI_LEVEL");
             }
 
@@ -495,7 +495,7 @@ namespace Nekoyume.UI
 
         private void OnSortDropdownValueChanged(int index)
         {
-            _sortType = (ESortType)index;
+            sortType = (SortType)index;
             UpdateItems();
         }
 
@@ -519,7 +519,7 @@ namespace Nekoyume.UI
             // 3. 재료 모두 미달성 (나머지)
 
             // 설정된 타입별로 정렬
-            var sortByTypeValue = SortByType(a, b, _sortType);
+            var sortByTypeValue = SortByType(a, b, sortType);
             if (sortByTypeValue != 0)
                 return sortByTypeValue;
 
@@ -530,16 +530,16 @@ namespace Nekoyume.UI
             return 0;
         }
 
-        private int SortByType(CollectionModel a, CollectionModel b, ESortType type)
+        private int SortByType(CollectionModel a, CollectionModel b, SortType type)
         {
             var sortTypeWeight = _isSortDescending ? 1 : -1;
-            switch (_sortType)
+            switch (type)
             {
-                case ESortType.Grade:
+                case SortType.Grade:
                     var aGrade = a.Materials.Max(material => material.Grade);
                     var bGrade = b.Materials.Max(material => material.Grade);
                     return (bGrade - aGrade) * sortTypeWeight;
-                case ESortType.Level:
+                case SortType.Level:
                     var aLevel = a.Materials.Max(material => material.EnoughLevel);
                     var bLevel = b.Materials.Max(material => material.EnoughLevel);
                     return (bLevel - aLevel) * sortTypeWeight;
