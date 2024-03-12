@@ -198,6 +198,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button _deselectAllButton;
 
+        [SerializeField]
+        private Button _okButton;
+
+        private ItemFilterOptions _itemFilterOptions;
+
         #region Popup
         protected override void Awake()
         {
@@ -209,24 +214,12 @@ namespace Nekoyume.UI
             {
                 if (_searchInputField.isFocused)
                     return;
+
                 Close(true);
             };
 
             _deselectAllButton.onClick.AddListener(DeselectAll);
-        }
-
-        public override void Show(bool ignoreShowAnimation = false)
-        {
-            base.Show(ignoreShowAnimation);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-
-            // TODO: IItemFilterOptionWidget로 대체
-            var collectionWidget = Find<Collection>();
-            collectionWidget.SetItemFilterOption(GetItemFilterOptionType());
+            _okButton.onClick.AddListener(OnClickOkButton);
         }
         #endregion Popup
 
@@ -296,7 +289,24 @@ namespace Nekoyume.UI
                 item.ResetToAll();
         }
 
-        private ItemFilterOptions GetItemFilterOptionType()
+        private void DeselectAll()
+        {
+            ResetToAll(gradeToggles);
+            ResetToAll(elementalToggles);
+            ResetToAll(itemTypeToggles);
+            ResetToAll(upgradeLevelToggles);
+            ResetToAll(optionCountToggles);
+            ResetToAll(withSkillToggles);
+            _searchInputField.text = string.Empty;
+        }
+
+        public void OnClickOkButton()
+        {
+            ApplyItemFilterOptionFromToggle();
+            Close(true);
+        }
+
+        protected void ApplyItemFilterOptionFromToggle()
         {
             var itemFilterOptionType = new ItemFilterOptions();
 
@@ -320,7 +330,51 @@ namespace Nekoyume.UI
 
             itemFilterOptionType.SearchText = _searchInputField.text;
 
-            return itemFilterOptionType;
+            _itemFilterOptions = itemFilterOptionType;
+        }
+
+        protected ItemFilterOptions GetItemFilterOptionType()
+        {
+            return _itemFilterOptions;
+        }
+
+        protected void SetTogglesFromFilterOption()
+        {
+            if (_itemFilterOptions.Grade != Grade.All)
+                foreach (var gradeToggle in gradeToggles)
+                    gradeToggle.toggle.isOn = _itemFilterOptions.Grade.HasFlag(gradeToggle.grade);
+            else
+                ResetToAll(gradeToggles);
+
+            if (_itemFilterOptions.Elemental != Elemental.All)
+                foreach (var elementalToggle in elementalToggles)
+                    elementalToggle.toggle.isOn = _itemFilterOptions.Elemental.HasFlag(elementalToggle.elemental);
+            else
+                ResetToAll(elementalToggles);
+
+            if (_itemFilterOptions.ItemType != ItemType.All)
+                foreach (var itemTypeToggle in itemTypeToggles)
+                    itemTypeToggle.toggle.isOn = _itemFilterOptions.ItemType.HasFlag(itemTypeToggle.itemType);
+            else
+                ResetToAll(itemTypeToggles);
+
+            if (_itemFilterOptions.UpgradeLevel != UpgradeLevel.All)
+                foreach (var upgradeLevelToggle in upgradeLevelToggles)
+                    upgradeLevelToggle.toggle.isOn = _itemFilterOptions.UpgradeLevel.HasFlag(upgradeLevelToggle.upgradeLevel);
+            else
+                ResetToAll(upgradeLevelToggles);
+
+            if (_itemFilterOptions.OptionCount != OptionCount.All)
+                foreach (var optionCountToggle in optionCountToggles)
+                    optionCountToggle.toggle.isOn = _itemFilterOptions.OptionCount.HasFlag(optionCountToggle.optionCount);
+            else
+                ResetToAll(optionCountToggles);
+
+            if (_itemFilterOptions.WithSkill != WithSkill.All)
+                foreach (var withSkillToggle in withSkillToggles)
+                    withSkillToggle.toggle.isOn = _itemFilterOptions.WithSkill.HasFlag(withSkillToggle.withSkill);
+            else
+                ResetToAll(withSkillToggles);
         }
 
         public static ItemType ItemSubTypeToItemType(ItemSubType itemSubType)
@@ -342,17 +396,6 @@ namespace Nekoyume.UI
                 default:
                     return ItemType.All;
             }
-        }
-
-        private void DeselectAll()
-        {
-            ResetToAll(gradeToggles);
-            ResetToAll(elementalToggles);
-            ResetToAll(itemTypeToggles);
-            ResetToAll(upgradeLevelToggles);
-            ResetToAll(optionCountToggles);
-            ResetToAll(withSkillToggles);
-            _searchInputField.text = string.Empty;
         }
     }
 }

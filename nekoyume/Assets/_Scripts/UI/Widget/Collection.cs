@@ -24,7 +24,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class Collection : Widget, IItemFilterOptionWidget
+    public class Collection : Widget
     {
         #region Internal Types
         [Serializable]
