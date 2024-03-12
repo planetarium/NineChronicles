@@ -571,5 +571,9 @@ namespace Nekoyume.Game
             container = Instantiate(prefab, transform);
         }
 
+        public IEnumerator CoShatterStrike(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            yield return null;
+        }
     }
 }

@@ -1400,5 +1400,10 @@ namespace Nekoyume.Game
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
         }
+
+        public IEnumerator CoShatterStrike(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            yield return null;
+        }
     }
 }

@@ -370,5 +370,10 @@ namespace Nekoyume.Game
                 }
             }
         }
+
+        public IEnumerator CoShatterStrike(ArenaCharacter caster, IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos, IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
+        {
+            yield return null;
+        }
     }
 }
