@@ -1403,7 +1403,16 @@ namespace Nekoyume.Game
 
         public IEnumerator CoShatterStrike(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            yield return null;
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoShatterStrike)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
+            var character = GetCharacter(caster);
+            if (character)
+            {
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoShatterStrike);
+                character.actions.Add(actionParams);
+                yield return null;
+            }
         }
     }
 }
