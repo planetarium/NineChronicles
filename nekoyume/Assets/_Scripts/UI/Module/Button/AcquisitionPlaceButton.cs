@@ -80,7 +80,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     break;
-                case ShortcutHelper.PlaceType.Shop:
+                case ShortcutHelper.PlaceType.PCShop:
                 case ShortcutHelper.PlaceType.Arena:
                 case ShortcutHelper.PlaceType.Quest:
                 case ShortcutHelper.PlaceType.Staking:
@@ -88,11 +88,12 @@ namespace Nekoyume.UI.Module
                 case ShortcutHelper.PlaceType.Craft:
                 case ShortcutHelper.PlaceType.Summon:
                     iconName = string.Format(IconNameFormat, $"00{(int)model.Type}");
-
+                    break;
+                case ShortcutHelper.PlaceType.MobileShop:
+                    iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.PCShop}");
                     break;
                 case ShortcutHelper.PlaceType.Upgrade:
                     iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.Craft}");
-
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
