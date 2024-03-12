@@ -64,6 +64,7 @@ namespace Nekoyume.UI
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
+        private const string TableSheetViewUrlPrefix = "https://9c-board.netlify.app/odin/tablesheet/";
 
         private bool _benefitListViewsInitialized;
 
@@ -257,13 +258,19 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // TODO: change l10n msg
             var confirmUI = Find<IconAndButtonSystem>();
-            var confirmTitle = "UI_ITEM_INFORMATION";
-            var confirmContent = "UI_INTRODUCE_MIGRATION";
-            var confirmIcon = IconAndButtonSystem.SystemType.Information;
+            var confirmTitle = L10nManager.Localize("UI_ITEM_INFORMATION");
+            var confirmContent = L10nManager.Localize("UI_INTRODUCE_MIGRATION",
+                $"{TableSheetViewUrlPrefix}{stakeState.Contract.StakeRegularRewardSheetTableName}",
+                $"{TableSheetViewUrlPrefix}{TableSheets.Instance.StakePolicySheet.StakeRegularRewardSheetValue}");
 
-            confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize:true, type: confirmIcon);
+            confirmUI.ShowWithTwoButton(
+                confirmTitle,
+                confirmContent,
+                labelYes: L10nManager.Localize("UI_OK"),
+                labelNo: L10nManager.Localize("UI_CANCEL"),
+                localize:false,
+                type: IconAndButtonSystem.SystemType.Information);
             var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo =>
             {
                 Application.OpenURL(linkInfo.GetLinkID());
