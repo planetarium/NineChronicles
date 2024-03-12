@@ -582,89 +582,96 @@ namespace Nekoyume.UI
 
         private bool ApplyFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.Grade != ItemFilterPopupBase.Grade.All)
+            if (!ApplyGradeFilterOption(model)) return false;
+            if (model.ItemType != ItemType.Equipment) return true;
+            if (!ApplyElementalFilterOption(model)) return false;
+            if (!ApplyUpgradeLevelFilterOption(model)) return false;
+            if (!ApplyItemTypeFilterOption(model)) return false;
+
+            return true;
+        }
+
+        private bool ApplyGradeFilterOption(CollectionModel model)
+        {
+            if (itemFilterOptions.Grade == ItemFilterPopupBase.Grade.All)
+                return true;
+
+            foreach (var material in model.Materials)
             {
-                foreach (var material in model.Materials)
-                {
-                    var gradeFlag = (ItemFilterPopupBase.Grade)(1 << (material.Grade - 1));
-                    var result = itemFilterOptions.Grade.HasFlag(gradeFlag);
-                    if (!result)
-                        return false;
-                }
-            }
-
-            if (model.ItemType != ItemType.Equipment)
-                return false;
-            var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
-
-            if (itemFilterOptions.Elemental != ItemFilterPopupBase.Elemental.All)
-            {
-                foreach (var material in model.Materials)
-                {
-                    if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
-                        return false;
-
-                    var elementalFlag = (ItemFilterPopupBase.Elemental)(1 << (int)equipment.ElementalType);
-                    var result = itemFilterOptions.Elemental.HasFlag(elementalFlag);
-                    if (!result)
-                        return false;
-                }
-            }
-
-            if (itemFilterOptions.UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All)
-            {
-                foreach (var material in model.Materials)
-                {
-                    var upgradeLevel = itemFilterOptions.UpgradeLevel;
-                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level1))
-                        if (material.EnoughLevel == 1)
-                            break;
-                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level2))
-                        if (material.EnoughLevel == 2)
-                            break;
-                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level3))
-                        if (material.EnoughLevel == 3)
-                            break;
-                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level4))
-                        if (material.EnoughLevel == 4)
-                            break;
-                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level5))
-                        if (material.EnoughLevel == 5)
-                            break;
-                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level6More))
-                        if (material.EnoughLevel >= 6)
-                            break;
-
-                    return false;
-                }
-            }
-
-            if (itemFilterOptions.ItemType != ItemFilterPopupBase.ItemType.All)
-            {
-                foreach (var material in model.Materials)
-                {
-                    if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
-                        return false;
-
-                    var itemType = ItemFilterPopupBase.ItemSubTypeToItemType(equipment.ItemSubType);
-                    var result = itemFilterOptions.ItemType.HasFlag(itemType);
-                    if (!result)
-                        return false;
-                }
-            }
-
-            // TODO: Remove
-            if (itemFilterOptions.OptionCount != ItemFilterPopupBase.OptionCount.All)
-            {
-                var result = itemFilterOptions.OptionCount.HasFlag((ItemFilterPopupBase.OptionCount)(1 << model.Row.StatModifiers.Count - 1));
+                var gradeFlag = (ItemFilterPopupBase.Grade)(1 << (material.Grade - 1));
+                var result = itemFilterOptions.Grade.HasFlag(gradeFlag);
                 if (!result)
                     return false;
             }
 
-            if (itemFilterOptions.WithSkill != ItemFilterPopupBase.WithSkill.All)
-            {
-                // Collection에서 스킬 유무는 패스, 모든 아이템이 스킬이 있어야하기 때문에 필터링이 의미 없음
+            return true;
+        }
+
+        private bool ApplyElementalFilterOption(CollectionModel model)
+        {
+            if (itemFilterOptions.Elemental == ItemFilterPopupBase.Elemental.All)
                 return true;
+
+            var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            foreach (var material in model.Materials)
+            {
+                if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
+                    return false;
+
+                var elementalFlag = (ItemFilterPopupBase.Elemental)(1 << (int)equipment.ElementalType);
+                var result = itemFilterOptions.Elemental.HasFlag(elementalFlag);
+                if (!result)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool ApplyUpgradeLevelFilterOption(CollectionModel model)
+        {
+            if (itemFilterOptions.UpgradeLevel == ItemFilterPopupBase.UpgradeLevel.All)
+                return true;
+
+            foreach (var material in model.Materials)
+            {
+                var upgradeFlag = ItemFilterPopupBase.UpgradeLevel.All;
+
+                if (material.EnoughLevel == 1)
+                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level1;
+                else if (material.EnoughLevel == 2)
+                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level2;
+                else if (material.EnoughLevel == 3)
+                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level3;
+                else if (material.EnoughLevel == 4)
+                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level4;
+                else if (material.EnoughLevel == 5)
+                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level5;
+                else if (material.EnoughLevel >= 6)
+                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level6More;
+
+                var result = itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
+                if (!result)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool ApplyItemTypeFilterOption(CollectionModel model)
+        {
+            if (itemFilterOptions.ItemType == ItemFilterPopupBase.ItemType.All)
+                return true;
+
+            var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            foreach (var material in model.Materials)
+            {
+                if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
+                    return false;
+
+                var itemType = ItemFilterPopupBase.ItemSubTypeToItemType(equipment.ItemSubType);
+                var result = itemFilterOptions.ItemType.HasFlag(itemType);
+                if (!result)
+                    return false;
             }
 
             return true;
