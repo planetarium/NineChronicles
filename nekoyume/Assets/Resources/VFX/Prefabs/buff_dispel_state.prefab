@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3966430322624182609}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.479}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4676,7 +4676,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -4718,7 +4718,7 @@ GameObject:
   - component: {fileID: 3533999491884519810}
   - component: {fileID: 5645032814684979659}
   - component: {fileID: 3589920339939064565}
-  - component: {fileID: 8879567650427417368}
+  - component: {fileID: 585698700732342081}
   m_Layer: 0
   m_Name: buff_dispel_state
   m_TagString: Untagged
@@ -4733,7 +4733,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5068662467704735941}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4743,7 +4743,7 @@ Transform:
   - {fileID: 9037915524874251176}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &5645032814684979659
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -9463,7 +9463,7 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &8879567650427417368
+--- !u!114 &585698700732342081
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9472,12 +9472,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5068662467704735941}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f351a36e8acd4e569c95f702b4c5006c, type: 3}
+  m_Script: {fileID: 11500000, guid: ff9c74dc6c9aeb2428066d24d9a6763f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _initializeSortingProbsOfChildren: 0
   <Target>k__BackingField: {fileID: 0}
-  <IsPersisting>k__BackingField: 0
+  <IsPersisting>k__BackingField: 1
 --- !u!1 &7284123043461054622
 GameObject:
   m_ObjectHideFlags: 0
@@ -9504,7 +9504,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7284123043461054622}
   m_LocalRotation: {x: -0.12186931, y: -0, z: -0, w: 0.9925462}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.479}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14404,7 +14404,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9041318798443049870}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -0.04399991, y: 0, z: 0.43600005}
+  m_LocalPosition: {x: -0.04399991, y: 0, z: -0.043}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -18986,7 +18986,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 12
   m_RenderMode: 4
   m_MeshDistribution: 0
   m_SortMode: 1

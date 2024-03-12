@@ -87,6 +87,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1824077203074702025}
   - component: {fileID: 821902166017795164}
+  - component: {fileID: 8301997907894908532}
   m_Layer: 5
   m_Name: LevelArea
   m_TagString: Untagged
@@ -115,7 +116,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1}
-  m_SizeDelta: {x: 300, y: 32}
+  m_SizeDelta: {x: 0, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &821902166017795164
 MonoBehaviour:
@@ -143,6 +144,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
   m_ReverseArrangement: 0
+--- !u!114 &8301997907894908532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466455446487644832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 0
 --- !u!1 &719323075185724459
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,6 +562,11 @@ MonoBehaviour:
   - {fileID: 5582978022049418341}
   hoverScaleTweener: {fileID: 5305865071020006205}
   notificationObj: {fileID: 1065496651164662156}
+  notStakingObj: {fileID: 4812674883289709041}
+  levelText: {fileID: 2083789808917942542}
+  stakedNcgText: {fileID: 5968809444132447497}
+  claimableTimeBlock: {fileID: 8920183516791804827}
+  levelTextParent: {fileID: 213354557198164922}
 --- !u!1 &2127285318739861467
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,7 +987,6 @@ GameObject:
   - component: {fileID: 1389050858694492935}
   - component: {fileID: 5968809444132447497}
   - component: {fileID: 2113113542053185220}
-  - component: {fileID: 7299539124758325029}
   m_Layer: 5
   m_Name: NCG
   m_TagString: Untagged
@@ -992,7 +1011,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 173.28001, y: 0}
+  m_AnchoredPosition: {x: 64.049995, y: 0}
   m_SizeDelta: {x: 0, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1389050858694492935
@@ -1106,19 +1125,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
---- !u!114 &7299539124758325029
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3012158234343650040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a094161211d3f934cbab67e86077499c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  content: {fileID: 5968809444132447497}
 --- !u!1 &3184540298155346661
 GameObject:
   m_ObjectHideFlags: 0
@@ -1644,7 +1650,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -17}
+  m_AnchoredPosition: {x: 0, y: -10}
   m_SizeDelta: {x: 64, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9209801081876583856
@@ -1687,7 +1693,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &3343331068723035237
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1704,7 +1710,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5408358079773042243
 GameObject:
   m_ObjectHideFlags: 0
@@ -2077,7 +2084,6 @@ GameObject:
   - component: {fileID: 7267066288731428682}
   - component: {fileID: 2083789808917942542}
   - component: {fileID: 6423033181276166412}
-  - component: {fileID: 752732658651100284}
   m_Layer: 5
   m_Name: Level
   m_TagString: Untagged
@@ -2102,7 +2108,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 122.51, y: 0}
+  m_AnchoredPosition: {x: 13.28, y: 0}
   m_SizeDelta: {x: 0, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7267066288731428682
@@ -2216,19 +2222,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
---- !u!114 &752732658651100284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7084222561411378694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a094161211d3f934cbab67e86077499c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  content: {fileID: 2083789808917942542}
 --- !u!1 &7862555482539124012
 GameObject:
   m_ObjectHideFlags: 0
@@ -2671,6 +2664,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4681619970566438773, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2791,14 +2789,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7937736088600402549, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7937736088600402549, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8114319135286425651, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8114319135286425651, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
-      propertyPath: m_Enabled
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

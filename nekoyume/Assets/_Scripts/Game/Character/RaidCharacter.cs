@@ -271,14 +271,7 @@ namespace Nekoyume.Game.Character
                 var effect = effectObj.GetComponent<VFX.VFX>();
                 if (effect != null)
                 {
-                    if (first)
-                    {
-                        effect.Play();
-                    }
-                    else
-                    {
-                        effect.Play();
-                    }
+                    effect.Play();
                 }
 
                 ProcessAttack(target, info, true);
@@ -409,13 +402,35 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
 
+            HashSet<RaidCharacter> dispeledTargets = new HashSet<RaidCharacter>();
             foreach (var info in skillInfos)
             {
                 var target = info.Target.Id == Id ? this : _target;
                 target.ProcessBuff(target, info);
+                if (!info.Affected || (info.DispelList != null && info.DispelList.Count() > 0))
+                {
+                    dispeledTargets.Add(target);
+                }
             }
 
             Animator.Idle();
+
+            if (dispeledTargets.Count > 0)
+            {
+                yield return new WaitForSeconds(.4f);
+            }
+            foreach (var item in dispeledTargets)
+            {
+                Vector3 effectPos = item.transform.position;
+
+                var effectObj = Game.instance.Stage.objectPool.Get("buff_dispel_success", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get("buff_dispel_success", true, effectPos);
+                var dispellEffect = effectObj.GetComponent<VFX.VFX>();
+                if (dispellEffect != null)
+                {
+                    dispellEffect.Play();
+                }
+            }
         }
 
         public IEnumerator CoHeal(IReadOnlyList<Skill.SkillInfo> skillInfos)
