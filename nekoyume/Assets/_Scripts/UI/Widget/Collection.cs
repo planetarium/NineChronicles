@@ -583,11 +583,30 @@ namespace Nekoyume.UI
 
         private bool ApplyFilterOption(CollectionModel model)
         {
-            if (!ApplyGradeFilterOption(model)) return false;
-            if (model.ItemType != ItemType.Equipment) return true;
-            if (!ApplyElementalFilterOption(model)) return false;
-            if (!ApplyUpgradeLevelFilterOption(model)) return false;
-            if (!ApplyItemTypeFilterOption(model)) return false;
+            if (!ApplyGradeFilterOption(model))
+            {
+                return false;
+            }
+
+            if (model.ItemType != ItemType.Equipment)
+            {
+                return true;
+            }
+
+            if (!ApplyElementalFilterOption(model))
+            {
+                return false;
+            }
+
+            if (!ApplyUpgradeLevelFilterOption(model))
+            {
+                return false;
+            }
+
+            if (!ApplyItemTypeFilterOption(model))
+            {
+                return false;
+            }
 
             return true;
         }
@@ -595,67 +614,82 @@ namespace Nekoyume.UI
         private bool ApplyGradeFilterOption(CollectionModel model)
         {
             if (itemFilterOptions.Grade == ItemFilterPopupBase.Grade.All)
+            {
                 return true;
+            }
 
+            var hasFlag = false;
             foreach (var material in model.Materials)
             {
                 var gradeFlag = (ItemFilterPopupBase.Grade)(1 << (material.Grade - 1));
-                var result = itemFilterOptions.Grade.HasFlag(gradeFlag);
-                if (!result)
-                    return false;
+                hasFlag |= itemFilterOptions.Grade.HasFlag(gradeFlag);
+
+                if (hasFlag)
+                {
+                    break;
+                }
             }
 
-            return true;
+            return hasFlag;
         }
 
         private bool ApplyElementalFilterOption(CollectionModel model)
         {
             if (itemFilterOptions.Elemental == ItemFilterPopupBase.Elemental.All)
+            {
                 return true;
+            }
 
+            var hasFlag = false;
             var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             foreach (var material in model.Materials)
             {
                 if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
+                {
                     return false;
+                }
 
                 var elementalFlag = (ItemFilterPopupBase.Elemental)(1 << (int)equipment.ElementalType);
-                var result = itemFilterOptions.Elemental.HasFlag(elementalFlag);
-                if (!result)
-                    return false;
+                hasFlag |= itemFilterOptions.Elemental.HasFlag(elementalFlag);
+
+                if (hasFlag)
+                {
+                    break;
+                }
             }
 
-            return true;
+            return hasFlag;
         }
 
         private bool ApplyUpgradeLevelFilterOption(CollectionModel model)
         {
             if (itemFilterOptions.UpgradeLevel == ItemFilterPopupBase.UpgradeLevel.All)
-                return true;
-
-            foreach (var material in model.Materials)
             {
-                var upgradeFlag = ItemFilterPopupBase.UpgradeLevel.All;
-
-                if (material.EnoughLevel == 1)
-                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level1;
-                else if (material.EnoughLevel == 2)
-                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level2;
-                else if (material.EnoughLevel == 3)
-                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level3;
-                else if (material.EnoughLevel == 4)
-                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level4;
-                else if (material.EnoughLevel == 5)
-                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level5;
-                else if (material.EnoughLevel >= 6)
-                    upgradeFlag = ItemFilterPopupBase.UpgradeLevel.Level6More;
-
-                var result = itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
-                if (!result)
-                    return false;
+                return true;
             }
 
-            return true;
+            var hasFlag = false;
+            foreach (var material in model.Materials)
+            {
+                var upgradeFlag = material.EnoughLevel switch
+                                  {
+                                      1    => ItemFilterPopupBase.UpgradeLevel.Level1,
+                                      2    => ItemFilterPopupBase.UpgradeLevel.Level2,
+                                      3    => ItemFilterPopupBase.UpgradeLevel.Level3,
+                                      4    => ItemFilterPopupBase.UpgradeLevel.Level4,
+                                      5    => ItemFilterPopupBase.UpgradeLevel.Level5,
+                                      >= 6 => ItemFilterPopupBase.UpgradeLevel.Level6More,
+                                      _    => ItemFilterPopupBase.UpgradeLevel.All
+                                  };
+
+                hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
+                if (hasFlag)
+                {
+                    break;
+                }
+            }
+
+            return hasFlag;
         }
 
         private bool ApplyItemTypeFilterOption(CollectionModel model)
@@ -663,6 +697,7 @@ namespace Nekoyume.UI
             if (itemFilterOptions.ItemType == ItemFilterPopupBase.ItemType.All)
                 return true;
 
+            var hasFlag = false;
             var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             foreach (var material in model.Materials)
             {
@@ -670,12 +705,14 @@ namespace Nekoyume.UI
                     return false;
 
                 var itemType = ItemFilterPopupBase.ItemSubTypeToItemType(equipment.ItemSubType);
-                var result = itemFilterOptions.ItemType.HasFlag(itemType);
-                if (!result)
-                    return false;
+                hasFlag |= itemFilterOptions.ItemType.HasFlag(itemType);
+                if (hasFlag)
+                {
+                    break;
+                }
             }
 
-            return true;
+            return hasFlag;
         }
 
         private bool IsMatchedSearch(CollectionModel model)
