@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Model.Item;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -256,9 +257,12 @@ namespace Nekoyume.UI
                     {
                         if (isOn) item.OffAllToggle();
                         else if (item.IsAll) ResetToAll(toggles);
+                        // TODO: 모든 일반 옵션들이 false가 되면 RestTOAll
                     });
                 }
             }
+
+            ResetToAll(toggles);
         }
         private void ResetToAll<T>(List<T> toggles) where T : ItemToggleType
         {
@@ -291,6 +295,27 @@ namespace Nekoyume.UI
             itemFilterOptionType.SearchText = _searchInputField.text;
 
             return itemFilterOptionType;
+        }
+
+        public static ItemType ItemSubTypeToItemType(ItemSubType itemSubType)
+        {
+            switch (itemSubType)
+            {
+                case ItemSubType.Weapon:
+                    return ItemType.Weapon;
+                case ItemSubType.Armor:
+                    return ItemType.Armor;
+                case ItemSubType.Belt:
+                    return ItemType.Belt;
+                case ItemSubType.Necklace:
+                    return ItemType.Necklace;
+                case ItemSubType.Ring:
+                    return ItemType.Ring;
+                case ItemSubType.Aura:
+                    return ItemType.Aura;
+                default:
+                    return ItemType.All;
+            }
         }
     }
 }

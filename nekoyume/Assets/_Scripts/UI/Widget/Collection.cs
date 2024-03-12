@@ -586,7 +586,7 @@ namespace Nekoyume.UI
             {
                 foreach (var material in model.Materials)
                 {
-                    var gradeFlag = (ItemFilterPopupBase.Grade)(1 << material.Grade);
+                    var gradeFlag = (ItemFilterPopupBase.Grade)(1 << (material.Grade - 1));
                     var result = itemFilterOptions.Grade.HasFlag(gradeFlag);
                     if (!result)
                         return false;
@@ -615,45 +615,50 @@ namespace Nekoyume.UI
             {
                 foreach (var material in model.Materials)
                 {
-                    var hasItem = false;
-                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level1))
-                        hasItem |= material.EnoughLevel == 1;
+                    var upgradeLevel = itemFilterOptions.UpgradeLevel;
+                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level1))
+                        if (material.EnoughLevel == 1)
+                            break;
+                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level2))
+                        if (material.EnoughLevel == 2)
+                            break;
+                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level3))
+                        if (material.EnoughLevel == 3)
+                            break;
+                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level4))
+                        if (material.EnoughLevel == 4)
+                            break;
+                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level5))
+                        if (material.EnoughLevel == 5)
+                            break;
+                    if (upgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level6More))
+                        if (material.EnoughLevel >= 6)
+                            break;
 
-                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level2))
-                        hasItem |= material.EnoughLevel == 2;
-
-                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level3))
-                        hasItem |= material.EnoughLevel == 3;
-
-                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level4))
-                        hasItem |= material.EnoughLevel == 4;
-
-                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level5))
-                        hasItem |= material.EnoughLevel == 5;
-
-                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level6More))
-                        hasItem |= material.EnoughLevel >= 6;
-
-                    if (!hasItem)
-                        return false;
+                    return false;
                 }
             }
 
             if (itemFilterOptions.ItemType != ItemFilterPopupBase.ItemType.All)
             {
-                var result = itemFilterOptions.ItemType == (ItemFilterPopupBase.ItemType)model.ItemType;
-                if (!result)
-                    return false;
-            }
-
-            if (itemFilterOptions.UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All)
-            {
                 foreach (var material in model.Materials)
                 {
-                    var result = itemFilterOptions.UpgradeLevel.HasFlag((ItemFilterPopupBase.UpgradeLevel)(1 << material.EnoughLevel));
+                    if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
+                        return false;
+
+                    var itemType = ItemFilterPopupBase.ItemSubTypeToItemType(equipment.ItemSubType);
+                    var result = itemFilterOptions.ItemType.HasFlag(itemType);
                     if (!result)
                         return false;
                 }
+            }
+
+            // TODO: Remove
+            if (itemFilterOptions.OptionCount != ItemFilterPopupBase.OptionCount.All)
+            {
+                var result = itemFilterOptions.OptionCount.HasFlag((ItemFilterPopupBase.OptionCount)(1 << model.Row.StatModifiers.Count - 1));
+                if (!result)
+                    return false;
             }
 
             if (itemFilterOptions.WithSkill != ItemFilterPopupBase.WithSkill.All)
