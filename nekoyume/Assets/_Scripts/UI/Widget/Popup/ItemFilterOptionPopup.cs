@@ -13,6 +13,7 @@ namespace Nekoyume.UI
         public ItemFilterOptionPopup.ItemType ItemType;
         public ItemFilterOptionPopup.UpgradeLevel UpgradeLevel;
         public ItemFilterOptionPopup.OptionCount OptionCount;
+        public ItemFilterOptionPopup.WithSkill WithSkill;
 
         public string SearchText;
 
@@ -20,7 +21,8 @@ namespace Nekoyume.UI
                                       Elemental != ItemFilterOptionPopup.Elemental.All ||
                                       ItemType != ItemFilterOptionPopup.ItemType.All ||
                                       UpgradeLevel != ItemFilterOptionPopup.UpgradeLevel.All ||
-                                      OptionCount != ItemFilterOptionPopup.OptionCount.All;
+                                      OptionCount != ItemFilterOptionPopup.OptionCount.All ||
+                                      WithSkill != ItemFilterOptionPopup.WithSkill.All;
     }
 
     public class ItemFilterOptionPopup : PopupWidget
@@ -38,7 +40,7 @@ namespace Nekoyume.UI
             Epic = 1 << 2,
             Unique = 1 << 3,
             Legendary = 1 << 4,
-            New = 1 << 5,
+            Divinity = 1 << 5,
         }
 
         [Flags]
@@ -83,6 +85,14 @@ namespace Nekoyume.UI
             One = 1 << 0,
             Two = 1 << 1,
             Three = 1 << 2,
+        }
+
+        [Flags]
+        public enum WithSkill
+        {
+            All = 0,
+            None = 1 << 0,
+            With = 1 << 1,
         }
 
         [Serializable]
@@ -145,6 +155,14 @@ namespace Nekoyume.UI
             public override bool IsAll => optionCount == OptionCount.All;
         }
 
+        [Serializable]
+        private class WithSkillToggle : ItemToggleType
+        {
+            public WithSkill withSkill;
+
+            public override bool IsAll => withSkill == WithSkill.All;
+        }
+
         #endregion Internal Type
 
         [SerializeField]
@@ -161,6 +179,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private List<OptionCountToggle> optionCountToggles;
+
+        [SerializeField]
+        private List<WithSkillToggle> withSkillToggles;
 
         [SerializeField]
         private TMP_InputField _searchInputField;
@@ -183,8 +204,6 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-
-            var collectionWidget = Find<Collection>();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -203,6 +222,7 @@ namespace Nekoyume.UI
             BindToggleEvent(itemTypeToggles);
             BindToggleEvent(upgradeLevelToggles);
             BindToggleEvent(optionCountToggles);
+            BindToggleEvent(withSkillToggles);
         }
 
         private void BindToggleEvent<T>(List<T> toggles) where T : ItemToggleType
