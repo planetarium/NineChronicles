@@ -994,24 +994,24 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
 
-            HashSet<CharacterBase> despeledTargets = new HashSet<CharacterBase>();
+            HashSet<CharacterBase> dispeledTargets = new HashSet<CharacterBase>();
             foreach (var info in skillInfos)
             {
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessBuff(target, info);
                 if (!info.Affected || (info.DispelList != null && info.DispelList.Count() > 0))
                 {
-                    despeledTargets.Add(target);
+                    dispeledTargets.Add(target);
                 }
             }
 
             Animator.Idle();
 
-            if(despeledTargets.Count > 0)
+            if(dispeledTargets.Count > 0)
             {
                 yield return new WaitForSeconds(.4f);
             }
-            foreach (var item in despeledTargets)
+            foreach (var item in dispeledTargets)
             {
                 Vector3 effectPos = item.transform.position;
                 effectPos.y = Stage.StageStartPosition + 0.32f;
