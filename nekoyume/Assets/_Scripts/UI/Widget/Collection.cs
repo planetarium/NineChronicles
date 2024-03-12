@@ -253,6 +253,8 @@ namespace Nekoyume.UI
                     sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_COUNT");
                     break;
             }
+
+            sortDropdown.RefreshShownValue();
         }
 
         #region ScrollView
@@ -536,13 +538,27 @@ namespace Nekoyume.UI
             switch (type)
             {
                 case SortType.Grade:
+                {
                     var aGrade = a.Materials.Max(material => material.Grade);
                     var bGrade = b.Materials.Max(material => material.Grade);
                     return (bGrade - aGrade) * sortTypeWeight;
+                }
                 case SortType.Level:
-                    var aLevel = a.Materials.Max(material => material.EnoughLevel);
-                    var bLevel = b.Materials.Max(material => material.EnoughLevel);
-                    return (bLevel - aLevel) * sortTypeWeight;
+                {
+                    if (a.ItemType == ItemType.Consumable || a.ItemType == ItemType.Material)
+                    {
+                        var aCount = a.Materials.Max(material => material.Row.Count);
+                        var bCount = b.Materials.Max(material => material.Row.Count);
+                        return (bCount - aCount) * sortTypeWeight;
+                    }
+                    if (a.ItemType == ItemType.Equipment)
+                    {
+                        var aLevel = a.Materials.Max(material => material.Row.Level);
+                        var bLevel = b.Materials.Max(material => material.Row.Level);
+                        return (bLevel - aLevel) * sortTypeWeight;
+                    }
+                    break;
+                }
             }
             return 0;
         }
@@ -671,7 +687,7 @@ namespace Nekoyume.UI
             var hasFlag = false;
             foreach (var material in model.Materials)
             {
-                var upgradeFlag = material.EnoughLevel switch
+                var upgradeFlag = material.Row.Level switch
                                   {
                                       1    => ItemFilterPopupBase.UpgradeLevel.Level1,
                                       2    => ItemFilterPopupBase.UpgradeLevel.Level2,
