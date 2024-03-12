@@ -511,7 +511,7 @@ namespace Nekoyume.Game.Character
                     effectPos.x += 0.3f;
                     effectPos.y = Stage.StageStartPosition + 0.32f;
 
-                    var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", false, effectPos) ??
+                    var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_{i + 1:D2}", false, effectPos) ??
                     Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
                     var effect = effectObj.GetComponent<VFX.VFX>();
                     if (effect != null)
