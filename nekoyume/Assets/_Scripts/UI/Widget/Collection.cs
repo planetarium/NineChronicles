@@ -205,6 +205,14 @@ namespace Nekoyume.UI
             UpdateItems();
         }
 
+        protected override void Update()
+        {
+            base.Update();
+
+            if (gameObject.activeSelf && Input.GetKeyDown("]"))
+                OnClickFilterButton();
+        }
+
         public void TryInitialize()
         {
             var index = Game.Game.instance.States.CurrentAvatarKey;
