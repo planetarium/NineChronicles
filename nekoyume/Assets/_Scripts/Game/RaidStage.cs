@@ -337,6 +337,15 @@ namespace Nekoyume.Game
             yield break;
         }
 
+        public IEnumerator CoDoubleAttackWithCombo(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
+            _actionQueue.Enqueue(actionParams);
+            yield break;
+        }
+
         public IEnumerator CoDoubleAttack(
             CharacterBase caster,
             int skillId,
@@ -345,18 +354,8 @@ namespace Nekoyume.Game
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var tableSheets = TableSheets.Instance;
-            var skillSheet = tableSheets.SkillSheet;
-            if (skillSheet.TryGetValue(skillId, out var skillSheetRow) && skillSheetRow.Combo)
-            {
-                var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
-                _actionQueue.Enqueue(actionParams);
-            }
-            else
-            {
-                var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
-                _actionQueue.Enqueue(actionParams);
-            }
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
+            _actionQueue.Enqueue(actionParams);
             yield break;
         }
 
@@ -571,5 +570,6 @@ namespace Nekoyume.Game
             var prefab = Resources.Load<RaidTimelineContainer>($"Timeline/WorldBoss/ContainerPrefabs/{id}");
             container = Instantiate(prefab, transform);
         }
+
     }
 }
