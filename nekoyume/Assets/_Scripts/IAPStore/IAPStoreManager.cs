@@ -577,7 +577,7 @@ namespace Nekoyume.IAPStore
                 Widget.Find<MobileShop>()?.RefreshGrid();
                 Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
-                Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
+                Widget.Find<IconAndButtonSystem>().Show(L10nManager.Localize("UI_ERROR"), exc.Message, L10nManager.Localize("UI_OK"), localize: false);
             }
         }
     }
