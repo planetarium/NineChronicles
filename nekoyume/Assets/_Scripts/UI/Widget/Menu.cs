@@ -595,7 +595,7 @@ namespace Nekoyume.UI
 
         public void DccClick()
         {
-            if (!btnStaking.IsUnlocked)
+            if (!btnDcc.IsUnlocked)
             {
                 return;
             }
