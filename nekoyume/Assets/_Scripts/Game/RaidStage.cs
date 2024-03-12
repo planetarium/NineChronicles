@@ -573,7 +573,11 @@ namespace Nekoyume.Game
 
         public IEnumerator CoShatterStrike(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            yield return null;
+            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
+            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoShatterStrike);
+            _actionQueue.Enqueue(actionParams);
+            yield break;
         }
     }
 }
