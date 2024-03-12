@@ -56,6 +56,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: aff88a92e8296da45b0ea1cc0bb1fac6, type: 3}
   - {fileID: 21300000, guid: f8e7aca2b6bdcf647be56bbde800ce4d, type: 3}
   - {fileID: 21300000, guid: a8af7cb22c7e8e242a691dbf5ca1f68d, type: 3}
+  - {fileID: 21300000, guid: a7024023f8101e94b8595eae1213843d, type: 3}
   - {fileID: 21300000, guid: 964c3b43e400b6c4b88535c701ce041f, type: 3}
   - {fileID: 21300000, guid: c1173b633be5d7f418e1991bde237833, type: 3}
   - {fileID: 21300000, guid: bd2aa083d8be71445a5defe3aaa78db2, type: 3}
@@ -79,6 +80,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0ca4608f84c3ddc489c99e0e088d80d8, type: 3}
   - {fileID: 21300000, guid: e393af8f071b00749844417be10f5284, type: 3}
   - {fileID: 21300000, guid: cc1c3caf339f2f441a80fdcd048f6647, type: 3}
+  - {fileID: 21300000, guid: 0cb10affbb2a6884e828a921e9bd520a, type: 3}
   m_PackedSpriteNamesToIndex:
   - UI_bg_worldclear_05_bg_02
   - UI_bg_worldclear_04_bg_05
@@ -86,6 +88,7 @@ SpriteAtlas:
   - UI_bg_worldclear_01_bg_04
   - UI_bg_worldclear_01_bg_07
   - UI_bg_worldclear_03_bg_04
+  - UI_bg_worldclear_08_bg_02
   - UI_bg_worldclear_03_bg_02
   - UI_bg_worldclear_07_bg_01
   - UI_bg_worldclear_01_bg_02
@@ -109,6 +112,7 @@ SpriteAtlas:
   - UI_bg_worldclear_03_bg_03
   - UI_bg_worldclear_04_bg_03
   - UI_bg_worldclear_03_bg_01
+  - UI_bg_worldclear_08_bg_01
   m_RenderDataMap: {}
   m_Tag: Atlas_WorldClear
   m_IsVariant: 0

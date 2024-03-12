@@ -239,6 +239,47 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public IEnumerator CoDoubleAttackWithCombo(
+            IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
+        {
+            if (skillInfos is null ||
+                skillInfos.Count == 0)
+                yield break;
+
+            var skillInfosFirst = skillInfos.First();
+            var skillInfosCount = skillInfos.Count;
+
+            var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
+
+            for (var i = 0; i < skillInfosCount; i++)
+            {
+                var info = skillInfos[i];
+                var target = info.Target.Id == Id ? this : _target;
+                if (target is null)
+                    continue;
+
+                Vector3 effectPos = target.transform.position;
+                effectPos.x += 0.3f;
+                effectPos.y = Stage.StageStartPosition + 0.32f;
+
+                var first = skillInfosFirst == info;
+
+                yield return StartCoroutine(CoAnimationAttack(info.Critical));
+
+                var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
+                var effect = effectObj.GetComponent<VFX.VFX>();
+                if (effect != null)
+                {
+                    effect.Play();
+                }
+
+                ProcessAttack(target, info, true);
+                if (this is Player && !(this is EnemyPlayer))
+                    battleWidget.ShowComboText(info.Effect > 0);
+            }
+        }
+
         public IEnumerator CoDoubleAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
         {
             if (skillInfos is null || skillInfos.Count == 0)
@@ -361,13 +402,35 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
 
+            HashSet<RaidCharacter> dispeledTargets = new HashSet<RaidCharacter>();
             foreach (var info in skillInfos)
             {
                 var target = info.Target.Id == Id ? this : _target;
                 target.ProcessBuff(target, info);
+                if (!info.Affected || (info.DispelList != null && info.DispelList.Count() > 0))
+                {
+                    dispeledTargets.Add(target);
+                }
             }
 
             Animator.Idle();
+
+            if (dispeledTargets.Count > 0)
+            {
+                yield return new WaitForSeconds(.4f);
+            }
+            foreach (var item in dispeledTargets)
+            {
+                Vector3 effectPos = item.transform.position;
+
+                var effectObj = Game.instance.Stage.objectPool.Get("buff_dispel_success", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get("buff_dispel_success", true, effectPos);
+                var dispellEffect = effectObj.GetComponent<VFX.VFX>();
+                if (dispellEffect != null)
+                {
+                    dispellEffect.Play();
+                }
+            }
         }
 
         public IEnumerator CoHeal(IReadOnlyList<Skill.SkillInfo> skillInfos)

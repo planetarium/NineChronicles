@@ -5032,8 +5032,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsTrail: 0
-  m_IgnoreCanvasScaler: 1
-  m_Scale: 100
+  m_IgnoreCanvasScaler: 0
+  m_AbsoluteMode: 0
   m_Scale3D: {x: 120, y: 120, z: 120}
   m_AnimatableProperties: []
   m_Particles:
@@ -5047,7 +5047,13 @@ MonoBehaviour:
   - {fileID: 1426474265861121351}
   - {fileID: 7129151057221025755}
   - {fileID: 2048600115411045021}
-  m_ShrinkByMaterial: 0
+  m_MeshSharing: 0
+  m_GroupId: 0
+  m_GroupMaxId: 0
+  m_PositionMode: 0
+  m_AutoScaling: 0
+  m_AutoScalingMode: 2
+  m_ResetScaleOnEnable: 0
 --- !u!1 &2819663696770485548
 GameObject:
   m_ObjectHideFlags: 0
@@ -47983,9 +47989,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  titleTextObj: {fileID: 6160514929022073829}
 --- !u!95 &2548948875339641530
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -48002,7 +48009,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8662694313709015888
 GameObject:
   m_ObjectHideFlags: 0
@@ -48362,6 +48370,11 @@ PrefabInstance:
       propertyPath: m_Scale3D.z
       value: 60
       objectReference: {fileID: 0}
+    - target: {fileID: 1523329750056322141, guid: 5de46ee72694b984c86ac3b4f2e788be,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1943828046272080729, guid: 5de46ee72694b984c86ac3b4f2e788be,
         type: 3}
       propertyPath: InitialModule.size3D
@@ -48532,6 +48545,11 @@ PrefabInstance:
       propertyPath: m_Scale3D.z
       value: 70
       objectReference: {fileID: 0}
+    - target: {fileID: 1523329750056322141, guid: 5de46ee72694b984c86ac3b4f2e788be,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1943828046272080729, guid: 5de46ee72694b984c86ac3b4f2e788be,
         type: 3}
       propertyPath: InitialModule.size3D
@@ -48701,6 +48719,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Scale3D.z
       value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 1523329750056322141, guid: 5de46ee72694b984c86ac3b4f2e788be,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1943828046272080729, guid: 5de46ee72694b984c86ac3b4f2e788be,
         type: 3}
@@ -48876,6 +48899,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Scale3D.z
       value: 350
+      objectReference: {fileID: 0}
+    - target: {fileID: 548617536654366129, guid: 0593756cea0d99f4fa17616e792c85e9,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3214860074179004713, guid: 0593756cea0d99f4fa17616e792c85e9,
         type: 3}

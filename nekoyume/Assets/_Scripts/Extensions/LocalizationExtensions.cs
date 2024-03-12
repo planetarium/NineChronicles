@@ -598,6 +598,7 @@ namespace Nekoyume
                 3 => Palette.GetColor(EnumType.ColorType.TextGrade02),
                 4 => Palette.GetColor(EnumType.ColorType.TextGrade03),
                 5 => Palette.GetColor(EnumType.ColorType.TextGrade04),
+                6 => Palette.GetColor(EnumType.ColorType.TextGrade05),
                 _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
             };
         }
