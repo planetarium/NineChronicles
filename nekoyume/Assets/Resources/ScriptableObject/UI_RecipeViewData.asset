@@ -63,4 +63,14 @@ MonoBehaviour:
     <LevelBgHsvHue>k__BackingField: -0.237
     <LevelBgHsvSaturation>k__BackingField: 0.072
     <LevelBgHsvValue>k__BackingField: 0.065
+  - <Grade>k__BackingField: 6
+    <BgSprite>k__BackingField: {fileID: 21300000, guid: a25f86723ec880641bce5d424539df2b,
+      type: 3}
+    <LevelTextMaterial>k__BackingField: {fileID: 2100000, guid: 6b18f619a22b76f4ea0eb364cf2c4c04,
+      type: 2}
+    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
+    <LevelBgHsvRange>k__BackingField: 1
+    <LevelBgHsvHue>k__BackingField: 0
+    <LevelBgHsvSaturation>k__BackingField: 0
+    <LevelBgHsvValue>k__BackingField: 0
   fallbackGrade: 1

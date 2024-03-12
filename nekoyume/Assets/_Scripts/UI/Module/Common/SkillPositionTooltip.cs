@@ -110,54 +110,75 @@ namespace Nekoyume.UI.Module.Common
         {
             var sheets = TableSheets.Instance;
             List<string> arg = new List<string>();
-            var buffList = sheets.SkillBuffSheet[skillRow.Id].BuffIds;
-            if (buffList.Count == 2)
+            if(sheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow))
             {
-                var buff = sheets.StatBuffSheet[buffList[0]];
-                var deBuff = sheets.StatBuffSheet[buffList[1]];
-                arg.Add(skillChance.ToString());
-                arg.Add(buff.Duration.ToString());
-                arg.Add((buff.Value + skillValue).ToString());
-                arg.Add(deBuff.Duration.ToString());
-                arg.Add(deBuff.Value.ToString());
-
-                var buffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, false);
-                buffIconImage.overrideSprite = buffIcon;
-                buffStatTypeText.text = buff.StatType.GetAcronym();
-
-                var deBuffIcon = BuffHelper.GetStatBuffIcon(deBuff.StatType, true);
-                debuffIconImage.overrideSprite = deBuffIcon;
-                debuffStatTypeText.text = deBuff.StatType.GetAcronym();
-
-                buffObject.SetActive(true);
-                debuffObject.SetActive(true);
-            }
-            else if(buffList.Count == 1)
-            {
-                var buff = sheets.StatBuffSheet[buffList[0]];
-                arg.Add(skillChance.ToString());
-                arg.Add(buff.Duration.ToString());
-                arg.Add((buff.Value + skillValue).ToString());
-                buffObject.SetActive(false);
-                debuffObject.SetActive(false);
-                if (skillRow.SkillType == SkillType.Buff)
+                var buffList = skillBuffRow.BuffIds;
+                if (buffList.Count == 2)
                 {
+                    var buff = sheets.StatBuffSheet[buffList[0]];
+                    var deBuff = sheets.StatBuffSheet[buffList[1]];
+                    arg.Add(skillChance.ToString());
+                    arg.Add(buff.Duration.ToString());
+                    arg.Add((buff.Value + skillValue).ToString());
+                    arg.Add(deBuff.Duration.ToString());
+                    arg.Add(deBuff.Value.ToString());
+
                     var buffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, false);
                     buffIconImage.overrideSprite = buffIcon;
                     buffStatTypeText.text = buff.StatType.GetAcronym();
-                    buffObject.SetActive(true);
-                }
 
-                if(skillRow.SkillType == SkillType.Debuff)
-                {
-                    var deBuffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, true);
+                    var deBuffIcon = BuffHelper.GetStatBuffIcon(deBuff.StatType, true);
                     debuffIconImage.overrideSprite = deBuffIcon;
-                    debuffStatTypeText.text = buff.StatType.GetAcronym();
+                    debuffStatTypeText.text = deBuff.StatType.GetAcronym();
+
+                    buffObject.SetActive(true);
                     debuffObject.SetActive(true);
                 }
+                else if (buffList.Count == 1)
+                {
+                    var buff = sheets.StatBuffSheet[buffList[0]];
+                    arg.Add(skillChance.ToString());
+                    arg.Add(buff.Duration.ToString());
+                    arg.Add((buff.Value + skillValue).ToString());
+                    buffObject.SetActive(false);
+                    debuffObject.SetActive(false);
+                    if (skillRow.SkillType == SkillType.Buff)
+                    {
+                        var buffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, false);
+                        buffIconImage.overrideSprite = buffIcon;
+                        buffStatTypeText.text = buff.StatType.GetAcronym();
+                        buffObject.SetActive(true);
+                    }
+
+                    if (skillRow.SkillType == SkillType.Debuff)
+                    {
+                        var deBuffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, true);
+                        debuffIconImage.overrideSprite = deBuffIcon;
+                        debuffStatTypeText.text = buff.StatType.GetAcronym();
+                        debuffObject.SetActive(true);
+                    }
+                }
+                else 
+                {
+                    buffObject.SetActive(false);
+                    debuffObject.SetActive(false);
+                }
+            }
+            else if(sheets.SkillActionBuffSheet.TryGetValue(skillRow.Id, out var skillActionBuffRow))
+            {
+                arg.Add(skillChance.ToString());
+                arg.Add(skillRow.Cooldown.ToString());
+                arg.Add(skillValue.ToString());
+                var buffIcon = BuffHelper.GetBuffOverrideIcon(skillActionBuffRow.BuffIds.First());
+                buffIconImage.overrideSprite = buffIcon;
+                buffStatTypeText.text = skillRow.SkillCategory.ToString();
+                debuffObject.SetActive(false);
             }
             else
             {
+                arg.Add(skillChance.ToString());
+                arg.Add(skillRow.Cooldown.ToString());
+                arg.Add(skillValue.ToString());
                 buffObject.SetActive(false);
                 debuffObject.SetActive(false);
             }
