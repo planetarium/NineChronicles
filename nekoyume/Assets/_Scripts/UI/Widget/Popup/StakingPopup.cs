@@ -264,11 +264,20 @@ namespace Nekoyume.UI
             var confirmIcon = IconAndButtonSystem.SystemType.Information;
 
             confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize:true, type: confirmIcon);
+            var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo =>
+            {
+                Application.OpenURL(linkInfo.GetLinkID());
+            });
             confirmUI.ConfirmCallback = () =>
             {
                 ActionManager.Instance.Stake(States.Instance.StakedBalanceState.Gold.MajorUnit)
                     .Subscribe();
+                disposable.Dispose();
                 OnChangeEditingState(false);
+            };
+            confirmUI.CancelCallback = () =>
+            {
+                disposable.Dispose();
             };
         }
 
