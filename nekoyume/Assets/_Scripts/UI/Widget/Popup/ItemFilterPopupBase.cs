@@ -195,6 +195,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_InputField _searchInputField;
 
+        [SerializeField]
+        private Button _deselectAllButton;
+
         #region Popup
         protected override void Awake()
         {
@@ -208,6 +211,8 @@ namespace Nekoyume.UI
                     return;
                 Close(true);
             };
+
+            _deselectAllButton.onClick.AddListener(DeselectAll);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -249,21 +254,42 @@ namespace Nekoyume.UI
                     item.toggle.onValueChanged.AddListener(isOn =>
                     {
                         if (isOn) ResetToAll(toggles);
+                        else if (IsOffAllToggle(toggles))
+                            ResetToAll(toggles);
                     });
                 }
                 else
                 {
                     item.toggle.onValueChanged.AddListener(isOn =>
                     {
-                        if (isOn) item.OffAllToggle();
-                        else if (item.IsAll) ResetToAll(toggles);
-                        // TODO: 모든 일반 옵션들이 false가 되면 RestTOAll
+                        if (isOn)
+                            OffAllToggle(toggles);
+                        else if (IsOffAllToggle(toggles))
+                            ResetToAll(toggles);
                     });
                 }
             }
 
             ResetToAll(toggles);
         }
+
+        private bool IsOffAllToggle<T>(List<T> toggles) where T : ItemToggleType
+        {
+            foreach (var item in toggles)
+            {
+                if (item.toggle.isOn)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void OffAllToggle<T>(List<T> toggles) where T : ItemToggleType
+        {
+            foreach (var item in toggles)
+                item.OffAllToggle();
+        }
+
         private void ResetToAll<T>(List<T> toggles) where T : ItemToggleType
         {
             foreach (var item in toggles)
@@ -316,6 +342,17 @@ namespace Nekoyume.UI
                 default:
                     return ItemType.All;
             }
+        }
+
+        private void DeselectAll()
+        {
+            ResetToAll(gradeToggles);
+            ResetToAll(elementalToggles);
+            ResetToAll(itemTypeToggles);
+            ResetToAll(upgradeLevelToggles);
+            ResetToAll(optionCountToggles);
+            ResetToAll(withSkillToggles);
+            _searchInputField.text = string.Empty;
         }
     }
 }
