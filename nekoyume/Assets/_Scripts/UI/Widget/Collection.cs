@@ -573,7 +573,8 @@ namespace Nekoyume.UI
             {
                 foreach (var material in model.Materials)
                 {
-                    var result = itemFilterOptions.Grade.HasFlag((ItemFilterPopupBase.Grade)(1 << material.Grade));
+                    var gradeFlag = (ItemFilterPopupBase.Grade)(1 << material.Grade);
+                    var result = itemFilterOptions.Grade.HasFlag(gradeFlag);
                     if (!result)
                         return false;
                 }
@@ -590,7 +591,8 @@ namespace Nekoyume.UI
                     if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
                         return false;
 
-                    var result = itemFilterOptions.Elemental.HasFlag((ItemFilterPopupBase.Elemental)(1 << (int)equipment.ElementalType));
+                    var elementalFlag = (ItemFilterPopupBase.Elemental)(1 << (int)equipment.ElementalType);
+                    var result = itemFilterOptions.Elemental.HasFlag(elementalFlag);
                     if (!result)
                         return false;
                 }
@@ -600,8 +602,26 @@ namespace Nekoyume.UI
             {
                 foreach (var material in model.Materials)
                 {
-                    var result = itemFilterOptions.UpgradeLevel.HasFlag((ItemFilterPopupBase.UpgradeLevel)(1 << material.EnoughLevel));
-                    if (!result)
+                    var hasItem = false;
+                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level1))
+                        hasItem |= material.EnoughLevel == 1;
+
+                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level2))
+                        hasItem |= material.EnoughLevel == 2;
+
+                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level3))
+                        hasItem |= material.EnoughLevel == 3;
+
+                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level4))
+                        hasItem |= material.EnoughLevel == 4;
+
+                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level5))
+                        hasItem |= material.EnoughLevel == 5;
+
+                    if (itemFilterOptions.UpgradeLevel.HasFlag(ItemFilterPopupBase.UpgradeLevel.Level6More))
+                        hasItem |= material.EnoughLevel >= 6;
+
+                    if (!hasItem)
                         return false;
                 }
             }
