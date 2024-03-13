@@ -72,15 +72,16 @@ namespace Nekoyume.Helper
                 case ItemSubType.Hourglass or ItemSubType.ApStone:
                     // Hourglass and AP Stone can get in both platform.
 #if UNITY_ANDROID || UNITY_IOS
-                    var shopByPlatform = PlaceType.MobileShop;
+                    var shopByPlatform = GetAcquisitionPlace(caller, PlaceType.MobileShop,
+                        categoryName: "Material");
 #else
-                    var shopByPlatform = PlaceType.PCShop;
+                    var shopByPlatform = GetAcquisitionPlace(caller, PlaceType.PCShop);
 #endif
                     if (!isTradable.HasValue)
                     {
                         acquisitionPlaceList.AddRange(new[]
                         {
-                            GetAcquisitionPlace(caller, shopByPlatform),
+                            shopByPlatform,
                             GetAcquisitionPlace(caller, PlaceType.Staking),
                             GetAcquisitionPlace(caller, PlaceType.Quest)
                         });
@@ -91,7 +92,7 @@ namespace Nekoyume.Helper
                     {
                         acquisitionPlaceList.AddRange(new[]
                         {
-                            GetAcquisitionPlace(caller, shopByPlatform),
+                            shopByPlatform,
                             GetAcquisitionPlace(caller, PlaceType.Staking),
                         });
                     }
@@ -145,17 +146,20 @@ namespace Nekoyume.Helper
             if (ShopItemIds.Contains(itemRow.Id))
             {
 #if UNITY_ANDROID || UNITY_IOS
+                var level = States.Instance.CurrentAvatarState.level;
                 var categorySchemas = Widget.Find<MobileShop>().CachedCategorySchemas;
-                var canBuyInMobileShop = categorySchemas
+                var canBuyInMobileShop = categorySchemas != null && categorySchemas
                     .Where(c => c.Active && c.Name != "NoShow")
                     .Any(c => c.ProductList
-                        .Where(p => p.Active && p.Buyable)
+                        .Where(p => p.Active && p.Buyable &&
+                                    p.RequiredLevel != null && p.RequiredLevel <= level)
                         .Any(p => p.FungibleItemList
                             .Any(fi => fi.SheetItemId == itemRow.Id)));
 
                 if (canBuyInMobileShop)
                 {
-                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.MobileShop));
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.MobileShop,
+                        categoryName: "Golden Dust"));
                 }
 
 #endif
@@ -208,7 +212,8 @@ namespace Nekoyume.Helper
             Widget caller,
             PlaceType type,
             (int worldId, int stageId)? stageInfo = null,
-            ItemSheet.Row itemRow = null)
+            ItemSheet.Row itemRow = null,
+            string categoryName = null)
         {
             System.Action shortcutAction;
             string guideText;
@@ -254,7 +259,7 @@ namespace Nekoyume.Helper
                     {
                         caller.CloseWithOtherWidgets();
                         Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                        Widget.Find<MobileShop>().Show();
+                        Widget.Find<MobileShop>().ShowAsTab(categoryName);
                     };
                     guideText = L10nManager.Localize("UI_SHOP_MOBILE");
                     break;
@@ -270,7 +275,11 @@ namespace Nekoyume.Helper
                 case PlaceType.Quest:
                     shortcutAction = () =>
                     {
-                        caller.Close();
+                        if (caller is ItemTooltip)
+                        {
+                            caller.Close();
+                        }
+
                         Widget.Find<AvatarInfoPopup>().Close();
                         Widget.Find<QuestPopup>().Show();
                     };
@@ -279,7 +288,11 @@ namespace Nekoyume.Helper
                 case PlaceType.Staking:
                     shortcutAction = () =>
                     {
-                        caller.Close();
+                        if (caller is ItemTooltip)
+                        {
+                            caller.Close();
+                        }
+
                         Widget.Find<StakingPopup>().Show();
                     };
                     guideText = L10nManager.Localize("UI_PLACE_STAKING");
@@ -468,11 +481,18 @@ namespace Nekoyume.Helper
 
                     return false;
                 case PlaceType.PCShop:
-                    return !Platform.IsMobilePlatform() &&
-                           States.Instance.CurrentAvatarState.worldInformation
-                               .IsStageCleared(Game.LiveAsset.GameConfig.RequiredStage.Shop);
+#if UNITY_ANDROID || UNITY_IOS
+                    return false;
+#else
+                    return States.Instance.CurrentAvatarState.worldInformation
+                        .IsStageCleared(Game.LiveAsset.GameConfig.RequiredStage.Shop);
+#endif
                 case PlaceType.MobileShop:
-                    return Platform.IsMobilePlatform();
+#if UNITY_ANDROID || UNITY_IOS
+                    return true;
+#else
+                    return false;
+#endif
                 case PlaceType.Arena:
                     return States.Instance.CurrentAvatarState.worldInformation
                         .IsStageCleared(Game.LiveAsset.GameConfig.RequiredStage.Arena);

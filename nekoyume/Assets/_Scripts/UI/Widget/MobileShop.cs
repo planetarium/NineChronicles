@@ -73,6 +73,18 @@ namespace Nekoyume.UI
             Find<ShopListPopup>().Show(product, purchasingData).Forget();
         }
 
+        public async void ShowAsTab(string categoryName)
+        {
+            await ShowAsync();
+
+            if (_allCategoryTab.TryGetValue(categoryName, out var categoryTab))
+            {
+                var toggle = categoryTab.GetComponent<Toggle>();
+                // set to true to trigger OnValueChanged
+                toggle.isOn = !toggle.isOn;
+            }
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Game.Event.OnRoomEnter.Invoke(true);
@@ -227,10 +239,9 @@ namespace Nekoyume.UI
 
         public async Task<IReadOnlyList<CategorySchema>> CacheCategorySchemas()
         {
-            var categorySchemas = await Game.Game.instance.IAPServiceManager
+            CachedCategorySchemas = await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
-            CachedCategorySchemas = categorySchemas;
-            return categorySchemas;
+            return CachedCategorySchemas;
         }
 
         public void RefreshGrid()
