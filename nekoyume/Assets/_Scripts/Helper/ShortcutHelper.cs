@@ -166,9 +166,20 @@ namespace Nekoyume.Helper
             {
                 case ItemType.Equipment:
                     var canCraft = itemRow.ItemSubType != ItemSubType.Aura;
-                    var firstPlaceType = required ? PlaceType.Upgrade :
-                        canCraft ? PlaceType.Craft : PlaceType.Summon;
-                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, firstPlaceType));
+
+                    if (required)
+                    {
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Upgrade));
+                    }
+                    else if (canCraft)
+                    {
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Craft, itemRow: itemRow));
+                    }
+                    else
+                    {
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Summon));
+                    }
+
                     if (canCraft)
                     {
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
@@ -178,7 +189,7 @@ namespace Nekoyume.Helper
                 case ItemType.Consumable:
                     acquisitionPlaceList.AddRange(new[]
                     {
-                        GetAcquisitionPlace(caller, PlaceType.Craft),
+                        GetAcquisitionPlace(caller, PlaceType.Craft, itemRow: itemRow),
                         GetAcquisitionPlace(caller, PlaceType.PCShop),
                     });
                     break;
@@ -196,7 +207,8 @@ namespace Nekoyume.Helper
         public static AcquisitionPlaceButton.Model GetAcquisitionPlace(
             Widget caller,
             PlaceType type,
-            (int worldId, int stageId)? stageInfo = null)
+            (int worldId, int stageId)? stageInfo = null,
+            ItemSheet.Row itemRow = null)
         {
             System.Action shortcutAction;
             string guideText;
@@ -277,7 +289,7 @@ namespace Nekoyume.Helper
                     {
                         caller.CloseWithOtherWidgets();
                         Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
-                        Widget.Find<Craft>().Show();
+                        Widget.Find<Craft>().ShowWithItemRow(itemRow);
                     };
                     guideText = L10nManager.Localize("CRAFT");
                     break;

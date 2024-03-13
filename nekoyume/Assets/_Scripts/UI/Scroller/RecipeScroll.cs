@@ -313,7 +313,7 @@ namespace Nekoyume.UI.Scroller
             return !sharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id);
         }
 
-        public void ShowAsFood(StatType type, bool updateToggle = false)
+        public void ShowAsFood(StatType type, bool updateToggle = false, ConsumableItemRecipeSheet.Row jumpToRecipe = null)
         {
             _disposablesAtShow.DisposeAllAndClear();
             openAllRecipeArea.container.SetActive(false);
@@ -344,8 +344,8 @@ namespace Nekoyume.UI.Scroller
             sortArea.container.SetActive(items.Any());
             SetFilterAndAscending(Filter.LEVEL, true, items);
 
-            var max = items.LastOrDefault(row => !IsConsumableLocked(row));
-            JumpTo(max);
+            jumpToRecipe ??= items.LastOrDefault(row => !IsConsumableLocked(row));
+            JumpTo(jumpToRecipe);
 
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)

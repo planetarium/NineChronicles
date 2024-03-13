@@ -236,6 +236,38 @@ namespace Nekoyume.UI
             }
         }
 
+        public void ShowWithItemRow(
+            ItemSheet.Row itemRow,
+            bool ignoreShowAnimation = false)
+        {
+            switch (itemRow)
+            {
+                case EquipmentItemSheet.Row:
+                    ShowWithToggleIndex(0, ignoreShowAnimation);
+
+                    var equipmentRecipeRow = TableSheets.Instance.EquipmentItemRecipeSheet
+                        .OrderedList!.First(e => e.ResultEquipmentId == itemRow.Id);
+                    recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true, equipmentRecipeRow);
+                    if (SharedModel.UnlockedRecipes.Value.Contains(equipmentRecipeRow.Id))
+                    {
+                        SharedModel.SelectedRow.Value = equipmentRecipeRow;
+                    }
+
+                    break;
+                case ConsumableItemSheet.Row consumableRow:
+                    ShowWithToggleIndex(1, ignoreShowAnimation);
+
+                    var consumableItemRow = TableSheets.Instance.ConsumableItemRecipeSheet
+                        .OrderedList!.First(e => e.ResultConsumableItemId == itemRow.Id);
+                    recipeScroll.ShowAsFood(consumableRow.GetUniqueStat().StatType, true, consumableItemRow);
+                    SharedModel.SelectedRow.Value = consumableItemRow;
+                    break;
+                default:
+                    ShowWithToggleIndex(0, ignoreShowAnimation);
+                    break;
+            }
+        }
+
         public void ShowWithToggleIndex(int toggleIndex, bool ignoreShowAnimation = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
