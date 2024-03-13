@@ -66,8 +66,6 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: d9cbbdde588215e4383f18ae3e60b18e, type: 2}
-  - {fileID: 2100000, guid: 0d1385817f5dd1f4884252da8c546ae6, type: 2}
-  - {fileID: 2100000, guid: d9cbbdde588215e4383f18ae3e60b18e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -103,6 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skeletonDataAsset: {fileID: 11400000, guid: a1d4ce3e784585c448230cf17d983cb2, type: 2}
   initialSkinName: 
+  fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
@@ -123,12 +122,14 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
+  updateTiming: 1
+  unscaledTime: 0
   _animationName: Idle
   loop: 1
   timeScale: 1
 --- !u!95 &5626680111542958629
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -145,7 +146,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3176694121955214343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,5 +216,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.92301977, y: 1.1306472, z: 0}
-  m_Center: {x: 0.031509876, y: 0.29752362, z: 0}
+  m_Size: {x: 4.890801, y: 3.186353, z: 0}
+  m_Center: {x: -1.1534386, y: 1.2625382, z: 0}
