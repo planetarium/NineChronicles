@@ -766,6 +766,7 @@ UI_ITEM_GRADE_2,Rare,레어,Cru,レア,Raro,หายาก,Langka,Редкий,
 UI_ITEM_GRADE_3,Epic,에픽,Épico,エピック,Épico,มหากาพย์,Epik,эпический,史诗,史詩,Epiko,Sử thi
 UI_ITEM_GRADE_4,Unique,유니크,Único,ユニーク,Único,เป็นเอกลักษณ์,Unik,Уникальный,独特,獨特的,Kakaiba,Độc nhất
 UI_ITEM_GRADE_5,Legend,레전드,Lenda,レジェンド,Legendario,ตำนาน,Legenda,легенда,传奇,傳奇,Maalamat,Huyền thoại
+UI_ITEM_GRADE_6,Divinity,신성,,,,,,,,,,
 UI_OPTION,Additional options,추가 옵션,Opções adicionais,追加オプション,Opciones Adicionales,ตัวเลือกเพิ่มเติม,Opsi tambahan,Дополнительные опции,附加选项,其他選項,Karagdagang Opsyon,Tùy chọn bổ sung
 ITEM_GROUPNAME_100000,Canned Tuna,참치캔,Atum enlatado,ツナ缶,Lata de atún,ทูน่ากระป๋อง,Tuna kaleng,Консервированный тунец,金枪鱼罐头,金槍魚罐頭,Delatang tuna,Cá ngừ đóng hộp
 ITEM_GROUPNAME_100002,Fried Egg,계란 후라이,Ovo frito,目玉焼き,Huevo Frito,ไข่ดาว,Telur goreng,Жаренное яйцо,煎鸡蛋,煎雞蛋,Pritong itlog,Trứng chiên
@@ -1944,3 +1945,5 @@ NPC_46_NAME,Moodgud,모드구드,Moodgud,ムードグッド,Moodgud,Moodgud,Mood
 NPC_47_NAME,Blurgrimnir,흐림그림니르,Blurgrimnir,ブラーグリムニル,Borrosogrím,ฝุ่นกริมนีล์,Blurgrimnir,Блюргримнир,模糊格里尼尔,模糊格里尼爾,Blurgrimnir,Blurgrimnir
 NPC_48_NAME,Garam,가름,Garam,ガラム,Garum,Garam,Garam,Гарам,Garam,Garam,Garam,Garam
 NPC_49_NAME,Hera,헤라,Hera,ヘラ,Hera,เฮร่า,Hera,Гера,赫拉,赫拉,Hera,Hera
+UI_INTRODUCE_MIGRATION,"<color=#FFA78B><link={0}>current data</link>
+<link={1}>new data</link></color>",,,,,,,,,,,

@@ -50,6 +50,8 @@ jobs:
           - nekoyume
         targetPlatform:
           - Android
+    env:
+      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
     steps:
       - name: Set CRLF
@@ -74,6 +76,10 @@ jobs:
           if [ -n "${{ github.event.inputs.clo }}" ]; then
             echo ${{ github.event.inputs.clo }} > ${{ matrix.projectPath }}/Assets/StreamingAssets/clo.json
           fi
+      
+      - name: Decode google-services.json File
+        run: |
+          echo "$GOOGLE_SERVICES_JSON" | base64 -d > ${{ matrix.projectPath }}/Assets/google-services.json
 
       - uses: game-ci/unity-builder@v4
         with:

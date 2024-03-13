@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 300001_SkeletonData
   m_EditorClassIdentifier: 
   atlasAssets:
-  - {fileID: 11400000, guid: b007b8aef85797e4c83a57241ef80302, type: 2}
+  - {fileID: 11400000, guid: 394dd2fd3d03529499254e734e681ce4, type: 2}
   scale: 0.01
   skeletonJSON: {fileID: 4900000, guid: 8d7c6bb297d565d4fab6a33edd278689, type: 3}
   isUpgradingBlendModeMaterials: 0
@@ -22,11 +22,11 @@ MonoBehaviour:
     applyAdditiveMaterial: 0
     additiveMaterials: []
     multiplyMaterials:
-    - pageName: 300001.png
-      material: {fileID: 2100000, guid: 571882d24a791fb47ba6b575fa1653d5, type: 2}
+    - pageName: 300001_aurarune.png
+      material: {fileID: 2100000, guid: adc52ebbe6607a74e9ba9ae9900db4f8, type: 2}
     screenMaterials:
-    - pageName: 300001.png
-      material: {fileID: 2100000, guid: fe1da4e87d4325547a42c8f61502d011, type: 2}
+    - pageName: 300001_aurarune.png
+      material: {fileID: 2100000, guid: dae53832906951f41aa1c6a2f207a239, type: 2}
   skeletonDataModifiers: []
   fromAnimation: []
   toAnimation: []

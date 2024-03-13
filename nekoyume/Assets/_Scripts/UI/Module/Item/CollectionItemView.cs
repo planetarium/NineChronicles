@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Module
             baseItemView.TouchHandler.OnClick.Select(_ => model).Subscribe(onClick).AddTo(_disposables);
             baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.ItemId);
 
-            var required = model.HasItem && !model.EnoughCount;
+            var required = model.HasItem && !model.IsEnoughAmount;
             baseItemView.EnhancementText.gameObject.SetActive(model.ItemType == ItemType.Equipment);
             var level = model.Row.Level;
             baseItemView.EnhancementText.text = level > 0 ? $"+{level}" : string.Empty;

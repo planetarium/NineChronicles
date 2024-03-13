@@ -19,5 +19,6 @@ namespace Nekoyume.EnumType
 	TextElement04,
 	TextElement05,
 	TextElement06,
+	TextGrade05,
     }
 }

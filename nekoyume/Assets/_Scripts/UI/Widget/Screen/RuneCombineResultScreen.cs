@@ -2,9 +2,7 @@
 using Nekoyume.UI.Tween;
 using System.Collections;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -146,9 +144,6 @@ namespace Nekoyume.UI
             OnDisappear?.Invoke();
             _closeAction?.Invoke();
             Close();
-            OneLineSystem.Push(MailType.Grinding,
-                L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE"),
-                NotificationCell.NotificationType.Information);
         }
     }
 }

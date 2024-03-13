@@ -240,6 +240,15 @@ namespace Nekoyume.Game
             yield return null;
         }
 
+
+        public IEnumerator CoDoubleAttackWithCombo(ArenaCharacter caster, IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos, IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
+        {
+            var target = caster.Id == me.Id ? me : enemy;
+            var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
+            target.Actions.Add(actionParams);
+            yield return null;
+        }
+
         public IEnumerator CoDoubleAttack(
             ArenaCharacter caster,
             IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
@@ -360,6 +369,14 @@ namespace Nekoyume.Game
                     yield return null;
                 }
             }
+        }
+
+        public IEnumerator CoShatterStrike(ArenaCharacter caster, IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos, IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
+        {
+            var target = caster.Id == me.Id ? me : enemy;
+            var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoShatterStrike);
+            target.Actions.Add(actionParams);
+            yield return null;
         }
     }
 }
