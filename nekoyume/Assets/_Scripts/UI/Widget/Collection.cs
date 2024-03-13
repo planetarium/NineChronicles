@@ -61,8 +61,6 @@ namespace Nekoyume.UI
         }
         #endregion Internal Types
 
-        private const int SortingGroupWeight = 1000;
-
         [SerializeField]
         private Button backButton;
 
@@ -84,6 +82,9 @@ namespace Nekoyume.UI
         [Header("Center bottom")]
         [SerializeField]
         private TMP_Dropdown sortDropdown;
+
+        [SerializeField]
+        private Button filterButton;
 
         [SerializeField]
         private Button sortButton;
@@ -186,6 +187,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
 
             sortButton.onClick.AddListener(OnClickSortButton);
+            filterButton.onClick.AddListener(OnClickFilterButton);
 
             InitializeSortDropdown();
             RefreshDescendingUI();
@@ -203,15 +205,6 @@ namespace Nekoyume.UI
             UpdateToggleView();
             UpdateStatToggleView();
             UpdateItems();
-        }
-
-        // TODO: UI 작업 후 삭제할 테스트 코드입니다
-        protected override void Update()
-        {
-            base.Update();
-
-            if (gameObject.activeSelf && Input.GetKeyDown("]"))
-                OnClickFilterButton();
         }
 
         public void TryInitialize()

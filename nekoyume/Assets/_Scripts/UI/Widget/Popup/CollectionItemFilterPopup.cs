@@ -6,7 +6,7 @@ namespace Nekoyume.UI
         {
             base.Close(ignoreCloseAnimation);
 
-            SetTogglesFromFilterOption();
+            ResetViewFromFilterOption();
             var collectionWidget = Find<Collection>();
             collectionWidget.SetItemFilterOption(GetItemFilterOptionType());
         }

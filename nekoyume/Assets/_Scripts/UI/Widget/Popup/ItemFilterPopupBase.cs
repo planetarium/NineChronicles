@@ -338,7 +338,13 @@ namespace Nekoyume.UI
             return _itemFilterOptions;
         }
 
-        protected void SetTogglesFromFilterOption()
+        protected void ResetViewFromFilterOption()
+        {
+            SetTogglesFromFilterOption();
+            SetInputFiledFromFilterOption();
+        }
+
+        private void SetTogglesFromFilterOption()
         {
             if (_itemFilterOptions.Grade != Grade.All)
                 foreach (var gradeToggle in gradeToggles)
@@ -375,6 +381,11 @@ namespace Nekoyume.UI
                     withSkillToggle.toggle.isOn = _itemFilterOptions.WithSkill.HasFlag(withSkillToggle.withSkill);
             else
                 ResetToAll(withSkillToggles);
+        }
+
+        private void SetInputFiledFromFilterOption()
+        {
+            _searchInputField.text = _itemFilterOptions.SearchText;
         }
 
         public static ItemType ItemSubTypeToItemType(ItemSubType itemSubType)
