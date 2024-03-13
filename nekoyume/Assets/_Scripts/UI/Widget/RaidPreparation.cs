@@ -20,6 +20,7 @@ using Libplanet.Action;
 using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Model;
 using Toggle = UnityEngine.UI.Toggle;
@@ -289,7 +290,7 @@ namespace Nekoyume.UI
                 itemSlotState.Costumes,
                 runeStates);
             var raidStage = Game.Game.instance.RaidStage;
-            raidStage.Play(
+            var raidStartData = new RaidStage.RaidStartData(
                 avatarState.address,
                 simulator.BossId,
                 log,
@@ -299,6 +300,8 @@ namespace Nekoyume.UI
                 true,
                 null,
                 new List<FungibleAssetValue>());
+
+            raidStage.Play(raidStartData);
 
             Find<WorldBoss>().ForceClose();
             Close();

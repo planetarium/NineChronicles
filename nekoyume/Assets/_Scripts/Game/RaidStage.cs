@@ -27,6 +27,41 @@ namespace Nekoyume.Game
 
     public class RaidStage : MonoBehaviour, IStage
     {
+        public struct RaidStartData
+        {
+            public Address AvatarAddress;
+            public int BossId;
+            public BattleLog Log;
+            public ArenaPlayerDigest Player;
+            public long DamageDealt;
+            public bool IsNewRecord;
+            public bool IsPractice;
+            public List<FungibleAssetValue> BattleRewards;
+            public List<FungibleAssetValue> KillRewards;
+
+            public RaidStartData(
+                Address avatarAddress,
+                int bossId,
+                BattleLog log,
+                ArenaPlayerDigest player,
+                long damageDealt,
+                bool isNewRecord,
+                bool isPractice,
+                List<FungibleAssetValue> battleRewards,
+                List<FungibleAssetValue> killRewards)
+            {
+                AvatarAddress = avatarAddress;
+                BossId = bossId;
+                Log = log;
+                Player = player;
+                DamageDealt = damageDealt;
+                IsNewRecord = isNewRecord;
+                IsPractice = isPractice;
+                BattleRewards = battleRewards;
+                KillRewards = killRewards;
+            }
+        }
+
         [SerializeField]
         private ObjectPool objectPool;
 
@@ -54,6 +89,8 @@ namespace Nekoyume.Game
         private long _currentScore;
         private int _currentBossId;
 
+        private RaidStartData? _currentPlayData;
+
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
@@ -67,33 +104,17 @@ namespace Nekoyume.Game
             BuffController = new BuffController(objectPool);
         }
 
-        public void Play(
-            Address avatarAddress,
-            int bossId,
-            BattleLog log,
-            ArenaPlayerDigest player,
-            long damageDealt,
-            bool isNewRecord,
-            bool isPractice,
-            List<FungibleAssetValue> battleRewards,
-            List<FungibleAssetValue> killRewards)
+        public void Play(RaidStartData data)
         {
             if (!_isPlaying)
             {
                 _isPlaying = true;
+                ClearBattle();
+                _currentPlayData = data;
 
-                if (_battleCoroutine is not null)
+                if (data.Log?.Count > 0)
                 {
-                    StopCoroutine(_battleCoroutine);
-                    _battleCoroutine = null;
-                    objectPool.ReleaseAll();
-                }
-
-                if (log?.Count > 0)
-                {
-                    _battleCoroutine = StartCoroutine(
-                        CoPlay(avatarAddress, bossId, log, player,
-                            damageDealt, isNewRecord, isPractice, battleRewards, killRewards));
+                    _battleCoroutine = StartCoroutine(CoPlay(data));
                 }
             }
             else
@@ -102,23 +123,14 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoPlay(
-            Address avatarAddress,
-            int bossId,
-            BattleLog log,
-            ArenaPlayerDigest player,
-            long damageDealt,
-            bool isNewRecord,
-            bool isPractice,
-            List<FungibleAssetValue> rewards,
-            List<FungibleAssetValue> killRewards)
+        private IEnumerator CoPlay(RaidStartData data)
         {
-            yield return StartCoroutine(CoEnter(avatarAddress, bossId, player));
+            yield return StartCoroutine(CoEnter(data.AvatarAddress, data.BossId, data.Player));
 
             var actionDelay = new WaitForSeconds(StageConfig.instance.actionDelay);
             var skillDelay = new WaitForSeconds(this.skillDelay);
 
-            foreach (var e in log)
+            foreach (var e in data.Log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
 
@@ -181,7 +193,7 @@ namespace Nekoyume.Game
                 yield return skillDelay;
             }
 
-            yield return StartCoroutine(CoFinish(damageDealt, isNewRecord, isPractice, rewards, killRewards));
+            yield return StartCoroutine(CoFinish(data.DamageDealt, data.IsNewRecord, data.IsPractice, data.BattleRewards, data.KillRewards));
         }
 
         private IEnumerator CoEnter(Address avatarAddress, int bossId, ArenaPlayerDigest playerDigest)
@@ -579,5 +591,31 @@ namespace Nekoyume.Game
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
+
+        public void SkipBattle()
+        {
+            if (_currentPlayData == null)
+            {
+                Debug.LogWarning("Can't skip battle. No battle data found.");
+                return;
+            }
+            var value = _currentPlayData.Value;
+            ClearBattle();
+
+            StartCoroutine(CoFinish(value.DamageDealt, value.IsNewRecord, value.IsPractice,
+                value.BattleRewards, value.KillRewards));
+        }
+
+        private void ClearBattle()
+        {
+            if (_battleCoroutine is not null)
+            {
+                StopCoroutine(_battleCoroutine);
+                _battleCoroutine = null;
+                objectPool.ReleaseAll();
+            }
+            _currentPlayData = null;
+        }
+
     }
 }

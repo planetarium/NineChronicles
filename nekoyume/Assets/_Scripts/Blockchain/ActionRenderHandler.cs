@@ -2962,7 +2962,7 @@ namespace Nekoyume.Blockchain
             worldBoss.Close(true);
 
             Widget.Find<LoadingScreen>().Close();
-            Game.Game.instance.RaidStage.Play(
+            var raidStartData = new RaidStage.RaidStartData(
                 eval.Action.AvatarAddress,
                 simulator.BossId,
                 log,
@@ -2972,6 +2972,8 @@ namespace Nekoyume.Blockchain
                 false,
                 simulator.AssetReward,
                 killRewards);
+
+            Game.Game.instance.RaidStage.Play(raidStartData);
         }
 
         private static ActionEvaluation<ClaimRaidReward> PrepareClaimRaidReward(
