@@ -11,6 +11,7 @@ namespace Nekoyume
 
         static TextMeshProExtensions()
         {
+            // TODO: main Camera가 아직까진 변경될 경우의 수가 적지만, 언젠가 생길 수도 있음.
             Camera = Camera.main;
         }
 
