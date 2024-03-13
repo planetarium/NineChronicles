@@ -692,6 +692,7 @@ namespace Nekoyume.UI
                                   };
 
                 hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
+                hasFlag &= upgradeFlag != ItemFilterPopupBase.UpgradeLevel.All;
                 if (hasFlag)
                 {
                     break;
