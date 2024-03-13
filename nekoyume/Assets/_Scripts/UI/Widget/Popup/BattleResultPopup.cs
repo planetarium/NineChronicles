@@ -442,9 +442,7 @@ namespace Nekoyume.UI
 
             RefreshSeasonPassCourageAmount();
 
-            closeButton.gameObject.SetActive(
-                model.StageID >= Battle.RequiredStageForExitButton ||
-                model.LastClearedStageId >= Battle.RequiredStageForExitButton);
+            closeButton.gameObject.SetActive(false);
             stagePreparationButton.gameObject.SetActive(false);
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
@@ -615,42 +613,45 @@ namespace Nekoyume.UI
         {
             var secondsFormat = L10nManager.Localize("UI_AFTER_N_SECONDS");
             string fullFormat = string.Empty;
-            closeButton.interactable = true;
 
-            var canExit = (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
-                           SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
+            var canExit = SharedModel.StageID >= Battle.RequiredStageForExitButton ||
+                          SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton;
+            var isActionPointEnough = !SharedModel.ActionPointNotEnough ||
+                                      SharedModel.StageType == StageType.EventDungeon;
+
+            closeButton.gameObject.SetActive(canExit);
+            closeButton.interactable = canExit;
+
             if (!SharedModel.IsClear)
             {
                 closeButton.gameObject.SetActive(true);
+                closeButton.interactable = true;
+
                 stagePreparationButton.gameObject.SetActive(canExit);
                 stagePreparationButton.interactable = canExit;
-            }
 
-            var isActionPointEnough = !SharedModel.ActionPointNotEnough ||
-                                      SharedModel.StageType == StageType.EventDungeon;
-            if (isActionPointEnough)
-            {
-                if (SharedModel.IsClear)
-                {
-                    stagePreparationButton.gameObject.SetActive(canExit && !SharedModel.IsEndStage);
-                    stagePreparationButton.interactable = canExit && !SharedModel.IsEndStage;
-                }
-                else
+                if (isActionPointEnough)
                 {
                     repeatButton.gameObject.SetActive(canExit);
                     repeatButton.interactable = canExit;
                 }
             }
-            else
+            else if (isActionPointEnough && !SharedModel.IsEndStage)
             {
-                stagePreparationButton.gameObject.SetActive(canExit && !SharedModel.IsClear);
-                stagePreparationButton.interactable = canExit && !SharedModel.IsClear;
-            }
+                stagePreparationButton.gameObject.SetActive(canExit);
+                stagePreparationButton.interactable = canExit;
 
-            if (!SharedModel.IsEndStage && isActionPointEnough && SharedModel.IsClear)
-            {
                 nextButton.gameObject.SetActive(true);
                 nextButton.interactable = true;
+            }
+            // Clear and EndStage, but EventDungeon -> show repeat, stagePreparation
+            else if (SharedModel.StageType == StageType.EventDungeon)
+            {
+                stagePreparationButton.gameObject.SetActive(canExit);
+                stagePreparationButton.interactable = canExit;
+
+                repeatButton.gameObject.SetActive(canExit);
+                repeatButton.interactable = canExit;
             }
 
             switch (SharedModel.NextState)
@@ -682,6 +683,7 @@ namespace Nekoyume.UI
                     TutorialController.TutorialStageArray.Any(stageId => stageId == SharedModel.StageID))
                 {
                     closeButton.gameObject.SetActive(true);
+                    closeButton.interactable = true;
                     stagePreparationButton.gameObject.SetActive(false);
                     nextButton.gameObject.SetActive(false);
                     repeatButton.gameObject.SetActive(false);
