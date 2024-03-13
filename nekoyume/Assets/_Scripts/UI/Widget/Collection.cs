@@ -630,7 +630,7 @@ namespace Nekoyume.UI
             var hasFlag = false;
             foreach (var material in model.Materials)
             {
-                var gradeFlag = (ItemFilterPopupBase.Grade)(1 << (material.Grade - 1));
+                var gradeFlag = ItemFilterPopupBase.GetGradeFlag(material.Grade);
                 hasFlag |= itemFilterOptions.Grade.HasFlag(gradeFlag);
 
                 if (hasFlag)
@@ -658,7 +658,7 @@ namespace Nekoyume.UI
                     return false;
                 }
 
-                var elementalFlag = (ItemFilterPopupBase.Elemental)(1 << (int)equipment.ElementalType);
+                var elementalFlag = ItemFilterPopupBase.GetElementalFlag(equipment.ElementalType);
                 hasFlag |= itemFilterOptions.Elemental.HasFlag(elementalFlag);
 
                 if (hasFlag)
@@ -680,17 +680,7 @@ namespace Nekoyume.UI
             var hasFlag = false;
             foreach (var material in model.Materials)
             {
-                var upgradeFlag = material.Row.Level switch
-                                  {
-                                      1    => ItemFilterPopupBase.UpgradeLevel.Level1,
-                                      2    => ItemFilterPopupBase.UpgradeLevel.Level2,
-                                      3    => ItemFilterPopupBase.UpgradeLevel.Level3,
-                                      4    => ItemFilterPopupBase.UpgradeLevel.Level4,
-                                      5    => ItemFilterPopupBase.UpgradeLevel.Level5,
-                                      >= 6 => ItemFilterPopupBase.UpgradeLevel.Level6More,
-                                      _    => ItemFilterPopupBase.UpgradeLevel.All
-                                  };
-
+                var upgradeFlag = ItemFilterPopupBase.GetUpgradeLevelFlag(material.Row.Level);
                 hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
                 hasFlag &= upgradeFlag != ItemFilterPopupBase.UpgradeLevel.All;
                 if (hasFlag)

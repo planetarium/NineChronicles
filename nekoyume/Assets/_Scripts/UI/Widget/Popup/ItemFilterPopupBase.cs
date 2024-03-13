@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using TMPro;
 using UnityEngine;
@@ -386,6 +387,31 @@ namespace Nekoyume.UI
         private void SetInputFiledFromFilterOption()
         {
             _searchInputField.text = _itemFilterOptions.SearchText;
+        }
+
+        public static Grade GetGradeFlag(int grade)
+        {
+            return (Grade)(1 << (grade - 1));
+        }
+
+        public static Elemental GetElementalFlag(ElementalType type)
+        {
+            // TODO: 타입 통합 필요
+            return (Elemental)(1 << (int)type);
+        }
+
+        public static UpgradeLevel GetUpgradeLevelFlag(int level)
+        {
+            return level switch
+                   {
+                       1    => UpgradeLevel.Level1,
+                       2    => UpgradeLevel.Level2,
+                       3    => UpgradeLevel.Level3,
+                       4    => UpgradeLevel.Level4,
+                       5    => UpgradeLevel.Level5,
+                       >= 6 => UpgradeLevel.Level6More,
+                       _    => UpgradeLevel.All
+                   };
         }
 
         public static ItemType ItemSubTypeToItemType(ItemSubType itemSubType)

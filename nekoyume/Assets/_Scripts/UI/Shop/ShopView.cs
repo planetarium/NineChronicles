@@ -55,6 +55,13 @@ namespace Nekoyume.UI.Module
         private int _pageCount = 1;
         protected bool _isActive;
 
+        private ItemFilterOptions itemFilterOptions;
+
+        /// <summary>
+        /// 필터 옵션 중 하나라도 활성화되었으면 true, 아니면 false
+        /// </summary>
+        private bool IsNeedFilter => IsNeedSearch || itemFilterOptions.IsNeedFilter;
+
         protected Action<ShopItem> ClickItemAction;
         protected abstract void OnAwake();
         protected abstract void InitInteractiveUI();
@@ -312,5 +319,95 @@ namespace Nekoyume.UI.Module
                 }
             }
         }
+
+        #region Filter
+        private readonly List<ShopItem> _filteredItems = new();
+
+        private bool IsNeedSearch => !string.IsNullOrWhiteSpace(itemFilterOptions.SearchText);
+
+        private List<ShopItem> RefreshFilteredItems()
+        {
+            _filteredItems.Clear();
+
+            foreach (var model in _items)
+            {
+                bool isContained = !(IsNeedSearch && !IsMatchedSearch(model));
+                isContained &= ApplyFilterOption(model);
+                if (isContained)
+                    _filteredItems.Add(model);
+            }
+
+            return _filteredItems;
+        }
+
+        private bool ApplyFilterOption(ShopItem model)
+        {
+            if (!ApplyGradeFilterOption(model))
+            {
+                return false;
+            }
+
+            if (model.Product.ItemType != ItemType.Equipment)
+            {
+                return true;
+            }
+
+            if (!ApplyElementalFilterOption(model))
+            {
+                return false;
+            }
+
+            if (!ApplyUpgradeLevelFilterOption(model))
+            {
+                return false;
+            }
+
+            if (!ApplyItemTypeFilterOption(model))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ApplyGradeFilterOption(ShopItem model)
+        {
+            if (itemFilterOptions.Grade == ItemFilterPopupBase.Grade.All)
+            {
+                return true;
+            }
+
+            var gradeFlag = ItemFilterPopupBase.GetGradeFlag(model.Grade);
+            return itemFilterOptions.Grade.HasFlag(gradeFlag);
+        }
+
+        private bool ApplyElementalFilterOption(ShopItem model)
+        {
+            if (itemFilterOptions.Elemental == ItemFilterPopupBase.Elemental.All)
+            {
+                return true;
+            }
+
+            var elementalFlag = ItemFilterPopupBase.GetElementalFlag(model.Product.ElementalType);
+            return itemFilterOptions.Elemental.HasFlag(elementalFlag);
+        }
+
+        private bool ApplyUpgradeLevelFilterOption(ShopItem model)
+        {
+            if (itemFilterOptions.UpgradeLevel == ItemFilterPopupBase.UpgradeLevel.All)
+            {
+                return true;
+            }
+
+            var upgradeFlag = ItemFilterPopupBase.GetUpgradeLevelFlag(model.Product.Level);
+
+            var hasFlag = false;
+            hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
+            hasFlag &= upgradeFlag != ItemFilterPopupBase.UpgradeLevel.All;
+
+            return hasFlag;
+        }
+
+        #endregion Filter
     }
 }
