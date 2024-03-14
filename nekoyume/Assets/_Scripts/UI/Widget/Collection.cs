@@ -453,7 +453,7 @@ namespace Nekoyume.UI
             {
                 case SortType.None:
                 {
-                    return L10nManager.Localize("UI_RESET");
+                    return L10nManager.Localize("UI_ID");
                 }
                 case SortType.Grade:
                 {
