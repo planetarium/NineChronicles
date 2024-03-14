@@ -431,9 +431,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
             blockStartingText.text = isEquipValid
-                ? L10nManager.Localize("UI_BATTLE_INTERVAL", battleArenaInterval)
+                ? L10nManager.Localize("UI_BATTLE_INTERVAL", worldBossRequiredInterval)
                 : L10nManager.Localize("UI_EQUIP_FAILED");
         }
     }
