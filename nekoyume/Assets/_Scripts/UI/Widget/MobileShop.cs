@@ -244,6 +244,28 @@ namespace Nekoyume.UI
             return CachedCategorySchemas;
         }
 
+        public bool TryGetCategoryName(int itemId, out string categoryName)
+        {
+            var level = States.Instance.CurrentAvatarState.level;
+            var categoryInMobileShop = CachedCategorySchemas?
+                .Where(c => c.Active && c.Name != "NoShow")
+                .OrderBy(c => c.Order)
+                .FirstOrDefault(c => c.ProductList
+                    .Where(p => p.Active && p.Buyable &&
+                                p.RequiredLevel != null && p.RequiredLevel <= level)
+                    .Any(p => p.FungibleItemList
+                        .Any(fi => fi.SheetItemId == itemId)));
+
+            if (categoryInMobileShop == null)
+            {
+                categoryName = string.Empty;
+                return false;
+            }
+
+            categoryName = categoryInMobileShop.Name;
+            return true;
+        }
+
         public void RefreshGrid()
         {
             RefreshGridByCategory(_lastSelectedCategory);

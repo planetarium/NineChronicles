@@ -70,33 +70,29 @@ namespace Nekoyume.Helper
                     break;
                 }
                 case ItemSubType.Hourglass or ItemSubType.ApStone:
+                    AcquisitionPlaceButton.Model shopByPlatform = null;
                     // Hourglass and AP Stone can get in both platform.
 #if UNITY_ANDROID || UNITY_IOS
-                    var shopByPlatform = GetAcquisitionPlace(caller, PlaceType.MobileShop,
-                        categoryName: "Material");
-#else
-                    var shopByPlatform = GetAcquisitionPlace(caller, PlaceType.PCShop);
-#endif
-                    if (!isTradable.HasValue)
+                    if (Widget.Find<MobileShop>().TryGetCategoryName(itemId, out var categoryName))
                     {
-                        acquisitionPlaceList.AddRange(new[]
+                        shopByPlatform = GetAcquisitionPlace(caller, PlaceType.MobileShop,
+                            categoryName: categoryName);
+                    }
+#else
+                    shopByPlatform = GetAcquisitionPlace(caller, PlaceType.PCShop);
+#endif
+
+                    if (!isTradable.HasValue || isTradable.Value)
+                    {
+                        if (shopByPlatform != null)
                         {
-                            shopByPlatform,
-                            GetAcquisitionPlace(caller, PlaceType.Staking),
-                            GetAcquisitionPlace(caller, PlaceType.Quest)
-                        });
-                        break;
+                            acquisitionPlaceList.Add(shopByPlatform);
+                        }
+
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                     }
 
-                    if (isTradable.Value)
-                    {
-                        acquisitionPlaceList.AddRange(new[]
-                        {
-                            shopByPlatform,
-                            GetAcquisitionPlace(caller, PlaceType.Staking),
-                        });
-                    }
-                    else
+                    if (!isTradable.HasValue || !isTradable.Value)
                     {
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
                     }
@@ -146,20 +142,10 @@ namespace Nekoyume.Helper
             if (ShopItemIds.Contains(itemRow.Id))
             {
 #if UNITY_ANDROID || UNITY_IOS
-                var level = States.Instance.CurrentAvatarState.level;
-                var categorySchemas = Widget.Find<MobileShop>().CachedCategorySchemas;
-                var canBuyInMobileShop = categorySchemas != null && categorySchemas
-                    .Where(c => c.Active && c.Name != "NoShow")
-                    .Any(c => c.ProductList
-                        .Where(p => p.Active && p.Buyable &&
-                                    p.RequiredLevel != null && p.RequiredLevel <= level)
-                        .Any(p => p.FungibleItemList
-                            .Any(fi => fi.SheetItemId == itemRow.Id)));
-
-                if (canBuyInMobileShop)
+                if (Widget.Find<MobileShop>().TryGetCategoryName(itemRow.Id, out var categoryName))
                 {
                     acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.MobileShop,
-                        categoryName: "Golden Dust"));
+                        categoryName: categoryName));
                 }
 
 #endif
