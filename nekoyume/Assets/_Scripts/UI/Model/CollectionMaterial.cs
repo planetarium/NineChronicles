@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
@@ -13,10 +14,14 @@ namespace Nekoyume.UI.Model
         public bool Active { get; set; }
 
         public bool HasItem { get; private set; }
-        public bool EnoughCount { get; private set; }
+        public bool IsEnoughAmount { get; private set; }
+
+        public int EnoughCount { get; }
+
+        public int EnoughLevel { get; }
 
         // enough condition for active
-        public bool Enough => !Active && HasItem && EnoughCount && !Registered.Value;
+        public bool Enough => !Active && HasItem && IsEnoughAmount && !Registered.Value;
 
         public ReactiveProperty<bool> Selected { get; }
 
@@ -37,7 +42,12 @@ namespace Nekoyume.UI.Model
 
             Active = active;
             HasItem = true;
-            EnoughCount = true;
+            IsEnoughAmount = true;
+
+            // TODO: 임시로 count = level로 설정
+            var maxValue = (int)MathF.Max(Row.Count, Row.Level);
+            EnoughCount = maxValue;
+            EnoughLevel = maxValue;
 
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
@@ -56,7 +66,12 @@ namespace Nekoyume.UI.Model
 
             Active = false;
             HasItem = true;
-            EnoughCount = true;
+            IsEnoughAmount = true;
+
+            // TODO: 임시로 count = level로 설정
+            var maxValue = (int)MathF.Max(Row.Count, Row.Level);
+            EnoughCount = maxValue;
+            EnoughLevel = maxValue;
 
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
@@ -101,7 +116,7 @@ namespace Nekoyume.UI.Model
             }
 
             HasItem = hasItem;
-            EnoughCount = enoughCount;
+            IsEnoughAmount = enoughCount;
         }
     }
 }

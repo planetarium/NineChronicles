@@ -239,6 +239,47 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public IEnumerator CoShatterStrike(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        {
+            if (skillInfos is null ||
+                skillInfos.Count == 0)
+                yield break;
+
+            Vector3 effectPos = transform.position;
+            effectPos.y += 0.55f;
+            var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
+            var castEffect = effectObj.GetComponent<VFX.VFX>();
+            if (castEffect != null)
+            {
+                castEffect.Play();
+            }
+
+            Animator.Cast();
+            yield return new WaitForSeconds(0.6f);
+
+            yield return StartCoroutine(
+                    CoAnimationCastAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
+
+            for (var i = 0; i < skillInfos.Count; i++)
+            {
+                var info = skillInfos[i];
+                var target = info.Target.Id == Id ? this : _target;
+                if (target is null)
+                    continue;
+
+                Vector3 targetEffectPos = target.transform.position;
+                targetEffectPos.y = Stage.StageStartPosition + 0.32f;
+                var targetEffectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
+                                Game.instance.Stage.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
+                var strikeEffect = targetEffectObj.GetComponent<VFX.VFX>();
+                if (strikeEffect is null)
+                    continue;
+                strikeEffect.Play();
+
+                ProcessAttack(target, info, true);
+            }
+        }
         public IEnumerator CoDoubleAttackWithCombo(
             IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
         {

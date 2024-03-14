@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using Coffee.UIEffects;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -13,6 +15,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
@@ -23,6 +26,7 @@ namespace Nekoyume.UI
 
     public class Collection : Widget
     {
+        #region Internal Types
         [Serializable]
         private struct ItemTypeToggle
         {
@@ -49,6 +53,16 @@ namespace Nekoyume.UI
             }
         }
 
+        private enum ESortType
+        {
+            None,
+            Grade,
+            Level,
+        }
+        #endregion Internal Types
+
+        private const int SortingGroupWeight = 1000;
+
         [SerializeField]
         private Button backButton;
 
@@ -66,6 +80,26 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private CollectionMaterialInfo collectionMaterialInfo;
+
+        [Header("Center bottom")]
+        [SerializeField]
+        private TMP_InputField _searchInputField;
+
+        [SerializeField]
+        private TMP_Dropdown _sortDropdown;
+
+        [SerializeField]
+        private Button _sortButton;
+
+        [SerializeField]
+        private UIFlip _sortFlip;
+
+        [SerializeField]
+        private ESortType _sortType = ESortType.None;
+
+        private bool _isSortDescending = true;
+
+        private List<CollectionModel> _items;
 
         private CollectionMaterial _selectedMaterial;
 
@@ -86,6 +120,11 @@ namespace Nekoyume.UI
 
         public bool HasNotification => _filter.Values.Any(dict => dict.Values.Any(value => value));
 
+        /// <summary>
+        /// 필터 옵션 중 하나라도 활성화되었으면 true, 아니면 false
+        /// </summary>
+        private bool IsNeedFilter => IsNeedSearch;
+
         protected override void Awake()
         {
             base.Awake();
@@ -97,6 +136,10 @@ namespace Nekoyume.UI
             });
             CloseWidget = () =>
             {
+                if (_searchInputField.isFocused)
+                    return;
+
+                _searchInputField.text = "";
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             };
@@ -122,6 +165,7 @@ namespace Nekoyume.UI
                         var toggle = statToggles.First().toggle;
                         toggle.isOn = !toggle.isOn;
 
+                        RefreshDropDownText();
                         UpdateStatToggleView();
                     })
                     .AddTo(gameObject);
@@ -136,7 +180,7 @@ namespace Nekoyume.UI
                     {
                         _currentStatType = statToggle.stat;
 
-                        UpdateScrollView();
+                        UpdateItems();
                     })
                     .AddTo(gameObject);
             }
@@ -145,6 +189,12 @@ namespace Nekoyume.UI
             scroll.OnClickMaterial.Subscribe(SelectMaterial).AddTo(gameObject);
             collectionMaterialInfo.OnClickCloseButton
                 .Subscribe(_ => SelectMaterial(null)).AddTo(gameObject);
+
+            _searchInputField.onValueChanged.AddListener(UpdateSearchedItems);
+            _sortButton.onClick.AddListener(OnClickSortButton);
+
+            InitializeSortDropdown();
+            RefreshDescendingUI();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -158,7 +208,7 @@ namespace Nekoyume.UI
 
             UpdateToggleView();
             UpdateStatToggleView();
-            UpdateScrollView();
+            UpdateItems();
 
             CheckMobileShopCategoryCached();
         }
@@ -194,17 +244,46 @@ namespace Nekoyume.UI
             ReactiveAvatarState.Inventory.Subscribe(_ => OnUpdateInventory()).AddTo(gameObject);
         }
 
+        private void RefreshDropDownText()
+        {
+            if (_sortDropdown.options.Count == 0)
+                return;
+
+            switch (_currentItemType)
+            {
+                case ItemType.Consumable:
+                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_COUNT");
+                    break;
+                case ItemType.Costume:
+                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_LEVEL");
+                    break;
+                case ItemType.Equipment:
+                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_LEVEL");
+                    break;
+                case ItemType.Material:
+                    _sortDropdown.options[(int)ESortType.Level].text = L10nManager.Localize("UI_COUNT");
+                    break;
+            }
+        }
+
         #region ScrollView
+
+        private void UpdateItems()
+        {
+            _items = _models
+                     .Where(model =>
+                         model.ItemType == _currentItemType &&
+                         model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
+                     .ToList();
+
+            _items.Sort(SortCollection);
+
+            UpdateScrollView();
+        }
 
         private void UpdateScrollView()
         {
-            var items = _models
-                .Where(model =>
-                    model.ItemType == _currentItemType &&
-                    model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
-                .OrderByDescending(model => model.CanActivate).ToList();
-
-            scroll.UpdateData(items,true);
+            scroll.UpdateData(IsNeedFilter ? RefreshFilteredItems() : _items, true);
             SelectMaterial(null);
         }
 
@@ -303,7 +382,7 @@ namespace Nekoyume.UI
                 UpdateToggleView(); // on update toggleDictionary
                 UpdateStatToggleView(); // on update toggleDictionary
 
-                UpdateScrollView(); // on update model.CanActivate
+                UpdateItems(); // on update model.CanActivate
             }
         }
 
@@ -383,5 +462,156 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        #region Sort
+        private void RefreshDescendingUI()
+        {
+            _sortFlip.vertical = _isSortDescending;
+        }
+
+        private void OnClickSortButton()
+        {
+            _isSortDescending = !_isSortDescending;
+            RefreshDescendingUI();
+            UpdateItems();
+        }
+
+        private void InitializeSortDropdown()
+        {
+            _sortDropdown.ClearOptions();
+
+            // TODO: Apply L10n
+            var options = new List<string>();
+            foreach (ESortType sortType in Enum.GetValues(typeof(ESortType)))
+                options.Add(GetSortTypeString(sortType));
+            _sortDropdown.AddOptions(options);
+
+            _sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
+            RefreshDropDownText();
+        }
+
+        private string GetSortTypeString(ESortType sortType)
+        {
+            switch (sortType)
+            {
+                case ESortType.None:
+                    return L10nManager.Localize("UI_RESET");
+                case ESortType.Grade:
+                    return L10nManager.Localize("UI_GRADE");
+                case ESortType.Level:
+                    return L10nManager.Localize("UI_LEVEL");
+            }
+
+            return string.Empty;
+        }
+
+        private void OnSortDropdownValueChanged(int index)
+        {
+            _sortType = (ESortType)index;
+            UpdateItems();
+        }
+
+        private int SortCollection(CollectionModel a, CollectionModel b)
+        {
+            if (a == null && b == null)
+                return 0;
+            if (a == null) return 1;
+            if (b == null) return -1;
+
+            // 1. 활성화 가능
+            if (a.CanActivate != b.CanActivate)
+                return a.CanActivate ? -1 : 1;
+
+            // 2. 재료 일정 부분 달성
+            var aPartiallyActive = a.Materials.Any(CheckHasMaterialWhenInactive);
+            var bPartiallyActive = b.Materials.Any(CheckHasMaterialWhenInactive);
+            if (aPartiallyActive != bPartiallyActive)
+                return aPartiallyActive ? -1 : 1;
+
+            // 3. 재료 모두 미달성 (나머지)
+
+            // 설정된 타입별로 정렬
+            var sortByTypeValue = SortByType(a, b, _sortType);
+            if (sortByTypeValue != 0)
+                return sortByTypeValue;
+
+            // 다른 조건이 같다면 ID로 비교
+            if (a.Row.Id != b.Row.Id)
+                return a.Row.Id < b.Row.Id ? -1 : 1;
+
+            return 0;
+        }
+
+        private int SortByType(CollectionModel a, CollectionModel b, ESortType type)
+        {
+            var sortTypeWeight = _isSortDescending ? 1 : -1;
+            switch (_sortType)
+            {
+                case ESortType.Grade:
+                    var aGrade = a.Materials.Max(material => material.Grade);
+                    var bGrade = b.Materials.Max(material => material.Grade);
+                    return (bGrade - aGrade) * sortTypeWeight;
+                case ESortType.Level:
+                    var aLevel = a.Materials.Max(material => material.EnoughLevel);
+                    var bLevel = b.Materials.Max(material => material.EnoughLevel);
+                    return (bLevel - aLevel) * sortTypeWeight;
+            }
+            return 0;
+        }
+
+        private bool CheckHasMaterialWhenInactive(CollectionMaterial material)
+        {
+            if (material == null)
+                return false;
+
+            return material.HasItem && !material.Active;
+        }
+        #endregion Sort
+
+        #region Filter
+        private readonly List<CollectionModel> _filteredItems = new();
+
+        private bool IsNeedSearch => !string.IsNullOrWhiteSpace(_searchInputField.text);
+
+        private List<CollectionModel> RefreshFilteredItems()
+        {
+            _filteredItems.Clear();
+
+            foreach (var model in _items)
+            {
+                bool isContained = !(IsNeedSearch && !IsMatchedSearch(model));
+
+                if (isContained)
+                    _filteredItems.Add(model);
+            }
+
+            return _filteredItems;
+        }
+
+        private void UpdateSearchedItems(string _)
+        {
+            UpdateScrollView();
+        }
+
+        private bool IsMatchedSearch(CollectionModel model)
+        {
+            if (model == null)
+                return false;
+
+            var itemName = L10nManager.LocalizeCollectionName(model.Row.Key);
+            var nameMatched = Regex.IsMatch(itemName, _searchInputField.text, RegexOptions.IgnoreCase);
+
+            var materialMatched = false;
+            foreach (var material in model.Materials)
+            {
+                var materialName = L10nManager.LocalizeItemName(material.Row.ItemId);
+                if (!Regex.IsMatch(materialName, _searchInputField.text, RegexOptions.IgnoreCase))
+                    continue;
+                materialMatched = true;
+                break;
+            }
+            return nameMatched || materialMatched;
+        }
+        #endregion Filter
     }
 }

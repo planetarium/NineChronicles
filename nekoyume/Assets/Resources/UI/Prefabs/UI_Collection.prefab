@@ -3774,6 +3774,11 @@ MonoBehaviour:
   collectionEffect: {fileID: 2910211704707782105}
   scroll: {fileID: 5197950029209217649}
   collectionMaterialInfo: {fileID: 4377978448742164360}
+  _searchInputField: {fileID: 1575416223031838115}
+  _sortDropdown: {fileID: 8099013325769506666}
+  _sortButton: {fileID: 2771560094575671121}
+  _sortFlip: {fileID: 5750570363553565414}
+  _sortType: 0
 --- !u!1 &1716475420388685582
 GameObject:
   m_ObjectHideFlags: 0
