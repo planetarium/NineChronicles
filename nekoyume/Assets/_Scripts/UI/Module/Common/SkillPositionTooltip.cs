@@ -58,7 +58,15 @@ namespace Nekoyume.UI.Module.Common
 
             if (L10nManager.ContainsKey(key))
             {
-                SetSkillDescription(key, skillRow, optionRow.SkillDamageMin, optionRow.SkillChanceMin);
+                switch (skillRow.SkillCategory)
+                {
+                    case SkillCategory.ShatterStrike:
+                        SetSkillDescription(key, skillRow, optionRow.StatDamageRatioMin, optionRow.SkillChanceMin);
+                        break;
+                    default:
+                        SetSkillDescription(key, skillRow, optionRow.SkillDamageMin, optionRow.SkillChanceMin);
+                        break;
+                }
             }
             else
             {
@@ -210,7 +218,15 @@ namespace Nekoyume.UI.Module.Common
             var key = $"SKILL_DESCRIPTION_{skillRow.Id}";
             if (L10nManager.ContainsKey(key))
             {
-                SetSkillDescription(key, skillRow, powerMin, chanceMin);
+                switch (skillRow.SkillCategory)
+                {
+                    case SkillCategory.ShatterStrike:
+                        SetSkillDescription(key, skillRow, ratioMin, chanceMin);
+                        break;
+                    default:
+                        SetSkillDescription(key, skillRow, powerMin, chanceMin);
+                        break;
+                }
             }
             else
             {
