@@ -157,9 +157,11 @@ namespace Nekoyume.UI
                 crystalContainer.SetActive(false);
             }
 
-            UpdateStartButton();
-            information.UpdateInventory(BattleType.Raid);
+            UpdateStartButton(currentBlockIndex);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(UpdateStartButton).AddTo(_disposables);
 
+            information.UpdateInventory(BattleType.Raid);
 
             coverToBlockClick.SetActive(false);
 
@@ -311,6 +313,9 @@ namespace Nekoyume.UI
         {
             startButton.enabled = false;
             coverToBlockClick.SetActive(true);
+
+            _lastBattleBlockIndex = Game.Game.instance.Agent.BlockIndex;
+
             var ticketAnimation = ShowMoveTicketAnimation();
             var avatarState = States.Instance.CurrentAvatarState;
             var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
@@ -404,13 +409,18 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
 
-        private void UpdateStartButton()
+        private long _lastBattleBlockIndex;
+
+        private void UpdateStartButton(long blockIndex)
         {
+            var worldBossRequiredInterval = States.Instance.GameConfigState.WorldBossRequiredInterval;
+            var isIntervalValid = blockIndex - _lastBattleBlockIndex >= worldBossRequiredInterval;
+
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Raid)
                 .Select(x=> x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
-            var canBattle = Util.CanBattle(equipments, costumes, consumables);
+            var canBattle = Util.CanBattle(equipments, costumes, consumables) && isIntervalValid;
             startButton.gameObject.SetActive(canBattle);
             blockStartingTextObject.SetActive(!canBattle);
         }
