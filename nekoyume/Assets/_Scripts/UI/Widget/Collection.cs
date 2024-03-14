@@ -226,30 +226,6 @@ namespace Nekoyume.UI
             ReactiveAvatarState.Inventory.Subscribe(_ => OnUpdateInventory()).AddTo(gameObject);
         }
 
-        private void RefreshDropDownText()
-        {
-            if (sortDropdown.options.Count == 0)
-                return;
-
-            switch (_currentItemType)
-            {
-                case ItemType.Consumable:
-                    sortDropdown.options[(int)SortType.LevelOrQuantity].text = L10nManager.Localize("UI_COUNT");
-                    break;
-                case ItemType.Costume:
-                    sortDropdown.options[(int)SortType.LevelOrQuantity].text = L10nManager.Localize("UI_LEVEL");
-                    break;
-                case ItemType.Equipment:
-                    sortDropdown.options[(int)SortType.LevelOrQuantity].text = L10nManager.Localize("UI_LEVEL");
-                    break;
-                case ItemType.Material:
-                    sortDropdown.options[(int)SortType.LevelOrQuantity].text = L10nManager.Localize("UI_COUNT");
-                    break;
-            }
-
-            sortDropdown.RefreshShownValue();
-        }
-
         #region ScrollView
 
         private void UpdateItems()
@@ -465,26 +441,59 @@ namespace Nekoyume.UI
 
             var options = new List<string>();
             foreach (SortType sortType in Enum.GetValues(typeof(SortType)))
-                options.Add(AddSortTypeOption(sortType));
+                options.Add(GetSortTypeString(sortType));
             sortDropdown.AddOptions(options);
 
             sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
-            RefreshDropDownText();
         }
 
-        private string AddSortTypeOption(SortType sortType)
+        private string GetSortTypeString(SortType sortType)
         {
             switch (sortType)
             {
                 case SortType.None:
+                {
                     return L10nManager.Localize("UI_RESET");
+                }
                 case SortType.Grade:
+                {
                     return L10nManager.Localize("UI_GRADE");
+                }
                 case SortType.LevelOrQuantity:
-                    return L10nManager.Localize("UI_LEVEL");
+                {
+                    return GetLevelOrQuantityString();
+                }
             }
 
             return string.Empty;
+        }
+
+        private string GetLevelOrQuantityString()
+        {
+            switch (_currentItemType)
+            {
+                case ItemType.Consumable:
+                    return L10nManager.Localize("UI_COUNT");
+                case ItemType.Costume:
+                    return L10nManager.Localize("UI_LEVEL");
+                case ItemType.Equipment:
+                    return L10nManager.Localize("UI_LEVEL");
+                case ItemType.Material:
+                    return L10nManager.Localize("UI_COUNT");
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private void RefreshDropDownText()
+        {
+            if (sortDropdown.options.Count == 0)
+                return;
+
+            for (var i = 0; i < sortDropdown.options.Count; i++)
+                sortDropdown.options[i].text = GetSortTypeString((SortType)i);
+
+            sortDropdown.RefreshShownValue();
         }
 
         private void OnSortDropdownValueChanged(int index)
