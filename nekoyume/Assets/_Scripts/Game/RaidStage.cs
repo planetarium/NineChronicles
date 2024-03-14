@@ -193,6 +193,11 @@ namespace Nekoyume.Game
                 yield return skillDelay;
             }
 
+            if (TurnNumber >= _turnLimit && !_boss.IsDead)
+            {
+                yield return container.CoPlayPlayerDefeatCutscene();
+            }
+
             yield return StartCoroutine(CoFinish(data.DamageDealt, data.IsNewRecord, data.IsPractice, data.BattleRewards, data.KillRewards));
         }
 
@@ -252,11 +257,6 @@ namespace Nekoyume.Game
             List<FungibleAssetValue> rewards,
             List<FungibleAssetValue> killRewards)
         {
-            if (TurnNumber >= _turnLimit && !_boss.IsDead)
-            {
-                yield return container.CoPlayPlayerDefeatCutscene();
-            }
-
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
 
