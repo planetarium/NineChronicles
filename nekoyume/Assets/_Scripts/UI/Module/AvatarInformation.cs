@@ -18,6 +18,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -49,6 +50,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private AvatarStats stats;
+
+        [SerializeField]
+        private Button collectionEffectButton;
 
         private GameObject _cachedCharacterTitle;
         private BattleType _battleType = BattleType.Adventure;
@@ -98,6 +102,12 @@ namespace Nekoyume.UI.Module
             {
                 slot.ShowUnlockTooltip = true;
             }
+
+            collectionEffectButton.onClick.AddListener(() =>
+            {
+                Widget.Find<CollectionEffectPopup>().Show();
+                AudioController.PlayClick();
+            });
 
             _disposables.DisposeAllAndClear();
             LoadingHelper.UnlockRuneSlot.ObserveCountChanged().Subscribe(x => {
