@@ -22,7 +22,7 @@ using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Model.EnumType;
-using Nekoyume.UI.Model;
+using UnityEngine.Serialization;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace Nekoyume.UI
@@ -80,7 +80,7 @@ namespace Nekoyume.UI
         private GameObject coverToBlockClick = null;
 
         [SerializeField]
-        private GameObject blockStartingTextObject;
+        private TMP_Text blockStartingText;
 
         [SerializeField]
         private GameObject crystalContainer;
@@ -420,9 +420,21 @@ namespace Nekoyume.UI
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Raid)
                 .Select(x=> x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
-            var canBattle = Util.CanBattle(equipments, costumes, consumables) && isIntervalValid;
+
+            var isEquipValid = Util.CanBattle(equipments, costumes, consumables);
+            var canBattle = isEquipValid && isIntervalValid;
             startButton.gameObject.SetActive(canBattle);
-            blockStartingTextObject.SetActive(!canBattle);
+            blockStartingText.gameObject.SetActive(!canBattle);
+
+            if (canBattle)
+            {
+                return;
+            }
+
+            var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
+            blockStartingText.text = isEquipValid
+                ? L10nManager.Localize("UI_BATTLE_INTERVAL", battleArenaInterval)
+                : L10nManager.Localize("UI_EQUIP_FAILED");
         }
     }
 }
