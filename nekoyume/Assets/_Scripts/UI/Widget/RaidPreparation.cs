@@ -93,6 +93,8 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
 
+        private long _lastBattleBlockIndex;
+
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent && startButton.enabled;
 
@@ -314,8 +316,6 @@ namespace Nekoyume.UI
             startButton.enabled = false;
             coverToBlockClick.SetActive(true);
 
-            _lastBattleBlockIndex = Game.Game.instance.Agent.BlockIndex;
-
             var ticketAnimation = ShowMoveTicketAnimation();
             var avatarState = States.Instance.CurrentAvatarState;
             var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
@@ -328,6 +328,8 @@ namespace Nekoyume.UI
             {
                 yield return new WaitWhile(() => ticketAnimation.IsPlaying);
             }
+
+            _lastBattleBlockIndex = Game.Game.instance.Agent.BlockIndex;
 
             Raid(false);
         }
@@ -408,8 +410,6 @@ namespace Nekoyume.UI
             Find<ShopBuy>().Show();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
-
-        private long _lastBattleBlockIndex;
 
         private void UpdateStartButton(long blockIndex)
         {
