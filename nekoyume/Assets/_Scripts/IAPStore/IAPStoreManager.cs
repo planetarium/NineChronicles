@@ -532,6 +532,18 @@ namespace Nekoyume.IAPStore
                 else
                 {
                     Widget.Find<MobileShop>()?.PurchaseComplete(e.purchasedProduct.definition.id);
+                    if(_initailizedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
+                    {
+                        p.PurchaseCount++;
+                        if (p.DailyLimit != null)
+                        {
+                            p.Buyable = p.PurchaseCount < p.DailyLimit.Value;
+                        }
+                        else if (p.WeeklyLimit != null)
+                        {
+                            p.Buyable = p.PurchaseCount < p.WeeklyLimit.Value;
+                        }
+                    }
 
                     Analyzer.Instance.Track(
                         "Unity/Shop/IAP/PurchaseResult",
