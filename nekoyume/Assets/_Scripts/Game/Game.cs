@@ -1551,6 +1551,7 @@ namespace Nekoyume.Game
                 yield break;
             }
 
+            var enableGuestLogin = _commandLineOptions.EnableGuestLogin;
             // NOTE: planetContext is null when the game is launched from the non-mobile platform.
             if (planetContext is null)
             {
@@ -1564,7 +1565,8 @@ namespace Nekoyume.Game
                         introScreen.Show(
                             _commandLineOptions.KeyStorePath,
                             _commandLineOptions.PrivateKey,
-                            planetContext: null);
+                            planetContext: null,
+                            enableGuestLogin);
                     }
 
                     Debug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
@@ -1636,7 +1638,8 @@ namespace Nekoyume.Game
                 introScreen.SetData(
                     _commandLineOptions.KeyStorePath,
                     pk.ToHexWithZeroPaddings(),
-                    planetContext);
+                    planetContext,
+                    enableGuestLogin);
             }
             else
             {
@@ -1647,7 +1650,8 @@ namespace Nekoyume.Game
                 introScreen.SetData(
                     _commandLineOptions.KeyStorePath,
                     _commandLineOptions.PrivateKey,
-                    planetContext);
+                    planetContext,
+                    enableGuestLogin);
             }
 
             if (planetContext.HasPledgedAccount)
@@ -1657,7 +1661,8 @@ namespace Nekoyume.Game
                 introScreen.Show(
                     _commandLineOptions.KeyStorePath,
                     pk.ToHexWithZeroPaddings(),
-                    planetContext);
+                    planetContext,
+                    enableGuestLogin);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
                 yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
