@@ -401,11 +401,12 @@ namespace Nekoyume.IAPStore
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
             Debug.LogError($"[IDetailedStoreListener PurchaseFail] reason: {p.reason}, Product: {i.metadata.localizedTitle}");
-            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}]");
+            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}][{p.message}]");
             Analyzer.Instance.Track(
                 "Unity/Shop/IAP/PurchaseResult",
                 ("product-id", p.productId),
-                ("result", p.reason.ToString()));
+                ("result", p.reason.ToString()),
+                ("message", p.message.ToString()));
 
             var evt = new AirbridgeEvent("IAP_Failed");
             evt.SetAction(p.productId);
