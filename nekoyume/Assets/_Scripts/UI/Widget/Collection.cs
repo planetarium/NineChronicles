@@ -282,7 +282,7 @@ namespace Nekoyume.UI
 
             if (_selectedMaterial != null)
             {
-                var required = _selectedMaterial.HasItem && !_selectedMaterial.EnoughCount;
+                var required = _selectedMaterial.HasItem && !_selectedMaterial.IsEnoughAmount;
                 collectionMaterialInfo.Show(this, _selectedMaterial.Row, required);
             }
             else
