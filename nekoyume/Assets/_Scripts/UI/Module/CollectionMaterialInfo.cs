@@ -4,6 +4,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -27,7 +28,8 @@ namespace Nekoyume.UI.Module
 
             [Space]
             public GameObject skillRequiredObject;
-            public TextMeshProUGUI countText;
+            public TextMeshProUGUI requiredAmountText;
+            public TextMeshProUGUI currentAmountText;
 
             [Space]
             public GameObject elementalTypeObject;
@@ -53,39 +55,48 @@ namespace Nekoyume.UI.Module
 
         public void Show(
             Widget shortcutCaller,
-            CollectionSheet.RequiredMaterial material,
+            CollectionMaterial collectionMaterial,
             bool required)
         {
+            var row = collectionMaterial.Row;
             var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
-            if (!itemSheet.TryGetValue(material.ItemId, out var row))
+            if (!itemSheet.TryGetValue(row.ItemId, out var itemRow))
             {
                 return;
             }
 
             gameObject.SetActive(true);
 
-            iconArea.itemName.text = row.GetLocalizedName(material.Level);
-            iconArea.itemView.Set(row, material);
+            iconArea.itemName.text = itemRow.GetLocalizedName(row.Level);
+            iconArea.itemView.Set(itemRow, row);
 
-            var (gradeColor, gradeText, subTypeText) = row.GetGradeData();
+            var (gradeColor, gradeText, subTypeText) = itemRow.GetGradeData();
             iconArea.gradeText.text = gradeText;
             iconArea.gradeText.color = gradeColor;
             iconArea.subTypeText.text = subTypeText;
             iconArea.subTypeText.color = gradeColor;
             iconArea.gradeAndSubTypeSpacer.color = gradeColor;
 
-            iconArea.skillRequiredObject.SetActive(material.SkillContains);
-            iconArea.countText.gameObject.SetActive(material.Count > 1);
-            if (material.Count > 1)
+            iconArea.skillRequiredObject.SetActive(row.SkillContains);
+            iconArea.requiredAmountText.gameObject.SetActive(row.Count > 1 || row.SkillContains);
+            iconArea.currentAmountText.gameObject.SetActive(collectionMaterial.HasItem);
+            var levelRequired = row.Level > 1;
+            if (levelRequired)
             {
-                iconArea.countText.text = L10nManager.Localize("UI_REQUIRED_COUNT_FORMAT", material.Count);
+                iconArea.requiredAmountText.text = L10nManager.Localize("UI_REQUIRED_LEVEL_FORMAT", row.Level);
+                iconArea.currentAmountText.text = L10nManager.Localize("UI_CURRENT_ITEM_LEVEL_FORMAT", collectionMaterial.CurrentAmount);
+            }
+            else
+            {
+                iconArea.requiredAmountText.text = L10nManager.Localize("UI_REQUIRED_COUNT_FORMAT", row.Count);
+                iconArea.currentAmountText.text = L10nManager.Localize("UI_CURRENT_ITEM_COUNT_FORMAT", collectionMaterial.CurrentAmount);
             }
 
-            if (row.ItemType.HasElementType())
+            if (itemRow.ItemType.HasElementType())
             {
-                iconArea.elementalTypeText.text = row.ElementalType.GetLocalizedString();
-                iconArea.elementalTypeText.color = row.ElementalType.GetElementalTypeColor();
-                var sprite = row.ElementalType.GetSprite();
+                iconArea.elementalTypeText.text = itemRow.ElementalType.GetLocalizedString();
+                iconArea.elementalTypeText.color = itemRow.ElementalType.GetElementalTypeColor();
+                var sprite = itemRow.ElementalType.GetSprite();
                 if (sprite is not null)
                 {
                     iconArea.elementalTypeImage.overrideSprite = sprite;
@@ -97,9 +108,9 @@ namespace Nekoyume.UI.Module
                 iconArea.elementalTypeObject.SetActive(false);
             }
 
-            iconArea.itemDescriptionText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
+            iconArea.itemDescriptionText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{itemRow.Id}");
 
-            SetAcquisitionPlaceButtons(shortcutCaller, row, required);
+            SetAcquisitionPlaceButtons(shortcutCaller, itemRow, required);
         }
 
         public void Close()
