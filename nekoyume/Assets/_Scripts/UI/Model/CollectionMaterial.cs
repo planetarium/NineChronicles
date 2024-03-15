@@ -16,10 +16,6 @@ namespace Nekoyume.UI.Model
         public bool HasItem { get; private set; }
         public bool IsEnoughAmount { get; private set; }
 
-        public int EnoughCount { get; }
-
-        public int EnoughLevel { get; }
-
         // enough condition for active
         public bool Enough => !Active && HasItem && IsEnoughAmount && !Registered.Value;
 
@@ -44,11 +40,6 @@ namespace Nekoyume.UI.Model
             HasItem = true;
             IsEnoughAmount = true;
 
-            // TODO: 임시로 count = level로 설정
-            var maxValue = (int)MathF.Max(Row.Count, Row.Level);
-            EnoughCount = maxValue;
-            EnoughLevel = maxValue;
-
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             Registered = new ReactiveProperty<bool>(false);
@@ -67,11 +58,6 @@ namespace Nekoyume.UI.Model
             Active = false;
             HasItem = true;
             IsEnoughAmount = true;
-
-            // TODO: 임시로 count = level로 설정
-            var maxValue = (int)MathF.Max(Row.Count, Row.Level);
-            EnoughCount = maxValue;
-            EnoughLevel = maxValue;
 
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);

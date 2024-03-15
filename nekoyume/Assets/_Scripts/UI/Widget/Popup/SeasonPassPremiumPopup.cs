@@ -10,6 +10,10 @@ using Nekoyume.Game.Controller;
 using System.Numerics;
 using TMPro;
 using System.Linq;
+using Nekoyume.State;
+using Nekoyume.Model.Mail;
+using Nekoyume.L10n;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI
 {
@@ -222,6 +226,24 @@ namespace Nekoyume.UI
             premiumPlusPurchaseButtonPriceObj.SetActive(seasonPassInfo.IsPremiumPlus);
         }
 
+        private void OnPurchase(string productKey)
+        {
+            Game.Game.instance.IAPServiceManager.CheckProductAvailable(productKey, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
+            //success
+            () =>
+            {
+                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(productKey);
+            },
+            //failed
+            () =>
+            {
+                PurchaseButtonLoadingEnd();
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_CODE_SHOPITEM_EXPIRED"),
+                    NotificationCell.NotificationType.Alert);
+            }).AsUniTask().Forget();
+        }
+
         public void PurchaseSeasonPassPremiumButton()
         {
             var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
@@ -235,7 +257,7 @@ namespace Nekoyume.UI
                 premiumPurchaseButtonDisabledObj.SetActive(true);
                 premiumPurchaseButtonPriceObj.SetActive(false);
                 premiumPurchaseButtonLoadingObj.SetActive(true);
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(product.Sku);
+                OnPurchase(productKey);
             }
         }
 
@@ -261,7 +283,7 @@ namespace Nekoyume.UI
                 premiumPlusPurchaseButtonDisabledObj.SetActive(true);
                 premiumPlusPurchaseButtonPriceObj.SetActive(false);
                 premiumPlusPurchaseButtonLoadingObj.SetActive(true);
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(product.Sku);
+                OnPurchase(product.Sku);
             }
         }
 
