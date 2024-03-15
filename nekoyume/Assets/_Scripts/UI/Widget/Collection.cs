@@ -205,20 +205,6 @@ namespace Nekoyume.UI
             UpdateToggleView();
             UpdateStatToggleView();
             UpdateItems();
-
-            CheckMobileShopCategoryCached();
-        }
-
-        private async void CheckMobileShopCategoryCached()
-        {
-#if UNITY_ANDROID || UNITY_IOS
-            // For get AcquisitionPlace
-            var mobileShop = Find<MobileShop>();
-            if (mobileShop.CachedCategorySchemas == null)
-            {
-                await mobileShop.CacheCategorySchemas();
-            }
-#endif
         }
 
         public void TryInitialize()

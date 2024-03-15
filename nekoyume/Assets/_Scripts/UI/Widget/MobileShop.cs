@@ -52,8 +52,6 @@ namespace Nekoyume.UI
 
         public static L10NSchema MOBILE_L10N_SCHEMA;
 
-        public IReadOnlyList<CategorySchema> CachedCategorySchemas { get; private set; }
-
         public override void Show(bool ignoreShowAnimation = false)
         {
             ShowAsync(ignoreShowAnimation);
@@ -98,7 +96,7 @@ namespace Nekoyume.UI
 
             try
             {
-                var categorySchemas = await CacheCategorySchemas();
+                var categorySchemas = await GetCategorySchemas();
                 if (!_isInitializedObj)
                 {
                     if (categorySchemas.Count == 0)
@@ -235,35 +233,6 @@ namespace Nekoyume.UI
         {
             return await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
-        }
-
-        public async Task<IReadOnlyList<CategorySchema>> CacheCategorySchemas()
-        {
-            CachedCategorySchemas = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
-            return CachedCategorySchemas;
-        }
-
-        public bool TryGetCategoryName(int itemId, out string categoryName)
-        {
-            var level = States.Instance.CurrentAvatarState.level;
-            var categoryInMobileShop = CachedCategorySchemas?
-                .Where(c => c.Active && c.Name != "NoShow")
-                .OrderBy(c => c.Order)
-                .FirstOrDefault(c => c.ProductList
-                    .Where(p => p.Active && p.Buyable &&
-                                p.RequiredLevel != null && p.RequiredLevel <= level)
-                    .Any(p => p.FungibleItemList
-                        .Any(fi => fi.SheetItemId == itemId)));
-
-            if (categoryInMobileShop == null)
-            {
-                categoryName = string.Empty;
-                return false;
-            }
-
-            categoryName = categoryInMobileShop.Name;
-            return true;
         }
 
         public void RefreshGrid()

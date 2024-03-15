@@ -343,7 +343,7 @@ namespace Nekoyume.UI
         {
             _isInLobby = true;
 
-            var categorySchemas = await Find<MobileShop>().CacheCategorySchemas();
+            var categorySchemas = await MobileShop.GetCategorySchemas();
             var category = categorySchemas
                 .Where(c => c.Active && c.Name != "NoShow")
                 .OrderBy(c => c.Order).First();

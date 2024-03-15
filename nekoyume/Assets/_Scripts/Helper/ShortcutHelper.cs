@@ -73,7 +73,7 @@ namespace Nekoyume.Helper
                     AcquisitionPlaceButton.Model shopByPlatform = null;
                     // Hourglass and AP Stone can get in both platform.
 #if UNITY_ANDROID || UNITY_IOS
-                    if (Widget.Find<MobileShop>().TryGetCategoryName(itemId, out var categoryName))
+                    if (Game.Game.instance.IAPStoreManager.TryGetCategoryName(itemId, out var categoryName))
                     {
                         shopByPlatform = GetAcquisitionPlace(caller, PlaceType.MobileShop,
                             categoryName: categoryName);
@@ -142,7 +142,7 @@ namespace Nekoyume.Helper
             if (ShopItemIds.Contains(itemRow.Id))
             {
 #if UNITY_ANDROID || UNITY_IOS
-                if (Widget.Find<MobileShop>().TryGetCategoryName(itemRow.Id, out var categoryName))
+                if (Game.Game.instance.IAPStoreManager.TryGetCategoryName(itemRow.Id, out var categoryName))
                 {
                     acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.MobileShop,
                         categoryName: categoryName));
