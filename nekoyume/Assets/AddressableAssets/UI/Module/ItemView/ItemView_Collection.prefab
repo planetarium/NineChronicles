@@ -7,6 +7,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1879539840347676651, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3236071531080856038, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7583783280538585243, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8953210588604891776, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_Pivot.x
@@ -137,6 +152,27 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 2910162451657301376}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &427642467432812746
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6285540353635198382}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5fd256b4c9336214993dea1015d9c7e5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1992865348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,3 +187,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseItemView: {fileID: 5704313979244312890}
   requiredColor: {r: 0.8980393, g: 0.31764707, b: 0.31764707, a: 1}
+  animator: {fileID: 427642467432812746}

@@ -18,7 +18,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Color requiredColor;
 
+        [SerializeField]
+        private Animator animator;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private static readonly int Register = Animator.StringToHash("Register");
 
         public void Set(CollectionMaterial model, Action<CollectionMaterial> onClick)
         {
@@ -88,6 +92,9 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
             model.Registered
                 .Subscribe(_ => baseItemView.EnoughObject.SetActive(model.Enough))
+                .AddTo(_disposables);
+            model.Registered.Where(b => b)
+                .Subscribe(_ => animator.SetTrigger(Register))
                 .AddTo(_disposables);
         }
     }
