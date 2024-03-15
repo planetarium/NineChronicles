@@ -41,14 +41,6 @@ namespace Nekoyume.UI
             public long RequiredBlockMax;
         }
 
-
-        private static readonly int FirstClicked =
-            Animator.StringToHash("FirstClicked");
-        private static readonly int EquipmentClick =
-            Animator.StringToHash("EquipmentClick");
-        private static readonly int ConsumableClick =
-            Animator.StringToHash("ConsumableClick");
-
         [SerializeField]
         private Toggle equipmentToggle;
 
@@ -89,6 +81,11 @@ namespace Nekoyume.UI
 
         private const string ConsumableRecipeGroupPath = "Recipe/ConsumableRecipeGroup";
         private const string EquipmentSubRecipeTabs = "Recipe/EquipmentSubRecipeTab";
+
+        private static readonly int EquipmentClick = Animator.StringToHash("EquipmentClick");
+        private static readonly int ConsumableClick = Animator.StringToHash("ConsumableClick");
+        // Play toggle animation except the first time when show with toggle index.
+        private bool _canPlayToggleAnimation;
 
         private bool _isTutorial;
 
@@ -145,7 +142,7 @@ namespace Nekoyume.UI
 
         protected override void OnDisable()
         {
-            Animator.SetBool(FirstClicked, false);
+            _canPlayToggleAnimation = false;
             Animator.ResetTrigger(EquipmentClick);
             Animator.ResetTrigger(ConsumableClick);
             base.OnDisable();
@@ -236,6 +233,38 @@ namespace Nekoyume.UI
             }
         }
 
+        public void ShowWithItemRow(
+            ItemSheet.Row itemRow,
+            bool ignoreShowAnimation = false)
+        {
+            switch (itemRow)
+            {
+                case EquipmentItemSheet.Row:
+                    ShowWithToggleIndex(0, ignoreShowAnimation);
+
+                    var equipmentRecipeRow = TableSheets.Instance.EquipmentItemRecipeSheet
+                        .OrderedList!.First(e => e.ResultEquipmentId == itemRow.Id);
+                    recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true, equipmentRecipeRow);
+                    if (SharedModel.UnlockedRecipes.Value.Contains(equipmentRecipeRow.Id))
+                    {
+                        SharedModel.SelectedRow.Value = equipmentRecipeRow;
+                    }
+
+                    break;
+                case ConsumableItemSheet.Row consumableRow:
+                    ShowWithToggleIndex(1, ignoreShowAnimation);
+
+                    var consumableItemRow = TableSheets.Instance.ConsumableItemRecipeSheet
+                        .OrderedList!.First(e => e.ResultConsumableItemId == itemRow.Id);
+                    recipeScroll.ShowAsFood(consumableRow.GetUniqueStat().StatType, true, consumableItemRow);
+                    SharedModel.SelectedRow.Value = consumableItemRow;
+                    break;
+                default:
+                    ShowWithToggleIndex(0, ignoreShowAnimation);
+                    break;
+            }
+        }
+
         public void ShowWithToggleIndex(int toggleIndex, bool ignoreShowAnimation = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
@@ -320,6 +349,7 @@ namespace Nekoyume.UI
             eventEquipmentSubRecipeView.ResetSelectedIndex();
             recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
             SharedModel.SelectedRow.Value = null;
+            _canPlayToggleAnimation = true;
         }
 
         private void ShowConsumable()
@@ -337,6 +367,7 @@ namespace Nekoyume.UI
             }
 
             SharedModel.SelectedRow.Value = null;
+            _canPlayToggleAnimation = true;
         }
 
         # endregion Invoke from animation
@@ -443,7 +474,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (Animator.GetBool(FirstClicked))
+            if (_canPlayToggleAnimation)
             {
                 Animator.SetTrigger(EquipmentClick);
                 Animator.ResetTrigger(ConsumableClick);
@@ -458,21 +489,18 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (Animator.GetBool(FirstClicked))
+            if (_canPlayToggleAnimation)
             {
-                if (Animator.GetCurrentAnimatorStateInfo(0)
-                    .IsName("Consumable"))
+                // For EventConsumableToggle
+                if (Animator.GetCurrentAnimatorStateInfo(0).IsName("Consumable"))
                 {
                     ShowConsumable();
                 }
                 else
                 {
                     Animator.SetTrigger(ConsumableClick);
+                    Animator.ResetTrigger(EquipmentClick);
                 }
-            }
-            else
-            {
-                Animator.SetBool(FirstClicked, true);
             }
         }
 

@@ -22250,11 +22250,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
         type: 3}
-      propertyPath: m_IsOn
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
-        type: 3}
       propertyPath: m_Group
       value: 
       objectReference: {fileID: 6412284748923707398}
@@ -25001,11 +24996,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
         type: 3}
-      propertyPath: m_IsOn
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
-        type: 3}
       propertyPath: m_Group
       value: 
       objectReference: {fileID: 6412284748923707398}
@@ -25502,11 +25492,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Padding.m_Bottom
       value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7963902146071144807, guid: ec3c95a861b3330439e701f8a43f3235,
-        type: 3}
-      propertyPath: m_AllowSwitchOff
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8308528420678367962, guid: ec3c95a861b3330439e701f8a43f3235,
         type: 3}
@@ -31041,11 +31026,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
         type: 3}
-      propertyPath: m_IsOn
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
-        type: 3}
       propertyPath: m_Group
       value: 
       objectReference: {fileID: 6412284748923707398}
@@ -31104,11 +31084,6 @@ PrefabInstance:
       propertyPath: items.Array.data[4]
       value: 
       objectReference: {fileID: 7435855843828070561}
-    - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
-        type: 3}
-      propertyPath: allowSwitchOffWhenIsOn
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
@@ -31889,11 +31864,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AllowSwitchOff
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
-        type: 3}
-      propertyPath: m_IsOn
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9002915620730383353, guid: 7fbf666150b81a4489573bebd8b3c266,
         type: 3}
