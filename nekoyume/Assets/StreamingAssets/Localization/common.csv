@@ -1937,23 +1937,59 @@ UI_WARNING_STAKING_REDUCE,"If you reduce the NCG currently staked, your rewards 
 UI_CHANGE,edit,변경,editar,編集,editar,แก้ไข,sunting,,编辑,編輯,i-edit,chỉnh sửa
 UI_CAUTION,CAUTION,주의,CUIDADO,注意,ATENCIÓN,คำเตือน,PERHATIAN,,注意,注意,MAG-INGAT,CẢNH BÁO
 UI_REQUIRED_COUNT_FORMAT,Required count : {0},필요 수량 : {0},Contagem necessária :{0},必要な数 :{0},Cantidad requerida :{0},จำนวนที่ต้องการ :{0},Jumlah yang dibutuhkan :{0},Необходимое количество :{0},所需数量 :{0},所需數量 :{0},Kinakailangang bilang :{0},Số lượng cần :{0}
-NPC_42_NAME,Ganglati,강글라티,Anglerati,ガングラティ,Anglerati,แองเกลราตี,Anglerati,Англерати,Anglerati,Anglerati,Anglerati,Anglerati
-NPC_43_NAME,Ganglöt,강글로트,Anglerote,ガングレト,Anglerote,แองเกลโรท,Anglerote,Англерот,Anglerote,Anglerote,Anglerote,Anglerote
-NPC_44_NAME,Helhest,헬헤스트,Helheist,ヘルヘスト,Helheist,เฮลไฮสต์,Helheist,Хельхейст,Helheist,Helheist,Helheist,Helheist
-NPC_45_NAME,Hrím,흐림,Desfoque,フリム,Desenfoque,ฝุ่น,Kabur,Размытие,模糊,模糊,Blur,Mờ
-NPC_46_NAME,Modgud,모드구드,Moodgud,モドグド,Moodgud,Moodgud,Moodgud,Мудгуд,Moodgud,Moodgud,Moodgud,Moodgud
-NPC_47_NAME,Hrímgrímnir,흐림그림니르,Blurgrimnir,フリムグリームニル,Borrosogrím,ฝุ่นกริมนีล์,Blurgrimnir,Блюргримнир,模糊格里尼尔,模糊格里尼爾,Blurgrimnir,Blurgrimnir
-NPC_48_NAME,Garmr,가름,Garam,ガルム,Garum,Garam,Garam,Гарам,Garam,Garam,Garam,Garam
-NPC_49_NAME,Hella,헬라,Hera,ヘラ,Hera,เฮร่า,Hera,Гера,赫拉,赫拉,Hera,Hera
-UI_INTRODUCE_MIGRATION,"<color=#FFA78B><link={0}>current data</link>
-<link={1}>new data</link></color>",,,,,,,,,,,
-UI_DEPOSIT,Deposit,잔고,,,,,,,,,,
-UI_HOLD_NCG,/ Hold NCG,,,,,,,,,,,
-UI_SYSTEM_REWARDS,System Rewards,시스템 보상,,,,,,,,,,
-UI_ITEM_REWARDS,Item Rewards,아이템 보상,,,,,,,,,,
-UI_MIGRATE,Migrate,갱신,,,,,,,,,,
-UI_SAVE,Save,저장,,,,,,,,,,
-UI_ENTER_NCG_TO_STAKE,Enter the NCG amount to stake.,스테이킹할 NCG를 입력해주세요.,,,,,,,,,,
-UI_LEVEL_TITLE,Staking Level,몬콜 레벨,,,,,,,,,,
-UI_SHOP_PC,Shop (PC),,,,,,,,,,,
-UI_SHOP_MOBILE,Shop (Mobile),,,,,,,,,,,
+NPC_42_NAME,Ganglati,강글라티,Anglerati,ガングラティ,Anglerati,แองเกลราตี,Anglerati,Англерати,Anglerati,Anglerati,Anglerati,Ganglati
+NPC_43_NAME,Ganglöt,강글로트,Anglerote,ガングレト,Anglerote,แองเกลโรท,Anglerote,Англерот,Anglerote,Anglerote,Anglerote,Ganglöt
+NPC_44_NAME,Helhest,헬헤스트,Helheist,ヘルヘスト,Helheist,เฮลไฮสต์,Helheist,Хельхейст,Helheist,Helheist,Helheist,Helhest
+NPC_45_NAME,Hrím,흐림,Desfoque,フリム,Desenfoque,ฝุ่น,Kabur,Размытие,模糊,模糊,Blur,Hrím
+NPC_46_NAME,Modgud,모드구드,Moodgud,モドグド,Moodgud,Moodgud,Moodgud,Мудгуд,Moodgud,Moodgud,Moodgud,Modgud
+NPC_47_NAME,Hrímgrímnir,흐림그림니르,Blurgrimnir,フリムグリームニル,Borrosogrím,ฝุ่นกริมนีล์,Blurgrimnir,Блюргримнир,模糊格里尼尔,模糊格里尼爾,Blurgrimnir,Hrímgrímnir
+NPC_48_NAME,Garmr,가름,Garam,ガルム,Garum,Garam,Garam,Гарам,Garam,Garam,Garam,Garmr
+NPC_49_NAME,Hella,헬라,Hera,ヘラ,Hera,เฮร่า,Hera,Гера,赫拉,赫拉,Hera,Hella
+UI_INTRODUCE_MIGRATION,"<color=#1264a3><link={0}>current rewards</link>
+<link={1}>new rewards</link></color>
+The reward has been updated.
+Would you like to migrate the contract?","<color=#1264A3><link={0}>현재 보상</link>
+<link={1}>새로운 보상</link></color>
+보상이 업데이트되었습니다.
+계약을 이전하시겠습니까?","<color=#1264A3><link={0}>recompensas atuais</link>
+<link={1}>novas recompensas</link></color>
+A recompensa foi atualizada.
+Gostaria de migrar o contrato?","<color=#1264A3><link={0}>現在の報酬</link>
+<link={1}>新しい報酬</link></color>
+報酬が更新されました。
+契約を移行しますか？","<color=#1264A3><link={0}>recompensas actuales</link>
+<link={1}>nuevas recompensas</link></color>
+La recompensa ha sido actualizada.
+¿Le gustaría migrar el contrato?","<color=#1264A3><link={0}>รางวัลปัจจุบัน</link>
+<link={1}>รางวัลใหม่</link></color>
+รางวัลได้รับการอัปเดตแล้ว
+คุณต้องการย้ายสัญญาหรือไม่?","<color=#1264A3><link={0}>hadiah saat ini</link>
+<link={1}>hadiah baru</link></color>
+Hadiah telah diperbarui.
+Apakah Anda ingin memigrasikan kontrak?","<color=#1264A3><link={0}>текущие награды</link>
+<link={1}>новые награды</link></color>
+Награда была обновлена.
+Хотите мигрировать контракт?","<color=#1264A3><link={0}>当前奖励</link>
+<link={1}>新奖励</link></color>
+奖励已经更新。
+您想迁移合同吗？","<color=#1264A3><link={0}>當前獎勵</link>
+<link={1}>新獎勵</link></color>
+獎勵已經更新。
+您想遷移合同嗎？","<color=#1264A3><link={0}>kasalukuyang gantimpala</link>
+<link={1}>bagong gantimpala</link></color>
+Nai-update na ang gantimpala.
+Gusto mo bang ilipat ang kontrata?","<color=#1264A3><link={0}>phần thưởng hiện tại</link>
+<link={1}>phần thưởng mới</link></color>
+Phần thưởng đã được cập nhật.
+Bạn có muốn chuyển đổi hợp đồng không?"
+UI_DEPOSIT,Deposit,예금,Depósito,預金,Depósito,ฝาก,Deposit,Депозит,存款,存款,Deposito,Tiền gửi
+UI_HOLD_NCG,/ NCG,/ NCG,/ NCG,/ NCG,/ NCG,/ NCG,/ NCG,/ NCG,/ NCG,/ NCG,/ NCG,/ NCG
+UI_SYSTEM_REWARDS,System Rewards,시스템 보상,Recompensas do Sistema,システム報酬,Recompensas del Sistema,รางวัลจากระบบ,Hadiah Sistem,Награды Системы,系统奖励,系統獎勵,Gantimpala ng Sistema,Phần Thưởng Hệ Thống
+UI_ITEM_REWARDS,Item Rewards,아이템 보상,Recompensas de Itens,アイテム報酬,Recompensas de Ítems,รางวัลไอเทม,Hadiah Item,Награды за предметы,物品奖励,物品獎勵,Gantimpala ng Item,Phần Thưởng Vật Phẩm
+UI_MIGRATE,Migrate,이전,Migrar,移住する,Migrar,อพยพ,Migrasi,Мигрировать,迁移,遷移,Lumipat,Di cư
+UI_SAVE,Save,저장,Salvar,保存する,Guardar,บันทึก,Simpan,Сохранить,保存,保存,I-save,Lưu
+UI_ENTER_NCG_TO_STAKE,Enter the amount of NCG to receive rewards.,보상을 받을 NCG를 입력해주세요.,Insira a quantidade de NCG para receber recompensas,報酬を受け取るためにNCGの量を入力してください,Ingresa la cantidad de NCG para recibir recompensas,ป้อนจำนวน NCG เพื่อรับรางวัล,Masukkan jumlah NCG untuk menerima hadiah,Введите количество NCG для получения наград,输入NCG的数量以接收奖励,輸入NCG的數量以接收獎勵,Ilagay ang halaga ng NCG para makatanggap ng gantimpala,Nhập số lượng NCG để nhận phần thưởng
+UI_LEVEL_TITLE,MonsterCollection Level,몬스터 컬렉션 레벨,Nível de Coleção de Monstros,モンスターコレクションレベル,Nivel de Colección de Monstruos,ระดับการสะสมมอนสเตอร์,Tingkat Koleksi Monster,Уровень Коллекции Монстров,怪物收集等级,怪物收集等級,Antas ng Koleksyon ng Halimaw,Cấp Độ Bộ Sưu Tập Quái Vật
+UI_SHOP_PC,Shop (PC),마켓 (PC),Comprar (PC),マーケット(PC),Tienda (PC),ร้านค้า (PC),Toko (PC),Магазин (ПК),店铺 (PC),店鋪 (PC),Tindahan (PC),Cửa hàng (PC)
+UI_SHOP_MOBILE,Shop (Mobile),마켓 (모바일),Comprar (Móvel),マーケット(モバイル),Tienda (Móvil),ร้านค้า (Mobai),Toko (Seluler),Магазин (Мобильный ),店铺 (移动 ),店鋪 (移動 ),Tindahan (Mobile),Cửa hàng (Di động)
+UI_MAIN_MENU_STAKING,Monster Collection,몬스터 컬렉션,Coleção de Monstros,モンスターコレクション,Colección de Monstruos,คอลเลกชันมอนสเตอร์,Koleksi Monster,Коллекция Монстров,怪物收藏,怪物收藏,Koleksyon ng Halimaw,Bộ Sưu Tập Quái Vật
