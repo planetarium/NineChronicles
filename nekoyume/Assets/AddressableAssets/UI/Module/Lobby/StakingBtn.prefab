@@ -2717,17 +2717,17 @@ PrefabInstance:
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
@@ -2791,9 +2791,29 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
+      propertyPath: m_AutoScalingMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_Particles.Array.data[0]
+      value: 
+      objectReference: {fileID: 3778215448762965817}
+    - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_Particles.Array.data[1]
+      value: 
+      objectReference: {fileID: 1701878525066090724}
+    - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+        type: 3}
+      propertyPath: m_Particles.Array.data[2]
+      value: 
+      objectReference: {fileID: 5821414397666424749}
     - target: {fileID: 7937736088600402549, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Enabled
@@ -2816,9 +2836,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8588ed37f97d0364a8a8b90bf428c3e0, type: 3}
+--- !u!198 &1701878525066090724 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8133661951978151497, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7457639873515259565}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &2725475525590947450 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7457639873515259565}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3778215448762965817 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5985337906200467860, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
+    type: 3}
+  m_PrefabInstance: {fileID: 7457639873515259565}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &5821414397666424749 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4014689132544192768, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
     type: 3}
   m_PrefabInstance: {fileID: 7457639873515259565}
   m_PrefabAsset: {fileID: 0}
