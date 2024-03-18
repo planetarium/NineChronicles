@@ -690,6 +690,13 @@ namespace Nekoyume.UI
                 }
             }
 
+            // for event EventDungeon
+            if(SharedModel.StageType == StageType.EventDungeon && SharedModel.IsEndStage && SharedModel.IsClear)
+            {
+                repeatButton.gameObject.SetActive(true);
+                repeatButton.interactable = true;
+            }
+
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
 
             yield return new WaitUntil(() => CanClose);
