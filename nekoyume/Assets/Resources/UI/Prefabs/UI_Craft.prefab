@@ -9806,7 +9806,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.18900001, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.026824951}
+  m_AnchoredPosition: {x: 0, y: -0.026855469}
   m_SizeDelta: {x: 921.6286, y: 0.053652763}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1687619414745605567
@@ -12082,6 +12082,7 @@ MonoBehaviour:
   eventMaterialSubRecipeView: {fileID: 359733018795746334}
   eventEquipmentSubRecipeView: {fileID: 6320559688897971733}
   canvasGroup: {fileID: 1687619416453876613}
+  collectionButton: {fileID: 2695893244470573181}
 --- !u!225 &1687619416453876613
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -37435,7 +37436,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 19.05
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -39713,6 +39714,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+--- !u!114 &2695893244470573181 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3269068318677096556, guid: 45eb7886920094eeca085daf783730b5,
+    type: 3}
+  m_PrefabInstance: {fileID: 592131883701133329}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286410174069461071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4915157557426049215 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5476809316646564014, guid: 45eb7886920094eeca085daf783730b5,
