@@ -83,8 +83,8 @@ namespace Nekoyume.UI.Module
             var levelRequired = row.Level > 1;
             if (levelRequired)
             {
-                iconArea.requiredAmountText.text = L10nManager.Localize("UI_REQUIRED_LEVEL_FORMAT", row.Level);
-                iconArea.currentAmountText.text = L10nManager.Localize("UI_CURRENT_ITEM_LEVEL_FORMAT", collectionMaterial.CurrentAmount);
+                iconArea.requiredAmountText.text = L10nManager.Localize("UI_REQUIRED_LEVEL_FORMAT", $"+{row.Level}");
+                iconArea.currentAmountText.text = L10nManager.Localize("UI_CURRENT_ITEM_LEVEL_FORMAT", $"+{collectionMaterial.CurrentAmount}");
             }
             else
             {
