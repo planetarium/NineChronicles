@@ -74,6 +74,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private CanvasGroup canvasGroup;
 
+        [SerializeField]
+        private Button collectionButton;
+
         public static RecipeModel SharedModel { get; set; }
         public static List<SubRecipeTab> SubRecipeTabs { get; private set; }
 
@@ -105,6 +108,8 @@ namespace Nekoyume.UI
                 Close(true);
                 Find<CombinationMain>().Show();
             };
+
+            collectionButton.onClick.AddListener(GoToCollection);
 
             equipmentToggle.OnValueChangedAsObservable()
                 .DistinctUntilChanged()
@@ -820,6 +825,12 @@ namespace Nekoyume.UI
         public void TutorialActionClickCombineEquipmentPremiumRecipeButton()
         {
             equipmentSubRecipeView.ChangeTabToPremiumForTutorial();
+        }
+
+        private void GoToCollection()
+        {
+            CloseWithOtherWidgets();
+            Find<Collection>().Show();
         }
     }
 }
