@@ -476,7 +476,7 @@ namespace Nekoyume.UI
                 case ItemType.Consumable:
                     return L10nManager.Localize("UI_COUNT");
                 case ItemType.Costume:
-                    return L10nManager.Localize("UI_EQUIPMENTLEVEL");
+                    return L10nManager.Localize("UI_COUNT");
                 case ItemType.Equipment:
                     return L10nManager.Localize("UI_EQUIPMENTLEVEL");
                 case ItemType.Material:
