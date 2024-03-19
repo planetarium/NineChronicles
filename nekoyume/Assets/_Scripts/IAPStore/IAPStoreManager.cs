@@ -122,8 +122,7 @@ namespace Nekoyume.IAPStore
                 .Where(c => c.Active && c.Name != "NoShow")
                 .OrderBy(c => c.Order)
                 .FirstOrDefault(c => c.ProductList
-                    .Where(p => p.Active && p.Buyable &&
-                                p.RequiredLevel != null && p.RequiredLevel <= level)
+                    .Where(p => p.Active && p.Buyable && (p.RequiredLevel == null || (p.RequiredLevel != null && p.RequiredLevel <= level)))
                     .Any(p => p.FungibleItemList
                         .Any(fi => fi.SheetItemId == itemId)));
 
