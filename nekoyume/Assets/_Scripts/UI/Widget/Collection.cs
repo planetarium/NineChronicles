@@ -110,6 +110,19 @@ namespace Nekoyume.UI
 
         private readonly List<CollectionModel> _models = new List<CollectionModel>();
 
+        private ItemType CurrentItemType
+        {
+            get => _currentItemType;
+            set
+            {
+                _currentItemType = value;
+                if (TryFind<CollectionItemFilterPopup>(out var filterPopup))
+                {
+                    filterPopup.SetItemTypeTap(_currentItemType);
+                }
+            }
+        }
+
         private readonly Dictionary<ItemType, Dictionary<StatType, bool>> _filter = new();
         private static readonly StatType[] TabStatTypes =
         {
@@ -156,7 +169,7 @@ namespace Nekoyume.UI
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
                     {
-                        _currentItemType = itemTypeToggle.type;
+                        CurrentItemType = itemTypeToggle.type;
 
                         var toggle = statToggles.First().toggle;
                         toggle.isOn = !toggle.isOn;
@@ -202,6 +215,8 @@ namespace Nekoyume.UI
             var toggle = itemTypeToggles.First().toggle;
             toggle.isOn = !toggle.isOn;
 
+            Find<CollectionItemFilterPopup>().SetItemTypeTap(_currentItemType);
+            RefreshDropDownText();
             UpdateToggleView();
             UpdateStatToggleView();
             UpdateItems();

@@ -306,6 +306,39 @@ namespace Nekoyume.UI
             Close(true);
         }
 
+        /// <summary>
+        /// 현재 선택된 아이템 탭에 따라 적용할 필터 옵션을 활성화/비활성화 시킨다.
+        /// 현재 gradeToggles를 제외한 모든 필터 토글이 Equipment 탭에서만 활성화 된다.
+        /// </summary>
+        /// <param name="itemType">현재 활성화된 아이템 탭</param>
+        public void SetItemTypeTap(Nekoyume.Model.Item.ItemType itemType)
+        {
+            foreach (var elementalToggle in elementalToggles)
+            {
+                elementalToggle.toggle.interactable = itemType == Nekoyume.Model.Item.ItemType.Equipment;
+            }
+
+            foreach (var itemTypeToggle in itemTypeToggles)
+            {
+                itemTypeToggle.toggle.interactable = itemType == Nekoyume.Model.Item.ItemType.Equipment;
+            }
+
+            foreach (var upgradeLevelToggle in upgradeLevelToggles)
+            {
+                upgradeLevelToggle.toggle.interactable = itemType == Nekoyume.Model.Item.ItemType.Equipment;
+            }
+
+            foreach (var optionCountToggle in optionCountToggles)
+            {
+                optionCountToggle.toggle.interactable = itemType == Nekoyume.Model.Item.ItemType.Equipment;
+            }
+
+            foreach (var withSkillToggle in withSkillToggles)
+            {
+                withSkillToggle.toggle.interactable = itemType == Nekoyume.Model.Item.ItemType.Equipment;
+            }
+        }
+
         protected void ApplyItemFilterOptionFromToggle()
         {
             var itemFilterOptionType = new ItemFilterOptions();
