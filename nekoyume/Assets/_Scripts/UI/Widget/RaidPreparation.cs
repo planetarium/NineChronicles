@@ -286,7 +286,8 @@ namespace Nekoyume.UI
                 runeStates,
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet,
-                collectionState.GetEffects(tableSheets.CollectionSheet)
+                collectionState.GetEffects(tableSheets.CollectionSheet),
+                tableSheets.DeBuffLimitSheet
             );
             var log = simulator.Simulate();
             var digest = new ArenaPlayerDigest(avatarState,
