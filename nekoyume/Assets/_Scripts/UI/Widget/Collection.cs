@@ -55,7 +55,7 @@ namespace Nekoyume.UI
 
         private enum SortType
         {
-            None,
+            Id,
             Grade,
             LevelOrQuantity,
         }
@@ -93,7 +93,7 @@ namespace Nekoyume.UI
         private UIFlip sortFlip;
 
         [SerializeField]
-        private SortType currentSortType = SortType.None;
+        private SortType currentSortType = SortType.Id;
 
         private bool _isSortDescending = true;
 
@@ -467,7 +467,7 @@ namespace Nekoyume.UI
         {
             switch (sortType)
             {
-                case SortType.None:
+                case SortType.Id:
                 {
                     return L10nManager.Localize("UI_ID");
                 }
@@ -554,6 +554,10 @@ namespace Nekoyume.UI
             var sortTypeWeight = _isSortDescending ? 1 : -1;
             switch (type)
             {
+                case SortType.Id:
+                {
+                    return (b.Row.Id - a.Row.Id) * sortTypeWeight;
+                }
                 case SortType.Grade:
                 {
                     var aGrade = a.Materials.Max(material => material.Grade);
