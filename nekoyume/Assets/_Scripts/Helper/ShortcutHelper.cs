@@ -444,7 +444,7 @@ namespace Nekoyume.Helper
             {
                 case PlaceType.EventDungeonStage:
                     var playableStageId =
-                        RxProps.EventDungeonInfo.HasValue ||
+                        !RxProps.EventDungeonInfo.HasValue ||
                         RxProps.EventDungeonInfo.Value.ClearedStageId == 0
                             ? RxProps.EventDungeonRow.StageBegin
                             : Math.Min(
