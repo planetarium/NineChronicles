@@ -3419,7 +3419,7 @@ MonoBehaviour:
   - type: 30000
     rectTransform: {fileID: 1224776344879185514}
   - type: 100000
-    rectTransform: {fileID: 6994716309426001764}
+    rectTransform: {fileID: 4715720422514842558}
   - type: 1000000
     rectTransform: {fileID: 359115451029900426}
   - type: 1000013
@@ -14297,12 +14297,6 @@ RectTransform:
 --- !u!224 &5260873243476608317 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3607065486314333383, guid: 5b9a9c1cc12b64a1eaba8ba00204a0f8,
-    type: 3}
-  m_PrefabInstance: {fileID: 8866671384757117434}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &6994716309426001764 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1882090995594983070, guid: 5b9a9c1cc12b64a1eaba8ba00204a0f8,
     type: 3}
   m_PrefabInstance: {fileID: 8866671384757117434}
   m_PrefabAsset: {fileID: 0}
