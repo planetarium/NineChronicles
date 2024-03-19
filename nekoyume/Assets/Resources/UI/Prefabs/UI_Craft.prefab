@@ -39578,6 +39578,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConditionalButton_Type4
       objectReference: {fileID: 0}
+    - target: {fileID: 1868312093538365534, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4156633523159160521, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_COLLECTION
+      objectReference: {fileID: 0}
     - target: {fileID: 5016195933614737777, guid: 45eb7886920094eeca085daf783730b5,
         type: 3}
       propertyPath: m_SizeDelta.y
