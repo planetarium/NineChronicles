@@ -14,6 +14,7 @@ namespace Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("offObject"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onObject"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onClickToggle"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("colorTransitionGraphics"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("allowSwitchOffWhenIsOn"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("obsolete"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onClickObsoletedToggle"));

@@ -460,6 +460,10 @@ namespace Nekoyume.Game
             _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             AudioController.instance.PlayMusic(bgmName);
             IsShowHud = true;
+
+            SelectedPlayer.Model.worldInformation.TryGetLastClearedStageId(out var lastClearedStageIdBeforeResponse);
+            _battleResultModel.LastClearedStageIdBeforeResponse = lastClearedStageIdBeforeResponse;
+
             if (!SelectedPlayer.Model.worldInformation.IsStageCleared(stageId))
             {
                 _tutorialModels = Widget.Find<Tutorial>().TutorialController.GetModelListByStage(stageId);
