@@ -105,14 +105,15 @@ namespace Nekoyume.UI
             ncgEditButton.onClick.AddListener(OnClickEditButton);
             migrateButton.onClick.AddListener(OnClickMigrateButton);
             stakingStartButton.onClick.AddListener(OnClickEditButton);
+            archiveButton.SetCondition(() => !LoadingHelper.ClaimStakeReward.Value);
             archiveButton.OnSubmitSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 ActionManager.Instance
                     .ClaimStakeReward(States.Instance.CurrentAvatarState.address)
                     .Subscribe();
-                archiveButton.Interactable = false;
                 LoadingHelper.ClaimStakeReward.Value = true;
+                archiveButton.UpdateObjects();
             }).AddTo(gameObject);
             editSaveButton.onClick.AddListener(OnClickSaveButton);
             editCancelButton.onClick.AddListener(() =>
@@ -464,7 +465,11 @@ namespace Nekoyume.UI
                 RemainingBlockFormat,
                 remainingBlock.BlockRangeToTimeSpanString(),
                 remainingBlock.ToString("N0"));
-            archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
+
+            if (!LoadingHelper.ClaimStakeReward.Value)
+            {
+                archiveButton.Interactable = remainingBlock == 0;
+            }
         }
 
         private static bool TryGetWaitedBlockIndex(
