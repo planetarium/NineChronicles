@@ -99,18 +99,33 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 return;
             }
 
+            ProductSchema? selectedProduct = null;
             foreach (var category in categoryList)
             {
                 foreach (var product in category.ProductList)
                 {
-                    if(product.Sku == productSku && product.Active && product.Buyable)
+                    if (product.Sku == productSku)
                     {
-                        success();
-                        return;
+                        selectedProduct = product;
+                        if(product.Active && product.Buyable)
+                        {
+                            success();
+                            return;
+                        }
                     }
                 }
             }
+
+            if (selectedProduct != null)
+            {
+                Debug.LogError($"CheckProductAvailable Fail {productSku} Active:{selectedProduct.Active} Buyable:{selectedProduct.Buyable}");
+            }
+            else
+            {
+                Debug.LogError($"CheckProductAvailable Fail can't find {productSku}");
+            }
             failed();
+
             return;
         }
 
