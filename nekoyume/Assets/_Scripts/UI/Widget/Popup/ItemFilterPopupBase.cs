@@ -71,12 +71,12 @@ namespace Nekoyume.UI
         public enum UpgradeLevel
         {
             All = 0,
-            Level1 = 1 << 0,
-            Level2 = 1 << 1,
-            Level3 = 1 << 2,
-            Level4 = 1 << 3,
-            Level5 = 1 << 4,
-            Level6More = 1 << 5,
+            Level0 = 1 << 0,
+            Level1 = 1 << 1,
+            Level2 = 1 << 2,
+            Level3 = 1 << 3,
+            Level4 = 1 << 4,
+            Level5More = 1 << 5,
         }
 
         [Flags]

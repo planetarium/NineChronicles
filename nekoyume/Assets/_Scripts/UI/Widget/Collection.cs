@@ -55,7 +55,7 @@ namespace Nekoyume.UI
 
         private enum SortType
         {
-            None,
+            Id,
             Grade,
             LevelOrQuantity,
         }
@@ -93,7 +93,7 @@ namespace Nekoyume.UI
         private UIFlip sortFlip;
 
         [SerializeField]
-        private SortType currentSortType = SortType.None;
+        private SortType currentSortType = SortType.Id;
 
         private bool _isSortDescending = true;
 
@@ -467,7 +467,7 @@ namespace Nekoyume.UI
         {
             switch (sortType)
             {
-                case SortType.None:
+                case SortType.Id:
                 {
                     return L10nManager.Localize("UI_ID");
                 }
@@ -491,9 +491,9 @@ namespace Nekoyume.UI
                 case ItemType.Consumable:
                     return L10nManager.Localize("UI_COUNT");
                 case ItemType.Costume:
-                    return L10nManager.Localize("UI_LEVEL");
+                    return L10nManager.Localize("UI_COUNT");
                 case ItemType.Equipment:
-                    return L10nManager.Localize("UI_LEVEL");
+                    return L10nManager.Localize("UI_EQUIPMENTLEVEL");
                 case ItemType.Material:
                     return L10nManager.Localize("UI_COUNT");
                 default:
@@ -554,6 +554,10 @@ namespace Nekoyume.UI
             var sortTypeWeight = _isSortDescending ? 1 : -1;
             switch (type)
             {
+                case SortType.Id:
+                {
+                    return (b.Row.Id - a.Row.Id) * sortTypeWeight;
+                }
                 case SortType.Grade:
                 {
                     var aGrade = a.Materials.Max(material => material.Grade);
@@ -706,12 +710,12 @@ namespace Nekoyume.UI
             {
                 var upgradeFlag = material.Row.Level switch
                                   {
+                                      0    => ItemFilterPopupBase.UpgradeLevel.Level0,
                                       1    => ItemFilterPopupBase.UpgradeLevel.Level1,
                                       2    => ItemFilterPopupBase.UpgradeLevel.Level2,
                                       3    => ItemFilterPopupBase.UpgradeLevel.Level3,
                                       4    => ItemFilterPopupBase.UpgradeLevel.Level4,
-                                      5    => ItemFilterPopupBase.UpgradeLevel.Level5,
-                                      >= 6 => ItemFilterPopupBase.UpgradeLevel.Level6More,
+                                      >= 5 => ItemFilterPopupBase.UpgradeLevel.Level5More,
                                       _    => ItemFilterPopupBase.UpgradeLevel.All
                                   };
 
