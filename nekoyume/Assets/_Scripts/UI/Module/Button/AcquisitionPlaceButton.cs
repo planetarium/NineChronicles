@@ -87,7 +87,7 @@ namespace Nekoyume.UI.Module
                 case ShortcutHelper.PlaceType.EventDungeonStage:
                 case ShortcutHelper.PlaceType.Craft:
                 case ShortcutHelper.PlaceType.Summon:
-                    iconName = string.Format(IconNameFormat, $"00{(int)model.Type}");
+                    iconName = string.Format(IconNameFormat, $"{(int)model.Type:000}");
                     break;
                 case ShortcutHelper.PlaceType.MobileShop:
                     iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.PCShop}");
