@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Model
         public bool Active { get; set; }
 
         public bool HasItem { get; private set; }
+        public int CurrentAmount { get; private set; }
         public bool IsEnoughAmount { get; private set; }
 
         // enough condition for active
@@ -78,6 +79,7 @@ namespace Nekoyume.UI.Model
                  tradableItem.RequiredBlockIndex <= blockIndex)).ToArray();
 
             var hasItem = items.Any();
+            var currentAmount = 0;
             bool enoughCount;
             switch (ItemType)
             {
@@ -86,15 +88,20 @@ namespace Nekoyume.UI.Model
                         .Where(equipment => equipment.HasSkill() == Row.SkillContains &&
                                             equipment.level <= Row.Level).ToArray();
                     hasItem &= equipments.Any();
+                    if (hasItem)
+                    {
+                        currentAmount = equipments.Max(equipment => equipment.level);
+                    }
 
-                    equipments = equipments.Where(equipment => equipment.level == Row.Level).ToArray();
-                    enoughCount = equipments.Any();
+                    enoughCount = equipments.Any(equipment => equipment.level == Row.Level);
                     break;
                 case ItemType.Material:
-                    enoughCount = items.Sum(item => item.count) >= Row.Count;
+                    currentAmount = items.Sum(item => item.count);
+                    enoughCount = currentAmount >= Row.Count;
                     break;
                 case ItemType.Consumable:
-                    enoughCount = items.Length >= Row.Count;
+                    currentAmount = items.Length;
+                    enoughCount = currentAmount >= Row.Count;
                     break;
                 default:
                     enoughCount = hasItem;
@@ -102,6 +109,7 @@ namespace Nekoyume.UI.Model
             }
 
             HasItem = hasItem;
+            CurrentAmount = currentAmount;
             IsEnoughAmount = enoughCount;
         }
     }
