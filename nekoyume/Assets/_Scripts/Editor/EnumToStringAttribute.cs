@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Nekoyume.Editor
@@ -15,4 +14,3 @@ namespace Nekoyume.Editor
         }
     }
 }
-#endif
