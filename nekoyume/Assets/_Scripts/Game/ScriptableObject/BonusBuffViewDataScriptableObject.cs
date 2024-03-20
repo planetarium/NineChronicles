@@ -26,7 +26,7 @@ namespace Nekoyume
         public Sprite GetBonusBuffIcon(SkillCategory skillCategory)
         {
             BonusBuffIconData data = null;
-            data = bonusBuffIconDatas.FirstOrDefault(x => x.SkillCategory() == skillCategory);
+            data = bonusBuffIconDatas.FirstOrDefault(x => x.SkillCategory == skillCategory);
             if (data is null)
             {
                 return FallbackIconSprite;

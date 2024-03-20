@@ -15,11 +15,10 @@ namespace Nekoyume.Game.ScriptableObject
         [SerializeField]
         private Sprite iconSprite;
 
-        public SkillCategory SkillCategory()
-        {
-            Enum.TryParse(typeof(SkillCategory), skillCategory, true, out var skillCategoryEnum);
-            return (SkillCategory)skillCategoryEnum;
-        }
+        public SkillCategory SkillCategory =>
+            Enum.TryParse(typeof(SkillCategory), skillCategory, true, out var skillCategoryEnum)
+                ? (SkillCategory) skillCategoryEnum
+                : SkillCategory.Buff;
 
         public Sprite IconSprite => iconSprite;
     }
