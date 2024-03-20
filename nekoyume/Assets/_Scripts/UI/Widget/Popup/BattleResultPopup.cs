@@ -656,6 +656,13 @@ namespace Nekoyume.UI
                 nextButton.interactable = true;
             }
 
+            // for event EventDungeon
+            if (SharedModel.StageType == StageType.EventDungeon && SharedModel.IsEndStage && SharedModel.IsClear)
+            {
+                repeatButton.gameObject.SetActive(true);
+                repeatButton.interactable = true;
+            }
+
             switch (SharedModel.NextState)
             {
                 case NextState.GoToMain:
@@ -691,13 +698,6 @@ namespace Nekoyume.UI
                     bottomText.text = string.Empty;
                     yield break;
                 }
-            }
-
-            // for event EventDungeon
-            if(SharedModel.StageType == StageType.EventDungeon && SharedModel.IsEndStage && SharedModel.IsClear)
-            {
-                repeatButton.gameObject.SetActive(true);
-                repeatButton.interactable = true;
             }
 
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
