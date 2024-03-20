@@ -257,7 +257,7 @@ namespace Nekoyume.UI
                 premiumPurchaseButtonDisabledObj.SetActive(true);
                 premiumPurchaseButtonPriceObj.SetActive(false);
                 premiumPurchaseButtonLoadingObj.SetActive(true);
-                OnPurchase(productKey);
+                OnPurchase(product.Sku);
             }
         }
 
