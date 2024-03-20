@@ -95,7 +95,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private SortType currentSortType = SortType.Id;
 
-        private bool _isSortDescending = true;
+        private bool _isSortDescending = false;
 
         private List<CollectionModel> _items;
 
@@ -441,7 +441,7 @@ namespace Nekoyume.UI
         #region Sort
         private void RefreshDescendingUI()
         {
-            sortFlip.vertical = _isSortDescending;
+            sortFlip.vertical = !_isSortDescending;
         }
 
         private void OnClickSortButton()
