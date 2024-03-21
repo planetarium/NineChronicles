@@ -24,6 +24,13 @@ namespace Nekoyume.UI
         [SerializeField] private CollectionInventory collectionInventory;
         [SerializeField] private EquipmentTooltip equipmentTooltip;
 
+        [Header("Register Animation")]
+        [SerializeField]
+        private float registerItemDelay = 0.05f;
+
+        [SerializeField]
+        private float registerAnimationDelay = 0.5f;
+
         private readonly Dictionary<CollectionMaterial, ICollectionMaterial> _registeredItems = new();
         private CollectionMaterial _focusedRequiredItem;
         private Action<List<ICollectionMaterial>> _registerMaterials;
@@ -88,12 +95,20 @@ namespace Nekoyume.UI
         {
             var registeredItems = _registeredItems.Values.ToList();
             _registerMaterials?.Invoke(registeredItems);
-            CloseWithDelay(0.5f).Forget();
+            RegisterItemAsync().Forget();
         }
 
-        private async UniTask CloseWithDelay(float delay = 0.5f)
+        private async UniTask RegisterItemAsync()
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(delay));
+            var requiredItems = _registeredItems.Keys.ToArray();
+            for (var i = 0; i < requiredItems.Length; i++)
+            {
+                requiredItems[i].Focused.SetValueAndForceNotify(false);
+                requiredItems[i].Registered.SetValueAndForceNotify(true);
+                await UniTask.Delay(TimeSpan.FromSeconds(registerItemDelay));
+            }
+
+            await UniTask.Delay(TimeSpan.FromSeconds(registerAnimationDelay));
             CloseWidget.Invoke();
         }
 
@@ -128,7 +143,6 @@ namespace Nekoyume.UI
             }
 
             _registeredItems[_focusedRequiredItem] = collectionMaterialItem;
-            _focusedRequiredItem.Registered.SetValueAndForceNotify(true);
 
             // Focus next required item or Activate
             var notRegisteredItem = _registeredItems
@@ -163,9 +177,9 @@ namespace Nekoyume.UI
 
             _focusedRequiredItem?.Focused.SetValueAndForceNotify(false);
             _focusedRequiredItem = collectionMaterial;
-            _focusedRequiredItem.Focused.SetValueAndForceNotify(true);
-
             collectionInventory.SetRequiredItem(_focusedRequiredItem);
+
+            _focusedRequiredItem.Focused.SetValueAndForceNotify(true);
 
             var count = _registeredItems.Count(registeredItem => registeredItem.Value == null);
             registrationButton.Text = count == 1
