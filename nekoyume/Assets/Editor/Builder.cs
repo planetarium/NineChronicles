@@ -331,6 +331,8 @@ namespace Editor
 
             UpdateDefines(useDevExtension);
 
+            AssetDatabase.Refresh();
+
             var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
             var summary = report.summary;
 
