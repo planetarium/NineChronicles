@@ -54,6 +54,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI[] premiumPlusPrices;
 
+        [SerializeField]
+        private GameObject[] premiumInfoList;
+
+        [SerializeField]
+        private GameObject[] premiumPlusInfoList;
+
         protected override void Awake()
         {
             base.Awake();
@@ -62,6 +68,35 @@ namespace Nekoyume.UI
             {
                 RefreshIcons(seasonPassInfo);
             }).AddTo(gameObject);
+
+            int infoKeyIndex = 1;
+            foreach (var item in premiumInfoList)
+            {
+                if (L10nManager.ContainsKey($"SEASONPASS_PREMIUM_INFO_{infoKeyIndex}"))
+                {
+                    item.SetActive(true);
+                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize($"SEASONPASS_PREMIUM_INFO_{infoKeyIndex}");
+                }
+                else
+                {
+                    item.SetActive(false);
+                }
+                infoKeyIndex++;
+            }
+            infoKeyIndex = 1;
+            foreach (var item in premiumPlusInfoList)
+            {
+                if (L10nManager.ContainsKey($"SEASONPASS_PREMIUM_PLUS_INFO_{infoKeyIndex}"))
+                {
+                    item.SetActive(true);
+                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize($"SEASONPASS_PREMIUM_PLUS_INFO_{infoKeyIndex}");
+                }
+                else
+                {
+                    item.SetActive(false);
+                }
+                infoKeyIndex++;
+            }
         }
 
         public override void Show(bool ignoreShowAnimation = false)
