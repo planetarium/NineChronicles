@@ -78,8 +78,9 @@ namespace Nekoyume.UI.Module
             iconArea.gradeAndSubTypeSpacer.color = gradeColor;
 
             iconArea.skillRequiredObject.SetActive(row.SkillContains);
-            iconArea.requiredAmountText.gameObject.SetActive(row.Count > 1 || row.SkillContains);
-            iconArea.currentAmountText.gameObject.SetActive(collectionMaterial.HasItem);
+            var isOnRequiredAmount = row.Count > 1 || row.Level > 0;
+            iconArea.requiredAmountText.gameObject.SetActive(isOnRequiredAmount);
+            iconArea.currentAmountText.gameObject.SetActive(isOnRequiredAmount && collectionMaterial.HasItem);
             var levelRequired = row.Level > 1;
             if (levelRequired)
             {
