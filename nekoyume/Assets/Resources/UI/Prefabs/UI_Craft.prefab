@@ -3037,7 +3037,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 14.25
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -17850,6 +17850,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &3228603011165276429
 GameObject:
   m_ObjectHideFlags: 0
@@ -18013,6 +18014,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &3254498054321608292
 GameObject:
   m_ObjectHideFlags: 0
@@ -24891,6 +24893,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &5071743345598877976
 GameObject:
   m_ObjectHideFlags: 0
@@ -29081,6 +29084,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &6133795662732839529
 GameObject:
   m_ObjectHideFlags: 0
@@ -29244,6 +29248,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &6232376047243125103
 GameObject:
   m_ObjectHideFlags: 0
@@ -32166,6 +32171,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571178197699181
 GameObject:
   m_ObjectHideFlags: 0
@@ -32273,6 +32279,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571178256630806
 GameObject:
   m_ObjectHideFlags: 0
@@ -32380,6 +32387,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571178442816237
 GameObject:
   m_ObjectHideFlags: 0
@@ -32487,6 +32495,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571178651658243
 GameObject:
   m_ObjectHideFlags: 0
@@ -32594,6 +32603,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571178858988038
 GameObject:
   m_ObjectHideFlags: 0
@@ -32701,6 +32711,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571179387110019
 GameObject:
   m_ObjectHideFlags: 0
@@ -32808,6 +32819,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571179504996808
 GameObject:
   m_ObjectHideFlags: 0
@@ -32915,6 +32927,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571179720843143
 GameObject:
   m_ObjectHideFlags: 0
@@ -33022,6 +33035,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7245571179925550360
 GameObject:
   m_ObjectHideFlags: 0
@@ -33129,6 +33143,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7292789130754733236
 GameObject:
   m_ObjectHideFlags: 0
@@ -37018,7 +37033,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Horizontal: 0
-  m_Veritical: 1
+  m_Veritical: 0
 --- !u!1 &8676433989726896256
 GameObject:
   m_ObjectHideFlags: 0
@@ -37436,7 +37451,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.05
+  m_fontSize: 18
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -43488,7 +43503,7 @@ PrefabInstance:
     - target: {fileID: 4055086873023492456, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
       propertyPath: m_fontSize
-      value: 12.6
+      value: 11.05
       objectReference: {fileID: 0}
     - target: {fileID: 4055086873023492456, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
