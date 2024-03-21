@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Collection;
@@ -87,6 +88,12 @@ namespace Nekoyume.UI
         {
             var registeredItems = _registeredItems.Values.ToList();
             _registerMaterials?.Invoke(registeredItems);
+            CloseWithDelay(0.5f).Forget();
+        }
+
+        private async UniTask CloseWithDelay(float delay = 0.5f)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(delay));
             CloseWidget.Invoke();
         }
 
