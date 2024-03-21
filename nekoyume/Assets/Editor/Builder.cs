@@ -331,6 +331,8 @@ namespace Editor
 
             UpdateDefines(useDevExtension);
 
+            Firebase.Editor.GenerateXmlFromGoogleServicesJson.ForceJsonUpdate();
+
             AssetDatabase.Refresh();
 
             var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
