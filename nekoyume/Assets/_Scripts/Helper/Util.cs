@@ -568,21 +568,23 @@ namespace Nekoyume.Helper
 
             if (CachedDownloadTexturesRaw.TryGetValue(url, out var cachedTextureRaw))
             {
-                var myTexture = new Texture2D(0,0, TextureFormat.RGBA32, false);
-                myTexture.LoadImage(cachedTextureRaw);
-                var result = Sprite.Create(
-                    myTexture,
-                    new Rect(0, 0, myTexture.width, myTexture.height),
-                    Pivot);
+                Sprite result = CreateSprite(cachedTextureRaw);
                 CachedDownloadTextures.Add(url, result);
                 return result;
             }
             else
             {
-                var www = UnityWebRequestTexture.GetTexture(url);
+                if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+                {
+                    return cachedTexture;
+                }
+
                 try
                 {
-                    await www.SendWebRequest();
+                    var rawdata = await DownloadTextureRaw(url);
+                    var result = CreateSprite(rawdata);
+                    CachedDownloadTextures.Add(url, result);
+                    return result;
                 }
                 catch
                 {
@@ -593,31 +595,20 @@ namespace Nekoyume.Helper
                     Debug.LogError($"[DownloadTexture] {url}");
                     return null;
                 }
-
-                if (www.result != UnityWebRequest.Result.Success)
-                {
-                    if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                    {
-                        return cachedTexture;
-                    }
-                    Debug.LogError($"[Util.DownloadTexture]{www.error}");
-                    return null;
-                }
-
-                if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                {
-                    return cachedTexture;
-                }
-
-                var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-                var result = Sprite.Create(
-                    myTexture,
-                    new Rect(0, 0, myTexture.width, myTexture.height),
-                    Pivot);
-                CachedDownloadTextures.Add(url, result);
-
-                return result;
             }
+        }
+
+        private static Sprite CreateSprite(byte[] cachedTextureRaw)
+        {
+            if (cachedTextureRaw == null)
+                return null;
+            var myTexture = new Texture2D(0, 0, TextureFormat.RGBA32, false);
+            myTexture.LoadImage(cachedTextureRaw);
+            var result = Sprite.Create(
+                myTexture,
+                new Rect(0, 0, myTexture.width, myTexture.height),
+                Pivot);
+            return result;
         }
 
         public static async UniTask<byte[]> DownloadTextureRaw(string url)

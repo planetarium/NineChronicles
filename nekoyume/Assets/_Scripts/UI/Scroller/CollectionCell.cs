@@ -6,6 +6,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -16,6 +17,7 @@ namespace Nekoyume.UI.Scroller
         private struct ActiveButtonLoading
         {
             public GameObject container;
+            public Button button;
             public GameObject indicator;
             public GameObject text;
         }
@@ -34,14 +36,11 @@ namespace Nekoyume.UI.Scroller
             activeButton.OnSubmitSubject
                 .Subscribe(_=> Context.OnClickActiveButton.OnNext(_itemData))
                 .AddTo(gameObject);
-            activeButton.OnClickDisabledSubject
-                .Where(_ => LoadingHelper.ActivateCollection.Value != 0)
-                .Subscribe(_ =>
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("NOTIFICATION_COLLECTION_DISABLED_ACTIVATING"),
-                        NotificationCell.NotificationType.Information))
-                .AddTo(gameObject);
+            activeButtonLoading.button.onClick.AddListener(() =>
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_COLLECTION_DISABLED_ACTIVATING"),
+                    NotificationCell.NotificationType.Information));
         }
 
         public override void UpdateContent(CollectionModel itemData)
@@ -73,7 +72,7 @@ namespace Nekoyume.UI.Scroller
             activeButton.Interactable = !itemData.Active;
 
             _disposables.DisposeAllAndClear();
-            LoadingHelper.ActivateCollection.Subscribe(collectionId =>
+            LoadingHelper.ActivateCollection.Where(_ => activeButton.Interactable).Subscribe(collectionId =>
             {
                 var loading = collectionId != 0;
                 if (loading)
@@ -83,7 +82,6 @@ namespace Nekoyume.UI.Scroller
                     activeButtonLoading.text.SetActive(!inProgress);
                 }
 
-                activeButton.Interactable = !loading && !_itemData.Active;
                 activeButtonLoading.container.SetActive(loading);
             }).AddTo(_disposables);
         }

@@ -18,7 +18,7 @@ namespace Nekoyume
         private void Awake()
         {
             _animator = GetComponent<Animator>();
-            _animator.keepAnimatorControllerStateOnDisable = true;
+            _animator.keepAnimatorStateOnDisable = true;
         }
 
         private void OnDisable()

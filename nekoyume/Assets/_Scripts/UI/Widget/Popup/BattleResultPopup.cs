@@ -57,6 +57,7 @@ namespace Nekoyume.UI
             public bool ActionPointNotEnough;
             public bool IsClear;
             public bool IsEndStage;
+            public int LastClearedStageIdBeforeResponse;
 
             /// <summary>
             /// [0]: The number of times a `BattleLog.clearedWaveNumber` is 0.
@@ -270,7 +271,8 @@ namespace Nekoyume.UI
                 if (SharedModel.IsClear
                     && SharedModel.IsEndStage
                     && lastClearedStageId == SharedModel.StageID
-                    && !Find<WorldMap>().SharedViewModel.UnlockedWorldIds.Contains(SharedModel.WorldID + 1))
+                    && !Find<WorldMap>().SharedViewModel.UnlockedWorldIds.Contains(SharedModel.WorldID + 1)
+                    && SharedModel.StageID - 1 == SharedModel.LastClearedStageIdBeforeResponse)
                 {
                     worldClear = true;
                 }
@@ -427,6 +429,7 @@ namespace Nekoyume.UI
                     ActionPointNotEnough = model.ActionPointNotEnough,
                     IsClear = model.IsClear,
                     IsEndStage = model.IsEndStage,
+                    LastClearedStageIdBeforeResponse = model.LastClearedStageIdBeforeResponse,
                     ClearedCountForEachWaves = ModelForMultiHackAndSlash.ClearedCountForEachWaves,
                 };
                 foreach (var item in ModelForMultiHackAndSlash.Rewards)
@@ -660,6 +663,13 @@ namespace Nekoyume.UI
             {
                 nextButton.gameObject.SetActive(true);
                 nextButton.interactable = true;
+            }
+
+            // for event EventDungeon
+            if (SharedModel.StageType == StageType.EventDungeon && SharedModel.IsEndStage && SharedModel.IsClear)
+            {
+                repeatButton.gameObject.SetActive(true);
+                repeatButton.interactable = true;
             }
 
             switch (SharedModel.NextState)

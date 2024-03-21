@@ -7,27 +7,30 @@ namespace Nekoyume.UI.Module.Arena.Join
     public class ArenaJoinMissionButton : MonoBehaviour
     {
         [SerializeField]
-        private GameObject _progressBarBackgroundGO;
+        private GameObject progressObject;
 
         [SerializeField]
-        private GameObject _progressBarGO;
+        private GameObject progressBarBackgroundGO;
 
         [SerializeField]
-        private RectMask2D _progressRectMask;
+        private GameObject progressBarGO;
 
         [SerializeField]
-        private TextMeshProUGUI _progressText;
+        private RectMask2D progressRectMask;
 
         [SerializeField]
-        private GameObject _completedObject;
+        private TextMeshProUGUI progressText;
+
+        [SerializeField]
+        private GameObject completedObject;
 
         private float _originalRectWidth;
         private Vector4 _originalProgressRectMaskPadding;
 
         private void Awake()
         {
-            _originalRectWidth = _progressRectMask.rectTransform.rect.width;
-            _originalProgressRectMaskPadding = _progressRectMask.padding;
+            _originalRectWidth = progressRectMask.rectTransform.rect.width;
+            _originalProgressRectMaskPadding = progressRectMask.padding;
         }
 
         public void Show((int required, int current) conditions)
@@ -35,22 +38,24 @@ namespace Nekoyume.UI.Module.Arena.Join
             var (required, current) = conditions;
             if (current >= required)
             {
-                _progressBarBackgroundGO.SetActive(false);
-                _progressBarGO.SetActive(false);
-                _completedObject.SetActive(true);
+                progressObject.SetActive(false);
+                progressBarBackgroundGO.SetActive(false);
+                progressBarGO.SetActive(false);
+                completedObject.SetActive(true);
             }
             else
             {
+                progressObject.SetActive(true);
                 _originalProgressRectMaskPadding.z = current == 0f
                     ? _originalRectWidth
                     : _originalRectWidth * (1f - (float)current / required);
-                _progressRectMask.padding = _originalProgressRectMaskPadding;
-                _progressBarBackgroundGO.SetActive(true);
-                _progressBarGO.SetActive(true);
-                _completedObject.SetActive(false);
+                progressRectMask.padding = _originalProgressRectMaskPadding;
+                progressBarBackgroundGO.SetActive(true);
+                progressBarGO.SetActive(true);
+                completedObject.SetActive(false);
             }
 
-            _progressText.text = $"{current}/{required}";
+            progressText.text = $"{current}/{required}";
             gameObject.SetActive(true);
         }
 

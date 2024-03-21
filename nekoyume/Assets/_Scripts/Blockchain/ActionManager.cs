@@ -1628,14 +1628,6 @@ namespace Nekoyume.Blockchain
                     ["SummonCount"] = summonCount,
                 }, true);
 
-
-            // check material enough
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[groupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-            var count = summonRow.CostMaterialCount * summonCount;
-            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, count);
-
             var action = new AuraSummon
             {
                 AvatarAddress = avatarAddress,
@@ -1671,13 +1663,6 @@ namespace Nekoyume.Blockchain
                     ["GroupId"] = groupId,
                     ["SummonCount"] = summonCount,
                 }, true);
-
-            // check material enough
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[groupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-            var count = summonRow.CostMaterialCount * summonCount;
-            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, count);
 
             var action = new RuneSummon
             {

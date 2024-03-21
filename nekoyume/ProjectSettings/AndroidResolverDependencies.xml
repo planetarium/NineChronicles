@@ -22,7 +22,7 @@
     <file>Assets/Plugins/Android/androidx.customview.customview-1.0.0.aar</file>
     <file>Assets/Plugins/Android/androidx.documentfile.documentfile-1.0.0.aar</file>
     <file>Assets/Plugins/Android/androidx.drawerlayout.drawerlayout-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.fragment.fragment-1.0.0.aar</file>
+    <file>Assets/Plugins/Android/androidx.fragment.fragment-1.1.0.aar</file>
     <file>Assets/Plugins/Android/androidx.interpolator.interpolator-1.0.0.aar</file>
     <file>Assets/Plugins/Android/androidx.legacy.legacy-support-core-ui-1.0.0.aar</file>
     <file>Assets/Plugins/Android/androidx.legacy.legacy-support-core-utils-1.0.0.aar</file>
@@ -79,7 +79,7 @@
     <setting name="bundleId" value="com.planetariumlabs.ninechroniclesmobile" />
     <setting name="explodeAars" value="True" />
     <setting name="gradleBuildEnabled" value="True" />
-    <setting name="gradlePropertiesTemplateEnabled" value="False" />
+    <setting name="gradlePropertiesTemplateEnabled" value="True" />
     <setting name="gradleTemplateEnabled" value="False" />
     <setting name="installAndroidPackages" value="True" />
     <setting name="localMavenRepoDir" value="Assets/GeneratedLocalRepo" />

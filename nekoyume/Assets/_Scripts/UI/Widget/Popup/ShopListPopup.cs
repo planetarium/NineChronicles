@@ -12,6 +12,8 @@ using System.Numerics;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI
 {
@@ -132,7 +134,20 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
+                    Game.Game.instance.IAPServiceManager.CheckProductAvailable(_data.Sku, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
+                        //success
+                        () =>
+                        {
+                            Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
+                        },
+                        //failed
+                        () =>
+                        {
+                            PurchaseButtonLoadingEnd();
+                            OneLineSystem.Push(MailType.System,
+                                L10nManager.Localize("ERROR_CODE_SHOPITEM_EXPIRED"),
+                                NotificationCell.NotificationType.Alert);
+                        }).AsUniTask().Forget();
                 }
 
                 buyButton.interactable = false;

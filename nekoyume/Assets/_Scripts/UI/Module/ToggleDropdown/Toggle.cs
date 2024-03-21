@@ -14,6 +14,10 @@ namespace Nekoyume.UI.Module
         public bool obsolete = false;
         public UnityEngine.Events.UnityEvent onClickObsoletedToggle;
 
+        [SerializeField]
+        [Tooltip("Graphics that will have color changes applied to them when the toggle state changes.")]
+        private Graphic[] colorTransitionGraphics;
+
         protected Toggle()
         {
             onValueChanged.AddListener(UpdateObject);
@@ -43,6 +47,71 @@ namespace Nekoyume.UI.Module
         {
             onValueChanged.RemoveAllListeners();
             base.OnDestroy();
+        }
+
+#if UNITY_EDITOR
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            if (isActiveAndEnabled && !Application.isPlaying)
+            {
+                StartColorTweens(Color.white, true);
+            }
+        }
+#endif // if UNITY_EDITOR
+
+        protected override void InstantClearState()
+        {
+            base.InstantClearState();
+
+            if (transition == Transition.ColorTint)
+            {
+                StartColorTweens(Color.white, true);
+            }
+        }
+
+        protected override void DoStateTransition(SelectionState state, bool instant)
+        {
+            base.DoStateTransition(state, instant);
+
+            Color tintColor;
+            switch (state)
+            {
+                case SelectionState.Normal:
+                    tintColor = colors.normalColor;
+                    break;
+                case SelectionState.Highlighted:
+                    tintColor = colors.highlightedColor;
+                    break;
+                case SelectionState.Pressed:
+                    tintColor = colors.pressedColor;
+                    break;
+                case SelectionState.Selected:
+                    tintColor = colors.selectedColor;
+                    break;
+                case SelectionState.Disabled:
+                    tintColor = colors.disabledColor;
+                    break;
+                default:
+                    tintColor = Color.black;
+                    break;
+            }
+
+            if (transition == Transition.ColorTint)
+            {
+                StartColorTweens(tintColor * colors.colorMultiplier, instant);
+            }
+        }
+
+        protected virtual void StartColorTweens(Color targetColor, bool instant)
+        {
+            if (colorTransitionGraphics == null)
+                return;
+
+            foreach (var targetColorGraphic in colorTransitionGraphics)
+            {
+                targetColorGraphic.CrossFadeColor(targetColor, instant ? 0f : colors.fadeDuration, true, true);
+            }
         }
 
         public override void OnPointerClick(UnityEngine.EventSystems.PointerEventData eventData)

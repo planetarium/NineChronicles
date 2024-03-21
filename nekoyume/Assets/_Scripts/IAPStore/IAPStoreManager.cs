@@ -33,6 +33,8 @@ namespace Nekoyume.IAPStore
         public bool IsInitialized { get; private set; }
 
         private Dictionary<string, ProductSchema> _initailizedProductSchema = new Dictionary<string, ProductSchema>();
+        private IReadOnlyList<CategorySchema> _initializedCategorySchema;
+
 
         public Dictionary<string, ProductSchema> SeasonPassProduct = new Dictionary<string, ProductSchema>();
 
@@ -50,9 +52,10 @@ namespace Nekoyume.IAPStore
                 Debug.LogException(exception);
             }
 
-            var categorys = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
+            _initializedCategorySchema = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
                 States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
-            if (categorys is null)
+
+            if (_initializedCategorySchema is null)
             {
                 // TODO: not initialized case handling
                 Debug.LogError(
@@ -60,7 +63,7 @@ namespace Nekoyume.IAPStore
                 return;
             }
 
-            foreach (var category in categorys)
+            foreach (var category in _initializedCategorySchema)
             {
                 foreach (var product in category.ProductList)
                 {
@@ -110,6 +113,27 @@ namespace Nekoyume.IAPStore
         {
             _initailizedProductSchema.TryGetValue(sku, out var result);
             return result;
+        }
+
+        public bool TryGetCategoryName(int itemId, out string categoryName)
+        {
+            var level = States.Instance.CurrentAvatarState.level;
+            var categoryInMobileShop = _initializedCategorySchema?
+                .Where(c => c.Active && c.Name != "NoShow")
+                .OrderBy(c => c.Order)
+                .FirstOrDefault(c => c.ProductList
+                    .Where(p => p.Active && p.Buyable && (p.RequiredLevel == null || (p.RequiredLevel != null && p.RequiredLevel <= level)))
+                    .Any(p => p.FungibleItemList
+                        .Any(fi => fi.SheetItemId == itemId)));
+
+            if (categoryInMobileShop == null)
+            {
+                categoryName = string.Empty;
+                return false;
+            }
+
+            categoryName = categoryInMobileShop.Name;
+            return true;
         }
 
         public void OnPurchaseClicked(string productId)
@@ -401,11 +425,12 @@ namespace Nekoyume.IAPStore
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
             Debug.LogError($"[IDetailedStoreListener PurchaseFail] reason: {p.reason}, Product: {i.metadata.localizedTitle}");
-            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}]");
+            PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}][{p.message}]");
             Analyzer.Instance.Track(
                 "Unity/Shop/IAP/PurchaseResult",
                 ("product-id", p.productId),
-                ("result", p.reason.ToString()));
+                ("result", p.reason.ToString()),
+                ("message", p.message.ToString()));
 
             var evt = new AirbridgeEvent("IAP_Failed");
             evt.SetAction(p.productId);
@@ -531,6 +556,18 @@ namespace Nekoyume.IAPStore
                 else
                 {
                     Widget.Find<MobileShop>()?.PurchaseComplete(e.purchasedProduct.definition.id);
+                    if(_initailizedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
+                    {
+                        p.PurchaseCount++;
+                        if (p.DailyLimit != null)
+                        {
+                            p.Buyable = p.PurchaseCount < p.DailyLimit.Value;
+                        }
+                        else if (p.WeeklyLimit != null)
+                        {
+                            p.Buyable = p.PurchaseCount < p.WeeklyLimit.Value;
+                        }
+                    }
 
                     Analyzer.Instance.Track(
                         "Unity/Shop/IAP/PurchaseResult",
@@ -577,7 +614,7 @@ namespace Nekoyume.IAPStore
                 Widget.Find<MobileShop>()?.RefreshGrid();
                 Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
-                Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
+                Widget.Find<IconAndButtonSystem>().Show(L10nManager.Localize("UI_ERROR"), exc.Message, L10nManager.Localize("UI_OK"), localize: false);
             }
         }
     }

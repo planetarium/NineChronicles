@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nekoyume.Game.LiveAsset;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -176,7 +175,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            _tabGroup.SetToggledOn(eventTabButton);
+            OnForceToggleOnEventTab();
             PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
         }
 
@@ -184,12 +183,15 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreStartAnimation);
             if (!eventTabButton.IsToggledOn)
-            {
-                _tabGroup.SetToggledOn(eventTabButton);
-                _tabGroup.OnToggledOn.OnNext(eventTabButton);
-            }
+                OnForceToggleOnEventTab();
 
             OnClickEventNoticeItem(_eventBannerItems[eventNotice.Description]);
+        }
+
+        private void OnForceToggleOnEventTab()
+        {
+            _tabGroup.SetToggledOn(eventTabButton);
+            _tabGroup.OnToggledOn.OnNext(eventTabButton);
         }
 
         private void OnClickEventNoticeItem(EventBannerItem item)

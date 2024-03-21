@@ -205,11 +205,11 @@ namespace Nekoyume.Blockchain
                 }
                 else
                 {
-                    yield return UniTask.RunOnThreadPool(UniTask.Action(async () =>
+                    yield return UniTask.Run(async () =>
                     {
                         var genesisBlockPath = options.GenesisBlockPath ?? BlockManager.GenesisBlockPath();
                         _genesis = await BlockManager.ImportBlockAsync(genesisBlockPath);
-                    })).ToCoroutine();
+                    }).ToCoroutine();
                 }
 
                 sw.Stop();

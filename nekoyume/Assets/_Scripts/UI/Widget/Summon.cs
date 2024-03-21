@@ -303,7 +303,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void SetMaterialAssets()
+        public void SetMaterialAssets()
         {
             if (!gameObject.activeSelf)
             {

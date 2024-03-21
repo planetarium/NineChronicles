@@ -209,6 +209,11 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState != null)
+            {
+                Set(avatarState.level);
+            }
         }
 
         public void Set(

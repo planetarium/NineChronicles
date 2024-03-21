@@ -58,7 +58,7 @@ jobs:
             Library-${{ matrix.projectPath }}-ubuntu-
             Library-
 
-      - uses: game-ci/unity-builder@v2
+      - uses: game-ci/unity-builder@v4
         with:
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}

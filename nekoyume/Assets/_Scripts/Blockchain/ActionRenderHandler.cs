@@ -679,7 +679,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
                 .AddTo(_disposables);
@@ -692,7 +691,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Select(PrepareRuneSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneSummon)
                 .AddTo(_disposables);
@@ -1416,46 +1414,35 @@ namespace Nekoyume.Blockchain
             Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
-        private ActionEvaluation<AuraSummon> PrepareAuraSummon(ActionEvaluation<AuraSummon> eval)
-        {
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            return eval;
-        }
-
-        private ActionEvaluation<RuneSummon> PrepareRuneSummon(ActionEvaluation<RuneSummon> eval)
-        {
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            UpdateCurrentAvatarRuneStoneBalance(eval);
-
-            return eval;
-        }
-
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var action = eval.Action;
-
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[action.GroupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-            var count = summonRow.CostMaterialCount * action.SummonCount;
-            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
-
-            Widget.Find<Summon>().OnActionRender(eval);
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                Widget.Find<Summon>().OnActionRender(eval);
+            });
         }
 
         private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
         {
-            var action = eval.Action;
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[action.GroupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-            var count = summonRow.CostMaterialCount * action.SummonCount;
-            LocalLayerModifier.AddItem(eval.Action.AvatarAddress, materialRow.ItemId, count);
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var action = eval.Action;
+                var tableSheets = Game.Game.instance.TableSheets;
+                var summonRow = tableSheets.SummonSheet[action.GroupId];
+                var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+                var count = summonRow.CostMaterialCount * action.SummonCount;
 
-            Widget.Find<Summon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval);
+            });
         }
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
@@ -2452,18 +2439,52 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
+            var prevStakeState = States.Instance.StakeStateV2.GetValueOrDefault();
             UniTask.RunOnThreadPool(async () =>
             {
                 await UpdateStakeStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
+                UpdateCrystalBalance(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                // Notification
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
-                    NotificationCell.NotificationType.Information);
+                // Calculate rewards~
+                var stakeRegularFixedRewardSheet = States.Instance.StakeRegularFixedRewardSheet;
+                var stakeRegularRewardSheet = States.Instance.StakeRegularRewardSheet;
+                var stakingLevel = States.Instance.StakingLevel;
+                var stakedNcg = States.Instance.StakedBalanceState.Gold;
+                var itemSheet = TableSheets.Instance.ItemSheet;
+                // The first reward is given at the claimable block index.
+                var rewardSteps = prevStakeState.ClaimableBlockIndex == eval.BlockIndex
+                    ? 1
+                    : 1 + (int)Math.DivRem(
+                        eval.BlockIndex - prevStakeState.ClaimableBlockIndex,
+                        prevStakeState.Contract.RewardInterval,
+                        out var _);
+                var rand = new LocalRandom(eval.RandomSeed);
+                var rewardItems = StakeRewardCalculator.CalculateFixedRewards(stakingLevel, rand,
+                    stakeRegularFixedRewardSheet, itemSheet, rewardSteps);
+                var (itemRewards, favs) = StakeRewardCalculator.CalculateRewards(GoldCurrency, stakedNcg, stakingLevel, rewardSteps,
+                    stakeRegularRewardSheet, itemSheet, rand);
+                // ~Calculate rewards
 
+                var mailRewards = new List<MailReward>();
+                foreach (var rewardPair in itemRewards)
+                {
+                    if (rewardItems.Keys.FirstOrDefault(key => key.Id == rewardPair.Key.Id) is {} itemBase)
+                    {
+                        rewardItems[itemBase] += rewardPair.Value;
+                    }
+                    else
+                    {
+                        rewardItems.Add(rewardPair.Key, rewardPair.Value);
+                    }
+                }
+
+                mailRewards.AddRange(rewardItems.Select(pair => new MailReward(pair.Key, pair.Value)));
+                mailRewards.AddRange(favs.Select(fav => new MailReward(fav, (int)fav.MajorUnit)));
+
+                Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE");
                 Widget.Find<StakingPopup>().SetView();
             });
         }
@@ -2660,7 +2681,9 @@ namespace Nekoyume.Blockchain
                         enemyDigest.Value,
                         arenaSheets,
                         myCollectionState.GetEffects(tableSheets.CollectionSheet),
-                        enemyCollectionState.GetEffects(tableSheets.CollectionSheet));
+                        enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
+                        tableSheets.DeBuffLimitSheet,
+                        true);
 
                     var reward = RewardSelector.Select(
                         random,
@@ -2861,7 +2884,8 @@ namespace Nekoyume.Blockchain
                 runeStates,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
-                States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet)
+                States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
+                TableSheets.Instance.DeBuffLimitSheet
             );
             simulator.Simulate();
             var log = simulator.Log;
@@ -2911,7 +2935,7 @@ namespace Nekoyume.Blockchain
             worldBoss.Close(true);
 
             Widget.Find<LoadingScreen>().Close();
-            Game.Game.instance.RaidStage.Play(
+            var raidStartData = new RaidStage.RaidStartData(
                 eval.Action.AvatarAddress,
                 simulator.BossId,
                 log,
@@ -2921,6 +2945,8 @@ namespace Nekoyume.Blockchain
                 false,
                 simulator.AssetReward,
                 killRewards);
+
+            Game.Game.instance.RaidStage.Play(raidStartData);
         }
 
         private static ActionEvaluation<ClaimRaidReward> PrepareClaimRaidReward(

@@ -51,6 +51,19 @@ namespace Nekoyume.UI.Model
 
             var key = $"SKILL_DESCRIPTION_{skillId}";
 
+            if (sheets.SkillActionBuffSheet.TryGetValue(skillId, out var skillActionBuffRow))
+            {
+                buffObject.SetActive(false);
+                debuffObject.SetActive(true);
+                var buffIcon = BuffHelper.GetBuffOverrideIcon(skillActionBuffRow.BuffIds.First());
+                buffIconImage.overrideSprite = buffIcon;
+                buffStatTypeText.text = skillName;
+                debuffObject.SetActive(false);
+                cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {coolDown}";
+                contentText.text = L10nManager.Localize($"SKILL_DESCRIPTION_{skillId}", chanceText, coolDown.ToString(), valueText);
+                return;
+            }
+
             List<int> buffList = null;
             if (sheets.SkillBuffSheet.TryGetValue(skillId, out var skillBuffSheetRow))
                 buffList = skillBuffSheetRow.BuffIds;

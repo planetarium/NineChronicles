@@ -30,15 +30,16 @@ RectTransform:
   m_GameObject: {fileID: 4841336002407819787}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 100, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -250, y: 130}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 220, y: -350}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!33 &529600705119399618
 MeshFilter:
@@ -59,6 +60,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -67,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8469783404a83794b902c43f1ffae873, type: 2}
+  - {fileID: 2100000, guid: 40bde574fb3ecef45abdc26f0c53e083, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -103,8 +105,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skeletonDataAsset: {fileID: 11400000, guid: 1771b84c4b3f0954c904f905d84bc9d4, type: 2}
   initialSkinName: 
+  fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
   initialFlipY: 0
+  updateWhenInvisible: 3
   separatorSlotNames: []
   zSpacing: 0
   useClipping: 1
@@ -113,6 +117,7 @@ MonoBehaviour:
   clearStateOnDisable: 0
   tintBlack: 0
   singleSubmesh: 0
+  fixDrawOrder: 0
   addNormals: 0
   calculateTangents: 0
   maskInteraction: 0
@@ -121,6 +126,8 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
+  updateTiming: 1
+  unscaledTime: 0
   _animationName: CutScene
   loop: 0
   timeScale: 1

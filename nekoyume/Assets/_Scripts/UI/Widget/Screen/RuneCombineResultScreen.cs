@@ -2,9 +2,7 @@
 using Nekoyume.UI.Tween;
 using System.Collections;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -107,26 +105,6 @@ namespace Nekoyume.UI
             StartCoroutine(DisappearNpc());
         }
 
-        private IEnumerator CoWorkshopItemMove()
-        {
-            var target = Find<HeaderMenuStatic>()
-                .GetToggle(HeaderMenuStatic.ToggleType.AvatarInfo);
-            var targetPosition = target ? target.position : Vector3.zero;
-
-            ItemMoveAnimation.Show(
-                speechBubble.RuneImage.sprite,
-                speechBubble.RuneImage.transform.position,
-                targetPosition,
-                Vector2.one * 1.5f,
-                false,
-                false,
-                1f,
-                0,
-                ItemMoveAnimation.EndPoint.Inventory);
-
-            yield return null;
-        }
-
         private IEnumerator DisappearNpc()
         {
             if (AnimationState.Value == AnimationStateType.Shown)
@@ -140,15 +118,11 @@ namespace Nekoyume.UI
 
         private void OnCloseComplete()
         {
-            StartCoroutine(CoWorkshopItemMove());
             npcSkeletonGraphic.gameObject.SetActive(false);
             speechBubble.Hide();
             OnDisappear?.Invoke();
             _closeAction?.Invoke();
             Close();
-            OneLineSystem.Push(MailType.Grinding,
-                L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE"),
-                NotificationCell.NotificationType.Information);
         }
     }
 }

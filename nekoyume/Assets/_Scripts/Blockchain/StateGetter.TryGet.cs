@@ -60,10 +60,17 @@ namespace Nekoyume.Blockchain
             Address address,
             out StakeStateV2 stakeStateV2)
         {
-            if(GetStakeStateV2(hash, address) is { } state)
+            try
             {
-                stakeStateV2 = state;
-                return true;
+                if (GetStakeStateV2(hash, address) is { } state)
+                {
+                    stakeStateV2 = state;
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                // ignored
             }
 
             stakeStateV2 = default;

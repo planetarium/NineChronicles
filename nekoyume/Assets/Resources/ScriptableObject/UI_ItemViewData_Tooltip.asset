@@ -68,3 +68,12 @@ MonoBehaviour:
     enhancementMaterial: {fileID: 2100000, guid: d0ba5015ebc174e1980d7df502f1ebb6,
       type: 2}
     itemGradeParticleColor: {r: 0.69718415, g: 0.20478818, b: 0.735849, a: 1}
+  - grade: 6
+    gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
+    gradeHsvRange: 1
+    gradeHsvHue: -0.06
+    gradeHsvSaturation: 0.5
+    gradeHsvValue: 0.06
+    enhancementMaterial: {fileID: 2100000, guid: 4a37678f75e9c3e4fa67b79e0891e313,
+      type: 2}
+    itemGradeParticleColor: {r: 0.7372549, g: 0.2415782, b: 0.20392154, a: 1}

@@ -2873,13 +2873,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 10.2
   m_fontSizeMax: 18
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -8230,7 +8230,7 @@ PrefabInstance:
     - target: {fileID: 6643681360994247513, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 34
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a68c5685c2668a4c8e9ff8c45bab175, type: 3}

@@ -71,6 +71,18 @@ namespace Nekoyume.UI
             Find<ShopListPopup>().Show(product, purchasingData).Forget();
         }
 
+        public async void ShowAsTab(string categoryName)
+        {
+            await ShowAsync();
+
+            if (_allCategoryTab.TryGetValue(categoryName, out var categoryTab))
+            {
+                var toggle = categoryTab.GetComponent<Toggle>();
+                // set to true to trigger OnValueChanged
+                toggle.isOn = !toggle.isOn;
+            }
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Game.Event.OnRoomEnter.Invoke(true);
@@ -99,6 +111,7 @@ namespace Nekoyume.UI
                             true,
                             IconAndButtonSystem.SystemType.Information);
                     }
+
                     await InitializeObj(categorySchemas);
 
                     _isInitializedObj = true;
@@ -111,7 +124,7 @@ namespace Nekoyume.UI
                         {
                             if (_allProductObjs.TryGetValue(item.Sku, out var cellView))
                             {
-                                cellView.SetData(item, category.Name == RecommendedString);
+                                cellView.SetData(item);
                             }
                         }
                     }

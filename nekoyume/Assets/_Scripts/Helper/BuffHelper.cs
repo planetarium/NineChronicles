@@ -100,6 +100,17 @@ namespace Nekoyume.Helper
             }
         }
 
+        public static Sprite GetBuffOverrideIcon(int id)
+        {
+            var overrideData = VFXData.OverrideDataList
+                    .FirstOrDefault(x => x.Id == id);
+            if(overrideData == null)
+            {
+                return VFXData.FallbackIcon;
+            }
+            return overrideData.Icon;
+        }
+
         public static Sprite GetStatBuffIcon(StatType statType, bool isDebuff)
         {
             var data = VFXData.DataList.FirstOrDefault(x => x.StatType == statType);

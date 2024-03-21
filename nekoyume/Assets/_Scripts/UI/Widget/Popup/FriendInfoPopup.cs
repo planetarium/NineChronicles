@@ -249,7 +249,7 @@ namespace Nekoyume.UI
             var runeSlot = _runes[battleType].GetRuneSlot();
             costumeSlots.SetPlayerCostumes(level, costumes, ShowTooltip, null);
             equipmentSlots.SetPlayerEquipments(level, equipments, ShowTooltip, null);
-            runeSlots.Set(runeSlot, _runeStates,ShowRuneTooltip);
+            runeSlots.Set(runeSlot, _runeStates, ShowRuneTooltip);
         }
 
         private void UpdateStatViews(
@@ -259,8 +259,8 @@ namespace Nekoyume.UI
         {
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
+            var runes = _runes[battleType];
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            var runeStates = _runeStates;
             var equipmentSetEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
@@ -270,7 +270,10 @@ namespace Nekoyume.UI
             }
 
             var runeStatModifiers = new List<StatModifier>();
-            foreach (var runeState in runeStates)
+            foreach (var runeState in runes.GetRuneSlot()
+                         .Where(slot => slot.RuneId.HasValue)
+                         .Select(slot => _runeStates.FirstOrDefault(x => x.RuneId == slot.RuneId))
+                         .Where(runeState => runeState != null))
             {
                 if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var statRow) ||
                     !statRow.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))

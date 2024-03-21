@@ -9,6 +9,7 @@ namespace Nekoyume.Game
     public class Background : MonoBehaviour
     {
         [SerializeField] private float parallaxSpeed = 0.0f;
+        [SerializeField] private float childSizeAdjust = 1.0f;
 
         private float _parallaxSize = 0.0f;
         private Transform _cameraTransform;
@@ -70,6 +71,7 @@ namespace Nekoyume.Game
                 {
                     g.transform.SetParent(go.transform);
                 }
+                go.transform.localScale *= childSizeAdjust;
             }
 
             foreach (var child in children)
@@ -109,7 +111,7 @@ namespace Nekoyume.Game
                         }
                     }
                 }
-                _images[i].localPosition = new Vector3(_parallaxSize * i + initPosition.x, initPosition.y, initPosition.z);
+                _images[i].localPosition = new Vector3(_parallaxSize * i * childSizeAdjust + initPosition.x, initPosition.y, initPosition.z);
             }
 
             _lastCameraX = _cameraTransform.position.x;

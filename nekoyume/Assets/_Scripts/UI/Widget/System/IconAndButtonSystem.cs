@@ -54,6 +54,8 @@ namespace Nekoyume.UI
         public System.Action ConfirmCallback { get; set; }
         public System.Action CancelCallback { get; set; }
 
+        public TextMeshProUGUI ContentText => _contentText;
+
         protected override void Awake()
         {
             base.Awake();

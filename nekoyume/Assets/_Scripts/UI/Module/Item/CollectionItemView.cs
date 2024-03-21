@@ -18,7 +18,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Color requiredColor;
 
+        [SerializeField]
+        private Animator animator;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private static readonly int Register = Animator.StringToHash("Register");
 
         public void Set(CollectionMaterial model, Action<CollectionMaterial> onClick)
         {
@@ -39,7 +43,7 @@ namespace Nekoyume.UI.Module
             baseItemView.TouchHandler.OnClick.Select(_ => model).Subscribe(onClick).AddTo(_disposables);
             baseItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(model.Row.ItemId);
 
-            var required = model.HasItem && !model.EnoughCount;
+            var required = model.HasItem && !model.IsEnoughAmount;
             baseItemView.EnhancementText.gameObject.SetActive(model.ItemType == ItemType.Equipment);
             var level = model.Row.Level;
             baseItemView.EnhancementText.text = level > 0 ? $"+{level}" : string.Empty;
@@ -88,6 +92,9 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
             model.Registered
                 .Subscribe(_ => baseItemView.EnoughObject.SetActive(model.Enough))
+                .AddTo(_disposables);
+            model.Registered.Where(b => b)
+                .Subscribe(_ => animator.SetTrigger(Register))
                 .AddTo(_disposables);
         }
     }
