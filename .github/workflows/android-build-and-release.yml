@@ -81,6 +81,38 @@ jobs:
         run: |
           echo "$GOOGLE_SERVICES_JSON" | base64 -d > ${{ matrix.projectPath }}/Assets/NineChronicles/GoogleServices/google-services.json
 
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Verify google-services.json File
+        run: |
+          FILE_PATH=${{ matrix.projectPath }}/Assets/NineChronicles/GoogleServices/google-services.json
+          if [ -f "$FILE_PATH" ]; then
+            echo "google-services.json exists. Verifying JSON format..."
+            jq empty $FILE_PATH
+            if [ $? -eq 0 ]; then
+              echo "JSON format is valid."
+            else
+              echo "JSON format is invalid. Please check the content of google-services.json."
+              exit 1
+            fi
+          else
+            echo "google-services.json does not exist. Please check the decoding and file creation process."
+            exit 1
+          fi
+        shell: bash
+
+      - name: Set Permissions for google-services.json
+        run: |
+          FILE_PATH=${{ matrix.projectPath }}/Assets/NineChronicles/GoogleServices/google-services.json
+          if [ -f "$FILE_PATH" ]; then
+            chmod 644 $FILE_PATH
+            echo "Set read and write permissions for user, and read permissions for group and others."
+          else
+            echo "google-services.json does not exist."
+          fi
+        shell: bash
+
       - uses: game-ci/unity-builder@v4
         with:
           androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
