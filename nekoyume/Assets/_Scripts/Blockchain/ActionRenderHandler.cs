@@ -2095,10 +2095,12 @@ namespace Nekoyume.Blockchain
             var random = new LocalRandom(eval.RandomSeed);
             var stageId = eval.Action.EventDungeonStageId;
             var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
-            var simulator = new StageSimulatorV2(
+            var tableSheets = TableSheets.Instance;
+            var simulator = new StageSimulator(
                 random,
                 States.Instance.CurrentAvatarState,
                 eval.Action.Foods,
+                States.Instance.GetEquippedRuneStates(BattleType.Adventure),
                 new List<Skill>(),
                 eval.Action.EventDungeonId,
                 stageId,
@@ -2108,14 +2110,16 @@ namespace Nekoyume.Blockchain
                 RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
                     stageId.ToEventDungeonStageNumber(),
                     Action.EventDungeonBattle.PlayCount),
-                TableSheets.Instance.GetSimulatorSheetsV1(),
+                TableSheets.Instance.GetStageSimulatorSheets(),
                 TableSheets.Instance.EnemySkillSheet,
                 TableSheets.Instance.CostumeStatSheet,
-                StageSimulatorV2.GetWaveRewards(
+                StageSimulator.GetWaveRewards(
                     random,
                     stageRow,
                     TableSheets.Instance.MaterialItemSheet,
-                    Action.EventDungeonBattle.PlayCount));
+                    Action.EventDungeonBattle.PlayCount),
+                States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                tableSheets.DeBuffLimitSheet);
             simulator.Simulate();
             var log = simulator.Log;
             var stage = Game.Game.instance.Stage;
