@@ -62,7 +62,7 @@ namespace Nekoyume.Game.Scenes
                 case SceneType.Battle:
                     break;
                 case SceneType.Loading:
-                    break;
+                    return "LoadingScene";
             }
 
             return string.Empty;

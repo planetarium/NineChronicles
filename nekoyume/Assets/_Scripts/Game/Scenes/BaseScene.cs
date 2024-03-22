@@ -23,6 +23,9 @@ namespace Nekoyume.Game.Scenes
             Initialize();
         }
 
+        /// <summary>
+        /// TODO: 어드레서블 적용시 해당 메서드에서 에셋 로드
+        /// </summary>
         protected abstract UniTask LoadSceneAssets();
 
         protected virtual void Initialize()

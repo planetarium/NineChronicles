@@ -14,8 +14,14 @@ namespace Nekoyume.BattleTest
         {
             if (Input.GetKeyDown("]"))
             {
-                NcSceneManager.Instance.LoadScene(SceneType.Loading).Forget();
+                EnterBattleLobby();
             }
+        }
+
+        [ContextMenu("Enter Battle Lobby")]
+        public void EnterBattleLobby()
+        {
+            NcSceneManager.Instance.LoadScene(SceneType.Lobby).Forget();
         }
     }
 }

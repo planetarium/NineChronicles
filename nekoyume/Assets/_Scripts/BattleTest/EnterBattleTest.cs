@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Scenes;
@@ -5,6 +6,7 @@ using Nekoyume.State;
 using TMPro;
 using UnityEngine;
 using Nekoyume.Model.EnumType;
+using UnityEngine.UI;
 
 namespace Nekoyume.BattleTest
 {
@@ -21,6 +23,14 @@ namespace Nekoyume.BattleTest
 
         [SerializeField]
         private TMP_InputField stageIdInputField;
+
+        [SerializeField]
+        private Button enterBattleButton;
+
+        private void Awake()
+        {
+            enterBattleButton.onClick.AddListener(EnterBattle);
+        }
 
         public void EnterBattle()
         {
