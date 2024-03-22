@@ -89,8 +89,6 @@ namespace Nekoyume.UI
         private string _keyStorePath;
         private string _privateKey;
         private PlanetContext _planetContext;
-        private bool _enableGuestLogin;
-        private bool _guest;
 
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
@@ -250,12 +248,11 @@ namespace Nekoyume.UI
                 L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
         }
 
-        public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext, bool enableGuestLogin)
+        public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             _planetContext = planetContext;
-            _enableGuestLogin = enableGuestLogin;
             ApplyPlanetContext(_planetContext);
 
             if (SigninContext.HasLatestSignedInSocialType)
@@ -282,14 +279,14 @@ namespace Nekoyume.UI
             qrCodeGuideContainer.SetActive(false);
         }
 
-        public void Show(string keyStorePath, string privateKey, PlanetContext planetContext, bool enableGuestLogin)
+        public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
             Analyzer.Instance.Track("Unity/Intro/Show");
 
             var evt = new AirbridgeEvent("Intro_Show");
             AirbridgeUnity.TrackEvent(evt);
 
-            SetData(keyStorePath, privateKey, planetContext, enableGuestLogin);
+            SetData(keyStorePath, privateKey, planetContext);
 
 #if RUN_ON_MOBILE
             pcContainer.SetActive(false);
@@ -298,7 +295,6 @@ namespace Nekoyume.UI
             touchScreenButtonGO.SetActive(false);
             startButtonContainer.SetActive(true);
             qrCodeGuideContainer.SetActive(false);
-            EnableGuest();
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
@@ -414,10 +410,15 @@ namespace Nekoyume.UI
             catch (Exception e)
             {
                 Debug.LogWarning($"Failed to get guest private key: {e}");
-                _guest = false;
                 return;
             }
 
+            if(Game.Game.instance.CommandLineOptions == null || !Game.Game.instance.CommandLineOptions.EnableGuestLogin)
+            {
+                return;
+            }
+
+            guestButton.gameObject.SetActive(true);
             guestButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/Guest/Click");
@@ -429,16 +430,7 @@ namespace Nekoyume.UI
                 KeyManager.Instance.SignIn(pk);
                 Game.Game.instance.IsGuestLogin = true;
             });
-            _guest = true;
-        }
-
-        private void EnableGuest()
-        {
-            if (_guest && _enableGuestLogin)
-            {
-                guestButton.gameObject.SetActive(true);
-                guestButton.interactable = true;
-            }
+            guestButton.interactable = true;
         }
 
 #if RUN_ON_MOBILE
