@@ -110,6 +110,12 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject debugConsolePrefab;
 
+        /// <summary>
+        /// 씬 분리 작업을 위해 전역적으로 쓰던 오브젝트들을 씬이 바뀌어도 파괴되지 않도록 설정합니다.
+        /// </summary>
+        [SerializeField]
+        private GameObject[] dontDestroyOnLoadObjects;
+
         public PlanetId? CurrentPlanetId { get; private set; }
 
         public States States { get; private set; }
@@ -214,6 +220,11 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             CurrentSocialEmail = string.Empty;
+
+            foreach (var dontDestroyOnLoadObject in dontDestroyOnLoadObjects)
+            {
+                DontDestroyOnLoad(dontDestroyOnLoadObject);
+            }
 
             Debug.Log("[Game] Awake() invoked");
             GL.Clear(true, true, Color.black);
