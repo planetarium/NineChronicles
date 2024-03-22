@@ -99,8 +99,9 @@ namespace Nekoyume
                     {
                         ItemSubTypeFilter.Food_HP,
                         ItemSubTypeFilter.Food_ATK,
-                        ItemSubTypeFilter.Food_DEF,
                         ItemSubTypeFilter.Food_CRI,
+                        ItemSubTypeFilter.Food_DEF,
+                        ItemSubTypeFilter.Food_SPD,
                         ItemSubTypeFilter.Food_HIT,
                     }
                 },
