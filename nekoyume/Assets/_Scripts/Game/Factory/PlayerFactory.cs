@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Libplanet.Crypto;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -36,7 +37,7 @@ namespace Nekoyume.Game.Factory
                     tableSheets.EquipmentItemSetEffectSheet);
             }
 
-            var objectPool = Game.instance.Stage.objectPool;
+            var objectPool = Stage.instance.objectPool;
             var player = objectPool.Get<Character.Player>();
             if (!player)
             {
@@ -65,7 +66,7 @@ namespace Nekoyume.Game.Factory
                 tableSheets.CharacterSheet,
                 tableSheets.CharacterLevelSheet,
                 tableSheets.EquipmentItemSetEffectSheet);
-            var objectPool = Game.instance.Stage.objectPool;
+            var objectPool = Stage.instance.objectPool;
 
             var player = objectPool.Get<Character.Player>();
             if (!player)

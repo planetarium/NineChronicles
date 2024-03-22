@@ -8,6 +8,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using TMPro;
 using UnityEngine;
@@ -48,7 +49,7 @@ namespace Nekoyume.UI
         public void Show(int beforeLevel, int afterLevel, bool ignoreShowAnimation = false)
         {
             var gameInstance = Game.Game.instance;
-            _model = gameInstance.Stage.SelectedPlayer.Model;
+            _model = Stage.instance.SelectedPlayer.Model;
             var characterSheet = gameInstance.TableSheets.CharacterSheet;
             var characterId = _model.CharacterId;
             var costumeStatSheet = gameInstance.TableSheets.CostumeStatSheet;
@@ -89,7 +90,7 @@ namespace Nekoyume.UI
 
             var position = CameraManager.Instance.MainCamera.transform.position;
 
-            var stage = Game.Game.instance.Stage;
+            var stage = Stage.instance;
             base.Show(ignoreShowAnimation);
         }
 

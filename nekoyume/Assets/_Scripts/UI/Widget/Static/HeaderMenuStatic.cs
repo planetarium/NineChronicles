@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -199,7 +200,7 @@ namespace Nekoyume.UI.Module
                             var widget = Find<InviteFriendsPopup>();
                             if (value)
                             {
-                                var stage = Game.instance.Stage;
+                                var stage = Stage.instance;
                                 if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                                 {
                                     widget.Show(() => { toggleInfo.Toggle.isOn = false; });
@@ -225,7 +226,7 @@ namespace Nekoyume.UI.Module
                             var confirm = Find<TitleOneButtonSystem>();
                             if (value)
                             {
-                                var stage = Game.instance.Stage;
+                                var stage = Stage.instance;
                                 if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                                 {
                                     confirm.SubmitCallback = () =>
@@ -253,7 +254,7 @@ namespace Nekoyume.UI.Module
                             var confirm = Find<TitleOneButtonSystem>();
                             if (value)
                             {
-                                var stage = Game.instance.Stage;
+                                var stage = Stage.instance;
                                 if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                                 {
                                     confirm.SubmitCallback = () =>
@@ -291,7 +292,7 @@ namespace Nekoyume.UI.Module
                             var widget = Find<EventReleaseNotePopup>();
                             if (value)
                             {
-                                var stage = Game.instance.Stage;
+                                var stage = Stage.instance;
                                 if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                                 {
                                     widget.ShowNotFiltered(() => { toggleInfo.Toggle.isOn = false; });
@@ -323,7 +324,7 @@ namespace Nekoyume.UI.Module
                                     return;
                                 }
 
-                                var stage = Game.instance.Stage;
+                                var stage = Stage.instance;
                                 if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                                 {
                                     widget.Show(() => { toggleInfo.Toggle.isOn = false; });

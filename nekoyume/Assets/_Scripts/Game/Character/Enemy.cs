@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Battle;
 using UniRx;
 using UnityEngine;
 
@@ -36,7 +37,7 @@ namespace Nekoyume.Game.Character
 
             Animator = new EnemyAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
-            Animator.TimeScale = AnimatorTimeScale * Game.instance.Stage.AnimationTimeScaleWeight;
+            Animator.TimeScale = AnimatorTimeScale * Stage.instance.AnimationTimeScaleWeight;
 
             TargetTag = Tag.Player;
         }
@@ -78,7 +79,7 @@ namespace Nekoyume.Game.Character
         {
             base.UpdateHpBar();
 
-            var boss = Game.instance.Stage.Boss;
+            var boss = Stage.instance.Boss;
             if (!(boss is null) && !Id.Equals(boss.Id))
                 return;
 

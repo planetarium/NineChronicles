@@ -1,6 +1,7 @@
 using System.Linq;
 using Libplanet.Crypto;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -103,10 +104,10 @@ namespace Nekoyume.UI
         {
             if (isCurrentAvatar)
             {
-                var player = Game.Game.instance.Stage.SelectedPlayer;
+                var player = Stage.instance.SelectedPlayer;
                 if (player is null)
                 {
-                    player = Game.Game.instance.Stage.GetPlayer();
+                    player = Stage.instance.GetPlayer();
                     characterView.SetByPlayer(player);
                     player.gameObject.SetActive(false);
                 }

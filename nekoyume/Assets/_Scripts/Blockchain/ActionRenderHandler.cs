@@ -31,6 +31,7 @@ using Nekoyume.Arena;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
@@ -1893,7 +1894,7 @@ namespace Nekoyume.Blockchain
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
-                Game.Game.instance.Stage.onEnterToStageEnd
+                Stage.instance.onEnterToStageEnd
                     .First()
                     .Subscribe(_ =>
                     {
@@ -1907,7 +1908,7 @@ namespace Nekoyume.Blockchain
                                     eval.Action.AvatarAddress,
                                     newAvatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
-                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                                Stage.instance.IsAvatarStateUpdatedAfterBattle = true;
                             }
                             catch (Exception e)
                             {
@@ -1938,8 +1939,8 @@ namespace Nekoyume.Blockchain
                 out var simulator,
                 out var temporaryAvatar);
             var log = simulator.Log;
-            Game.Game.instance.Stage.PlayCount = eval.Action.TotalPlayCount;
-            Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
+            Stage.instance.PlayCount = eval.Action.TotalPlayCount;
+            Stage.instance.StageType = StageType.HackAndSlash;
             if (eval.Action.TotalPlayCount > 1)
             {
                 Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
@@ -2063,7 +2064,7 @@ namespace Nekoyume.Blockchain
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
-                Game.Game.instance.Stage.onEnterToStageEnd
+                Stage.instance.onEnterToStageEnd
                     .First()
                     .Subscribe(_ =>
                     {
@@ -2072,7 +2073,7 @@ namespace Nekoyume.Blockchain
                             UpdateCurrentAvatarStateAsync(eval).Forget();
                             RxProps.EventDungeonInfo.UpdateAsync().Forget();
                             _disposableForBattleEnd = null;
-                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            Stage.instance.IsAvatarStateUpdatedAfterBattle = true;
                         }, configureAwait: false);
                         task.ToObservable()
                             .First()
@@ -2118,7 +2119,7 @@ namespace Nekoyume.Blockchain
                     Action.EventDungeonBattle.PlayCount));
             simulator.Simulate();
             var log = simulator.Log;
-            var stage = Game.Game.instance.Stage;
+            var stage = Stage.instance;
             stage.StageType = StageType.EventDungeon;
             stage.PlayCount = playCount;
 

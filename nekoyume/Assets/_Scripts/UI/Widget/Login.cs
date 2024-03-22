@@ -6,6 +6,7 @@ using Nekoyume.Game.Util;
 using Nekoyume.State;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
@@ -31,7 +32,7 @@ namespace Nekoyume.UI
             {
                 throw new Exception("Login widget's slots.Length is not equals GameConfig.SlotCount.");
             }
-            _objectPool = Game.Game.instance.Stage.objectPool;
+            _objectPool = Stage.instance.objectPool;
 
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
             Game.Event.OnRoomEnter.AddListener(_ => ClearPlayers());

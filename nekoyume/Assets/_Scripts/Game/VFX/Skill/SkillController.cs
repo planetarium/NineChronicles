@@ -1,3 +1,4 @@
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;

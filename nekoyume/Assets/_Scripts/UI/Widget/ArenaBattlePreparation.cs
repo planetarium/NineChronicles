@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.Model.Item;
@@ -228,7 +229,7 @@ namespace Nekoyume.UI
             coverToBlockClick.SetActive(true);
             var game = Game.Game.instance;
             game.IsInWorld = true;
-            game.Stage.IsShowHud = true;
+            Stage.instance.IsShowHud = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
             var currencyImage = costType switch

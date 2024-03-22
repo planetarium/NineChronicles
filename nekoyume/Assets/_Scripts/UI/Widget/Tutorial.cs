@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
@@ -102,7 +103,7 @@ namespace Nekoyume.UI
             }
 
             const int skippableTutorialId = 50011;
-            var isSkippable = Game.Game.instance.Stage.TutorialController.LastPlayedTutorialId >
+            var isSkippable = Stage.instance.TutorialController.LastPlayedTutorialId >
                               skippableTutorialId;
             skipButton.gameObject.SetActive(isSkippable);
             _finishRef = 0;
@@ -185,7 +186,7 @@ namespace Nekoyume.UI
 
         private void SkipSession()
         {
-            var controller = Game.Game.instance.Stage.TutorialController;
+            var controller = Stage.instance.TutorialController;
             controller.Skip(controller.LastPlayedTutorialId);
         }
 

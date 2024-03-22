@@ -14,6 +14,7 @@ using System.Linq;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Director;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Model.Skill;
 using UnityEngine;

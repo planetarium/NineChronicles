@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;

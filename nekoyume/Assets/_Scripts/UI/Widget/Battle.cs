@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -67,7 +68,7 @@ namespace Nekoyume.UI
 
             exitToggle.onValueChanged.AddListener(value =>
             {
-                var stage = Game.Game.instance.Stage;
+                var stage = Stage.instance;
                 stage.IsExitReserved = value;
                 if (value)
                 {
@@ -104,7 +105,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             guidedQuest.Hide(ignoreCloseAnimation);
-            var stage = Game.Game.instance.Stage;
+            var stage = Stage.instance;
             stage.AnimationTimeScaleWeight = Stage.DefaultAnimationTimeScaleWeight;
             stage.UpdateTimeScale();
             accelerationToggle.gameObject.SetActive(false);
@@ -263,7 +264,7 @@ namespace Nekoyume.UI
 
         private void SetAccelToggle(bool value)
         {
-            var stage = Game.Game.instance.Stage;
+            var stage = Stage.instance;
             stage.AnimationTimeScaleWeight = value
                 ? Stage.AcceleratedAnimationTimeScaleWeight
                 : Stage.DefaultAnimationTimeScaleWeight;

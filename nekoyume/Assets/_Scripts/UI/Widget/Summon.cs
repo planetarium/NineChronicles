@@ -10,6 +10,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -428,7 +429,7 @@ namespace Nekoyume.UI
             Find<SummonResultPopup>().Show(summonRow, 1, new List<Equipment> {resultEquipment},
                 () =>
                 {
-                    Game.Game.instance.Stage.TutorialController.Play(50005);
+                    Stage.instance.TutorialController.Play(50005);
                 });
 
             // UI Reset for SetCostUIForTutorial() invoking

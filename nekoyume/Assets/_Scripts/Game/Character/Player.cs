@@ -5,6 +5,7 @@ using System.Linq;
 using Libplanet.Crypto;
 using mixpanel;
 using Nekoyume.Game.Avatar;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
@@ -35,7 +36,7 @@ namespace Nekoyume.Game.Character
 
         public Pet Pet => appearance.Pet;
 
-        protected override float RunSpeedDefault => CharacterModel.RunSpeed * Game.instance.Stage.AnimationTimeScaleWeight;
+        protected override float RunSpeedDefault => CharacterModel.RunSpeed * Stage.instance.AnimationTimeScaleWeight;
 
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
@@ -60,7 +61,7 @@ namespace Nekoyume.Game.Character
 
             Animator = new PlayerAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
-            Animator.TimeScale = Game.instance.Stage.AnimationTimeScaleWeight;
+            Animator.TimeScale = Stage.instance.AnimationTimeScaleWeight;
 
             touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
                 .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
@@ -81,7 +82,7 @@ namespace Nekoyume.Game.Character
             {
                 if (Game.instance.IsInWorld)
                 {
-                    if (Game.instance.Stage.IsShowHud)
+                    if (Stage.instance.IsShowHud)
                     {
                         HudContainer.UpdateAlpha(IsDead ? 0 : 1);
                     }

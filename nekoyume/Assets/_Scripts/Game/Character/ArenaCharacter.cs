@@ -5,6 +5,7 @@ using System.Linq;
 using BTAI;
 using DG.Tweening;
 using Libplanet.Crypto;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -510,8 +511,8 @@ namespace Nekoyume.Game.Character
 
                     Vector3 targetEffectPos = target.transform.position;
                     targetEffectPos.y += 0.55f;
-                    var targetEffectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
-                                    Game.instance.Stage.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
+                    var targetEffectObj = Stage.instance.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
+                                    Stage.instance.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
                     var strikeEffect = targetEffectObj.GetComponent<VFX.VFX>();
                     if (strikeEffect is null)
                         continue;
@@ -523,8 +524,8 @@ namespace Nekoyume.Game.Character
 
             Vector3 effectPos = transform.position;
             effectPos.y += 0.55f;
-            var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
-                            Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
+            var effectObj = Stage.instance.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
+                            Stage.instance.objectPool.Get("ShatterStrike_casting", true, effectPos);
             var castEffect = effectObj.GetComponent<VFX.VFX>();
             if (castEffect != null)
             {
@@ -557,8 +558,8 @@ namespace Nekoyume.Game.Character
                     effectPos.x += 0.3f;
                     effectPos.y = Stage.StageStartPosition + 0.32f;
 
-                    var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_{i + 1:D2}", false, effectPos) ??
-                    Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
+                    var effectObj = Stage.instance.objectPool.Get($"TwinAttack_{i + 1:D2}", false, effectPos) ??
+                    Stage.instance.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
                     var effect = effectObj.GetComponent<VFX.VFX>();
                     if (effect != null)
                     {
@@ -745,8 +746,8 @@ namespace Nekoyume.Game.Character
             {
                 Vector3 effectPos = item.transform.position;
 
-                var effectObj = Game.instance.Stage.objectPool.Get("buff_dispel_success", false, effectPos) ??
-                            Game.instance.Stage.objectPool.Get("buff_dispel_success", true, effectPos);
+                var effectObj = Stage.instance.objectPool.Get("buff_dispel_success", false, effectPos) ??
+                            Stage.instance.objectPool.Get("buff_dispel_success", true, effectPos);
                 var dispellEffect = effectObj.GetComponent<VFX.VFX>();
                 if (dispellEffect != null)
                 {

@@ -1,4 +1,5 @@
 ﻿using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.UI;
 using UnityEditor;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace Editor
                 Debug.Log("Trying to show tutorial...");
                 if (int.TryParse(_tutorialIdInput, out var id))
                 {
-                    Game.instance.Stage.TutorialController.Play(id);
+                    Stage.instance.TutorialController.Play(id);
                     Debug.Log($"Show tutorial: {id}");
                 }
                 else

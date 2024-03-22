@@ -10,6 +10,7 @@ using UnityEngine;
 using System.Numerics;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
@@ -165,7 +166,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             if (enhancementInventory.TryGetCellByIndex(0, out var firstCell))
             {
-                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                Stage.instance.TutorialController.SetTutorialTarget(new TutorialTarget
                 {
                     type = TutorialTargetType.CombinationInventoryFirstCell,
                     rectTransform = (RectTransform)firstCell.transform
@@ -174,7 +175,7 @@ namespace Nekoyume.UI
 
             if (enhancementInventory.TryGetCellByIndex(1, out var secondCell))
             {
-                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                Stage.instance.TutorialController.SetTutorialTarget(new TutorialTarget
                 {
                     type = TutorialTargetType.CombinationInventorySecondCell,
                     rectTransform = (RectTransform)secondCell.transform

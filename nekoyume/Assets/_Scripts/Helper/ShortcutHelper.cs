@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -397,7 +398,7 @@ namespace Nekoyume.Helper
             int stageId,
             bool showByGuideQuest = false)
         {
-            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+            Stage.instance.GetPlayer().gameObject.SetActive(false);
 
             var worldMap = Widget.Find<WorldMap>();
             worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
@@ -418,7 +419,7 @@ namespace Nekoyume.Helper
             int eventDungeonStageId,
             bool showByGuideQuest = false)
         {
-            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+            Stage.instance.GetPlayer().gameObject.SetActive(false);
 
             var worldMap = Widget.Find<WorldMap>();
             worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);

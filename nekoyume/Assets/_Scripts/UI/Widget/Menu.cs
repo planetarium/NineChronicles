@@ -15,6 +15,7 @@ using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -187,7 +188,7 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
-            var stage = Game.Game.instance.Stage;
+            var stage = Stage.instance;
             stage.IsExitReserved = false;
             var player = stage.GetPlayer();
             player.StartRun();
@@ -709,7 +710,7 @@ namespace Nekoyume.UI
             }
 
             var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 0;
-            Game.Game.instance.Stage.TutorialController.Run(clearedStageId);
+            Stage.instance.TutorialController.Run(clearedStageId);
         }
 
         private IEnumerator CoHelpPopup()
@@ -799,7 +800,7 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction()
         public void TutorialActionClickGuidedQuestWorldStage2()
         {
-            var player = Game.Game.instance.Stage.GetPlayer();
+            var player = Stage.instance.GetPlayer();
             player.DisableHudContainer();
             HackAndSlash(
                 States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(

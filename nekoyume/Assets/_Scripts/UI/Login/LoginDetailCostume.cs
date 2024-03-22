@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
@@ -146,7 +147,7 @@ namespace Nekoyume.UI
 
         private void UpdateCostume(int index)
         {
-            var player = Game.Game.instance.Stage.SelectedPlayer;
+            var player = Stage.instance.SelectedPlayer;
             if (player is null)
             {
                 throw new NullReferenceException(nameof(player));
@@ -195,7 +196,7 @@ namespace Nekoyume.UI
 
             earToggle.isOn = true;
 
-            var player = Game.Game.instance.Stage.SelectedPlayer;
+            var player = Stage.instance.SelectedPlayer;
             if (player is null)
             {
                 throw new NullReferenceException(nameof(player));

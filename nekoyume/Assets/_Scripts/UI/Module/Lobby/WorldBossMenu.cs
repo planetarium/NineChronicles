@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
@@ -206,7 +207,7 @@ namespace Nekoyume.UI.Module.Lobby
                     timeContainer.SetActive(false);
                     ticketContainer.SetActive(false);
                     // Set tutorial target to off-season object
-                    Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                    Stage.instance.TutorialController.SetTutorialTarget(new TutorialTarget
                     {
                         type = TutorialTargetType.WorldBossButton,
                         rectTransform = offSeasonOutlineRect
@@ -227,7 +228,7 @@ namespace Nekoyume.UI.Module.Lobby
                     offSeason.SetActive(false);
                     timeContainer.SetActive(true);
                     // Set tutorial target to on-season object
-                    Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                    Stage.instance.TutorialController.SetTutorialTarget(new TutorialTarget
                     {
                         type = TutorialTargetType.WorldBossButton,
                         rectTransform = onSeasonOutlineRect

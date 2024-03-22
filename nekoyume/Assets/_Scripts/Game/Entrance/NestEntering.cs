@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
@@ -21,7 +22,7 @@ namespace Nekoyume.Game.Entrance
         private IEnumerator Start()
         {
             DOTween.KillAll();
-            var stage = Game.instance.Stage;
+            var stage = Stage.instance;
             stage.LoadBackground("nest");
 
             Widget.Find<Login>().ready = false;

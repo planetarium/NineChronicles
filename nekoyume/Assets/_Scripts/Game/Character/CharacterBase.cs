@@ -16,6 +16,7 @@ using UnityEngine.Rendering;
 using Nekoyume.Model.Buff;
 using DG.Tweening.Plugins.Options;
 using Cysharp.Threading.Tasks.Triggers;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Model.BattleStatus;
 
@@ -559,7 +560,7 @@ namespace Nekoyume.Game.Character
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
-                var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
+                var effect = Stage.instance.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
 
 #if TEST_LOG
                 Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
@@ -679,7 +680,7 @@ namespace Nekoyume.Game.Character
             yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
             if (info.ElementalType != ElementalType.Normal)
             {
-                var effect = Game.instance.Stage.SkillController.GetBlowCasting(
+                var effect = Stage.instance.SkillController.GetBlowCasting(
                     pos,
                     info.SkillCategory,
                     info.ElementalType);
@@ -697,7 +698,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Stage.SkillController.Get(pos, info.ElementalType);
+            var effect = Stage.instance.SkillController.Get(pos, info.ElementalType);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
@@ -712,7 +713,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Stage.BuffController.Get(pos, info.Buff);
+            var effect = Stage.instance.BuffController.Get(pos, info.Buff);
             effect.Play();
 #if TEST_LOG
                 Debug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
@@ -751,7 +752,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 ProcessAttack(target, info, info.Target.IsDead, false);
                 if (this is Player && !(this is EnemyPlayer))
                     battleWidget.ShowComboText(info.Effect > 0);
@@ -781,13 +782,13 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 if (target is null)
                     continue;
 
                 if (info.ElementalType != ElementalType.Normal)
                 {
-                    var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, info);
+                    var effect = Stage.instance.SkillController.Get<SkillBlowVFX>(target, info);
                     if (effect is null)
                         continue;
                     effect.Play();
@@ -806,8 +807,8 @@ namespace Nekoyume.Game.Character
 
             Vector3 effectPos = transform.position;
             effectPos.y += 0.55f;
-            var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
-                            Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
+            var effectObj = Stage.instance.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
+                            Stage.instance.objectPool.Get("ShatterStrike_casting", true, effectPos);
             var castEffect = effectObj.GetComponent<VFX.VFX>();
             if (castEffect != null)
             {
@@ -825,14 +826,14 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfos.Count; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 if (target is null)
                     continue;
 
                 Vector3 targetEffectPos = target.transform.position;
                 targetEffectPos.y = Stage.StageStartPosition + 0.32f;
-                var targetEffectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
-                                Game.instance.Stage.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
+                var targetEffectObj = Stage.instance.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
+                                Stage.instance.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
                 var strikeEffect = targetEffectObj.GetComponent<VFX.VFX>();
                 if (strikeEffect is null)
                     continue;
@@ -857,7 +858,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 if (target is null)
                     continue;
 
@@ -869,8 +870,8 @@ namespace Nekoyume.Game.Character
 
                 yield return StartCoroutine(CoAnimationAttack(info.Critical));
 
-                var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", false, effectPos) ??
-                            Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
+                var effectObj = Stage.instance.objectPool.Get($"TwinAttack_0{i + 1}", false, effectPos) ??
+                            Stage.instance.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
                 var effect = effectObj.GetComponent<VFX.VFX>();
                 if (effect != null)
                 {
@@ -895,12 +896,12 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 if (target is null)
                     continue;
 
                 var first = skillInfosFirst == info;
-                var effect = Game.instance.Stage.SkillController.Get<SkillDoubleVFX>(target, info);
+                var effect = Stage.instance.SkillController.Get<SkillDoubleVFX>(target, info);
                 if (effect is null)
                     continue;
 
@@ -931,12 +932,12 @@ namespace Nekoyume.Game.Character
             ShowCutscene();
             yield return StartCoroutine(CoAnimationCast(skillInfosFirst));
 
-            var effectTarget = Game.instance.Stage.GetCharacter(skillInfosFirst.Target);
+            var effectTarget = Stage.instance.GetCharacter(skillInfosFirst.Target);
             if (effectTarget is null)
                 yield break;
 
             var effect =
-                Game.instance.Stage.SkillController.Get<SkillAreaVFX>(effectTarget,
+                Stage.instance.SkillController.Get<SkillAreaVFX>(effectTarget,
                     skillInfosFirst);
             if (effect is null)
                 yield break;
@@ -955,7 +956,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 if (target is null)
                     continue;
 
@@ -1012,7 +1013,7 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in skillInfos)
             {
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 ProcessHeal(target, info);
             }
 
@@ -1027,7 +1028,7 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in skillInfos)
             {
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 ProcessHeal(target, info);
             }
         }
@@ -1043,7 +1044,7 @@ namespace Nekoyume.Game.Character
             HashSet<CharacterBase> dispeledTargets = new HashSet<CharacterBase>();
             foreach (var info in skillInfos)
             {
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Stage.instance.GetCharacter(info.Target);
                 ProcessBuff(target, info);
                 if (!info.Affected || (info.DispelList != null && info.DispelList.Count() > 0))
                 {
@@ -1061,8 +1062,8 @@ namespace Nekoyume.Game.Character
             {
                 Vector3 effectPos = item.transform.position;
 
-                var effectObj = Game.instance.Stage.objectPool.Get("buff_dispel_success", false, effectPos) ??
-                            Game.instance.Stage.objectPool.Get("buff_dispel_success", true, effectPos);
+                var effectObj = Stage.instance.objectPool.Get("buff_dispel_success", false, effectPos) ??
+                            Stage.instance.objectPool.Get("buff_dispel_success", true, effectPos);
                 var dispellEffect = effectObj.GetComponent<VFX.VFX>();
                 if (dispellEffect != null)
                 {
@@ -1084,7 +1085,7 @@ namespace Nekoyume.Game.Character
             {
                 action = actions.First();
 
-                var stage = Game.instance.Stage;
+                var stage = Stage.instance;
                 var waitSeconds = StageConfig.instance.actionDelay;
 
                 foreach (var info in action.skillInfos)
@@ -1092,7 +1093,7 @@ namespace Nekoyume.Game.Character
                     var target = info.Target;
                     if (target.IsDead)
                     {
-                        var character = Game.instance.Stage.GetCharacter(target);
+                        var character = Stage.instance.GetCharacter(target);
                         if (character)
                         {
                             if (character.actions.Any())

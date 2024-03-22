@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -522,7 +523,7 @@ namespace Nekoyume.UI
             var widget = Widget.Create<T>();
             _secondWidgets.Add(widget);
             widget.Initialize();
-            Game.Game.instance.Stage.TutorialController?.RegisterWidget(widget);
+            Stage.instance.TutorialController?.RegisterWidget(widget);
             return widget;
         }
 
@@ -534,7 +535,7 @@ namespace Nekoyume.UI
                 if (found == widget)
                 {
                     _secondWidgets.Remove(widget);
-                    Game.Game.instance.Stage.TutorialController?.UnregisterWidget(widget);
+                    Stage.instance.TutorialController?.UnregisterWidget(widget);
                     return Widget.Remove(widget);
                 }
             }

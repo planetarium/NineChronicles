@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -84,10 +85,10 @@ namespace Nekoyume.UI.Scroller
 
             if (_isCurrentUser)
             {
-                var player = Game.Game.instance.Stage.SelectedPlayer;
+                var player = Stage.instance.SelectedPlayer;
                 if (player is null)
                 {
-                    player = Game.Game.instance.Stage.GetPlayer();
+                    player = Stage.instance.GetPlayer();
                     characterView.SetByPlayer(player);
                     player.gameObject.SetActive(false);
                 }

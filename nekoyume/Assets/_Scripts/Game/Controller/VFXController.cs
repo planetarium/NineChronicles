@@ -1,4 +1,5 @@
 using System.Collections;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
@@ -19,7 +20,7 @@ namespace Nekoyume.Game.Controller
         {
             base.Awake();
 
-            _pool = Game.instance.Stage.objectPool;
+            _pool = Stage.instance.objectPool;
             if (ReferenceEquals(_pool, null))
             {
                 throw new NotFoundComponentException<ObjectPool>();

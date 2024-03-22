@@ -7,6 +7,7 @@ using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -93,7 +94,7 @@ namespace Nekoyume.UI
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);
-            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+            Stage.instance.GetPlayer().gameObject.SetActive(false);
             await ReactiveShopState.RequestBuyProductsAsync(ItemSubTypeFilter.Weapon, MarketOrderType.cp_desc, ItemDisplayCount);
             base.Show(ignoreShowAnimation);
             view.Show(

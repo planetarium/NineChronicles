@@ -8,6 +8,7 @@ using Libplanet.Action.State;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
@@ -437,7 +438,7 @@ namespace Nekoyume
             simulator.Simulate();
             simulator.Log.result = _result;
 
-            var stage = Game.Game.instance.Stage;
+            var stage = Stage.instance;
             stage.PlayStage(simulator.Log);
 
             Close();

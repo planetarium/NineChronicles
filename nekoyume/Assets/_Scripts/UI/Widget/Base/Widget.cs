@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.UI.Module;
 using UnityEngine;
 
@@ -206,7 +207,7 @@ namespace Nekoyume.UI
             var names = type.ToString().Split('.');
             var widgetName = $"UI_{names[names.Length - 1]}";
             var resName = $"UI/Prefabs/{widgetName}";
-            var pool = Game.Game.instance.Stage.objectPool;
+            var pool = Stage.instance.objectPool;
             var go = pool.Get(widgetName, false);
             if (go)
             {

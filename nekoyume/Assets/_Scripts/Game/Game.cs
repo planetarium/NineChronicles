@@ -33,6 +33,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
+using Nekoyume.Game.Battle;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -136,7 +137,6 @@ namespace Nekoyume.Game
 
         public GuildServiceClient GuildServiceClient { get; private set; }
 
-        public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
         public Lobby Lobby => lobby;
@@ -653,7 +653,7 @@ namespace Nekoyume.Game
             // Initialize Stage
             sw.Reset();
             sw.Start();
-            Stage.Initialize();
+            Stage.instance.Initialize();
             sw.Stop();
             Debug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             sw.Reset();
@@ -1401,7 +1401,7 @@ namespace Nekoyume.Game
 
             var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
             Event.OnRoomEnter.Invoke(showLoadingScreen);
-            instance.Stage.OnRoomEnterEnd
+            Stage.instance.OnRoomEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
             instance.Arena.OnRoomEnterEnd

@@ -7,12 +7,17 @@
 #endif
 //#define TEST_LOG
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
@@ -25,17 +30,14 @@ using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
+using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Game.CameraSystem;
-using Nekoyume.Model.Skill;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -45,11 +47,13 @@ using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Game.Battle
 {
-    using UniRx;
-
-    public class Stage : MonoBehaviour, IStage
+    /// <summary>
+    /// TODO: 싱글톤으로 관리될 필요는 없지만, Game오브젝트와의 분리를 위해 싱글톤으로 구현
+    /// 씬 분리 테스트와 전투관련 로직 정리 후에 Singleton 제거 예정
+    /// </summary>
+    public class Stage : MonoSingleton<Stage>, IStage
     {
         public const float DefaultAnimationTimeScaleWeight = 1f;
         public const float AcceleratedAnimationTimeScaleWeight = 1.6f;

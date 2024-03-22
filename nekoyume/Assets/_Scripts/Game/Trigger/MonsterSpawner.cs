@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -27,7 +28,7 @@ namespace Nekoyume.Game.Trigger
 
         private void SpawnWave()
         {
-            var player = Game.instance.Stage.SelectedPlayer;
+            var player = Stage.instance.SelectedPlayer;
             var offsetX = player.transform.position.x + 2.8f;
             var randIndex = Enumerable.Range(0, spawnPoints.Length / 2)
                 .OrderBy(n => Guid.NewGuid()).ToArray();
@@ -47,7 +48,7 @@ namespace Nekoyume.Game.Trigger
 
         private IEnumerator CoSpawnWave(List<Model.Enemy> monsters)
         {
-            var stage = Game.instance.Stage;
+            var stage = Stage.instance;
             for (var index = 0; index < monsters.Count; index++)
             {
                 var monster = monsters[index];

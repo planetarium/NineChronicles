@@ -13,6 +13,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.UI;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.UI.Module;
 
@@ -51,7 +52,7 @@ namespace Nekoyume.Game
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             CameraManager.Instance.MainCamera.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);
-            Game.instance.Stage.LoadBackground("Chapter_Prologue");
+            Stage.instance.LoadBackground("Chapter_Prologue");
             var go = PlayerFactory.Create();
             _player = go.GetComponent<Player>();
             _player.EquipForPrologue(_armorId, _weaponId);
@@ -86,12 +87,12 @@ namespace Nekoyume.Game
             StartCoroutine(Widget.Find<Blind>().FadeIn(2f, ""));
             yield return new WaitForSeconds(2f);
             CameraManager.Instance.MainCamera.Idle();
-            Game.instance.Stage.objectPool.ReleaseAll();
+            Stage.instance.objectPool.ReleaseAll();
             AudioController.instance.StopAll();
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
-            Game.instance.Stage.LoadBackground("nest");
+            Stage.instance.LoadBackground("nest");
             Widget.Find<Synopsis>().Show();
-            Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
+            Stage.instance.objectPool.Remove<Player>(_player.gameObject);
             CameraManager.Instance.MainCamera.InPrologue = false;
         }
 
@@ -104,7 +105,7 @@ namespace Nekoyume.Game
                 205000,
             };
             yield return StartCoroutine(
-                Game.instance.Stage.spawner.CoSpawnWave(monsterIds, player.transform.position, 0f, _fenrir, _player));
+                Stage.instance.spawner.CoSpawnWave(monsterIds, player.transform.position, 0f, _fenrir, _player));
             var characters = GetComponentsInChildren<PrologueCharacter>();
             _fox = characters[1];
             _pig = characters[2];
@@ -184,11 +185,11 @@ namespace Nekoyume.Game
             AudioController.instance.PlaySfx(sfxCode);
             _player.Animator.Cast();
             var pos = _player.transform.position;
-            var castingEffect = Game.instance.Stage.SkillController.Get(pos, ElementalType.Fire);
+            var castingEffect = Stage.instance.SkillController.Get(pos, ElementalType.Fire);
             castingEffect.Play();
             AreaAttackCutscene.Show(_armorId);
             yield return new WaitForSeconds(0.6f);
-            var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
+            var effect = Stage.instance.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();
             yield return new WaitForSeconds(0.5f);
             var dmgMap = new[] {1617, 4851, 8085, 12936, 38808};
@@ -224,10 +225,10 @@ namespace Nekoyume.Game
             var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.Value > 0 && r.StatType == StatType.HP);
             var buff = new StatBuff(buffRow);
-            var castingEffect = Game.instance.Stage.BuffController.Get(_player.transform.position, buff);
+            var castingEffect = Stage.instance.BuffController.Get(_player.transform.position, buff);
             castingEffect.Play();
             yield return new WaitForSeconds(0.6f);
-            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_player.gameObject, buff);
+            var effect = Stage.instance.BuffController.Get<BuffVFX>(_player.gameObject, buff);
             effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);

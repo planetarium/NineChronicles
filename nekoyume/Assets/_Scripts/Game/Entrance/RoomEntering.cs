@@ -1,5 +1,6 @@
 using System.Collections;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.CameraSystem;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
@@ -18,7 +19,7 @@ namespace Nekoyume.Game.Entrance
 
         private IEnumerator Act()
         {
-            var stage = Game.instance.Stage;
+            var stage = Stage.instance;
             if (stage.showLoadingScreen)
             {
                 Widget.Find<LoadingScreen>().Show();

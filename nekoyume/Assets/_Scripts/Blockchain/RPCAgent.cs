@@ -28,6 +28,7 @@ using MagicOnion.Unity;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model;
@@ -1089,7 +1090,7 @@ namespace Nekoyume.Blockchain
 
             Debug.Log($"{message} (code: {code})");
             Game.Event.OnRoomEnter.Invoke(true);
-            Game.Game.instance.Stage.OnRoomEnterEnd
+            Stage.instance.OnRoomEnterEnd
                 .First()
                 .Subscribe(_ =>
                 {

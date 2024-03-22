@@ -10,6 +10,7 @@ using LruCacheNet;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -377,11 +378,11 @@ namespace Nekoyume.Blockchain
             if (Pending)
             {
                 Debug.Log($"[{nameof(ActionHandler)}] Pending AvatarState");
-                Game.Game.instance.Stage.AvatarState = avatarState;
+                Stage.instance.AvatarState = avatarState;
                 return;
             }
 
-            Game.Game.instance.Stage.AvatarState = null;
+            Stage.instance.AvatarState = null;
             var questList = avatarState.questList.Where(i => i.Complete && !i.IsPaidInAction).ToList();
             if (questList.Count >= 1)
             {

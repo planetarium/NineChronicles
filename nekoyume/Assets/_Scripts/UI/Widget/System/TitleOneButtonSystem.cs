@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Nekoyume.EnumType;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
@@ -20,19 +21,19 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/SystemPopupImpression");
 
             var evt = new AirbridgeEvent("System_Popup_Impression");
-            evt.SetValue(Game.Game.instance.Stage.stageId);
+            evt.SetValue(Stage.instance.stageId);
             AirbridgeUnity.TrackEvent(evt);
 
             if (Game.Game.instance.IsInWorld)
             {
                 var props = new Dictionary<string, Value>()
                 {
-                    ["StageId"] = Game.Game.instance.Stage.stageId,
+                    ["StageId"] = Stage.instance.stageId,
                 };
                 Analyzer.Instance.Track("Unity/Stage Exit Crash", props);
 
                 var crashEvt = new AirbridgeEvent("Stage_Exit_Crash");
-                evt.SetValue(Game.Game.instance.Stage.stageId);
+                evt.SetValue(Stage.instance.stageId);
                 AirbridgeUnity.TrackEvent(crashEvt);
             }
 

@@ -14,6 +14,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -243,7 +244,7 @@ namespace Nekoyume.UI
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
             if (information.TryGetCellByIndex(0, out var firstCell))
             {
-                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                Stage.instance.TutorialController.SetTutorialTarget(new TutorialTarget
                 {
                     type = TutorialTargetType.InventoryFirstCell,
                     rectTransform = (RectTransform)firstCell.transform
@@ -252,7 +253,7 @@ namespace Nekoyume.UI
 
             if (information.TryGetCellByIndex(1, out var secondCell))
             {
-                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                Stage.instance.TutorialController.SetTutorialTarget(new TutorialTarget
                 {
                     type = TutorialTargetType.InventorySecondCell,
                     rectTransform = (RectTransform)secondCell.transform
@@ -480,7 +481,7 @@ namespace Nekoyume.UI
         {
             var game = Game.Game.instance;
             game.IsInWorld = true;
-            game.Stage.IsShowHud = true;
+            Stage.instance.IsShowHud = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
             var currencyImage = costType switch
@@ -528,7 +529,7 @@ namespace Nekoyume.UI
             var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
                 .GetEquippedRuneSlotInfos();
             var consumables = information.GetEquippedConsumables();
-            var stage = Game.Game.instance.Stage;
+            var stage = Stage.instance;
             stage.IsExitReserved = false;
             stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
@@ -562,7 +563,7 @@ namespace Nekoyume.UI
                 .GetEquippedRuneSlotInfos();
             var consumables = information.GetEquippedConsumables();
 
-            var stage = Game.Game.instance.Stage;
+            var stage = Stage.instance;
             stage.IsExitReserved = false;
             stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
