@@ -28,6 +28,8 @@ namespace Nekoyume.Game.Scenes
 
         private BaseScene _currentScene;
 
+        public BaseScene CurrentScene => _currentScene;
+
         private NcSceneManager()
         {
             SceneManager.sceneUnloaded += OnSceneUnLoaded;
@@ -36,7 +38,9 @@ namespace Nekoyume.Game.Scenes
         public async UniTask LoadScene(SceneType type)
         {
             // TODO: 씬 타입에 따라 로딩 스크린을 다르게 보여줄 수 있도록 수정
-            Widget.Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldBoss);
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            loadingScreen.CloseWithOtherWidgets();
+            loadingScreen.Show(LoadingScreen.LoadingType.WorldBoss);
 
             ESceneType = type;
             ClearScene();

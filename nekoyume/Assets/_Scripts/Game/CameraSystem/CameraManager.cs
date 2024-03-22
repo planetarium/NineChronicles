@@ -1,11 +1,7 @@
 #nullable enable
 
-using System;
-using System.Collections;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Util;
-using Nekoyume.Pattern;
-using Unity.Mathematics;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game.CameraSystem
@@ -24,7 +20,18 @@ namespace Nekoyume.Game.CameraSystem
         #region Properties
         public ActionCamera? MainCamera
         {
-            set => _mainCamera = value;
+            set
+            {
+                _mainCamera = value;
+                if (_mainCamera != null)
+                {
+                    SetMainCanvasCamera(_mainCamera.Cam);
+                }
+                else
+                {
+                    SetMainCanvasCamera(null);
+                }
+            }
             get
             {
                 if (_mainCamera != null) return _mainCamera;
@@ -32,10 +39,16 @@ namespace Nekoyume.Game.CameraSystem
                 var mainCamera = Camera.main;
                 if (mainCamera == null) return null;
                 _mainCamera = mainCamera.gameObject.GetOrAddComponent<ActionCamera>();
+                SetMainCanvasCamera(mainCamera);
 
                 return _mainCamera;
             }
         }
         #endregion Properties
+
+        private void SetMainCanvasCamera(Camera? camera)
+        {
+            MainCanvas.instance.Canvas.worldCamera = camera;
+        }
     }
 }

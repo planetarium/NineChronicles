@@ -1,4 +1,7 @@
+using System;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Game.CameraSystem;
+using Nekoyume.Game.Util;
 using UnityEngine;
 
 namespace Nekoyume.Game.Scenes
@@ -6,6 +9,16 @@ namespace Nekoyume.Game.Scenes
     public abstract class BaseScene : MonoBehaviour
     {
         public bool IsInitialized { get; protected set; } = false;
+
+        private void Awake()
+        {
+            var mainCamera = Camera.main;
+
+            if (mainCamera != null)
+            {
+                CameraManager.Instance.MainCamera = mainCamera.gameObject.GetOrAddComponent<ActionCamera>();
+            }
+        }
 
         /// <summary>
         /// 씬의 모든 오브젝트가 초기화된 뒤 씬 객체를 초기화하기 위해

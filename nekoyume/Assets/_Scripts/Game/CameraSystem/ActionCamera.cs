@@ -111,15 +111,9 @@ namespace Nekoyume.Game.CameraSystem
         public bool InPrologue = false;
         private bool _isStaticRatio;
 
-        public static float MinScreenRatio
-        {
-            get { return 16f / 9f; }
-        }
+        public static float MinScreenRatio => 16f / 9f;
 
-        public static float MaxScreenRatio
-        {
-            get { return 22f / 9f; }
-        }
+        public static float MaxScreenRatio => 22f / 9f;
 
         private int _lastScreenWidth;
         private int _lastScreenHeight;

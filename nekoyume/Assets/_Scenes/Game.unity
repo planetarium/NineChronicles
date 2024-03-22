@@ -421,7 +421,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbf20e9ec90ac0044a286916433cc2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stage: {fileID: 1333831682}
   arena: {fileID: 861244096}
   raidStage: {fileID: 530859351}
   lobby: {fileID: 716216230}
@@ -493,7 +492,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1333831683}
   - {fileID: 861244095}
   - {fileID: 530859350}
   - {fileID: 716216231}
@@ -1062,7 +1060,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 76870003}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &384134972
 GameObject:
@@ -1247,7 +1245,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 76870003}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &530859351
 MonoBehaviour:
@@ -1839,7 +1837,7 @@ Transform:
   - {fileID: 8633774720316280540}
   - {fileID: 1683363016}
   m_Father: {fileID: 76870003}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &721921031
 GameObject:
@@ -2025,7 +2023,7 @@ Transform:
   m_Children:
   - {fileID: 1157630537}
   m_Father: {fileID: 76870003}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &861244096
 MonoBehaviour:
@@ -3617,8 +3615,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 157041506}
-  m_Father: {fileID: 76870003}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1333831684
 MonoBehaviour:

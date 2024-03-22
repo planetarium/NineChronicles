@@ -78,9 +78,6 @@ namespace Nekoyume.Game
     public class Game : MonoSingleton<Game>
     {
         [SerializeField]
-        private Stage stage;
-
-        [SerializeField]
         private Arena arena;
 
         [SerializeField]

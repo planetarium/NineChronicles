@@ -127,12 +127,6 @@ namespace Nekoyume.Game.Battle
 
         protected void Awake()
         {
-            _camera = CameraManager.Instance.MainCamera.Cam;
-            if (_camera is null)
-            {
-                throw new NullReferenceException("`Camera.main` can't be null.");
-            }
-
             if (dummy is null)
             {
                 throw new NullReferenceException("`Dummy` can't be null.");
@@ -172,6 +166,12 @@ namespace Nekoyume.Game.Battle
 
         private void OnStageStart(BattleLog log)
         {
+            _camera = CameraManager.Instance.MainCamera.Cam;
+            if (_camera == null)
+            {
+                throw new NullReferenceException("`Camera.main` can't be null.");
+            }
+
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(OnStageStart)}() enter");
 #endif
