@@ -33,6 +33,7 @@ namespace Nekoyume.Game.Scenes
         {
             await UniTask.WaitUntil(() => Game.instance.IsInitialized);
             await LoadSceneAssets();
+            await WaitActionResponse();
             Initialize();
         }
 
@@ -40,6 +41,8 @@ namespace Nekoyume.Game.Scenes
         /// TODO: 어드레서블 적용시 해당 메서드에서 에셋 로드
         /// </summary>
         protected abstract UniTask LoadSceneAssets();
+
+        protected abstract UniTask WaitActionResponse();
 
         protected virtual void Initialize()
         {

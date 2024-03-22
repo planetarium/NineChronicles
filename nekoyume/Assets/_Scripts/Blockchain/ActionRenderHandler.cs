@@ -32,6 +32,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Battle;
+using Nekoyume.Game.Scenes;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
@@ -1973,6 +1974,15 @@ namespace Nekoyume.Blockchain
                 evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
                 evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
                 AirbridgeUnity.TrackEvent(evt);
+            }
+
+            if (NcSceneManager.Instance.ESceneType == SceneType.Battle)
+            {
+                var battleScene = NcSceneManager.Instance.CurrentScene as BattleScene;
+                if (battleScene != null)
+                {
+                    battleScene.OnBattleLogReceived(log);
+                }
             }
 
             if (Widget.Find<LoadingScreen>().IsActive())

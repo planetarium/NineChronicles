@@ -125,7 +125,7 @@ namespace Nekoyume.Game.Battle
 
         #endregion
 
-        protected void Awake()
+        protected override void Awake()
         {
             if (dummy is null)
             {

@@ -32,7 +32,7 @@ namespace Nekoyume.BattleTest
             enterBattleButton.onClick.AddListener(EnterBattle);
         }
 
-        public void EnterBattle()
+        private void EnterBattle()
         {
             var worldId = int.Parse(worldIdInputField.text);
             var stageId = int.Parse(stageIdInputField.text);
@@ -54,9 +54,16 @@ namespace Nekoyume.BattleTest
                 apStoneCount: 0,
                 trackGuideQuest: false
             ).Subscribe();
+
+            NcSceneManager.Instance.LoadScene(SceneType.Battle).Forget();
         }
 
         protected override UniTask LoadSceneAssets()
+        {
+            return UniTask.CompletedTask;
+        }
+
+        protected override UniTask WaitActionResponse()
         {
             return UniTask.CompletedTask;
         }

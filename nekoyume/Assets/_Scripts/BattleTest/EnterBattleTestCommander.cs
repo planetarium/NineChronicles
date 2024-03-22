@@ -21,7 +21,7 @@ namespace Nekoyume.BattleTest
         [ContextMenu("Enter Battle Lobby")]
         public void EnterBattleLobby()
         {
-            NcSceneManager.Instance.LoadScene(SceneType.Lobby).Forget();
+            NcSceneManager.Instance.LoadScene(SceneType.TestLobby).Forget();
         }
     }
 }

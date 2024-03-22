@@ -12,6 +12,9 @@ namespace Nekoyume.Game.Scenes
         Lobby,
         Battle,
         Loading,
+
+
+        TestLobby = 9999,
     }
 
     public class NcSceneManager
@@ -61,10 +64,10 @@ namespace Nekoyume.Game.Scenes
             {
                 case SceneType.Intro:
                     break;
-                case SceneType.Lobby:
+                case SceneType.TestLobby:
                     return "EnterBattleTestScene";
                 case SceneType.Battle:
-                    break;
+                    return "BattleScene";
                 case SceneType.Loading:
                     return "LoadingScene";
             }
