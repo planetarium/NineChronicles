@@ -29,7 +29,7 @@ RectTransform:
   m_GameObject: {fileID: 571260857702055708}
   m_LocalRotation: {x: 0.29164436, y: -0.59817076, z: -0.24777043, w: -0.7040918}
   m_LocalPosition: {x: 0, y: 0, z: 95}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4872022220595341915}
@@ -4709,7 +4709,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de9107de396324d48adf6060dabe87ea, type: 2}
+  - {fileID: 2100000, guid: 0def0e6a461953346a3cc12dcf9daa0c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4789,14 +4789,20 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsTrail: 0
-  m_IgnoreCanvasScaler: 1
-  m_Scale: 100
-  m_Scale3D: {x: 0.001, y: 0.001, z: 0.001}
+  m_IgnoreCanvasScaler: 0
+  m_AbsoluteMode: 0
+  m_Scale3D: {x: 1, y: 1, z: 1}
   m_AnimatableProperties: []
   m_Particles:
   - {fileID: 385003643372430596}
   - {fileID: 4698225170783214929}
-  m_ShrinkByMaterial: 0
+  m_MeshSharing: 0
+  m_GroupId: 0
+  m_GroupMaxId: 0
+  m_PositionMode: 0
+  m_AutoScaling: 0
+  m_AutoScalingMode: 1
+  m_ResetScaleOnEnable: 0
 --- !u!1 &4866418934249758891
 GameObject:
   m_ObjectHideFlags: 0
@@ -9426,7 +9432,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f98351d515db7ab47938c9eb05b24fc0, type: 2}
+  - {fileID: 2100000, guid: 6e37b336af810436a97364055255ea6a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
