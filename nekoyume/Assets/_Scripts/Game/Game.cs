@@ -1490,7 +1490,11 @@ namespace Nekoyume.Game
 
         private static void PlayMouseOnClickVFX(Vector3 position)
         {
-            position = MainCanvas.instance.Canvas.worldCamera.ScreenToWorldPoint(position);
+            var mainCamera = Camera.main;
+            if (mainCamera == null)
+                return;
+
+            position = mainCamera.ScreenToWorldPoint(position);
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
             vfx.Play();
         }
