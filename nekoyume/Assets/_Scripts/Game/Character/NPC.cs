@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.EnumType;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Spine.Unity;
@@ -120,7 +121,7 @@ namespace Nekoyume.Game.Character
                 case "Smash":
                 {
                     AudioController.instance.PlaySfx(AudioController.SfxCode.CombinationSmash);
-                    var position = ActionCamera.instance.Cam.transform.position;
+                    var position = CameraManager.Instance.MainCamera.Cam.transform.position;
                     VFXController.instance.CreateAndChaseCam<HammerSmashVFX>(
                         position,
                         new Vector3(0.7f, -0.25f));

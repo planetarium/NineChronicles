@@ -1,6 +1,7 @@
 using IngameDebugConsole;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.UI;
 
 namespace Nekoyume.Game.Util
@@ -65,7 +66,7 @@ namespace Nekoyume.Game.Util
         {
             DebugLogConsole.AddCommand("screen", "Change Screen Ratio State ", () =>
             {
-                ActionCamera.instance.ChangeRatioState();
+                CameraManager.Instance.MainCamera.ChangeRatioState();
                 var raidCam = Component.FindObjectOfType<RaidCamera>();
                 if (raidCam != null)
                     raidCam.ChangeRatioState();

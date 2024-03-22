@@ -5,6 +5,7 @@ using Nekoyume.Game;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using System.Collections;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
@@ -52,7 +53,7 @@ namespace Nekoyume.UI
             result.IsPlaying = true;
             result.itemImage.sprite = itemSprite;
             var rect = result.RectTransform;
-            rect.anchoredPosition = startWorldPosition.ToCanvasPosition(ActionCamera.instance.Cam,
+            rect.anchoredPosition = startWorldPosition.ToCanvasPosition(CameraManager.Instance.MainCamera.Cam,
                 MainCanvas.instance.Canvas);
             rect.localScale = defaultScale;
 
@@ -90,7 +91,7 @@ namespace Nekoyume.UI
             IsPlaying = true;
             itemImage.enabled = true;
             var rect = RectTransform;
-            rect.anchoredPosition = startWorldPosition.ToCanvasPosition(ActionCamera.instance.Cam,
+            rect.anchoredPosition = startWorldPosition.ToCanvasPosition(CameraManager.Instance.MainCamera.Cam,
                 MainCanvas.instance.Canvas);
             rect.localScale = defaultScale;
 

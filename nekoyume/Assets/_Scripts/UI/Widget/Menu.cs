@@ -15,6 +15,7 @@ using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -190,7 +191,7 @@ namespace Nekoyume.UI
             stage.IsExitReserved = false;
             var player = stage.GetPlayer();
             player.StartRun();
-            ActionCamera.instance.ChaseX(player.transform);
+            CameraManager.Instance.MainCamera.ChaseX(player.transform);
             ActionRenderHandler.Instance.Pending = true;
             var emptyGuids = new List<Guid>();
             Game.Game.instance.ActionManager

@@ -13,6 +13,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.UI;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.Game
@@ -48,7 +49,7 @@ namespace Nekoyume.Game
             AirbridgeUnity.TrackEvent(evt);
 
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
-            ActionCamera.instance.InPrologue = true;
+            CameraManager.Instance.MainCamera.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);
             Game.instance.Stage.LoadBackground("Chapter_Prologue");
             var go = PlayerFactory.Create();
@@ -58,7 +59,7 @@ namespace Nekoyume.Game
             position.y = Stage.StageStartPosition;
             _player.transform.position = position;
             _player.StartRun();
-            ActionCamera.instance.ChaseX(_player.transform);
+            CameraManager.Instance.MainCamera.ChaseX(_player.transform);
             _battle = Widget.Find<UI.Battle>();
             _battle.ShowForTutorial(true);
             Widget.Find<HeaderMenuStatic>().Close(true);
@@ -84,14 +85,14 @@ namespace Nekoyume.Game
             Widget.Find<Synopsis>().prolgueEnd = true;
             StartCoroutine(Widget.Find<Blind>().FadeIn(2f, ""));
             yield return new WaitForSeconds(2f);
-            ActionCamera.instance.Idle();
+            CameraManager.Instance.MainCamera.Idle();
             Game.instance.Stage.objectPool.ReleaseAll();
             AudioController.instance.StopAll();
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             Game.instance.Stage.LoadBackground("nest");
             Widget.Find<Synopsis>().Show();
             Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
-            ActionCamera.instance.InPrologue = false;
+            CameraManager.Instance.MainCamera.InPrologue = false;
         }
 
         private IEnumerator CoSpawnWave(GameObject player)
@@ -139,7 +140,7 @@ namespace Nekoyume.Game
             var group = !isPlayer ? DamageText.TextGroupState.Damage : DamageText.TextGroupState.Basic;
             if (critical)
             {
-                ActionCamera.instance.Shake();
+                CameraManager.Instance.MainCamera.Shake();
                 AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg, group);
                 VFXController.instance.Create<BattleAttackCritical01VFX>(pos);
@@ -147,7 +148,7 @@ namespace Nekoyume.Game
             else
             {
                 AudioController.PlayDamaged(elementalType);
-                DamageText.Show(ActionCamera.instance.Cam, position, force, dmg, group);
+                DamageText.Show(CameraManager.Instance.MainCamera.Cam, position, force, dmg, group);
                 VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
         }
@@ -230,7 +231,7 @@ namespace Nekoyume.Game
             effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
-            DamageText.Show(ActionCamera.instance.Cam, position, force, 64000.ToString(), DamageText.TextGroupState.Heal);
+            DamageText.Show(CameraManager.Instance.MainCamera.Cam, position, force, 64000.ToString(), DamageText.TextGroupState.Heal);
             yield return new WaitForSeconds(1f);
             _player.Animator.Idle();
             yield return new WaitForSeconds(1f);

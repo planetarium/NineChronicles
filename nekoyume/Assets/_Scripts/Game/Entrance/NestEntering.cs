@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Tween;
@@ -95,7 +96,7 @@ namespace Nekoyume.Game.Entrance
                 yield return new WaitForSeconds(0.2f);
             }
 
-            ActionCamera.instance.SetPosition(0f, 0f);
+            CameraManager.Instance.MainCamera.SetPosition(0f, 0f);
 
             yield return new WaitForSeconds(1.0f);
 

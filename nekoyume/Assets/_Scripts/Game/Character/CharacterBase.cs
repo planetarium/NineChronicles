@@ -16,6 +16,7 @@ using UnityEngine.Rendering;
 using Nekoyume.Model.Buff;
 using DG.Tweening.Plugins.Options;
 using Cysharp.Threading.Tasks.Triggers;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume.Game.Character
@@ -171,12 +172,12 @@ namespace Nekoyume.Game.Character
         {
             if (HudContainer)
             {
-                HudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
+                HudContainer.UpdatePosition(CameraManager.Instance.MainCamera.Cam, gameObject, HUDOffset);
             }
 
             if (SpeechBubble)
             {
-                SpeechBubble.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
+                SpeechBubble.UpdatePosition(CameraManager.Instance.MainCamera.Cam, gameObject, HUDOffset);
             }
         }
 
@@ -214,7 +215,7 @@ namespace Nekoyume.Game.Character
                 HudContainer.UpdateAlpha(1);
             }
 
-            HudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
+            HudContainer.UpdatePosition(CameraManager.Instance.MainCamera.Cam, gameObject, HUDOffset);
             HPBar.Set(CurrentHP, CharacterModel.AdditionalHP, HP);
             HPBar.SetBuffs(CharacterModel.Buffs);
             HPBar.SetLevel(Level);
@@ -293,7 +294,7 @@ namespace Nekoyume.Game.Character
                     index = 1;
                 }
 
-                MissText.Show(ActionCamera.instance.Cam, position, force, index);
+                MissText.Show(CameraManager.Instance.MainCamera.Cam, position, force, index);
                 yield break;
             }
 
@@ -336,7 +337,7 @@ namespace Nekoyume.Game.Character
 
             if (info.Critical)
             {
-                ActionCamera.instance.Shake();
+                CameraManager.Instance.MainCamera.Shake();
                 AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg, group);
                 if (info.SkillCategory == SkillCategory.NormalAttack)
@@ -347,7 +348,7 @@ namespace Nekoyume.Game.Character
                 AudioController.PlayDamaged(isConsiderElementalType
                     ? info.ElementalType
                     : ElementalType.Normal);
-                DamageText.Show(ActionCamera.instance.Cam, position, force, dmg, group);
+                DamageText.Show(CameraManager.Instance.MainCamera.Cam, position, force, dmg, group);
                 if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
@@ -589,7 +590,7 @@ namespace Nekoyume.Game.Character
 
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
         {
-            DamageText.Show(ActionCamera.instance.Cam, position, force, dmg, DamageText.TextGroupState.Heal);
+            DamageText.Show(CameraManager.Instance.MainCamera.Cam, position, force, dmg, DamageText.TextGroupState.Heal);
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
@@ -874,7 +875,7 @@ namespace Nekoyume.Game.Character
                 if (effect != null)
                 {
                     effect.Play();
-                }                    
+                }
 
                 ProcessAttack(target, info, !first, true);
                 if (this is Player && !(this is EnemyPlayer))

@@ -5,6 +5,7 @@ using System.Linq;
 using BTAI;
 using DG.Tweening;
 using Libplanet.Crypto;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -63,8 +64,8 @@ namespace Nekoyume.Game.Character
 
         private void LateUpdate()
         {
-            _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
-            _speechBubble.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
+            _hudContainer.UpdatePosition(CameraManager.Instance.MainCamera.Cam, gameObject, HUDOffset);
+            _speechBubble.UpdatePosition(CameraManager.Instance.MainCamera.Cam, gameObject, HUDOffset);
         }
 
         private void OnDisable()
@@ -122,7 +123,7 @@ namespace Nekoyume.Game.Character
             if (!Game.instance.IsInWorld)
                 return;
 
-            _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
+            _hudContainer.UpdatePosition(CameraManager.Instance.MainCamera.Cam, gameObject, HUDOffset);
             _arenaBattle.UpdateStatus(CharacterModel.IsEnemy, _currentHp, CharacterModel.HP, CharacterModel.Buffs);
 
 
@@ -190,7 +191,7 @@ namespace Nekoyume.Game.Character
 
             if (info.Critical)
             {
-                ActionCamera.instance.Shake();
+                CameraManager.Instance.MainCamera.Shake();
                 AudioController.PlayDamagedCritical();
                 CriticalText.Show(position, force, dmg, group);
                 if (info.SkillCategory == SkillCategory.NormalAttack)
@@ -201,7 +202,7 @@ namespace Nekoyume.Game.Character
                 AudioController.PlayDamaged(isConsiderElementalType
                     ? info.ElementalType
                     : ElementalType.Normal);
-                DamageText.Show(ActionCamera.instance.Cam, position, force, dmg, group);
+                DamageText.Show(CameraManager.Instance.MainCamera.Cam, position, force, dmg, group);
                 if (info.SkillCategory == SkillCategory.NormalAttack)
                     VFXController.instance.Create<BattleAttack01VFX>(pos);
             }
@@ -281,7 +282,7 @@ namespace Nekoyume.Game.Character
             if (dmg <= 0)
             {
                 var index = CharacterModel.IsEnemy ? 1 : 0;
-                MissText.Show(ActionCamera.instance.Cam, position, force, index);
+                MissText.Show(CameraManager.Instance.MainCamera.Cam, position, force, index);
                 yield break;
             }
 
@@ -304,7 +305,7 @@ namespace Nekoyume.Game.Character
             var position = transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
             var txt = info.Effect.ToString();
-            DamageText.Show(ActionCamera.instance.Cam, position, force, txt, DamageText.TextGroupState.Heal);
+            DamageText.Show(CameraManager.Instance.MainCamera.Cam, position, force, txt, DamageText.TextGroupState.Heal);
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 

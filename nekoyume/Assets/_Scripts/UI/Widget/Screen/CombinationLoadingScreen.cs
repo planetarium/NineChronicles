@@ -4,6 +4,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -113,7 +114,7 @@ namespace Nekoyume.UI
         private IEnumerator CoAnimateNPC(
             SpeechBubbleItemType itemType, string quote = null)
         {
-            var pos = ActionCamera.instance.Cam.transform.position;
+            var pos = CameraManager.Instance.MainCamera.Cam.transform.position;
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             npcSkeletonGraphic.gameObject.SetActive(true);
             switch (itemType)

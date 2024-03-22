@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -236,7 +237,7 @@ namespace Nekoyume.Game.Character
         public IEnumerator CoFinisher(int[] damageMap, bool[] criticalMap)
         {
             AttackEndCalled = false;
-            var position = ActionCamera.instance.Cam.ScreenToWorldPoint(
+            var position = CameraManager.Instance.MainCamera.Cam.ScreenToWorldPoint(
                 new Vector2((float) Screen.width / 2, (float) Screen.height / 2));
             position.z = 0f;
             var effect = Game.instance.Stage.objectPool.Get<FenrirSkillVFX>(position);
@@ -244,7 +245,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlSkill);
             yield return new WaitForSeconds(2f);
             Animator.Skill();
-            ActionCamera.instance.Shake();
+            CameraManager.Instance.MainCamera.Shake();
             var time = Time.time;
             yield return new WaitUntil(() => AttackEndCalled || Time.time - time > 1f);
             for (var i = 0; i < 2; i++)

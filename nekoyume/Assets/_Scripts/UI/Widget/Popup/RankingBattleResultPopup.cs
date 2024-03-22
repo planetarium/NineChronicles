@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Nekoyume.Game;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.BattleStatus.Arena;
@@ -66,7 +67,7 @@ namespace Nekoyume.UI
             if (win)
             {
                 VFXController.instance.CreateAndChase<PVPVictoryVFX>(
-                    ActionCamera.instance.transform, VfxBattleWinOffset);
+                    CameraManager.Instance.MainCamera.transform, VfxBattleWinOffset);
             }
 
             scoreText.text = $"{log.Score}";

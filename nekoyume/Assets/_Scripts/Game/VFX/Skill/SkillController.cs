@@ -1,3 +1,4 @@
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using Nekoyume.Model.BattleStatus.Arena;
@@ -45,7 +46,7 @@ namespace Nekoyume.Game.VFX.Skill
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
                 if (elemental == ElementalType.Normal)
                     elemental = ElementalType.Fire;
-                var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
+                var pos = CameraManager.Instance.MainCamera.Cam.ScreenToWorldPoint(
                     new Vector2((float) Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
@@ -86,7 +87,7 @@ namespace Nekoyume.Game.VFX.Skill
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
                 if (elemental == ElementalType.Normal)
                     elemental = ElementalType.Fire;
-                var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
+                var pos = CameraManager.Instance.MainCamera.Cam.ScreenToWorldPoint(
                     new Vector2((float) Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
@@ -157,7 +158,7 @@ namespace Nekoyume.Game.VFX.Skill
             if (skillCategory == SkillCategory.AreaAttack)
             {
                 size = "l";
-                var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
+                var pos = CameraManager.Instance.MainCamera.Cam.ScreenToWorldPoint(
                     new Vector2((float) Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;

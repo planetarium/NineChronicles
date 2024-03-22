@@ -1,4 +1,5 @@
 using System.Collections;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
 using UnityEngine;
@@ -42,7 +43,7 @@ namespace Nekoyume.Game.Controller
 
         public T CreateAndChaseCam<T>(Vector3 position) where T : VFX.VFX
         {
-            var target = ActionCamera.instance.transform;
+            var target = CameraManager.Instance.MainCamera.transform;
             var targetPosition = target.position;
             var offset = position - targetPosition;
             offset.z += 10f;

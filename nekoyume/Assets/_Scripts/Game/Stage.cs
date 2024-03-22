@@ -34,6 +34,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Model.Skill;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -122,7 +123,7 @@ namespace Nekoyume.Game
 
         protected void Awake()
         {
-            _camera = ActionCamera.instance.Cam;
+            _camera = CameraManager.Instance.MainCamera.Cam;
             if (_camera is null)
             {
                 throw new NullReferenceException("`Camera.main` can't be null.");
@@ -1402,7 +1403,7 @@ namespace Nekoyume.Game
         private static void RunAndChasePlayer(Character.CharacterBase player)
         {
             player.StartRun();
-            ActionCamera.instance.ChaseX(player.transform);
+            CameraManager.Instance.MainCamera.ChaseX(player.transform);
         }
 
         public IEnumerator CoShatterStrike(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)

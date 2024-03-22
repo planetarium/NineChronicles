@@ -1,3 +1,4 @@
+using Nekoyume.Game.CameraSystem;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.Common
@@ -25,8 +26,8 @@ namespace Nekoyume.UI.Module.Common
             originAnchorMin = rectTransform.anchorMin;
             originAnchorMax = rectTransform.anchorMax;
 
-            ActionCamera.instance.OnResolutionDynamic += CalculateNotchSizeAndAdjustPosition;
-            ActionCamera.instance.OnResolutionStatic += CalculateNotchSizeAndAdjustPosition;
+            CameraManager.Instance.MainCamera.OnResolutionDynamic += CalculateNotchSizeAndAdjustPosition;
+            CameraManager.Instance.MainCamera.OnResolutionStatic += CalculateNotchSizeAndAdjustPosition;
 
             switch (NotchType)
             {

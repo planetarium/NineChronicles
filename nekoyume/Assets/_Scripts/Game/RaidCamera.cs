@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Nekoyume.EnumType;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
 using Unity.Mathematics;

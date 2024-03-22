@@ -1,5 +1,6 @@
 using System.Collections;
 using Nekoyume.EnumType;
+using Nekoyume.Game.CameraSystem;
 using UnityEngine;
 
 namespace Nekoyume.Game.Util
@@ -79,7 +80,7 @@ namespace Nekoyume.Game.Util
 
         protected virtual Vector3 GetWorldPosition()
         {
-            return ActionCamera.instance.GetWorldPosition(
+            return CameraManager.Instance.MainCamera.GetWorldPosition(
                 transform,
                 screenPivot);
         }

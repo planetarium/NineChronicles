@@ -1,4 +1,5 @@
 using System.Linq;
+using Nekoyume.Game.CameraSystem;
 using UnityEngine;
 
 namespace Nekoyume.Game.VFX.Skill
@@ -30,7 +31,7 @@ namespace Nekoyume.Game.VFX.Skill
             {
                 finisher.gameObject.SetActive(true);
                 finisher.Play();
-                ActionCamera.instance.Shake();
+                CameraManager.Instance.MainCamera.Shake();
             }
         }
 

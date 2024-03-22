@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
@@ -187,8 +188,8 @@ namespace Nekoyume.Game
             enemy.gameObject.SetActive(false);
             objectPool.ReleaseAll();
             Game.instance.IsInWorld = false;
-            ActionCamera.instance.SetPosition(0f, 0f);
-            ActionCamera.instance.Idle();
+            CameraManager.Instance.MainCamera.SetPosition(0f, 0f);
+            CameraManager.Instance.MainCamera.Idle();
             Widget.Find<ArenaBoard>().ShowAsync().Forget();
             _isPlaying = false;
         }

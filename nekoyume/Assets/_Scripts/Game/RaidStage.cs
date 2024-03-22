@@ -14,6 +14,7 @@ using System.Linq;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Director;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Model.Skill;
 using UnityEngine;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
@@ -207,7 +208,7 @@ namespace Nekoyume.Game
             _nextWaveCoroutine = null;
             Widget.Find<HeaderMenuStatic>().Close(true);
             Widget.Find<EventBanner>().Close(true);
-            ActionCamera.instance.Cam.gameObject.SetActive(false);
+            CameraManager.Instance.MainCamera.Cam.gameObject.SetActive(false);
             _actionQueue.Clear();
 
             CreateContainer(bossId);
@@ -277,10 +278,10 @@ namespace Nekoyume.Game
 
             container.Close();
 
-            var actionCam = ActionCamera.instance;
+            var actionCam = CameraManager.Instance.MainCamera;
             actionCam.Cam.gameObject.SetActive(true);
             actionCam.RerunFSM();
-            MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
+            MainCanvas.instance.Canvas.worldCamera = CameraManager.Instance.MainCamera.Cam;
 
             if (isPractice)
             {

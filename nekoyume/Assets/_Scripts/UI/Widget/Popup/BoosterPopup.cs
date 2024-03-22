@@ -5,6 +5,7 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -117,7 +118,7 @@ namespace Nekoyume.UI
         private void BoostQuest()
         {
             _player.StartRun();
-            ActionCamera.instance.ChaseX(_player.transform);
+            CameraManager.Instance.MainCamera.ChaseX(_player.transform);
 
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);

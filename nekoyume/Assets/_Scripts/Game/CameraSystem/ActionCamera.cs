@@ -7,13 +7,12 @@ using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-
-namespace Nekoyume.Game
+namespace Nekoyume.Game.CameraSystem
 {
     // NOTE: ActionCamera는 처음에 카메라 연출을 위해 작성했는데, 이제는 게임의 메인 카메라 역할을 하고 있다.
     // 이번에는 스크린 해상도 코드가 추가됐는데, 이들을 적절히 분리하는 구조를 고민해보면 좋겠다.
     [RequireComponent(typeof(Camera))]
-    public class ActionCamera : MonoSingleton<ActionCamera>
+    public class ActionCamera : MonoBehaviour
     {
         private enum State
         {
@@ -37,8 +36,6 @@ namespace Nekoyume.Game
             public float magnitudeY;
         }
 
-        //should move
-        public bool IsResolutionDynamic = true;
         public System.Action OnResolutionDynamic;
         public System.Action OnResolutionStatic;
 
@@ -88,32 +85,52 @@ namespace Nekoyume.Game
         public event Action<Resolution> OnScreenResolutionChange;
         public event Action<Transform> OnTranslate;
 
-        private Transform Transform => _transform
-            ? _transform
-            : _transform = GetComponent<Transform>();
+        private Transform Transform
+        {
+            get
+            {
+                return _transform
+                    ? _transform
+                    : _transform = GetComponent<Transform>();
+            }
+        }
 
-        public Camera Cam => _cam
-            ? _cam
-            : _cam = GetComponent<Camera>();
+        public Camera Cam
+        {
+            get
+            {
+                if (_cam == null)
+                {
+                    _cam = GetComponent<Camera>();
+                }
+
+                return _cam;
+            }
+        }
 
         public bool InPrologue = false;
         private bool _isStaticRatio;
 
-        public static float MinScreenRatio => 16f / 9f;
-        public static float MaxScreenRatio => 22f / 9f;
+        public static float MinScreenRatio
+        {
+            get { return 16f / 9f; }
+        }
+
+        public static float MaxScreenRatio
+        {
+            get { return 22f / 9f; }
+        }
 
         private int _lastScreenWidth;
         private int _lastScreenHeight;
 
         #region Mono
 
-        protected override void Awake()
+        private void Awake()
         {
             // NOTE: 화면과 카메라가 밀접한 관계에 있고, 카메라 스크립트는 게임 초기화 스크립트인 `Game.Game`과 같은 프레임에 활성화 되니 이곳에서 설정해 본다.
             // Screen.SetResolution(referenceResolution.x, referenceResolution.y,
             //     FullScreenMode.FullScreenWindow);
-
-            base.Awake();
 
             InitScreenResolution();
 
@@ -124,7 +141,10 @@ namespace Nekoyume.Game
             _fsm.Run(State.Idle);
         }
 
-        public void RerunFSM() => _fsm.Run(State.Idle);
+        public void RerunFSM()
+        {
+            _fsm.Run(State.Idle);
+        }
 
         private void Update()
         {
@@ -140,7 +160,7 @@ namespace Nekoyume.Game
             _fsm.Kill();
         }
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
             _fsm.Kill();
         }
@@ -425,7 +445,6 @@ namespace Nekoyume.Game
 
         public void UpdateDynamicRatio()
         {
-            IsResolutionDynamic = true;
             _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
 #if UNITY_IOS
@@ -444,7 +463,6 @@ namespace Nekoyume.Game
 
         public void UpdateStaticRatioWithLetterBox()
         {
-            IsResolutionDynamic = false;
             _defaultAspect = Mathf.Clamp((float)Screen.width / (float)Screen.height, MinScreenRatio, MaxScreenRatio);
             _defaultOrthographicSize = Cam.orthographicSize;
 
@@ -479,7 +497,10 @@ namespace Nekoyume.Game
             OnResolutionStatic?.Invoke();
         }
 
-        void OnPreCull() => GL.Clear(true, true, Color.black);
+        void OnPreCull()
+        {
+            GL.Clear(true, true, Color.black);
+        }
 
         private float GetCameraAspect()
         {

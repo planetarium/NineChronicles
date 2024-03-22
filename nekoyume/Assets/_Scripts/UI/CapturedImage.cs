@@ -3,6 +3,7 @@ using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Game;
+using Nekoyume.Game.CameraSystem;
 
 namespace Nekoyume.UI
 {
@@ -34,7 +35,7 @@ namespace Nekoyume.UI
         public void Show()
         {
             rawImage.texture = CaptureCurrentScreen();
-            rawImage.uvRect = ActionCamera.instance.Cam.rect;
+            rawImage.uvRect = CameraManager.Instance.MainCamera.Cam.rect;
             rawImage.enabled = true;
         }
 
@@ -51,7 +52,7 @@ namespace Nekoyume.UI
             var prevRenderTexture = RenderTexture.active;
 
             // create render texture
-            var cam = ActionCamera.instance.Cam;
+            var cam = CameraManager.Instance.MainCamera.Cam;
             var renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
             cam.targetTexture = renderTexture;
             cam.Render();

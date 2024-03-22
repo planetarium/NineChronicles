@@ -5,6 +5,7 @@ using System.Linq;
 using Libplanet.Action;
 using Libplanet.Types.Assets;
 using Nekoyume.Game;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -251,7 +252,7 @@ namespace Nekoyume.UI
                 _praiseVFX.Stop();
             }
 
-            var position = ActionCamera.instance.transform.position;
+            var position = CameraManager.Instance.MainCamera.transform.position;
             _praiseVFX = VFXController.instance.CreateAndChaseCam<PraiseVFX>(position);
             _praiseVFX.Play();
         }

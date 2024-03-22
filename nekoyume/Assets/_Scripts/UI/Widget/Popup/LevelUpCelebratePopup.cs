@@ -8,6 +8,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.CameraSystem;
 using TMPro;
 using UnityEngine;
 
@@ -86,7 +87,7 @@ namespace Nekoyume.UI
 
             base.Show(ignoreShowAnimation);
 
-            var position = ActionCamera.instance.transform.position;
+            var position = CameraManager.Instance.MainCamera.transform.position;
 
             var stage = Game.Game.instance.Stage;
             base.Show(ignoreShowAnimation);

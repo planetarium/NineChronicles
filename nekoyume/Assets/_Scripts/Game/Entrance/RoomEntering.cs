@@ -1,5 +1,6 @@
 using System.Collections;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -42,8 +43,8 @@ namespace Nekoyume.Game.Entrance
             yield return new WaitUntil(() => onFinish);
             Game.instance.Lobby.Character.EnterRoom();
             Widget.Find<Menu>().EnterRoom();
-            ActionCamera.instance.SetPosition(0f, 0f);
-            ActionCamera.instance.Idle();
+            CameraManager.Instance.MainCamera.SetPosition(0f, 0f);
+            CameraManager.Instance.MainCamera.Idle();
 
             var stageLoadingScreen = Widget.Find<StageLoadingEffect>();
             if (stageLoadingScreen.IsActive())

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.CameraSystem;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -21,9 +22,9 @@ namespace Nekoyume.Game
 
         private void Awake ()
         {
-            _cameraTransform = ActionCamera.instance.transform;
+            _cameraTransform = CameraManager.Instance.MainCamera.transform;
             var initPosition = transform.localPosition;
-            var cameraPosition = ActionCamera.instance.Cam.transform.localPosition;
+            var cameraPosition = CameraManager.Instance.MainCamera.Cam.transform.localPosition;
             initPosition.x += cameraPosition.x;
             transform.localPosition = Vector3.zero;
             InstantiateChildren();
