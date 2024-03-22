@@ -2711,6 +2711,7 @@ namespace Nekoyume.Blockchain
                         arenaSheets,
                         myCollectionState.GetEffects(tableSheets.CollectionSheet),
                         enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
+                        tableSheets.DeBuffLimitSheet,
                         true);
 
                     var reward = RewardSelector.Select(
@@ -2912,7 +2913,8 @@ namespace Nekoyume.Blockchain
                 runeStates,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
-                States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet)
+                States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
+                TableSheets.Instance.DeBuffLimitSheet
             );
             simulator.Simulate();
             var log = simulator.Log;
@@ -2962,7 +2964,7 @@ namespace Nekoyume.Blockchain
             worldBoss.Close(true);
 
             Widget.Find<LoadingScreen>().Close();
-            Game.Game.instance.RaidStage.Play(
+            var raidStartData = new RaidStage.RaidStartData(
                 eval.Action.AvatarAddress,
                 simulator.BossId,
                 log,
@@ -2972,6 +2974,8 @@ namespace Nekoyume.Blockchain
                 false,
                 simulator.AssetReward,
                 killRewards);
+
+            Game.Game.instance.RaidStage.Play(raidStartData);
         }
 
         private static ActionEvaluation<ClaimRaidReward> PrepareClaimRaidReward(
