@@ -748,6 +748,7 @@ namespace Nekoyume.Blockchain
                     States.Instance.SetRuneStates(TableSheets.Instance.RuneListSheet.Select(pair => new RuneState(pair.Value.Id)));
                     await States.Instance.InitItemSlotStates();
                     await States.Instance.InitRuneSlotStates();
+                    await RxProps.SelectAvatarAsync(eval.Action.index);
                 }).ToObservable()
                 .ObserveOnMainThread()
                 .Subscribe(x =>
