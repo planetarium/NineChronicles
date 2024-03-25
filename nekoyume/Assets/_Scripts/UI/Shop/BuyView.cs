@@ -392,7 +392,7 @@ namespace Nekoyume
         {
             await SetItems(true);
             UpdateView();
-            base.UpdatePage(0);
+            _page.SetValueAndForceNotify(0);
         }
 
         protected override async void UpdatePage(int page)
