@@ -62037,8 +62037,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsTrail: 0
-  m_IgnoreCanvasScaler: 1
-  m_Scale: 100
+  m_IgnoreCanvasScaler: 0
+  m_AbsoluteMode: 0
   m_Scale3D: {x: 0.001, y: 0.001, z: 0.001}
   m_AnimatableProperties: []
   m_Particles:
@@ -62064,7 +62064,13 @@ MonoBehaviour:
   - {fileID: 8447817956643468605}
   - {fileID: 5613980309801998627}
   - {fileID: 5614056829280550603}
-  m_ShrinkByMaterial: 0
+  m_MeshSharing: 0
+  m_GroupId: 0
+  m_GroupMaxId: 0
+  m_PositionMode: 0
+  m_AutoScaling: 0
+  m_AutoScalingMode: 2
+  m_ResetScaleOnEnable: 0
 --- !u!1 &5704490868750176183
 GameObject:
   m_ObjectHideFlags: 0

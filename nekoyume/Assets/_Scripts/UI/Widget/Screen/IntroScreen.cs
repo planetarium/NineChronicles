@@ -413,6 +413,11 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if(Game.Game.instance.CommandLineOptions == null || !Game.Game.instance.CommandLineOptions.EnableGuestLogin)
+            {
+                return;
+            }
+
             guestButton.gameObject.SetActive(true);
             guestButton.onClick.AddListener(() =>
             {

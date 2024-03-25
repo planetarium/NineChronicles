@@ -79,7 +79,8 @@ namespace Nekoyume.UI
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)
         {
             acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
-            var acquisitionPlaceList = ShortcutHelper.GetAcquisitionPlaceList(this, itemBase);
+            var acquisitionPlaceList = ShortcutHelper.GetAcquisitionPlaceList(
+                this, itemBase.Id, itemBase.ItemSubType, itemBase is ITradableItem);
             if (acquisitionPlaceList.Any())
             {
                 acquisitionGroup.SetActive(true);

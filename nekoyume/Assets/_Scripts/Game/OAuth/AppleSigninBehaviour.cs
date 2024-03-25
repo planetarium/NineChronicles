@@ -98,7 +98,7 @@ namespace Nekoyume.Game.OAuth
                 error =>
                 {
                     var authorizationErrorCode = error.GetAuthorizationErrorCode();
-                    Debug.LogWarning("Error while trying to get credential state " + authorizationErrorCode.ToString() + " " + error.ToString());
+                    Debug.LogWarning($"Error while trying to get credential state {authorizationErrorCode} {error} {error.Domain} {error.LocalizedDescription} {error.LocalizedFailureReason} {error.LocalizedRecoverySuggestion}");
                     // this.SetupLoginMenuForSignInWithApple();
                 });
         }

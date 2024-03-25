@@ -71,6 +71,28 @@ namespace Nekoyume
             StatType referencedStatType)
         {
             var sheets = TableSheets.Instance;
+
+            if(sheets.SkillSheet.TryGetValue(skillId,out var skillSheetRow))
+            {
+                switch (skillSheetRow.SkillCategory)
+                {
+                    case SkillCategory.ShatterStrike:
+                        var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
+                        var multiplierText = (statPowerRatio / 10000m).ToString("P2", percentageFormat);
+                        return $"({multiplierText} {referencedStatType})";
+                    case SkillCategory.Focus:
+                    case SkillCategory.Dispel:
+                        if(sheets.SkillActionBuffSheet.TryGetValue(skillId, out var skillActionBuffSheetRow) &&
+                            sheets.ActionBuffSheet.TryGetValue(skillActionBuffSheetRow.BuffIds.First(),out var actionBuffSheetRow))
+                        {
+                            return $"{actionBuffSheetRow.Chance}%";
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             var isBuff = sheets.SkillBuffSheet.TryGetValue(skillId, out var skillBuffRow) &&
                 (skillType == SkillType.Buff || skillType == SkillType.Debuff);
             var showPercent = false;

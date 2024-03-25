@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
@@ -99,6 +100,12 @@ namespace Nekoyume.UI
         private bool _useSweep = true;
         private Action<StageType, int, int, bool> _repeatBattleAction;
 
+        private const int UsableApStoneCountWithRepeat = 1;
+
+        private int MaxApStoneCount => _useSweep
+            ? HackAndSlashSweep.UsableApStoneCount
+            : UsableApStoneCountWithRepeat;
+
         protected override void Awake()
         {
             _apStoneCount.Subscribe(v => UpdateView()).AddTo(gameObject);
@@ -168,12 +175,16 @@ namespace Nekoyume.UI
             objectsForSweep.ForEach(obj => obj.SetActive(useSweep));
             objectsForRepeat.ForEach(obj => obj.SetActive(!useSweep));
             _useSweep = useSweep;
-            if (!useSweep)
-            {
-                // TODO: hotfix about HAS repeating bug. We have to delete it.
-                apStoneSlider.ForceMove(0);
-                _apStoneCount.Value = 0;
-            }
+            var materialSheet = TableSheets.Instance.MaterialItemSheet;
+            var haveApStoneCount =
+                States.Instance.CurrentAvatarState.inventory.GetUsableMaterialCount(
+                    materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
+                    Game.Game.instance.Agent?.BlockIndex ?? -1);
+            apStoneSlider.Set(0,
+                Math.Min(haveApStoneCount, MaxApStoneCount),
+                0,
+                MaxApStoneCount, 1,
+                x => _apStoneCount.Value = x);
 
             UpdateView();
         }
@@ -188,44 +199,12 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                var haveApStoneCount = 0;
-
-                foreach (var item in inventory.Items)
-                {
-                    if (item.Locked)
-                    {
-                        continue;
-                    }
-
-                    switch (item.item.ItemType)
-                    {
-                        case ItemType.Material:
-                            if (item.item.ItemSubType != ItemSubType.ApStone)
-                            {
-                                continue;
-                            }
-
-                            if (item.item is ITradableItem tradableItem)
-                            {
-                                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                                if (tradableItem.RequiredBlockIndex > blockIndex)
-                                {
-                                    continue;
-                                }
-
-                                haveApStoneCount += item.count;
-                            }
-                            else
-                            {
-                                haveApStoneCount += item.count;
-                            }
-
-                            break;
-                    }
-                }
+                var materialSheet = TableSheets.Instance.MaterialItemSheet;
+                var haveApStoneCount = inventory.GetUsableMaterialCount(
+                    materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
+                    Game.Game.instance.Agent?.BlockIndex ?? -1);
 
                 var haveApCount = States.Instance.CurrentAvatarState.actionPoint;
-
                 haveApText.text = haveApCount.ToString();
                 haveApStoneText.text = haveApStoneCount.ToString();
 
@@ -241,9 +220,9 @@ namespace Nekoyume.UI
                     x => _ap.Value = x * _costAp);
 
                 apStoneSlider.Set(0,
-                    Math.Min(haveApStoneCount, HackAndSlashSweep.UsableApStoneCount),
+                    Math.Min(haveApStoneCount, MaxApStoneCount),
                     0,
-                    HackAndSlashSweep.UsableApStoneCount, 1,
+                    MaxApStoneCount, 1,
                     x => _apStoneCount.Value = x);
 
                 _cp.Value = Util.TotalCP(BattleType.Adventure);

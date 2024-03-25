@@ -76,9 +76,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private Sprite dccSlotDefaultSprite;
 
-        [SerializeField]
-        private Button collectionEffectButton;
-
         private Image _activeDcc;
         private Image _activeCostume;
         private BattlePreparation _battlePreparation;
@@ -153,12 +150,6 @@ namespace Nekoyume.UI
             {
                 Dcc.instance.SetVisible(_isVisibleDcc.Value ? 0 : 1);
                 _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
-            });
-
-            collectionEffectButton.onClick.AddListener(() =>
-            {
-                Find<CollectionEffectPopup>().Show();
-                AudioController.PlayClick();
             });
 
             base.Awake();

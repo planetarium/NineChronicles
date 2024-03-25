@@ -99,8 +99,9 @@ namespace Nekoyume
                     {
                         ItemSubTypeFilter.Food_HP,
                         ItemSubTypeFilter.Food_ATK,
-                        ItemSubTypeFilter.Food_DEF,
                         ItemSubTypeFilter.Food_CRI,
+                        ItemSubTypeFilter.Food_DEF,
+                        ItemSubTypeFilter.Food_SPD,
                         ItemSubTypeFilter.Food_HIT,
                     }
                 },
@@ -306,12 +307,8 @@ namespace Nekoyume
             {
                 var index = toggleDropdowns.IndexOf(toggleDropdown);
                 var toggleType = _toggleTypes[index];
-                toggleDropdown.onValueChanged.AddListener((value) =>
+                toggleDropdown.onClickToggle.AddListener(() =>
                 {
-                    if (!value)
-                    {
-                        return;
-                    }
                     _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
 
                     var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
@@ -319,7 +316,7 @@ namespace Nekoyume
                     _toggleSortFilterIndex[itemTypeFilter] = 0;
 
                     toggleDropdown.items.First().isOn = true;
-                    _page.SetValueAndForceNotify(0);
+                    ResetPage();
                 });
                 toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
 
@@ -338,7 +335,7 @@ namespace Nekoyume
                         _selectedSortFilter.Value = _toggleSortFilters[itemTypeFilter].First();
                         _toggleSortFilterIndex[itemTypeFilter] = 0;
 
-                        _page.SetValueAndForceNotify(0);
+                        ResetPage();
                     });
                     item.onClickToggle.AddListener(AudioController.PlayClick);
                 }
@@ -354,7 +351,7 @@ namespace Nekoyume
                 _toggleSortFilterIndex[itemTypeFilter] = nextIndex;
                 _selectedSortFilter.Value = sortFilters[nextIndex];
 
-                _page.SetValueAndForceNotify(0);
+                ResetPage();
             });
 
             inputField.onValueChanged.AddListener(_ =>
@@ -362,41 +359,53 @@ namespace Nekoyume
             inputField.onSubmit.AddListener(_ =>
             {
                 _useSearch.SetValueAndForceNotify(inputField.text.Length > 0);
-                _page.SetValueAndForceNotify(0);
+                ResetPage();
             });
             searchButton.onClick.AddListener(() =>
             {
                 _useSearch.SetValueAndForceNotify(inputField.text.Length > 0);
-                _page.SetValueAndForceNotify(0);
+                ResetPage();
             });
             resetButton.onClick.AddListener(() =>
             {
                 _useSearch.Value = !_useSearch.Value;
-                _page.SetValueAndForceNotify(0);
+                ResetPage();
             });
             sortOrderButton.onClick.AddListener(() =>
             {
                 _isAscending.Value = !_isAscending.Value;
-                _page.SetValueAndForceNotify(0);
+                ResetPage();
             });
             levelLimitToggle.onValueChanged.AddListener(value =>
             {
                 _levelLimit.Value = value;
-                _page.SetValueAndForceNotify(0);
+                ResetPage();
             });
         }
 
-        public async void OnBuyProductAction()
+        public void OnBuyProductAction()
         {
-            _page.SetValueAndForceNotify(_page.Value);
             ClearSelectedItems();
+        }
+
+        private async void ResetPage()
+        {
+            await SetItems(true);
+            UpdateView();
+            _page.SetValueAndForceNotify(0);
         }
 
         protected override async void UpdatePage(int page)
         {
-            await CheckItem();
-            base.UpdatePage(page);
+            var limit = _column * _row;
+            var cachedCount = ReactiveShopState.GetCachedBuyItemCount(_selectedSubTypeFilter.Value);
+            if (limit * (page + 1) >= cachedCount)
+            {
+                await SetItems();
+            }
+
             UpdateView();
+            base.UpdatePage(page);
         }
 
         private int[] GetFilteredItemIds(ItemSubTypeFilter filter)
@@ -451,7 +460,7 @@ namespace Nekoyume
             }
         }
 
-        private async Task CheckItem()
+        private async Task SetItems(bool reset = false)
         {
             if (!_isActive)
             {
@@ -460,13 +469,6 @@ namespace Nekoyume
 
             var filter = _selectedSubTypeFilter.Value;
             var limit = _column * _row;
-            var reset = _page.Value == 0;
-            var count = reset ? 0 : ReactiveShopState.GetCachedBuyItemCount(filter);
-            if (!reset && count > (_page.Value + 1) * limit)
-            {
-                return;
-            }
-
             var orderType = _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
 
             _loadingCount++;
@@ -487,7 +489,6 @@ namespace Nekoyume
             loading.SetActive(_loadingCount > 0);
 
             Set(ReactiveShopState.BuyItemProducts, ReactiveShopState.BuyFungibleAssetProducts);
-            UpdateView();
         }
 
         protected override void SubscribeToSearchConditions()
@@ -637,15 +638,15 @@ namespace Nekoyume
 
         protected override void Reset()
         {
-            toggleDropdowns.First().isOn = false;
+            _loadingCount = 0;
+            loading.SetActive(_loadingCount > 0);
+
             cartView.gameObject.SetActive(false);
             toggleDropdowns.First().isOn = true;
             toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
             levelLimitToggle.isOn = false;
-            _loadingCount = 0;
-            loading.SetActive(_loadingCount > 0);
             if (_resetAnimator.isActiveAndEnabled)
             {
                 _resetAnimator.Play(_hashDisabled);

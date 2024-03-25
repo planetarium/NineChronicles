@@ -9,7 +9,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using UniRx;
     public class CollectionResultPopup : PopupWidget
     {
         [Serializable]
@@ -18,9 +17,6 @@ namespace Nekoyume.UI
             public GameObject gameObject;
             public TextMeshProUGUI text;
         }
-
-        [SerializeField]
-        private TextMeshProUGUI continueText;
 
         [SerializeField]
         private TextMeshProUGUI collectionText;
@@ -40,13 +36,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
-        private Coroutine _timerCoroutine;
-        private const float ContinueTime = 3f;
-
         protected override void Awake()
         {
             base.Awake();
-            closeButton.onClick.AddListener(() => Close());
+            closeButton.onClick.AddListener(() => Close(true));
         }
 
         public void Show(
@@ -62,8 +55,6 @@ namespace Nekoyume.UI
                 Debug.LogError(sb.ToString());
                 return;
             }
-
-            continueText.alpha = 0f;
 
             collectionText.text = L10nManager.LocalizeCollectionName(row.Id);
 
@@ -85,61 +76,6 @@ namespace Nekoyume.UI
             cpScreen.Show(previousCp, currentCp);
 
             base.Show(ignoreShowAnimation);
-
-            StartContinueTimer();
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            StopContinueTimer();
-
-            base.Close(true);
-        }
-
-        private void StopContinueTimer()
-        {
-            if (_timerCoroutine is not null)
-            {
-                StopCoroutine(_timerCoroutine);
-                _timerCoroutine = null;
-            }
-        }
-
-        private void StartContinueTimer()
-        {
-            if (_timerCoroutine is not null)
-            {
-                StopCoroutine(_timerCoroutine);
-            }
-
-            _timerCoroutine = StartCoroutine(CoContinueTimer(ContinueTime));
-        }
-
-        private IEnumerator CoContinueTimer(float timer)
-        {
-            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
-            continueText.alpha = 1f;
-
-            yield return new WaitForSeconds(1.5f);
-
-            var prevFlooredTime = Mathf.Round(timer);
-            while (timer >= .3f)
-            {
-                // 텍스트 업데이트 횟수를 줄이기 위해 소숫점을 내림해
-                // 정수부만 체크 후 텍스트 업데이트 여부를 결정합니다.
-                var flooredTime = Mathf.Floor(timer);
-                if (flooredTime < prevFlooredTime)
-                {
-                    prevFlooredTime = flooredTime;
-                    continueText.text = string.Format(format, flooredTime);
-                }
-
-                timer -= Time.deltaTime;
-                yield return null;
-            }
-
-            Close();
-            _timerCoroutine = null;
         }
     }
 }

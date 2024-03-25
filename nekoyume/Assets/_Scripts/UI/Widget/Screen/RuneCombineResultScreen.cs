@@ -105,26 +105,6 @@ namespace Nekoyume.UI
             StartCoroutine(DisappearNpc());
         }
 
-        private IEnumerator CoWorkshopItemMove()
-        {
-            var target = Find<HeaderMenuStatic>()
-                .GetToggle(HeaderMenuStatic.ToggleType.AvatarInfo);
-            var targetPosition = target ? target.position : Vector3.zero;
-
-            ItemMoveAnimation.Show(
-                speechBubble.RuneImage.sprite,
-                speechBubble.RuneImage.transform.position,
-                targetPosition,
-                Vector2.one * 1.5f,
-                false,
-                false,
-                1f,
-                0,
-                ItemMoveAnimation.EndPoint.Inventory);
-
-            yield return null;
-        }
-
         private IEnumerator DisappearNpc()
         {
             if (AnimationState.Value == AnimationStateType.Shown)
@@ -138,7 +118,6 @@ namespace Nekoyume.UI
 
         private void OnCloseComplete()
         {
-            StartCoroutine(CoWorkshopItemMove());
             npcSkeletonGraphic.gameObject.SetActive(false);
             speechBubble.Hide();
             OnDisappear?.Invoke();

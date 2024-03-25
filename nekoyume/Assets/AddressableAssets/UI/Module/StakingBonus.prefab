@@ -921,6 +921,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 8efd7a17ae635458c812966d604e1b9c, type: 3}
   - {fileID: 21300000, guid: be4b27f5757edba43a41d0811a555e42, type: 3}
   - {fileID: 21300000, guid: 728f6169050fa7b4a9295aa9365f5ce3, type: 3}
+  - {fileID: 21300000, guid: 72be66d3298f99b4caaec099078f5891, type: 3}
   enableIcon: {fileID: 1206277559859245641}
   enableObjects:
   - {fileID: 3546716467216547893}
@@ -930,6 +931,7 @@ MonoBehaviour:
   - {fileID: 4237245992686234399}
   - {fileID: 1521085419625991906}
   - {fileID: 7402825587081543889}
+  - {fileID: 6876917300544747125}
 --- !u!225 &3190610291325093023
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3359,6 +3361,12 @@ PrefabInstance:
 --- !u!224 &1080339765909190575 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7446821095837636622, guid: d757eefa41de74cce95d109b176b64f2,
+    type: 3}
+  m_PrefabInstance: {fileID: 7612859218520403873}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6876917300544747125 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3947960080141539796, guid: d757eefa41de74cce95d109b176b64f2,
     type: 3}
   m_PrefabInstance: {fileID: 7612859218520403873}
   m_PrefabAsset: {fileID: 0}

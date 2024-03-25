@@ -44,5 +44,34 @@ namespace Nekoyume
                 ? items.Sum(x => x.count)
                 : 0;
         }
+
+        public static int GetUsableMaterialCount(this Inventory inventory, int id, long blockIndex)
+        {
+            if (inventory is null)
+            {
+                return 0;
+            }
+
+            return inventory.Items.Where(item =>
+            {
+                if (item.Locked)
+                {
+                    return false;
+                }
+
+                if (item.item.Id != id)
+                {
+                    return false;
+                }
+
+                if (item.item is ITradableItem tradableItem &&
+                    tradableItem.RequiredBlockIndex > blockIndex)
+                {
+                    return false;
+                }
+
+                return true;
+            }).Sum(item => item.count);
+        }
     }
 }

@@ -55,9 +55,9 @@ namespace Nekoyume.UI
 
         private enum SortType
         {
-            None,
+            Id,
             Grade,
-            Level,
+            LevelOrQuantity,
         }
         #endregion Internal Types
 
@@ -93,9 +93,9 @@ namespace Nekoyume.UI
         private UIFlip sortFlip;
 
         [SerializeField]
-        private SortType sortType = SortType.None;
+        private SortType currentSortType = SortType.Id;
 
-        private bool _isSortDescending = true;
+        private bool _isSortDescending = false;
 
         private List<CollectionModel> _items;
 
@@ -109,6 +109,19 @@ namespace Nekoyume.UI
         private ItemFilterOptions itemFilterOptions;
 
         private readonly List<CollectionModel> _models = new List<CollectionModel>();
+
+        private ItemType CurrentItemType
+        {
+            get => _currentItemType;
+            set
+            {
+                _currentItemType = value;
+                if (TryFind<CollectionItemFilterPopup>(out var filterPopup))
+                {
+                    filterPopup.SetItemTypeTap(_currentItemType);
+                }
+            }
+        }
 
         private readonly Dictionary<ItemType, Dictionary<StatType, bool>> _filter = new();
         private static readonly StatType[] TabStatTypes =
@@ -156,7 +169,7 @@ namespace Nekoyume.UI
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
                     {
-                        _currentItemType = itemTypeToggle.type;
+                        CurrentItemType = itemTypeToggle.type;
 
                         var toggle = statToggles.First().toggle;
                         toggle.isOn = !toggle.isOn;
@@ -202,6 +215,8 @@ namespace Nekoyume.UI
             var toggle = itemTypeToggles.First().toggle;
             toggle.isOn = !toggle.isOn;
 
+            Find<CollectionItemFilterPopup>().SetItemTypeTap(_currentItemType);
+            RefreshDropDownText();
             UpdateToggleView();
             UpdateStatToggleView();
             UpdateItems();
@@ -224,30 +239,6 @@ namespace Nekoyume.UI
             UpdateToggleDictionary();
 
             ReactiveAvatarState.Inventory.Subscribe(_ => OnUpdateInventory()).AddTo(gameObject);
-        }
-
-        private void RefreshDropDownText()
-        {
-            if (sortDropdown.options.Count == 0)
-                return;
-
-            switch (_currentItemType)
-            {
-                case ItemType.Consumable:
-                    sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_COUNT");
-                    break;
-                case ItemType.Costume:
-                    sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_LEVEL");
-                    break;
-                case ItemType.Equipment:
-                    sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_LEVEL");
-                    break;
-                case ItemType.Material:
-                    sortDropdown.options[(int)SortType.Level].text = L10nManager.Localize("UI_COUNT");
-                    break;
-            }
-
-            sortDropdown.RefreshShownValue();
         }
 
         #region ScrollView
@@ -292,7 +283,8 @@ namespace Nekoyume.UI
 
             if (_selectedMaterial != null)
             {
-                collectionMaterialInfo.Show(_selectedMaterial.Row);
+                var required = _selectedMaterial.HasItem && !_selectedMaterial.IsEnoughAmount;
+                collectionMaterialInfo.Show(this, _selectedMaterial, required);
             }
             else
             {
@@ -463,34 +455,66 @@ namespace Nekoyume.UI
         {
             sortDropdown.ClearOptions();
 
-            // TODO: Apply L10n
             var options = new List<string>();
             foreach (SortType sortType in Enum.GetValues(typeof(SortType)))
                 options.Add(GetSortTypeString(sortType));
             sortDropdown.AddOptions(options);
 
             sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
-            RefreshDropDownText();
         }
 
         private string GetSortTypeString(SortType sortType)
         {
             switch (sortType)
             {
-                case SortType.None:
-                    return L10nManager.Localize("UI_RESET");
+                case SortType.Id:
+                {
+                    return L10nManager.Localize("UI_ID");
+                }
                 case SortType.Grade:
+                {
                     return L10nManager.Localize("UI_GRADE");
-                case SortType.Level:
-                    return L10nManager.Localize("UI_LEVEL");
+                }
+                case SortType.LevelOrQuantity:
+                {
+                    return GetLevelOrQuantityString();
+                }
             }
 
             return string.Empty;
         }
 
+        private string GetLevelOrQuantityString()
+        {
+            switch (_currentItemType)
+            {
+                case ItemType.Consumable:
+                    return L10nManager.Localize("UI_COUNT");
+                case ItemType.Costume:
+                    return L10nManager.Localize("UI_COUNT");
+                case ItemType.Equipment:
+                    return L10nManager.Localize("UI_EQUIPMENTLEVEL");
+                case ItemType.Material:
+                    return L10nManager.Localize("UI_COUNT");
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private void RefreshDropDownText()
+        {
+            if (sortDropdown.options.Count == 0)
+                return;
+
+            for (var i = 0; i < sortDropdown.options.Count; i++)
+                sortDropdown.options[i].text = GetSortTypeString((SortType)i);
+
+            sortDropdown.RefreshShownValue();
+        }
+
         private void OnSortDropdownValueChanged(int index)
         {
-            sortType = (SortType)index;
+            currentSortType = (SortType)index;
             UpdateItems();
         }
 
@@ -514,7 +538,7 @@ namespace Nekoyume.UI
             // 3. 재료 모두 미달성 (나머지)
 
             // 설정된 타입별로 정렬
-            var sortByTypeValue = SortByType(a, b, sortType);
+            var sortByTypeValue = SortByType(a, b, currentSortType);
             if (sortByTypeValue != 0)
                 return sortByTypeValue;
 
@@ -530,13 +554,17 @@ namespace Nekoyume.UI
             var sortTypeWeight = _isSortDescending ? 1 : -1;
             switch (type)
             {
+                case SortType.Id:
+                {
+                    return (b.Row.Id - a.Row.Id) * sortTypeWeight;
+                }
                 case SortType.Grade:
                 {
                     var aGrade = a.Materials.Max(material => material.Grade);
                     var bGrade = b.Materials.Max(material => material.Grade);
                     return (bGrade - aGrade) * sortTypeWeight;
                 }
-                case SortType.Level:
+                case SortType.LevelOrQuantity:
                 {
                     if (a.ItemType == ItemType.Consumable || a.ItemType == ItemType.Material)
                     {

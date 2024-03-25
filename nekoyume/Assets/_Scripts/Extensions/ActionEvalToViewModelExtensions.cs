@@ -62,7 +62,8 @@ namespace Nekoyume
                     sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
                     StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet),
-                    collectionState.GetEffects(sheets.CollectionSheet));
+                    collectionState.GetEffects(sheets.CollectionSheet),
+                    sheets.DeBuffLimitSheet);
                 simulator.Simulate();
                 if (simulator.Log.IsClear)
                 {

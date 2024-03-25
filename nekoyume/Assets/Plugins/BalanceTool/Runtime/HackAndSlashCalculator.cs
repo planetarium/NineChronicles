@@ -56,6 +56,7 @@ namespace BalanceTool
                     typeof(CrystalRandomBuffSheet),
                     typeof(StakeActionPointCoefficientSheet),
                     typeof(RuneListSheet),
+                    typeof(DeBuffLimitSheet),
                 });
 
             return await playDataList.Select(pd => ExecuteHackAndSlashAsync(
@@ -161,6 +162,7 @@ namespace BalanceTool
                     sheets.GetSheet<CollectionSheet>(),
                     sheets.GetSheet<WorldSheet>(),
                     sheets.GetSheet<WorldUnlockSheet>(),
+                    sheets.GetSheet<DeBuffLimitSheet>(),
                     exp);
                 result = ApplyToPlayResult(
                     exp,
@@ -188,6 +190,7 @@ namespace BalanceTool
             CollectionSheet collectionSheet,
             WorldSheet worldSheet,
             WorldUnlockSheet worldUnlockSheet,
+            DeBuffLimitSheet deBuffLimitSheet,
             int exp)
         {
             var simulator = new StageSimulator(
@@ -209,7 +212,9 @@ namespace BalanceTool
                     random,
                     stageRow,
                     materialItemSheet),
-                collectionState.GetEffects(collectionSheet));
+                collectionState.GetEffects(collectionSheet),
+                deBuffLimitSheet
+                );
             simulator.Simulate();
 
             if (simulator.Log.IsClear)

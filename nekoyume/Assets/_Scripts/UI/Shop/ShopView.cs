@@ -91,11 +91,11 @@ namespace Nekoyume.UI.Module
             ReactiveProperty<List<FungibleAssetValueProductResponseModel>> fungibleAssetProducts,
             Action<ShopItem> clickItem)
         {
-            Reset();
             InstantiateItemView();
             SetAction(clickItem);
             Set(itemProducts, fungibleAssetProducts);
             UpdateView();
+            Reset();
         }
 
         private void Awake()

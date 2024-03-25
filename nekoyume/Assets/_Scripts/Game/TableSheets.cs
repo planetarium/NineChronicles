@@ -255,6 +255,8 @@ namespace Nekoyume.Game
 
         public CollectionSheet CollectionSheet { get; private set; }
 
+        public DeBuffLimitSheet DeBuffLimitSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();

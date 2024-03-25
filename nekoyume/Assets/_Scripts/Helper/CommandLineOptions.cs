@@ -110,6 +110,8 @@ namespace Nekoyume.Helper
 
         private string _guildIconBucket;
 
+        private bool _enableGuestLogin;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -586,6 +588,17 @@ namespace Nekoyume.Helper
             set
             {
                 _guildIconBucket = value;
+                Empty = false;
+            }
+        }
+
+        [Option("enable-guest-login", Required = false, HelpText = "enable guest login")]
+        public bool EnableGuestLogin
+        {
+            get => _enableGuestLogin;
+            set
+            {
+                _enableGuestLogin = value;
                 Empty = false;
             }
         }

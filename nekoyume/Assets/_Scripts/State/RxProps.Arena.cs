@@ -37,10 +37,10 @@ namespace Nekoyume.State
 
         public static IReadOnlyReactiveProperty<int> PurchasedDuringInterval =>
             _purchasedDuringInterval;
-        private static readonly ReactiveProperty<long> _lastBattleBlockIndex = new();
+        private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
 
-        public static IReadOnlyReactiveProperty<long> LastBattleBlockIndex =>
-            _lastBattleBlockIndex;
+        public static IReadOnlyReactiveProperty<long> LastArenaBattleBlockIndex =>
+            _lastArenaBattleBlockIndex;
         public static IReadOnlyReactiveProperty<ArenaParticipantModel> PlayerArenaInfo =>
             _playerArenaInfo;
         public static
@@ -325,7 +325,7 @@ namespace Nekoyume.State
             _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
             _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
-            _lastBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
+            _lastArenaBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
 
             return arenaInfo;
         }
