@@ -215,14 +215,14 @@ namespace Nekoyume.Game.LiveAsset
                 LanguageType.Japanese => JapaneseImagePostfix,
                 _ => string.Empty
             };
-            return await GetTexture(
+            return await Helper.Util.DownloadTexture(
                 $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
         }
 
         private async UniTaskVoid InitializeStakingResource()
         {
-            StakingLevelSprite = await GetTexture($"{_endpoint.ImageRootUrl}/{StakingLevelImageUrl}");
-            StakingRewardSprite = await GetTexture($"{_endpoint.ImageRootUrl}/{StakingRewardImageUrl}");
+            StakingLevelSprite = await Helper.Util.DownloadTexture($"{_endpoint.ImageRootUrl}/{StakingLevelImageUrl}");
+            StakingRewardSprite = await Helper.Util.DownloadTexture($"{_endpoint.ImageRootUrl}/{StakingRewardImageUrl}");
             RequestManager.instance
                 .GetJson(StakingArenaBonusUrl, response =>
                 {
@@ -230,23 +230,6 @@ namespace Nekoyume.Game.LiveAsset
                 })
                 .ToUniTask()
                 .Forget();
-        }
-        private async UniTask<Sprite> GetTexture(string url)
-        {
-            var www = UnityWebRequestTexture.GetTexture(url);
-            await www.SendWebRequest();
-
-            if (www.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError(www.error);
-                return null;
-            }
-
-            var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-            return Sprite.Create(
-                myTexture,
-                new Rect(0, 0, myTexture.width, myTexture.height),
-                Pivot);
         }
     }
 }

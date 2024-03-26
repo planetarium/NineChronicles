@@ -16,24 +16,22 @@ MonoBehaviour:
     type: 3}
   <FallbackBuffRank>k__BackingField: 1
   bonusBuffIconDatas:
-  - skillCategory: 6
+  - skillCategory: HPBuff
     iconSprite: {fileID: 21300000, guid: c4377040b973b41eb82d99b5e2022d75, type: 3}
-  - skillCategory: 7
+  - skillCategory: AttackBuff
     iconSprite: {fileID: 21300000, guid: eec6d1b368b8a4a2db5a3ed5c2f8a8b7, type: 3}
-  - skillCategory: 8
+  - skillCategory: DefenseBuff
     iconSprite: {fileID: 21300000, guid: b9c62b18b33cc4ed7b4f112a7465aa93, type: 3}
-  - skillCategory: 9
+  - skillCategory: CriticalBuff
     iconSprite: {fileID: 21300000, guid: 6ab32b560c4d64605a912204ad375e49, type: 3}
-  - skillCategory: 10
+  - skillCategory: HitBuff
     iconSprite: {fileID: 21300000, guid: 366576646055b4ba084889e06f1ec5b6, type: 3}
-  - skillCategory: 11
+  - skillCategory: SpeedBuff
     iconSprite: {fileID: 21300000, guid: ec94c68a4e1d14659bcbabe96c99236b, type: 3}
-  - skillCategory: 13
-    iconSprite: {fileID: 21300000, guid: 39d46914ec312d8469b6bb4740099db4, type: 3}
-  - skillCategory: 12
+  - skillCategory: CriticalDamageBuff
+    iconSprite: {fileID: 21300000, guid: bec94c8a7472b43ae8536decac34f162, type: 3}
+  - skillCategory: DamageReductionBuff
     iconSprite: {fileID: 21300000, guid: 4b87d7e8068a69745ae995cf6cac5f12, type: 3}
-  - skillCategory: 3
-    iconSprite: {fileID: 21300000, guid: 7687707e6ab3b4ebe97384fcc8fb595f, type: 3}
   bonusBuffGradeDatas:
   - buffRank: 1
     iconSprite: {fileID: 21300000, guid: f15bf6bec64cf82459fe705a0f8024ec, type: 3}

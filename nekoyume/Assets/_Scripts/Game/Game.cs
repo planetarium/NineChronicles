@@ -179,6 +179,8 @@ namespace Nekoyume.Game
 
         private CommandLineOptions _commandLineOptions;
 
+        public CommandLineOptions CommandLineOptions { get => _commandLineOptions; }
+
         private AmazonCloudWatchLogsClient _logsClient;
 
         private PlayableDirector _activeDirector;

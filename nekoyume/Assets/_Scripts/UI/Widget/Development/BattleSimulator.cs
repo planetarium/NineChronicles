@@ -227,8 +227,9 @@ public class BattleSimulator : Widget
             tableSheets.GetStageSimulatorSheets(),
             tableSheets.EnemySkillSheet,
             tableSheets.CostumeStatSheet,
-            StageSimulatorV2.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet),
-            collectionModifiers
+            StageSimulator.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet),
+            collectionModifiers,
+            tableSheets.DeBuffLimitSheet
         );
 
         simulator.Simulate();

@@ -492,6 +492,84 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public IEnumerator CoShatterStrike(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+        {
+            if (skillInfos is null ||
+                skillInfos.Count == 0)
+                yield break;
+
+            ActionPoint = () =>
+            {
+                for (var i = 0; i < skillInfos.Count; i++)
+                {
+                    var info = skillInfos[i];
+                    var target = info.Target.Id == Id ? this : _target;
+                    if (target is null)
+                        continue;
+
+                    Vector3 targetEffectPos = target.transform.position;
+                    targetEffectPos.y += 0.55f;
+                    var targetEffectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
+                                    Game.instance.Stage.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
+                    var strikeEffect = targetEffectObj.GetComponent<VFX.VFX>();
+                    if (strikeEffect is null)
+                        continue;
+                    strikeEffect.Play();
+
+                    ProcessAttack(target, info, false);
+                }
+            };
+
+            Vector3 effectPos = transform.position;
+            effectPos.y += 0.55f;
+            var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
+            var castEffect = effectObj.GetComponent<VFX.VFX>();
+            if (castEffect != null)
+            {
+                castEffect.Play();
+            }
+
+            Animator.Cast();
+            yield return new WaitForSeconds(0.6f);
+
+            yield return StartCoroutine(
+                    CoAnimationCastAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
+        }
+
+        public IEnumerator CoDoubleAttackWithCombo(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+        {
+            if (skillInfos is null || skillInfos.Count == 0)
+            {
+                yield break;
+            }
+
+            var skillInfosCount = skillInfos.Count;
+            for (var i = 0; i < skillInfosCount; i++)
+            {
+                var info = skillInfos[i];
+                ActionPoint = () =>
+                {
+                    var target = info.Target.Id == Id ? this : _target;
+
+                    Vector3 effectPos = target.transform.position;
+                    effectPos.x += 0.3f;
+                    effectPos.y = Stage.StageStartPosition + 0.32f;
+
+                    var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_{i + 1:D2}", false, effectPos) ??
+                    Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
+                    var effect = effectObj.GetComponent<VFX.VFX>();
+                    if (effect != null)
+                    {
+                        effect.Play();
+                    }
+
+                    ProcessAttack(target, info, true);
+                };
+                yield return StartCoroutine(CoAnimationAttack(info.Critical));
+            }
+        }
+
         public IEnumerator CoDoubleAttack(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null || skillInfos.Count == 0)
@@ -645,13 +723,35 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
 
+            HashSet<ArenaCharacter> dispeledTargets = new HashSet<ArenaCharacter>();
             foreach (var info in skillInfos)
             {
                 var target = info.Target.Id == Id ? this : _target;
                 target.ProcessBuff(target, info);
+                if (!info.Affected || (info.DispelList != null && info.DispelList.Count() > 0))
+                {
+                    dispeledTargets.Add(target);
+                }
             }
 
             Animator.Idle();
+
+            if (dispeledTargets.Count > 0)
+            {
+                yield return new WaitForSeconds(.4f);
+            }
+            foreach (var item in dispeledTargets)
+            {
+                Vector3 effectPos = item.transform.position;
+
+                var effectObj = Game.instance.Stage.objectPool.Get("buff_dispel_success", false, effectPos) ??
+                            Game.instance.Stage.objectPool.Get("buff_dispel_success", true, effectPos);
+                var dispellEffect = effectObj.GetComponent<VFX.VFX>();
+                if (dispellEffect != null)
+                {
+                    dispellEffect.Play();
+                }
+            }
         }
 
         public IEnumerator CoTickDamage(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)

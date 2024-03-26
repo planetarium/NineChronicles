@@ -76,9 +76,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private Sprite dccSlotDefaultSprite;
 
-        [SerializeField]
-        private Button collectionEffectButton;
-
         private Image _activeDcc;
         private Image _activeCostume;
         private BattlePreparation _battlePreparation;
@@ -155,12 +152,6 @@ namespace Nekoyume.UI
                 _isVisibleDcc.SetValueAndForceNotify(!_isVisibleDcc.Value);
             });
 
-            collectionEffectButton.onClick.AddListener(() =>
-            {
-                Find<CollectionEffectPopup>().Show();
-                AudioController.PlayClick();
-            });
-
             base.Awake();
         }
 
@@ -189,11 +180,24 @@ namespace Nekoyume.UI
                     information.UpdateInventory(BattleType.Adventure);
                 }
             });
+
+            grindModeToggle.onClickObsoletedToggle.AddListener(() =>
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_STAGE_LOCK_FORMAT",
+                        Game.LiveAsset.GameConfig.RequiredStage.Grind),
+                    NotificationCell.NotificationType.UnlockCondition);
+            });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+
+            var clearedStageId = States.Instance.CurrentAvatarState
+                .worldInformation.TryGetLastClearedStageId(out var stageId) ? stageId : 1;
+            grindModeToggle.obsolete = clearedStageId < Game.LiveAsset.GameConfig.RequiredStage.Grind;
             grindModeToggle.isOn = false;
             information.UpdateInventory(BattleType.Adventure);
             OnClickPresetTab(adventureButton, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]);

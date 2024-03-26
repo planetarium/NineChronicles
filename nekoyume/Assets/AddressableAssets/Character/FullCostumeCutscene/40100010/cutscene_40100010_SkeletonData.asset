@@ -22,8 +22,10 @@ MonoBehaviour:
     applyAdditiveMaterial: 0
     additiveMaterials: []
     multiplyMaterials:
+    - pageName: cutscene_40100010_2.png
+      material: {fileID: 2100000, guid: e6ff70c0d892d284899c3543cc6a17c6, type: 2}
     - pageName: cutscene_40100010.png
-      material: {fileID: 2100000, guid: 527cc44d80e2242cd9b999c456eee195, type: 2}
+      material: {fileID: 2100000, guid: eaac501821a1e904081cdcda5bc4b88c, type: 2}
     screenMaterials: []
   skeletonDataModifiers: []
   fromAnimation: []

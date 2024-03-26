@@ -169,7 +169,7 @@ namespace Nekoyume.UI.Scroller
                 AudioController.PlayClick();
 
                 var items = ItemsSource.SelectMany(x => x);
-                SetFilterAndAscending((Filter)index, true, items, true);
+                SetFilterAndAscending((Filter)index, false, items, true);
             });
             sortArea.button.onClick.AddListener(() =>
             {
@@ -266,7 +266,7 @@ namespace Nekoyume.UI.Scroller
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
-            SetFilterAndAscending(Filter.UNLOCK_STAGE, true, items);
+            SetFilterAndAscending(Filter.UNLOCK_STAGE, false, items);
 
             jumpToRecipe ??= items.LastOrDefault(row => !IsEquipmentLocked(row));
             JumpTo(jumpToRecipe);
@@ -313,7 +313,7 @@ namespace Nekoyume.UI.Scroller
             return !sharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id);
         }
 
-        public void ShowAsFood(StatType type, bool updateToggle = false)
+        public void ShowAsFood(StatType type, bool updateToggle = false, ConsumableItemRecipeSheet.Row jumpToRecipe = null)
         {
             _disposablesAtShow.DisposeAllAndClear();
             openAllRecipeArea.container.SetActive(false);
@@ -342,10 +342,10 @@ namespace Nekoyume.UI.Scroller
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
-            SetFilterAndAscending(Filter.LEVEL, true, items);
+            SetFilterAndAscending(Filter.LEVEL, false, items);
 
-            var max = items.LastOrDefault(row => !IsConsumableLocked(row));
-            JumpTo(max);
+            jumpToRecipe ??= items.LastOrDefault(row => !IsConsumableLocked(row));
+            JumpTo(jumpToRecipe);
 
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
@@ -403,7 +403,7 @@ namespace Nekoyume.UI.Scroller
             emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
             eventScheduleTab.container.SetActive(items.Any());
-            SetFilterAndAscending(Filter.LEVEL, true, items, true);
+            SetFilterAndAscending(Filter.LEVEL, false, items, true);
         }
 
         private void UpdateEventScheduleEntireTime(EventScheduleSheet.Row row)
@@ -520,12 +520,12 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void SetFilterAndAscending<T>(Filter filter, bool isAscending, IEnumerable<T> items, bool jumpToFirst = false) where T : SheetRow<int>
+        private void SetFilterAndAscending<T>(Filter filter, bool isDescending, IEnumerable<T> items, bool jumpToFirst = false) where T : SheetRow<int>
         {
             sortArea.filter.SetValueWithoutNotify((int)filter);
-            sortArea.buttonArrow.vertical = isAscending;
+            sortArea.buttonArrow.vertical = isDescending;
 
-            items = GetSortedItems(items, (Filter)sortArea.filter.value, sortArea.buttonArrow.vertical);
+            items = GetSortedItems(items, (Filter)sortArea.filter.value, !isDescending);
             Show(items, jumpToFirst);
             AnimateScroller();
         }

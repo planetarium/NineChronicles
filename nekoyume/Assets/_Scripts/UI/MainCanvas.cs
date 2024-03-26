@@ -332,6 +332,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Collection>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CollectionItemFilterPopup>());
+            yield return null;
 
             // loading
             _secondWidgets.Add(Widget.Create<StageLoadingEffect>());

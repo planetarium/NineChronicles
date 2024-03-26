@@ -377,7 +377,14 @@ namespace Nekoyume.State
                             var blockIndex = agent?.BlockIndex ?? -1;
                             if (equipment.RequiredBlockIndex <= blockIndex)
                             {
-                                checkedItems.Add(equipment.ItemId);
+                                if (checkedItems.Contains(equipment.ItemId))
+                                {
+                                    Debug.LogError($"Duplicated ItemId in Inventory {equipment.ItemId}");
+                                }
+                                else
+                                {
+                                    checkedItems.Add(equipment.ItemId);
+                                }
                             }
                         }
                     }

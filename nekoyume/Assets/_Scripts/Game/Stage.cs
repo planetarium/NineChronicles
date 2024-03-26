@@ -460,6 +460,10 @@ namespace Nekoyume.Game
             _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             AudioController.instance.PlayMusic(bgmName);
             IsShowHud = true;
+
+            SelectedPlayer.Model.worldInformation.TryGetLastClearedStageId(out var lastClearedStageIdBeforeResponse);
+            _battleResultModel.LastClearedStageIdBeforeResponse = lastClearedStageIdBeforeResponse;
+
             if (!SelectedPlayer.Model.worldInformation.IsStageCleared(stageId))
             {
                 _tutorialModels = Widget.Find<Tutorial>().TutorialController.GetModelListByStage(stageId);
@@ -851,6 +855,20 @@ namespace Nekoyume.Game
             }
         }
 
+        public IEnumerator CoDoubleAttackWithCombo(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoDoubleAttackWithCombo)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
+            var character = GetCharacter(caster);
+            if (character)
+            {
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttackWithCombo);
+                character.actions.Add(actionParams);
+                yield return null;
+            }
+        }
+
         public IEnumerator CoDoubleAttack(
             CharacterBase caster,
             int skillId,
@@ -865,7 +883,6 @@ namespace Nekoyume.Game
             {
                 var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
                 character.actions.Add(actionParams);
-
                 yield return null;
             }
         }
@@ -1052,7 +1069,7 @@ namespace Nekoyume.Game
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
+            Debug.Log($"[CoRemoveBuffs][{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
 #endif
             var character = GetCharacter(caster);
             if (character)
@@ -1386,6 +1403,20 @@ namespace Nekoyume.Game
         {
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
+        }
+
+        public IEnumerator CoShatterStrike(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoShatterStrike)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
+            var character = GetCharacter(caster);
+            if (character)
+            {
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoShatterStrike);
+                character.actions.Add(actionParams);
+                yield return null;
+            }
         }
     }
 }
