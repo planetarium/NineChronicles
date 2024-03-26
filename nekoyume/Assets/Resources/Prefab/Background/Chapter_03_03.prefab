@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: -0.1
+  childSizeAdjust: 1
 --- !u!1 &1695784027791969149
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,6 +197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0
+  childSizeAdjust: 1
 --- !u!1 &1696152048006139829
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,6 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.3
+  childSizeAdjust: 1
 --- !u!1 &1696488138466621871
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,6 +395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0
+  childSizeAdjust: 1
 --- !u!1 &1696707214452814555
 GameObject:
   m_ObjectHideFlags: 0
@@ -401,6 +405,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1701538461211497915}
+  - component: {fileID: -38938806953080495}
   m_Layer: 10
   m_Name: Chapter_03_03
   m_TagString: Untagged
@@ -430,6 +435,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-38938806953080495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1696707214452814555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71fe791ae7c3d4248b358d7453f94d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites: []
+  particles:
+  - {fileID: 5976403875493811350}
+  - {fileID: 5256643996934801301}
+  backgrounds:
+  - {fileID: 7902510062080720671}
+  - {fileID: 6421529489022826026}
+  - {fileID: 2063452668873466441}
+  - {fileID: 4393997693260868556}
+  - {fileID: 2936808942595412439}
+  - {fileID: 894367768554494389}
 --- !u!1 &1697519099433959385
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,6 +556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.21
+  childSizeAdjust: 1
 --- !u!1 &7496313895670705209
 GameObject:
   m_ObjectHideFlags: 0
@@ -626,6 +655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: -0.1
+  childSizeAdjust: 1
 --- !u!1001 &8007215617263041847
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -735,6 +765,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 821cf5c6ef8174f409d2ddc7c9fe41a0, type: 3}
+--- !u!198 &5256643996934801301 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 2876676406397467298, guid: 821cf5c6ef8174f409d2ddc7c9fe41a0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8007215617263041847}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5976403875479584728 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4462833615018263279, guid: 821cf5c6ef8174f409d2ddc7c9fe41a0,
@@ -759,3 +795,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10b555ab7e236ff428e2f4eb134632c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!198 &5976403875493811350 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4462833615037786529, guid: 821cf5c6ef8174f409d2ddc7c9fe41a0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8007215617263041847}
+  m_PrefabAsset: {fileID: 0}
