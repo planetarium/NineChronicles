@@ -11,7 +11,7 @@ namespace Nekoyume.Game
         [SerializeField] private Background[] backgrounds;
 
         private float _currentFadeValue = 1f;
-        private float _targetFadeValue;
+        private float _targetFadeValue = 1f;
         private float _fadeDuration;
         private float _fadeTime;
 
