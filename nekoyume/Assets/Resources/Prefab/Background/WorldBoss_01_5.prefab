@@ -392,6 +392,7 @@ MonoBehaviour:
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
   m_OverlapOperation: 0
   m_NormalMapDistance: 3
   m_NormalMapQuality: 2
@@ -400,35 +401,6 @@ MonoBehaviour:
   m_ShadowIntensity: 0.75
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
-  m_Vertices:
-  - position: {x: 0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0.70710677, g: 0.70710677, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.9985302, y: 0.9985302, z: 0}
-    color: {r: -0.70710677, g: 0.70710677, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.99853003, y: -0.9985304, z: 0}
-    color: {r: -0.70710665, g: -0.7071069, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0.70710665, g: -0.7071069, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: 0, y: 0, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  m_Triangles: 030001000800020000000100030002000100050003000800040002000300050004000300070005000800060004000500070006000500010007000800000006000700010000000700
   m_LocalBounds:
     m_Center: {x: 0, y: -0.00000011920929, z: 0}
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
@@ -10956,6 +10928,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1242894322585749068}
   - component: {fileID: 1929925242606435023}
+  - component: {fileID: 826973245702319818}
   m_Layer: 10
   m_Name: WorldBoss_01_5
   m_TagString: Untagged
@@ -10982,7 +10955,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1929925242606435023
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -10999,7 +10972,104 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &826973245702319818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236834356435003538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71fe791ae7c3d4248b358d7453f94d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: 4447459439332041986}
+  - {fileID: 5263978943388499902}
+  - {fileID: 8798062938589202096}
+  - {fileID: 3857475575861002466}
+  - {fileID: 8138570642124394087}
+  - {fileID: 6781107441533379877}
+  - {fileID: 2806781917793816030}
+  - {fileID: 9058268320530593088}
+  - {fileID: 2003374553956442853}
+  - {fileID: 2536252958359187814}
+  - {fileID: 5638783836083617474}
+  - {fileID: 8477214065386876713}
+  - {fileID: 730583633196750663}
+  - {fileID: 873601990486620701}
+  - {fileID: 6331299361244539613}
+  - {fileID: 5586504946671089627}
+  - {fileID: 947056606051628300}
+  - {fileID: 519173459048732630}
+  - {fileID: 8260379732588515293}
+  - {fileID: 4326217008607177292}
+  - {fileID: 1909532154086998455}
+  - {fileID: 352666311319978896}
+  - {fileID: 7935828411766562169}
+  - {fileID: 3503307388090516141}
+  - {fileID: 675341217528457410}
+  - {fileID: 5714217011270345851}
+  - {fileID: 4815785460870862215}
+  - {fileID: 2393654172972293460}
+  - {fileID: 28360054181158187}
+  - {fileID: 8506173908838103474}
+  - {fileID: 7443355532240348182}
+  - {fileID: 161235097169205872}
+  - {fileID: 6073133727167444901}
+  - {fileID: 2211586831161064899}
+  - {fileID: 3587557391349260370}
+  - {fileID: 3647339615004590433}
+  - {fileID: 7597529576247772184}
+  - {fileID: 4278387819806630444}
+  - {fileID: 5683001575530813006}
+  - {fileID: 5957022735117277529}
+  - {fileID: 8373006593471502551}
+  - {fileID: 4844591422477373970}
+  - {fileID: 4038166878226544383}
+  - {fileID: 4118563948677463222}
+  - {fileID: 8148907330002457243}
+  - {fileID: 741063046170349570}
+  - {fileID: 3010178336921505589}
+  - {fileID: 6268660744900479090}
+  - {fileID: 495206807073376450}
+  - {fileID: 6566911756719105385}
+  - {fileID: 6180091303001049152}
+  - {fileID: 7507656468112173031}
+  - {fileID: 4824675143433442614}
+  - {fileID: 8662691180727772795}
+  - {fileID: 2932043045464486088}
+  - {fileID: 5024294850468032838}
+  - {fileID: 1247296804668310319}
+  - {fileID: 3780454583630184021}
+  - {fileID: 8332729950819740347}
+  - {fileID: 5588593697438901004}
+  - {fileID: 1719764147017363037}
+  - {fileID: 6890925934814555765}
+  - {fileID: 3081288049559894376}
+  - {fileID: 4003724997965744894}
+  - {fileID: 3276597749095714289}
+  - {fileID: 605226772260779243}
+  - {fileID: 5970043760158868175}
+  - {fileID: 6750312790267867561}
+  - {fileID: 365440932417188380}
+  - {fileID: 123918422883121089}
+  - {fileID: 1059199326925712904}
+  - {fileID: 7219032066668696489}
+  particles:
+  - {fileID: 2390214697233682391}
+  - {fileID: 934750592318465391}
+  - {fileID: 4444778359355158830}
+  - {fileID: 6832161235213421724}
+  - {fileID: 8916733313304219489}
+  - {fileID: 847731614451128555}
+  - {fileID: 7953845496903507363}
+  - {fileID: 2358965748391225824}
+  - {fileID: 7197596197589090014}
+  backgrounds: []
 --- !u!1 &1239059303759040182
 GameObject:
   m_ObjectHideFlags: 0
@@ -12256,7 +12326,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &659239601792261704
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -12273,7 +12343,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3390662849273645124
 GameObject:
   m_ObjectHideFlags: 0
@@ -28370,6 +28441,7 @@ MonoBehaviour:
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 1
+  m_AlphaBlendOnOverlap: 0
   m_OverlapOperation: 0
   m_NormalMapDistance: 3
   m_NormalMapQuality: 2
@@ -28378,35 +28450,6 @@ MonoBehaviour:
   m_ShadowIntensity: 0.75
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
-  m_Vertices:
-  - position: {x: 0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0.70710677, g: 0.70710677, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.9985302, y: 0.9985302, z: 0}
-    color: {r: -0.70710677, g: 0.70710677, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.99853003, y: -0.9985304, z: 0}
-    color: {r: -0.70710665, g: -0.7071069, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0.70710665, g: -0.7071069, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: 0, y: 0, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  m_Triangles: 030001000800020000000100030002000100050003000800040002000300050004000300070005000800060004000500070006000500010007000800000006000700010000000700
   m_LocalBounds:
     m_Center: {x: 0, y: -0.00000011920929, z: 0}
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
@@ -50166,6 +50209,7 @@ MonoBehaviour:
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 1
+  m_AlphaBlendOnOverlap: 0
   m_OverlapOperation: 0
   m_NormalMapDistance: 3
   m_NormalMapQuality: 2
@@ -50174,35 +50218,6 @@ MonoBehaviour:
   m_ShadowIntensity: 0.75
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
-  m_Vertices:
-  - position: {x: 0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0.70710677, g: 0.70710677, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.9985302, y: 0.9985302, z: 0}
-    color: {r: -0.70710677, g: 0.70710677, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.9985302, y: 0.9985302, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.99853003, y: -0.9985304, z: 0}
-    color: {r: -0.70710665, g: -0.7071069, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: -0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0.70710665, g: -0.7071069, b: 0, a: 0}
-    uv: {x: 0, y: 0}
-  - position: {x: 0.99853003, y: -0.9985304, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  - position: {x: 0, y: 0, z: 0}
-    color: {r: 0, g: 0, b: 0, a: 1}
-    uv: {x: 0, y: 0}
-  m_Triangles: 030001000800020000000100030002000100050003000800040002000300050004000300070005000800060004000500070006000500010007000800000006000700010000000700
   m_LocalBounds:
     m_Center: {x: 0, y: -0.00000011920929, z: 0}
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}

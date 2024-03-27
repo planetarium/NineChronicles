@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.05
+  childSizeAdjust: 1
 --- !u!1 &1461120247514626
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,6 +108,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4656877397846236}
+  - component: {fileID: -6448141113366708503}
   m_Layer: 10
   m_Name: Chapter_05_01
   m_TagString: Untagged
@@ -133,6 +135,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6448141113366708503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1461120247514626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71fe791ae7c3d4248b358d7453f94d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites: []
+  particles: []
+  backgrounds:
+  - {fileID: 2272018376287237114}
+  - {fileID: 5551840178084979392}
+  - {fileID: 143183727332531825}
+  - {fileID: 2716200672213299647}
 --- !u!1 &1529699047408554
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,6 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.3
+  childSizeAdjust: 1
 --- !u!1 &3224140697789375043
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,6 +351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.25
+  childSizeAdjust: 1
 --- !u!1 &3934813650412477924
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,3 +450,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.05
+  childSizeAdjust: 1

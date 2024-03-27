@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.UI;
 using UnityEngine;
 
 
@@ -19,7 +18,7 @@ namespace Nekoyume.Game
         private int _rightIndex;
         private const string DefaultSpritePath = "UI/Textures/00_Common/8x8_rect_transparent";
 
-        private void Awake ()
+        public void Initialize()
         {
             _cameraTransform = ActionCamera.instance.transform;
             var initPosition = transform.localPosition;
