@@ -9424,7 +9424,7 @@ PrefabInstance:
     - target: {fileID: 1048486395209867171, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_fontSize
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1048486395209867171, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -9440,7 +9440,7 @@ PrefabInstance:
     - target: {fileID: 1048486395209867171, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_fontSizeMax
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1048486395209867171, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -9479,6 +9479,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1444397434721364587, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
+      propertyPath: l10nKey
+      value: UI_RAPID_COMBINATION
+      objectReference: {fileID: 0}
+    - target: {fileID: 1444397434721364587, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
       propertyPath: fontMaterialType
       value: 31
       objectReference: {fileID: 0}
@@ -9506,7 +9511,7 @@ PrefabInstance:
     - target: {fileID: 1476684319522568036, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_fontSizeMax
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1476684319522568036, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -10473,10 +10478,20 @@ PrefabInstance:
       propertyPath: m_Padding.m_Left
       value: 24
       objectReference: {fileID: 0}
+    - target: {fileID: 7478207742819768578, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_RAPID_COMBINATION
+      objectReference: {fileID: 0}
     - target: {fileID: 7834646986214837268, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_RootOrder
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7897994086446589500, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_RAPID_COMBINATION
       objectReference: {fileID: 0}
     - target: {fileID: 7897994086446589500, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -10732,7 +10747,7 @@ PrefabInstance:
     - target: {fileID: 8972125639260608703, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_fontSizeMax
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8972125639260608703, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
