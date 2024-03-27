@@ -9,6 +9,7 @@ using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -415,10 +416,11 @@ namespace Nekoyume
             var tableSheets = Game.Game.instance.TableSheets;
             var random = new DebugRandom();
             var avatarState = States.Instance.CurrentAvatarState;
-            var simulator = new StageSimulatorV2(
+            var simulator = new StageSimulator(
                 random,
                 avatarState,
                 new List<Guid>(),
+                States.Instance.GetEquippedRuneStates(BattleType.Adventure),
                 new List<Skill>(),
                 worldRow.Id,
                 stageId,
@@ -426,13 +428,15 @@ namespace Nekoyume
                 tableSheets.StageWaveSheet[stageId],
                 avatarState.worldInformation.IsStageCleared(stageId),
                 StageRewardExpHelper.GetExp(avatarState.level, stageId),
-                tableSheets.GetSimulatorSheetsV1(),
+                tableSheets.GetStageSimulatorSheets(),
                 tableSheets.EnemySkillSheet,
                 tableSheets.CostumeStatSheet,
-                StageSimulatorV2.GetWaveRewards(
+                StageSimulator.GetWaveRewards(
                     random,
                     tableSheets.StageSheet[stageId],
-                    tableSheets.MaterialItemSheet)
+                    tableSheets.MaterialItemSheet),
+                States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                tableSheets.DeBuffLimitSheet
             );
             simulator.Simulate();
             simulator.Log.result = _result;

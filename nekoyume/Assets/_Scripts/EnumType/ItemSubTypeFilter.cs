@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Types.Assets;
@@ -25,6 +25,7 @@ namespace Nekoyume.EnumType
         Food_DEF,
         Food_CRI,
         Food_HIT,
+        Food_SPD,
 
         FullCostume,
         HairCostume,
@@ -62,8 +63,9 @@ namespace Nekoyume.EnumType
                     ItemSubTypeFilter.Ring,
                     ItemSubTypeFilter.Food_HP,
                     ItemSubTypeFilter.Food_ATK,
-                    ItemSubTypeFilter.Food_DEF,
                     ItemSubTypeFilter.Food_CRI,
+                    ItemSubTypeFilter.Food_DEF,
+                    ItemSubTypeFilter.Food_SPD,
                     ItemSubTypeFilter.Food_HIT,
                     ItemSubTypeFilter.FullCostume,
                     ItemSubTypeFilter.Title,
@@ -104,6 +106,10 @@ namespace Nekoyume.EnumType
                     return useSell
                         ? $"{StatType.HIT.ToString()} {ItemSubType.Food.GetLocalizedString()}"
                         : StatType.HIT.ToString();
+                case ItemSubTypeFilter.Food_SPD:
+                    return useSell
+                        ? $"{StatType.SPD.ToString()} {ItemSubType.Food.GetLocalizedString()}"
+                        : StatType.SPD.ToString();
                 case ItemSubTypeFilter.Materials:
                     return L10nManager.Localize("UI_MATERIALS");
 
@@ -149,6 +155,7 @@ namespace Nekoyume.EnumType
                 case ItemSubTypeFilter.Food_DEF:
                 case ItemSubTypeFilter.Food_CRI:
                 case ItemSubTypeFilter.Food_HIT:
+                case ItemSubTypeFilter.Food_SPD:
                     return ItemSubType.Food;
 
                 case ItemSubTypeFilter.Materials:
@@ -183,6 +190,8 @@ namespace Nekoyume.EnumType
                     return StatType.CRI;
                 case ItemSubTypeFilter.Food_HIT:
                     return StatType.HIT;
+                case ItemSubTypeFilter.Food_SPD:
+                    return StatType.SPD;
                 default:
                     return StatType.NONE;
             }
@@ -205,6 +214,7 @@ namespace Nekoyume.EnumType
                 case ItemSubTypeFilter.Food_DEF:
                 case ItemSubTypeFilter.Food_CRI:
                 case ItemSubTypeFilter.Food_HIT:
+                case ItemSubTypeFilter.Food_SPD:
                     return ItemSubTypeFilter.Food;
 
                 case ItemSubTypeFilter.FullCostume:
@@ -239,6 +249,7 @@ namespace Nekoyume.EnumType
                 case StatType.HIT:
                     return ItemSubTypeFilter.Food_HIT;
                 case StatType.SPD:
+                    return ItemSubTypeFilter.Food_SPD;
                 case StatType.NONE:
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
@@ -288,6 +299,8 @@ namespace Nekoyume.EnumType
                             result.Add(ItemSubTypeFilter.Food_HIT);
                             break;
                         case StatType.SPD:
+                            result.Add(ItemSubTypeFilter.Food_SPD);
+                            break;
                         case StatType.NONE:
                         default:
                             throw new ArgumentOutOfRangeException(

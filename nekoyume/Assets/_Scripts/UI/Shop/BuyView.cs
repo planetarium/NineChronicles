@@ -99,8 +99,9 @@ namespace Nekoyume
                     {
                         ItemSubTypeFilter.Food_HP,
                         ItemSubTypeFilter.Food_ATK,
-                        ItemSubTypeFilter.Food_DEF,
                         ItemSubTypeFilter.Food_CRI,
+                        ItemSubTypeFilter.Food_DEF,
+                        ItemSubTypeFilter.Food_SPD,
                         ItemSubTypeFilter.Food_HIT,
                     }
                 },
@@ -391,7 +392,7 @@ namespace Nekoyume
         {
             await SetItems(true);
             UpdateView();
-            base.UpdatePage(0);
+            _page.SetValueAndForceNotify(0);
         }
 
         protected override async void UpdatePage(int page)

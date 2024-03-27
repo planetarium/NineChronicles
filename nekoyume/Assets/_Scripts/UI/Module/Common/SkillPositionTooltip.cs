@@ -10,6 +10,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Nekoyume.UI.Module.Common
 {
@@ -61,10 +62,10 @@ namespace Nekoyume.UI.Module.Common
                 switch (skillRow.SkillCategory)
                 {
                     case SkillCategory.ShatterStrike:
-                        SetSkillDescription(key, skillRow, optionRow.StatDamageRatioMin, optionRow.SkillChanceMin);
+                        ShatterStrikeDiscription(skillRow, optionRow.StatDamageRatioMin,optionRow.StatDamageRatioMax,optionRow.SkillChanceMin, key);
                         break;
                     default:
-                        SetSkillDescription(key, skillRow, optionRow.SkillDamageMin, optionRow.SkillChanceMin);
+                        DefualtSkillDiscription(skillRow, optionRow.SkillDamageMin, optionRow.SkillDamageMax, optionRow.SkillChanceMin, key);
                         break;
                 }
             }
@@ -101,6 +102,43 @@ namespace Nekoyume.UI.Module.Common
 
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {skillRow.Cooldown}";
             gameObject.SetActive(true);
+        }
+
+        private void ShatterStrikeDiscription(SkillSheet.Row skillRow, int valueMin, int valueMax, int chanceMin, string key)
+        {
+            SetSkillDescription(key, skillRow, valueMin, chanceMin);
+            var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
+            string skilleffect = string.Empty;
+            if (valueMin == valueMax)
+            {
+                skilleffect = $"{(valueMin / 10000m).ToString("P2", percentageFormat)}";
+            }
+            else
+            {
+                skilleffect = $"{(valueMin / 10000m).ToString("P2", percentageFormat)}~{(valueMax / 10000m).ToString("P2", percentageFormat)}";
+            }
+            contentText.text = L10nManager.Localize(key,
+                chanceMin.ToString(),
+                skillRow.Cooldown.ToString(),
+                skilleffect);
+        }
+
+        private void DefualtSkillDiscription(SkillSheet.Row skillRow, int valueMin, int valueMax, int chanceMin, string key)
+        {
+            SetSkillDescription(key, skillRow, valueMin, chanceMin);
+            string skilleffect = string.Empty;
+            if (valueMin == valueMax)
+            {
+                skilleffect = valueMin.ToString();
+            }
+            else
+            {
+                skilleffect = $"{valueMin}~{valueMax}";
+            }
+            contentText.text = L10nManager.Localize(key,
+                chanceMin.ToString(),
+                skillRow.Cooldown.ToString(),
+                skilleffect);
         }
 
         public void Show(SkillSheet.Row skillRow, RuneOptionSheet.Row.RuneOptionInfo optionInfo)
@@ -232,10 +270,10 @@ namespace Nekoyume.UI.Module.Common
                 switch (skillRow.SkillCategory)
                 {
                     case SkillCategory.ShatterStrike:
-                        SetSkillDescription(key, skillRow, ratioMin, chanceMin);
+                        ShatterStrikeDiscription(skillRow, ratioMin, ratioMax, chanceMin, key);
                         break;
                     default:
-                        SetSkillDescription(key, skillRow, powerMin, chanceMin);
+                        DefualtSkillDiscription(skillRow, (int)powerMin, (int)powerMax, chanceMin, key);
                         break;
                 }
             }
