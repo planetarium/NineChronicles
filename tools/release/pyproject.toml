@@ -11,7 +11,7 @@ dependencies = [
     "py7zr ~=0.20.0",
     "structlog >=16.1,<22.1",
     "boto3 ~=1.24",
-    "requests ==2.26.0",
+    "requests ==2.31.0",
     "typer[all] ~=0.6.1",
     "python-dotenv ~=0.19",
 ]
