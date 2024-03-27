@@ -748,6 +748,7 @@ namespace Nekoyume.Blockchain
                     States.Instance.SetRuneStates(TableSheets.Instance.RuneListSheet.Select(pair => new RuneState(pair.Value.Id)));
                     await States.Instance.InitItemSlotStates();
                     await States.Instance.InitRuneSlotStates();
+                    await RxProps.SelectAvatarAsync(eval.Action.index);
                 }).ToObservable()
                 .ObserveOnMainThread()
                 .Subscribe(x =>
@@ -2095,10 +2096,12 @@ namespace Nekoyume.Blockchain
             var random = new LocalRandom(eval.RandomSeed);
             var stageId = eval.Action.EventDungeonStageId;
             var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
-            var simulator = new StageSimulatorV2(
+            var tableSheets = TableSheets.Instance;
+            var simulator = new StageSimulator(
                 random,
                 States.Instance.CurrentAvatarState,
                 eval.Action.Foods,
+                States.Instance.GetEquippedRuneStates(BattleType.Adventure),
                 new List<Skill>(),
                 eval.Action.EventDungeonId,
                 stageId,
@@ -2108,14 +2111,16 @@ namespace Nekoyume.Blockchain
                 RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
                     stageId.ToEventDungeonStageNumber(),
                     Action.EventDungeonBattle.PlayCount),
-                TableSheets.Instance.GetSimulatorSheetsV1(),
+                TableSheets.Instance.GetStageSimulatorSheets(),
                 TableSheets.Instance.EnemySkillSheet,
                 TableSheets.Instance.CostumeStatSheet,
-                StageSimulatorV2.GetWaveRewards(
+                StageSimulator.GetWaveRewards(
                     random,
                     stageRow,
                     TableSheets.Instance.MaterialItemSheet,
-                    Action.EventDungeonBattle.PlayCount));
+                    Action.EventDungeonBattle.PlayCount),
+                States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                tableSheets.DeBuffLimitSheet);
             simulator.Simulate();
             var log = simulator.Log;
             var stage = Game.Game.instance.Stage;
@@ -2711,6 +2716,7 @@ namespace Nekoyume.Blockchain
                         arenaSheets,
                         myCollectionState.GetEffects(tableSheets.CollectionSheet),
                         enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
+                        tableSheets.DeBuffLimitSheet,
                         true);
 
                     var reward = RewardSelector.Select(
@@ -2912,7 +2918,8 @@ namespace Nekoyume.Blockchain
                 runeStates,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
-                States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet)
+                States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
+                TableSheets.Instance.DeBuffLimitSheet
             );
             simulator.Simulate();
             var log = simulator.Log;
@@ -2962,7 +2969,7 @@ namespace Nekoyume.Blockchain
             worldBoss.Close(true);
 
             Widget.Find<LoadingScreen>().Close();
-            Game.Game.instance.RaidStage.Play(
+            var raidStartData = new RaidStage.RaidStartData(
                 eval.Action.AvatarAddress,
                 simulator.BossId,
                 log,
@@ -2972,6 +2979,8 @@ namespace Nekoyume.Blockchain
                 false,
                 simulator.AssetReward,
                 killRewards);
+
+            Game.Game.instance.RaidStage.Play(raidStartData);
         }
 
         private static ActionEvaluation<ClaimRaidReward> PrepareClaimRaidReward(

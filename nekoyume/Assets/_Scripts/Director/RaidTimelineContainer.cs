@@ -107,6 +107,11 @@ namespace Nekoyume.Director
             _currentSkipMarker = null;
         }
 
+        public void SkipBattle()
+        {
+            Game.Game.instance.RaidStage.SkipBattle();
+        }
+
         public IEnumerator CoPlaySkillCutscene(int skillId)
         {
             var info = skillCutsceneInfos.FirstOrDefault(x => x.SkillId == skillId);

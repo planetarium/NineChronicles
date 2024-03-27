@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Lib9c;
 using Nekoyume.Blockchain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
@@ -62,6 +63,8 @@ namespace Nekoyume.UI
 
         private readonly Module.ToggleGroup _toggleGroup = new();
 
+        private readonly Color _normalInputFieldColor = new(0xEB, 0xCE, 0xB1, 0xFF);
+
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
@@ -105,14 +108,15 @@ namespace Nekoyume.UI
             ncgEditButton.onClick.AddListener(OnClickEditButton);
             migrateButton.onClick.AddListener(OnClickMigrateButton);
             stakingStartButton.onClick.AddListener(OnClickEditButton);
+            archiveButton.SetCondition(() => !LoadingHelper.ClaimStakeReward.Value);
             archiveButton.OnSubmitSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 ActionManager.Instance
                     .ClaimStakeReward(States.Instance.CurrentAvatarState.address)
                     .Subscribe();
-                archiveButton.Interactable = false;
                 LoadingHelper.ClaimStakeReward.Value = true;
+                archiveButton.UpdateObjects();
             }).AddTo(gameObject);
             editSaveButton.onClick.AddListener(OnClickSaveButton);
             editCancelButton.onClick.AddListener(() =>
@@ -123,6 +127,16 @@ namespace Nekoyume.UI
             {
                 stakingInformationObject.SetActive(false);
             };
+            stakingNcgInputField.onEndEdit.AddListener(value =>
+            {
+                var totalDeposit = (States.Instance.GoldBalanceState.Gold +
+                                    States.Instance.StakedBalanceState.Gold)
+                    .MajorUnit;
+                stakingNcgInputField.textComponent.color =
+                    BigInteger.TryParse(value, out var inputBigInt) && totalDeposit < inputBigInt
+                        ? Palette.GetColor(ColorType.TextDenial)
+                        : _normalInputFieldColor;
+            });
         }
 
         public override void Initialize()
@@ -464,7 +478,11 @@ namespace Nekoyume.UI
                 RemainingBlockFormat,
                 remainingBlock.BlockRangeToTimeSpanString(),
                 remainingBlock.ToString("N0"));
-            archiveButton.Interactable = remainingBlock == 0 && !LoadingHelper.ClaimStakeReward.Value;
+
+            if (!LoadingHelper.ClaimStakeReward.Value)
+            {
+                archiveButton.Interactable = remainingBlock == 0;
+            }
         }
 
         private static bool TryGetWaitedBlockIndex(

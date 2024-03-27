@@ -10,6 +10,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Nekoyume.UI.Module.Common
 {
@@ -58,7 +59,15 @@ namespace Nekoyume.UI.Module.Common
 
             if (L10nManager.ContainsKey(key))
             {
-                SetSkillDescription(key, skillRow, optionRow.SkillDamageMin, optionRow.SkillChanceMin);
+                switch (skillRow.SkillCategory)
+                {
+                    case SkillCategory.ShatterStrike:
+                        ShatterStrikeDiscription(skillRow, optionRow.StatDamageRatioMin,optionRow.StatDamageRatioMax,optionRow.SkillChanceMin, key);
+                        break;
+                    default:
+                        DefualtSkillDiscription(skillRow, optionRow.SkillDamageMin, optionRow.SkillDamageMax, optionRow.SkillChanceMin, key);
+                        break;
+                }
             }
             else
             {
@@ -95,6 +104,43 @@ namespace Nekoyume.UI.Module.Common
             gameObject.SetActive(true);
         }
 
+        private void ShatterStrikeDiscription(SkillSheet.Row skillRow, int valueMin, int valueMax, int chanceMin, string key)
+        {
+            SetSkillDescription(key, skillRow, valueMin, chanceMin);
+            var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
+            string skilleffect = string.Empty;
+            if (valueMin == valueMax)
+            {
+                skilleffect = $"{(valueMin / 10000m).ToString("P2", percentageFormat)}";
+            }
+            else
+            {
+                skilleffect = $"{(valueMin / 10000m).ToString("P2", percentageFormat)}~{(valueMax / 10000m).ToString("P2", percentageFormat)}";
+            }
+            contentText.text = L10nManager.Localize(key,
+                chanceMin.ToString(),
+                skillRow.Cooldown.ToString(),
+                skilleffect);
+        }
+
+        private void DefualtSkillDiscription(SkillSheet.Row skillRow, int valueMin, int valueMax, int chanceMin, string key)
+        {
+            SetSkillDescription(key, skillRow, valueMin, chanceMin);
+            string skilleffect = string.Empty;
+            if (valueMin == valueMax)
+            {
+                skilleffect = valueMin.ToString();
+            }
+            else
+            {
+                skilleffect = $"{valueMin}~{valueMax}";
+            }
+            contentText.text = L10nManager.Localize(key,
+                chanceMin.ToString(),
+                skillRow.Cooldown.ToString(),
+                skilleffect);
+        }
+
         public void Show(SkillSheet.Row skillRow, RuneOptionSheet.Row.RuneOptionInfo optionInfo)
         {
             titleText.text = skillRow.GetLocalizedName();
@@ -110,7 +156,8 @@ namespace Nekoyume.UI.Module.Common
         {
             var sheets = TableSheets.Instance;
             List<string> arg = new List<string>();
-            if(sheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow))
+            string debuffLimitDisc = string.Empty;
+            if (sheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow))
             {
                 var buffList = skillBuffRow.BuffIds;
                 if (buffList.Count == 2)
@@ -130,6 +177,11 @@ namespace Nekoyume.UI.Module.Common
                     var deBuffIcon = BuffHelper.GetStatBuffIcon(deBuff.StatType, true);
                     debuffIconImage.overrideSprite = deBuffIcon;
                     debuffStatTypeText.text = deBuff.StatType.GetAcronym();
+
+                    if (sheets.DeBuffLimitSheet.TryGetValue(deBuff.GroupId, out var debuffLimitRow))
+                    {
+                        debuffLimitDisc = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF_LIMIT", debuffStatTypeText.text, debuffLimitRow.Value);
+                    }
 
                     buffObject.SetActive(true);
                     debuffObject.SetActive(true);
@@ -156,6 +208,11 @@ namespace Nekoyume.UI.Module.Common
                         debuffIconImage.overrideSprite = deBuffIcon;
                         debuffStatTypeText.text = buff.StatType.GetAcronym();
                         debuffObject.SetActive(true);
+
+                        if (sheets.DeBuffLimitSheet.TryGetValue(buff.GroupId, out var debuffLimitRow))
+                        {
+                            debuffLimitDisc = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF_LIMIT", debuffStatTypeText.text, debuffLimitRow.Value);
+                        }
                     }
                 }
                 else 
@@ -183,7 +240,7 @@ namespace Nekoyume.UI.Module.Common
                 debuffObject.SetActive(false);
             }
 
-            contentText.text = L10nManager.Localize(key, arg.ToArray());
+            contentText.text = L10nManager.Localize(key, arg.ToArray()) + debuffLimitDisc;
         }
 
         public void Show(Skill skill)
@@ -210,7 +267,15 @@ namespace Nekoyume.UI.Module.Common
             var key = $"SKILL_DESCRIPTION_{skillRow.Id}";
             if (L10nManager.ContainsKey(key))
             {
-                SetSkillDescription(key, skillRow, powerMin, chanceMin);
+                switch (skillRow.SkillCategory)
+                {
+                    case SkillCategory.ShatterStrike:
+                        ShatterStrikeDiscription(skillRow, ratioMin, ratioMax, chanceMin, key);
+                        break;
+                    default:
+                        DefualtSkillDiscription(skillRow, (int)powerMin, (int)powerMax, chanceMin, key);
+                        break;
+                }
             }
             else
             {
@@ -332,7 +397,14 @@ namespace Nekoyume.UI.Module.Common
             {
                 debuffStatTypeText.text = buffRow.StatType.GetAcronym();
                 debuffIconImage.overrideSprite = icon;
-                contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF", chanceText, statType, value);
+
+                string debuffLimitDisc = string.Empty;
+                if(sheets.DeBuffLimitSheet.TryGetValue(buffRow.GroupId,out var debuffLimitRow))
+                {
+                    debuffLimitDisc = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF_LIMIT", statType, debuffLimitRow.Value);
+                }
+
+                contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF", chanceText, statType, value) + debuffLimitDisc;
             }
             else
             {

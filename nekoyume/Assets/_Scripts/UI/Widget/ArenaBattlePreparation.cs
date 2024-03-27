@@ -324,7 +324,7 @@ namespace Nekoyume.UI
 
         private static bool IsIntervalValid(long blockIndex)
         {
-            var lastBattleBlockIndex = RxProps.LastBattleBlockIndex.Value;
+            var lastBattleBlockIndex = RxProps.LastArenaBattleBlockIndex.Value;
             var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
 
             return blockIndex - lastBattleBlockIndex >= battleArenaInterval;
