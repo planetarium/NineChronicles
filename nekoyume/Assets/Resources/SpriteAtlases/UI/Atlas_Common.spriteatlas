@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 1024
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 0
+      m_TextureCompression: 1
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -44,7 +44,7 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: 307470842cf8e4d5fa4cc9e48efe5259, type: 3}
+    - {fileID: 102900000, guid: 4fe8c903f1ca3fa48a4cb98e2ac7e8d7, type: 3}
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 0bf5c23803104494ca10b8ff991e0713, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
@@ -56,7 +56,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: 0bb47bbd3c49047f09e679d6faf9f322, type: 3}
     - {fileID: 102900000, guid: 2fb1c62dfba1b4ae2a3c1b79a642680a, type: 3}
     - {fileID: 102900000, guid: 39d58f8c1e75944698d7dc48a782a0df, type: 3}
-    - {fileID: 102900000, guid: 4fe8c903f1ca3fa48a4cb98e2ac7e8d7, type: 3}
+    - {fileID: 102900000, guid: 307470842cf8e4d5fa4cc9e48efe5259, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -309,6 +309,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 48bdf0b9424ad42998aeb6636afbc309, type: 3}
   - {fileID: 21300000, guid: 8e26f1c9f9ab349b3ad8eecdb01c4033, type: 3}
   - {fileID: 21300000, guid: 32a851d99b83242ba816c0ffc7bbf350, type: 3}
+  - {fileID: 21300000, guid: 80c1fed9f9a62c4458dfa107a0fce225, type: 3}
   - {fileID: 21300000, guid: 801939e9c8bca4fd480e1d967b397c57, type: 3}
   - {fileID: 21300000, guid: a94d2be9dc0ea43feb0f058c8287713c, type: 3}
   - {fileID: 21300000, guid: 394d8ce9092f0d740b7db43b7dafa09f, type: 3}
@@ -357,6 +358,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9e9b008bd39ec4fdda2ba2614e002eda, type: 3}
   - {fileID: 21300000, guid: df87cf8b0efa2824ab4f19a5a87cfc7e, type: 3}
   - {fileID: 21300000, guid: 54b387ab1a8c3a2408e32dd774f8a9c2, type: 3}
+  - {fileID: 21300000, guid: cabce9ab7c463dd40818f34b350fd3be, type: 3}
   - {fileID: 21300000, guid: c43ae1bb7d282440bb841f000f2f6284, type: 3}
   - {fileID: 21300000, guid: 23190dbba14e76846b53703f5a3141aa, type: 3}
   - {fileID: 21300000, guid: be3b65cbfef2f43169dcfe77b80cdffa, type: 3}
@@ -557,7 +559,7 @@ SpriteAtlas:
   - UI_bg_stageback_00
   - Common_Prrogressbar_GaugeBg_Glow
   - Button_Tab_bg_Press_01
-  - UI_box_13
+  - UI_box_15
   - Button_Tab_bg_Normal_03
   - icon_character_01_black
   - UI_icon_Block
@@ -716,6 +718,7 @@ SpriteAtlas:
   - UI_main_icon_Goldfish
   - UI_icon_option_skill
   - UI_Popup_bg_08
+  - UI_box_13
   - Common_Gradiant_bg_01
   - item_bg_Plus
   - RewardImg_1
@@ -764,6 +767,7 @@ SpriteAtlas:
   - UI_popup_list_bg
   - UI_icon_item_bg_01
   - UI_stage_star_03
+  - Common_Bg_Gradiant
   - UI_Combination_Slot_Question
   - ui_line_06
   - button_brown_minus_T2

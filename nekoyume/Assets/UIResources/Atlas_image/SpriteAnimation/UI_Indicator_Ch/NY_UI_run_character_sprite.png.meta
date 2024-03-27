@@ -33,7 +33,7 @@ TextureImporter:
       213: -4645759611503392768
     second: NY_UI_run_character_sprite_9
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -93,19 +93,20 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 1
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -117,7 +118,43 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 50
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 47
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -342,15 +379,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      NY_UI_run_character_sprite_2: -215964084235459473
       NY_UI_run_character_sprite_0: -5550030602434467921
       NY_UI_run_character_sprite_1: -7786770504375309011
+      NY_UI_run_character_sprite_2: -215964084235459473
       NY_UI_run_character_sprite_3: 7687873392813444736
-      NY_UI_run_character_sprite_5: 4242689629003115250
-      NY_UI_run_character_sprite_8: -5994285195251622388
       NY_UI_run_character_sprite_4: 7525291156845224031
-      NY_UI_run_character_sprite_7: -7909998851383704114
+      NY_UI_run_character_sprite_5: 4242689629003115250
       NY_UI_run_character_sprite_6: 7945536162122961198
+      NY_UI_run_character_sprite_7: -7909998851383704114
+      NY_UI_run_character_sprite_8: -5994285195251622388
       NY_UI_run_character_sprite_9: -4645759611503392768
   spritePackingTag: 
   pSDRemoveMatte: 0
