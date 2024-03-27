@@ -29,16 +29,16 @@ RectTransform:
   m_GameObject: {fileID: 1753655873611473556}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3702010686618938756}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 280, y: 59.760002}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!198 &1786728470360705692
 ParticleSystem:
@@ -59,7 +59,7 @@ ParticleSystem:
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
-  autoRandomSeed: 1
+  autoRandomSeed: 0
   startDelay:
     serializedVersion: 2
     minMaxState: 0
@@ -115,8 +115,8 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
-  randomSeed: 0
+  scalingMode: 0
+  randomSeed: -1529568292
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -292,8 +292,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.02
-      minScalar: 0.03
+      scalar: 0.03
+      minScalar: 0.05
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -669,14 +669,14 @@ ParticleSystem:
     serializedVersion: 6
     enabled: 1
     type: 12
-    angle: 25
+    angle: 0
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
-    radiusThickness: 1
+    radiusThickness: 0.5
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 0.1, y: 1, z: 1}
+    m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -755,13 +755,13 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1
+      value: 0.1
       mode: 0
       spread: 0
       speed:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 1
+        scalar: 0.5
         minScalar: 1
         maxCurve:
           serializedVersion: 2
@@ -812,7 +812,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
     arc:
-      value: 360
+      value: 90
       mode: 0
       spread: 0
       speed:
@@ -4848,13 +4848,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsTrail: 0
-  m_IgnoreCanvasScaler: 1
-  m_Scale: 100
-  m_Scale3D: {x: 1.2, y: 1.2, z: 1.2}
+  m_IgnoreCanvasScaler: 0
+  m_AbsoluteMode: 0
+  m_Scale3D: {x: 700, y: 700, z: 700}
   m_AnimatableProperties: []
   m_Particles:
   - {fileID: 1786728470360705692}
-  m_ShrinkByMaterial: 0
+  m_MeshSharing: 0
+  m_GroupId: 0
+  m_GroupMaxId: 0
+  m_PositionMode: 0
+  m_AutoScaling: 0
+  m_AutoScalingMode: 1
+  m_ResetScaleOnEnable: 0
 --- !u!1 &1862394229092003708
 GameObject:
   m_ObjectHideFlags: 0
