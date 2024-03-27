@@ -192,39 +192,38 @@ namespace Nekoyume.UI.Module.Common
                 buffStatTypeText.text = skillRow.SkillCategory.ToString();
                 debuffObject.SetActive(false);
             }
+            else if (skillRow.SkillCategory == SkillCategory.ShatterStrike)
+            {
+                string skilleffect = string.Empty;
+                var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
+                if (skillRatioMin == skillRatioMax)
+                {
+                    skilleffect = $"{(skillRatioMin / 10000m).ToString("P2", percentageFormat)}";
+                }
+                else
+                {
+                    skilleffect = $"{(skillRatioMin / 10000m).ToString("P2", percentageFormat)}~{(skillRatioMax / 10000m).ToString("P2", percentageFormat)}";
+                }
+                arg.Add(skillChance.ToString());
+                arg.Add(skillRow.Cooldown.ToString());
+                arg.Add(skilleffect);
+                buffObject.SetActive(false);
+                debuffObject.SetActive(false);
+            }
             else
             {
                 string skilleffect = string.Empty;
-                switch (skillRow.SkillCategory)
+                if (skillPowerMin == skillPowerMax)
                 {
-                    case SkillCategory.ShatterStrike:
-                        var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
-                        if (skillRatioMin == skillRatioMax)
-                        {
-                            skilleffect = $"{(skillRatioMin / 10000m).ToString("P2", percentageFormat)}";
-                        }
-                        else
-                        {
-                            skilleffect = $"{(skillRatioMin / 10000m).ToString("P2", percentageFormat)}~{(skillRatioMax / 10000m).ToString("P2", percentageFormat)}";
-                        }
-                        arg.Add(skillChance.ToString());
-                        arg.Add(skillRow.Cooldown.ToString());
-                        arg.Add(skilleffect);
-                        break;
-                    default:
-                        if (skillPowerMin == skillPowerMax)
-                        {
-                            skilleffect = skillPowerMin.ToString();
-                        }
-                        else
-                        {
-                            skilleffect = $"{skillPowerMin}~{skillPowerMax}";
-                        }
-                        arg.Add(skillChance.ToString());
-                        arg.Add(skillRow.Cooldown.ToString());
-                        arg.Add(skilleffect);
-                        break;
+                    skilleffect = skillPowerMin.ToString();
                 }
+                else
+                {
+                    skilleffect = $"{skillPowerMin}~{skillPowerMax}";
+                }
+                arg.Add(skillChance.ToString());
+                arg.Add(skillRow.Cooldown.ToString());
+                arg.Add(skilleffect);
                 buffObject.SetActive(false);
                 debuffObject.SetActive(false);
             }
