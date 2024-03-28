@@ -241,12 +241,15 @@ namespace Nekoyume.UI.Module
 
                 case SlotType.WaitingReceive:
                     SetContainer(false, false, false, true);
-                    waitingReceiveItemView.SetData(new Item(state.Result.itemUsable));
-                    waitingReceiveText.text = string.Format(
-                        L10nManager.Localize("UI_SENDING_THROUGH_MAIL"),
-                        state.Result.itemUsable.GetLocalizedName(
-                            useElementalIcon: false,
-                            ignoreLevel: true));
+                    if(state != null)
+                    {
+                        waitingReceiveItemView.SetData(new Item(state.Result.itemUsable));
+                        waitingReceiveText.text = string.Format(
+                            L10nManager.Localize("UI_SENDING_THROUGH_MAIL"),
+                            state.Result.itemUsable.GetLocalizedName(
+                                useElementalIcon: false,
+                                ignoreLevel: true));
+                    }
                     break;
             }
         }
