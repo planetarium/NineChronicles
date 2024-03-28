@@ -355,7 +355,7 @@ namespace Nekoyume.Helper
             if (rowList.Any())
             {
                 // First recommended stage is the highest level in rowList.
-                rowList = rowList.OrderByDescending(sheet => sheet.Key).ToList();
+                rowList = rowList.OrderByDescending(row => row.Key).ToList();
                 var row = rowList.First();
                 result.Add(row);
                 rowList.Remove(row);
@@ -375,8 +375,8 @@ namespace Nekoyume.Helper
             // add the closest stage among the stages that could not be cleared.
             if (result.Count < MaxCountOfAcquisitionStages)
             {
-                rowList = stageRows.ToList();
-                for (var i = rowList.Count - 1; i >= 0 && result.Count < MaxCountOfAcquisitionStages; i--)
+                rowList = stageRows.OrderBy(row => row.Key).ToList();
+                for (var i = 0; i < rowList.Count && result.Count < MaxCountOfAcquisitionStages; i++)
                 {
                     if (!result.Contains(rowList[i]))
                     {
