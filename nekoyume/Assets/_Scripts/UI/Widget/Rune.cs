@@ -73,19 +73,16 @@ namespace Nekoyume.UI
         private TryCountSlider tryCountSlider;
 
         [SerializeField]
-        private TextMeshProUGUI loadingText;
-
-        [SerializeField]
-        private ConditionalButton combineButton;
-
-        [SerializeField]
         private ConditionalButton levelUpButton;
 
         [SerializeField]
-        private List<GameObject> loadingObjects;
+        private GameObject maxLevel;
 
         [SerializeField]
-        private GameObject maxLevel;
+        private TextMeshProUGUI loadingText;
+
+        [SerializeField]
+        private List<GameObject> loadingObjects;
 
         [SerializeField]
         private Animator animator;
@@ -112,20 +109,18 @@ namespace Nekoyume.UI
                 _costItems.Add(costItem.CostType, costItem);
             }
 
-            combineButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
             levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
-            combineButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1"),
-                    NotificationCell.NotificationType.Alert);
-            }).AddTo(gameObject);
             levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
             {
+                var message = _selectedRuneItem.Level > 0
+                    ? L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2")  // Level Up
+                    : L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1");  // Combine
+
                 NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2"),
+                    message,
                     NotificationCell.NotificationType.Alert);
             }).AddTo(gameObject);
+
             tryCountSlider.plusButton.onClick.AddListener(() =>
             {
                 if (_maxTryCount <= 0)
@@ -275,8 +270,8 @@ namespace Nekoyume.UI
             UpdateSlider(item);
             animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
             loadingText.text = item.Level > 0
-                ? L10nManager.Localize($"UI_RUNE_LEVEL_UP_PROCESSING")
-                : L10nManager.Localize($"UI_RUNE_COMBINE_PROCESSING");
+                ? L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING")  // Level Up Processing
+                : L10nManager.Localize("UI_RUNE_COMBINE_PROCESSING");  // Combine Processing
 
             successContainer.SetActive(!item.IsMaxLevel);
             costContainer.SetActive(!item.IsMaxLevel);
@@ -303,11 +298,11 @@ namespace Nekoyume.UI
             requirement.SetActive(item.HasNotification);
             maxLevel.SetActive(item.IsMaxLevel);
 
-            combineButton.Interactable = item.HasNotification;
+            levelUpButton.gameObject.SetActive(!item.IsMaxLevel);
+            levelUpButton.Text = item.Level > 0
+                ? L10nManager.Localize("UI_UPGRADE_EQUIPMENT")  // Level Up
+                : L10nManager.Localize("UI_COMBINATION_ITEM");  // Combine
             levelUpButton.Interactable = item.HasNotification;
-
-            combineButton.gameObject.SetActive(!item.IsMaxLevel && item.Level == 0);
-            levelUpButton.gameObject.SetActive(!item.IsMaxLevel && item.Level != 0);
         }
 
         private void UpdateRuneOptions(RuneItem item)
