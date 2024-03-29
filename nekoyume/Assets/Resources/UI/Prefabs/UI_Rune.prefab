@@ -7010,7 +7010,7 @@ MonoBehaviour:
   animator: {fileID: 5146677639958581202}
 --- !u!95 &5146677639958581202
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -7027,7 +7027,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &572256535208406925
 GameObject:
   m_ObjectHideFlags: 0
@@ -7814,7 +7815,7 @@ MonoBehaviour:
         m_CallState: 2
 --- !u!95 &141878535820341056
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -7831,7 +7832,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1135664025490691824
 GameObject:
   m_ObjectHideFlags: 0
@@ -9211,7 +9213,7 @@ MonoBehaviour:
       m_Calls: []
 --- !u!95 &1075784434571012353
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -9228,7 +9230,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3110226124710319151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14218,7 +14221,7 @@ MonoBehaviour:
       m_Calls: []
 --- !u!95 &4777900537527231217
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -14235,7 +14238,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3301063941699021626
 GameObject:
   m_ObjectHideFlags: 0
@@ -16342,7 +16346,7 @@ MonoBehaviour:
         m_CallState: 2
 --- !u!95 &3489834282903018688
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -16359,7 +16363,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4166528905787962431
 GameObject:
   m_ObjectHideFlags: 0
@@ -18081,14 +18086,20 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsTrail: 0
-  m_IgnoreCanvasScaler: 1
-  m_Scale: 100
+  m_IgnoreCanvasScaler: 0
+  m_AbsoluteMode: 0
   m_Scale3D: {x: 100, y: 100, z: 100}
   m_AnimatableProperties: []
   m_Particles:
   - {fileID: 1573712762223749908}
   - {fileID: 5215035336249566583}
-  m_ShrinkByMaterial: 0
+  m_MeshSharing: 0
+  m_GroupId: 0
+  m_GroupMaxId: 0
+  m_PositionMode: 0
+  m_AutoScaling: 0
+  m_AutoScalingMode: 2
+  m_ResetScaleOnEnable: 0
 --- !u!1 &4685234639540037661
 GameObject:
   m_ObjectHideFlags: 0
@@ -35836,7 +35847,7 @@ MonoBehaviour:
       m_Calls: []
 --- !u!95 &4500524967690533651
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -35853,7 +35864,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3145843095468097777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37672,13 +37684,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsTrail: 0
-  m_IgnoreCanvasScaler: 1
-  m_Scale: 100
+  m_IgnoreCanvasScaler: 0
+  m_AbsoluteMode: 0
   m_Scale3D: {x: 100, y: 100, z: 100}
   m_AnimatableProperties: []
   m_Particles:
   - {fileID: 8277751542346097670}
-  m_ShrinkByMaterial: 0
+  m_MeshSharing: 0
+  m_GroupId: 0
+  m_GroupMaxId: 0
+  m_PositionMode: 0
+  m_AutoScaling: 0
+  m_AutoScalingMode: 2
+  m_ResetScaleOnEnable: 0
 --- !u!1 &8365943319628832073
 GameObject:
   m_ObjectHideFlags: 0
@@ -39927,6 +39945,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4701259107963663685, guid: 9c6f222f201845d40a1c05047dffae0a,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4804999717424846324, guid: 9c6f222f201845d40a1c05047dffae0a,
         type: 3}
       propertyPath: m_IsActive
@@ -40209,6 +40232,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4701259107963663685, guid: 9c6f222f201845d40a1c05047dffae0a,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5043116701910772740, guid: 9c6f222f201845d40a1c05047dffae0a,
         type: 3}
@@ -41070,6 +41098,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4701259107963663685, guid: 9c6f222f201845d40a1c05047dffae0a,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6395365617581864019, guid: 9c6f222f201845d40a1c05047dffae0a,
         type: 3}
