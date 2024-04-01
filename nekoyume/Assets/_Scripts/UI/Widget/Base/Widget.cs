@@ -171,7 +171,7 @@ namespace Nekoyume.UI
             var type = typeof(T);
             if (!Pool.TryGetValue(type, out var model))
             {
-#if UNITY_ANDROID || UNITY_IOS
+#if APPLY_MEMORY_IOS_OPTIMIZATION || UNITY_ANDROID || UNITY_IOS
                 // Memory optimization
                 return MainCanvas.instance.AddWidget<T>();
 #else

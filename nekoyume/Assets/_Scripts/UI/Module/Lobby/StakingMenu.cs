@@ -32,13 +32,6 @@ namespace Nekoyume.UI.Module.Lobby
 
         private readonly List<IDisposable> _disposables = new();
 
-        protected override void Awake()
-        {
-            base.Awake();
-            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(OnEveryUpdateBlockIndex)
-                .AddTo(gameObject);
-        }
-
         private void OnEnable()
         {
             _disposables.DisposeAllAndClear();
@@ -46,8 +39,11 @@ namespace Nekoyume.UI.Module.Lobby
                 .AddTo(_disposables);
             StakingSubject.StakedNCG.Subscribe(OnUpdateStakedBalance)
                 .AddTo(_disposables);
+            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(OnEveryUpdateBlockIndex)
+                .AddTo(_disposables);
             OnUpdateStakingLevel(States.Instance.StakingLevel);
             OnUpdateStakedBalance(States.Instance.StakedBalanceState.Gold);
+            OnEveryUpdateBlockIndex(Game.Game.instance.Agent.BlockIndex);
         }
 
         private void OnDisable()

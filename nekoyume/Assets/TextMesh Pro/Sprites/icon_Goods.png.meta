@@ -18,7 +18,7 @@ TextureImporter:
       213: -718665036859047226
     second: icon_Goods_4
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -78,13 +78,14 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 128
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -107,7 +108,7 @@ TextureImporter:
     buildTarget: iPhone
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 50
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -343,13 +344,13 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       icon_Goods_0: -8016891343203374023
+      icon_Goods_1: -4859897889212576687
       icon_Goods_2: -6247857204911425069
       icon_Goods_3: 8312423727619987913
-      icon_Goods_5: 972563438
       icon_Goods_4: -718665036859047226
-      icon_Goods_7: -1358200569
+      icon_Goods_5: 972563438
       icon_Goods_6: -62398551
-      icon_Goods_1: -4859897889212576687
+      icon_Goods_7: -1358200569
       icon_Goods_8: 2025432022
   spritePackingTag: 
   pSDRemoveMatte: 0

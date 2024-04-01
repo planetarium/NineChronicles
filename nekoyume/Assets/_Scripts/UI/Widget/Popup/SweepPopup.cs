@@ -164,6 +164,7 @@ namespace Nekoyume.UI
             canvasGroupForRepeat.alpha = disableRepeat ? 0 : 1;
             canvasGroupForRepeat.interactable = !disableRepeat;
             pageToggle.isOn = disableRepeat;
+            UpdateByToggle(disableRepeat);
             contentText.text =
                 $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
 

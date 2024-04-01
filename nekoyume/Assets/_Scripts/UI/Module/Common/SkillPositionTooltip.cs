@@ -59,15 +59,13 @@ namespace Nekoyume.UI.Module.Common
 
             if (L10nManager.ContainsKey(key))
             {
-                switch (skillRow.SkillCategory)
-                {
-                    case SkillCategory.ShatterStrike:
-                        ShatterStrikeDiscription(skillRow, optionRow.StatDamageRatioMin,optionRow.StatDamageRatioMax,optionRow.SkillChanceMin, key);
-                        break;
-                    default:
-                        DefualtSkillDiscription(skillRow, optionRow.SkillDamageMin, optionRow.SkillDamageMax, optionRow.SkillChanceMin, key);
-                        break;
-                }
+                SetSkillDescription(key,
+                                    skillRow,
+                                    optionRow.SkillDamageMin,
+                                    optionRow.SkillDamageMax,
+                                    optionRow.StatDamageRatioMin,
+                                    optionRow.StatDamageRatioMax,
+                                    optionRow.SkillChanceMin);
             }
             else
             {
@@ -104,43 +102,6 @@ namespace Nekoyume.UI.Module.Common
             gameObject.SetActive(true);
         }
 
-        private void ShatterStrikeDiscription(SkillSheet.Row skillRow, int valueMin, int valueMax, int chanceMin, string key)
-        {
-            SetSkillDescription(key, skillRow, valueMin, chanceMin);
-            var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
-            string skilleffect = string.Empty;
-            if (valueMin == valueMax)
-            {
-                skilleffect = $"{(valueMin / 10000m).ToString("P2", percentageFormat)}";
-            }
-            else
-            {
-                skilleffect = $"{(valueMin / 10000m).ToString("P2", percentageFormat)}~{(valueMax / 10000m).ToString("P2", percentageFormat)}";
-            }
-            contentText.text = L10nManager.Localize(key,
-                chanceMin.ToString(),
-                skillRow.Cooldown.ToString(),
-                skilleffect);
-        }
-
-        private void DefualtSkillDiscription(SkillSheet.Row skillRow, int valueMin, int valueMax, int chanceMin, string key)
-        {
-            SetSkillDescription(key, skillRow, valueMin, chanceMin);
-            string skilleffect = string.Empty;
-            if (valueMin == valueMax)
-            {
-                skilleffect = valueMin.ToString();
-            }
-            else
-            {
-                skilleffect = $"{valueMin}~{valueMax}";
-            }
-            contentText.text = L10nManager.Localize(key,
-                chanceMin.ToString(),
-                skillRow.Cooldown.ToString(),
-                skilleffect);
-        }
-
         public void Show(SkillSheet.Row skillRow, RuneOptionSheet.Row.RuneOptionInfo optionInfo)
         {
             titleText.text = skillRow.GetLocalizedName();
@@ -152,7 +113,7 @@ namespace Nekoyume.UI.Module.Common
             debuffObject.SetActive(false);
         }
 
-        private void SetSkillDescription(string key, SkillSheet.Row skillRow, long skillValue, int skillChance)
+        private void SetSkillDescription(string key, SkillSheet.Row skillRow, long skillPowerMin, long skillPowerMax, int skillRatioMin, int skillRatioMax, int skillChance)
         {
             var sheets = TableSheets.Instance;
             List<string> arg = new List<string>();
@@ -166,7 +127,7 @@ namespace Nekoyume.UI.Module.Common
                     var deBuff = sheets.StatBuffSheet[buffList[1]];
                     arg.Add(skillChance.ToString());
                     arg.Add(buff.Duration.ToString());
-                    arg.Add((buff.Value + skillValue).ToString());
+                    arg.Add((buff.Value + skillPowerMin).ToString());
                     arg.Add(deBuff.Duration.ToString());
                     arg.Add(deBuff.Value.ToString());
 
@@ -191,7 +152,7 @@ namespace Nekoyume.UI.Module.Common
                     var buff = sheets.StatBuffSheet[buffList[0]];
                     arg.Add(skillChance.ToString());
                     arg.Add(buff.Duration.ToString());
-                    arg.Add((buff.Value + skillValue).ToString());
+                    arg.Add((buff.Value + skillPowerMin).ToString());
                     buffObject.SetActive(false);
                     debuffObject.SetActive(false);
                     if (skillRow.SkillType == SkillType.Buff)
@@ -225,17 +186,44 @@ namespace Nekoyume.UI.Module.Common
             {
                 arg.Add(skillChance.ToString());
                 arg.Add(skillRow.Cooldown.ToString());
-                arg.Add(skillValue.ToString());
+                arg.Add(skillPowerMin.ToString());
                 var buffIcon = BuffHelper.GetBuffOverrideIcon(skillActionBuffRow.BuffIds.First());
                 buffIconImage.overrideSprite = buffIcon;
                 buffStatTypeText.text = skillRow.SkillCategory.ToString();
                 debuffObject.SetActive(false);
             }
-            else
+            else if (skillRow.SkillCategory == SkillCategory.ShatterStrike)
             {
+                string skilleffect = string.Empty;
+                var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
+                if (skillRatioMin == skillRatioMax)
+                {
+                    skilleffect = $"{(skillRatioMin / 10000m).ToString("P2", percentageFormat)}";
+                }
+                else
+                {
+                    skilleffect = $"{(skillRatioMin / 10000m).ToString("P2", percentageFormat)}~{(skillRatioMax / 10000m).ToString("P2", percentageFormat)}";
+                }
                 arg.Add(skillChance.ToString());
                 arg.Add(skillRow.Cooldown.ToString());
-                arg.Add(skillValue.ToString());
+                arg.Add(skilleffect);
+                buffObject.SetActive(false);
+                debuffObject.SetActive(false);
+            }
+            else
+            {
+                string skilleffect = string.Empty;
+                if (skillPowerMin == skillPowerMax)
+                {
+                    skilleffect = skillPowerMin.ToString();
+                }
+                else
+                {
+                    skilleffect = $"{skillPowerMin}~{skillPowerMax}";
+                }
+                arg.Add(skillChance.ToString());
+                arg.Add(skillRow.Cooldown.ToString());
+                arg.Add(skilleffect);
                 buffObject.SetActive(false);
                 debuffObject.SetActive(false);
             }
@@ -267,15 +255,13 @@ namespace Nekoyume.UI.Module.Common
             var key = $"SKILL_DESCRIPTION_{skillRow.Id}";
             if (L10nManager.ContainsKey(key))
             {
-                switch (skillRow.SkillCategory)
-                {
-                    case SkillCategory.ShatterStrike:
-                        ShatterStrikeDiscription(skillRow, ratioMin, ratioMax, chanceMin, key);
-                        break;
-                    default:
-                        DefualtSkillDiscription(skillRow, (int)powerMin, (int)powerMax, chanceMin, key);
-                        break;
-                }
+                SetSkillDescription(key,
+                                    skillRow,
+                                    powerMin,
+                                    powerMax,
+                                    ratioMin,
+                                    ratioMax,
+                                    chanceMin);
             }
             else
             {
