@@ -128,6 +128,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Image requiredNormalItemImage;
 
+        [SerializeField]
+        private TextMeshProUGUI collectionCount;
+
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
         private SheetRow<int> _recipeRow;
@@ -323,6 +326,7 @@ namespace Nekoyume.UI
                     }
 
                     recipeCell.Show(equipmentRow, false);
+                    UpdateCollectionCount(resultItem.Id);
                     break;
                 }
                 case ConsumableItemRecipeSheet.Row consumableRow:
@@ -348,6 +352,7 @@ namespace Nekoyume.UI
 
                     recipeCell.Show(consumableRow, false);
                     ChangeTab(0);
+                    UpdateCollectionCount(resultItem.Id);
                     break;
                 }
                 case EventMaterialItemRecipeSheet.Row materialRow :
@@ -357,6 +362,7 @@ namespace Nekoyume.UI
                     mainStatTexts.First().text = resultItem.GetLocalizedDescription();
                     recipeCell.Show(materialRow, false);
                     ChangeTab(0);
+                    UpdateCollectionCount(resultItem.Id);
                     break;
                 }
             }
@@ -380,6 +386,21 @@ namespace Nekoyume.UI
                     }
                 });
             }
+        }
+
+        public void UpdateCollectionCount(int id)
+        {
+            if(collectionCount == null)
+            {
+                return;
+            }
+
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var allCollectionSheetRowById = collectionSheet.Where(x => x.Value.Materials.Count(y => y.ItemId == id) > 0);
+            int maxCount = allCollectionSheetRowById.Count();
+            int count = collectionState.Ids.Count(x => allCollectionSheetRowById.Count(y => y.Key == x) > 0);
+            collectionCount.text = $"{count}/{maxCount}";
         }
 
         public void ResetSelectedIndex()
