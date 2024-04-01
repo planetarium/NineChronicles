@@ -111,16 +111,16 @@ namespace Nekoyume.UI
 
             tryCountSlider.plusButton.onClick.AddListener(() =>
             {
-                if (_maxTryCount <= 0)
+                if (_maxTryCount < 1)
                 {
                     return;
                 }
-                TryCount.Value = Math.Min(_maxTryCount, TryCount.Value + 1);
-                TryCount.Value = Math.Max(1, TryCount.Value);
+
+                TryCount.Value = Math.Min(TryCount.Value + 1, _maxTryCount);
             });
             tryCountSlider.minusButton.onClick.AddListener(() =>
             {
-                TryCount.Value = Math.Max(1, TryCount.Value - 1);
+                TryCount.Value = Math.Max(TryCount.Value - 1, 1);
             });
             closeButton.onClick.AddListener(() =>
             {
@@ -380,37 +380,25 @@ namespace Nekoyume.UI
             }
             else
             {
-                if (item.Cost is null)
+                if (item.CostRow is null)
                 {
                     tryCountSlider.container.SetActive(false);
                     return;
                 }
 
                 tryCountSlider.container.SetActive(true);
-                var maxRuneStone = item.Cost.RuneStoneQuantity > 0
-                    ? item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
-                    : -1;
-                var maxCrystal = item.Cost.CrystalQuantity > 0
-                    ? States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
-                    : -1;
-                var maxNcg = item.Cost.NcgQuantity > 0
-                    ? States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
-                    : -1;
-                var maxValues = new List<BigInteger> { maxRuneStone, maxCrystal, maxNcg };
-                var count = (int)maxValues.Where(x => x >= 0).Min();
-                _maxTryCount = Math.Min(100, count);
-                tryCountSlider.slider.Set(1,
-                    _maxTryCount > 0 ? _maxTryCount : 1,
-                    1,
-                    _maxTryCount > 0 ? _maxTryCount : 1,
-                    1,
-                    x =>
-                    {
-                        TryCount.Value = x;
-                        TryCount.Value = Math.Max(1, TryCount.Value);
-                    },
-                    _maxTryCount > 0,
-                    true);
+
+                _maxTryCount = item.CostRow.GetMaxTryCount(item.Level, (
+                    States.Instance.GoldBalanceState.Gold,
+                    States.Instance.CrystalBalance,
+                    item.RuneStone), 30);
+
+                var sliderMaxValue = _maxTryCount > 0 ? _maxTryCount : 1;
+                tryCountSlider.slider.Set(
+                    1, sliderMaxValue,
+                    1, sliderMaxValue,
+                    1, x => TryCount.Value = Math.Clamp(x, 1, sliderMaxValue),
+                    _maxTryCount > 0, true);
             }
         }
 

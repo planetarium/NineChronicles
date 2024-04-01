@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Model
         public RuneListSheet.Row Row { get; }
         public RuneOptionSheet.Row OptionRow { get; }
         public RuneCostSheet.RuneCostData Cost { get; }
+        public RuneCostSheet.Row CostRow { get; }
 
         public FungibleAssetValue RuneStone { get; set; }
         public int Level { get; }
@@ -57,6 +58,8 @@ namespace Nekoyume.UI.Model
             {
                 return;
             }
+
+            CostRow = costRow;
 
             Cost = costRow.Cost.FirstOrDefault(x => x.Level == level + 1);
             if (Cost is null)
