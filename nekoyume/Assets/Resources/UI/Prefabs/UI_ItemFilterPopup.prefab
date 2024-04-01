@@ -1029,9 +1029,9 @@ MonoBehaviour:
     withSkill: 1
   - toggle: {fileID: 3456438862679067322}
     withSkill: 2
-  _searchInputField: {fileID: 697725487413271905}
-  _deselectAllButton: {fileID: 4012814574730450772}
-  _okButton: {fileID: 4836828661321840938}
+  searchInputField: {fileID: 697725487413271905}
+  deselectAllButton: {fileID: 4012814574730450772}
+  okButton: {fileID: 4836828661321840938}
 --- !u!95 &7435949875806070387
 Animator:
   serializedVersion: 5

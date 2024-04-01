@@ -215,13 +215,13 @@ namespace Nekoyume.UI
         private List<WithSkillToggle> withSkillToggles;
 
         [SerializeField]
-        private TMP_InputField _searchInputField;
+        private TMP_InputField searchInputField;
 
         [SerializeField]
-        private Button _deselectAllButton;
+        private Button deselectAllButton;
 
         [SerializeField]
-        private Button _okButton;
+        private Button okButton;
 
         private ItemFilterOptions _itemFilterOptions;
 
@@ -236,14 +236,14 @@ namespace Nekoyume.UI
 
             CloseWidget = () =>
             {
-                if (_searchInputField.isFocused)
+                if (searchInputField.isFocused)
                     return;
 
                 Close(true);
             };
 
-            _deselectAllButton.onClick.AddListener(DeselectAll);
-            _okButton.onClick.AddListener(OnClickOkButton);
+            deselectAllButton.onClick.AddListener(DeselectAll);
+            okButton.onClick.AddListener(OnClickOkButton);
         }
 
         public void Show(Widget owner, FilterTap filterTap)
@@ -345,10 +345,10 @@ namespace Nekoyume.UI
             ResetToAll(upgradeLevelToggles);
             ResetToAll(optionCountToggles);
             ResetToAll(withSkillToggles);
-            _searchInputField.text = string.Empty;
+            searchInputField.text = string.Empty;
         }
 
-        public void OnClickOkButton()
+        private void OnClickOkButton()
         {
             ApplyItemFilterOptionFromToggle();
             Close(true);
@@ -389,7 +389,7 @@ namespace Nekoyume.UI
             }
         }
 
-        protected void ApplyItemFilterOptionFromToggle()
+        private void ApplyItemFilterOptionFromToggle()
         {
             var itemFilterOptionType = new ItemFilterOptions();
 
@@ -411,17 +411,17 @@ namespace Nekoyume.UI
             foreach (var withSkillToggle in withSkillToggles)
                 itemFilterOptionType.WithSkill |= withSkillToggle.toggle.isOn ? withSkillToggle.withSkill : WithSkill.All;
 
-            itemFilterOptionType.SearchText = _searchInputField.text;
+            itemFilterOptionType.SearchText = searchInputField.text;
 
             _itemFilterOptions = itemFilterOptionType;
         }
 
-        protected ItemFilterOptions GetItemFilterOptionType()
+        private ItemFilterOptions GetItemFilterOptionType()
         {
             return _itemFilterOptions;
         }
 
-        protected void ResetViewFromFilterOption()
+        private void ResetViewFromFilterOption()
         {
             SetTogglesFromFilterOption();
             SetInputFiledFromFilterOption();
@@ -468,7 +468,7 @@ namespace Nekoyume.UI
 
         private void SetInputFiledFromFilterOption()
         {
-            _searchInputField.text = _itemFilterOptions.SearchText;
+            searchInputField.text = _itemFilterOptions.SearchText;
         }
 
         public static Grade GetGradeFlag(int grade)
