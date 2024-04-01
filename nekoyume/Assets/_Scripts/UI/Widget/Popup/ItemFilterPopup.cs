@@ -10,26 +10,37 @@ namespace Nekoyume.UI
 {
     public struct ItemFilterOptions
     {
-        public ItemFilterPopupBase.Grade Grade;
-        public ItemFilterPopupBase.Elemental Elemental;
-        public ItemFilterPopupBase.ItemType ItemType;
-        public ItemFilterPopupBase.UpgradeLevel UpgradeLevel;
-        public ItemFilterPopupBase.OptionCount OptionCount;
-        public ItemFilterPopupBase.WithSkill WithSkill;
+        public ItemFilterPopup.Grade Grade;
+        public ItemFilterPopup.Elemental Elemental;
+        public ItemFilterPopup.ItemType ItemType;
+        public ItemFilterPopup.UpgradeLevel UpgradeLevel;
+        public ItemFilterPopup.OptionCount OptionCount;
+        public ItemFilterPopup.WithSkill WithSkill;
 
         public string SearchText;
 
-        public bool IsNeedFilter => Grade != ItemFilterPopupBase.Grade.All ||
-                                      Elemental != ItemFilterPopupBase.Elemental.All ||
-                                      ItemType != ItemFilterPopupBase.ItemType.All ||
-                                      UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All ||
-                                      OptionCount != ItemFilterPopupBase.OptionCount.All ||
-                                      WithSkill != ItemFilterPopupBase.WithSkill.All;
+        public bool IsNeedFilter => Grade != ItemFilterPopup.Grade.All ||
+                                      Elemental != ItemFilterPopup.Elemental.All ||
+                                      ItemType != ItemFilterPopup.ItemType.All ||
+                                      UpgradeLevel != ItemFilterPopup.UpgradeLevel.All ||
+                                      OptionCount != ItemFilterPopup.OptionCount.All ||
+                                      WithSkill != ItemFilterPopup.WithSkill.All;
     }
 
-    public abstract class ItemFilterPopupBase : PopupWidget
+    public class ItemFilterPopup : PopupWidget
     {
         #region Internal Type
+        [Flags]
+        public enum FilterTap
+        {
+            Grade = 1 << 0,
+            Elemental = 1 << 1,
+            ItemType = 1 << 2,
+            UpgradeLevel = 1 << 3,
+            OptionCount = 1 << 4,
+            WithSkill = 1 << 5,
+        }
+
         /// <summary>
         /// 아무것도 선택하지 않은 상태가 필터링을 하지 않아 전체 아이템을 보여주는 것으로 간주한다.
         /// </summary>
@@ -42,7 +53,7 @@ namespace Nekoyume.UI
             Epic = 1 << 2,
             Unique = 1 << 3,
             Legendary = 1 << 4,
-            Divinity = 1 << 5,
+            Sacred = 1 << 5,
         }
 
         [Flags]
@@ -95,6 +106,13 @@ namespace Nekoyume.UI
             All = 0,
             None = 1 << 0,
             With = 1 << 1,
+        }
+
+        [Serializable]
+        private class FilterTapObject
+        {
+            public FilterTap filterTap;
+            public GameObject gameObject;
         }
 
         [Serializable]
@@ -172,9 +190,12 @@ namespace Nekoyume.UI
             public override bool IsAll => withSkill == WithSkill.All;
             public override string GetOptionName => withSkill.ToString();
         }
-
         #endregion Internal Type
 
+        [Space(10)]
+        [SerializeField] List<FilterTapObject> filterTabs;
+
+        [Header("Toggles")]
         [SerializeField]
         private List<GradeToggle> gradeToggles;
 
@@ -204,6 +225,8 @@ namespace Nekoyume.UI
 
         private ItemFilterOptions _itemFilterOptions;
 
+        private Widget _owner;
+
         #region Popup
         protected override void Awake()
         {
@@ -221,6 +244,30 @@ namespace Nekoyume.UI
 
             _deselectAllButton.onClick.AddListener(DeselectAll);
             _okButton.onClick.AddListener(OnClickOkButton);
+        }
+
+        public void Show(Widget owner, FilterTap filterTap)
+        {
+            foreach (var filterTabObject in filterTabs)
+            {
+                filterTabObject.gameObject.SetActive(filterTap.HasFlag(filterTabObject.filterTap));
+            }
+
+            // IItemFilterWidget타입으로 owner를 받을 수도 있지만, 위젯 오브젝트의 fake null을 방지하기 위해 Widget으로 받았습니다.
+            _owner = owner;
+            Show(owner);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+
+            ResetViewFromFilterOption();
+
+            if (_owner != null && _owner is IItemFilterWidget itemFilterWidget)
+                itemFilterWidget.SetItemFilterOption(GetItemFilterOptionType());
+
+            _owner = null;
         }
         #endregion Popup
 
@@ -314,6 +361,8 @@ namespace Nekoyume.UI
         /// <param name="itemType">현재 활성화된 아이템 탭</param>
         public void SetItemTypeTap(Nekoyume.Model.Item.ItemType itemType)
         {
+            // Grade(Class)의 경우 모든 아이템 탭에서 활성화 되어야 해서 패스
+
             foreach (var elementalToggle in elementalToggles)
             {
                 elementalToggle.toggle.interactable = itemType == Nekoyume.Model.Item.ItemType.Equipment;
@@ -437,12 +486,12 @@ namespace Nekoyume.UI
         {
             return level switch
                    {
+                       0    => UpgradeLevel.Level0,
                        1    => UpgradeLevel.Level1,
                        2    => UpgradeLevel.Level2,
                        3    => UpgradeLevel.Level3,
                        4    => UpgradeLevel.Level4,
-                       5    => UpgradeLevel.Level5,
-                       >= 6 => UpgradeLevel.Level6More,
+                       >= 5 => UpgradeLevel.Level5More,
                        _    => UpgradeLevel.All
                    };
         }

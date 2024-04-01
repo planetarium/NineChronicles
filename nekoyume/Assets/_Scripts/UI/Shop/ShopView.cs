@@ -340,6 +340,12 @@ namespace Nekoyume.UI.Module
             return _filteredItems;
         }
 
+        private bool IsMatchedSearch(ShopItem model)
+        {
+            // TODO
+            return true;
+        }
+
         private bool ApplyFilterOption(ShopItem model)
         {
             if (!ApplyGradeFilterOption(model))
@@ -362,48 +368,43 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (!ApplyItemTypeFilterOption(model))
-            {
-                return false;
-            }
-
             return true;
         }
 
         private bool ApplyGradeFilterOption(ShopItem model)
         {
-            if (itemFilterOptions.Grade == ItemFilterPopupBase.Grade.All)
+            if (itemFilterOptions.Grade == ItemFilterPopup.Grade.All)
             {
                 return true;
             }
 
-            var gradeFlag = ItemFilterPopupBase.GetGradeFlag(model.Grade);
+            var gradeFlag = ItemFilterPopup.GetGradeFlag(model.Grade);
             return itemFilterOptions.Grade.HasFlag(gradeFlag);
         }
 
         private bool ApplyElementalFilterOption(ShopItem model)
         {
-            if (itemFilterOptions.Elemental == ItemFilterPopupBase.Elemental.All)
+            if (itemFilterOptions.Elemental == ItemFilterPopup.Elemental.All)
             {
                 return true;
             }
 
-            var elementalFlag = ItemFilterPopupBase.GetElementalFlag(model.Product.ElementalType);
+            var elementalFlag = ItemFilterPopup.GetElementalFlag(model.Product.ElementalType);
             return itemFilterOptions.Elemental.HasFlag(elementalFlag);
         }
 
         private bool ApplyUpgradeLevelFilterOption(ShopItem model)
         {
-            if (itemFilterOptions.UpgradeLevel == ItemFilterPopupBase.UpgradeLevel.All)
+            if (itemFilterOptions.UpgradeLevel == ItemFilterPopup.UpgradeLevel.All)
             {
                 return true;
             }
 
-            var upgradeFlag = ItemFilterPopupBase.GetUpgradeLevelFlag(model.Product.Level);
+            var upgradeFlag = ItemFilterPopup.GetUpgradeLevelFlag(model.Product.Level);
 
             var hasFlag = false;
             hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
-            hasFlag &= upgradeFlag != ItemFilterPopupBase.UpgradeLevel.All;
+            hasFlag &= upgradeFlag != ItemFilterPopup.UpgradeLevel.All;
 
             return hasFlag;
         }

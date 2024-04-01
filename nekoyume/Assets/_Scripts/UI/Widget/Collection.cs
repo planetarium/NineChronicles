@@ -24,8 +24,10 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class Collection : Widget
+    public class Collection : Widget, IItemFilterWidget
     {
+        const ItemFilterPopup.FilterTap CollectionFilterTap = ItemFilterPopup.FilterTap.Grade | ItemFilterPopup.FilterTap.Elemental | ItemFilterPopup.FilterTap.UpgradeLevel | ItemFilterPopup.FilterTap.ItemType;
+
         #region Internal Types
         [Serializable]
         private struct ItemTypeToggle
@@ -116,7 +118,7 @@ namespace Nekoyume.UI
             set
             {
                 _currentItemType = value;
-                if (TryFind<CollectionItemFilterPopup>(out var filterPopup))
+                if (TryFind<ItemFilterPopup>(out var filterPopup))
                 {
                     filterPopup.SetItemTypeTap(_currentItemType);
                 }
@@ -215,7 +217,7 @@ namespace Nekoyume.UI
             var toggle = itemTypeToggles.First().toggle;
             toggle.isOn = !toggle.isOn;
 
-            Find<CollectionItemFilterPopup>().SetItemTypeTap(_currentItemType);
+            Find<ItemFilterPopup>().SetItemTypeTap(_currentItemType);
             RefreshDropDownText();
             UpdateToggleView();
             UpdateStatToggleView();
@@ -600,7 +602,7 @@ namespace Nekoyume.UI
 
         private void OnClickFilterButton()
         {
-            Find<CollectionItemFilterPopup>().Show(this);
+            Find<ItemFilterPopup>().Show(this, CollectionFilterTap);
         }
 
         private List<CollectionModel> RefreshFilteredItems()
@@ -650,7 +652,7 @@ namespace Nekoyume.UI
 
         private bool ApplyGradeFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.Grade == ItemFilterPopupBase.Grade.All)
+            if (itemFilterOptions.Grade == ItemFilterPopup.Grade.All)
             {
                 return true;
             }
@@ -658,7 +660,7 @@ namespace Nekoyume.UI
             var hasFlag = false;
             foreach (var material in model.Materials)
             {
-                var gradeFlag = ItemFilterPopupBase.GetGradeFlag(material.Grade);
+                var gradeFlag = ItemFilterPopup.GetGradeFlag(material.Grade);
                 hasFlag |= itemFilterOptions.Grade.HasFlag(gradeFlag);
 
                 if (hasFlag)
@@ -672,7 +674,7 @@ namespace Nekoyume.UI
 
         private bool ApplyElementalFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.Elemental == ItemFilterPopupBase.Elemental.All)
+            if (itemFilterOptions.Elemental == ItemFilterPopup.Elemental.All)
             {
                 return true;
             }
@@ -686,7 +688,7 @@ namespace Nekoyume.UI
                     return false;
                 }
 
-                var elementalFlag = ItemFilterPopupBase.GetElementalFlag(equipment.ElementalType);
+                var elementalFlag = ItemFilterPopup.GetElementalFlag(equipment.ElementalType);
                 hasFlag |= itemFilterOptions.Elemental.HasFlag(elementalFlag);
 
                 if (hasFlag)
@@ -700,7 +702,7 @@ namespace Nekoyume.UI
 
         private bool ApplyUpgradeLevelFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.UpgradeLevel == ItemFilterPopupBase.UpgradeLevel.All)
+            if (itemFilterOptions.UpgradeLevel == ItemFilterPopup.UpgradeLevel.All)
             {
                 return true;
             }
@@ -708,9 +710,9 @@ namespace Nekoyume.UI
             var hasFlag = false;
             foreach (var material in model.Materials)
             {
-                var upgradeFlag = ItemFilterPopupBase.GetUpgradeLevelFlag(material.Row.Level);
+                var upgradeFlag = ItemFilterPopup.GetUpgradeLevelFlag(material.Row.Level);
                 hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
-                hasFlag &= upgradeFlag != ItemFilterPopupBase.UpgradeLevel.All;
+                hasFlag &= upgradeFlag != ItemFilterPopup.UpgradeLevel.All;
                 if (hasFlag)
                 {
                     break;
@@ -722,7 +724,7 @@ namespace Nekoyume.UI
 
         private bool ApplyItemTypeFilterOption(CollectionModel model)
         {
-            if (itemFilterOptions.ItemType == ItemFilterPopupBase.ItemType.All)
+            if (itemFilterOptions.ItemType == ItemFilterPopup.ItemType.All)
                 return true;
 
             var hasFlag = false;
@@ -732,7 +734,7 @@ namespace Nekoyume.UI
                 if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
                     return false;
 
-                var itemType = ItemFilterPopupBase.ItemSubTypeToItemType(equipment.ItemSubType);
+                var itemType = ItemFilterPopup.ItemSubTypeToItemType(equipment.ItemSubType);
                 hasFlag |= itemFilterOptions.ItemType.HasFlag(itemType);
                 if (hasFlag)
                 {

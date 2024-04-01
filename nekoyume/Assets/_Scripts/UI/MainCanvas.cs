@@ -333,7 +333,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Collection>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CollectionItemFilterPopup>());
+            _secondWidgets.Add(Widget.Create<ItemFilterPopup>());
             yield return null;
 
             // loading
