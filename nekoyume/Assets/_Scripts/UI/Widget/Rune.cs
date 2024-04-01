@@ -55,19 +55,7 @@ namespace Nekoyume.UI
         private Image runeImage;
 
         [SerializeField]
-        private GameObject successContainer;
-
-        [SerializeField]
-        private TextMeshProUGUI successRateText;
-
-        [SerializeField]
         private List<RuneCostItem> costItems;
-
-        [SerializeField]
-        private GameObject costContainer;
-
-        [SerializeField]
-        private List<RuneEachCostItem> eachCostItems;
 
         [SerializeField]
         private TryCountSlider tryCountSlider;
@@ -256,7 +244,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (item.Cost is null && !item.IsMaxLevel)
+            if (item.CostRow is null && !item.IsMaxLevel)
             {
                 return;
             }
@@ -273,8 +261,6 @@ namespace Nekoyume.UI
                 ? L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING")  // Level Up Processing
                 : L10nManager.Localize("UI_RUNE_COMBINE_PROCESSING");  // Combine Processing
 
-            successContainer.SetActive(!item.IsMaxLevel);
-            costContainer.SetActive(!item.IsMaxLevel);
             TryCount.SetValueAndForceNotify(TryCount.Value);
         }
 
@@ -345,17 +331,13 @@ namespace Nekoyume.UI
 
         private void UpdateCost(RuneItem item, Sprite runeStoneIcon)
         {
-            if (item.Cost is null)
+            if (item.CostRow is null)
             {
-                successRateText.text = String.Empty;
-                eachCostItems.ForEach(x=> x.Set(0));
                 _costItems[RuneCostType.RuneStone].Set(0, false, null);
                 _costItems[RuneCostType.Crystal].Set(0, false, null);
                 _costItems[RuneCostType.Ncg].Set(0, false, null);
                 return;
             }
-
-            successRateText.text = $"{item.Cost.LevelUpSuccessRate / 100}%";
 
             var popup = Find<MaterialNavigationPopup>();
 
@@ -374,22 +356,6 @@ namespace Nekoyume.UI
                 item.Cost.NcgQuantity,
                 item.EnoughNcg,
                 () => popup.ShowCurrency(CostType.NCG));
-
-            foreach (var costItem in eachCostItems)
-            {
-                switch(costItem.CostType)
-                {
-                    case RuneCostType.RuneStone:
-                        costItem.Set(item.Cost.RuneStoneQuantity);
-                        break;
-                    case RuneCostType.Crystal:
-                        costItem.Set(item.Cost.CrystalQuantity);
-                        break;
-                    case RuneCostType.Ncg:
-                        costItem.Set(item.Cost.NcgQuantity);
-                        break;
-                }
-            }
         }
 
         private void UpdateHeaderMenu(Sprite runeStoneIcon, FungibleAssetValue runeStone)
