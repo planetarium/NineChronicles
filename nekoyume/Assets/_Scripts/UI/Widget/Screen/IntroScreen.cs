@@ -433,7 +433,7 @@ namespace Nekoyume.UI
             guestButton.interactable = true;
         }
 
-#if RUN_ON_MOBILE
+#if APPLY_MEMORY_IOS_OPTIMIZATION || RUN_ON_MOBILE
         protected override void OnCompleteOfCloseAnimationInternal()
         {
             base.OnCompleteOfCloseAnimationInternal();
