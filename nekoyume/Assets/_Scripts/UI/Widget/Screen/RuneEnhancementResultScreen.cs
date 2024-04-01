@@ -103,17 +103,9 @@ namespace Nekoyume.UI
         {
             base.Show(true);
 
-            var isSuccess = RuneHelper.TryEnhancement(
-                ncg,
-                crystal,
-                runeItem.RuneStone,
-                ncg.Currency,
-                crystal.Currency,
-                runeItem.RuneStone.Currency,
-                runeItem.Cost,
-                random,
-                tryCount,
-                 out var tryResult);
+            // Todo : Implement this ( it will be fixed in #4680 )
+            var isSuccess = true;
+            var tryResult = 0;
 
             var speech = string.Empty;
 
