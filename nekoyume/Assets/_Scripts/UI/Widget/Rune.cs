@@ -142,6 +142,7 @@ namespace Nekoyume.UI
                 _costItems[RuneCostType.RuneStone].UpdateCount(x);
                 _costItems[RuneCostType.Ncg].UpdateCount(x);
                 _costItems[RuneCostType.Crystal].UpdateCount(x);
+                runeOptionView.UpdateTryCount(x);
             }).AddTo(gameObject);
         }
 
@@ -296,37 +297,7 @@ namespace Nekoyume.UI
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
 
-            if (item.Level == 0)
-            {
-                if (item.OptionRow is null || !item.OptionRow.LevelOptionMap.TryGetValue(1, out var statInfo))
-                {
-                    return;
-                }
-
-                runeOptionView.Set(1, statInfo, (RuneUsePlace)item.Row.UsePlace);
-            }
-            else
-            {
-                if (!item.OptionRow.LevelOptionMap.TryGetValue(item.Level, out var statInfo))
-                {
-                    return;
-                }
-
-                var nextLevel = item.Level + 1;
-                if (item.OptionRow.LevelOptionMap.TryGetValue(nextLevel, out var nextStatInfo))
-                {
-                    runeOptionView.Set(
-                    item.Level,
-                    nextLevel,
-                    statInfo,
-                    nextStatInfo,
-                    (RuneUsePlace)item.Row.UsePlace);
-                }
-                else
-                {
-                    runeOptionView.Set(item.Level, statInfo, (RuneUsePlace)item.Row.UsePlace); // max level
-                }
-            }
+            runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);
         }
 
         private void UpdateCost(RuneItem item, Sprite runeStoneIcon)
