@@ -29,11 +29,25 @@
             Legacy = false;
         }
 
+        public ValidatorSet GetValidatorSet()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public ITrie Trie { get; }
 
         public bool Legacy { get; private set; }
 
         public IAccountState GetAccountState(Address address) => GetMockAccountState(address);
+        public FungibleAssetValue GetBalance(Address address, Currency currency)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public FungibleAssetValue GetTotalSupply(Currency currency)
+        {
+            throw new System.NotImplementedException();
+        }
 
 #pragma warning disable SA1118 // Parameter should not span multiple lines
         public MockAccountState GetMockAccountState(Address address)
