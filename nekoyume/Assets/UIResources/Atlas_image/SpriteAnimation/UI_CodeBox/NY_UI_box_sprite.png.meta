@@ -45,7 +45,7 @@ TextureImporter:
       213: 4362372813466340364
     second: NY_UI_box_sprite_13
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -105,19 +105,20 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 1
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
@@ -129,7 +130,43 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 50
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 47
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -438,20 +475,20 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      NY_UI_box_sprite_9: 8578464483376042770
-      NY_UI_box_sprite_4: 2287984770700167600
-      NY_UI_box_sprite_12: 7926269416023090486
-      NY_UI_box_sprite_7: -7718148748287202074
-      NY_UI_box_sprite_5: -3020393199670728860
-      NY_UI_box_sprite_1: -6449372472856077848
-      NY_UI_box_sprite_6: -1000550960399165664
-      NY_UI_box_sprite_13: 4362372813466340364
       NY_UI_box_sprite_0: -6798087632103567474
-      NY_UI_box_sprite_8: -7605701837148140112
-      NY_UI_box_sprite_2: -4466919020364160544
-      NY_UI_box_sprite_3: -2274508893389097871
+      NY_UI_box_sprite_1: -6449372472856077848
       NY_UI_box_sprite_10: -5902649389085097448
       NY_UI_box_sprite_11: 6456263240982355547
+      NY_UI_box_sprite_12: 7926269416023090486
+      NY_UI_box_sprite_13: 4362372813466340364
+      NY_UI_box_sprite_2: -4466919020364160544
+      NY_UI_box_sprite_3: -2274508893389097871
+      NY_UI_box_sprite_4: 2287984770700167600
+      NY_UI_box_sprite_5: -3020393199670728860
+      NY_UI_box_sprite_6: -1000550960399165664
+      NY_UI_box_sprite_7: -7718148748287202074
+      NY_UI_box_sprite_8: -7605701837148140112
+      NY_UI_box_sprite_9: 8578464483376042770
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
