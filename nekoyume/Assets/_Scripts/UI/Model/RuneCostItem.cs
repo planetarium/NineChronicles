@@ -1,5 +1,6 @@
 ﻿using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,8 +29,11 @@ namespace Nekoyume.UI.Model
 
         public RuneCostType CostType => costType;
         public Sprite Icon => iconImage.sprite;
+
+        private RuneCostSheet.Row _costRow;
+        private int _startLevel;
+        private bool _isEnough;
         private System.Action _callback;
-        private int _defaultCount;
 
         private void Awake()
         {
@@ -44,25 +48,33 @@ namespace Nekoyume.UI.Model
             });
         }
 
-        public void Set(int count, bool isEnough, System.Action callback, Sprite icon = null)
+        public void Set(RuneCostSheet.Row costRow, int startLevel,
+            bool isEnough, System.Action callback, Sprite icon = null)
         {
-            _defaultCount = count;
-            countText.text = count > 0 ? count.ToCurrencyNotation() : string.Empty;
-            countText.color = isEnough ? Color.white : Palette.GetColor(ColorType.TextDenial);
-            effect.SetActive(count > 0 && isEnough);
+            _costRow = costRow;
+            _startLevel = startLevel;
+            _isEnough = isEnough;
             _callback = callback;
             if (icon != null)
             {
                 iconImage.sprite = icon;
             }
-
-            lockObject.SetActive(count == 0);
         }
 
         public void UpdateCount(int tryCount)
         {
-            var count = _defaultCount * tryCount;
-            countText.text = _defaultCount > 0 ? count.ToCurrencyNotation() : string.Empty;
+            if (_costRow is null)
+            {
+                return;
+            }
+
+            var cost = _costRow.GetCostQuantity(_startLevel, tryCount, costType);
+            var costExist = cost > 0;
+
+            countText.text = cost > 0 ? cost.ToCurrencyNotation() : string.Empty;
+            countText.color = _isEnough ? Color.white : Palette.GetColor(ColorType.TextDenial);
+            effect.SetActive(costExist && _isEnough);
+            lockObject.SetActive(!costExist);
         }
     }
 }

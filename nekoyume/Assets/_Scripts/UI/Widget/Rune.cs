@@ -333,27 +333,30 @@ namespace Nekoyume.UI
         {
             if (item.CostRow is null)
             {
-                _costItems[RuneCostType.RuneStone].Set(0, false, null);
-                _costItems[RuneCostType.Crystal].Set(0, false, null);
-                _costItems[RuneCostType.Ncg].Set(0, false, null);
+                _costItems[RuneCostType.RuneStone].Set(null, 0, false, null);
+                _costItems[RuneCostType.Crystal].Set(null, 0, false, null);
+                _costItems[RuneCostType.Ncg].Set(null, 0, false, null);
                 return;
             }
 
             var popup = Find<MaterialNavigationPopup>();
 
             _costItems[RuneCostType.RuneStone].Set(
-                item.Cost.RuneStoneQuantity,
+                item.CostRow,
+                item.Level,
                 item.EnoughRuneStone,
                 () => popup.ShowRuneStone(item.Row.Id),
                 runeStoneIcon);
 
             _costItems[RuneCostType.Crystal].Set(
-                item.Cost.CrystalQuantity,
+                item.CostRow,
+                item.Level,
                 item.EnoughCrystal,
                 () => popup.ShowCurrency(CostType.Crystal));
 
             _costItems[RuneCostType.Ncg].Set(
-                item.Cost.NcgQuantity,
+                item.CostRow,
+                item.Level,
                 item.EnoughNcg,
                 () => popup.ShowCurrency(CostType.NCG));
         }
