@@ -613,7 +613,7 @@ namespace Nekoyume
 
         private void SetResetButton()
         {
-            resetButton.interactable = ReactiveShopState.IsNeedSearch;
+            resetButton.interactable = ReactiveShopState.IsNeedFilter;
             _resetAnimator.Play(resetButton.interactable ? _hashNormal : _hashDisabled);
         }
     }

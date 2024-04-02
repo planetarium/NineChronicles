@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Lib9c.Model.Order;
 using MarketService.Response;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
@@ -28,6 +29,12 @@ namespace Nekoyume.State
         private static readonly List<int> PetIds = new();
 
         public static bool IsNeedSearch => !string.IsNullOrWhiteSpace(ItemFilterOptions.SearchText);
+
+        /// <summary>
+        /// 필터 옵션 중 하나라도 활성화되었으면 true, 아니면 false
+        /// </summary>
+        public static bool IsNeedFilter => IsNeedSearch || ItemFilterOptions.IsNeedFilter;
+
         public static ReactiveProperty<List<ItemProductResponseModel>> BuyItemProducts { get; } =
             new();
 
@@ -103,7 +110,7 @@ namespace Nekoyume.State
             SetBuyProducts();
         }
 
-        public static async Task RequestBuyFungibleAssetsAsync(
+        private static async Task RequestBuyFungibleAssetsAsync(
             string[] tickers,
             MarketOrderType orderType,
             int limit,
@@ -126,6 +133,11 @@ namespace Nekoyume.State
 
             foreach (var asset in fungibleAssets)
             {
+                if (!ApplyItemFilterOptionToFungibleAsset(asset))
+                {
+                    continue;
+                }
+                
                 if (CachedBuyFungibleAssetProducts.All(x => x.ProductId != asset.ProductId))
                 {
                     CachedBuyFungibleAssetProducts.Add(asset);
@@ -420,6 +432,17 @@ namespace Nekoyume.State
         public static void ResetItemFilter()
         {
             ItemFilterOptions = new ItemFilterOptions();
+        }
+
+        private static bool ApplyItemFilterOptionToFungibleAsset(FungibleAssetValueProductResponseModel asset)
+        {
+            if (ItemFilterOptions.Grade == ItemFilterPopup.Grade.All)
+            {
+                return true;
+            }
+
+            var gradeFlag = ItemFilterPopup.GetGradeFlag(Util.GetTickerGrade(asset.Ticker));
+            return ItemFilterOptions.Grade.HasFlag(gradeFlag);
         }
         #endregion ItemFilter
     }

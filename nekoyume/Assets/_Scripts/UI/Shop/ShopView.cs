@@ -50,17 +50,11 @@ namespace Nekoyume.UI.Module
 
         private Image _nextPageImage;
         private Image _previousPageImage;
+
         protected int _column;
         protected  int _row;
         private int _pageCount = 1;
         protected bool _isActive;
-
-        private ItemFilterOptions itemFilterOptions;
-
-        /// <summary>
-        /// 필터 옵션 중 하나라도 활성화되었으면 true, 아니면 false
-        /// </summary>
-        private bool IsNeedFilter => IsNeedSearch || itemFilterOptions.IsNeedFilter;
 
         protected Action<ShopItem> ClickItemAction;
         protected abstract void OnAwake();
@@ -319,96 +313,5 @@ namespace Nekoyume.UI.Module
                 }
             }
         }
-
-        #region Filter
-        private readonly List<ShopItem> _filteredItems = new();
-
-        private bool IsNeedSearch => !string.IsNullOrWhiteSpace(itemFilterOptions.SearchText);
-
-        private List<ShopItem> RefreshFilteredItems()
-        {
-            _filteredItems.Clear();
-
-            foreach (var model in _items)
-            {
-                bool isContained = !(IsNeedSearch && !IsMatchedSearch(model));
-                isContained &= ApplyFilterOption(model);
-                if (isContained)
-                    _filteredItems.Add(model);
-            }
-
-            return _filteredItems;
-        }
-
-        private bool IsMatchedSearch(ShopItem model)
-        {
-            // TODO
-            return true;
-        }
-
-        private bool ApplyFilterOption(ShopItem model)
-        {
-            if (!ApplyGradeFilterOption(model))
-            {
-                return false;
-            }
-
-            if (model.Product.ItemType != ItemType.Equipment)
-            {
-                return true;
-            }
-
-            if (!ApplyElementalFilterOption(model))
-            {
-                return false;
-            }
-
-            if (!ApplyUpgradeLevelFilterOption(model))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool ApplyGradeFilterOption(ShopItem model)
-        {
-            if (itemFilterOptions.Grade == ItemFilterPopup.Grade.All)
-            {
-                return true;
-            }
-
-            var gradeFlag = ItemFilterPopup.GetGradeFlag(model.Grade);
-            return itemFilterOptions.Grade.HasFlag(gradeFlag);
-        }
-
-        private bool ApplyElementalFilterOption(ShopItem model)
-        {
-            if (itemFilterOptions.Elemental == ItemFilterPopup.Elemental.All)
-            {
-                return true;
-            }
-
-            var elementalFlag = ItemFilterPopup.GetElementalFlag(model.Product.ElementalType);
-            return itemFilterOptions.Elemental.HasFlag(elementalFlag);
-        }
-
-        private bool ApplyUpgradeLevelFilterOption(ShopItem model)
-        {
-            if (itemFilterOptions.UpgradeLevel == ItemFilterPopup.UpgradeLevel.All)
-            {
-                return true;
-            }
-
-            var upgradeFlag = ItemFilterPopup.GetUpgradeLevelFlag(model.Product.Level);
-
-            var hasFlag = false;
-            hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
-            hasFlag &= upgradeFlag != ItemFilterPopup.UpgradeLevel.All;
-
-            return hasFlag;
-        }
-
-        #endregion Filter
     }
 }
