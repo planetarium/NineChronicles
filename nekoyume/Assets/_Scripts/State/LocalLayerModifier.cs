@@ -79,40 +79,6 @@ namespace Nekoyume.State
             States.Instance.SetCrystalBalance(crystalBalance);
         }
 
-        /// <summary>
-        /// Modify the avatar's action point.
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="actionPoint"></param>
-        public static void ModifyAvatarActionPoint(Address avatarAddress, int actionPoint)
-        {
-            if (actionPoint is 0)
-            {
-                return;
-            }
-
-            var modifier = new AvatarActionPointModifier(actionPoint);
-            LocalLayer.Instance.Add(avatarAddress, modifier);
-
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
-                return;
-            }
-
-            if (!isCurrentAvatarState)
-            {
-                return;
-            }
-
-            outAvatarState = modifier.Modify(outAvatarState);
-            ReactiveAvatarState.UpdateActionPoint(outAvatarState.actionPoint);
-        }
-
         #endregion
 
         #region Avatar / AddItem

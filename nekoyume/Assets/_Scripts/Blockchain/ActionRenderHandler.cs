@@ -987,7 +987,6 @@ namespace Nekoyume.Blockchain
             var avatarState = renderArgs.AvatarState;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -1124,7 +1123,6 @@ namespace Nekoyume.Blockchain
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -1176,7 +1174,6 @@ namespace Nekoyume.Blockchain
             var itemUsable = result.itemUsable;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -2024,9 +2021,6 @@ namespace Nekoyume.Blockchain
             if (eval.Action.apStoneCount > 0)
             {
                 var avatarAddress = eval.Action.avatarAddress;
-                LocalLayerModifier.ModifyAvatarActionPoint(
-                    avatarAddress,
-                    eval.Action.actionPoint);
                 var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
