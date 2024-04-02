@@ -224,7 +224,7 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
-                    ReactiveAvatarState.ActionPoint
+                    ReactiveAvatarState.ObservableActionPoint
                         .Subscribe(_ => UpdateStartButton())
                         .AddTo(_disposables);
                     break;

@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Module
         private Button button;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private int _currentActionPoint;
+        private long _currentActionPoint;
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
 
@@ -122,13 +122,13 @@ namespace Nekoyume.UI.Module
                 SetRewardReceivedBlockIndex(avatarState.dailyRewardReceivedIndex, false);
             }
 
-            ReactiveAvatarState.ActionPoint
+            ReactiveAvatarState.ObservableActionPoint
                 .Subscribe(x => SetActionPoint(x, true))
                 .AddTo(_disposables);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(x => SetBlockIndex(x, true))
                 .AddTo(_disposables);
-            ReactiveAvatarState.DailyRewardReceivedIndex
+            ReactiveAvatarState.ObservableDailyRewardReceivedIndex
                 .Subscribe(x => SetRewardReceivedBlockIndex(x, true))
                 .AddTo(_disposables);
 
@@ -164,7 +164,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        private void SetActionPoint(int actionPoint, bool useAnimation)
+        private void SetActionPoint(long actionPoint, bool useAnimation)
         {
             if (_currentActionPoint == actionPoint)
             {
@@ -222,7 +222,7 @@ namespace Nekoyume.UI.Module
             animator.SetBool(IsFull, dailyBonus.sliderAnimator.IsFull);
         }
 
-        public void SetActionPoint(int actionPoint)
+        public void SetActionPoint(long actionPoint)
         {
             SetActionPoint(actionPoint, false);
         }

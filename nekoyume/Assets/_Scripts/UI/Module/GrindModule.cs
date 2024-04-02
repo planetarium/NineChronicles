@@ -215,7 +215,7 @@ namespace Nekoyume.UI.Module
 
         private void Subscribe()
         {
-            ReactiveAvatarState.ActionPoint
+            ReactiveAvatarState.ObservableActionPoint
                 .Subscribe(_ => grindButton.Interactable = CanGrind)
                 .AddTo(_disposables);
 

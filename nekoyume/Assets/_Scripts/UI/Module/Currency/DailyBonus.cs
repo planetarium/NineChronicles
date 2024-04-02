@@ -85,7 +85,7 @@ namespace Nekoyume.UI.Module
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(x => SetBlockIndex(x, true))
                 .AddTo(_disposables);
-            ReactiveAvatarState.DailyRewardReceivedIndex
+            ReactiveAvatarState.ObservableDailyRewardReceivedIndex
                 .Subscribe(x => SetRewardReceivedBlockIndex(x, true))
                 .AddTo(_disposables);
 

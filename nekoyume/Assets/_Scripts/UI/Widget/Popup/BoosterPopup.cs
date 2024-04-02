@@ -82,7 +82,7 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageId = stageId;
 
-            ObservableExtensions.Subscribe(ReactiveAvatarState.ActionPoint, value =>
+            ObservableExtensions.Subscribe(ReactiveAvatarState.ObservableActionPoint, value =>
             {
                 var costOfStage = GetCostOfStage();
                 apSlider.maxValue = value / costOfStage >= maxCount ? maxCount : value / costOfStage;
