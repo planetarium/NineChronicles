@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public struct ItemFilterOptions
+    public struct ItemFilterOptions : IEquatable<ItemFilterOptions>
     {
         public ItemFilterPopup.Grade Grade;
         public ItemFilterPopup.Elemental Elemental;
@@ -25,6 +25,34 @@ namespace Nekoyume.UI
                                       UpgradeLevel != ItemFilterPopup.UpgradeLevel.All ||
                                       OptionCount != ItemFilterPopup.OptionCount.All ||
                                       WithSkill != ItemFilterPopup.WithSkill.All;
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ItemFilterOptions other)
+                return Equals(other);
+
+            return false;
+        }
+
+        public bool Equals(ItemFilterOptions other)
+        {
+            return Grade == other.Grade && Elemental == other.Elemental && ItemType == other.ItemType && UpgradeLevel == other.UpgradeLevel && OptionCount == other.OptionCount && WithSkill == other.WithSkill && SearchText == other.SearchText;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine((int)Grade, (int)Elemental, (int)ItemType, (int)UpgradeLevel, (int)OptionCount, (int)WithSkill, SearchText);
+        }
+
+        public static bool operator ==(ItemFilterOptions a, ItemFilterOptions b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(ItemFilterOptions a, ItemFilterOptions b)
+        {
+            return !a.Equals(b);
+        }
     }
 
     public class ItemFilterPopup : PopupWidget
