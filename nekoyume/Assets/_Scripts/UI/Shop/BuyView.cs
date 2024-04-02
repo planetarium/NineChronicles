@@ -370,7 +370,7 @@ namespace Nekoyume
         {
             var limit = _column * _row;
             var cachedCount = ReactiveShopState.GetCachedBuyItemCount(_selectedSubTypeFilter.Value);
-            if (limit * (page + 1) >= cachedCount)
+            if (limit * (page + 1) > cachedCount)
             {
                 await SetItems();
             }

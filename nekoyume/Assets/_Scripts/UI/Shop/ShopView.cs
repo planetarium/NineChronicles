@@ -79,7 +79,7 @@ namespace Nekoyume.UI.Module
             if (_column * _row > 0)
             {
                 _pageCount = _selectedModels.Any()
-                    ? _selectedModels.Count / (_column * _row) + 1
+                    ? Mathf.CeilToInt((float)_selectedModels.Count / (_column * _row))
                     : 1;
             }
 
