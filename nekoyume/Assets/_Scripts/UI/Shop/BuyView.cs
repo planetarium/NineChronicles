@@ -273,6 +273,14 @@ namespace Nekoyume
 
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
+
+            _selectedSubTypeFilter.Subscribe(value =>
+            {
+                if (Widget.TryFind<ItemFilterPopup>(out var filterPopup))
+                {
+                    filterPopup.SetItemTypeTap(value.ToItemType());
+                }
+            });
         }
 
         protected override void InitInteractiveUI()
@@ -594,8 +602,11 @@ namespace Nekoyume
 
         public void SetItemFilterOption(ItemFilterOptions type)
         {
-            ReactiveShopState.SetItemFilterOption(type);
-            ResetPage();
+            if (type != ReactiveShopState.ItemFilterOptions)
+            {
+                ReactiveShopState.SetItemFilterOption(type);
+                ResetPage();
+            }
 
             SetResetButton();
         }

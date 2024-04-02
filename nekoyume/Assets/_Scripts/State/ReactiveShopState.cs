@@ -17,6 +17,17 @@ namespace Nekoyume.State
 {
     public static class ReactiveShopState
     {
+        const string RuneStone = "RUNE";
+        const string PetSoulStone = "SOULSTONE";
+        const int PageSize = 15;
+
+        public static ItemFilterOptions ItemFilterOptions { get; private set; }
+
+        private static readonly List<int> ItemIds = new();
+        private static readonly List<int> RuneIds = new();
+        private static readonly List<int> PetIds = new();
+
+        public static bool IsNeedSearch => !string.IsNullOrWhiteSpace(ItemFilterOptions.SearchText);
         public static ReactiveProperty<List<ItemProductResponseModel>> BuyItemProducts { get; } =
             new();
 
@@ -335,18 +346,6 @@ namespace Nekoyume.State
         }
 
         #region ItemFilter
-        const string RuneStone = "RUNE";
-        const string PetSoulStone = "SOULSTONE";
-        const int PageSize = 15;
-
-        public static ItemFilterOptions ItemFilterOptions { get; private set; }
-
-        private static readonly List<int> ItemIds = new();
-        private static readonly List<int> RuneIds = new();
-        private static readonly List<int> PetIds = new();
-
-        public static bool IsNeedSearch => !string.IsNullOrWhiteSpace(ItemFilterOptions.SearchText);
-
         public static void SetItemFilterOption(ItemFilterOptions type)
         {
             ItemFilterOptions = type;
