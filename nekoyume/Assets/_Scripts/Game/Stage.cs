@@ -556,7 +556,7 @@ namespace Nekoyume.Game
                 objectPool.ReleaseExcept(ReleaseWhiteList);
             }
 
-            _battleResultModel.ActionPoint = avatarState.actionPoint;
+            _battleResultModel.ActionPoint = ReactiveAvatarState.ActionPoint;
             _battleResultModel.State = log.result;
             switch (StageType)
             {
@@ -579,7 +579,7 @@ namespace Nekoyume.Game
                         .TryGetValue(stageId, out var stageRow))
                     {
                         _battleResultModel.ActionPointNotEnough =
-                            avatarState.actionPoint < stageRow.CostAP;
+                            ReactiveAvatarState.ActionPoint < stageRow.CostAP;
                     }
 
                     break;

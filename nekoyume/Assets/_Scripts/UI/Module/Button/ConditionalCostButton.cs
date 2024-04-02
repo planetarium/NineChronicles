@@ -165,7 +165,7 @@ namespace Nekoyume.UI.Module
                 case CostType.Crystal:
                     return States.Instance.CrystalBalance.MajorUnit >= cost;
                 case CostType.ActionPoint:
-                    return States.Instance.CurrentAvatarState.actionPoint >= cost;
+                    return ReactiveAvatarState.ActionPoint >= cost;
                 case CostType.Hourglass:
                     var inventory = States.Instance.CurrentAvatarState.inventory;
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);

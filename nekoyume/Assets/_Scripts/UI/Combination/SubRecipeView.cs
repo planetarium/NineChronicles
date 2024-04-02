@@ -768,7 +768,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            if (States.Instance.CurrentAvatarState.actionPoint < _selectedRecipeInfo.CostAP)
+            if (ReactiveAvatarState.ActionPoint < _selectedRecipeInfo.CostAP)
             {
                 errorMessage = L10nManager.Localize("ERROR_ACTION_POINT");
                 return false;

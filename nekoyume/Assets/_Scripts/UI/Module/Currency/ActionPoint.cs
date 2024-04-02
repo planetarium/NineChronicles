@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -117,9 +118,9 @@ namespace Nekoyume.UI.Module
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is not null)
             {
-                SetActionPoint(avatarState.actionPoint, false);
+                SetActionPoint(ReactiveAvatarState.ActionPoint, false);
                 SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
-                SetRewardReceivedBlockIndex(avatarState.dailyRewardReceivedIndex, false);
+                SetRewardReceivedBlockIndex(ReactiveAvatarState.DailyRewardReceivedIndex, false);
             }
 
             ReactiveAvatarState.ObservableActionPoint
@@ -310,8 +311,8 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (States.Instance.CurrentAvatarState.actionPoint ==
-                States.Instance.GameConfigState.ActionPointMax) // full?
+            // if full?
+            if (ReactiveAvatarState.ActionPoint == DailyReward.ActionPointMax)
             {
                 return false;
             }

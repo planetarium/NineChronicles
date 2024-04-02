@@ -303,7 +303,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            if (States.Instance.CurrentAvatarState.actionPoint < GameConfig.EnhanceEquipmentCostAP)
+            if (ReactiveAvatarState.ActionPoint < GameConfig.EnhanceEquipmentCostAP)
             {
                 _errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_ACTION_POWER");
                 return false;

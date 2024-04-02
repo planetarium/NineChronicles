@@ -147,7 +147,7 @@ namespace Nekoyume.UI.Module
                 additiveImage.enabled = _isFull;
             }
 
-            hasNotificationImage.enabled = _isFull && States.Instance.CurrentAvatarState?.actionPoint == 0;
+            hasNotificationImage.enabled = _isFull && ReactiveAvatarState.ActionPoint == 0;
 
             animator.SetBool(IsFull, _isFull);
         }
@@ -178,7 +178,7 @@ namespace Nekoyume.UI.Module
                     L10nManager.Localize("UI_CHARGING_AP"),
                     NotificationCell.NotificationType.Information);
             }
-            else if (States.Instance.CurrentAvatarState.actionPoint > 0)
+            else if (ReactiveAvatarState.ActionPoint > 0)
             {
                 var confirm = Widget.Find<ConfirmPopup>();
                 confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
