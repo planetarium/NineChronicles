@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
@@ -25,10 +24,6 @@ namespace Nekoyume
 
     public class BuyView : ShopView
     {
-        const string RuneStone = "RUNE";
-        const string PetSoulStone = "SOULSTONE";
-        const int PageSize = 15;
-
         public enum BuyMode
         {
             Single,
@@ -48,9 +43,6 @@ namespace Nekoyume
         private Button sortOrderButton;
 
         [SerializeField]
-        private Button searchButton;
-
-        [SerializeField]
         private Button resetButton;
 
         [SerializeField]
@@ -64,12 +56,6 @@ namespace Nekoyume
 
         [SerializeField]
         private RectTransform sortOrderIcon = null;
-
-        [SerializeField]
-        private TMP_InputField inputField = null;
-
-        [SerializeField]
-        private Transform inputPlaceholder = null;
 
         [SerializeField]
         private GameObject loading;
@@ -200,9 +186,6 @@ namespace Nekoyume
         };
 
         private readonly List<ShopItem> _selectedItems = new();
-        private readonly List<int> _itemIds = new();
-        private readonly List<int> _runeIds = new();
-        private readonly List<int> _petIds = new();
         private readonly int _hashNormal = Animator.StringToHash("Normal");
         private readonly int _hashDisabled = Animator.StringToHash("Disabled");
         private const int CartMaxCount = 20;
@@ -213,7 +196,6 @@ namespace Nekoyume
         private readonly ReactiveProperty<ShopSortFilter> _selectedSortFilter =
             new(ShopSortFilter.CP);
 
-        private readonly ReactiveProperty<bool> _useSearch = new();
         private readonly ReactiveProperty<bool> _isAscending = new();
         private readonly ReactiveProperty<bool> _levelLimit = new();
 
@@ -221,13 +203,9 @@ namespace Nekoyume
 
         private Action<List<ShopItem>> _onBuyMultiple;
 
-        private Animator _sortAnimator;
-        private Animator _sortOrderAnimator;
-        private Animator _levelLimitAnimator;
         private Animator _resetAnimator;
         private TextMeshProUGUI _sortText;
 
-        public bool IsFocused => inputField.isFocused;
         public bool IsCartEmpty => !_selectedItems.Any();
 
         public void ClearSelectedItems()
@@ -248,19 +226,8 @@ namespace Nekoyume
 
         protected override void OnAwake()
         {
-            _sortAnimator = sortButton.GetComponent<Animator>();
-            _sortOrderAnimator = sortOrderButton.GetComponent<Animator>();
-            _levelLimitAnimator = levelLimitToggle.GetComponent<Animator>();
             _resetAnimator = resetButton.GetComponent<Animator>();
-
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
-            var tableSheets = Game.Game.instance.TableSheets;
-            _itemIds.AddRange(tableSheets.EquipmentItemSheet.Values.Select(x => x.Id));
-            _itemIds.AddRange(tableSheets.ConsumableItemSheet.Values.Select(x => x.Id));
-            _itemIds.AddRange(tableSheets.CostumeItemSheet.Values.Select(x => x.Id));
-            _itemIds.AddRange(tableSheets.MaterialItemSheet.Values.Select(x => x.Id));
-            _runeIds.AddRange(tableSheets.RuneListSheet.Values.Select(x=> x.Id));
-            _petIds.AddRange(tableSheets.PetSheet.Values.Select(x=> x.Id));
 
             ReactiveShopState.Initialize();
 
@@ -310,8 +277,6 @@ namespace Nekoyume
 
         protected override void InitInteractiveUI()
         {
-            inputPlaceholder.SetAsLastSibling();
-
             foreach (var toggleDropdown in toggleDropdowns)
             {
                 var index = toggleDropdowns.IndexOf(toggleDropdown);
@@ -363,21 +328,10 @@ namespace Nekoyume
                 ResetPage();
             });
 
-            inputField.onValueChanged.AddListener(_ =>
-                searchButton.gameObject.SetActive(inputField.text.Length > 0));
-            inputField.onSubmit.AddListener(_ =>
-            {
-                _useSearch.SetValueAndForceNotify(inputField.text.Length > 0);
-                ResetPage();
-            });
-            searchButton.onClick.AddListener(() =>
-            {
-                _useSearch.SetValueAndForceNotify(inputField.text.Length > 0);
-                ResetPage();
-            });
             resetButton.onClick.AddListener(() =>
             {
-                _useSearch.Value = !_useSearch.Value;
+                ReactiveShopState.ResetItemFilter();
+                Widget.Find<ItemFilterPopup>().ItemFilterOptions = ReactiveShopState.ItemFilterOptions;
                 ResetPage();
             });
             sortOrderButton.onClick.AddListener(() =>
@@ -417,58 +371,6 @@ namespace Nekoyume
             base.UpdatePage(page);
         }
 
-        private int[] GetFilteredItemIds(ItemSubTypeFilter filter)
-        {
-            var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
-            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
-
-            if ((!_useSearch.Value && !_levelLimit.Value) ||
-                filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
-            {
-                return Array.Empty<int>();
-            }
-
-            bool IsValid(int id)
-            {
-                var inSearch = !_useSearch.Value ||
-                               Regex.IsMatch(L10nManager.LocalizeItemName(id), inputField.text, RegexOptions.IgnoreCase);
-                var inLevelLimit = !_levelLimit.Value ||
-                                   (requirementSheet.TryGetValue(id, out var requirementRow) &&
-                                    avatarLevel >= requirementRow.Level);
-                return inSearch && inLevelLimit;
-            }
-
-            return _itemIds.Where(IsValid).ToArray();
-        }
-
-        private string[] GetFilteredTicker(ItemSubTypeFilter filter)
-        {
-            if (!_useSearch.Value)
-            {
-                return new[] { filter == ItemSubTypeFilter.RuneStone ? RuneStone : PetSoulStone };
-            }
-
-            var itemName = inputField.text;
-            switch (filter)
-            {
-                case ItemSubTypeFilter.RuneStone:
-                    var filteredRuneList = _runeIds.Where(id => Regex.IsMatch(L10nManager.LocalizeRuneName(id), itemName, RegexOptions.IgnoreCase)).ToList();
-                    var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-                    return filteredRuneList.Any()
-                        ? filteredRuneList.Select(id => runeSheet[id].Ticker).ToArray()
-                        : new[] { RuneStone };
-
-                case ItemSubTypeFilter.PetSoulStone:
-                    var filteredPetList = _petIds.Where(id => Regex.IsMatch(L10nManager.LocalizePetName(id), itemName, RegexOptions.IgnoreCase)).ToList();
-                    var petSheet = Game.Game.instance.TableSheets.PetSheet;
-                    return filteredPetList.Any()
-                        ? filteredPetList.Select(id => petSheet[id].SoulStoneTicker.ToUpper()).ToArray()
-                        : new[] { PetSoulStone };
-                default:
-                    return new[] { RuneStone };
-            }
-        }
-
         private async Task SetItems(bool reset = false)
         {
             if (!_isActive)
@@ -495,15 +397,6 @@ namespace Nekoyume
             _selectedSortFilter.Subscribe(filter =>
             {
                 _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
-            }).AddTo(gameObject);
-            _useSearch.Subscribe(useSearch =>
-            {
-                resetButton.interactable = useSearch;
-                _resetAnimator.Play(useSearch ? _hashNormal : _hashDisabled);
-                if (!useSearch)
-                {
-                    inputField.text = string.Empty;
-                }
             }).AddTo(gameObject);
             _isAscending.Subscribe(isAscending =>
             {
@@ -643,7 +536,6 @@ namespace Nekoyume
             cartView.gameObject.SetActive(false);
             toggleDropdowns.First().isOn = true;
             toggleDropdowns.First().items.First().isOn = true;
-            inputField.text = string.Empty;
             resetButton.interactable = false;
             levelLimitToggle.isOn = false;
             if (_resetAnimator.isActiveAndEnabled)
@@ -659,7 +551,6 @@ namespace Nekoyume
             _page.SetValueAndForceNotify(0);
             _selectedSubTypeFilter.SetValueAndForceNotify(ItemSubTypeFilter.Weapon);
             _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.CP);
-            _useSearch.SetValueAndForceNotify(false);
             _isAscending.SetValueAndForceNotify(false);
             _levelLimit.SetValueAndForceNotify(false);
             _mode.SetValueAndForceNotify(BuyMode.Single);
@@ -679,6 +570,8 @@ namespace Nekoyume
         {
             base.UpdateView();
 
+            SetResetButton();
+
             var expiredItems = _selectedItems.Where(x => x.Expired.Value).ToList();
             foreach (var item in expiredItems)
             {
@@ -697,6 +590,20 @@ namespace Nekoyume
             }
 
             UpdateSelected(_selectedItems);
+        }
+
+        public void SetItemFilterOption(ItemFilterOptions type)
+        {
+            ReactiveShopState.SetItemFilterOption(type);
+            ResetPage();
+
+            SetResetButton();
+        }
+
+        private void SetResetButton()
+        {
+            resetButton.interactable = ReactiveShopState.IsNeedSearch;
+            _resetAnimator.Play(resetButton.interactable ? _hashNormal : _hashDisabled);
         }
     }
 }

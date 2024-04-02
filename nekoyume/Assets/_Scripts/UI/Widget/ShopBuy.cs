@@ -53,15 +53,6 @@ namespace Nekoyume.UI
             });
 
             closeButton.onClick.AddListener(() => Close());
-            CloseWidget = () =>
-            {
-                if (view.IsFocused)
-                {
-                    return;
-                }
-
-                Close();
-            };
 
             view.SetAction(ShowBuyPopup);
 
@@ -324,7 +315,7 @@ namespace Nekoyume.UI
 
         public void SetItemFilterOption(ItemFilterOptions type)
         {
-            ReactiveShopState.SetItemFilterOption(type);
+            view.SetItemFilterOption(type);
         }
     }
 }

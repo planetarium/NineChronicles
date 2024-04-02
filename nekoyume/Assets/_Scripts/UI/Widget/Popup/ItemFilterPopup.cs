@@ -225,6 +225,16 @@ namespace Nekoyume.UI
 
         private ItemFilterOptions _itemFilterOptions;
 
+        public ItemFilterOptions ItemFilterOptions
+        {
+            get => _itemFilterOptions;
+            set
+            {
+                _itemFilterOptions = value;
+                ResetViewFromFilterOption();
+            }
+        }
+
         private Widget _owner;
 
         #region Popup
@@ -265,7 +275,7 @@ namespace Nekoyume.UI
             ResetViewFromFilterOption();
 
             if (_owner != null && _owner is IItemFilterWidget itemFilterWidget)
-                itemFilterWidget.SetItemFilterOption(GetItemFilterOptionType());
+                itemFilterWidget.SetItemFilterOption(ItemFilterOptions);
 
             _owner = null;
         }
@@ -413,12 +423,7 @@ namespace Nekoyume.UI
 
             itemFilterOptionType.SearchText = searchInputField.text;
 
-            _itemFilterOptions = itemFilterOptionType;
-        }
-
-        private ItemFilterOptions GetItemFilterOptionType()
-        {
-            return _itemFilterOptions;
+            ItemFilterOptions = itemFilterOptionType;
         }
 
         private void ResetViewFromFilterOption()
@@ -429,46 +434,46 @@ namespace Nekoyume.UI
 
         private void SetTogglesFromFilterOption()
         {
-            if (_itemFilterOptions.Grade != Grade.All)
+            if (ItemFilterOptions.Grade != Grade.All)
                 foreach (var gradeToggle in gradeToggles)
-                    gradeToggle.toggle.isOn = _itemFilterOptions.Grade.HasFlag(gradeToggle.grade);
+                    gradeToggle.toggle.isOn = ItemFilterOptions.Grade.HasFlag(gradeToggle.grade);
             else
                 ResetToAll(gradeToggles);
 
-            if (_itemFilterOptions.Elemental != Elemental.All)
+            if (ItemFilterOptions.Elemental != Elemental.All)
                 foreach (var elementalToggle in elementalToggles)
-                    elementalToggle.toggle.isOn = _itemFilterOptions.Elemental.HasFlag(elementalToggle.elemental);
+                    elementalToggle.toggle.isOn = ItemFilterOptions.Elemental.HasFlag(elementalToggle.elemental);
             else
                 ResetToAll(elementalToggles);
 
-            if (_itemFilterOptions.ItemType != ItemType.All)
+            if (ItemFilterOptions.ItemType != ItemType.All)
                 foreach (var itemTypeToggle in itemTypeToggles)
-                    itemTypeToggle.toggle.isOn = _itemFilterOptions.ItemType.HasFlag(itemTypeToggle.itemType);
+                    itemTypeToggle.toggle.isOn = ItemFilterOptions.ItemType.HasFlag(itemTypeToggle.itemType);
             else
                 ResetToAll(itemTypeToggles);
 
-            if (_itemFilterOptions.UpgradeLevel != UpgradeLevel.All)
+            if (ItemFilterOptions.UpgradeLevel != UpgradeLevel.All)
                 foreach (var upgradeLevelToggle in upgradeLevelToggles)
-                    upgradeLevelToggle.toggle.isOn = _itemFilterOptions.UpgradeLevel.HasFlag(upgradeLevelToggle.upgradeLevel);
+                    upgradeLevelToggle.toggle.isOn = ItemFilterOptions.UpgradeLevel.HasFlag(upgradeLevelToggle.upgradeLevel);
             else
                 ResetToAll(upgradeLevelToggles);
 
-            if (_itemFilterOptions.OptionCount != OptionCount.All)
+            if (ItemFilterOptions.OptionCount != OptionCount.All)
                 foreach (var optionCountToggle in optionCountToggles)
-                    optionCountToggle.toggle.isOn = _itemFilterOptions.OptionCount.HasFlag(optionCountToggle.optionCount);
+                    optionCountToggle.toggle.isOn = ItemFilterOptions.OptionCount.HasFlag(optionCountToggle.optionCount);
             else
                 ResetToAll(optionCountToggles);
 
-            if (_itemFilterOptions.WithSkill != WithSkill.All)
+            if (ItemFilterOptions.WithSkill != WithSkill.All)
                 foreach (var withSkillToggle in withSkillToggles)
-                    withSkillToggle.toggle.isOn = _itemFilterOptions.WithSkill.HasFlag(withSkillToggle.withSkill);
+                    withSkillToggle.toggle.isOn = ItemFilterOptions.WithSkill.HasFlag(withSkillToggle.withSkill);
             else
                 ResetToAll(withSkillToggles);
         }
 
         private void SetInputFiledFromFilterOption()
         {
-            searchInputField.text = _itemFilterOptions.SearchText;
+            searchInputField.text = ItemFilterOptions.SearchText;
         }
 
         public static Grade GetGradeFlag(int grade)

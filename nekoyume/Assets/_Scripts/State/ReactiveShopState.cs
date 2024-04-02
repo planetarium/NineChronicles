@@ -11,7 +11,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 using Nekoyume.UI;
-using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.State
@@ -340,17 +339,17 @@ namespace Nekoyume.State
         const string PetSoulStone = "SOULSTONE";
         const int PageSize = 15;
 
-        private static ItemFilterOptions _itemFilterOptions;
+        public static ItemFilterOptions ItemFilterOptions { get; private set; }
 
         private static readonly List<int> ItemIds = new();
         private static readonly List<int> RuneIds = new();
         private static readonly List<int> PetIds = new();
 
-        private static bool IsNeedSearch => !string.IsNullOrWhiteSpace(_itemFilterOptions.SearchText);
+        public static bool IsNeedSearch => !string.IsNullOrWhiteSpace(ItemFilterOptions.SearchText);
 
         public static void SetItemFilterOption(ItemFilterOptions type)
         {
-            _itemFilterOptions = type;
+            ItemFilterOptions = type;
         }
 
         public static async Task RefreshItemsAsync(ItemSubTypeFilter filter, MarketOrderType orderType, int itemCountPerPage, bool useLevelLimit, bool isReset)
@@ -381,7 +380,7 @@ namespace Nekoyume.State
             bool IsValid(int id)
             {
                 var inSearch = !IsNeedSearch ||
-                               Regex.IsMatch(L10nManager.LocalizeItemName(id), _itemFilterOptions.SearchText, RegexOptions.IgnoreCase);
+                               Regex.IsMatch(L10nManager.LocalizeItemName(id), ItemFilterOptions.SearchText, RegexOptions.IgnoreCase);
                 var inLevelLimit = !useLevelLimit ||
                                    (requirementSheet.TryGetValue(id, out var requirementRow) &&
                                     avatarLevel >= requirementRow.Level);
@@ -398,7 +397,7 @@ namespace Nekoyume.State
                 return new[] { filter == ItemSubTypeFilter.RuneStone ? RuneStone : PetSoulStone };
             }
 
-            var itemName = _itemFilterOptions.SearchText;
+            var itemName = ItemFilterOptions.SearchText;
             switch (filter)
             {
                 case ItemSubTypeFilter.RuneStone:
@@ -417,6 +416,11 @@ namespace Nekoyume.State
                 default:
                     return new[] { RuneStone };
             }
+        }
+
+        public static void ResetItemFilter()
+        {
+            ItemFilterOptions = new ItemFilterOptions();
         }
         #endregion ItemFilter
     }
