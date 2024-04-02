@@ -399,7 +399,10 @@ namespace Nekoyume.UI
         /// <param name="itemType">현재 활성화된 아이템 탭</param>
         public void SetItemTypeTap(Nekoyume.Model.Item.ItemType itemType)
         {
-            // Grade(Class)의 경우 모든 아이템 탭에서 활성화 되어야 해서 패스
+            foreach (var elementalToggle in elementalToggles)
+            {
+                elementalToggle.toggle.interactable = itemType != Nekoyume.Model.Item.ItemType.Material;
+            }
 
             foreach (var elementalToggle in elementalToggles)
             {
@@ -527,6 +530,22 @@ namespace Nekoyume.UI
                        >= 5 => UpgradeLevel.Level5More,
                        _    => UpgradeLevel.All
                    };
+        }
+
+        public static OptionCount GetOptionCountFlag(int count)
+        {
+            return count switch
+                   {
+                       1 => OptionCount.One,
+                       2 => OptionCount.Two,
+                       3 => OptionCount.Three,
+                       _ => OptionCount.All,
+                   };
+        }
+
+        public static WithSkill GetWithSkillFlag(bool withSkill)
+        {
+            return withSkill ? WithSkill.With : WithSkill.None;
         }
 
         public static ItemType ItemSubTypeToItemType(ItemSubType itemSubType)

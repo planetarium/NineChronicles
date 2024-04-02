@@ -100,6 +100,11 @@ namespace Nekoyume.State
 
             foreach (var product in products)
             {
+                if (!ApplyItemFilterOption(product))
+                {
+                    continue;
+                }
+
                 if (CachedBuyItemProducts.All(x => x.ProductId != product.ProductId))
                 {
                     CachedBuyItemProducts.Add(product);
@@ -137,7 +142,7 @@ namespace Nekoyume.State
                 {
                     continue;
                 }
-                
+
                 if (CachedBuyFungibleAssetProducts.All(x => x.ProductId != asset.ProductId))
                 {
                     CachedBuyFungibleAssetProducts.Add(asset);
@@ -432,6 +437,106 @@ namespace Nekoyume.State
         public static void ResetItemFilter()
         {
             ItemFilterOptions = new ItemFilterOptions();
+        }
+
+        private static bool ApplyItemFilterOption(ItemProductResponseModel product)
+        {
+            if (!ApplyGradeFilterOption(product))
+            {
+                return false;
+            }
+
+            if (product.ItemType != ItemType.Equipment)
+            {
+                return true;
+            }
+
+            if (!ApplyElementalFilterOption(product))
+            {
+                return false;
+            }
+
+            if (!ApplyUpgradeLevelFilterOption(product))
+            {
+                return false;
+            }
+
+            if (!ApplyOptionCountFilterOption(product))
+            {
+                return false;
+            }
+
+            if (!ApplyWithSkillFilterOption(product))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ApplyGradeFilterOption(ItemProductResponseModel product)
+        {
+            if (ItemFilterOptions.Grade == ItemFilterPopup.Grade.All)
+            {
+                return true;
+            }
+
+            if (product.ItemType == ItemType.Material)
+            {
+                var materialItemSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                if (materialItemSheet.TryGetValue(product.ItemId, out var material))
+                {
+                    var gradeFlagInMaterial = ItemFilterPopup.GetGradeFlag(material.Grade);
+                    return ItemFilterOptions.Grade.HasFlag(gradeFlagInMaterial);
+                }
+            }
+
+            var gradeFlag = ItemFilterPopup.GetGradeFlag(product.Grade);
+            return ItemFilterOptions.Grade.HasFlag(gradeFlag);
+        }
+
+        private static bool ApplyElementalFilterOption(ItemProductResponseModel product)
+        {
+            if (ItemFilterOptions.Elemental == ItemFilterPopup.Elemental.All)
+            {
+                return true;
+            }
+
+            var elementalFlag = ItemFilterPopup.GetElementalFlag(product.ElementalType);
+            return ItemFilterOptions.Elemental.HasFlag(elementalFlag);
+        }
+
+        private static bool ApplyUpgradeLevelFilterOption(ItemProductResponseModel product)
+        {
+            if (ItemFilterOptions.UpgradeLevel == ItemFilterPopup.UpgradeLevel.All)
+            {
+                return true;
+            }
+
+            var upgradeLevelFlag = ItemFilterPopup.GetUpgradeLevelFlag(product.Level);
+            return ItemFilterOptions.UpgradeLevel.HasFlag(upgradeLevelFlag);
+        }
+
+        private static bool ApplyOptionCountFilterOption(ItemProductResponseModel product)
+        {
+            if (ItemFilterOptions.OptionCount == ItemFilterPopup.OptionCount.All)
+            {
+                return true;
+            }
+
+            var optionCountFlag = ItemFilterPopup.GetOptionCountFlag(product.OptionCountFromCombination - product.SkillModels.Count);
+            return ItemFilterOptions.OptionCount.HasFlag(optionCountFlag);
+        }
+
+        private static bool ApplyWithSkillFilterOption(ItemProductResponseModel product)
+        {
+            if (ItemFilterOptions.WithSkill == ItemFilterPopup.WithSkill.All)
+            {
+                return true;
+            }
+
+            var withSkillFlag = ItemFilterPopup.GetWithSkillFlag(product.SkillModels.Count > 0);
+            return ItemFilterOptions.WithSkill.HasFlag(withSkillFlag);
         }
 
         private static bool ApplyItemFilterOptionToFungibleAsset(FungibleAssetValueProductResponseModel asset)
