@@ -23,8 +23,9 @@ using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
-    public class ShopBuy : Widget
+    public class ShopBuy : Widget, IItemFilterWidget
     {
+        private const ItemFilterPopup.FilterTap ShopBuyFilterTap = ItemFilterPopup.FilterTap.Grade | ItemFilterPopup.FilterTap.Elemental | ItemFilterPopup.FilterTap.UpgradeLevel | ItemFilterPopup.FilterTap.OptionCount | ItemFilterPopup.FilterTap.WithSkill;
         private const int ItemDisplayCount = 240;
 
         [SerializeField]
@@ -63,6 +64,13 @@ namespace Nekoyume.UI
             };
 
             view.SetAction(ShowBuyPopup);
+
+            view.ItemFilterButton.onClick.AddListener(OnClickFilterButton);
+        }
+
+        private void OnClickFilterButton()
+        {
+            Find<ItemFilterPopup>().Show(this, ShopBuyFilterTap);
         }
 
         public override void Initialize()
@@ -312,6 +320,11 @@ namespace Nekoyume.UI
             var order = await Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
+        }
+
+        public void SetItemFilterOption(ItemFilterOptions type)
+        {
+            ReactiveShopState.SetItemFilterOption(type);
         }
     }
 }

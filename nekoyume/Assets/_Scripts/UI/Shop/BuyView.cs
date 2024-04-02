@@ -25,6 +25,10 @@ namespace Nekoyume
 
     public class BuyView : ShopView
     {
+        const string RuneStone = "RUNE";
+        const string PetSoulStone = "SOULSTONE";
+        const int PageSize = 15;
+
         public enum BuyMode
         {
             Single,
@@ -69,6 +73,9 @@ namespace Nekoyume
 
         [SerializeField]
         private GameObject loading;
+
+        [field: SerializeField]
+        public Button ItemFilterButton { get; private set; }
 
         private int _loadingCount;
 
@@ -255,6 +262,8 @@ namespace Nekoyume
             _runeIds.AddRange(tableSheets.RuneListSheet.Values.Select(x=> x.Id));
             _petIds.AddRange(tableSheets.PetSheet.Values.Select(x=> x.Id));
 
+            ReactiveShopState.Initialize();
+
             historyButton.onClick.AddListener(() =>
             {
                 Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
@@ -436,7 +445,7 @@ namespace Nekoyume
         {
             if (!_useSearch.Value)
             {
-                return new[] { filter == ItemSubTypeFilter.RuneStone ? "RUNE" : "SOULSTONE" };
+                return new[] { filter == ItemSubTypeFilter.RuneStone ? RuneStone : PetSoulStone };
             }
 
             var itemName = inputField.text;
@@ -447,16 +456,16 @@ namespace Nekoyume
                     var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
                     return filteredRuneList.Any()
                         ? filteredRuneList.Select(id => runeSheet[id].Ticker).ToArray()
-                        : new[] { "RUNE" };
+                        : new[] { RuneStone };
 
                 case ItemSubTypeFilter.PetSoulStone:
                     var filteredPetList = _petIds.Where(id => Regex.IsMatch(L10nManager.LocalizePetName(id), itemName, RegexOptions.IgnoreCase)).ToList();
                     var petSheet = Game.Game.instance.TableSheets.PetSheet;
                     return filteredPetList.Any()
                         ? filteredPetList.Select(id => petSheet[id].SoulStoneTicker.ToUpper()).ToArray()
-                        : new[] { "SOULSTONE" };
+                        : new[] { PetSoulStone };
                 default:
-                    return new[] { "RUNE" };
+                    return new[] { RuneStone };
             }
         }
 
@@ -467,24 +476,14 @@ namespace Nekoyume
                 return;
             }
 
-            var filter = _selectedSubTypeFilter.Value;
-            var limit = _column * _row;
-            var orderType = _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value);
-
             _loadingCount++;
             loading.SetActive(_loadingCount > 0);
-            if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
-            {
-                var tickers = GetFilteredTicker(filter);
-                await ReactiveShopState.RequestBuyFungibleAssetsAsync(
-                    tickers, orderType, limit * 15, reset);
-            }
-            else
-            {
-                var filteredItemIds = GetFilteredItemIds(filter);
-                await ReactiveShopState.RequestBuyProductsAsync(
-                    filter, orderType, limit * 15, reset, filteredItemIds);
-            }
+            await ReactiveShopState.RefreshItemsAsync(
+                _selectedSubTypeFilter.Value,
+                _selectedSortFilter.Value.ToMarketOrderType(_isAscending.Value),
+                _column * _row,
+                _levelLimit.Value,
+                reset);
             _loadingCount--;
             loading.SetActive(_loadingCount > 0);
 

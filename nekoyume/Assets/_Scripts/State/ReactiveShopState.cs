@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Lib9c.Model.Order;
 using MarketService.Response;
 using Nekoyume.EnumType;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
+using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.State
@@ -318,5 +322,102 @@ namespace Nekoyume.State
                     return sum;
             }
         }
+
+        public static void Initialize()
+        {
+            var tableSheets = Game.Game.instance.TableSheets;
+
+            ItemIds.AddRange(tableSheets.EquipmentItemSheet.Values.Select(x => x.Id));
+            ItemIds.AddRange(tableSheets.ConsumableItemSheet.Values.Select(x => x.Id));
+            ItemIds.AddRange(tableSheets.CostumeItemSheet.Values.Select(x => x.Id));
+            ItemIds.AddRange(tableSheets.MaterialItemSheet.Values.Select(x => x.Id));
+            RuneIds.AddRange(tableSheets.RuneListSheet.Values.Select(x=> x.Id));
+            PetIds.AddRange(tableSheets.PetSheet.Values.Select(x=> x.Id));
+        }
+
+        #region ItemFilter
+        const string RuneStone = "RUNE";
+        const string PetSoulStone = "SOULSTONE";
+        const int PageSize = 15;
+
+        private static ItemFilterOptions _itemFilterOptions;
+
+        private static readonly List<int> ItemIds = new();
+        private static readonly List<int> RuneIds = new();
+        private static readonly List<int> PetIds = new();
+
+        private static bool IsNeedSearch => !string.IsNullOrWhiteSpace(_itemFilterOptions.SearchText);
+
+        public static void SetItemFilterOption(ItemFilterOptions type)
+        {
+            _itemFilterOptions = type;
+        }
+
+        public static async Task RefreshItemsAsync(ItemSubTypeFilter filter, MarketOrderType orderType, int itemCountPerPage, bool useLevelLimit, bool isReset)
+        {
+            if (filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
+            {
+                var tickers = GetFilteredTicker(filter);
+                await RequestBuyFungibleAssetsAsync(tickers, orderType, itemCountPerPage * PageSize, isReset);
+            }
+            else
+            {
+                var filteredItemIds = GetFilteredItemIds(filter, useLevelLimit);
+                await RequestBuyProductsAsync(filter, orderType, itemCountPerPage * PageSize, isReset, filteredItemIds);
+            }
+        }
+
+        private static int[] GetFilteredItemIds(ItemSubTypeFilter filter, bool useLevelLimit)
+        {
+            var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
+            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+
+            if ((!IsNeedSearch && !useLevelLimit) ||
+                filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
+            {
+                return Array.Empty<int>();
+            }
+
+            bool IsValid(int id)
+            {
+                var inSearch = !IsNeedSearch ||
+                               Regex.IsMatch(L10nManager.LocalizeItemName(id), _itemFilterOptions.SearchText, RegexOptions.IgnoreCase);
+                var inLevelLimit = !useLevelLimit ||
+                                   (requirementSheet.TryGetValue(id, out var requirementRow) &&
+                                    avatarLevel >= requirementRow.Level);
+                return inSearch && inLevelLimit;
+            }
+
+            return ItemIds.Where(IsValid).ToArray();
+        }
+
+        private static string[] GetFilteredTicker(ItemSubTypeFilter filter)
+        {
+            if (!IsNeedSearch)
+            {
+                return new[] { filter == ItemSubTypeFilter.RuneStone ? RuneStone : PetSoulStone };
+            }
+
+            var itemName = _itemFilterOptions.SearchText;
+            switch (filter)
+            {
+                case ItemSubTypeFilter.RuneStone:
+                    var filteredRuneList = RuneIds.Where(id => Regex.IsMatch(L10nManager.LocalizeRuneName(id), itemName, RegexOptions.IgnoreCase)).ToList();
+                    var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                    return filteredRuneList.Any()
+                        ? filteredRuneList.Select(id => runeSheet[id].Ticker).ToArray()
+                        : new[] { RuneStone };
+
+                case ItemSubTypeFilter.PetSoulStone:
+                    var filteredPetList = PetIds.Where(id => Regex.IsMatch(L10nManager.LocalizePetName(id), itemName, RegexOptions.IgnoreCase)).ToList();
+                    var petSheet = Game.Game.instance.TableSheets.PetSheet;
+                    return filteredPetList.Any()
+                        ? filteredPetList.Select(id => petSheet[id].SoulStoneTicker.ToUpper()).ToArray()
+                        : new[] { PetSoulStone };
+                default:
+                    return new[] { RuneStone };
+            }
+        }
+        #endregion ItemFilter
     }
 }
