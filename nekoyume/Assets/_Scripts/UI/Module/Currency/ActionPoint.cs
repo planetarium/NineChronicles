@@ -143,15 +143,9 @@ namespace Nekoyume.UI.Module
             else
             {
                 var address = States.Instance.CurrentAvatarState.address;
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
-                {
-                    var value = GameConfigStateSubject.ActionPointState[address];
-                    Charger(value);
-                }
-                else
-                {
-                    Charger(false);
-                }
+                Charger(
+                    GameConfigStateSubject.ActionPointState.TryGetValue(address, out var value) &&
+                    value);
             }
         }
 

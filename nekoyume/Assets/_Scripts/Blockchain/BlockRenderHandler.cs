@@ -135,7 +135,7 @@ namespace Nekoyume.Blockchain
                             agent.GetStateAsync(Addresses.DailyReward, avatarState.address));
                         var ap = states[0] is Integer apValue ? (long)apValue : avatarState.actionPoint;
                         ReactiveAvatarState.UpdateActionPoint(ap);
-                        var dri = states[1] is Integer driValue ? (long)driValue :  avatarState.dailyRewardReceivedIndex;
+                        var dri = states[1] is Integer driValue ? (long)driValue : avatarState.dailyRewardReceivedIndex;
                         ReactiveAvatarState.UpdateDailyRewardReceivedIndex(dri);
                         _avatarUpdateRequired = false;
                         return (false, null);
