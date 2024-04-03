@@ -1816,6 +1816,9 @@ namespace Nekoyume.Blockchain
                 GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
             }
 
+            States.Instance.SetCurrentAvatarBalance(StateGetter.GetBalance(
+                eval.OutputState, eval.Action.avatarAddress, RuneHelper.DailyRewardRune));
+
             return eval;
         }
 
@@ -1826,44 +1829,37 @@ namespace Nekoyume.Blockchain
         /// <param name="eval">The action evaluation for render daily reward.</param>
         private void ResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
-            UniTask.RunOnThreadPool(async () =>
+            // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
+            ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(eval.BlockIndex);
+            LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
+                eval.Action.avatarAddress);
+
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
+                NotificationCell.NotificationType.Notification);
+            var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
+                Action.DailyReward.DailyRewardInterval));
+            var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
+            PushNotifier.Push(
+                notificationText,
+                expectedNotifiedTime,
+                PushNotifier.PushType.Reward);
+
+            if (!RuneFrontHelper.TryGetRuneData(
+                    RuneHelper.DailyRewardRune.Ticker,
+                    out var data))
             {
-                States.Instance.SetCurrentAvatarBalance(StateGetter.GetBalance(
-                    eval.OutputState, eval.Action.avatarAddress, RuneHelper.DailyRewardRune));
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
-                // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
-                ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
-                ReactiveAvatarState.UpdateDailyRewardReceivedIndex(eval.BlockIndex);
-                LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
-                    eval.Action.avatarAddress);
+                return;
+            }
 
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
-                    NotificationCell.NotificationType.Notification);
-                var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                    Action.DailyReward.DailyRewardInterval));
-                var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
-                PushNotifier.Push(
-                    notificationText,
-                    expectedNotifiedTime,
-                    PushNotifier.PushType.Reward);
-
-                if (!RuneFrontHelper.TryGetRuneData(
-                        RuneHelper.DailyRewardRune.Ticker,
-                        out var data))
-                {
-                    return;
-                }
-
-                var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
-                var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
-                NotificationSystem.Push(
-                    MailType.System,
-                    $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
-                    NotificationCell.NotificationType.RuneAcquisition);
-            });
+            var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
+            const int amount = Action.DailyReward.DailyRuneRewardAmount;
+            NotificationSystem.Push(
+                MailType.System,
+                $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
+                NotificationCell.NotificationType.RuneAcquisition);
         }
 
         private (ActionEvaluation<HackAndSlash> eval, AvatarState avatarState, CrystalRandomSkillState randomSkillState, long actionPoint) PrepareHackAndSlash(
