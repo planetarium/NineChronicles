@@ -19,6 +19,7 @@ using static Lib9c.SerializeKeys;
 using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -559,41 +560,7 @@ namespace Nekoyume.State
                 _hammerPointStates = null;
                 await UniTask.RunOnThreadPool(async () =>
                 {
-                    var curAvatarState = (await Game.Game.instance.Agent.GetAvatarStatesAsync(
-                        new[] { avatarState.address }))[avatarState.address];
-                    if (curAvatarState is null)
-                    {
-                        return;
-                    }
-
-                    var avatarAddress = CurrentAvatarState.address;
-                    var skillStateAddress =
-                        Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
-                    var skillStateIValue =
-                        await Game.Game.instance.Agent.GetStateAsync(
-                            ReservedAddresses.LegacyAccount,
-                            skillStateAddress);
-                    if (skillStateIValue is List serialized)
-                    {
-                        var skillState = new CrystalRandomSkillState(skillStateAddress, serialized);
-                        SetCrystalRandomSkillState(skillState);
-                    }
-                    else
-                    {
-                        CrystalRandomSkillState = null;
-                    }
-
-                    await SetCombinationSlotStatesAsync(curAvatarState);
-                    await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
-                    await SetPetStates(avatarState.address);
-
-                    var collectionStateIValue = await Game.Game.instance.Agent.GetStateAsync(
-                        Addresses.Collection,
-                        avatarAddress);
-                    var collectionState = collectionStateIValue is List list
-                        ? new CollectionState(list)
-                        : new CollectionState();
-                    SetCollectionState(collectionState);
+                    await InitializeAvatarAndRelatedStates(agent, avatarState.address);
                 });
 
                 Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
@@ -601,6 +568,66 @@ namespace Nekoyume.State
             }
 
             return CurrentAvatarState;
+        }
+
+        private async UniTask InitializeAvatarAndRelatedStates(IAgent agent, Address avatarAddr)
+        {
+            var curAvatarState = (await agent.GetAvatarStatesAsync(
+                new[] { avatarAddr }))[avatarAddr];
+            // AvatarState를 체인에서 가져오지 못했을때
+            if (curAvatarState is null)
+            {
+                return;
+            }
+
+            var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddr);
+            var combinationSlotAddresses = curAvatarState.combinationSlotAddresses;
+            var petIds = TableSheets.Instance.PetSheet.Values
+                .Select(row => (row.Id, PetState.DeriveAddress(avatarAddr, row.Id)))
+                .ToList();
+            // [0]: combinationSlots
+            // [1]: pet states
+            var bulkStates = await Task.WhenAll(
+                agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount,
+                    combinationSlotAddresses),
+                agent.GetStateBulkAsync(
+                    ReservedAddresses.LegacyAccount,
+                    petIds.Select(pair => pair.Item2)
+                )
+            );
+            LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(curAvatarState);
+            SetCombinationSlotStatesAsync(curAvatarState.address,
+                combinationSlotAddresses.Select((address, i) =>
+                    (i, new CombinationSlotState((Dictionary)bulkStates[0][address]))
+                )
+            );
+            await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
+            SetPetStates(petIds.ToDictionary(pair => pair.Id, pair => bulkStates[1][pair.Item2]));
+
+            // [0]: crystalRandomSkillState
+            // [1]: CollectionState
+            // [2]: ActionPoint
+            // [3]: DailyRewardReceivedBlockIndex
+            var listStates = await Task.WhenAll(agent.GetStateAsync(
+                    ReservedAddresses.LegacyAccount,
+                    skillStateAddress),
+                agent.GetStateAsync(
+                    Addresses.Collection,
+                    avatarAddr),
+                agent.GetStateAsync(Addresses.ActionPoint, avatarAddr),
+                agent.GetStateAsync(Addresses.DailyReward, avatarAddr));
+            SetCrystalRandomSkillState(listStates[0] is List serialized
+                ? new CrystalRandomSkillState(skillStateAddress, serialized)
+                : null);
+            SetCollectionState(listStates[1] is List list
+                ? new CollectionState(list)
+                : new CollectionState());
+            ReactiveAvatarState.UpdateActionPoint(listStates[2] is Integer ap
+                ? ap
+                : curAvatarState.actionPoint);
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(listStates[3] is Integer index
+                ? index
+                : curAvatarState.dailyRewardReceivedIndex);
         }
 
         /// <summary>
@@ -613,30 +640,12 @@ namespace Nekoyume.State
             UpdateCurrentAvatarState(null);
         }
 
-        private async UniTask SetCombinationSlotStatesAsync(AvatarState avatarState)
+        private void SetCombinationSlotStatesAsync(Address avatarAddr,
+            IEnumerable<(int, CombinationSlotState)> slotStates)
         {
-            if (avatarState is null)
+            foreach (var slotState in slotStates)
             {
-                LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
-                return;
-            }
-
-            LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
-            var agent = Game.Game.instance.Agent;
-            for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
-            {
-                var slotAddress = avatarState.address.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        CombinationSlotState.DeriveFormat,
-                        i
-                    )
-                );
-                var stateValue = await agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    slotAddress);
-                var state = new CombinationSlotState((Dictionary)stateValue);
-                UpdateCombinationSlotState(avatarState.address, i, state);
+                UpdateCombinationSlotState(avatarAddr, slotState.Item1, slotState.Item2);
             }
         }
 
@@ -794,19 +803,13 @@ namespace Nekoyume.State
             return runeState != null;
         }
 
-        private async UniTask SetPetStates(Address avatarAddress)
+        private void SetPetStates(Dictionary<int,IValue> petRawStates)
         {
-            var petIds = TableSheets.Instance.PetSheet.Values.Select(row => row.Id).ToList();
-            var petRawStates = await Game.Game.instance.Agent.GetStateBulkAsync(
-                ReservedAddresses.LegacyAccount,
-                petIds.Select(id => PetState.DeriveAddress(avatarAddress, id))
-            );
-            foreach (var petId in petIds)
+            foreach (var pair in petRawStates)
             {
-                var petAddress = PetState.DeriveAddress(avatarAddress, petId);
                 PetStates.UpdatePetState(
-                    petId,
-                    petRawStates[petAddress] is List rawState ? new PetState(rawState) : null);
+                    pair.Key,
+                    pair.Value is List rawState ? new PetState(rawState) : null);
             }
         }
 

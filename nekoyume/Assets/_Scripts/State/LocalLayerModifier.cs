@@ -472,66 +472,6 @@ namespace Nekoyume.State
             ReactiveAvatarState.UpdateInventory(outAvatarState.inventory);
         }
 
-        /// <summary>
-        /// Change the daily reward acquisition block index of the avatar.
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="blockCount"></param>
-        public static void IncreaseAvatarDailyRewardReceivedIndex(Address avatarAddress, long blockCount)
-        {
-            var modifier = new AvatarDailyRewardReceivedIndexModifier(blockCount);
-            LocalLayer.Instance.Add(avatarAddress, modifier);
-
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
-                return;
-            }
-
-            if (!isCurrentAvatarState)
-            {
-                return;
-            }
-
-            outAvatarState = modifier.Modify(outAvatarState);
-            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
-                outAvatarState.dailyRewardReceivedIndex);
-        }
-
-        public static void ModifyAvatarItemRequiredIndex(
-            Address avatarAddress,
-            Guid tradableId,
-            long blockIndex
-        )
-        {
-            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, tradableId);
-            LocalLayer.Instance.Add(avatarAddress, modifier);
-
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
-                return;
-            }
-
-            outAvatarState = modifier.Modify(outAvatarState);
-
-            if (!isCurrentAvatarState)
-            {
-                return;
-            }
-
-            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
-                outAvatarState.dailyRewardReceivedIndex);
-        }
-
         public static void AddWorld(Address avatarAddress, int worldId)
         {
             var modifier = new AvatarWorldInformationAddWorldModifier(worldId);
