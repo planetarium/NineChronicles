@@ -33,7 +33,7 @@ namespace Nekoyume
         {
             if(url == null)
             {
-                Debug.LogError($"SeasonPassServiceManager Initialized Fail url is Null");
+                NcDebugger.LogError($"SeasonPassServiceManager Initialized Fail url is Null");
                 return;
             }
             Client = new SeasonPassServiceClient(url);
@@ -50,7 +50,7 @@ namespace Nekoyume
                 RefreshRemainingTime();
             }, (error) =>
             {
-                Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassCurrentAsync] error: {error}");
+                NcDebugger.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassCurrentAsync] error: {error}");
             }).AsUniTask().Forget();
 
             Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1)).Subscribe((time) =>
@@ -70,7 +70,7 @@ namespace Nekoyume
                 LevelInfos = result.OrderBy(info => info.Level).ToList();
             }, (error) =>
             {
-                Debug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassLevelAsync] error: {error}");
+                NcDebugger.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassLevelAsync] error: {error}");
             }).AsUniTask().Forget();
 
             Client.GetSeasonpassExpAsync((result) =>
@@ -100,7 +100,7 @@ namespace Nekoyume
                 }
             }, (error) =>
             {
-                Debug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassExpAsync] error: {error}");
+                NcDebugger.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassExpAsync] error: {error}");
             }).AsUniTask().Forget();
         }
 
@@ -123,21 +123,21 @@ namespace Nekoyume
         {
             if(CurrentSeasonPassData == null || LevelInfos == null) {
                 AvatarInfo.SetValueAndForceNotify(null);
-                Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] CurrentSeasonPassData or LevelInfos is null");
+                NcDebugger.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] CurrentSeasonPassData or LevelInfos is null");
                 return;
             }
 
             if (!Game.Game.instance.CurrentPlanetId.HasValue)
             {
                 AvatarInfo.SetValueAndForceNotify(null);
-                Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Game.Game.instance.CurrentPlanetId is null");
+                NcDebugger.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Game.Game.instance.CurrentPlanetId is null");
                 return;
             }
 
             if(Game.Game.instance.States == null || Game.Game.instance.States.CurrentAvatarState == null)
             {
                 AvatarInfo.SetValueAndForceNotify(null);
-                Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] States or CurrentAvatarState is null");
+                NcDebugger.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] States or CurrentAvatarState is null");
                 return;
             }
 
@@ -146,7 +146,7 @@ namespace Nekoyume
             if(Client == null)
             {
                 AvatarInfo.SetValueAndForceNotify(null);
-                Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Client is null");
+                NcDebugger.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Client is null");
                 return;
             }
 
@@ -164,9 +164,9 @@ namespace Nekoyume
                 },
                 (error) =>
                 {
-                    Debug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [GetSeasonpassCurrentAsync] error: {error}");
+                    NcDebugger.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [GetSeasonpassCurrentAsync] error: {error}");
                 });
-            
+
             await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
                 (result) =>
                 {
@@ -175,8 +175,8 @@ namespace Nekoyume
                 (error) =>
                 {
                     AvatarInfo.SetValueAndForceNotify(null);
-                    Debug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] error: {error}");
-                });   
+                    NcDebugger.LogError($"SeasonPassServiceManager [AvatarStateRefresh] error: {error}");
+                });
         }
 
         public void ReceiveAll(Action<SeasonPassServiceClient.ClaimResultSchema> onSucces, Action<string> onError)
@@ -186,7 +186,7 @@ namespace Nekoyume
             if (!Game.Game.instance.CurrentPlanetId.HasValue)
             {
                 var errorString = "$SeasonPassServiceManager [ReceiveAll] Game.Game.instance.CurrentPlanetId is null";
-                Debug.LogError(errorString);
+                NcDebugger.LogError(errorString);
                 onError?.Invoke(errorString);
                 return;
             }
@@ -203,7 +203,7 @@ namespace Nekoyume
                 },
                 (error) =>
                 {
-                    Debug.LogError($"SeasonPassServiceManager [ReceiveAll] error: {error}");
+                    NcDebugger.LogError($"SeasonPassServiceManager [ReceiveAll] error: {error}");
                     onError?.Invoke(error);
                 }).AsUniTask().Forget();
         }
@@ -212,7 +212,7 @@ namespace Nekoyume
         {
             if(LevelInfos == null)
             {
-                Debug.LogError("[SeasonPassServiceManager] LevelInfos Not Setted");
+                NcDebugger.LogError("[SeasonPassServiceManager] LevelInfos Not Setted");
                 minExp = 0;
                 maxExp = 0;
                 return;

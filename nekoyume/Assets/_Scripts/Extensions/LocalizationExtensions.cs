@@ -107,7 +107,7 @@ namespace Nekoyume
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
                                 default:
-                                    Debug.LogError(
+                                    NcDebugger.LogError(
                                         $"Unexpected result.enhancementResult: {result.enhancementResult}");
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
@@ -122,7 +122,7 @@ namespace Nekoyume
                                 formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                             break;
                         default:
-                            Debug.LogError(
+                            NcDebugger.LogError(
                                 "itemEnhanceMail.attachment is not ItemEnhancement.ResultModel");
                             formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                             break;
@@ -736,7 +736,7 @@ namespace Nekoyume
                     usageMessage);
             }
 
-            Debug.LogWarning($"This Currency is not defined in 9c! {asset.Currency.ToString()}");
+            NcDebugger.LogWarning($"This Currency is not defined in 9c! {asset.Currency.ToString()}");
             return string.Empty;
         }
 

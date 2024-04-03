@@ -66,14 +66,14 @@ namespace Nekoyume.UI.Model
         {
             if (recipes is null)
             {
-                Debug.LogError("Failed to load equipment recipe.");
+                NcDebugger.LogError("Failed to load equipment recipe.");
                 return;
             }
 
             RecipeForTutorial = recipes.FirstOrDefault(x => x.Id == RecipeIdForTutorial);
             if (RecipeForTutorial is null)
             {
-                Debug.LogError($"Failed to load recipe for tutorial. id : {RecipeIdForTutorial}");
+                NcDebugger.LogError($"Failed to load recipe for tutorial. id : {RecipeIdForTutorial}");
             }
 
             foreach (var recipe in recipes)
@@ -96,7 +96,7 @@ namespace Nekoyume.UI.Model
         {
             if (groups is null)
             {
-                Debug.LogError("Failed to load consumable recipe.");
+                NcDebugger.LogError("Failed to load consumable recipe.");
                 return;
             }
 

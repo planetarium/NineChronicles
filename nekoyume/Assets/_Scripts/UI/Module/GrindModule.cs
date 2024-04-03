@@ -369,7 +369,7 @@ namespace Nekoyume.UI.Module
         {
             if (!equipments.Any() || equipments.Count > LimitGrindingCount)
             {
-                Debug.LogWarning($"Invalid selected items count. count : {equipments.Count}");
+                NcDebugger.LogWarning($"Invalid selected items count. count : {equipments.Count}");
                 return;
             }
 
@@ -436,7 +436,7 @@ namespace Nekoyume.UI.Module
                     Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
                     if (eval.Exception != null)
                     {
-                        Debug.LogException(eval.Exception.InnerException);
+                        NcDebugger.LogException(eval.Exception.InnerException);
                         OneLineSystem.Push(
                             MailType.Grinding,
                             L10nManager.Localize("ERROR_UNKNOWN"),

@@ -18,18 +18,18 @@ namespace Nekoyume.UI
             Action<string> onSuccess,
             Action<UnityWebRequest> onFailed = null)
         {
-            Debug.Log($"[RequestManager] GetJson: {url}");
+            NcDebugger.Log($"[RequestManager] GetJson: {url}");
             using var request = MakeRequestWithTimeout(url);
             request.SetRequestHeader("Cache-Control", "no-cache");
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log($"[RequestManager] GetJson Success: {url}, {request.downloadHandler.text}");
+                NcDebugger.Log($"[RequestManager] GetJson Success: {url}, {request.downloadHandler.text}");
                 onSuccess(request.downloadHandler.text);
             }
             else
             {
-                Debug.LogError($"[RequestManager] GetJson Failed: {url}, {request.error}");
+                NcDebugger.LogError($"[RequestManager] GetJson Failed: {url}, {request.error}");
                 onFailed?.Invoke(request);
             }
         }
@@ -42,18 +42,18 @@ namespace Nekoyume.UI
             Action<UnityWebRequest> onFailed = null,
             int timeOut = 0)
         {
-            Debug.Log($"[RequestManager] GetJson: {url}, {headerName}, {headerValue}");
+            NcDebugger.Log($"[RequestManager] GetJson: {url}, {headerName}, {headerValue}");
             using var request = MakeRequestWithTimeout(url, timeOut);
             request.SetRequestHeader(headerName, headerValue);
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log($"[RequestManager] GetJson Success: {url}, {request.downloadHandler.text}");
+                NcDebugger.Log($"[RequestManager] GetJson Success: {url}, {request.downloadHandler.text}");
                 onSuccess(request.downloadHandler.text);
             }
             else
             {
-                Debug.LogError($"[RequestManager] GetJson Failed: {url}, {request.error}");
+                NcDebugger.LogError($"[RequestManager] GetJson Failed: {url}, {request.error}");
                 onFailed?.Invoke(request);
             }
         }

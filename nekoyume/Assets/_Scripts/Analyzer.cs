@@ -42,7 +42,7 @@ namespace Nekoyume
             _isTrackable = isTrackable;
             if (!_isTrackable)
             {
-                Debug.Log($"Analyzer does not track: {nameof(isTrackable)} is false");
+                NcDebugger.Log($"Analyzer does not track: {nameof(isTrackable)} is false");
                 return;
             }
 
@@ -78,7 +78,7 @@ namespace Nekoyume
 
             Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
 
-            Debug.Log($"Analyzer initialized: {uniqueId}");
+            NcDebugger.Log($"Analyzer initialized: {uniqueId}");
         }
 
         public static void SetAgentAddress(string? addressString)
@@ -104,7 +104,7 @@ namespace Nekoyume
 
         public static void SetPlanetId(string? planetId)
         {
-            Debug.Log($"[Analyzer] SetPlanetId() invoked with {planetId}");
+            NcDebugger.Log($"[Analyzer] SetPlanetId() invoked with {planetId}");
             planetId ??= "no-planet-id";
 
             Mixpanel.Register("planet-id", planetId);

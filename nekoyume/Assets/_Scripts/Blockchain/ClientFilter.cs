@@ -16,11 +16,11 @@ namespace Nekoyume.Blockchain
             {
                 try
                 {
-                    Debug.Log("Request Begin:" + context.MethodPath);
+                    NcDebugger.Log("Request Begin:" + context.MethodPath);
                     var sw = Stopwatch.StartNew();
                     var resp = await next(context);
                     sw.Stop();
-                    Debug.Log("Request Completed:" + context.MethodPath + ", Elapsed:" + sw.Elapsed.TotalMilliseconds + "ms");
+                    NcDebugger.Log("Request Completed:" + context.MethodPath + ", Elapsed:" + sw.Elapsed.TotalMilliseconds + "ms");
                     return resp;
                 }
                 catch (Exception e)
@@ -30,7 +30,7 @@ namespace Nekoyume.Blockchain
                     exception = e;
                 }
             }
-            Debug.Log($"Filter Catch Exception: {exception}");
+            NcDebugger.Log($"Filter Catch Exception: {exception}");
             return null;
         }
     }

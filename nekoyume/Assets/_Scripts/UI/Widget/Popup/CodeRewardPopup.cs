@@ -69,7 +69,7 @@ namespace Nekoyume.UI
             }
             catch (FormatException e)
             {
-                Debug.LogError($"{e.Message} {redeemCode}");
+                NcDebugger.LogError($"{e.Message} {redeemCode}");
                 return new List<(ItemBase, int)>();
             }
 

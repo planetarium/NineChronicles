@@ -485,7 +485,7 @@ namespace Nekoyume.Game.Character
             {
                 if (info.Target.Id != Id)
                 {
-                    Debug.LogWarning($"[{nameof(RaidCharacter)}] Heal target is different from expected.");
+                    NcDebugger.LogWarning($"[{nameof(RaidCharacter)}] Heal target is different from expected.");
                 }
 
                 ProcessHeal(info);
@@ -503,7 +503,7 @@ namespace Nekoyume.Game.Character
             {
                 if (info.Target?.Id != Id)
                 {
-                    Debug.LogWarning($"[{nameof(RaidCharacter)}] Heal target is different from expected.");
+                    NcDebugger.LogWarning($"[{nameof(RaidCharacter)}] Heal target is different from expected.");
                 }
 
                 ProcessHeal(info);

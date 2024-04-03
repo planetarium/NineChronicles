@@ -68,7 +68,7 @@ namespace Nekoyume.UI
         {
             if (!PatrolReward.Initialized)
             {
-                Debug.LogError("PatrolReward is not initialized.");
+                NcDebugger.LogError("PatrolReward is not initialized.");
                 return;
             }
 
@@ -252,7 +252,7 @@ namespace Nekoyume.UI
                 var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
                 if (txResultResponse is null)
                 {
-                    Debug.LogError(
+                    NcDebugger.LogError(
                         $"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
                     OneLineSystem.Push(
                         MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),

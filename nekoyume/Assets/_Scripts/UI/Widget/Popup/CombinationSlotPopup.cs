@@ -162,7 +162,7 @@ namespace Nekoyume.UI
                     SetEnhancementOption(GetInformation(type), ie);
                     break;
                 default:
-                    Debug.LogError(
+                    NcDebugger.LogError(
                         $"[{nameof(CombinationSlotPopup)}] Not supported type. {slotState.Result.GetType().FullName}");
                     break;
             }
@@ -174,7 +174,7 @@ namespace Nekoyume.UI
         {
             if (!resultModel.itemUsable.TryGetOptionInfo(out var itemOptionInfo))
             {
-                Debug.LogError("Failed to create ItemOptionInfo");
+                NcDebugger.LogError("Failed to create ItemOptionInfo");
                 return;
             }
 
@@ -230,7 +230,7 @@ namespace Nekoyume.UI
         {
             if (resultModel.itemUsable is not Equipment equipment)
             {
-                Debug.LogError("resultModel.itemUsable is not Equipment");
+                NcDebugger.LogError("resultModel.itemUsable is not Equipment");
                 return;
             }
 
@@ -241,13 +241,13 @@ namespace Nekoyume.UI
             var row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade && x.Level == level);
             if (row is null)
             {
-                Debug.LogError($"Not found row: {nameof(EnhancementCostSheetV2)} Grade({grade}) Level({level})");
+                NcDebugger.LogError($"Not found row: {nameof(EnhancementCostSheetV2)} Grade({grade}) Level({level})");
                 return;
             }
 
             if (!resultModel.itemUsable.TryGetOptionInfo(out var itemOptionInfo))
             {
-                Debug.LogError("Failed to create ItemOptionInfo");
+                NcDebugger.LogError("Failed to create ItemOptionInfo");
                 return;
             }
 
@@ -319,13 +319,13 @@ namespace Nekoyume.UI
         {
             if (resultModel.itemUsable is not Equipment equipment)
             {
-                Debug.LogError("resultModel.itemUsable is not Equipment");
+                NcDebugger.LogError("resultModel.itemUsable is not Equipment");
                 return;
             }
 
             if (resultModel.preItemUsable is not Equipment preEquipment)
             {
-                Debug.LogError("resultModel.preItemUsable is not Equipment");
+                NcDebugger.LogError("resultModel.preItemUsable is not Equipment");
                 return;
             }
 

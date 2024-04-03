@@ -1,5 +1,6 @@
-#if !UNITY_EDITOR
 using System;
+using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Nekoyume
 {
@@ -20,81 +21,115 @@ namespace Nekoyume
     ///
     /// 2012.11. @kimsama
     ///
-    public static class Debug
+    public static class NcDebugger
     {
+        // used for build with 'DEBUG_USE' symbol.
+        [UsedImplicitly]
         public static string InsertTimestamp(string message)
         {
             return $"[{DateTime.UtcNow:yyyy-M-d HH:mm:ss}] {message}";
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void Log(object message)
         {
-            UnityEngine.Debug.Log(InsertTimestamp(message.ToString()));
+#if UNITY_EDITOR
+            Debug.Log(message);
+#elif DEBUG_USE
+            Debug.Log(InsertTimestamp(message.ToString()));
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void Log(object message, UnityEngine.Object context)
         {
-            UnityEngine.Debug.Log(InsertTimestamp(message.ToString()), context);
+#if UNITY_EDITOR
+            Debug.Log(message, context);
+#elif DEBUG_USE
+            Debug.Log(InsertTimestamp(message.ToString()), context);
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogFormat(string format, params object[] args)
         {
+#if UNITY_EDITOR
+            Debug.LogFormat(format, args);
+#elif DEBUG_USE
             // LogFormat() in itself expands an array when it takes only one array.
-            UnityEngine.Debug.Log(InsertTimestamp(string.Format(format, args)));
+            Debug.Log(InsertTimestamp(string.Format(format, args)));
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogWarning(object message)
         {
-            UnityEngine.Debug.LogWarning(InsertTimestamp(message.ToString()));
+#if UNITY_EDITOR
+            Debug.LogWarning(message);
+#elif DEBUG_USE
+            Debug.LogWarning(InsertTimestamp(message.ToString()));
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogWarning(object message, UnityEngine.Object context)
         {
-            UnityEngine.Debug.LogWarning(InsertTimestamp(message.ToString()), context);
+#if UNITY_EDITOR
+            Debug.LogWarning(message, context);
+#elif DEBUG_USE
+            Debug.LogWarning(InsertTimestamp(message.ToString()), context);
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogWarningFormat(string format, params object[] args)
         {
+#if UNITY_EDITOR
+            Debug.LogWarningFormat(format, args);
+#elif DEBUG_USE
             // LogWarningFormat() in itself expands an array when it takes only one array.
-            UnityEngine.Debug.LogWarningFormat(InsertTimestamp(string.Format(format, args)));
+            Debug.LogWarningFormat(InsertTimestamp(string.Format(format, args)));
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogError(object message)
         {
-            UnityEngine.Debug.LogError(InsertTimestamp(message.ToString()));
+#if UNITY_EDITOR
+            Debug.LogError(message);
+#elif DEBUG_USE
+            Debug.LogError(InsertTimestamp(message.ToString()));
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogError(object message, UnityEngine.Object context)
         {
-            UnityEngine.Debug.LogError(InsertTimestamp(message.ToString()), context);
+#if UNITY_EDITOR
+            Debug.LogError(message, context);
+#elif DEBUG_USE
+            Debug.LogError(InsertTimestamp(message.ToString()), context);
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogErrorFormat(string format, params object[] args)
         {
+#if UNITY_EDITOR
+            Debug.LogErrorFormat(format, args);
+#elif DEBUG_USE
             // LogErrorFormat() in itself expands an array when it takes only one array.
-            UnityEngine.Debug.LogErrorFormat(InsertTimestamp(string.Format(format, args)));
+            Debug.LogErrorFormat(InsertTimestamp(string.Format(format, args)));
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogException(Exception exception)
         {
-            UnityEngine.Debug.LogError(InsertTimestamp(exception.Message));
+#if UNITY_EDITOR
+            Debug.LogError(exception.Message);
+#elif DEBUG_USE
+            Debug.LogError(InsertTimestamp(exception.Message));
+#endif
         }
 
-        [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogException(Exception exception, UnityEngine.Object context)
         {
-            UnityEngine.Debug.LogError(InsertTimestamp(exception.Message), context);
+#if UNITY_EDITOR
+            Debug.LogError(exception.Message, context);
+#elif DEBUG_USE
+            Debug.LogError(InsertTimestamp(exception.Message), context);
+#endif
         }
     }
 }
-#endif

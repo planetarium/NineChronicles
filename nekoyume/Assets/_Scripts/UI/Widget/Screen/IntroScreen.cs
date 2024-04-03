@@ -103,14 +103,14 @@ namespace Nekoyume.UI
 
             touchScreenButton.onClick.AddListener(() =>
             {
-                Debug.Log("[IntroScreen] Click touch screen button.");
+                NcDebugger.Log("[IntroScreen] Click touch screen button.");
                 touchScreenButtonGO.SetActive(false);
                 startButtonContainer.SetActive(true);
                 OnClickTabToStart.OnNext(this);
             });
             startButton.onClick.AddListener(() =>
             {
-                Debug.Log("[IntroScreen] Click start button.");
+                NcDebugger.Log("[IntroScreen] Click start button.");
                 Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
 
                 var evt = new AirbridgeEvent("Intro_StartButton_Click");
@@ -129,7 +129,7 @@ namespace Nekoyume.UI
                 return;
 #endif
 
-                Debug.Log("[IntroScreen] Click apple sign in button.");
+                NcDebugger.Log("[IntroScreen] Click apple sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
 
                 var evt = new AirbridgeEvent("Intro_AppleSignIn_Click");
@@ -140,7 +140,7 @@ namespace Nekoyume.UI
             });
             googleSignInButton.onClick.AddListener(() =>
             {
-                Debug.Log("[IntroScreen] Click google sign in button.");
+                NcDebugger.Log("[IntroScreen] Click google sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Click");
 
                 var evt = new AirbridgeEvent("Intro_GoogleSignIn_Click");
@@ -151,7 +151,7 @@ namespace Nekoyume.UI
             });
             twitterSignInButton.onClick.AddListener(() =>
             {
-                Debug.Log("[IntroScreen] Click twitter sign in button.");
+                NcDebugger.Log("[IntroScreen] Click twitter sign in button.");
 
                 Analyzer.Instance.Track("Unity/Intro/TwitterSignIn/Click");
 
@@ -162,7 +162,7 @@ namespace Nekoyume.UI
             });
             discordSignInButton.onClick.AddListener(() =>
             {
-                Debug.Log("[IntroScreen] Click discord sign in button.");
+                NcDebugger.Log("[IntroScreen] Click discord sign in button.");
 
                 Analyzer.Instance.Track("Unity/Intro/DiscordSignIn/Click");
 
@@ -257,13 +257,13 @@ namespace Nekoyume.UI
 
             if (SigninContext.HasLatestSignedInSocialType)
             {
-                Debug.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is true");
+                NcDebugger.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is true");
                 startButtonGO.SetActive(true);
                 socialButtonsGO.SetActive(false);
             }
             else
             {
-                Debug.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is false");
+                NcDebugger.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is false");
                 startButtonGO.SetActive(false);
                 socialButtonsGO.SetActive(true);
             }
@@ -327,10 +327,10 @@ namespace Nekoyume.UI
         /// </summary>
         public void ShowPlanetAccountInfosPopup(PlanetContext planetContext, bool needToImportKey)
         {
-            Debug.Log("[IntroScreen] ShowPlanetAccountInfosPopup invoked");
+            NcDebugger.Log("[IntroScreen] ShowPlanetAccountInfosPopup invoked");
             if (planetContext.PlanetAccountInfos is null)
             {
-                Debug.LogError("[IntroScreen] planetContext.PlanetAccountInfos is null");
+                NcDebugger.LogError("[IntroScreen] planetContext.PlanetAccountInfos is null");
             }
 
             planetAccountInfoScroll.SetData(
@@ -409,7 +409,7 @@ namespace Nekoyume.UI
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"Failed to get guest private key: {e}");
+                NcDebugger.LogWarning($"Failed to get guest private key: {e}");
                 return;
             }
 
@@ -444,7 +444,7 @@ namespace Nekoyume.UI
 
         private void ApplyPlanetContext(PlanetContext planetContext)
         {
-            Debug.Log("[IntroScreen] ApplyPlanetRegistry invoked.");
+            NcDebugger.Log("[IntroScreen] ApplyPlanetRegistry invoked.");
             selectPlanetScroll.SetData(
                 planetContext?.PlanetRegistry,
                 planetContext?.SelectedPlanetInfo?.ID);
@@ -455,11 +455,11 @@ namespace Nekoyume.UI
 
         private void ApplySelectedPlanetInfo(PlanetContext planetContext)
         {
-            Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked.");
+            NcDebugger.Log("[IntroScreen] ApplySelectedPlanetInfo invoked.");
             var planetInfo = planetContext?.SelectedPlanetInfo;
             if (planetInfo is null)
             {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetInfo is null");
+                NcDebugger.Log("[IntroScreen] ApplySelectedPlanetInfo... planetInfo is null");
                 yourPlanetButtonText.text = "Null";
                 planetAccountInfoText.text = string.Empty;
                 return;
@@ -471,11 +471,11 @@ namespace Nekoyume.UI
 
         private void ApplySelectedPlanetAccountInfo(PlanetContext planetContext)
         {
-            Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo invoked.");
+            NcDebugger.Log("[IntroScreen] ApplySelectedPlanetAccountInfo invoked.");
             var planetAccountInfo = planetContext?.SelectedPlanetAccountInfo;
             if (planetAccountInfo?.AgentAddress is null)
             {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo?.AgentAddress is null.");
+                NcDebugger.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo?.AgentAddress is null.");
                 planetAccountInfoText.text = SigninContext.HasLatestSignedInSocialType
                     ? L10nManager.Localize("SDESC_THERE_IS_NO_ACCOUNT")
                     : string.Empty;
@@ -486,7 +486,7 @@ namespace Nekoyume.UI
             if (!(planetAccountInfo.IsAgentPledged.HasValue &&
                   planetAccountInfo.IsAgentPledged.Value))
             {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo.IsAgentPledged is false.");
+                NcDebugger.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo.IsAgentPledged is false.");
                 planetAccountInfoText.text = L10nManager.Localize("SDESC_THERE_IS_NO_CHARACTER");
                 return;
             }
@@ -507,16 +507,16 @@ namespace Nekoyume.UI
                 google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
             }
 
-            Debug.Log($"[IntroScreen] google.State.Value: {google.State.Value}");
+            NcDebugger.Log($"[IntroScreen] google.State.Value: {google.State.Value}");
             switch (google.State.Value)
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
+                    NcDebugger.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
                     SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Google);
                     OnSocialSignedIn.OnNext((SigninContext.SocialType.Google, google.Email, google.IdToken));
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
-                    Debug.Log("[IntroScreen] Already waiting for google sign in.");
+                    NcDebugger.Log("[IntroScreen] Already waiting for google sign in.");
                     return;
                 case GoogleSigninBehaviour.SignInState.Undefined:
                 case GoogleSigninBehaviour.SignInState.Canceled:
@@ -559,16 +559,16 @@ namespace Nekoyume.UI
                 apple.Initialize();
             }
 
-            Debug.Log($"[IntroScreen] apple.State.Value: {apple.State.Value}");
+            NcDebugger.Log($"[IntroScreen] apple.State.Value: {apple.State.Value}");
             switch (apple.State.Value)
             {
                 case AppleSigninBehaviour.SignInState.Signed:
-                    Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
+                    NcDebugger.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
                     SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Apple);
                     OnSocialSignedIn.OnNext((SigninContext.SocialType.Apple, apple.Email, apple.IdToken));
                     return;
                 case AppleSigninBehaviour.SignInState.Waiting:
-                    Debug.Log("[IntroScreen] Already waiting for apple sign in.");
+                    NcDebugger.Log("[IntroScreen] Already waiting for apple sign in.");
                     return;
                 case AppleSigninBehaviour.SignInState.Undefined:
                 case AppleSigninBehaviour.SignInState.Canceled:

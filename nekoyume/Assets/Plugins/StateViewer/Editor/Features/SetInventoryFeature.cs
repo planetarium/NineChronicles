@@ -8,7 +8,6 @@ using Bencodex.Types;
 using CsvHelper;
 using Lib9cCommonTool.Runtime;
 using Libplanet.Crypto;
-using Nekoyume;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
@@ -17,6 +16,7 @@ using StateViewer.Runtime;
 using UnityEditor;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
+using Nekoyume;
 
 namespace StateViewer.Editor.Features
 {
@@ -121,7 +121,7 @@ namespace StateViewer.Editor.Features
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
+                    NcDebugger.LogException(e);
                     return;
                 }
 
@@ -184,7 +184,7 @@ namespace StateViewer.Editor.Features
             {
                 if (!csvReader.TryGetField<int>("item_id", out var itemId))
                 {
-                    Debug.LogWarning("item_id column is not found.");
+                    NcDebugger.LogWarning("item_id column is not found.");
                     continue;
                 }
 
@@ -205,7 +205,7 @@ namespace StateViewer.Editor.Features
 
                 if (!itemSheet.TryGetValue(itemId, out var itemRow))
                 {
-                    Debug.LogWarning($"{nameof(itemId)}({itemId}) does not exist.");
+                    NcDebugger.LogWarning($"{nameof(itemId)}({itemId}) does not exist.");
                     continue;
                 }
 

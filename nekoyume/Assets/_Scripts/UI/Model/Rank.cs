@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Model
                     );
                     IsInitialized = true;
                     sw.Stop();
-                    Debug.Log($"Ranking updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    NcDebugger.Log($"Ranking updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 });
             }
 
@@ -75,7 +75,7 @@ namespace Nekoyume.UI.Model
             var response = await apiClient.GetObjectAsync<AbilityRankingResponse>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(AbilityRankingResponse)}");
+                NcDebugger.LogError($"Failed getting response : {nameof(AbilityRankingResponse)}");
                 return;
             }
 
@@ -116,14 +116,14 @@ namespace Nekoyume.UI.Model
                 var myInfoResponse = await apiClient.GetObjectAsync<AbilityRankingResponse>(myInfoQuery);
                 if (myInfoResponse is null)
                 {
-                    Debug.LogError("Failed getting my ranking record.");
+                    NcDebugger.LogError("Failed getting my ranking record.");
                     continue;
                 }
 
                 var myRecord = myInfoResponse.AbilityRanking.FirstOrDefault();
                 if (myRecord is null)
                 {
-                    Debug.LogWarning($"{nameof(AbilityRankingRecord)} not exists.");
+                    NcDebugger.LogWarning($"{nameof(AbilityRankingRecord)} not exists.");
                     continue;
                 }
 
@@ -158,7 +158,7 @@ namespace Nekoyume.UI.Model
             var response = await apiClient.GetObjectAsync<StageRankingResponse>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(StageRankingResponse)}");
+                NcDebugger.LogError($"Failed getting response : {nameof(StageRankingResponse)}");
                 return;
             }
 
@@ -199,14 +199,14 @@ namespace Nekoyume.UI.Model
                 var myInfoResponse = await apiClient.GetObjectAsync<StageRankingResponse>(myInfoQuery);
                 if (myInfoResponse is null)
                 {
-                    Debug.LogError("Failed getting my ranking record.");
+                    NcDebugger.LogError("Failed getting my ranking record.");
                     continue;
                 }
 
                 var myRecord = myInfoResponse.StageRanking.FirstOrDefault();
                 if (myRecord is null)
                 {
-                    Debug.LogWarning($"{nameof(StageRankingRecord)} not exists.");
+                    NcDebugger.LogWarning($"{nameof(StageRankingRecord)} not exists.");
                     continue;
                 }
 
@@ -241,7 +241,7 @@ namespace Nekoyume.UI.Model
             var response = await apiClient.GetObjectAsync<CraftRankingResponse>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(CraftRankingResponse)}");
+                NcDebugger.LogError($"Failed getting response : {nameof(CraftRankingResponse)}");
                 return;
             }
 
@@ -282,14 +282,14 @@ namespace Nekoyume.UI.Model
                 var myInfoResponse = await apiClient.GetObjectAsync<CraftRankingResponse>(myInfoQuery);
                 if (myInfoResponse is null)
                 {
-                    Debug.LogError("Failed getting my ranking record.");
+                    NcDebugger.LogError("Failed getting my ranking record.");
                     continue;
                 }
 
                 var myRecord = myInfoResponse.CraftRanking.FirstOrDefault();
                 if (myRecord is null)
                 {
-                    Debug.LogWarning($"{nameof(CraftRankingRecord)} not exists.");
+                    NcDebugger.LogWarning($"{nameof(CraftRankingRecord)} not exists.");
                     continue;
                 }
 
@@ -332,7 +332,7 @@ namespace Nekoyume.UI.Model
                 var response = await apiClient.GetObjectAsync<EquipmentRankingResponse>(query);
                 if (response is null)
                 {
-                    Debug.LogError($"Failed getting response : {nameof(EquipmentRankingResponse)}");
+                    NcDebugger.LogError($"Failed getting response : {nameof(EquipmentRankingResponse)}");
                     return;
                 }
 
@@ -377,14 +377,14 @@ namespace Nekoyume.UI.Model
                     var myInfoResponse = await apiClient.GetObjectAsync<EquipmentRankingResponse>(myInfoQuery);
                     if (myInfoResponse is null)
                     {
-                        Debug.LogError("Failed getting my ranking record.");
+                        NcDebugger.LogError("Failed getting my ranking record.");
                         continue;
                     }
 
                     var myRecord = myInfoResponse.EquipmentRanking.FirstOrDefault();
                     if (myRecord is null)
                     {
-                        Debug.LogWarning($"{nameof(EquipmentRankingRecord)} not exists.");
+                        NcDebugger.LogWarning($"{nameof(EquipmentRankingRecord)} not exists.");
                         continue;
                     }
 

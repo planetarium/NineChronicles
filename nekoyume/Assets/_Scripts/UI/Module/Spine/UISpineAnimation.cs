@@ -26,7 +26,7 @@ namespace Nekoyume
             _seSkeletonGraphic = GetComponent<SkeletonGraphic>();
             if (ReferenceEquals(_seSkeletonGraphic.skeletonDataAsset, null))
             {
-                Debug.LogError("Skeleton Data Asset is null");
+                NcDebugger.LogError("Skeleton Data Asset is null");
                 return;
             }
 

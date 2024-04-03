@@ -146,7 +146,7 @@ namespace Nekoyume.UI
                         e.Stat.StatType == _editorStatOptions[0].statType).ToList();
                 if (!equipmentList.Any())
                 {
-                    Debug.LogError($"{_editorStatOptions[0].statType} cannot be main stat type");
+                    NcDebugger.LogError($"{_editorStatOptions[0].statType} cannot be main stat type");
                     return;
                 }
 
@@ -177,7 +177,7 @@ namespace Nekoyume.UI
                         e.Stats[0].StatType == _editorStatOptions[0].statType).ToList();
                 if (!consumableList.Any())
                 {
-                    Debug.LogError($"{_editorStatOptions[0].statType} cannot be main stat type");
+                    NcDebugger.LogError($"{_editorStatOptions[0].statType} cannot be main stat type");
                     return;
                 }
 
@@ -203,7 +203,7 @@ namespace Nekoyume.UI
         {
             if (itemUsable is null)
             {
-                Debug.LogError($"{nameof(itemUsable)} is null");
+                NcDebugger.LogError($"{nameof(itemUsable)} is null");
                 return;
             }
 
@@ -324,7 +324,7 @@ namespace Nekoyume.UI
             if (_itemOptionInfo.CP !=
                 CPHelper.DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]))
             {
-                Debug.LogError(
+                NcDebugger.LogError(
                     $"Wrong CP!!!! {_itemOptionInfo.CP} != {_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]}");
             }
 
@@ -405,7 +405,7 @@ namespace Nekoyume.UI
         {
             if (index < 0 || index >= _itemOptionIconViews.Count)
             {
-                Debug.LogError($"Invalid argument: {nameof(index)}({index})");
+                NcDebugger.LogError($"Invalid argument: {nameof(index)}({index})");
             }
 
             if (index >= _itemOptionInfo.OptionCountFromCombination)
@@ -558,7 +558,7 @@ namespace Nekoyume.UI
         {
             if (stepIndex < 0 || stepIndex >= _cpListForAnimationSteps.Count - 1)
             {
-                Debug.Log($"Argument out of range. {nameof(stepIndex)}({stepIndex})");
+                NcDebugger.Log($"Argument out of range. {nameof(stepIndex)}({stepIndex})");
                 return;
             }
 

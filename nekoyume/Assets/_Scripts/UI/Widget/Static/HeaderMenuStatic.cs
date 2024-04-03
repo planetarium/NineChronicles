@@ -562,7 +562,7 @@ namespace Nekoyume.UI.Module
         {
             if (mailBox is null)
             {
-                Debug.LogWarning($"{nameof(mailBox)} is null.");
+                NcDebugger.LogWarning($"{nameof(mailBox)} is null.");
                 return;
             }
 
@@ -574,7 +574,7 @@ namespace Nekoyume.UI.Module
         {
             if (questList is null)
             {
-                Debug.LogWarning($"{nameof(questList)} is null.");
+                NcDebugger.LogWarning($"{nameof(questList)} is null.");
                 return;
             }
 

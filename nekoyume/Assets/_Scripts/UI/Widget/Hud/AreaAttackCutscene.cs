@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             if (cutscene.TryGetComponent<MeshRenderer>(out var meshRenderer))
                 meshRenderer.SetPropertyBlock(mpb);
             else
-                Debug.LogError($"[{nameof(AreaAttackCutscene)}] No MeshRenderer found.");
+                NcDebugger.LogError($"[{nameof(AreaAttackCutscene)}] No MeshRenderer found.");
 
             return cutscene.SkeletonAnimation.AnimationState.Tracks.First().AnimationEnd;
         }

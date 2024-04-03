@@ -201,7 +201,7 @@ namespace Nekoyume.UI
             if (count < totalCost)
             {
                 // Not enough
-                Debug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
+                NcDebugger.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
                 return;
             }
 

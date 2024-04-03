@@ -45,11 +45,11 @@ namespace Nekoyume.Multiplanetary
         public static async UniTask<PlanetContext> InitializePlanetRegistryAsync(
             PlanetContext context)
         {
-            Debug.Log("[PlanetSelector] Initializing planet registry...");
+            NcDebugger.Log("[PlanetSelector] Initializing planet registry...");
 #if UNITY_EDITOR
             if (string.IsNullOrEmpty(context.CommandLineOptions.PlanetRegistryUrl))
             {
-                Debug.Log("[PlanetSelector] Skip initializing Planets because" +
+                NcDebugger.Log("[PlanetSelector] Skip initializing Planets because" +
                           " PlanetRegistryUrl in CommandLineOptions is" +
                           " null or empty in editor.");
                 context.IsSkipped = true;
@@ -67,7 +67,7 @@ namespace Nekoyume.Multiplanetary
             var clo = context.CommandLineOptions;
             if (!clo.RpcClient)
             {
-                Debug.Log("[PlanetSelector] Skip initializing PlanetRegistry because" +
+                NcDebugger.Log("[PlanetSelector] Skip initializing PlanetRegistry because" +
                           " RpcClient is false.");
                 context.IsSkipped = true;
                 return context;
@@ -75,13 +75,13 @@ namespace Nekoyume.Multiplanetary
 
             if (string.IsNullOrEmpty(clo.PlanetRegistryUrl))
             {
-                Debug.LogError("[PlanetSelector] CommandLineOptions.PlanetRegisterUrl must" +
+                NcDebugger.LogError("[PlanetSelector] CommandLineOptions.PlanetRegisterUrl must" +
                                " not be null or empty when RpcClient is true.");
                 context.SetError(PlanetContext.ErrorType.PlanetRegistryUrlIsEmpty);
                 return context;
             }
 
-            Debug.Log("[PlanetSelector] Initializing PlanetRegistry with" +
+            NcDebugger.Log("[PlanetSelector] Initializing PlanetRegistry with" +
                       $" PlanetRegistryUrl: {clo.PlanetRegistryUrl}");
             context.PlanetRegistry = new PlanetRegistry(clo.PlanetRegistryUrl);
 
@@ -93,21 +93,21 @@ namespace Nekoyume.Multiplanetary
                 sw.Stop();
                 if (context.PlanetRegistry.IsInitialized)
                 {
-                    Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    NcDebugger.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                     break;
                 }
 
-                Debug.LogError($"[PlanetSelector] Failed to initialize PlanetRegistry. Retry({i + 1})...");
+                NcDebugger.LogError($"[PlanetSelector] Failed to initialize PlanetRegistry. Retry({i + 1})...");
             }
 
             if (!context.PlanetRegistry.IsInitialized)
             {
-                Debug.LogError("[PlanetSelector] Failed to initialize PlanetRegistry.");
+                NcDebugger.LogError("[PlanetSelector] Failed to initialize PlanetRegistry.");
                 context.SetNetworkConnectionError(PlanetContext.ErrorType.InitializePlanetRegistryFailed);
                 return context;
             }
 
-            Debug.Log("[PlanetSelector] PlanetRegistry initialized successfully.");
+            NcDebugger.Log("[PlanetSelector] PlanetRegistry initialized successfully.");
             return context;
         }
 
@@ -126,10 +126,10 @@ namespace Nekoyume.Multiplanetary
         /// </summary>
         public static PlanetContext InitializeSelectedPlanetInfo(PlanetContext context)
         {
-            Debug.Log("[PlanetSelector] Initializing CurrentPlanetInfo...");
+            NcDebugger.Log("[PlanetSelector] Initializing CurrentPlanetInfo...");
             if (context.PlanetRegistry is null)
             {
-                Debug.LogError("[PlanetSelector] PlanetRegistry is null." +
+                NcDebugger.LogError("[PlanetSelector] PlanetRegistry is null." +
                                " Use InitializeAsync() before calling this method.");
                 context.SetError(PlanetContext.ErrorType.PlanetRegistryNotInitialized);
                 return context;
@@ -137,7 +137,7 @@ namespace Nekoyume.Multiplanetary
 
             if (!context.PlanetRegistry.PlanetInfos.Any())
             {
-                Debug.LogError("[PlanetSelector] PlanetRegistry.PlanetInfos is empty." +
+                NcDebugger.LogError("[PlanetSelector] PlanetRegistry.PlanetInfos is empty." +
                                " It cannot proceed without planet infos.");
                 context.SetError(PlanetContext.ErrorType.NoPlanetInPlanetRegistry);
                 return context;
@@ -147,7 +147,7 @@ namespace Nekoyume.Multiplanetary
             // Check selected planet id in command line options.
             if (!string.IsNullOrEmpty(context.CommandLineOptions.SelectedPlanetId))
             {
-                Debug.Log("[PlanetSelector] Use CommandLineOptions.SelectedPlanetId(" +
+                NcDebugger.Log("[PlanetSelector] Use CommandLineOptions.SelectedPlanetId(" +
                           $"{context.CommandLineOptions.SelectedPlanetId}).");
                 if (context.PlanetRegistry.TryGetPlanetInfoByIdString(
                         context.CommandLineOptions.SelectedPlanetId,
@@ -157,13 +157,13 @@ namespace Nekoyume.Multiplanetary
                     context.CanSkipPlanetSelection = !context.HasError;
                     if (context.CanSkipPlanetSelection.Value)
                     {
-                        Debug.Log("[PlanetSelector] Can skip planet selection.");
+                        NcDebugger.Log("[PlanetSelector] Can skip planet selection.");
                     }
 
                     return context;
                 }
 
-                Debug.LogWarning("[PlanetSelector] Cannot use CommandLineOptions.SelectedPlanetId(" +
+                NcDebugger.LogWarning("[PlanetSelector] Cannot use CommandLineOptions.SelectedPlanetId(" +
                                  $"{context.CommandLineOptions.SelectedPlanetId})." +
                                  " PlanetRegistry does not have planet info for it." +
                                  " Try the following steps...");
@@ -172,7 +172,7 @@ namespace Nekoyume.Multiplanetary
             // Check cached planet id in player prefs.
             if (HasCachedPlanetIdString)
             {
-                Debug.Log($"[PlanetSelector] Use cached planet id in PlayerPrefs({CachedPlanetIdString}).");
+                NcDebugger.Log($"[PlanetSelector] Use cached planet id in PlayerPrefs({CachedPlanetIdString}).");
                 if (context.PlanetRegistry.TryGetPlanetInfoByIdString(
                         CachedPlanetIdString,
                         out planetInfo))
@@ -181,13 +181,13 @@ namespace Nekoyume.Multiplanetary
                     context.CanSkipPlanetSelection = !context.HasError;
                     if (context.CanSkipPlanetSelection.Value)
                     {
-                        Debug.Log("[PlanetSelector] Can skip planet selection.");
+                        NcDebugger.Log("[PlanetSelector] Can skip planet selection.");
                     }
 
                     return context;
                 }
 
-                Debug.LogWarning("[PlanetSelector] Cannot use cached planet id in PlayerPrefs(" +
+                NcDebugger.LogWarning("[PlanetSelector] Cannot use cached planet id in PlayerPrefs(" +
                                  $"{CachedPlanetIdString})." +
                                  " PlanetRegistry does not have planet info for it." +
                                  " Try the following steps...");
@@ -196,7 +196,7 @@ namespace Nekoyume.Multiplanetary
             if (!string.IsNullOrEmpty(context.CommandLineOptions.DefaultPlanetId))
             {
                 // Use default planet id in command line options.
-                Debug.Log("[PlanetSelector] Use CommandLineOptions.DefaultPlanetId(" +
+                NcDebugger.Log("[PlanetSelector] Use CommandLineOptions.DefaultPlanetId(" +
                           $"{context.CommandLineOptions.DefaultPlanetId}).");
                 if (context.PlanetRegistry.TryGetPlanetInfoByIdString(
                         context.CommandLineOptions.DefaultPlanetId,
@@ -205,14 +205,14 @@ namespace Nekoyume.Multiplanetary
                     return SelectPlanetById(context, planetInfo.ID);
                 }
 
-                Debug.LogWarning("[PlanetSelector] Cannot use CommandLineOptions.DefaultPlanetId(" +
+                NcDebugger.LogWarning("[PlanetSelector] Cannot use CommandLineOptions.DefaultPlanetId(" +
                                  $"{context.CommandLineOptions.DefaultPlanetId})." +
                                  " PlanetRegistry does not have planet info for it." +
                                  " Try the following steps...");
             }
 
             // Use default planet id in script.
-            Debug.Log($"[PlanetSelector] Use PlanetSelector.DefaultPlanetId({DefaultPlanetId}).");
+            NcDebugger.Log($"[PlanetSelector] Use PlanetSelector.DefaultPlanetId({DefaultPlanetId}).");
             if (context.PlanetRegistry.TryGetPlanetInfoById(
                     DefaultPlanetId,
                     out planetInfo))
@@ -220,24 +220,24 @@ namespace Nekoyume.Multiplanetary
                 return SelectPlanetById(context, planetInfo.ID);
             }
 
-            Debug.LogWarning("[PlanetSelector] Cannot use PlanetSelector.DefaultPlanetId(" +
+            NcDebugger.LogWarning("[PlanetSelector] Cannot use PlanetSelector.DefaultPlanetId(" +
                              $"{DefaultPlanetId})." +
                              " PlanetRegistry does not have planet info for it." +
                              " Try the following steps...");
 
             // Use first planet info in planet registry.
             planetInfo = context.PlanetRegistry.PlanetInfos.First();
-            Debug.Log("[PlanetSelector] Use PlanetRegistry.PlanetInfos.First(" +
+            NcDebugger.Log("[PlanetSelector] Use PlanetRegistry.PlanetInfos.First(" +
                       $"{planetInfo.ID}).");
             return SelectPlanetById(context, planetInfo.ID);
         }
 
         public static PlanetContext SelectPlanetById(PlanetContext context, PlanetId planetId)
         {
-            Debug.Log($"[PlanetSelector] Selecting planet by id({planetId})...");
+            NcDebugger.Log($"[PlanetSelector] Selecting planet by id({planetId})...");
             if (context.PlanetRegistry is null)
             {
-                Debug.LogError("[PlanetSelector] PlanetRegistry is null." +
+                NcDebugger.LogError("[PlanetSelector] PlanetRegistry is null." +
                                " Use InitializeAsync() before calling this method.");
                 context.SetError(PlanetContext.ErrorType.PlanetRegistryNotInitialized);
                 return context;
@@ -251,7 +251,7 @@ namespace Nekoyume.Multiplanetary
 
             if (!context.PlanetRegistry.TryGetPlanetInfoById(planetId, out var planetInfo))
             {
-                Debug.LogError($"[PlanetSelector] There is no planet info for planet id({planetId}).");
+                NcDebugger.LogError($"[PlanetSelector] There is no planet info for planet id({planetId}).");
                 context.SetError(
                     PlanetContext.ErrorType.PlanetNotFoundInPlanetRegistry,
                     planetId.ToLocalizedPlanetName(containsPlanetId: false));
@@ -265,10 +265,10 @@ namespace Nekoyume.Multiplanetary
             PlanetContext context,
             string planetIdString)
         {
-            Debug.Log($"[PlanetSelector] Selecting planet by id string({planetIdString})...");
+            NcDebugger.Log($"[PlanetSelector] Selecting planet by id string({planetIdString})...");
             if (context.PlanetRegistry is null)
             {
-                Debug.LogError("[PlanetSelector] PlanetRegistry is null." +
+                NcDebugger.LogError("[PlanetSelector] PlanetRegistry is null." +
                                " Use InitializeAsync() before calling this method.");
                 context.SetError(PlanetContext.ErrorType.PlanetRegistryNotInitialized);
                 return context;
@@ -284,7 +284,7 @@ namespace Nekoyume.Multiplanetary
                     planetIdString,
                     out var planetInfo))
             {
-                Debug.LogError($"[PlanetSelector] There is no planet info for planet id({planetIdString}).");
+                NcDebugger.LogError($"[PlanetSelector] There is no planet info for planet id({planetIdString}).");
                 context.SetError(
                     PlanetContext.ErrorType.PlanetNotFoundInPlanetRegistry,
                     PlanetIdExtensions.ToLocalizedPlanetName(planetIdString, containsPlanetId: false));
@@ -301,11 +301,11 @@ namespace Nekoyume.Multiplanetary
             context = UpdateCommandLineOptions(context);
             if (context.HasError)
             {
-                Debug.LogError($"[PlanetSelector] Failed to select planet({planetInfo.ID}, {planetInfo.Name}).");
+                NcDebugger.LogError($"[PlanetSelector] Failed to select planet({planetInfo.ID}, {planetInfo.Name}).");
                 return context;
             }
 
-            Debug.Log($"[PlanetSelector] Planet({planetInfo.ID}, {planetInfo.Name}) selected successfully.");
+            NcDebugger.Log($"[PlanetSelector] Planet({planetInfo.ID}, {planetInfo.Name}) selected successfully.");
             SelectedPlanetInfoSubject.OnNext((context, context.SelectedPlanetInfo));
             return UpdateSelectedPlanetAccountInfo(context);
         }
@@ -319,10 +319,10 @@ namespace Nekoyume.Multiplanetary
             Address agentAddress,
             bool updateSelectedPlanetAccountInfo)
         {
-            Debug.Log($"[PlanetSelector] Updating PlanetAccountInfos...");
+            NcDebugger.Log($"[PlanetSelector] Updating PlanetAccountInfos...");
             if (context.PlanetRegistry is null)
             {
-                Debug.LogError("[PlanetSelector] PlanetRegistry is null." +
+                NcDebugger.LogError("[PlanetSelector] PlanetRegistry is null." +
                                " Use InitializeAsync() before calling this method.");
                 context.SetError(PlanetContext.ErrorType.PlanetRegistryNotInitialized);
                 return context;
@@ -330,7 +330,7 @@ namespace Nekoyume.Multiplanetary
 
             if (!context.PlanetRegistry.PlanetInfos.Any())
             {
-                Debug.LogError("[PlanetSelector] PlanetRegistry.PlanetInfos is empty." +
+                NcDebugger.LogError("[PlanetSelector] PlanetRegistry.PlanetInfos is empty." +
                                " It cannot proceed without planet infos.");
                 context.SetError(PlanetContext.ErrorType.NoPlanetInPlanetRegistry);
                 return context;
@@ -344,7 +344,7 @@ namespace Nekoyume.Multiplanetary
             {
                 if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
                 {
-                    Debug.LogError($"[PlanetSelector] HeadlessGql endpoint of planet({planetInfo.ID}) is empty.");
+                    NcDebugger.LogError($"[PlanetSelector] HeadlessGql endpoint of planet({planetInfo.ID}) is empty.");
                     context.SetError(
                         PlanetContext.ErrorType.NoHeadlessGqlEndpointInPlanet,
                         planetInfo.ID.ToLocalizedPlanetName(containsPlanetId: false));
@@ -355,7 +355,7 @@ namespace Nekoyume.Multiplanetary
                 var endpoint = planetInfo.RPCEndpoints.HeadlessGql[index];
                 if (string.IsNullOrEmpty(endpoint))
                 {
-                    Debug.LogError($"[PlanetSelector] endpoint(index: {index}) is null or empty" +
+                    NcDebugger.LogError($"[PlanetSelector] endpoint(index: {index}) is null or empty" +
                                    $" for planet({planetInfo.ID}).");
                     context.SetError(
                         PlanetContext.ErrorType.PlanetHeadlessGqlEndpointIsEmpty,
@@ -364,7 +364,7 @@ namespace Nekoyume.Multiplanetary
                     break;
                 }
 
-                Debug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
+                NcDebugger.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
                           $" with endpoint({endpoint})...");
                 AgentAndPledgeGraphType? agentAndPledgeGraphType;
                 using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
@@ -375,8 +375,8 @@ namespace Nekoyume.Multiplanetary
                 }
                 catch (OperationCanceledException ex)
                 {
-                    Debug.LogException(ex);
-                    Debug.LogError("[PlanetSelector] Querying agent and pledge canceled." +
+                    NcDebugger.LogException(ex);
+                    NcDebugger.LogError("[PlanetSelector] Querying agent and pledge canceled." +
                                    " Check the network connection.");
                     context.SetNetworkConnectionError(
                         PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
@@ -386,8 +386,8 @@ namespace Nekoyume.Multiplanetary
                 }
                 catch (HttpRequestException ex)
                 {
-                    Debug.LogException(ex);
-                    Debug.LogError("[PlanetSelector] Querying agent and avatars failed." +
+                    NcDebugger.LogException(ex);
+                    NcDebugger.LogError("[PlanetSelector] Querying agent and avatars failed." +
                                    " Check the endpoint url.");
                     context.SetNetworkConnectionError(
                         PlanetContext.ErrorType.QueryPlanetAccountInfoFailed,
@@ -397,9 +397,9 @@ namespace Nekoyume.Multiplanetary
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogException(ex);
-                    Debug.LogException(ex.InnerException);
-                    Debug.LogError("[PlanetSelector] Querying agent and avatars failed." +
+                    NcDebugger.LogException(ex);
+                    NcDebugger.LogException(ex.InnerException);
+                    NcDebugger.LogError("[PlanetSelector] Querying agent and avatars failed." +
                                    " Unexpected exception occurred." +
                                    $"{ex.GetType().FullName}({ex.InnerException?.GetType().FullName})");
                     context.SetError(
@@ -409,7 +409,7 @@ namespace Nekoyume.Multiplanetary
                     break;
                 }
 
-                Debug.Log($"[PlanetSelector] {agentAndPledgeGraphType}");
+                NcDebugger.Log($"[PlanetSelector] {agentAndPledgeGraphType}");
                 var info = new PlanetAccountInfo(
                     planetInfo.ID,
                     agentAndPledgeGraphType?.Agent?.Address,
@@ -419,7 +419,7 @@ namespace Nekoyume.Multiplanetary
             }
 
             sw.Stop();
-            Debug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count})" +
+            NcDebugger.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count})" +
                       $" updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
 
             if (context.HasError)
@@ -428,7 +428,7 @@ namespace Nekoyume.Multiplanetary
             }
 
             context.PlanetAccountInfos = planetAccountInfos.ToArray();
-            Debug.Log($"[PlanetSelector] PlanetAccountInfos({context.PlanetAccountInfos.Length})" +
+            NcDebugger.Log($"[PlanetSelector] PlanetAccountInfos({context.PlanetAccountInfos.Length})" +
                       " updated successfully.");
             return updateSelectedPlanetAccountInfo
                 ? UpdateSelectedPlanetAccountInfo(context)
@@ -437,10 +437,10 @@ namespace Nekoyume.Multiplanetary
 
         public static PlanetContext SelectPlanetAccountInfo(PlanetContext context, PlanetId planetId)
         {
-            Debug.Log($"[PlanetSelector] SelectPlanetAccountInfo() invoked. planet id({planetId})");
+            NcDebugger.Log($"[PlanetSelector] SelectPlanetAccountInfo() invoked. planet id({planetId})");
             if (context.PlanetAccountInfos is null)
             {
-                Debug.LogError("[PlanetSelector] PlanetAccountInfos is null." +
+                NcDebugger.LogError("[PlanetSelector] PlanetAccountInfos is null." +
                                " Use UpdatePlanetAccountInfosAsync() before calling this method.");
                 context.SetError(PlanetContext.ErrorType.PlanetAccountInfosNotInitialized);
                 return context;
@@ -455,7 +455,7 @@ namespace Nekoyume.Multiplanetary
             var info = context.PlanetAccountInfos.FirstOrDefault(e => e.PlanetId.Equals(planetId));
             if (info is null)
             {
-                Debug.LogError($"[PlanetSelector] There is no planet account info for planet id({planetId}).");
+                NcDebugger.LogError($"[PlanetSelector] There is no planet account info for planet id({planetId}).");
                 context.SetError(
                     PlanetContext.ErrorType.PlanetNotFoundInPlanetRegistry,
                     planetId.ToLocalizedPlanetName(containsPlanetId: false));
@@ -469,7 +469,7 @@ namespace Nekoyume.Multiplanetary
 
         private static PlanetContext UpdateSelectedPlanetAccountInfo(PlanetContext context)
         {
-            Debug.Log("[PlanetSelector] Updating SelectedPlanetAccountInfo...");
+            NcDebugger.Log("[PlanetSelector] Updating SelectedPlanetAccountInfo...");
             if (context.SelectedPlanetInfo is null ||
                 context.PlanetAccountInfos is null)
             {
@@ -486,7 +486,7 @@ namespace Nekoyume.Multiplanetary
             var selectedPlanetInfo = context.SelectedPlanetInfo;
             if (selectedPlanetInfo is null)
             {
-                Debug.LogError("[PlanetSelector] SelectedPlanetInfo is null." +
+                NcDebugger.LogError("[PlanetSelector] SelectedPlanetInfo is null." +
                                " Use SelectPlanet() before calling this method.");
                 context.SetError(PlanetContext.ErrorType.PlanetNotSelected);
                 return context;
@@ -498,7 +498,7 @@ namespace Nekoyume.Multiplanetary
             var rpcEndpoints = selectedPlanetInfo.RPCEndpoints;
             if (rpcEndpoints.HeadlessGrpc.Count == 0)
             {
-                Debug.LogError($"[PlanetSelector] HeadlessGql endpoint of planet({selectedPlanetInfo.ID}) is empty.");
+                NcDebugger.LogError($"[PlanetSelector] HeadlessGql endpoint of planet({selectedPlanetInfo.ID}) is empty.");
                 context.SetError(
                     PlanetContext.ErrorType.NoHeadlessGqlEndpointInPlanet,
                     selectedPlanetInfo.ID.ToLocalizedPlanetName(containsPlanetId: false));

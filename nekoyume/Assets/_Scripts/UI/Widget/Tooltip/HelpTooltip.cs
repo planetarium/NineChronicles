@@ -212,7 +212,7 @@ namespace Nekoyume.UI
             var sb = new StringBuilder($"[{nameof(HelpTooltip)}]");
             sb.Append($" {nameof(GetViewModels)}()");
             sb.Append($" Failed to load resource at {JsonDataPath}");
-            Debug.LogError(sb.ToString());
+            NcDebugger.LogError(sb.ToString());
             return null;
         }
 
@@ -247,7 +247,7 @@ namespace Nekoyume.UI
             if (Instance is null ||
                 SharedViewModels is null)
             {
-                Debug.LogError("Failed to initialize.");
+                NcDebugger.LogError("Failed to initialize.");
             }
         }
 
@@ -386,7 +386,7 @@ namespace Nekoyume.UI
                 var sb = new StringBuilder($"[{nameof(HelpTooltip)}]");
                 sb.Append($" {nameof(TrySetId)}({id.GetType().Name} {nameof(id)}):");
                 sb.Append($" Cannot found {id}");
-                Debug.LogError(sb.ToString());
+                NcDebugger.LogError(sb.ToString());
                 return false;
             }
 
@@ -467,7 +467,7 @@ namespace Nekoyume.UI
             var sprite = Resources.Load<Sprite>(imageModel.resourcePath);
             if (sprite is null)
             {
-                Debug.LogError($"Failed to load resource at {imageModel.resourcePath}");
+                NcDebugger.LogError($"Failed to load resource at {imageModel.resourcePath}");
                 return;
             }
 
@@ -490,7 +490,7 @@ namespace Nekoyume.UI
             if (imageModel.spinning)
             {
                 _spinningImages.Add(tuple);
-                Debug.LogWarning("_spinningImages.Add() called!");
+                NcDebugger.LogWarning("_spinningImages.Add() called!");
             }
         }
 

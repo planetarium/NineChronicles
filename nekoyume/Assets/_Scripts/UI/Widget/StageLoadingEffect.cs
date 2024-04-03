@@ -70,7 +70,7 @@ namespace Nekoyume.UI
             var sprite = spriteAtlas.GetSprite(spriteName);
             if (sprite is null)
             {
-                Debug.LogError($"Failed to get sprite in \"{spriteAtlas.name}\" by {spriteName}");
+                NcDebugger.LogError($"Failed to get sprite in \"{spriteAtlas.name}\" by {spriteName}");
             }
 
             return sprite;
@@ -83,7 +83,7 @@ namespace Nekoyume.UI
             var spriteAtlas = Resources.Load<SpriteAtlas>(spriteAtlasPath);
             if (spriteAtlas is null)
             {
-                Debug.LogError($"Failed to load SpriteAtlas in \"Assets/Resources/{spriteAtlasPath}\"");
+                NcDebugger.LogError($"Failed to load SpriteAtlas in \"Assets/Resources/{spriteAtlasPath}\"");
             }
 
             return spriteAtlas;

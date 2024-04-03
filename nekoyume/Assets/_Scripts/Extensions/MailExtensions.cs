@@ -37,7 +37,7 @@ namespace Nekoyume
             var iapServiceManager = game.IAPServiceManager;
             if (iapServiceManager is null)
             {
-                Debug.Log($"{nameof(IAPServiceManager)} is null.");
+                NcDebugger.Log($"{nameof(IAPServiceManager)} is null.");
                 return mail.GetCellContentsForException();
             }
 
@@ -110,7 +110,7 @@ namespace Nekoyume
                         itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
                         continue;
                     }
-                    Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                    NcDebugger.LogWarning($"Not found material sheet row. {fungibleId}");
 
                     row = materialSheet.OrderedList!
                         .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
@@ -170,7 +170,7 @@ namespace Nekoyume
             var iapServiceManager = game.IAPServiceManager;
             if (iapServiceManager is null)
             {
-                Debug.Log($"{nameof(IAPServiceManager)} is null.");
+                NcDebugger.Log($"{nameof(IAPServiceManager)} is null.");
                 return mail.GetCellContentsForException();
             }
 
@@ -251,7 +251,7 @@ namespace Nekoyume
                         itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
                         continue;
                     }
-                    Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                    NcDebugger.LogWarning($"Not found material sheet row. {fungibleId}");
                 }
             }
 

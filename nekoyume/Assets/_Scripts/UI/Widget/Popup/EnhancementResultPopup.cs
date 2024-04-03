@@ -175,19 +175,19 @@ namespace Nekoyume.UI
         {
             if (!(mail.attachment is ItemEnhancement13.ResultModel result))
             {
-                Debug.LogError("mail.attachment is not ItemEnhancement.ResultModel");
+                NcDebugger.LogError("mail.attachment is not ItemEnhancement.ResultModel");
                 return;
             }
 
             if (!(result.preItemUsable is Equipment preEquipment))
             {
-                Debug.LogError("result.preItemUsable is not Equipment");
+                NcDebugger.LogError("result.preItemUsable is not Equipment");
                 return;
             }
 
             if (!(result.itemUsable is Equipment equipment))
             {
-                Debug.LogError("result.itemUsable is not Equipment");
+                NcDebugger.LogError("result.itemUsable is not Equipment");
                 return;
             }
 
@@ -202,13 +202,13 @@ namespace Nekoyume.UI
         {
             if (preEquipment is null)
             {
-                Debug.LogError("preEquipment is null");
+                NcDebugger.LogError("preEquipment is null");
                 return;
             }
 
             if (equipment is null)
             {
-                Debug.LogError("equipment is null");
+                NcDebugger.LogError("equipment is null");
                 return;
             }
 

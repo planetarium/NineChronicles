@@ -106,7 +106,7 @@ namespace Nekoyume.Blockchain
                 localPath = path;
             }
 
-            Debug.Log($"[BlockManager] localPath: {localPath}");
+            NcDebugger.Log($"[BlockManager] localPath: {localPath}");
 
 #if UNITY_ANDROID
             // NOTE: UnityWebRequest requires to be called in main thread.
@@ -123,7 +123,7 @@ namespace Nekoyume.Blockchain
 #else
             if (File.Exists(localPath))
             {
-                Debug.Log($"[BlockManager] Load genesis block from local path via File IO. {localPath}");
+                NcDebugger.Log($"[BlockManager] Load genesis block from local path via File IO. {localPath}");
                 var buffer = await File.ReadAllBytesAsync(localPath);
                 var dict = (Dictionary)_codec.Decode(buffer);
                 return BlockMarshaler.UnmarshalBlock(dict);
@@ -132,7 +132,7 @@ namespace Nekoyume.Blockchain
 
             using var client = new WebClient();
             {
-                Debug.Log($"[BlockManager] Load genesis block from remote path via WebClient. {uri.AbsoluteUri}");
+                NcDebugger.Log($"[BlockManager] Load genesis block from remote path via WebClient. {uri.AbsoluteUri}");
                 var rawGenesisBlock = await client.DownloadDataTaskAsync(uri);
                 var dict = (Dictionary)_codec.Decode(rawGenesisBlock);
                 return BlockMarshaler.UnmarshalBlock(dict);

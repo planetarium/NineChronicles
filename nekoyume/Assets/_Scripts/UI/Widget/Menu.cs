@@ -703,7 +703,7 @@ namespace Nekoyume.UI
             var worldInfo = Game.Game.instance.States.CurrentAvatarState.worldInformation;
             if (worldInfo is null)
             {
-                Debug.LogError("[Menu.PlayTutorial] : worldInformation is null");
+                NcDebugger.LogError("[Menu.PlayTutorial] : worldInformation is null");
                 return;
             }
 
@@ -777,7 +777,7 @@ namespace Nekoyume.UI
                 .FirstOrDefault();
             if (firstRecipeRow is null)
             {
-                Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
+                NcDebugger.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
                 return;
             }
 

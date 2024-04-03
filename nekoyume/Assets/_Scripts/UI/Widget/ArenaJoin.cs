@@ -111,7 +111,7 @@ namespace Nekoyume.UI
                 RxProps.ArenaInformationOrderedWithScore.UpdateAsync());
             loading.Close();
             sw.Stop();
-            Debug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
+            NcDebugger.Log($"[Arena] Loading Complete. {sw.Elapsed}");
             Show(ignoreShowAnimation);
         }
 

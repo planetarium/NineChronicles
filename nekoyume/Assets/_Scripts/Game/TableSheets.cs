@@ -76,7 +76,7 @@ namespace Nekoyume.Game
             ItemSheetInitialize();
             QuestSheetInitialize();
             sw.Stop();
-            Debug.Log($"[{nameof(TableSheets)}] Initialize Total: {DateTime.UtcNow - started}");
+            NcDebugger.Log($"[{nameof(TableSheets)}] Initialize Total: {DateTime.UtcNow - started}");
         }
 
         public WorldSheet WorldSheet { get; private set; }

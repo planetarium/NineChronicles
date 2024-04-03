@@ -112,7 +112,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                Debug.Log("Skip incoming battle. Battle is already simulating.");
+                NcDebugger.Log("Skip incoming battle. Battle is already simulating.");
             }
         }
 

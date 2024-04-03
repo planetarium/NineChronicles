@@ -17,7 +17,7 @@ namespace Nekoyume.Helper
             var filteredArgs = args.Where(str =>
                 !str.Contains("private")).ToList();
             var argsString = string.Join(" ", filteredArgs);
-            Debug.Log($"[CommandLineParser] GetCommandLineOptions<{typeof(T).Name}> invoked" +
+            NcDebugger.Log($"[CommandLineParser] GetCommandLineOptions<{typeof(T).Name}> invoked" +
                       $" with {argsString}");
 
             var parser = new Parser(with => with.IgnoreUnknownArguments = true);
@@ -27,7 +27,7 @@ namespace Nekoyume.Helper
                 return ((Parsed<T>)result).Value;
             }
 
-            result.WithNotParsed(_ => Debug.Log(HelpText.AutoBuild(result)));
+            result.WithNotParsed(_ => NcDebugger.Log(HelpText.AutoBuild(result)));
             return null;
         }
     }

@@ -80,7 +80,7 @@ namespace Nekoyume.UI.Module
                     }
                     catch
                     {
-                        Debug.LogError($"Can't Find Item ID {itemInfo.Id} in ItemSheet");
+                        NcDebugger.LogError($"Can't Find Item ID {itemInfo.Id} in ItemSheet");
                     }
                 }
                 else if(currencyInfo != null)
@@ -253,7 +253,7 @@ namespace Nekoyume.UI.Module
             {
                 if(index > premiums.Length)
                 {
-                    Debug.LogError("[SeasonPassRewardCell] out of range premiums item");
+                    NcDebugger.LogError("[SeasonPassRewardCell] out of range premiums item");
                     continue;
                 }
                 premiums[index].SetData(item, null, rewardSchema.Level, false);
@@ -264,7 +264,7 @@ namespace Nekoyume.UI.Module
             {
                 if (index > premiums.Length)
                 {
-                    Debug.LogError("[SeasonPassRewardCell] out of range premiums currency");
+                    NcDebugger.LogError("[SeasonPassRewardCell] out of range premiums currency");
                     continue;
                 }
                 premiums[index].SetData(null, item, rewardSchema.Level, false);

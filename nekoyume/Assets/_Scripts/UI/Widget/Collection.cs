@@ -299,7 +299,7 @@ namespace Nekoyume.UI
             var collectionState = Game.Game.instance.States.CollectionState;
             if (collectionState.Ids.Contains(collectionId))
             {
-                Debug.LogError("collection already active");
+                NcDebugger.LogError("collection already active");
                 return;
             }
 

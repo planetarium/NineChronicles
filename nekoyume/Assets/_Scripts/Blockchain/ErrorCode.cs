@@ -152,7 +152,7 @@ namespace Nekoyume.Blockchain
                         }
                     }
 
-                    Debug.LogError(
+                    NcDebugger.LogError(
                         $"Action timeout: (txId: {txId}, actionId: {ate.ActionId}, code: {code})");
 
                     errorMsg += $"\nError Code: {code}";
