@@ -23,6 +23,7 @@ using Nekoyume.Game;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData.Event;
 using NUnit.Framework;
+using TMPro;
 
 namespace Nekoyume.UI
 {
@@ -78,10 +79,10 @@ namespace Nekoyume.UI
         private Button collectionButton;
 
         [SerializeField]
-        private TMPro.TextMeshProUGUI collectionCount;
+        private TextMeshProUGUI collectionCount;
 
         [SerializeField]
-        private TMPro.TextMeshProUGUI collectionMaxCount;
+        private TextMeshProUGUI collectionMaxCount;
 
         public static RecipeModel SharedModel { get; set; }
         public static List<SubRecipeTab> SubRecipeTabs { get; private set; }
