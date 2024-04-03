@@ -65,7 +65,6 @@ namespace Nekoyume.State
             _inventory.SetValueAndForceNotify(state.inventory);
             _mailBox.SetValueAndForceNotify(state.mailBox);
             _worldInformation.SetValueAndForceNotify(state.worldInformation);
-            _dailyRewardReceivedIndex.SetValueAndForceNotify(state.dailyRewardReceivedIndex);
             _questList.SetValueAndForceNotify(state.questList);
         }
 
