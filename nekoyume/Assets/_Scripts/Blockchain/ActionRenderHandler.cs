@@ -1843,7 +1843,7 @@ namespace Nekoyume.Blockchain
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
                     NotificationCell.NotificationType.Notification);
                 var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                    States.Instance.GameConfigState.DailyRewardInterval));
+                    Action.DailyReward.DailyRewardInterval));
                 var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
                 PushNotifier.Push(
                     notificationText,

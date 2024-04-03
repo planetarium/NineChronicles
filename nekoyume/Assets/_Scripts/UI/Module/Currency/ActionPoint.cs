@@ -78,16 +78,9 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
 
             sliderAnimator.SetValue(0f, false);
+            sliderAnimator.SetMaxValue(DailyReward.ActionPointMax);
             dailyBonus.sliderAnimator.SetValue(0f, false);
-
-            GameConfigStateSubject.GameConfigState
-                .ObserveOnMainThread()
-                .Subscribe(state =>
-                {
-                    sliderAnimator.SetMaxValue(state.ActionPointMax);
-                    dailyBonus.sliderAnimator.SetMaxValue(state.DailyRewardInterval);
-                })
-                .AddTo(gameObject);
+            dailyBonus.sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
 
             GameConfigStateSubject.ActionPointState.ObserveAdd()
                 .Where(x => x.Key == States.Instance.CurrentAvatarState.address)
@@ -105,15 +98,8 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
 
-            if (!syncWithAvatarState)
-                return;
-
-            var gameConfig = States.Instance.GameConfigState;
-            if (gameConfig is not null)
-            {
-                sliderAnimator.SetMaxValue(gameConfig.ActionPointMax);
-                dailyBonus.sliderAnimator.SetMaxValue(gameConfig.DailyRewardInterval);
-            }
+            sliderAnimator.SetMaxValue(DailyReward.ActionPointMax);
+            dailyBonus.sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
 
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is not null)
@@ -194,10 +180,9 @@ namespace Nekoyume.UI.Module
 
         private void UpdateDailyBonusSlider(bool useAnimation)
         {
-            var gameConfigState = States.Instance.GameConfigState;
             var endValue = Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex);
-            var value = Math.Min(gameConfigState.DailyRewardInterval, endValue);
-            var remainBlock = gameConfigState.DailyRewardInterval - value;
+            var value = Math.Min(DailyReward.DailyRewardInterval, endValue);
+            var remainBlock = DailyReward.DailyRewardInterval - value;
 
             dailyBonus.sliderAnimator.SetValue(value, useAnimation);
             var timeSpanString =
@@ -215,11 +200,6 @@ namespace Nekoyume.UI.Module
         private void OnDailyBonusSliderChange()
         {
             animator.SetBool(IsFull, dailyBonus.sliderAnimator.IsFull);
-        }
-
-        public void SetActionPoint(long actionPoint)
-        {
-            SetActionPoint(actionPoint, false);
         }
 
         public void SetEventTriggerEnabled(bool value)

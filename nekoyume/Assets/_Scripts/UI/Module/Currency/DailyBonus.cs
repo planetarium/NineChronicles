@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using JetBrains.Annotations;
+using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -64,22 +65,18 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ => OnSliderChange())
                 .AddTo(gameObject);
             sliderAnimator.SetValue(0f, false);
-
-            GameConfigStateSubject.GameConfigState
-                .ObserveOnMainThread()
-                .Subscribe(state => sliderAnimator.SetMaxValue(state.DailyRewardInterval))
-                .AddTo(gameObject);
+            sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
 
-            sliderAnimator.SetMaxValue(States.Instance.GameConfigState?.DailyRewardInterval ?? 0f);
+            sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
             if (States.Instance.CurrentAvatarState is not null)
             {
                 SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
-                SetRewardReceivedBlockIndex(States.Instance.CurrentAvatarState.dailyRewardReceivedIndex, false);
+                SetRewardReceivedBlockIndex(ReactiveAvatarState.DailyRewardReceivedIndex, false);
             }
 
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
@@ -125,10 +122,9 @@ namespace Nekoyume.UI.Module
 
         private void UpdateSlider(bool useAnimation)
         {
-            var gameConfigState = States.Instance.GameConfigState;
             var endValue = Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex);
-            var value = Math.Min(gameConfigState.DailyRewardInterval, endValue);
-            var remainBlock = gameConfigState.DailyRewardInterval - value;
+            var value = Math.Min(DailyReward.DailyRewardInterval, endValue);
+            var remainBlock = DailyReward.DailyRewardInterval - value;
 
             sliderAnimator.SetValue(value, useAnimation);
             timeSpanText.text =

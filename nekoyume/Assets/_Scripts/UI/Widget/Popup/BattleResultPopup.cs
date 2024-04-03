@@ -438,7 +438,6 @@ namespace Nekoyume.UI
                 true);
             worldStageId.text = $"{SharedModel.WorldName}" +
                                 $" {stageText}";
-            actionPoint.SetActionPoint(model.ActionPoint);
             actionPoint.SetEventTriggerEnabled(true);
 
             base.Show();

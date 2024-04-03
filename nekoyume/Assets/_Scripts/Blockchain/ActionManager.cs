@@ -775,12 +775,6 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<DailyReward>> DailyReward()
         {
-            var blockCount = Game.Game.instance.Agent.BlockIndex -
-                States.Instance.CurrentAvatarState.dailyRewardReceivedIndex + 1;
-            LocalLayerModifier.IncreaseAvatarDailyRewardReceivedIndex(
-                States.Instance.CurrentAvatarState.address,
-                blockCount);
-
             var action = new DailyReward
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
