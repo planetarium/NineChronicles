@@ -59,6 +59,9 @@ namespace Nekoyume.UI.Model
         [SerializeField]
         private TextMeshProUGUI nextCp;
 
+        private RuneOptionSheet.Row _optionRow;
+        private int _startLevel;
+        private RuneUsePlace _runeUsePlace;
 
         public void Hide()
         {
@@ -73,6 +76,56 @@ namespace Nekoyume.UI.Model
         }
 
         public void Set(
+            RuneOptionSheet.Row optionRow,
+            int startLevel,
+            RuneUsePlace runeUsePlace)
+        {
+            _optionRow = optionRow;
+            _startLevel = startLevel;
+            _runeUsePlace = runeUsePlace;
+        }
+
+        public void UpdateTryCount(int tryCount)
+        {
+            if (_optionRow is null)
+            {
+                return;
+            }
+
+            if (_startLevel == 0)
+            {
+                if (!_optionRow.LevelOptionMap.TryGetValue(1, out var statInfo))
+                {
+                    return;
+                }
+
+                Set(1, statInfo, _runeUsePlace);
+            }
+            else
+            {
+                if (!_optionRow.LevelOptionMap.TryGetValue(_startLevel, out var statInfo))
+                {
+                    return;
+                }
+
+                var nextLevel = _startLevel + tryCount;
+                if (_optionRow.LevelOptionMap.TryGetValue(nextLevel, out var nextStatInfo))
+                {
+                    Set(
+                        _startLevel,
+                        nextLevel,
+                        statInfo,
+                        nextStatInfo,
+                        _runeUsePlace);
+                }
+                else // max level
+                {
+                    Set(_startLevel, statInfo, _runeUsePlace);
+                }
+            }
+        }
+
+        private void Set(
             int level,
             int nextLevel,
             RuneOptionSheet.Row.RuneOptionInfo option,
@@ -107,9 +160,13 @@ namespace Nekoyume.UI.Model
 
                 var skillName = L10nManager.Localize($"SKILL_NAME_{option.SkillId}");
                 var curChance = $"{option.SkillChance}%";
-                var nextChance = option.SkillChance == nextOption.SkillChance ? $"<color=#FFF3D4>{option.SkillChance}%</color>" : $"{nextOption.SkillChance}%";
+                var nextChance = option.SkillChance == nextOption.SkillChance
+                    ? $"<color=#FFF3D4>{option.SkillChance}%</color>"
+                    : $"{nextOption.SkillChance}%";
                 var curCooldown = $"{option.SkillCooldown}";
-                var nextCooldown = option.SkillCooldown == nextOption.SkillCooldown ? $"<color=#FFF3D4>{option.SkillCooldown}</color>" : $"{nextOption.SkillCooldown}";
+                var nextCooldown = option.SkillCooldown == nextOption.SkillCooldown
+                    ? $"<color=#FFF3D4>{option.SkillCooldown}</color>"
+                    : $"{nextOption.SkillCooldown}";
                 var currentValueString = RuneFrontHelper.GetRuneValueString(option);
                 var nextValueString = RuneFrontHelper.GetRuneValueString(nextOption);
                 if (currentValueString.Equals(nextValueString))
@@ -151,7 +208,7 @@ namespace Nekoyume.UI.Model
             nextCp.gameObject.SetActive(true);
         }
 
-        public void Set(int level, RuneOptionSheet.Row.RuneOptionInfo option, RuneUsePlace runeUsePlace)
+        private void Set(int level, RuneOptionSheet.Row.RuneOptionInfo option, RuneUsePlace runeUsePlace)
         {
             UpdateAreaIcon(runeUsePlace);
             levelText.text = $"+{level}";

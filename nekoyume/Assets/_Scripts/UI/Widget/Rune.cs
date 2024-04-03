@@ -1,13 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Cysharp.Threading.Tasks;
 using Libplanet.Action;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -25,95 +24,60 @@ namespace Nekoyume.UI
     using UniRx;
     public class Rune : Widget
     {
-        [SerializeField]
-        private RuneOptionView currentOptions;
+        [Serializable]
+        private struct TryCountSlider
+        {
+            public GameObject container;
+            public SweepSlider slider;
+            public Button minusButton;
+            public Button plusButton;
+        }
 
         [SerializeField]
-        private List<RuneCostItem> costItems;
+        private Button closeButton;
 
-        [SerializeField]
-        private List<RuneEachCostItem> eachCostItems;
+        [SerializeField] [Header("LeftArea")]
+        private RuneStoneEnhancementInventoryScroll scroll;
 
-        [SerializeField]
-        private Image runeImage;
-
-        [SerializeField]
+        [SerializeField] [Header("RightArea")]
         private TextMeshProUGUI runeNameText;
 
         [SerializeField]
         private TextMeshProUGUI gradeText;
 
         [SerializeField]
-        private TextMeshProUGUI successRateText;
+        private RuneOptionView runeOptionView;
 
-        [SerializeField]
-        private TextMeshProUGUI loadingText;
-
-        [SerializeField]
-        private Button closeButton;
-
-        [SerializeField]
-        private Button combineButton;
-
-        [SerializeField]
-        private Button levelUpButton;
-
-        [SerializeField]
-        private Button plusButton;
-
-        [SerializeField]
-        private Button minusButton;
-
-        [SerializeField]
-        private Button disableCombineButton;
-
-        [SerializeField]
-        private Button disableLevelUpButton;
-
-        [SerializeField]
-        private Button informationButton;
-
-        [SerializeField]
-        private SweepSlider slider;
-
-        [SerializeField]
-        private List<GameObject> activeButtons;
-
-        [SerializeField]
-        private GameObject content;
-
-        [SerializeField]
+        [SerializeField] [Header("CenterArea")]
         private GameObject requirement;
 
         [SerializeField]
-        private GameObject successContainer;
+        private Image runeImage;
 
         [SerializeField]
-        private GameObject costContainer;
+        private List<RuneCostItem> costItems;
 
         [SerializeField]
-        private List<GameObject> loadingObjects;
+        private TryCountSlider tryCountSlider;
+
+        [SerializeField]
+        private ConditionalButton levelUpButton;
 
         [SerializeField]
         private GameObject maxLevel;
 
         [SerializeField]
-        private GameObject sliderContainer;
+        private TextMeshProUGUI loadingText;
 
         [SerializeField]
-        private RuneStoneEnhancementInventoryScroll scroll;
+        private List<GameObject> loadingObjects;
 
         [SerializeField]
         private Animator animator;
 
-        private static readonly int HashToCombine =
-            Animator.StringToHash("Combine");
-
-        private static readonly int HashToLevelUp =
-            Animator.StringToHash("LevelUp");
-
-        private static readonly int HashToMaterialUse =
-            Animator.StringToHash("MaterialUse");
+        private static readonly int HashToCombine = Animator.StringToHash("Combine");
+        private static readonly int HashToLevelUp = Animator.StringToHash("LevelUp");
+        private static readonly int HashToMaterialUse = Animator.StringToHash("MaterialUse");
 
         private readonly List<RuneItem> _runeItems = new();
         private readonly List<IDisposable> _disposables = new();
@@ -133,42 +97,35 @@ namespace Nekoyume.UI
                 _costItems.Add(costItem.CostType, costItem);
             }
 
-            combineButton.onClick.AddListener(Enhancement);
-            levelUpButton.onClick.AddListener(Enhancement);
-            disableCombineButton.onClick.AddListener(() =>
+            levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
+            levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
             {
+                var message = _selectedRuneItem.Level > 0
+                    ? L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2")  // Level Up
+                    : L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1");  // Combine
+
                 NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1"),
+                    message,
                     NotificationCell.NotificationType.Alert);
-            });
-            disableLevelUpButton.onClick.AddListener(() =>
+            }).AddTo(gameObject);
+
+            tryCountSlider.plusButton.onClick.AddListener(() =>
             {
-                NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2"),
-                    NotificationCell.NotificationType.Alert);
-            });
-            informationButton.onClick.AddListener(() =>
-            {
-                informationButton.gameObject.SetActive(false);
-            });
-            plusButton.onClick.AddListener(() =>
-            {
-                if (_maxTryCount <= 0)
+                if (_maxTryCount < 1)
                 {
                     return;
                 }
-                TryCount.Value = Math.Min(_maxTryCount, TryCount.Value + 1);
-                TryCount.Value = Math.Max(1, TryCount.Value);
+
+                TryCount.Value = Math.Min(TryCount.Value + 1, _maxTryCount);
             });
-            minusButton.onClick.AddListener(() =>
+            tryCountSlider.minusButton.onClick.AddListener(() =>
             {
-                TryCount.Value = Math.Max(1, TryCount.Value - 1);
+                TryCount.Value = Math.Max(TryCount.Value - 1, 1);
             });
             closeButton.onClick.AddListener(() =>
             {
-                base.Close(true);
-                Find<CombinationMain>().Show();
-                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                AudioController.PlayClick();
+                CloseWidget.Invoke();
             });
             CloseWidget = () =>
             {
@@ -181,14 +138,15 @@ namespace Nekoyume.UI
                          .AddTo(gameObject);
             TryCount.Subscribe(x =>
             {
-                slider.ForceMove(x);
+                tryCountSlider.slider.ForceMove(x);
                 _costItems[RuneCostType.RuneStone].UpdateCount(x);
                 _costItems[RuneCostType.Ncg].UpdateCount(x);
                 _costItems[RuneCostType.Crystal].UpdateCount(x);
+                runeOptionView.UpdateTryCount(x);
             }).AddTo(gameObject);
         }
 
-        public void Show(bool ignoreShowAnimation = false)
+        public override void Show(bool ignoreShowAnimation = false)
         {
             SetInventory();
             base.Show(ignoreShowAnimation);
@@ -204,7 +162,6 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             Set(_selectedRuneItem);
         }
-
 
         public void OnActionRender(IRandom random, FungibleAssetValue fav)
         {
@@ -230,7 +187,7 @@ namespace Nekoyume.UI
 
             var runeStates = States.Instance.RuneStates;
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
-            List<RuneStoneEnhancementInventoryItem> items = new List<RuneStoneEnhancementInventoryItem>();
+            var items = new List<RuneStoneEnhancementInventoryItem>();
             foreach (var value in sheet.Values)
             {
                 var state = runeStates.FirstOrDefault(x => x.RuneId == value.Id);
@@ -288,13 +245,12 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (item.Cost is null && !item.IsMaxLevel)
+            if (item.CostRow is null && !item.IsMaxLevel)
             {
                 return;
             }
 
             _selectedRuneItem = item;
-            content.SetActive(true);
             UpdateRuneItems(item);
             UpdateButtons(item);
             UpdateRuneOptions(item);
@@ -303,11 +259,9 @@ namespace Nekoyume.UI
             UpdateSlider(item);
             animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
             loadingText.text = item.Level > 0
-                ? L10nManager.Localize($"UI_RUNE_LEVEL_UP_PROCESSING")
-                : L10nManager.Localize($"UI_RUNE_COMBINE_PROCESSING");
+                ? L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING")  // Level Up Processing
+                : L10nManager.Localize("UI_RUNE_COMBINE_PROCESSING");  // Combine Processing
 
-            successContainer.SetActive(!item.IsMaxLevel);
-            costContainer.SetActive(!item.IsMaxLevel);
             TryCount.SetValueAndForceNotify(TryCount.Value);
         }
 
@@ -328,27 +282,14 @@ namespace Nekoyume.UI
 
         private void UpdateButtons(RuneItem item)
         {
-            foreach (var b in activeButtons)
-            {
-                b.SetActive(item.HasNotification);
-            }
-
             requirement.SetActive(item.HasNotification);
             maxLevel.SetActive(item.IsMaxLevel);
 
-            disableCombineButton.gameObject.SetActive(!item.HasNotification);
-            disableLevelUpButton.gameObject.SetActive(!item.HasNotification);
-
-            if (item.IsMaxLevel)
-            {
-                combineButton.gameObject.SetActive(false);
-                levelUpButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                combineButton.gameObject.SetActive(item.Level == 0);
-                levelUpButton.gameObject.SetActive(item.Level != 0);
-            }
+            levelUpButton.gameObject.SetActive(!item.IsMaxLevel);
+            levelUpButton.Text = item.Level > 0
+                ? L10nManager.Localize("UI_UPGRADE_EQUIPMENT")  // Level Up
+                : L10nManager.Localize("UI_COMBINATION_ITEM");  // Combine
+            levelUpButton.Interactable = item.HasNotification;
         }
 
         private void UpdateRuneOptions(RuneItem item)
@@ -356,86 +297,39 @@ namespace Nekoyume.UI
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
 
-            if (item.Level == 0)
-            {
-                if (item.OptionRow is null || !item.OptionRow.LevelOptionMap.TryGetValue(1, out var statInfo))
-                {
-                    return;
-                }
-
-                currentOptions.Set(1, statInfo, (RuneUsePlace)item.Row.UsePlace);
-            }
-            else
-            {
-                if (!item.OptionRow.LevelOptionMap.TryGetValue(item.Level, out var statInfo))
-                {
-                    return;
-                }
-
-                var nextLevel = item.Level + 1;
-                if (item.OptionRow.LevelOptionMap.TryGetValue(nextLevel, out var nextStatInfo))
-                {
-                    currentOptions.Set(
-                    item.Level,
-                    nextLevel,
-                    statInfo,
-                    nextStatInfo,
-                    (RuneUsePlace)item.Row.UsePlace);
-                }
-                else
-                {
-                    currentOptions.Set(item.Level, statInfo, (RuneUsePlace)item.Row.UsePlace); // max level
-                }
-            }
+            runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);
         }
 
         private void UpdateCost(RuneItem item, Sprite runeStoneIcon)
         {
-            if (item.Cost is null)
+            if (item.CostRow is null)
             {
-                successRateText.text = String.Empty;
-                eachCostItems.ForEach(x=> x.Set(0));
-                _costItems[RuneCostType.RuneStone].Set(0, false, null);
-                _costItems[RuneCostType.Crystal].Set(0, false, null);
-                _costItems[RuneCostType.Ncg].Set(0, false, null);
+                _costItems[RuneCostType.RuneStone].Set(null, 0, false, null);
+                _costItems[RuneCostType.Crystal].Set(null, 0, false, null);
+                _costItems[RuneCostType.Ncg].Set(null, 0, false, null);
                 return;
             }
-
-            successRateText.text = $"{item.Cost.LevelUpSuccessRate / 100}%";
 
             var popup = Find<MaterialNavigationPopup>();
 
             _costItems[RuneCostType.RuneStone].Set(
-                item.Cost.RuneStoneQuantity,
+                item.CostRow,
+                item.Level,
                 item.EnoughRuneStone,
                 () => popup.ShowRuneStone(item.Row.Id),
                 runeStoneIcon);
 
             _costItems[RuneCostType.Crystal].Set(
-                item.Cost.CrystalQuantity,
+                item.CostRow,
+                item.Level,
                 item.EnoughCrystal,
                 () => popup.ShowCurrency(CostType.Crystal));
 
             _costItems[RuneCostType.Ncg].Set(
-                item.Cost.NcgQuantity,
+                item.CostRow,
+                item.Level,
                 item.EnoughNcg,
                 () => popup.ShowCurrency(CostType.NCG));
-
-            foreach (var costItem in eachCostItems)
-            {
-                switch(costItem.CostType)
-                {
-                    case RuneCostType.RuneStone:
-                        costItem.Set(item.Cost.RuneStoneQuantity);
-                        break;
-                    case RuneCostType.Crystal:
-                        costItem.Set(item.Cost.CrystalQuantity);
-                        break;
-                    case RuneCostType.Ncg:
-                        costItem.Set(item.Cost.NcgQuantity);
-                        break;
-                }
-            }
         }
 
         private void UpdateHeaderMenu(Sprite runeStoneIcon, FungibleAssetValue runeStone)
@@ -444,6 +338,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
             var headerMenu = Find<HeaderMenuStatic>();
             headerMenu.UpdateAssets(HeaderMenuStatic.AssetVisibleState.RuneStone);
             headerMenu.RuneStone.SetRuneStone(
@@ -454,42 +349,30 @@ namespace Nekoyume.UI
         {
             if (item.Level == 0)
             {
-                sliderContainer.SetActive(false);
+                tryCountSlider.container.SetActive(false);
                 TryCount.Value = 1;
             }
             else
             {
-                if (item.Cost is null)
+                if (item.CostRow is null)
                 {
-                    sliderContainer.SetActive(false);
+                    tryCountSlider.container.SetActive(false);
                     return;
                 }
 
-                sliderContainer.SetActive(true);
-                var maxRuneStone = item.Cost.RuneStoneQuantity > 0
-                    ? item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
-                    : -1;
-                var maxCrystal = item.Cost.CrystalQuantity > 0
-                    ? States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
-                    : -1;
-                var maxNcg = item.Cost.NcgQuantity > 0
-                    ? States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
-                    : -1;
-                var maxValues = new List<BigInteger> { maxRuneStone, maxCrystal, maxNcg };
-                var count = (int)maxValues.Where(x => x >= 0).Min();
-                _maxTryCount = Math.Min(100, count);
-                slider.Set(1,
-                    _maxTryCount > 0 ? _maxTryCount : 1,
-                    1,
-                    _maxTryCount > 0 ? _maxTryCount : 1,
-                    1,
-                    (x) =>
-                    {
-                        TryCount.Value = x;
-                        TryCount.Value = Math.Max(1, TryCount.Value);
-                    },
-                    _maxTryCount > 0,
-                    true);
+                tryCountSlider.container.SetActive(true);
+
+                _maxTryCount = item.CostRow.GetMaxTryCount(item.Level, (
+                    States.Instance.GoldBalanceState.Gold,
+                    States.Instance.CrystalBalance,
+                    item.RuneStone), 30);
+
+                var sliderMaxValue = _maxTryCount > 0 ? _maxTryCount : 1;
+                tryCountSlider.slider.Set(
+                    1, sliderMaxValue,
+                    1, sliderMaxValue,
+                    1, x => TryCount.Value = Math.Clamp(x, 1, sliderMaxValue),
+                    _maxTryCount > 0, true);
             }
         }
 

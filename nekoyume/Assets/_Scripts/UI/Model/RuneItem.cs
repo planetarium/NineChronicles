@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Model
     {
         public RuneListSheet.Row Row { get; }
         public RuneOptionSheet.Row OptionRow { get; }
-        public RuneCostSheet.RuneCostData Cost { get; }
+        public RuneCostSheet.Row CostRow { get; }
 
         public FungibleAssetValue RuneStone { get; set; }
         public int Level { get; }
@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Model
 
             OptionRow = optionRow;
 
-            IsMaxLevel = level == optionRow.LevelOptionMap.Count;
+            IsMaxLevel = Level == optionRow.LevelOptionMap.Count;
 
             var runeRow = Game.Game.instance.TableSheets.RuneSheet[row.Id];
             if (!States.Instance.CurrentAvatarBalances.ContainsKey(runeRow.Ticker))
@@ -58,21 +58,20 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            Cost = costRow.Cost.FirstOrDefault(x => x.Level == level + 1);
-            if (Cost is null)
+            CostRow = costRow;
+
+            if (IsMaxLevel || !CostRow.TryGetCost(Level + 1, out var cost))
             {
-                if (IsMaxLevel)
-                {
-                    EnoughRuneStone = false;
-                    EnoughCrystal = false;
-                    EnoughNcg = false;
-                }
+                EnoughRuneStone = false;
+                EnoughCrystal = false;
+                EnoughNcg = false;
+
                 return;
             }
 
-            EnoughRuneStone = RuneStone.MajorUnit >= Cost.RuneStoneQuantity;
-            EnoughCrystal = States.Instance.CrystalBalance.MajorUnit >= Cost.CrystalQuantity;
-            EnoughNcg = States.Instance.GoldBalanceState.Gold.MajorUnit >= Cost.NcgQuantity;
+            EnoughRuneStone = RuneStone.MajorUnit >= cost.RuneStoneQuantity;
+            EnoughCrystal = States.Instance.CrystalBalance.MajorUnit >= cost.CrystalQuantity;
+            EnoughNcg = States.Instance.GoldBalanceState.Gold.MajorUnit >= cost.NcgQuantity;
         }
     }
 }

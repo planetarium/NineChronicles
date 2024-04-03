@@ -103,25 +103,29 @@ namespace Nekoyume.UI
         {
             base.Show(true);
 
-            // Todo : Implement this ( it will be fixed in #4680 )
-            var isSuccess = true;
-            var tryResult = 0;
-
-            var speech = string.Empty;
+            // FIXME
+            var isSuccess = RuneHelper.TryEnhancement(
+                runeItem.Level,
+                runeItem.CostRow,
+                random,
+                tryCount,
+                out var tryResult);
 
             AudioController.instance.PlaySfx(isSuccess
                 ? AudioController.SfxCode.Success
                 : AudioController.SfxCode.Failed);
 
+            var levelUpCount = tryResult.LevelUpCount;
+            string speech;
             if (isSuccess)
             {
-                speech = tryCount != tryResult
-                    ? L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_1", tryCount, tryResult)
-                    : L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_2", tryResult);
+                speech = tryCount != levelUpCount
+                    ? L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_1", tryCount, levelUpCount)
+                    : L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_2", levelUpCount);
             }
             else
             {
-                speech = L10nManager.Localize("UI_RUNE_LEVEL_UP_FAIL", tryResult);
+                speech = L10nManager.Localize("UI_RUNE_LEVEL_UP_FAIL", levelUpCount);
             }
 
             speechBubble.Show();
@@ -129,7 +133,7 @@ namespace Nekoyume.UI
 
             UpdateInformation(runeItem, isSuccess);
             currentLevelText.text = $"+{runeItem.Level}";
-            nextLevelText.text = $"+{runeItem.Level + 1}";
+            nextLevelText.text = $"+{runeItem.Level + tryResult.LevelUpCount}";
             successText.gameObject.SetActive(isSuccess);
             failText.gameObject.SetActive(!isSuccess);
             animator.Play(isSuccess ? HashToSuccess : HashToFail);
