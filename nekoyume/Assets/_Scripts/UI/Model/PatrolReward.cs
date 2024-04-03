@@ -61,7 +61,7 @@ $@"query {{
             var response = await serviceClient.GetObjectAsync<InitializeResponse>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(InitializeResponse)}");
+                NcDebug.LogError($"Failed getting response : {nameof(InitializeResponse)}");
                 return;
             }
 
@@ -78,7 +78,7 @@ $@"query {{
 
             if (response.Policy is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
+                NcDebug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
             }
             else
             {
@@ -124,7 +124,7 @@ $@"query {{
             var response = await serviceClient.GetObjectAsync<AvatarResponse>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(AvatarResponse)}");
+                NcDebug.LogError($"Failed getting response : {nameof(AvatarResponse)}");
                 return;
             }
 
@@ -173,13 +173,13 @@ $@"query {{
             var response = await serviceClient.GetObjectAsync<PolicyResponse>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(PolicyResponse)}");
+                NcDebug.LogError($"Failed getting response : {nameof(PolicyResponse)}");
                 return;
             }
 
             if (response.Policy is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
+                NcDebug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
             }
             else
             {
@@ -205,7 +205,7 @@ $@"mutation {{
             var response = await serviceClient.GetObjectAsync<ClaimResponse>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(ClaimResponse)}");
+                NcDebug.LogError($"Failed getting response : {nameof(ClaimResponse)}");
                 return null;
             }
 
@@ -234,13 +234,13 @@ $@"mutation {{
             var response = await serviceClient.GetObjectAsync<PutAvatarResponse>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(PutAvatarResponse)}");
+                NcDebug.LogError($"Failed getting response : {nameof(PutAvatarResponse)}");
                 return;
             }
 
             if (response.PutAvatar is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(PutAvatarResponse.PutAvatar)}");
+                NcDebug.LogError($"Failed getting response : {nameof(PutAvatarResponse.PutAvatar)}");
                 return;
             }
 

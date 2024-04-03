@@ -7,10 +7,10 @@ namespace Nekoyume.Native
     {
         public static void Open(string category)
         {
-            Debug.Log($"[SystemSettingsOpener] Open System Settings: {category}");
+            NcDebug.Log($"[SystemSettingsOpener] Open System Settings: {category}");
             if (Application.platform != RuntimePlatform.Android)
             {
-                Debug.LogWarning("SystemSettingOpener is only supported on Android.");
+                NcDebug.LogWarning("SystemSettingOpener is only supported on Android.");
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace Nekoyume.Native
             }
             catch (Exception ex)
             {
-                Debug.LogException(ex);
+                NcDebug.LogException(ex);
             }
         }
 

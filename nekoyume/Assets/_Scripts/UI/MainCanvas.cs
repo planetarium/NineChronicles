@@ -489,7 +489,7 @@ namespace Nekoyume.UI
             {
                 if (value is null)
                 {
-                    Debug.LogWarning($"value is null. last is {last.name}");
+                    NcDebug.LogWarning($"value is null. last is {last.name}");
                     continue;
                 }
 

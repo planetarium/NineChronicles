@@ -42,7 +42,7 @@ namespace Nekoyume.State
                 throw new ArgumentNullException(nameof(tableSheets));
             }
 
-            Debug.Log("[RxProps] Start");
+            NcDebug.Log("[RxProps] Start");
             _agent = agent;
             _states = states;
             _tableSheets = tableSheets;
@@ -63,7 +63,7 @@ namespace Nekoyume.State
 
         public static void Stop()
         {
-            Debug.Log($"{nameof(RxProps)} stop");
+            NcDebug.Log($"{nameof(RxProps)} stop");
             _disposables.DisposeAllAndClear();
         }
 

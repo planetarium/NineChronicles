@@ -200,7 +200,7 @@ namespace Nekoyume.UI
             {
                 missingObject.SetActive(false);
                 refreshObject.SetActive(true);
-                Debug.LogError($"Error loading ranking. Exception : \n{RankLoadingTask.Exception}\n{RankLoadingTask.Exception.StackTrace}");
+                NcDebug.LogError($"Error loading ranking. Exception : \n{RankLoadingTask.Exception}\n{RankLoadingTask.Exception.StackTrace}");
                 myInfoCell.SetEmpty(states.CurrentAvatarState);
                 return;
             }
@@ -335,7 +335,7 @@ namespace Nekoyume.UI
                 var firstSubElement = dropdown.items.FirstOrDefault();
                 if (firstSubElement is null)
                 {
-                    Debug.LogError($"No sub element exists in {dropdown.name}");
+                    NcDebug.LogError($"No sub element exists in {dropdown.name}");
                     return;
                 }
 

@@ -85,7 +85,7 @@ namespace Nekoyume.UI
                 _onBlurRemoved.OnNext(Unit.Default);
                 if (lastBlur != this)
                 {
-                    Debug.LogWarning("Last Blur object not equals to this object.");
+                    NcDebug.LogWarning("Last Blur object not equals to this object.");
                 }
             }
 

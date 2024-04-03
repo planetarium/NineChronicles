@@ -59,7 +59,7 @@ namespace Nekoyume.Game.Character
         {
             if (Target is null)
             {
-                Debug.LogWarning($"Target is null. {nameof(MecanimAnimator)}.{nameof(DestroyTarget)}");
+                NcDebug.LogWarning($"Target is null. {nameof(MecanimAnimator)}.{nameof(DestroyTarget)}");
                 return;
             }
 

@@ -54,7 +54,7 @@ namespace Nekoyume.UI
                 {
                     if (_targets.ContainsKey(target.type))
                     {
-                        Debug.LogError($"Duplication Tutorial Targets AlreadyRegisterd : {_targets[target.type].gameObject.name}  TryRegisterd : {target.rectTransform.gameObject.name}");
+                        NcDebug.LogError($"Duplication Tutorial Targets AlreadyRegisterd : {_targets[target.type].gameObject.name}  TryRegisterd : {target.rectTransform.gameObject.name}");
                         continue;
                     }
                     _targets.Add(target.type, target.rectTransform);
@@ -68,7 +68,7 @@ namespace Nekoyume.UI
                     {
                         if (_actions.ContainsKey(action))
                         {
-                            Debug.LogError($"Duplication Tutorial {action} Action AlreadyRegisterd : {_actions[action].ActionWidget.name}  TryRegisterd : {widget.name}");
+                            NcDebug.LogError($"Duplication Tutorial {action} Action AlreadyRegisterd : {_actions[action].ActionWidget.name}  TryRegisterd : {widget.name}");
                             continue;
                         }
                         _actions.Add(action, new TutorialAction(widget, methodInfo));
@@ -91,7 +91,7 @@ namespace Nekoyume.UI
 
         public void Play(int id)
         {
-            Debug.Log($"[TutorialController] Play({id})");
+            NcDebug.Log($"[TutorialController] Play({id})");
             if (!_tutorial.isActiveAndEnabled)
             {
                 _tutorial.Show(true);
@@ -327,7 +327,7 @@ namespace Nekoyume.UI
             {
                 if (_targets.ContainsKey(target.type))
                 {
-                    Debug.LogError($"Duplication Tutorial Targets AlreadyRegisterd : {_targets[target.type].gameObject.name}  TryRegisterd : {target.rectTransform.gameObject.name}");
+                    NcDebug.LogError($"Duplication Tutorial Targets AlreadyRegisterd : {_targets[target.type].gameObject.name}  TryRegisterd : {target.rectTransform.gameObject.name}");
                     continue;
                 }
                 _targets.Add(target.type, target.rectTransform);
@@ -341,7 +341,7 @@ namespace Nekoyume.UI
                 {
                     if (_actions.ContainsKey(action))
                     {
-                        Debug.LogError($"Duplication Tutorial {action} Action AlreadyRegisterd : {_actions[action].ActionWidget.name}  TryRegisterd : {widget.name}");
+                        NcDebug.LogError($"Duplication Tutorial {action} Action AlreadyRegisterd : {_actions[action].ActionWidget.name}  TryRegisterd : {widget.name}");
                         continue;
                     }
                     _actions.Add(action, new TutorialAction(widget, methodInfo));

@@ -38,7 +38,7 @@ namespace Nekoyume.GraphQL
                 {
                     foreach (var error in graphQLResponse.Errors)
                     {
-                        Debug.LogError(error.Message);
+                        NcDebug.LogError(error.Message);
                     }
 
                     return null;
@@ -48,7 +48,7 @@ namespace Nekoyume.GraphQL
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to get object with GraphQL Request.\n{e}");
+                NcDebug.LogError($"Failed to get object with GraphQL Request.\n{e}");
                 return null;
             }
         }

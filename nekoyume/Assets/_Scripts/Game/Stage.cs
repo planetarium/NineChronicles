@@ -184,7 +184,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                Debug.Log("Skip incoming battle. Battle is already simulating.");
+                NcDebug.Log("Skip incoming battle. Battle is already simulating.");
             }
         }
 
@@ -1340,7 +1340,7 @@ namespace Nekoyume.Game
 
                 if (ch is null)
                 {
-                    Debug.Log("player is null");
+                    NcDebug.Log("player is null");
                 }
 
                 if (ch is Player)

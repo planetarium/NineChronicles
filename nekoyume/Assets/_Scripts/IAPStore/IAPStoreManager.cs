@@ -49,7 +49,7 @@ namespace Nekoyume.IAPStore
             catch (Exception exception)
             {
                 // An error occurred during services initialization.
-                Debug.LogException(exception);
+                NcDebug.LogException(exception);
             }
 
             _initializedCategorySchema = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
@@ -58,7 +58,7 @@ namespace Nekoyume.IAPStore
             if (_initializedCategorySchema is null)
             {
                 // TODO: not initialized case handling
-                Debug.LogError(
+                NcDebug.LogError(
                     $"IAPServiceManager.GetProductsAsync({States.Instance.AgentState.address}): Product Catagorys is null.");
                 return;
             }
@@ -149,7 +149,7 @@ namespace Nekoyume.IAPStore
             }
             catch (Exception error)
             {
-                Debug.LogError("[OnPurchaseClicked] Log Error " + error);
+                NcDebug.LogError("[OnPurchaseClicked] Log Error " + error);
                 Analyzer.Instance.Track(
                     "Unity/Shop/IAP/OnPurchaseClicked/Error",
                     ("error", error.Message));
@@ -166,10 +166,10 @@ namespace Nekoyume.IAPStore
         {
             _controller = controller;
             _extensions = extensions;
-            Debug.Log("IAP Store Manager Initialized successfully!");
+            NcDebug.Log("IAP Store Manager Initialized successfully!");
             foreach (var product in _controller.products.all)
             {
-                Debug.Log(
+                NcDebug.Log(
                     $"{product.definition.id}: {product.metadata.localizedTitle}, {product.metadata.localizedDescription}, {product.metadata.localizedPriceString}");
             }
 
@@ -189,7 +189,7 @@ namespace Nekoyume.IAPStore
 
         void IStoreListener.OnInitializeFailed(InitializationFailureReason error, string message)
         {
-            Debug.LogError($"Initializing failed for the specified reason: {error}\n{message}");
+            NcDebug.LogError($"Initializing failed for the specified reason: {error}\n{message}");
         }
 
 
@@ -224,7 +224,7 @@ namespace Nekoyume.IAPStore
             var transactionList = GetLocalTransactions();
             if (transactionList.Contains(transaction))
             {
-                Debug.LogWarning($"[AddLocalTransactions] duplicate Transaction {transaction}");
+                NcDebug.LogWarning($"[AddLocalTransactions] duplicate Transaction {transaction}");
             }
             else
             {
@@ -256,11 +256,11 @@ namespace Nekoyume.IAPStore
                         orderId,
                         data);
 
-                Debug.Log("[PurchaseLog] Log " + result);
+                NcDebug.Log("[PurchaseLog] Log " + result);
             }
             catch (Exception error)
             {
-                Debug.LogError("[PurchaseLog] Log Error " + error);
+                NcDebug.LogError("[PurchaseLog] Log Error " + error);
             }
         }
 
@@ -308,7 +308,7 @@ namespace Nekoyume.IAPStore
 
             if (result is null)
             {
-                Debug.LogError($"[RePurchaseTryAsync] Failed {pData.Receipt} AgentAddressHex: {pData.AgentAddressHex} AvatarAddressHex: {pData.AvatarAddressHex} PlanetId: {pData.PlanetId}");
+                NcDebug.LogError($"[RePurchaseTryAsync] Failed {pData.Receipt} AgentAddressHex: {pData.AgentAddressHex} AvatarAddressHex: {pData.AvatarAddressHex} PlanetId: {pData.PlanetId}");
             }
             else
             {
@@ -335,7 +335,7 @@ namespace Nekoyume.IAPStore
             }
             catch (Exception error)
             {
-                Debug.LogError("[ProcessPurchase] Log Error " + error);
+                NcDebug.LogError("[ProcessPurchase] Log Error " + error);
                 Analyzer.Instance.Track(
                     "Unity/Shop/IAP/ProcessPurchase/Error",
                     ("error", error.Message));
@@ -345,7 +345,7 @@ namespace Nekoyume.IAPStore
 
             if (e == null)
             {
-                Debug.Log("[ProcessPurchase] PurchaseEventArgs is null");
+                NcDebug.Log("[ProcessPurchase] PurchaseEventArgs is null");
                 return PurchaseProcessingResult.Pending;
             }
             bool existTxInfo = false;
@@ -368,21 +368,21 @@ namespace Nekoyume.IAPStore
             }
             catch (Exception error)
             {
-                Debug.LogError("[ProcessPurchase] AddLocalTransactions Error " + error);
+                NcDebug.LogError("[ProcessPurchase] AddLocalTransactions Error " + error);
             }
 
             try
             {
                 if (existTxInfo)
                 {
-                    Debug.Log("[ProcessPurchase] Is not PurchasePage");
+                    NcDebug.Log("[ProcessPurchase] Is not PurchasePage");
                     RePurchaseTryAsync(e.purchasedProduct);
                     return PurchaseProcessingResult.Pending;
                 }
             }
             catch (Exception error)
             {
-                Debug.LogError("[ProcessPurchase] RePurchaseTryAsync Error " + error);
+                NcDebug.LogError("[ProcessPurchase] RePurchaseTryAsync Error " + error);
             }
 
             try
@@ -394,12 +394,12 @@ namespace Nekoyume.IAPStore
                 }
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
-                Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
+                NcDebug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
                 return PurchaseProcessingResult.Pending;
             }
             catch (Exception error)
             {
-                Debug.LogError("[ProcessPurchase] " + error);
+                NcDebug.LogError("[ProcessPurchase] " + error);
                 return PurchaseProcessingResult.Pending;
             }
         }
@@ -411,7 +411,7 @@ namespace Nekoyume.IAPStore
         /// </summary>
         void IStoreListener.OnPurchaseFailed(Product i, PurchaseFailureReason p)
         {
-            Debug.LogError($"[IStoreListener PurchaseFail] reason: {p}, Product: {i.metadata.localizedTitle}");
+            NcDebug.LogError($"[IStoreListener PurchaseFail] reason: {p}, Product: {i.metadata.localizedTitle}");
             PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p}]");
             if (p == PurchaseFailureReason.PurchasingUnavailable)
             {
@@ -424,7 +424,7 @@ namespace Nekoyume.IAPStore
         /// </summary>
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
-            Debug.LogError($"[IDetailedStoreListener PurchaseFail] reason: {p.reason}, Product: {i.metadata.localizedTitle}");
+            NcDebug.LogError($"[IDetailedStoreListener PurchaseFail] reason: {p.reason}, Product: {i.metadata.localizedTitle}");
             PurchaseLog(i.definition.id, i.transactionID, $"PurchaseFailed[{p.reason}][{p.message}]");
             Analyzer.Instance.Track(
                 "Unity/Shop/IAP/PurchaseResult",

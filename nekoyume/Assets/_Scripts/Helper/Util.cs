@@ -136,7 +136,7 @@ namespace Nekoyume.Helper
         {
             if (Game.Game.instance.Agent is null)
             {
-                Debug.LogError("[Util.TryGetStoredSlotIndex] agent is null");
+                NcDebug.LogError("[Util.TryGetStoredSlotIndex] agent is null");
                 slotIndex = 0;
                 return false;
             }
@@ -152,7 +152,7 @@ namespace Nekoyume.Helper
         {
             if (Game.Game.instance.Agent is null)
             {
-                Debug.LogError("[Util.SaveSlotIndex] agent is null");
+                NcDebug.LogError("[Util.SaveSlotIndex] agent is null");
                 return;
             }
 
@@ -188,7 +188,7 @@ namespace Nekoyume.Helper
                     var equipment = (Equipment)itemBase;
                     if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
                     {
-                        Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                        NcDebug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
                         return 0;
                     }
 
@@ -229,7 +229,7 @@ namespace Nekoyume.Helper
             }
             catch (Exception e)
             {
-                Debug.LogError(
+                NcDebug.LogError(
                     $"Check the player is equipped with the valid equipment.\nException: {e}");
             }
 
@@ -438,14 +438,14 @@ namespace Nekoyume.Helper
             apv = 0;
             if (string.IsNullOrEmpty(token))
             {
-                Debug.LogWarning("apv token is null.");
+                NcDebug.LogWarning("apv token is null.");
                 return;
             }
 
             var pos = token.IndexOf('/');
             if (pos < 0)
             {
-                Debug.LogException(new FormatException("Failed to find the first field delimiter."));
+                NcDebug.LogException(new FormatException("Failed to find the first field delimiter."));
                 return;
             }
 
@@ -456,7 +456,7 @@ namespace Nekoyume.Helper
             }
             catch (Exception e) when (e is OverflowException or FormatException)
             {
-                Debug.LogException(new FormatException($"Failed to parse a version number: {e}", e));
+                NcDebug.LogException(new FormatException($"Failed to parse a version number: {e}", e));
                 return;
             }
 
@@ -592,7 +592,7 @@ namespace Nekoyume.Helper
                     {
                         return cachedTexture;
                     }
-                    Debug.LogError($"[DownloadTexture] {url}");
+                    NcDebug.LogError($"[DownloadTexture] {url}");
                     return null;
                 }
             }
@@ -630,7 +630,7 @@ namespace Nekoyume.Helper
                 {
                     return cachedTexture;
                 }
-                Debug.LogError($"[DownloadTextureRaw] {url}");
+                NcDebug.LogError($"[DownloadTextureRaw] {url}");
                 return null;
             }
 
@@ -653,7 +653,7 @@ namespace Nekoyume.Helper
             }
             else
             {
-                Debug.LogWarning("[SetActiveSafe] fail");
+                NcDebug.LogWarning("[SetActiveSafe] fail");
             }
         }
     }

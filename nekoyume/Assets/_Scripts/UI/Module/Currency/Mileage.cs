@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
                     },
                     request =>
                     {
-                        Debug.LogError($"URL:{request.url}, error:{request.error}");
+                        NcDebug.LogError($"URL:{request.url}, error:{request.error}");
                         gameObject.SetActive(false);
                     }));
             }

@@ -76,7 +76,7 @@ namespace Nekoyume.UI
             var count = int.Parse(inputField.text);
             var results = new Dictionary<int, List<Result>>();
 
-            Debug.Log($"-------------S T A R T (Combination) [COUNT] : {count}----------");
+            NcDebug.Log($"-------------S T A R T (Combination) [COUNT] : {count}----------");
             var task = Task.Run(() =>
             {
                 foreach (var recipe in equipmentReceipeSheet)
@@ -111,7 +111,7 @@ namespace Nekoyume.UI
             var finish = await task;
             if (finish)
             {
-                Debug.Log("-------------F I N I S H (Combination)----------");
+                NcDebug.Log("-------------F I N I S H (Combination)----------");
             }
         }
 
@@ -124,7 +124,7 @@ namespace Nekoyume.UI
             }
 
             var results = numbers.Select((t, i) => GetExpectRatio(result, numbers, i + 1)).ToList();
-            Debug.Log($"[CS] [{L10nManager.Localize($"ITEM_NAME_{itemId}")}] {itemId} / " +
+            NcDebug.Log($"[CS] [{L10nManager.Localize($"ITEM_NAME_{itemId}")}] {itemId} / " +
                       $"[subRecipeId] {result.subRecipeId} / " +
                       $"<color=#5FD900>[1]</color><color=#0078FF>{results[0]:P2}</color> <color=#00A4FF> --> {(result.results[0] / (float)count):P2}</color> / " +
                       $"<color=#5FD900>[2]</color><color=#FF1800>{results[1]:P2}</color> <color=#F16558> --> {(result.results[1] / (float)count):P2}</color> / " +
@@ -209,7 +209,7 @@ namespace Nekoyume.UI
         private async void AsyncEnhancementSimulate(IRandom random)
         {
             var count = int.Parse(inputField.text);
-            Debug.Log($"-------------S T A R T (Enhancement) [COUNT] : {count}----------");
+            NcDebug.Log($"-------------S T A R T (Enhancement) [COUNT] : {count}----------");
             var task = Task.Run(() =>
             {
                 var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
@@ -239,7 +239,7 @@ namespace Nekoyume.UI
             var finish = await task;
             if (finish)
             {
-                Debug.Log("-------------F I N I S H (Enhancement)----------");
+                NcDebug.Log("-------------F I N I S H (Enhancement)----------");
             }
         }
     }

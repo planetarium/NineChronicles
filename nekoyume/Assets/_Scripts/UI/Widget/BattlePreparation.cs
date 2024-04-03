@@ -772,14 +772,14 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Debug.LogError($"TutorialActionClickBattlePreparationFirstInventoryCellView() throw error.");
+                    NcDebug.LogError($"TutorialActionClickBattlePreparationFirstInventoryCellView() throw error.");
                 }
 
                 Find<EquipmentTooltip>().OnEnterButtonArea(true);
             }
             catch
             {
-                Debug.LogError($"TryGetFirstCell throw error.");
+                NcDebug.LogError($"TryGetFirstCell throw error.");
             }
         }
 
@@ -790,7 +790,7 @@ namespace Nekoyume.UI
                 var itemCell = information.GetBestEquipmentInventoryItems();
                 if (itemCell is null)
                 {
-                    Debug.LogError($"information.GetBestEquipmentInventoryItems().ElementAtOrDefault(0) is null");
+                    NcDebug.LogError($"information.GetBestEquipmentInventoryItems().ElementAtOrDefault(0) is null");
                     return;
                 }
 
@@ -799,7 +799,7 @@ namespace Nekoyume.UI
             }
             catch
             {
-                Debug.LogError($"GetSecondCell throw error.");
+                NcDebug.LogError($"GetSecondCell throw error.");
             }
         }
 

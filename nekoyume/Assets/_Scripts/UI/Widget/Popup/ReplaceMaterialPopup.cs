@@ -34,7 +34,7 @@ namespace Nekoyume.UI
                 var itemView = itemViews.FirstOrDefault(x => !x.gameObject.activeSelf);
                 if (itemView == null)
                 {
-                    Debug.LogError("ItemView is already full.");
+                    NcDebug.LogError("ItemView is already full.");
                     continue;
                 }
 

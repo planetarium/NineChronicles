@@ -39,7 +39,7 @@ namespace Nekoyume.Multiplanetary
                 return true;
             }
 
-            Debug.Log("[PlanetRegistry] start initialization");
+            NcDebug.Log("[PlanetRegistry] start initialization");
             using var req = UnityWebRequest.Get(_planetRegistryUrl);
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
@@ -51,14 +51,14 @@ namespace Nekoyume.Multiplanetary
             {
                 if (ex.CancellationToken == cts.Token)
                 {
-                    Debug.LogError($"[PlanetRegistry] initialize failed due to timeout({timeout})");
+                    NcDebug.LogError($"[PlanetRegistry] initialize failed due to timeout({timeout})");
                     return false;
                 }
             }
 
             if (req.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError($"[PlanetRegistry] initialize failed: {req.error}");
+                NcDebug.LogError($"[PlanetRegistry] initialize failed: {req.error}");
                 return false;
             }
 
@@ -69,7 +69,7 @@ namespace Nekoyume.Multiplanetary
             {
                 if (planetInfos.Count == 0)
                 {
-                    Debug.LogError("[PlanetRegistry] initialize failed: count of planet infos is 0.");
+                    NcDebug.LogError("[PlanetRegistry] initialize failed: count of planet infos is 0.");
                     return false;
                 }
 
@@ -89,12 +89,12 @@ namespace Nekoyume.Multiplanetary
 
                 var text = string.Join(", ", _planetInfos.Select(e =>
                     $"{e.ID.ToString()}({e.Name})"));
-                Debug.Log($"[PlanetRegistry] initialize succeeded: [{text}]");
+                NcDebug.Log($"[PlanetRegistry] initialize succeeded: [{text}]");
 
                 IsInitialized = true;
             }
 
-            Debug.Log($"[PlanetRegistry] finish initialization: {IsInitialized}");
+            NcDebug.Log($"[PlanetRegistry] finish initialization: {IsInitialized}");
             return IsInitialized;
         }
 

@@ -13,12 +13,12 @@ namespace Nekoyume.State.Subjects
     {
         public static readonly Subject<WeeklyArenaState> WeeklyArenaState = new Subject<WeeklyArenaState>();
         public static readonly Subject<long> ResetIndex = new Subject<long>();
-        
+
         public static void OnNext(WeeklyArenaState state)
         {
             if (state is null)
             {
-                Debug.LogWarning($"[{nameof(WeeklyArenaStateSubject)}] / {nameof(OnNext)} / {nameof(state)} is null.");
+                NcDebug.LogWarning($"[{nameof(WeeklyArenaStateSubject)}] / {nameof(OnNext)} / {nameof(state)} is null.");
                 return;
             }
 

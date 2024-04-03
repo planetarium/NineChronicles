@@ -40,7 +40,7 @@ namespace Nekoyume.UI.Scroller
             _viewModel = itemData;
             if (_viewModel is null)
             {
-                Debug.Log("[SelectPlanetCell] UpdateContent()... _viewModel is null.");
+                NcDebug.Log("[SelectPlanetCell] UpdateContent()... _viewModel is null.");
                 button.Interactable = false;
                 button.Text = "null";
                 newMarkGO.SetActive(false);

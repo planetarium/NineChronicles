@@ -72,7 +72,7 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
         private async Task GetProductsAsync()
         {
             var categoryResponse = await _iapService.GetProductsAsync(Addresses.Admin, "0x100000000000");
-            Debug.Log(Addresses.Admin);
+            NcDebug.Log(Addresses.Admin);
             _productsText = categoryResponse is null
                 ? "null"
                 : JsonSerializer.Serialize(categoryResponse, JsonSerializerOptions);

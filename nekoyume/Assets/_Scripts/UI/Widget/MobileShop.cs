@@ -132,7 +132,7 @@ namespace Nekoyume.UI
             }
             catch (Exception e)
             {
-                Debug.LogError(e.Message);
+                NcDebug.LogError(e.Message);
                 loading.Close();
                 base.Show(ignoreShowAnimation);
                 Close();

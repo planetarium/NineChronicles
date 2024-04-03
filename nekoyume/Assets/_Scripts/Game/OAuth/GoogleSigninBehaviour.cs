@@ -36,13 +36,13 @@ namespace Nekoyume.Game.OAuth
 
         public void OnSignIn()
         {
-            Debug.Log("[GoogleSigninBehaviour] OnSignIn() invoked.");
+            NcDebug.Log("[GoogleSigninBehaviour] OnSignIn() invoked.");
             GoogleSignIn.Configuration = _configuration;
             State.Value = SignInState.Waiting;
             GoogleSignIn.DefaultInstance.SignIn().ContinueWith(OnAuthenticationFinished);
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
-                Debug.Log($"[GoogleSigninBehaviour] State changed: {state}");
+                NcDebug.Log($"[GoogleSigninBehaviour] State changed: {state}");
                 switch (state)
                 {
                     case SignInState.Signed:
@@ -63,7 +63,7 @@ namespace Nekoyume.Game.OAuth
 
         public void OnSignInSilently()
         {
-            Debug.Log("[GoogleSigninBehaviour] OnSignInSilently() invoked.");
+            NcDebug.Log("[GoogleSigninBehaviour] OnSignInSilently() invoked.");
             GoogleSignIn.Configuration = _configuration;
             GoogleSignIn.DefaultInstance.SignInSilently()
                 .ContinueWith(OnAuthenticationFinished);
@@ -71,22 +71,22 @@ namespace Nekoyume.Game.OAuth
 
         public void OnSignOut()
         {
-            Debug.Log("[GoogleSigninBehaviour] OnSignOut() invoked.");
+            NcDebug.Log("[GoogleSigninBehaviour] OnSignOut() invoked.");
             GoogleSignIn.DefaultInstance.SignOut();
         }
 
         public void OnDisconnect()
         {
-            Debug.Log("[GoogleSigninBehaviour] OnDisconnect() invoked.");
+            NcDebug.Log("[GoogleSigninBehaviour] OnDisconnect() invoked.");
             GoogleSignIn.DefaultInstance.Disconnect();
         }
 
         private void OnAuthenticationFinished(Task<GoogleSignInUser> task)
         {
-            Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished() invoked.");
+            NcDebug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished() invoked.");
             if (task.IsFaulted)
             {
-                Debug.LogWarning("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
+                NcDebug.LogWarning("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
                                " task is faulted.");
                 using var enumerator =
                     task.Exception?.InnerExceptions.GetEnumerator();
@@ -94,26 +94,26 @@ namespace Nekoyume.Game.OAuth
                     enumerator.MoveNext() &&
                     enumerator.Current is GoogleSignIn.SignInException e)
                 {
-                    Debug.LogException(e);
+                    NcDebug.LogException(e);
                 }
                 else
                 {
-                    Debug.LogError("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
+                    NcDebug.LogError("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
                                    " unexpected exception occurred.");
-                    Debug.LogException(task.Exception);
+                    NcDebug.LogException(task.Exception);
                 }
 
                 State.Value = SignInState.Canceled;
             }
             else if (task.IsCanceled)
             {
-                Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished()... task is canceled.");
+                NcDebug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished()... task is canceled.");
                 State.Value = SignInState.Canceled;
             }
             else
             {
                 var res = task.Result;
-                Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
+                NcDebug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
                           $" Welcome!! {res.Email}, userId({res.UserId}), token({res.IdToken})");
                 Email = res.Email;
                 IdToken = res.IdToken;

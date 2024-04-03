@@ -103,7 +103,7 @@ namespace Nekoyume.Blockchain
                     });
                 if (hasException && exception is not OperationCanceledException)
                 {
-                    Debug.LogException(exception);
+                    NcDebug.LogException(exception);
                 }
             }
 
@@ -141,7 +141,7 @@ namespace Nekoyume.Blockchain
                     });
                 if (hasException && !(exception is OperationCanceledException))
                 {
-                    Debug.LogException(exception);
+                    NcDebug.LogException(exception);
                 }
             }
 

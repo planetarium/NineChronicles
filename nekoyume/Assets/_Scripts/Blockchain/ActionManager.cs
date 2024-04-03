@@ -69,7 +69,7 @@ namespace Nekoyume.Blockchain
                 e = new ActionTimeoutException(e.Message, txId, actionId);
             }
 
-            Debug.LogException(e);
+            NcDebug.LogException(e);
             return e;
         }
 
@@ -114,7 +114,7 @@ namespace Nekoyume.Blockchain
         private void ProcessAction<T>(T actionBase) where T : ActionBase
         {
             var actionType = actionBase.GetActionTypeAttribute();
-            Debug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\"");
+            NcDebug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\"");
 
             _agent.EnqueueAction(actionBase);
 

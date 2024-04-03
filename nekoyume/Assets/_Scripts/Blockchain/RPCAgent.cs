@@ -159,7 +159,7 @@ namespace Nekoyume.Blockchain
             PrivateKey privateKey,
             Action<bool> callback)
         {
-            Debug.Log($"[RPCAgent] Start initialization: {options.RpcServerHost}:{options.RpcServerPort}");
+            NcDebug.Log($"[RPCAgent] Start initialization: {options.RpcServerHost}:{options.RpcServerPort}");
             PrivateKey = privateKey;
             _channel ??= GrpcChannelx.ForTarget(
                 new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
@@ -213,14 +213,14 @@ namespace Nekoyume.Blockchain
                 }
 
                 sw.Stop();
-                Debug.Log($"[RPCAgent] genesis block imported in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                NcDebug.Log($"[RPCAgent] genesis block imported in {sw.ElapsedMilliseconds}ms.(elapsed)");
             }
 
             yield return getTipTask.ToCoroutine();
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
-            Debug.Log($"[RPCAgent] Finish initialization");
+            NcDebug.Log($"[RPCAgent] Finish initialization");
         }
 
         public IValue GetState(Address accountAddress, Address address)
@@ -258,7 +258,7 @@ namespace Nekoyume.Blockchain
             var blockHash = await GetBlockHashAsync(null);
             if (!blockHash.HasValue)
             {
-                Debug.LogError("Failed to get tip block hash.");
+                NcDebug.LogError("Failed to get tip block hash.");
                 return null;
             }
 
@@ -270,7 +270,7 @@ namespace Nekoyume.Blockchain
             var blockHash = await GetBlockHashAsync(blockIndex);
             if (!blockHash.HasValue)
             {
-                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                NcDebug.LogError($"Failed to get block hash from block index: {blockIndex}");
                 return null;
             }
 
@@ -340,7 +340,7 @@ namespace Nekoyume.Blockchain
             var blockHash = await GetBlockHashAsync(null);
             if (blockHash is null)
             {
-                Debug.LogError($"Failed to get tup block hash.");
+                NcDebug.LogError($"Failed to get tup block hash.");
                 return 0 * currency;
             }
 
@@ -377,7 +377,7 @@ namespace Nekoyume.Blockchain
             var blockHash = await GetBlockHashAsync(blockIndex);
             if (blockHash is null)
             {
-                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                NcDebug.LogError($"Failed to get block hash from block index: {blockIndex}");
                 return 0 * currency;
             }
 
@@ -432,7 +432,7 @@ namespace Nekoyume.Blockchain
             var blockHash = await GetBlockHashAsync(null);
             if (blockHash is not { } blockHashNotNull)
             {
-                Debug.LogError($"Failed to get tip block hash.");
+                NcDebug.LogError($"Failed to get tip block hash.");
                 return null;
             }
 
@@ -447,7 +447,7 @@ namespace Nekoyume.Blockchain
             var blockHash = await GetBlockHashAsync(blockIndex);
             if (blockHash is not { } blockHashNotNull)
             {
-                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                NcDebug.LogError($"Failed to get block hash from block index: {blockIndex}");
                 return null;
             }
 
@@ -478,7 +478,7 @@ namespace Nekoyume.Blockchain
             }
             else
             {
-                Debug.LogError("Given raw is not a format of the AgentState.");
+                NcDebug.LogError("Given raw is not a format of the AgentState.");
                 return null;
             }
         }
@@ -489,7 +489,7 @@ namespace Nekoyume.Blockchain
             var blockHash = await GetBlockHashAsync(null);
             if (!blockHash.HasValue)
             {
-                Debug.LogError($"Failed to get tip block hash.");
+                NcDebug.LogError($"Failed to get tip block hash.");
                 return null;
             }
 
@@ -511,7 +511,7 @@ namespace Nekoyume.Blockchain
             var blockHash = await GetBlockHashAsync(blockIndex);
             if (!blockHash.HasValue)
             {
-                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                NcDebug.LogError($"Failed to get block hash from block index: {blockIndex}");
                 return null;
             }
 
@@ -546,7 +546,7 @@ namespace Nekoyume.Blockchain
             AvatarState avatarState;
             if (!(_codec.Decode(raw) is List full))
             {
-                Debug.LogError("Given raw is not a format of the AvatarState.");
+                NcDebug.LogError("Given raw is not a format of the AvatarState.");
                 return null;
             }
 
@@ -558,7 +558,7 @@ namespace Nekoyume.Blockchain
                 }
                 else
                 {
-                    Debug.LogError("Given raw is not a format of the AvatarState.");
+                    NcDebug.LogError("Given raw is not a format of the AvatarState.");
                     return null;
                 }
             }
@@ -574,25 +574,25 @@ namespace Nekoyume.Blockchain
                 }
                 else
                 {
-                    Debug.LogError("Given raw is not a format of the AvatarState.");
+                    NcDebug.LogError("Given raw is not a format of the AvatarState.");
                     return null;
                 }
 
                 if (full[1] is not List inventoryList)
                 {
-                    Debug.LogError("Given raw is not a format of the inventory.");
+                    NcDebug.LogError("Given raw is not a format of the inventory.");
                     return null;
                 }
 
                 if (full[2] is not Dictionary questListDict)
                 {
-                    Debug.LogError("Given raw is not a format of the questList.");
+                    NcDebug.LogError("Given raw is not a format of the questList.");
                     return null;
                 }
 
                 if (full[3] is not Dictionary worldInformationDict)
                 {
-                    Debug.LogError("Given raw is not a format of the worldInformation.");
+                    NcDebug.LogError("Given raw is not a format of the worldInformation.");
                     return null;
                 }
 
@@ -602,7 +602,7 @@ namespace Nekoyume.Blockchain
             }
             else
             {
-                Debug.LogError("Given raw is not a format of the AvatarState.");
+                NcDebug.LogError("Given raw is not a format of the AvatarState.");
                 return null;
             }
 
@@ -664,12 +664,12 @@ namespace Nekoyume.Blockchain
                     {
                         cd.TryAdd(pair.Key, pair.Value);
                         var size = Buffer.ByteLength(pair.Value);
-                        Debug.Log($"[GetSheets/{new Address(pair.Key)}] buffer size: {size}");
+                        NcDebug.Log($"[GetSheets/{new Address(pair.Key)}] buffer size: {size}");
                         await Task.CompletedTask;
                     });
                 });
             sw.Stop();
-            Debug.Log($"[SyncTableSheets/GetSheets] Get sheets. {sw.Elapsed}");
+            NcDebug.Log($"[SyncTableSheets/GetSheets] Get sheets. {sw.Elapsed}");
             sw.Restart();
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in cd)
@@ -677,7 +677,7 @@ namespace Nekoyume.Blockchain
                 result[new Address(kv.Key)] = _codec.Decode(MessagePackSerializer.Deserialize<byte[]>(kv.Value, _lz4Options));
             }
             sw.Stop();
-            Debug.Log($"[SyncTableSheets/GetSheets] decode values. {sw.Elapsed}");
+            NcDebug.Log($"[SyncTableSheets/GetSheets] decode values. {sw.Elapsed}");
             return result;
         }
 
@@ -734,7 +734,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(tuple =>
                 {
-                    Debug.Log($"Retry rpc connection. (remain count: {tuple.retryCount})");
+                    NcDebug.Log($"Retry rpc connection. (remain count: {tuple.retryCount})");
                     var tryCount = RpcConnectionRetryCount - tuple.retryCount;
                     if (tryCount > 0)
                     {
@@ -854,17 +854,17 @@ namespace Nekoyume.Blockchain
                 {
                     continue;
                 }
-                Debug.Log($"[RPCAgent] CoTxProcessor()... before MakeTransaction.({++i})");
+                NcDebug.Log($"[RPCAgent] CoTxProcessor()... before MakeTransaction.({++i})");
                 Task task = Task.Run(async () =>
                 {
                     await MakeTransaction(new List<ActionBase> { action });
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
-                Debug.Log("[RPCAgent] CoTxProcessor()... after MakeTransaction." +
+                NcDebug.Log("[RPCAgent] CoTxProcessor()... after MakeTransaction." +
                           $" task completed({task.IsCompleted})");
                 if (task.IsFaulted)
                 {
-                    Debug.LogException(task.Exception);
+                    NcDebug.LogException(task.Exception);
                     // FIXME: Should restore this after fixing actual bug that MakeTransaction
                     // was throwing Exception.
                     /*Debug.LogError(
@@ -899,7 +899,7 @@ namespace Nekoyume.Blockchain
 
                 return action.GetActionTypeAttribute().TypeIdentifier.ToString();
             }));
-            Debug.Log("[RPCAgent] MakeTransaction()... w/" +
+            NcDebug.Log("[RPCAgent] MakeTransaction()... w/" +
                       $" nonce={nonce}" +
                       $" PrivateKeyAddr={PrivateKey.Address.ToString()}" +
                       $" GenesisBlockHash={_genesis?.Hash}" +
@@ -958,7 +958,7 @@ namespace Nekoyume.Blockchain
                 BlockTipHashSubject.OnNext(BlockTipHash);
                 _lastTipChangedAt = DateTimeOffset.UtcNow;
 
-                Debug.Log(
+                NcDebug.Log(
                     $"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}");
                 BlockRenderer.RenderBlock(null, null);
             });
@@ -994,9 +994,9 @@ namespace Nekoyume.Blockchain
                 }
                 try
                 {
-                    Debug.Log($"Trying to join hub...");
+                    NcDebug.Log($"Trying to join hub...");
                     await Join(true);
-                    Debug.Log($"Join complete! Registering disconnect event...");
+                    NcDebug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
                     OnRetryEnded.OnNext(this);
@@ -1004,30 +1004,30 @@ namespace Nekoyume.Blockchain
                 }
                 catch (TimeoutException toe)
                 {
-                    Debug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
+                    NcDebug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
                     retryCount--;
                 }
                 catch (AggregateException ae)
                 {
                     if (ae.InnerException is RpcException re)
                     {
-                        Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                        NcDebug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
                         retryCount--;
                     }
                     else
                     {
-                        Debug.LogWarning($"Unexpected error occurred during rpc connection. {ae}");
+                        NcDebug.LogWarning($"Unexpected error occurred during rpc connection. {ae}");
                         break;
                     }
                 }
                 catch (ObjectDisposedException ode)
                 {
-                    Debug.LogWarning($"ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
+                    NcDebug.LogWarning($"ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
                     retryCount--;
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning($"Unexpected error occurred during rpc connection. {e}");
+                    NcDebug.LogWarning($"Unexpected error occurred during rpc connection. {e}");
                     break;
                 }
             }
@@ -1060,7 +1060,7 @@ namespace Nekoyume.Blockchain
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
 
-            Debug.Log($"[{nameof(RPCAgent)}] Render reorg: {BlockIndex}, {BlockTipHash.ToString()}");
+            NcDebug.Log($"[{nameof(RPCAgent)}] Render reorg: {BlockIndex}, {BlockTipHash.ToString()}");
         }
 
         public void OnReorgEnd(byte[] oldTip, byte[] newTip, byte[] branchpoint)
@@ -1087,7 +1087,7 @@ namespace Nekoyume.Blockchain
             var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
                 L10nManager.Localize(key), errorCode);
 
-            Debug.Log($"{message} (code: {code})");
+            NcDebug.Log($"{message} (code: {code})");
             Game.Event.OnRoomEnter.Invoke(true);
             Game.Game.instance.Stage.OnRoomEnterEnd
                 .First()
@@ -1104,13 +1104,13 @@ namespace Nekoyume.Blockchain
         public void OnPreloadStart()
         {
             OnPreloadStarted.OnNext(this);
-            Debug.Log($"On Preload Start");
+            NcDebug.Log($"On Preload Start");
         }
 
         public void OnPreloadEnd()
         {
             OnPreloadEnded.OnNext(this);
-            Debug.Log($"On Preload End");
+            NcDebug.Log($"On Preload End");
         }
 
         public void UpdateSubscribeAddresses()
@@ -1131,7 +1131,7 @@ namespace Nekoyume.Blockchain
                 addresses.AddRange(slotAddresses);
             }
 
-            Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
+            NcDebug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
 
             foreach (var address in addresses)
             {

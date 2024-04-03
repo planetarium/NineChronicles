@@ -233,7 +233,7 @@ namespace Nekoyume.UI.Module
 
                     break;
                 default:
-                    Debug.LogWarning(
+                    NcDebug.LogWarning(
                         $"[{nameof(GuidedQuest)}] Cannot proceed because" +
                         $" ViewState is {_state.Value} Try when state is" +
                         $" {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
@@ -290,7 +290,7 @@ namespace Nekoyume.UI.Module
         {
             if (_state.Value != ViewState.Shown)
             {
-                Debug.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
                 onComplete?.Invoke(false);
                 return;
@@ -317,7 +317,7 @@ namespace Nekoyume.UI.Module
         {
             if (_state.Value != ViewState.Shown)
             {
-                Debug.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is" +
                     $" {_state.Value}. Try when state is {ViewState.Shown}");
                 onComplete?.Invoke(false);
@@ -359,7 +359,7 @@ namespace Nekoyume.UI.Module
         {
             if (_state.Value != ViewState.Shown)
             {
-                Debug.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
                 return;
             }

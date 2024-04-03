@@ -49,11 +49,11 @@ namespace Nekoyume.Game.OAuth
                 // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
                 var deserializer = new PayloadDeserializer();
                 // Creates an Apple Authentication manager with the deserializer
-                this._appleAuthManager = new AppleAuthManager(deserializer);    
-                
+                this._appleAuthManager = new AppleAuthManager(deserializer);
+
                 this._appleAuthManager.SetCredentialsRevokedCallback(result =>
                 {
-                    Debug.Log("Received revoked callback " + result);
+                    NcDebug.Log("Received revoked callback " + result);
                     PlayerPrefs.DeleteKey(AppleUserIdKey);
                 });
             }
@@ -84,7 +84,7 @@ namespace Nekoyume.Game.OAuth
                             // this.SetupGameMenu(appleUserId, null);
                             State.Value = SignInState.Signed;
                             return;
-                        
+
                         // If it was revoked, or not found, we need a new sign in with apple attempt
                         // Discard previous apple user id
                         case CredentialState.Revoked:
@@ -98,16 +98,16 @@ namespace Nekoyume.Game.OAuth
                 error =>
                 {
                     var authorizationErrorCode = error.GetAuthorizationErrorCode();
-                    Debug.LogWarning($"Error while trying to get credential state {authorizationErrorCode} {error} {error.Domain} {error.LocalizedDescription} {error.LocalizedFailureReason} {error.LocalizedRecoverySuggestion}");
+                    NcDebug.LogWarning($"Error while trying to get credential state {authorizationErrorCode} {error} {error.Domain} {error.LocalizedDescription} {error.LocalizedFailureReason} {error.LocalizedRecoverySuggestion}");
                     // this.SetupLoginMenuForSignInWithApple();
                 });
         }
-        
+
         public void OnSignIn()
         {
-            Debug.Log("[AppleSigninBehaviour] OnSignIn() invoked.");
+            NcDebug.Log("[AppleSigninBehaviour] OnSignIn() invoked.");
             var loginArgs = new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName);
-            
+
             State.Value = SignInState.Waiting;
             this._appleAuthManager.LoginWithAppleId(
                 loginArgs,
@@ -126,12 +126,12 @@ namespace Nekoyume.Game.OAuth
                 error =>
                 {
                     var authorizationErrorCode = error.GetAuthorizationErrorCode();
-                    Debug.LogWarning("Sign in with Apple failed " + authorizationErrorCode.ToString() + " " + error.ToString());
+                    NcDebug.LogWarning("Sign in with Apple failed " + authorizationErrorCode.ToString() + " " + error.ToString());
                     State.Value = SignInState.Canceled;
                 });
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
-                Debug.Log($"[AppleSigninBehaviour] State changed: {state}");
+                NcDebug.Log($"[AppleSigninBehaviour] State changed: {state}");
                 switch (state)
                 {
                     case SignInState.Signed:

@@ -28,7 +28,7 @@ query {{
             var response = await client.GetObjectAsync<JObject>(query);
             if (response is null)
             {
-                Debug.LogError($"Failed getting response : {nameof(JObject)}");
+                NcDebug.LogError($"Failed getting response : {nameof(JObject)}");
                 return null;
             }
 
@@ -39,7 +39,7 @@ query {{
             }
             catch
             {
-                Debug.LogError(response.ToString());
+                NcDebug.LogError(response.ToString());
                 return null;
             }
         }

@@ -368,7 +368,7 @@ namespace Nekoyume.State
 
             if (modifier is null)
             {
-                Debug.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(agentAddress)}");
             }
         }
@@ -411,7 +411,7 @@ namespace Nekoyume.State
 
             if (modifier is null)
             {
-                Debug.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(avatarAddress)}");
             }
         }
@@ -451,7 +451,7 @@ namespace Nekoyume.State
 
             if (modifier is null)
             {
-                Debug.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(weeklyArenaAddress)}");
             }
         }

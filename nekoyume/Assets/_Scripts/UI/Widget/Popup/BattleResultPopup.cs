@@ -1100,7 +1100,7 @@ namespace Nekoyume.UI
                 }
                 catch
                 {
-                    Debug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
+                    NcDebug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
                 }
 
                 if (SharedModel.StageType == StageType.EventDungeon)

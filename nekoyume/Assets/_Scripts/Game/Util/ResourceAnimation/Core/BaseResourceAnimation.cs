@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Util
         {
             if (startIndex < 0 || startIndex >= _frameCount)
             {
-                Debug.LogError($"Index is not exist : {startIndex}");
+                NcDebug.LogError($"Index is not exist : {startIndex}");
                 return;
             }
 

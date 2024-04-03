@@ -48,7 +48,7 @@ namespace Nekoyume.UI
 
         private void Confirm()
         {
-            Debug.Log($"[OneButtonSystem] Confirm() invoked. {confirmButton.Text}");
+            NcDebug.Log($"[OneButtonSystem] Confirm() invoked. {confirmButton.Text}");
             _confirmCallback?.Invoke();
             base.Close();
             AudioController.PlayClick();

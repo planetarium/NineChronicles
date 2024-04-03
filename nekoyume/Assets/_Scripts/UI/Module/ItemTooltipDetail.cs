@@ -280,7 +280,7 @@ namespace Nekoyume.UI.Module
             var starImage = statView.StarImages.FirstOrDefault();
             if (starImage is null)
             {
-                Debug.LogError("Failed to get star image for option.");
+                NcDebug.LogError("Failed to get star image for option.");
                 return;
             }
             starImage.SetActive(true);
@@ -299,7 +299,7 @@ namespace Nekoyume.UI.Module
                 var starImage = statView.StarImages.FirstOrDefault(x => !x.activeSelf);
                 if (starImage is null)
                 {
-                    Debug.LogError("Failed to get star image for option.");
+                    NcDebug.LogError("Failed to get star image for option.");
                     return;
                 }
 

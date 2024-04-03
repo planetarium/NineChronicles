@@ -66,7 +66,7 @@ namespace Editor
                 sb.Append($"{feeType.ToString()}{championshipId}_{round} : {address}\n");
             }
 
-            Debug.Log(sb);
+            NcDebug.Log(sb);
         }
     }
 }

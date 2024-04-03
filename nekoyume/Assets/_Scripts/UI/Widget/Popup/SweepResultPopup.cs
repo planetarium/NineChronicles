@@ -151,7 +151,7 @@ namespace Nekoyume.UI
             }
 
             var cutscenePath = $"UI/Prefabs/UI_WorldClear_{worldId:D2}";
-            Debug.Log($"cutscenePath :{cutscenePath}");
+            NcDebug.Log($"cutscenePath :{cutscenePath}");
             var clone = Resources.Load<GameObject>(cutscenePath) ??
                         Resources.Load<GameObject>("UI/Prefabs/UI_WorldClear_01");
             _titleDeco = Instantiate(clone, titleDecoContainer);

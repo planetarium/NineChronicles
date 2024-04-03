@@ -286,7 +286,7 @@ namespace Nekoyume
             TableSheetsDropdown.options = TableAssets.Keys.Select(s => new Dropdown.OptionData(s)).ToList();
             if (TableSheetsDropdown.options.Count == 0)
             {
-                Debug.Log("It seems there is no table having difference.");
+                NcDebug.Log("It seems there is no table having difference.");
                 Display(nameof(OnChainTableSheet), "No content.");
                 Display(nameof(LocalTableSheet), "No content.");
                 PatchButton.SetActive(false);

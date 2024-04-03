@@ -66,7 +66,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoRequestPermission(Action<Result> onSuccess = null)
         {
-            Debug.Log("[CodeReaderView] CoRequestPermission start.");
+            NcDebug.Log("[CodeReaderView] CoRequestPermission start.");
             rawCamImage.gameObject.SetActive(false);
             _shouldRequestPermissionWhenApplicationFocusedIn = false;
 #if UNITY_ANDROID
@@ -98,7 +98,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoScanQrCode(Action<Result> onSuccess = null)
         {
-            Debug.Log("[CodeReaderView] CoScanQrCode start.");
+            NcDebug.Log("[CodeReaderView] CoScanQrCode start.");
             var rect = rawCamImage.rectTransform.rect;
             // NOTE: WebCamTexture need to construct after the camera permission granted.
             _camTexture = new WebCamTexture
@@ -121,10 +121,10 @@ namespace Nekoyume.UI
                 //       It may occur by native reasons.
                 if (!_camTexture.isPlaying)
                 {
-                    Debug.Log("[CodeReaderView] WebCamTexture is not playing. Now start playing and wait for playing.");
+                    NcDebug.Log("[CodeReaderView] WebCamTexture is not playing. Now start playing and wait for playing.");
                     _camTexture.Play();
                     yield return new WaitUntil(() => _camTexture.isPlaying);
-                    Debug.Log("[CodeReaderView] WebCamTexture is playing.");
+                    NcDebug.Log("[CodeReaderView] WebCamTexture is playing.");
                 }
 
                 var localScale = rawCamImage.rectTransform.localScale;
@@ -144,10 +144,10 @@ namespace Nekoyume.UI
                             _camTexture.Stop();
                         }
 
-                        Debug.Log("[CodeReaderView] QR code detected." +
+                        NcDebug.Log("[CodeReaderView] QR code detected." +
                                   $" Text: {result.Text}" +
                                   $", Format: {result.BarcodeFormat}");
-                        Debug.Log("[CodeReaderView] CoRequestPermission end.");
+                        NcDebug.Log("[CodeReaderView] CoRequestPermission end.");
                         onSuccess?.Invoke(result);
                     }
                 }
@@ -158,7 +158,7 @@ namespace Nekoyume.UI
                         _camTexture.Stop();
                     }
 
-                    Debug.LogException(ex);
+                    NcDebug.LogException(ex);
                     // Don't invoke onSuccess? with null. Just try again.
                 }
 
@@ -168,21 +168,21 @@ namespace Nekoyume.UI
 
         private void OnPermissionDenied(string permission)
         {
-            Debug.Log($"[CodeReaderView] OnPermissionDenied: {permission}");
+            NcDebug.Log($"[CodeReaderView] OnPermissionDenied: {permission}");
             _cameraPermissionState = PermissionState.Denied;
             OpenSystemSettingsAndQuit();
         }
 
         private void OnPermissionDeniedAndDontAskAgain(string permission)
         {
-            Debug.Log($"[CodeReaderView] OnPermissionDeniedAndDontAskAgain: {permission}");
+            NcDebug.Log($"[CodeReaderView] OnPermissionDeniedAndDontAskAgain: {permission}");
             _cameraPermissionState = PermissionState.DeniedAndDontAskAgain;
             OpenSystemSettingsAndQuit();
         }
 
         private void OnPermissionGranted(string permission)
         {
-            Debug.Log($"[CodeReaderView] OnPermissionGranted: {permission}");
+            NcDebug.Log($"[CodeReaderView] OnPermissionGranted: {permission}");
             _cameraPermissionState = PermissionState.Granted;
         }
 
@@ -198,7 +198,7 @@ namespace Nekoyume.UI
                 confirmText: L10nManager.Localize("BTN_OPEN_SYSTEM_SETTINGS"),
                 confirmCallback: () =>
                 {
-                    Debug.Log("[CodeReaderView] Open system settings.");
+                    NcDebug.Log("[CodeReaderView] Open system settings.");
                     _shouldRequestPermissionWhenApplicationFocusedIn = true;
                     SystemSettingsOpener.OpenApplicationDetailSettings();
                 });
@@ -206,11 +206,11 @@ namespace Nekoyume.UI
 
         public void OnApplicationFocus(bool hasFocus)
         {
-            Debug.Log($"[CodeReaderView] OnApplicationFocus: {hasFocus}");
+            NcDebug.Log($"[CodeReaderView] OnApplicationFocus: {hasFocus}");
             if (hasFocus && _shouldRequestPermissionWhenApplicationFocusedIn)
             {
                 _shouldRequestPermissionWhenApplicationFocusedIn = false;
-                Debug.Log("[CodeReaderView] Request camera permission.(Retry)");
+                NcDebug.Log("[CodeReaderView] Request camera permission.(Retry)");
                 Permission.RequestUserPermission(
                     Permission.Camera,
                     _permissionCallbacks);

@@ -226,7 +226,7 @@ namespace Nekoyume.Game.Controller
 
             if (CurrentState != State.None)
             {
-                Debug.LogError("Already initialized.");
+                NcDebug.LogError("Already initialized.");
                 return;
             }
 
@@ -248,7 +248,7 @@ namespace Nekoyume.Game.Controller
                 var audioSource = asset.GetComponent<AudioSource>();
                 if (!audioSource)
                 {
-                    Debug.LogError(
+                    NcDebug.LogError(
                         $"There is no AudioSource component: {Path.Combine(containerPath, asset.name)}");
                     continue;
                 }
@@ -272,7 +272,7 @@ namespace Nekoyume.Game.Controller
                 if (prefabs.ContainsKey(code))
                     continue;
 
-                Debug.LogError($"There is no audio prefab: {Path.Combine(containerPath, code)}");
+                NcDebug.LogError($"There is no audio prefab: {Path.Combine(containerPath, code)}");
             }
         }
 
@@ -284,13 +284,13 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                Debug.LogError("Not initialized.");
+                NcDebug.LogError("Not initialized.");
                 return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                Debug.LogError($"{nameof(audioName)} is null or empty");
+                NcDebug.LogError($"{nameof(audioName)} is null or empty");
                 return;
             }
 
@@ -314,13 +314,13 @@ namespace Nekoyume.Game.Controller
 
             if (CurrentState != State.Idle)
             {
-                Debug.LogError("Not initialized.");
+                NcDebug.LogError("Not initialized.");
                 return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                Debug.LogError($"{nameof(audioName)} is null or empty");
+                NcDebug.LogError($"{nameof(audioName)} is null or empty");
                 return;
             }
 
@@ -344,7 +344,7 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                Debug.LogError("Not initialized.");
+                NcDebug.LogError("Not initialized.");
                 return;
             }
 
@@ -384,13 +384,13 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                Debug.LogError("Not initialized.");
+                NcDebug.LogError("Not initialized.");
                 return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                Debug.LogError($"{nameof(audioName)} is null or empty");
+                NcDebug.LogError($"{nameof(audioName)} is null or empty");
                 return;
             }
 
@@ -410,7 +410,7 @@ namespace Nekoyume.Game.Controller
         {
             if (!prefabs.ContainsKey(audioName))
             {
-                Debug.LogError($"Not found AudioSource `{audioName}`.");
+                NcDebug.LogError($"Not found AudioSource `{audioName}`.");
                 return null;
             }
 
@@ -609,7 +609,7 @@ namespace Nekoyume.Game.Controller
                 case ElementalType.Wind:
                     return SfxCode.CastingWind;
                 default:
-                    Debug.LogError("Elemental type is invaild.");
+                    NcDebug.LogError("Elemental type is invaild.");
                     return SfxCode.CastingNormal;
             }
         }

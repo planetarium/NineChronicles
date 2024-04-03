@@ -90,7 +90,7 @@ namespace Nekoyume.Game.LiveAsset
             osKey = "-ios";
 #endif
             var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}.json";
-            Debug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
+            NcDebug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
             yield return StartCoroutine(
                 RequestManager.instance.GetJson(
                     cloEndpoint,
@@ -143,7 +143,7 @@ namespace Nekoyume.Game.LiveAsset
             var options = CommandLineParser.GetCommandLineOptions<CommandLineOptions>();
             if (options is { Empty: false })
             {
-                Debug.Log($"Get options from commandline.");
+                NcDebug.Log($"Get options from commandline.");
                 CommandLineOptions = options;
             }
 

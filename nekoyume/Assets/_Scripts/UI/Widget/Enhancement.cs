@@ -537,7 +537,7 @@ namespace Nekoyume.UI
 
                 if (targetRangeRows.Count < 2)
                 {
-                    Debug.LogError("[Enhancement] Faild Get TargetRangeRows");
+                    NcDebug.LogError("[Enhancement] Faild Get TargetRangeRows");
                 }
                 else
                 {

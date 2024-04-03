@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     break;
                 default:
                     var value = _currentData?.RoundData.ArenaType.ToString() ?? "null";
-                    Debug.Log($"{nameof(ArenaJoinSeasonCell)} type: {value}");
+                    NcDebug.Log($"{nameof(ArenaJoinSeasonCell)} type: {value}");
                     break;
             }
         }

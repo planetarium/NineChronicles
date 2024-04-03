@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             {
                 if (index.Value >= _data.Count)
                 {
-                    Debug.LogError($"Index out of range: {index.Value} >= {_data.Count}");
+                    NcDebug.LogError($"Index out of range: {index.Value} >= {_data.Count}");
                     return;
                 }
 
