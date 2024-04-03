@@ -130,11 +130,12 @@ namespace Nekoyume.Blockchain
                                 $"Given address {currentAvatarState.address} is empty."));
                         }
 
-
-                        var ap = avatarState.actionPoint;
+                        var states = await Task.WhenAll(
+                            agent.GetStateAsync(Addresses.ActionPoint, avatarState.address),
+                            agent.GetStateAsync(Addresses.DailyReward, avatarState.address));
+                        var ap = states[0] is Integer apValue ? (long)apValue : avatarState.actionPoint;
                         ReactiveAvatarState.UpdateActionPoint(ap);
-
-                        var dri = avatarState.dailyRewardReceivedIndex;
+                        var dri = states[1] is Integer driValue ? (long)driValue :  avatarState.dailyRewardReceivedIndex;
                         ReactiveAvatarState.UpdateDailyRewardReceivedIndex(dri);
                         _avatarUpdateRequired = false;
                         return (false, null);
