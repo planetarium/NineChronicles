@@ -388,7 +388,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void UpdateCollectionCount(int id)
+        public void UpdateCollectionCount(int itemId)
         {
             if(collectionCount == null)
             {
