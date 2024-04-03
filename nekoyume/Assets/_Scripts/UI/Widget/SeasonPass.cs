@@ -100,7 +100,7 @@ namespace Nekoyume.UI
         {
             if (seasonPassManager.CurrentSeasonPassData == null)
             {
-                NcDebugger.LogError("[RefreshRewardCells] RefreshFailed");
+                NcDebug.LogError("[RefreshRewardCells] RefreshFailed");
                 return;
             }
 

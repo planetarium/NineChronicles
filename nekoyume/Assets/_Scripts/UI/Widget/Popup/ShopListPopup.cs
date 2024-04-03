@@ -119,7 +119,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                NcDebugger.Log($"Purchase: {_data.Sku}");
+                NcDebug.Log($"Purchase: {_data.Sku}");
 
                 Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click", ("product-id", _data.Sku));
 
@@ -191,7 +191,7 @@ namespace Nekoyume.UI
 
             if (!_data.IsFree)
             {
-                NcDebugger.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
                 foreach (var item in priceTexts)
                 {
                     item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
@@ -237,7 +237,7 @@ namespace Nekoyume.UI
                     }
                     catch
                     {
-                        NcDebugger.LogError($"Can't Find Item ID {item.SheetItemId} in ItemSheet");
+                        NcDebug.LogError($"Can't Find Item ID {item.SheetItemId} in ItemSheet");
                     }
 
                     iapRewardIndex++;

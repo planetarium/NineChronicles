@@ -123,7 +123,7 @@ namespace Nekoyume.Game.Character
         {
             if (string.IsNullOrEmpty(slotName))
             {
-                NcDebugger.LogWarning($"Argument Null Or Empty: {nameof(slotName)}");
+                NcDebug.LogWarning($"Argument Null Or Empty: {nameof(slotName)}");
                 slotAndAttachment = null;
                 return false;
             }
@@ -131,7 +131,7 @@ namespace Nekoyume.Game.Character
             var slot = SkeletonAnimation.skeleton.FindSlot(slotName);
             if (slot is null)
             {
-                NcDebugger.LogWarning($"Not Found Slot: {slotName}");
+                NcDebug.LogWarning($"Not Found Slot: {slotName}");
                 slotAndAttachment = null;
                 return false;
             }

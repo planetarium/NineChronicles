@@ -33,7 +33,7 @@ namespace Nekoyume.Helper
             {
                 throw new ArgumentException("SetupMarketServiceRepository first.");
             }
-            NcDebugger.LogFormat($"MarketService project directory is: {_marketPath}");
+            NcDebug.LogFormat($"MarketService project directory is: {_marketPath}");
             var options = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
             var startInfo = new ProcessStartInfo
             {
@@ -52,16 +52,16 @@ namespace Nekoyume.Helper
                     ["ConnectionStrings__MARKET"] = marketDbConnectionString,
                 },
             };
-            NcDebugger.Log(startInfo.Arguments);
-            NcDebugger.Log($"WorkingDirectory: {startInfo.WorkingDirectory}");
+            NcDebug.Log(startInfo.Arguments);
+            NcDebug.Log($"WorkingDirectory: {startInfo.WorkingDirectory}");
             try
             {
                 _process = Process.Start(startInfo);
                 // FIXME: Can I wait here?
                 _process.WaitForExit();
-                NcDebugger.LogError($"{_process.StandardError.ReadToEnd()}");
-                NcDebugger.Log($"{_process.StandardOutput.ReadToEnd()}");
-                NcDebugger.Log($"MarketService done: {_process.ExitCode}");
+                NcDebug.LogError($"{_process.StandardError.ReadToEnd()}");
+                NcDebug.Log($"{_process.StandardOutput.ReadToEnd()}");
+                NcDebug.Log($"MarketService done: {_process.ExitCode}");
             }
             catch (ThreadInterruptedException)
             {

@@ -52,7 +52,7 @@ namespace Nekoyume.UI
                         e.Id.Equals(rewardInfo.ItemId));
                     if (itemRow is null)
                     {
-                        NcDebugger.LogWarning($"ItemId({rewardInfo.ItemId}) does not exist in MaterialItemSheet.");
+                        NcDebug.LogWarning($"ItemId({rewardInfo.ItemId}) does not exist in MaterialItemSheet.");
                         itemView.Clear();
                         continue;
                     }

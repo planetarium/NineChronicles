@@ -52,8 +52,8 @@ namespace Nekoyume.Helper
             var pkHex = Agent.ProposerKey.ToHexWithZeroPaddings();
             try
             {
-                NcDebugger.Log(Path.Combine(_genesisPath, "genesis-block"));
-                NcDebugger.Log(Path.Combine(_docsRoot, "planetarium", _storeName));
+                NcDebug.Log(Path.Combine(_genesisPath, "genesis-block"));
+                NcDebug.Log(Path.Combine(_docsRoot, "planetarium", _storeName));
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
@@ -66,17 +66,17 @@ namespace Nekoyume.Helper
                         $" --miner-private-key {pkHex} --consensus-private-key {pkHex} --consensus-seed {new PrivateKey(pkHex!).PublicKey},localhost,60000";
                 }
 
-                NcDebugger.Log(startInfo.Arguments);
+                NcDebug.Log(startInfo.Arguments);
                 startInfo.WorkingDirectory = _headlessPath;
-                NcDebugger.Log($"WorkingDirectory: {startInfo.WorkingDirectory}");
+                NcDebug.Log($"WorkingDirectory: {startInfo.WorkingDirectory}");
                 process = Process.Start(startInfo);
                 // FIXME: Can I wait here?
                 process.WaitForExit();
-                NcDebugger.Log($"Headless done: {process.ExitCode}");
+                NcDebug.Log($"Headless done: {process.ExitCode}");
             }
             catch (ThreadInterruptedException)
             {
-                NcDebugger.Log("Interrupt Detected. Exiting...");
+                NcDebug.Log("Interrupt Detected. Exiting...");
                 process.CloseMainWindow();
             }
         }

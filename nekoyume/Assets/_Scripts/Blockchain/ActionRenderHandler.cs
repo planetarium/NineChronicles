@@ -85,7 +85,7 @@ namespace Nekoyume.Blockchain
             Stop();
             _actionRenderer.BlockEndSubject.ObserveOnMainThread().Subscribe(_ =>
             {
-                NcDebugger.Log($"[{nameof(BlockRenderHandler)}] Render actions end");
+                NcDebug.Log($"[{nameof(BlockRenderHandler)}] Render actions end");
             }).AddTo(_disposables);
             _actionRenderer.ActionRenderSubject.ObserveOnMainThread().Subscribe(eval =>
             {
@@ -887,7 +887,7 @@ namespace Nekoyume.Blockchain
                             formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                             break;*/
                         default:
-                            NcDebugger.LogError(
+                            NcDebug.LogError(
                                 $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
                             formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                             break;
@@ -896,7 +896,7 @@ namespace Nekoyume.Blockchain
                     break;
                 }
                 default:
-                    NcDebugger.LogError(
+                    NcDebug.LogError(
                         $"Unexpected state.Result: {stateResult}");
                     formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                     break;
@@ -1051,7 +1051,7 @@ namespace Nekoyume.Blockchain
             }
             else
             {
-                NcDebugger.LogError(
+                NcDebug.LogError(
                     $"[{nameof(ResponseCombinationEquipment)}] result.itemUsable is not Equipment");
                 formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
             }
@@ -1358,7 +1358,7 @@ namespace Nekoyume.Blockchain
                     formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                     break;*/
                 default:
-                    NcDebugger.LogError(
+                    NcDebug.LogError(
                         $"Unexpected result.enhancementResult: {result.enhancementResult}");
                     formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                     break;
@@ -1907,7 +1907,7 @@ namespace Nekoyume.Blockchain
                             }
                             catch (Exception e)
                             {
-                                NcDebugger.LogException(e);
+                                NcDebug.LogException(e);
                             }
                         });
                     });
@@ -2073,7 +2073,7 @@ namespace Nekoyume.Blockchain
                         task.ToObservable()
                             .First()
                             // ReSharper disable once ConvertClosureToMethodGroup
-                            .DoOnError(e => NcDebugger.LogException(e));
+                            .DoOnError(e => NcDebug.LogException(e));
                     });
             return eval;
         }
@@ -2405,7 +2405,7 @@ namespace Nekoyume.Blockchain
 
             if (eval.Exception is not null)
             {
-                NcDebugger.LogError($"unlock world exc : {eval.Exception.InnerException}");
+                NcDebug.LogError($"unlock world exc : {eval.Exception.InnerException}");
                 return;
             }
 
@@ -2624,7 +2624,7 @@ namespace Nekoyume.Blockchain
                         }).ToObservable()
                         .First()
                         // ReSharper disable once ConvertClosureToMethodGroup
-                        .DoOnError(e => NcDebugger.LogException(e));
+                        .DoOnError(e => NcDebug.LogException(e));
                 });
 
             var tableSheets = TableSheets.Instance;
@@ -2662,7 +2662,7 @@ namespace Nekoyume.Blockchain
                             }, configureAwait: false).ToObservable()
                             .First()
                             // ReSharper disable once ConvertClosureToMethodGroup
-                            .DoOnError(e => NcDebugger.LogException(e));
+                            .DoOnError(e => NcDebug.LogException(e));
                     });
                 previousMyScore = StateGetter.TryGetArenaScore(
                     eval.PreviousState,
@@ -2865,7 +2865,7 @@ namespace Nekoyume.Blockchain
                         task.ToObservable()
                             .First()
                             // ReSharper disable once ConvertClosureToMethodGroup
-                            .DoOnError(e => NcDebugger.LogException(e));
+                            .DoOnError(e => NcDebug.LogException(e));
                     });
             return eval;
         }
@@ -2892,7 +2892,7 @@ namespace Nekoyume.Blockchain
 
             if (!WorldBossFrontHelper.TryGetCurrentRow(eval.BlockIndex, out var row))
             {
-                NcDebugger.LogError(
+                NcDebug.LogError(
                     $"[Raid] Failed to get current world boss row. BlockIndex : {eval.BlockIndex}");
                 return;
             }
@@ -3263,7 +3263,7 @@ namespace Nekoyume.Blockchain
         {
             if (eval.Exception is not null)
             {
-                NcDebugger.Log(eval.Exception.Message);
+                NcDebug.Log(eval.Exception.Message);
                 return;
             }
 
@@ -3279,12 +3279,12 @@ namespace Nekoyume.Blockchain
                 avatarValue = StateGetter.GetState(states, Addresses.Avatar, avatarAddr);
                 if (avatarValue is not List avatarList)
                 {
-                    NcDebugger.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
                     return;
                 }
                 if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
                 {
-                    NcDebugger.LogError($"Failed to get mail box: {avatarAddr}");
+                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
                     return;
                 }
                 mailBox = new MailBox(mailBoxList);
@@ -3315,13 +3315,13 @@ namespace Nekoyume.Blockchain
 
                 if (avatarValue is not List avatarList)
                 {
-                    NcDebugger.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
                     return;
                 }
 
                 if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
                 {
-                    NcDebugger.LogError($"Failed to get mail box: {avatarAddr}");
+                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
                     return;
                 }
 
@@ -3361,7 +3361,7 @@ namespace Nekoyume.Blockchain
                     }
                 }
 
-                NcDebugger.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                NcDebug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
                     $"the render context of UnloadFromMyGarages action.\n" +
                     $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             });
@@ -3416,7 +3416,7 @@ namespace Nekoyume.Blockchain
         {
             if (eval.Exception is not null)
             {
-                NcDebugger.Log(eval.Exception.Message);
+                NcDebug.Log(eval.Exception.Message);
                 return;
             }
 
@@ -3431,12 +3431,12 @@ namespace Nekoyume.Blockchain
                 avatarValue = StateGetter.GetState(states, Addresses.Avatar, avatarAddr);
                 if (avatarValue is not List avatarList)
                 {
-                    NcDebugger.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
                     return;
                 }
                 if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
                 {
-                    NcDebugger.LogError($"Failed to get mail box: {avatarAddr}");
+                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
                     return;
                 }
 
@@ -3450,13 +3450,13 @@ namespace Nekoyume.Blockchain
 
                 if (avatarValue is not List avatarList)
                 {
-                    NcDebugger.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
                     return;
                 }
 
                 if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
                 {
-                    NcDebugger.LogError($"Failed to get mail box: {avatarAddr}");
+                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
                     return;
                 }
 
@@ -3498,7 +3498,7 @@ namespace Nekoyume.Blockchain
                     }
                 }
 
-                NcDebugger.LogWarning($"Not found ClaimItemsRecipientMail from " +
+                NcDebug.LogWarning($"Not found ClaimItemsRecipientMail from " +
                     $"the render context of ClaimItems action.\n" +
                     $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             });
@@ -3556,7 +3556,7 @@ namespace Nekoyume.Blockchain
         {
             if (eval.Exception is not null)
             {
-                NcDebugger.Log(eval.Exception.Message);
+                NcDebug.Log(eval.Exception.Message);
                 return;
             }
 

@@ -24,7 +24,7 @@ namespace Nekoyume.Pattern
             {
                 if (_applicationIsQuitting)
                 {
-                    NcDebugger.Log(
+                    NcDebug.Log(
                         $"[MonoSingleton]Instance '{typeof(T)}' already destroyed on application quit. Won't create again - returning null.");
                     return _instance;
                 }
@@ -41,15 +41,15 @@ namespace Nekoyume.Pattern
                         _instance = new GameObject(typeof(T).ToString(), typeof(T)).GetComponent<T>();
                         if (!_instance)
                         {
-                            NcDebugger.LogError("[MonoSingleton]Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
+                            NcDebug.LogError("[MonoSingleton]Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
                         }
 
-                        NcDebugger.Log($"[MonoSingleton]An instance of {typeof(T)} is needed in the scene, so '{_instance.name}' was created with DontDestroyOnLoad.");
+                        NcDebug.Log($"[MonoSingleton]An instance of {typeof(T)} is needed in the scene, so '{_instance.name}' was created with DontDestroyOnLoad.");
                     }
 
                     if (FindObjectsOfType(typeof(T)).Length > 1)
                     {
-                        NcDebugger.LogError(
+                        NcDebug.LogError(
                             $"[MonoSingleton]Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
                     }
 
@@ -65,7 +65,7 @@ namespace Nekoyume.Pattern
             if (_instance &&
                 _instance != this)
             {
-                NcDebugger.LogWarning($"{typeof(T)} already exist!");
+                NcDebug.LogWarning($"{typeof(T)} already exist!");
                 Destroy(gameObject);
                 return;
             }

@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module
         {
             if (!Enum.TryParse<StatType>(keyText, out var statType))
             {
-                NcDebugger.LogError("Failed to parse StatType.");
+                NcDebug.LogError("Failed to parse StatType.");
                 return;
             }
 

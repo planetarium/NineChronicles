@@ -69,7 +69,7 @@ namespace Nekoyume.UI
             Show(RxProps.ArenaInformationOrderedWithScore.Value,
                 ignoreShowAnimation);
             sw.Stop();
-            NcDebugger.Log($"[Arena] Loading Complete. {sw.Elapsed}");
+            NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
         }
 
         public void Show(
@@ -117,14 +117,14 @@ namespace Nekoyume.UI
             var player = RxProps.PlayerArenaInfo.Value;
             if (player is null)
             {
-                NcDebugger.Log($"{nameof(RxProps.PlayerArenaInfo)} is null");
+                NcDebug.Log($"{nameof(RxProps.PlayerArenaInfo)} is null");
                 _billboard.SetData();
                 return;
             }
 
             if (!RxProps.ArenaInfoTuple.HasValue)
             {
-                NcDebugger.Log($"{nameof(RxProps.ArenaInfoTuple)} is null");
+                NcDebug.Log($"{nameof(RxProps.ArenaInfoTuple)} is null");
                 _billboard.SetData();
                 return;
             }

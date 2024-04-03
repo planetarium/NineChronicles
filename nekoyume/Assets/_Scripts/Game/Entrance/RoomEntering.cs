@@ -116,7 +116,7 @@ namespace Nekoyume.Game.Entrance
                 }
                 catch (System.Exception e)
                 {
-                    NcDebugger.LogError(e);
+                    NcDebug.LogError(e);
                 }
             }
 

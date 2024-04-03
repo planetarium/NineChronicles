@@ -35,7 +35,7 @@ namespace Nekoyume
         {
             if (blockIndex != Game.Game.instance.Agent.BlockIndex)
             {
-                NcDebugger.LogError(
+                NcDebug.LogError(
                     $"[{nameof(ArenaHelperOld)}.{nameof(GetThisWeekStateAsync)}] `{nameof(blockIndex)}`({blockIndex}) not equals with `Game.Game.instance.Agent.BlockIndex`({Game.Game.instance.Agent.BlockIndex})");
                 return null;
             }

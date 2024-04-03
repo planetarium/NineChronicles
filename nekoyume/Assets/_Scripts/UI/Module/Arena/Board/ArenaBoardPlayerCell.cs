@@ -123,7 +123,7 @@ namespace Nekoyume.UI.Module.Arena.Board
             {
                 var url = $"{Game.Game.instance.GuildBucketUrl}/{_currentData.guildName}.png";
                 guildMark.sprite = Util.GetTexture(url);
-                NcDebugger.Log($"[Guild]Set guild image {_currentData.guildName}");
+                NcDebug.Log($"[Guild]Set guild image {_currentData.guildName}");
             }
 
             guildMark.enabled = guildEnabled;

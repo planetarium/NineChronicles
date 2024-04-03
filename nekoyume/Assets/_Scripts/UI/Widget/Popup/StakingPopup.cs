@@ -259,7 +259,7 @@ namespace Nekoyume.UI
         {
             if (!States.Instance.StakeStateV2.HasValue)
             {
-                NcDebugger.LogWarning("[StakingPopup] invoked OnClickMigrateButton(), but not has StakeState.");
+                NcDebug.LogWarning("[StakingPopup] invoked OnClickMigrateButton(), but not has StakeState.");
                 return;
             }
 

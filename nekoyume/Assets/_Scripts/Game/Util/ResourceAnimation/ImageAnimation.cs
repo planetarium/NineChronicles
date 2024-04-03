@@ -15,7 +15,7 @@ namespace Nekoyume.Game.Util
         {
             if (!frames.Any())
             {
-                NcDebugger.LogError("frames list is empty. Fill in the frames.");
+                NcDebug.LogError("frames list is empty. Fill in the frames.");
                 return;
             }
 

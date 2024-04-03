@@ -103,7 +103,7 @@ namespace Nekoyume.Helper
             var options = CommandLineParser.GetCommandLineOptions<Url>();
             if (options is { Empty: false })
             {
-                NcDebugger.Log($"Get options from commandline.");
+                NcDebug.Log($"Get options from commandline.");
                 return options;
             }
 
@@ -129,14 +129,14 @@ namespace Nekoyume.Helper
 #endif
             try
             {
-                NcDebugger.Log($"Get url from local: {localPath}");
+                NcDebug.Log($"Get url from local: {localPath}");
                 var jsonText = File.ReadAllText(localPath);
-                NcDebugger.Log($"loaded plain json: {jsonText}");
+                NcDebug.Log($"loaded plain json: {jsonText}");
                 return JsonSerializer.Deserialize<Url>(jsonText, jsonOptions);
             }
             catch(Exception e)
             {
-                NcDebugger.LogErrorFormat("Failed to find {0}. Using default url.\nException: {1}", localPath, e);
+                NcDebug.LogErrorFormat("Failed to find {0}. Using default url.\nException: {1}", localPath, e);
                 return new Url();
             }
         }

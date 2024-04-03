@@ -52,7 +52,7 @@ namespace Nekoyume.UI
             {
                 var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
                 sb.Append($"Argument {nameof(row)} is null.");
-                NcDebugger.LogError(sb.ToString());
+                NcDebug.LogError(sb.ToString());
                 return;
             }
 

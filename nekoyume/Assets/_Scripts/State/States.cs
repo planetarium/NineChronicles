@@ -116,7 +116,7 @@ namespace Nekoyume.State
         {
             if (state is null)
             {
-                NcDebugger.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(States)}.{nameof(SetAgentStateAsync)}] {nameof(state)} is null.");
                 return;
             }
@@ -142,7 +142,7 @@ namespace Nekoyume.State
         {
             if (goldBalanceState is null)
             {
-                NcDebugger.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(States)}.{nameof(SetGoldBalanceState)}] {nameof(goldBalanceState)} is null.");
                 return;
             }
@@ -155,7 +155,7 @@ namespace Nekoyume.State
         {
             if (!fav.Currency.Equals(CrystalCalculator.CRYSTAL))
             {
-                NcDebugger.LogWarning($"Currency not matches. {fav.Currency}");
+                NcDebug.LogWarning($"Currency not matches. {fav.Currency}");
                 return;
             }
 
@@ -379,7 +379,7 @@ namespace Nekoyume.State
                             {
                                 if (checkedItems.Contains(equipment.ItemId))
                                 {
-                                    NcDebugger.LogError($"Duplicated ItemId in Inventory {equipment.ItemId}");
+                                    NcDebug.LogError($"Duplicated ItemId in Inventory {equipment.ItemId}");
                                 }
                                 else
                                 {
@@ -444,7 +444,7 @@ namespace Nekoyume.State
         {
             if (skillState is null)
             {
-                NcDebugger.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(States)}.{nameof(SetCrystalRandomSkillState)}] {nameof(skillState)} is null.");
             }
 
@@ -481,7 +481,7 @@ namespace Nekoyume.State
         {
             if (state is null)
             {
-                NcDebugger.LogWarning(
+                NcDebug.LogWarning(
                     $"[{nameof(States)}.{nameof(AddOrReplaceAvatarStateAsync)}] {nameof(state)} is null.");
                 return null;
             }
@@ -694,7 +694,7 @@ namespace Nekoyume.State
 
             if (!initializeReactiveState)
             {
-                NcDebugger.Log(
+                NcDebug.Log(
                     $"[{nameof(States)}] {nameof(UpdateCurrentAvatarState)}() initializeReactiveState: false");
                 return;
             }
@@ -814,7 +814,7 @@ namespace Nekoyume.State
         {
             if (state is null)
             {
-                NcDebugger.LogWarning($"[{nameof(States)}.{nameof(SetCollectionState)}] {nameof(state)} is null.");
+                NcDebug.LogWarning($"[{nameof(States)}.{nameof(SetCollectionState)}] {nameof(state)} is null.");
             }
 
             CollectionState = state;

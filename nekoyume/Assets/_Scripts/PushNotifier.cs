@@ -135,7 +135,7 @@ namespace Nekoyume
                     break;
             }
 
-            NcDebugger.Log($"FireTime : {fireTime}");
+            NcDebug.Log($"FireTime : {fireTime}");
             var title = L10nManager.Localize("TITLE");
             var iconName = pushType.ToString().ToLower();
 

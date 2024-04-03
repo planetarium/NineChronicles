@@ -54,7 +54,7 @@ namespace Nekoyume.Pattern
         {
             if (isRunning)
             {
-                NcDebugger.LogWarning("Already started.");
+                NcDebug.LogWarning("Already started.");
                 return;
             }
 

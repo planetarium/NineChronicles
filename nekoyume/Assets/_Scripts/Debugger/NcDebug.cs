@@ -21,7 +21,7 @@ namespace Nekoyume
     ///
     /// 2012.11. @kimsama
     ///
-    public static class NcDebugger
+    public static class NcDebug
     {
         // used for build with 'DEBUG_USE' symbol.
         [UsedImplicitly]

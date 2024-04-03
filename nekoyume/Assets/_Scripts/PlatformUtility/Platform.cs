@@ -21,7 +21,7 @@ namespace Nekoyume
 
         public static string GetPersistentDataPath(string fileName)
         {
-            NcDebugger.Log($"[GetPersistentDataPath] {PersistentDataPath} , {fileName}");
+            NcDebug.Log($"[GetPersistentDataPath] {PersistentDataPath} , {fileName}");
             return Path.Combine(PersistentDataPath, fileName);
         }
 
@@ -55,18 +55,18 @@ namespace Nekoyume
         /// <param name="target">The target path where the folder will be copied to.</param>
         private static void CopyFolder(string path, string target)
         {
-            NcDebugger.Log($"[CopyFolder] path:{path}    target:{target}");
+            NcDebug.Log($"[CopyFolder] path:{path}    target:{target}");
 
             if (!Directory.Exists(target))
             {
                 Directory.CreateDirectory(target);
-                NcDebugger.Log($"[Directory.CreateDirectory] target: {target}");
+                NcDebug.Log($"[Directory.CreateDirectory] target: {target}");
             }
 
             foreach (string file in Directory.GetFiles(path))
             {
                 File.Copy(file, Path.Combine(target, Path.GetFileName(file)));
-                NcDebugger.Log($"[File.Copy] path:{Path.GetFileName(file)}    target:{target}");
+                NcDebug.Log($"[File.Copy] path:{Path.GetFileName(file)}    target:{target}");
             }
 
             foreach (string directory in Directory.GetDirectories(path))
@@ -85,7 +85,7 @@ namespace Nekoyume
         /// <param name="target">The target directory path where files will be checked and deleted if a match is found.</param>
         private static void DeleteSameFileName(string path, string target)
         {
-            NcDebugger.Log($"[DeleteCopiedFile] path:{path}    target:{target}");
+            NcDebug.Log($"[DeleteCopiedFile] path:{path}    target:{target}");
             foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
             {
                 string relativePath = file.Substring(path.Length + 1);
@@ -94,7 +94,7 @@ namespace Nekoyume
                 if (File.Exists(targetFile))
                 {
                     File.Delete(targetFile);
-                    NcDebugger.Log($"[File.Delete] Deleted file: {targetFile}");
+                    NcDebug.Log($"[File.Delete] Deleted file: {targetFile}");
                 }
             }
         }

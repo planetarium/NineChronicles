@@ -119,7 +119,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                NcDebugger.Log("Skip incoming battle. Battle is already simulating.");
+                NcDebug.Log("Skip incoming battle. Battle is already simulating.");
             }
         }
 
@@ -596,7 +596,7 @@ namespace Nekoyume.Game
         {
             if (_currentPlayData == null)
             {
-                NcDebugger.LogWarning("Can't skip battle. No battle data found.");
+                NcDebug.LogWarning("Can't skip battle. No battle data found.");
                 return;
             }
             var value = _currentPlayData.Value;

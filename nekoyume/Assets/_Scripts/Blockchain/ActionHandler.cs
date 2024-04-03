@@ -243,7 +243,7 @@ namespace Nekoyume.Blockchain
             }
             catch (Exception e)
             {
-                NcDebugger.LogError(
+                NcDebug.LogError(
                     $"Failed to Update AvatarState: {agentAddress}, {avatarAddress}\n{e.Message}");
             }
         }
@@ -259,7 +259,7 @@ namespace Nekoyume.Blockchain
             }
             else
             {
-                NcDebugger.LogError($"Failed to get AvatarState: {avatarAddress}");
+                NcDebug.LogError($"Failed to get AvatarState: {avatarAddress}");
             }
         }
 
@@ -376,7 +376,7 @@ namespace Nekoyume.Blockchain
             // When in battle, do not immediately update the AvatarState, but pending it.
             if (Pending)
             {
-                NcDebugger.Log($"[{nameof(ActionHandler)}] Pending AvatarState");
+                NcDebug.Log($"[{nameof(ActionHandler)}] Pending AvatarState");
                 Game.Game.instance.Stage.AvatarState = avatarState;
                 return;
             }

@@ -49,7 +49,7 @@ namespace NekoyumeEditor
                 }
                 catch (Exception e)
                 {
-                    NcDebugger.LogError($"[{tableSheet.name}] Serialize Failed - {e.Message}");
+                    NcDebug.LogError($"[{tableSheet.name}] Serialize Failed - {e.Message}");
                     continue;
                 }
 
@@ -87,10 +87,10 @@ namespace NekoyumeEditor
                 sb.AppendLine("\n[Equals Check] (Action Data == Deserialized)");
                 sb.AppendLine(equalsCheck.ToString());
 
-                NcDebugger.Log(sb);
+                NcDebug.Log(sb);
             }
 
-            NcDebugger.Log($"TablePatch action hash was exported at {hashFilePath}");
+            NcDebug.Log($"TablePatch action hash was exported at {hashFilePath}");
         }
     }
 }

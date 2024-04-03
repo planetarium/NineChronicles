@@ -161,7 +161,7 @@ namespace Nekoyume.State
             var sheet = _tableSheets.ArenaSheet;
             if (!sheet.TryGetCurrentRound(blockIndex, out var currentRoundData))
             {
-                NcDebugger.Log($"Failed to get current round data. block index({blockIndex})");
+                NcDebug.Log($"Failed to get current round data. block index({blockIndex})");
                 return previous;
             }
 
@@ -253,7 +253,7 @@ namespace Nekoyume.State
             }
             catch (Exception e)
             {
-                NcDebugger.LogException(e);
+                NcDebug.LogException(e);
                 // TODO: this is temporary code for local testing.
                 arenaInfo.AddRange(_states.AvatarStates.Values.Select(avatar => new ArenaParticipantModel
                 {
@@ -300,7 +300,7 @@ namespace Nekoyume.State
 
             if (!arenaInfo.Any())
             {
-                NcDebugger.Log($"Failed to get {nameof(ArenaParticipantModel)}");
+                NcDebug.Log($"Failed to get {nameof(ArenaParticipantModel)}");
 
                 // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
                 // 따로 처리합니다.

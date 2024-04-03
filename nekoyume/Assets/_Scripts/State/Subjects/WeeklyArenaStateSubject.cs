@@ -18,7 +18,7 @@ namespace Nekoyume.State.Subjects
         {
             if (state is null)
             {
-                NcDebugger.LogWarning($"[{nameof(WeeklyArenaStateSubject)}] / {nameof(OnNext)} / {nameof(state)} is null.");
+                NcDebug.LogWarning($"[{nameof(WeeklyArenaStateSubject)}] / {nameof(OnNext)} / {nameof(state)} is null.");
                 return;
             }
 

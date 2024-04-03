@@ -76,26 +76,26 @@ public class TestbedTool : EditorWindow
 
     private void OnClickSellExport()
     {
-        NcDebugger.Log("[OnClickSellExport]");
+        NcDebug.Log("[OnClickSellExport]");
         Export<TestbedSellScriptableObject, TestbedSell>("TestbedSell", "sell-field");
     }
 
     private void OnClickCreateAvatarExport()
     {
-        NcDebugger.Log("[OnClickCreateAvatarExport]");
+        NcDebug.Log("[OnClickCreateAvatarExport]");
         Export<TestbedCreateAvatarScriptableObject, TestbedCreateAvatar>(
             "TestbedCreateAvatar", "create-avatar-field");
     }
 
     private void OnClickSellImport()
     {
-        NcDebugger.Log("[OnClickImport]");
+        NcDebug.Log("[OnClickImport]");
         Import<TestbedSellScriptableObject, TestbedSell>("sell-field");
     }
 
     private void OnClickCreateAvatarImport()
     {
-        NcDebugger.Log("[OnClickImport]");
+        NcDebug.Log("[OnClickImport]");
         Import<TestbedCreateAvatarScriptableObject, TestbedCreateAvatar>("create-avatar-field");
     }
 
@@ -171,7 +171,7 @@ public class TestbedTool : EditorWindow
             }
         }
 
-        NcDebugger.Log("confirm");
+        NcDebug.Log("confirm");
         AssetDatabase.Refresh();
     }
 }

@@ -173,7 +173,7 @@ namespace Nekoyume.UI.Module
             var metadata = _purchasingData?.metadata;
             if (!_data.IsFree)
             {
-                NcDebugger.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
                 foreach (var item in price)
                 {
                     item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);

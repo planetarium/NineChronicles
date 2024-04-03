@@ -119,12 +119,12 @@ namespace Nekoyume.UI
 
                     if(item is null)
                     {
-                        NcDebugger.LogError($"item is Null");
+                        NcDebug.LogError($"item is Null");
                     }
 
                     if (notice is null)
                     {
-                        NcDebugger.LogError($"notice is Null");
+                        NcDebug.LogError($"notice is Null");
                     }
 
                     item.Set(notice,
@@ -156,7 +156,7 @@ namespace Nekoyume.UI
             }
             catch(Exception e)
             {
-                NcDebugger.LogError(e);
+                NcDebug.LogError(e);
             }
         }
 

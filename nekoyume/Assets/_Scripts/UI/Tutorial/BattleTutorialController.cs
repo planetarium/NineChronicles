@@ -34,31 +34,31 @@ namespace Nekoyume.UI
             {
                 if (!csvReader.TryGetField<int>(0, out var id))
                 {
-                    NcDebugger.LogWarning("id column is not found.");
+                    NcDebug.LogWarning("id column is not found.");
                     continue;
                 }
 
                 if (!csvReader.TryGetField<int>(1, out var stage))
                 {
-                    NcDebugger.LogWarning("stage column is not found.");
+                    NcDebug.LogWarning("stage column is not found.");
                     continue;
                 }
 
                 if (!csvReader.TryGetField<int>(2, out var wave))
                 {
-                    NcDebugger.LogWarning("wave column is not found.");
+                    NcDebug.LogWarning("wave column is not found.");
                     continue;
                 }
 
                 if (!csvReader.TryGetField<string>(3, out var l10NKey))
                 {
-                    NcDebugger.LogWarning("l10nKey column is not found.");
+                    NcDebug.LogWarning("l10nKey column is not found.");
                     continue;
                 }
 
                 if (!csvReader.TryGetField<int>(4, out var nextId))
                 {
-                    NcDebugger.LogWarning("nextId column is not found.");
+                    NcDebug.LogWarning("nextId column is not found.");
                 }
 
                 _modelDict.Add(id, new BattleTutorialModel
@@ -74,7 +74,7 @@ namespace Nekoyume.UI
             foreach (var id in
                      _modelDict.Keys)
             {
-                NcDebugger.Log($"[BattleTutorialController]: contains {id}");
+                NcDebug.Log($"[BattleTutorialController]: contains {id}");
             }
         }
 

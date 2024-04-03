@@ -101,7 +101,7 @@ namespace Nekoyume.UI
                 deeplinkURL = "[none]";
             }
 
-            NcDebugger.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl})" +
+            NcDebug.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl})" +
                       $", deeplinkURL({deeplinkURL})" +
                       $", accessToken({accessToken})" +
                       $", refreshToken({refreshToken})");
@@ -110,7 +110,7 @@ namespace Nekoyume.UI
         public void OpenPortal(System.Action onPortalEnd = null)
         {
             var url = $"{PortalUrl}/mobile-signin?clientSecret={clientSecret}";
-            NcDebugger.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortal)} invoked: url({url})");
+            NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortal)} invoked: url({url})");
             _onPortalEnd = onPortalEnd;
 
             clientSecret = GetClientSecret();
@@ -124,13 +124,13 @@ namespace Nekoyume.UI
         public void OpenPortalRewardUrl()
         {
             var url = $"{PortalUrl}{PortalRewardEndpoint}";
-            NcDebugger.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortalRewardUrl)} invoked: url({url})");
+            NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortalRewardUrl)} invoked: url({url})");
             Application.OpenURL(url);
         }
 
         private void OnDeepLinkActivated(string url)
         {
-            NcDebugger.Log($"[{nameof(PortalConnect)}] {nameof(OnDeepLinkActivated)} invoked: url({url})");
+            NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(OnDeepLinkActivated)} invoked: url({url})");
             deeplinkURL = url;
 
             if (_onPortalEnd != null)
@@ -215,7 +215,7 @@ namespace Nekoyume.UI
             AirbridgeUnity.TrackEvent(evt);
 
             var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
-            NcDebugger.Log($"[{nameof(PortalConnect)}] {nameof(RequestCode)} invoked: url({url})");
+            NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(RequestCode)} invoked: url({url})");
 
             var form = new WWWForm();
             var request = UnityWebRequest.Post(url, form);
@@ -232,13 +232,13 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    NcDebugger.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} Deserialize Error: {json}");
+                    NcDebug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} Deserialize Error: {json}");
                     ShowRequestErrorPopup(data);
                 }
             }
             else
             {
-                NcDebugger.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} " +
+                NcDebug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} " +
                                $"Error: {request.error}\n{json}\nclientSecret: {clientSecret}");
                 ShowRequestErrorPopup(data);
             }
@@ -247,7 +247,7 @@ namespace Nekoyume.UI
         private async void GetAccessToken()
         {
             var url = $"{PortalUrl}{AccessTokenEndpoint}";
-            NcDebugger.Log($"[{nameof(PortalConnect)}] {nameof(GetAccessToken)} invoked: " +
+            NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(GetAccessToken)} invoked: " +
                       $"url({url}), clientSecret({clientSecret}), code({code})");
 
             var form = new WWWForm();
@@ -263,7 +263,7 @@ namespace Nekoyume.UI
             }
             catch (UnityWebRequestException e)
             {
-                NcDebugger.LogException(e);
+                NcDebug.LogException(e);
             }
 
             HandleTokensResult(request);
@@ -274,7 +274,7 @@ namespace Nekoyume.UI
         {
             var url = $"{PortalUrl}{RefreshTokenEndpoint}";
 
-            NcDebugger.Log($"[{nameof(PortalConnect)}] {nameof(UpdateTokens)} invoked: url({url}), refreshToken({refreshToken})");
+            NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(UpdateTokens)} invoked: url({url}), refreshToken({refreshToken})");
 
             var form = new WWWForm();
             form.AddField("refreshToken", refreshToken);
@@ -288,7 +288,7 @@ namespace Nekoyume.UI
             }
             catch (UnityWebRequestException e)
             {
-                NcDebugger.LogException(e);
+                NcDebug.LogException(e);
             }
 
             if (HandleTokensResult(request))
@@ -340,19 +340,19 @@ namespace Nekoyume.UI
             }
 
             var logTitle = $"[{nameof(PortalConnect)}] {nameof(ProcessGoogleSigningSilently)}";
-            NcDebugger.Log($"{logTitle} invoked: google.State.Value({google.State.Value})");
+            NcDebug.Log($"{logTitle} invoked: google.State.Value({google.State.Value})");
 
             switch (google.State.Value)
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    NcDebugger.Log($"{logTitle}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
+                    NcDebug.Log($"{logTitle}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
                     SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Google);
                     return (
                         email: google.Email,
                         idToken: google.IdToken,
                         address: await SendGoogleIdTokenAsync(google.IdToken));
                 case GoogleSigninBehaviour.SignInState.Waiting:
-                    NcDebugger.Log($"{logTitle}... Already waiting for google sign in.");
+                    NcDebug.Log($"{logTitle}... Already waiting for google sign in.");
                     return (
                         email: google.Email,
                         idToken: google.IdToken,
@@ -407,19 +407,19 @@ namespace Nekoyume.UI
             }
 
             var logTitle = $"[{nameof(PortalConnect)}] {nameof(ProcessAppleSigningSilently)}";
-            NcDebugger.Log($"{logTitle} invoked: apple.State.Value({apple.State.Value})");
+            NcDebug.Log($"{logTitle} invoked: apple.State.Value({apple.State.Value})");
 
             switch (apple.State.Value)
             {
                 case AppleSigninBehaviour.SignInState.Signed:
                     SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Apple);
-                    NcDebugger.Log($"{logTitle}... Already signed in apple. Anyway, invoke SendAppleIdToken.");
+                    NcDebug.Log($"{logTitle}... Already signed in apple. Anyway, invoke SendAppleIdToken.");
                     return (
                         email: apple.Email,
                         idToken: apple.IdToken,
                         address: await SendAppleIdTokenAsync(apple.IdToken));
                 case AppleSigninBehaviour.SignInState.Waiting:
-                    NcDebugger.Log($"{logTitle}... Already waiting for apple sign in.");
+                    NcDebug.Log($"{logTitle}... Already waiting for apple sign in.");
                     return (
                         email: apple.Email,
                         idToken: apple.IdToken,
@@ -488,7 +488,7 @@ namespace Nekoyume.UI
 
         public async Task<Address?> SendGoogleIdTokenAsync(string idToken)
         {
-            NcDebugger.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
+            NcDebug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
 
             var evt = new AirbridgeEvent("Intro_GoogleSignIn_ConnectToPortal");
@@ -517,13 +517,13 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
                 {
                     var address = new Address(accessTokenResult.address);
-                    NcDebugger.Log($"[GoogleSigninBehaviour] SendGoogleIdToken succeeded. AgentAddress: {address}");
+                    NcDebug.Log($"[GoogleSigninBehaviour] SendGoogleIdToken succeeded. AgentAddress: {address}");
                     return address;
                 }
             }
             else
             {
-                NcDebugger.LogError($"[GoogleSigninBehaviour] SendGoogleIdToken failed w/ error: {request.error}");
+                NcDebug.LogError($"[GoogleSigninBehaviour] SendGoogleIdToken failed w/ error: {request.error}");
             }
 
             return null;
@@ -531,7 +531,7 @@ namespace Nekoyume.UI
 
         public async Task<Address?> SendAppleIdTokenAsync(string idToken)
         {
-            NcDebugger.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({idToken})");
+            NcDebug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");
 
             var evt = new AirbridgeEvent("Intro_AppleSignIn_ConnectToPortal");
@@ -560,13 +560,13 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
                 {
                     var address = new Address(accessTokenResult.address);
-                    NcDebugger.Log($"[AppleSigninBehaviour] SendAppleleIdToken succeeded. AgentAddress: {address}");
+                    NcDebug.Log($"[AppleSigninBehaviour] SendAppleleIdToken succeeded. AgentAddress: {address}");
                     return address;
                 }
             }
             else
             {
-                NcDebugger.LogError($"[AppleSigninBehaviour] SendAppleleIdToken failed w/ error: {request.error}");
+                NcDebug.LogError($"[AppleSigninBehaviour] SendAppleleIdToken failed w/ error: {request.error}");
             }
 
             return null;
@@ -592,7 +592,7 @@ namespace Nekoyume.UI
             {
                 if (addressInPortal != address)
                 {
-                    NcDebugger.LogError($"[{nameof(PortalConnect)}] {nameof(CheckTokensAsync)}... " +
+                    NcDebug.LogError($"[{nameof(PortalConnect)}] {nameof(CheckTokensAsync)}... " +
                                    $"addressInPortal({addressInPortal}) != address({address})");
                     return false;
                 }
@@ -609,29 +609,29 @@ namespace Nekoyume.UI
             var logTitle = $"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)}";
 
             var json = request.downloadHandler.text;
-            NcDebugger.Log($"{logTitle} invoked w/ request: result({request.result}), json({json})");
+            NcDebug.Log($"{logTitle} invoked w/ request: result({request.result}), json({json})");
             var data = JsonUtility.FromJson<AccessTokenResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
                 if (!string.IsNullOrEmpty(data.accessToken) && !string.IsNullOrEmpty(data.refreshToken))
                 {
-                    NcDebugger.Log($"{logTitle} Success: {json}");
+                    NcDebug.Log($"{logTitle} Success: {json}");
                     accessToken = data.accessToken;
                     refreshToken = data.refreshToken;
 
                     return true;
                 }
 
-                NcDebugger.LogError($"{logTitle} Deserialize Error: {json}");
+                NcDebug.LogError($"{logTitle} Deserialize Error: {json}");
                 ShowRequestErrorPopup(data);
             }
             else if (data.resultCode is 3003 or 3004)
             {
-                NcDebugger.Log($"{logTitle} Refresh Token expired: Refresh Token({accessToken})\n{json}");
+                NcDebug.Log($"{logTitle} Refresh Token expired: Refresh Token({accessToken})\n{json}");
             }
             else
             {
-                NcDebugger.LogError($"{logTitle} Failed: {request.error}\ncode: {code}\nclientSecret: {clientSecret}");
+                NcDebug.LogError($"{logTitle} Failed: {request.error}\ncode: {code}\nclientSecret: {clientSecret}");
                 ShowRequestErrorPopup(data);
             }
 
@@ -648,7 +648,7 @@ namespace Nekoyume.UI
             os = "ios";
 #endif
 
-            NcDebugger.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} invoked: " +
+            NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} invoked: " +
                       $"url({url}), os({os}), planetId({planetId}), address({address}), accessToken({accessToken})");
 
             var form = new WWWForm();
@@ -668,19 +668,19 @@ namespace Nekoyume.UI
             {
                 if (!string.IsNullOrEmpty(data.txId))
                 {
-                    NcDebugger.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Success: {json}");
+                    NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Success: {json}");
                     txId = data.txId;
                     PlayerPrefs.DeleteKey(ClientSecretKey);
                 }
                 else
                 {
-                    NcDebugger.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Deserialize Error: {json}");
+                    NcDebug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Deserialize Error: {json}");
                     ShowRequestErrorPopup(data);
                 }
             }
             else
             {
-                NcDebugger.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Error: " +
+                NcDebug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Error: " +
                                $"{request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
                 ShowRequestErrorPopup(data);
             }
@@ -691,7 +691,7 @@ namespace Nekoyume.UI
             var logTitle = $"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)}";
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
-            NcDebugger.Log($"{logTitle} invoked: url({url}), accessToken({accessToken})");
+            NcDebug.Log($"{logTitle} invoked: url({url}), accessToken({accessToken})");
 
 #if UNITY_IOS
             var client = new HttpClient();
@@ -736,7 +736,7 @@ namespace Nekoyume.UI
             }
             catch (UnityWebRequestException e)
             {
-                NcDebugger.LogException(e);
+                NcDebug.LogException(e);
             }
 
             var json = request.downloadHandler.text;
@@ -745,16 +745,16 @@ namespace Nekoyume.UI
             {
                 if (!string.IsNullOrEmpty(data.referralCode))
                 {
-                    NcDebugger.Log($"{logTitle} Success: {json}");
+                    NcDebug.Log($"{logTitle} Success: {json}");
                     return data;
                 }
 
-                NcDebugger.LogError($"{logTitle} Deserialize Error: {json}");
+                NcDebug.LogError($"{logTitle} Deserialize Error: {json}");
                 ShowRequestErrorPopup(data);
             }
             else if (data.resultCode is 3001 or 3002)
             {
-                NcDebugger.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
+                NcDebug.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
                 if (await UpdateTokens())
                 {
                     return await GetReferralInformation();
@@ -762,7 +762,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                NcDebugger.LogError($"{logTitle} Failed: {request.error}\n{json}\n");
+                NcDebug.LogError($"{logTitle} Failed: {request.error}\n{json}\n");
                 ShowRequestErrorPopup(data);
             }
 #endif
@@ -775,7 +775,7 @@ namespace Nekoyume.UI
             var logTitle = $"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)}";
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
-            NcDebugger.Log($"{logTitle} invoked: url({url}), referralCode({referralCode}) accessToken({accessToken})");
+            NcDebug.Log($"{logTitle} invoked: url({url}), referralCode({referralCode}) accessToken({accessToken})");
 
             var form = new WWWForm();
             form.AddField("referralCode", referralCode);
@@ -790,7 +790,7 @@ namespace Nekoyume.UI
             }
             catch (UnityWebRequestException e)
             {
-                NcDebugger.LogException(e);
+                NcDebug.LogException(e);
             }
 
             var json = request.downloadHandler.text;
@@ -799,13 +799,13 @@ namespace Nekoyume.UI
             {
                 if (request.responseCode == 200)
                 {
-                    NcDebugger.Log($"{logTitle} Success: {json}");
+                    NcDebug.Log($"{logTitle} Success: {json}");
                     return null;
                 }
             }
             else if (data.resultCode is 3001 or 3002)
             {
-                NcDebugger.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
+                NcDebug.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
                 if (await UpdateTokens())
                 {
                     return await EnterReferralCode(referralCode);
@@ -813,7 +813,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                NcDebugger.LogError($"{logTitle} Error: {request.error}\n{json}\n");
+                NcDebug.LogError($"{logTitle} Error: {request.error}\n{json}\n");
             }
 
             return data;

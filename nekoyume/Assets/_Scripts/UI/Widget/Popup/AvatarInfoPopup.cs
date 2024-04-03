@@ -337,7 +337,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                NcDebugger.LogError($"TutorialActionClickAvatarInfoFirstInventoryCellView() throw error.");
+                NcDebug.LogError($"TutorialActionClickAvatarInfoFirstInventoryCellView() throw error.");
             }
         }
 

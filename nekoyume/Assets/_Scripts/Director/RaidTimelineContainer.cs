@@ -156,7 +156,7 @@ namespace Nekoyume.Director
 
             if (tracks == null)
             {
-                NcDebugger.LogError($"[{nameof(RaidTimelineContainer)}] No Spine_Player track found");
+                NcDebug.LogError($"[{nameof(RaidTimelineContainer)}] No Spine_Player track found");
                 return;
             }
 
@@ -193,7 +193,7 @@ namespace Nekoyume.Director
 
             if (tracks == null)
             {
-                NcDebugger.LogError($"[{nameof(RaidTimelineContainer)}] No Spine_Boss track found");
+                NcDebug.LogError($"[{nameof(RaidTimelineContainer)}] No Spine_Boss track found");
                 return;
             }
 

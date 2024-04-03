@@ -24,16 +24,16 @@ namespace Nekoyume
 
             var message = $" Endpoint: {client.Options.EndPoint?.AbsoluteUri ?? "null"}" +
                           $" Query: {query}";
-            NcDebugger.Log($"[GraphQl] StateQueryAsync()... {message}");
+            NcDebug.Log($"[GraphQl] StateQueryAsync()... {message}");
             var request = new GraphQLRequest(query);
             var response = await client.SendQueryAsync<StateQueryGraphType<T>>(request);
             if (response.Errors != null)
             {
-                NcDebugger.LogError("[GraphQl] StateQueryAsync()... request has errors." +
+                NcDebug.LogError("[GraphQl] StateQueryAsync()... request has errors." +
                                $" request: {message}");
                 foreach (var error in response.Errors)
                 {
-                    NcDebugger.LogError(error.Message);
+                    NcDebug.LogError(error.Message);
                 }
             }
 

@@ -379,7 +379,7 @@ namespace Nekoyume.UI
                 }
                 catch (KeyNotFoundException e)
                 {
-                    NcDebugger.LogWarning(e.Message);
+                    NcDebug.LogWarning(e.Message);
                     Find<LoadingScreen>().Close();
                     EnterLogin();
                 }

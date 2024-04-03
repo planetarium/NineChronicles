@@ -805,7 +805,7 @@ namespace Nekoyume.UI
                     MailType.System,
                     L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"),
                     NotificationCell.NotificationType.Alert);
-                NcDebugger.LogError(L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
+                NcDebug.LogError(L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
             }
 
             var currency = model.Price.Value.Currency;

@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Scroller
         {
             if (questModel is null)
             {
-                NcDebugger.LogError("Quest is null.");
+                NcDebug.LogError("Quest is null.");
                 return;
             }
 

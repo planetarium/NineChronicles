@@ -20,7 +20,7 @@ namespace Nekoyume.Director
                 var    defaultAnimation = spineClip.template.animationReference;
                 if (defaultAnimation == null || string.IsNullOrEmpty(defaultAnimation.name))
                 {
-                    NcDebugger.LogWarning($"[{nameof(TimelineHelper)}] AnimationReferenceAsset is null or empty");
+                    NcDebug.LogWarning($"[{nameof(TimelineHelper)}] AnimationReferenceAsset is null or empty");
                     if (string.IsNullOrEmpty(timelineClip.displayName) || timelineClip.displayName == "SpineAnimationStateClip")
                     {
                         spineClip.template.animationReference = null;

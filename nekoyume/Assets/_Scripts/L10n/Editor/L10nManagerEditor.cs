@@ -63,7 +63,7 @@ namespace Nekoyume.L10n.Editor
             PrepareCharacterFilesDirectory();
 
             var uri = new Uri("http://hanzidb.org/TGSCC-Unicode.txt");
-            NcDebugger.Log($"Start to downloading simplified chinese unicode range file from \"{uri}\".");
+            NcDebug.Log($"Start to downloading simplified chinese unicode range file from \"{uri}\".");
 
             var request = UnityWebRequest.Get(uri);
             var requestOperation = request.SendWebRequest();
@@ -92,7 +92,7 @@ namespace Nekoyume.L10n.Editor
                         $"simplified-chinese-8105-unicode-range-{i + 1:00}-{counts[i]:0000}.txt");
                     File.WriteAllText(filePath, joined);
 
-                    NcDebugger.Log($"Complete to downloading simplified chinese unicode range file to \"{filePath}\".");
+                    NcDebug.Log($"Complete to downloading simplified chinese unicode range file to \"{filePath}\".");
                 }
 
                 request.Dispose();
@@ -128,7 +128,7 @@ namespace Nekoyume.L10n.Editor
                     .Select(characterNumber => characterNumber.ToString("X4"))
                     .ToList();
                 var unicodeHexesCount = unicodeHexes.Count;
-                NcDebugger.LogWarning($"{languageType} unicodeHexes count: {unicodeHexesCount}");
+                NcDebug.LogWarning($"{languageType} unicodeHexes count: {unicodeHexesCount}");
                 var maxCharacterCountForEachFile = GetMaxCharacterCountForEachSDF(languageType);
                 var fileIndex = 0;
                 while (true)
@@ -173,7 +173,7 @@ namespace Nekoyume.L10n.Editor
             var settingsList = Resources.Load<FontAssetGenerationSettings>(GenerationSettingsPath).settings;
             foreach (var languageType in languageTypes)
             {
-                NcDebugger.Log($"-------------Generate Start : {languageType}-------------");
+                NcDebug.Log($"-------------Generate Start : {languageType}-------------");
                 var settings = settingsList[(int)languageType];
 
                 var characterPath = Path.Combine(charactersPath,
@@ -189,7 +189,7 @@ namespace Nekoyume.L10n.Editor
                 yield return new EditorWaitForSeconds(WaitTimeForGenerateAtlas);
                 generator.SaveFontAssetToSDF(fontAssetFullPath);
                 yield return new EditorWaitForSeconds(WaitTimeForGenerateSaveSDF);
-                NcDebugger.Log($"-------------Generate End : {languageType}-------------");
+                NcDebug.Log($"-------------Generate End : {languageType}-------------");
             }
         }
 

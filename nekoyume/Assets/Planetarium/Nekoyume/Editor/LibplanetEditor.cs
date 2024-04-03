@@ -16,8 +16,8 @@ namespace Planetarium.Nekoyume.Editor
         private static PublicKey GetOrCreateInitialValidator()
         {
             var pk = Agent.ProposerKey;
-            NcDebugger.Log($"Private Key of initialValidator: {pk.ToHexWithZeroPaddings()}");
-            NcDebugger.Log($"Public Key of initialValidator: {pk.PublicKey}");
+            NcDebug.Log($"Private Key of initialValidator: {pk.ToHexWithZeroPaddings()}");
+            NcDebug.Log($"Public Key of initialValidator: {pk.PublicKey}");
             return pk.PublicKey;
         }
 
@@ -67,7 +67,7 @@ namespace Planetarium.Nekoyume.Editor
                 out List<PendingActivationState> pendingActivationStates,
                 out List<ActivationKey> activationKeys,
                 10);
-            activationKeys.ForEach(x => NcDebugger.Log(x.Encode()));
+            activationKeys.ForEach(x => NcDebug.Log(x.Encode()));
 
             var block = BlockManager.ProposeGenesisBlock(
                 pendingActivationStates.ToArray(),

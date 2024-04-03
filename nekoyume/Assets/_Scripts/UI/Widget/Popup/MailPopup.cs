@@ -304,7 +304,7 @@ namespace Nekoyume.UI
                                 mailRewards.Add(new MailReward(item, fungibleCount));
                                 continue;
                             }
-                            NcDebugger.LogWarning($"Not found material sheet row. {fungibleId}");
+                            NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
                         }
                     }
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
@@ -348,7 +348,7 @@ namespace Nekoyume.UI
                                 continue;
                             }
 
-                            NcDebugger.LogWarning($"Not found material sheet row. {fungibleId}");
+                            NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
                         }
                     }
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
@@ -490,7 +490,7 @@ namespace Nekoyume.UI
             var itemUsable = mail?.attachment?.itemUsable;
             if (itemUsable is null)
             {
-                NcDebugger.LogError("CombinationMail.itemUsable is null");
+                NcDebug.LogError("CombinationMail.itemUsable is null");
                 return;
             }
 
@@ -510,7 +510,7 @@ namespace Nekoyume.UI
                     new[] { avatarAddress }))[avatarAddress];
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
-                NcDebugger.Log("CombinationMail LocalLayer task completed");
+                NcDebug.Log("CombinationMail LocalLayer task completed");
                 await States.Instance.AddOrReplaceAvatarStateAsync(avatarState,
                     States.Instance.CurrentAvatarKey);
             });
@@ -566,12 +566,12 @@ namespace Nekoyume.UI
 
         public void Read(GrindingMail grindingMail)
         {
-            NcDebugger.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
+            NcDebug.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
         }
 
         public void Read(MaterialCraftMail materialCraftMail)
         {
-            NcDebugger.Log($"[{nameof(MaterialCraftMail)}] ItemCount: {materialCraftMail.ItemCount}, ItemId: {materialCraftMail.ItemId}");
+            NcDebug.Log($"[{nameof(MaterialCraftMail)}] ItemCount: {materialCraftMail.ItemCount}, ItemId: {materialCraftMail.ItemId}");
         }
 
         public async void Read(ProductBuyerMail productBuyerMail)
@@ -674,7 +674,7 @@ namespace Nekoyume.UI
             var itemUsable = itemEnhanceMail?.attachment?.itemUsable;
             if (itemUsable is null)
             {
-                NcDebugger.LogError("ItemEnhanceMail.itemUsable is null");
+                NcDebug.LogError("ItemEnhanceMail.itemUsable is null");
                 return;
             }
 
@@ -714,7 +714,7 @@ namespace Nekoyume.UI
                     new[] { avatarAddress }))[avatarAddress];
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
-                NcDebugger.Log("ItemEnhanceMail LocalLayer task completed");
+                NcDebug.Log("ItemEnhanceMail LocalLayer task completed");
                 await States.Instance.AddOrReplaceAvatarStateAsync(avatarState,
                     States.Instance.CurrentAvatarKey);
             });
@@ -782,7 +782,7 @@ namespace Nekoyume.UI
         public void Read(RaidRewardMail raidRewardMail)
         {
             raidRewardMail.New = false;
-            NcDebugger.Log($"[MailRead] MailPopupReadRaidRewardMail mailid : {raidRewardMail.id}");
+            NcDebug.Log($"[MailRead] MailPopupReadRaidRewardMail mailid : {raidRewardMail.id}");
         }
 
         public void Read(UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail)
@@ -799,7 +799,7 @@ namespace Nekoyume.UI
                 game.States.CurrentAvatarState.address,
                 unloadFromMyGaragesRecipientMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
-            NcDebugger.Log($"[MailRead] MailPopupReadUnloadFromMyGaragesRecipientMail mailid : {unloadFromMyGaragesRecipientMail.id} Memo : {unloadFromMyGaragesRecipientMail.Memo}");
+            NcDebug.Log($"[MailRead] MailPopupReadUnloadFromMyGaragesRecipientMail mailid : {unloadFromMyGaragesRecipientMail.id} Memo : {unloadFromMyGaragesRecipientMail.Memo}");
 
             if (unloadFromMyGaragesRecipientMail.Memo != null && unloadFromMyGaragesRecipientMail.Memo.Contains("season_pass"))
             {
@@ -827,7 +827,7 @@ namespace Nekoyume.UI
                                     .FirstOrDefault(row => row.ItemId.Equals(item.FungibleItemId));
                                 if (row is null)
                                 {
-                                    NcDebugger.LogWarning($"Not found material sheet row. {item.FungibleItemId}");
+                                    NcDebug.LogWarning($"Not found material sheet row. {item.FungibleItemId}");
                                     continue;
                                 }
                                 var material = ItemFactory.CreateMaterial(row);
@@ -852,7 +852,7 @@ namespace Nekoyume.UI
                             .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
                         if (row is null)
                         {
-                            NcDebugger.LogWarning($"Not found material sheet row. {fungibleId}");
+                            NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
                             continue;
                         }
 
@@ -929,7 +929,7 @@ namespace Nekoyume.UI
                 game.States.CurrentAvatarState.address,
                 claimItemsMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
-            NcDebugger.Log($"[MailRead] MailPopupReadClaimItemsMail mailid : {claimItemsMail.id} Memo : {claimItemsMail.Memo}");
+            NcDebug.Log($"[MailRead] MailPopupReadClaimItemsMail mailid : {claimItemsMail.id} Memo : {claimItemsMail.Memo}");
 
             var rewards = new List<MailReward>();
             if (claimItemsMail.FungibleAssetValues is not null)
@@ -970,7 +970,7 @@ namespace Nekoyume.UI
                         continue;
                     }
 
-                    NcDebugger.LogWarning($"Not found material sheet row. {fungibleId}");
+                    NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
                 }
             }
 
@@ -981,7 +981,7 @@ namespace Nekoyume.UI
         {
             if (MailBox.Count == 0)
             {
-                NcDebugger.LogError(
+                NcDebug.LogError(
                     "TutorialActionClickFirstCombinationMailSubmitButton() MailBox.Count == 0");
                 return;
             }
@@ -989,7 +989,7 @@ namespace Nekoyume.UI
             var mail = MailBox[0] as CombinationMail;
             if (mail is null)
             {
-                NcDebugger.LogError(
+                NcDebug.LogError(
                     "TutorialActionClickFirstCombinationMailSubmitButton() mail is null");
                 return;
             }

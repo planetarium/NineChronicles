@@ -130,14 +130,14 @@ namespace Nekoyume.L10n
             switch (CurrentState)
             {
                 case State.InInitializing:
-                    NcDebugger.LogWarning($"[{nameof(L10nManager)}] Already in initializing now.");
+                    NcDebug.LogWarning($"[{nameof(L10nManager)}] Already in initializing now.");
                     return OnInitialize;
                 case State.InLanguageChanging:
-                    NcDebugger.LogWarning(
+                    NcDebug.LogWarning(
                         $"[{nameof(L10nManager)}] Already initialized and in changing language now.");
                     return OnLanguageChange;
                 case State.Initialized:
-                    NcDebugger.LogWarning(
+                    NcDebug.LogWarning(
                         $"[{nameof(L10nManager)}] Already initialized as {CurrentLanguage}.");
                     return Observable.Empty(CurrentLanguage);
             }
@@ -187,7 +187,7 @@ namespace Nekoyume.L10n
                     subject.OnError(new L10nNotInitializedException());
                     return subject;
                 case State.InLanguageChanging:
-                    NcDebugger.LogWarning($"[{nameof(L10nManager)}] Already in changing language now.");
+                    NcDebug.LogWarning($"[{nameof(L10nManager)}] Already in changing language now.");
                     return OnLanguageChange;
             }
 
@@ -383,7 +383,7 @@ namespace Nekoyume.L10n
 
                                 if (dictionary.ContainsKey(key))
                                 {
-                                    NcDebugger.LogError("[L10nManager] L10n duplication Key." +
+                                    NcDebug.LogError("[L10nManager] L10n duplication Key." +
                                                    " Ignore duplicated key and use first value." +
                                                    $" key: {key}" +
                                                    $", recordsIndex: {recordsIndex}" +
@@ -399,7 +399,7 @@ namespace Nekoyume.L10n
                         }
                         catch (CsvHelper.MissingFieldException e)
                         {
-                            NcDebugger.LogError($"`{csvFileInfo.Name}` file has failed parse \n{e}");
+                            NcDebug.LogError($"`{csvFileInfo.Name}` file has failed parse \n{e}");
                             continue;
                         }
                     }
@@ -443,7 +443,7 @@ namespace Nekoyume.L10n
                     text = localized;
                     return true;
                 }
-                NcDebugger.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
+                NcDebug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
                 text = $"!{key}!";
                 return false;
             }
@@ -620,13 +620,13 @@ namespace Nekoyume.L10n
                 else
                 {
                     text = string.Empty;
-                    NcDebugger.LogError($"_additionalDic can't find value: {key} {CurrentLanguage}");
+                    NcDebug.LogError($"_additionalDic can't find value: {key} {CurrentLanguage}");
                     return false;
                 }
             }
 
             text = string.Empty;
-            NcDebugger.LogError($"_additionalDic can't find key: {key}");
+            NcDebug.LogError($"_additionalDic can't find key: {key}");
             return false;
         }
     }

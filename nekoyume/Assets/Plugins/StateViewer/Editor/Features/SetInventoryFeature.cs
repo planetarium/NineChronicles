@@ -121,7 +121,7 @@ namespace StateViewer.Editor.Features
                 }
                 catch (Exception e)
                 {
-                    NcDebugger.LogException(e);
+                    NcDebug.LogException(e);
                     return;
                 }
 
@@ -184,7 +184,7 @@ namespace StateViewer.Editor.Features
             {
                 if (!csvReader.TryGetField<int>("item_id", out var itemId))
                 {
-                    NcDebugger.LogWarning("item_id column is not found.");
+                    NcDebug.LogWarning("item_id column is not found.");
                     continue;
                 }
 
@@ -205,7 +205,7 @@ namespace StateViewer.Editor.Features
 
                 if (!itemSheet.TryGetValue(itemId, out var itemRow))
                 {
-                    NcDebugger.LogWarning($"{nameof(itemId)}({itemId}) does not exist.");
+                    NcDebug.LogWarning($"{nameof(itemId)}({itemId}) does not exist.");
                     continue;
                 }
 

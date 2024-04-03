@@ -149,7 +149,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                NcDebugger.LogError($"Not supported type of recipe.");
+                NcDebug.LogError($"Not supported type of recipe.");
                 IsLocked = true;
             }
 

@@ -1059,7 +1059,7 @@ namespace Nekoyume.L10n.Editor
         {
             if (filePath.Length == 0)
             {
-                NcDebugger.LogError("SaveFontAssetToSDF: File Path is empty.");
+                NcDebug.LogError("SaveFontAssetToSDF: File Path is empty.");
                 return;
             }
 
@@ -1067,11 +1067,11 @@ namespace Nekoyume.L10n.Editor
                   GlyphRasterModes.RASTER_MODE_BITMAP))
             {
                 Save_SDF_FontAsset(filePath);
-                NcDebugger.Log("Font Asset has been saved to disk.");
+                NcDebug.Log("Font Asset has been saved to disk.");
             }
             else
             {
-                NcDebugger.LogError("Glyph Raster Mode is invalid : It must be SDF.");
+                NcDebug.LogError("Glyph Raster Mode is invalid : It must be SDF.");
             }
         }
     }

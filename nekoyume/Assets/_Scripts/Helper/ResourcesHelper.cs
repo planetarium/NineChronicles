@@ -26,7 +26,7 @@ namespace Nekoyume.Helper
                 return t;
             }
 
-            NcDebugger.LogError($"{typeof(T)} is not exist !");
+            NcDebug.LogError($"{typeof(T)} is not exist !");
             return default;
         }
 

@@ -128,7 +128,7 @@ namespace Nekoyume.UI
 
         private void SubscribeState(States states)
         {
-            NcDebugger.Log($"[LoginSystem] SubscribeState: {states}");
+            NcDebug.Log($"[LoginSystem] SubscribeState: {states}");
             titleText.gameObject.SetActive(true);
             contentText.gameObject.SetActive(false);
 
@@ -276,7 +276,7 @@ namespace Nekoyume.UI
 
         private void CheckLogin(System.Action success)
         {
-            NcDebugger.Log($"[LoginSystem] CheckLogin invoked");
+            NcDebug.Log($"[LoginSystem] CheckLogin invoked");
             if (!KeyManager.Instance.TrySigninWithTheFirstRegisteredKey(loginField.text))
             {
                 loginWarning.SetActive(true);
@@ -285,10 +285,10 @@ namespace Nekoyume.UI
 
             if (KeyManager.Instance.IsSignedIn)
             {
-                NcDebugger.Log($"[LoginSystem] CheckLogin... success");
+                NcDebug.Log($"[LoginSystem] CheckLogin... success");
                 if (Platform.IsMobilePlatform())
                 {
-                    NcDebugger.Log($"[LoginSystem] CheckLogin... cache passphrase");
+                    NcDebug.Log($"[LoginSystem] CheckLogin... cache passphrase");
                     KeyManager.Instance.CachePassphrase(
                         KeyManager.Instance.SignedInAddress,
                         loginField.text);
@@ -305,7 +305,7 @@ namespace Nekoyume.UI
 
         public void Submit()
         {
-            NcDebugger.Log($"[LoginSystem] Submit invoked: submittable({submitButton.IsSubmittable})" +
+            NcDebug.Log($"[LoginSystem] Submit invoked: submittable({submitButton.IsSubmittable})" +
                       $", {State.Value}");
             if (!submitButton.IsSubmittable)
             {
@@ -396,7 +396,7 @@ namespace Nekoyume.UI
         public void Show(string privateKeyString)
         {
             // WARNING: Do not log privateKeyString.
-            NcDebugger.Log("[LoginSystem] Show(string) invoked with " +
+            NcDebug.Log("[LoginSystem] Show(string) invoked with " +
                       $"privateKeyString({(privateKeyString is null ? "null" : "not null")}).");
             AnalyzeCache.Reset();
 
@@ -460,7 +460,7 @@ namespace Nekoyume.UI
         // Keystore 가 없을 때에만 가능해야 함
         public void Show(Address? connectedAddress)
         {
-            NcDebugger.Log($"[LoginSystem] Show invoked: connectedAddress({connectedAddress})");
+            NcDebug.Log($"[LoginSystem] Show invoked: connectedAddress({connectedAddress})");
             // accountExist
             if (connectedAddress.HasValue)
             {
@@ -489,7 +489,7 @@ namespace Nekoyume.UI
 
         public void ShowResetPassword()
         {
-            NcDebugger.Log($"[LoginSystem] ShowResetPassword invoked");
+            NcDebug.Log($"[LoginSystem] ShowResetPassword invoked");
             Analyzer.Instance.Track("Unity/SetPassword/Show");
 
             var evt = new AirbridgeEvent("SetPassword_Show");
@@ -515,7 +515,7 @@ namespace Nekoyume.UI
                 KeyManager.Instance.SignInAndRegister(
                     new PrivateKey(ByteUtil.ParseHex(privateKeyString)),
                     passPhraseField.text);
-                NcDebugger.LogWarningFormat(
+                NcDebug.LogWarningFormat(
                     "As --private-key option is used, keystore files are ignored.\n" +
                     "Loaded key (address): {0}",
                     KeyManager.Instance.SignedInAddress

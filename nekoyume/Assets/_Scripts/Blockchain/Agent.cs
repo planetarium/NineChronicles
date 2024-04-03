@@ -120,15 +120,15 @@ namespace Nekoyume.Blockchain
             PrivateKey privateKey,
             Action<bool> callback)
         {
-            NcDebugger.Log($"[Agent] Start initialization");
+            NcDebug.Log($"[Agent] Start initialization");
             if (disposed)
             {
-                NcDebugger.Log("Agent Exist");
+                NcDebug.Log("Agent Exist");
                 yield break;
             }
 
             InitAgentAsync(callback, privateKey, options);
-            NcDebugger.Log($"[Agent] Finish initialization");
+            NcDebug.Log($"[Agent] Finish initialization");
         }
 
         private async Task InitAsync(
@@ -143,11 +143,11 @@ namespace Nekoyume.Blockchain
             var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath());
             if (genesisBlock is null)
             {
-                NcDebugger.LogError("There is no genesis block.");
+                NcDebug.LogError("There is no genesis block.");
             }
 
-            NcDebugger.Log($"Store Path: {path}");
-            NcDebugger.Log($"Genesis Block Hash: {genesisBlock.Hash}");
+            NcDebug.Log($"Store Path: {path}");
+            NcDebug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
 
             _stagePolicy = new VolatileStagePolicy();
             PrivateKey = privateKey;
@@ -236,7 +236,7 @@ namespace Nekoyume.Blockchain
 
         public void EnqueueAction(ActionBase actionBase)
         {
-            NcDebugger.LogFormat("Enqueue GameAction: {0}", actionBase);
+            NcDebug.LogFormat("Enqueue GameAction: {0}", actionBase);
             _queuedActions.Enqueue(actionBase);
 
             if (actionBase is GameAction gameAction)
@@ -411,8 +411,8 @@ namespace Nekoyume.Blockchain
             }
             catch (Exception e)
             {
-                NcDebugger.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
-                NcDebugger.LogException(e);
+                NcDebug.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
+                NcDebug.LogException(e);
             }
 
             DefaultStoragePath = StorePath.GetDefaultStoragePath();
@@ -562,23 +562,23 @@ namespace Nekoyume.Blockchain
 
             if (storageType is null)
             {
-                NcDebugger.Log("Storage Type is not specified. DefaultStore will be used.");
+                NcDebug.Log("Storage Type is not specified. DefaultStore will be used.");
             }
             else if (storageType == "rocksdb")
             {
                 try
                 {
                     store = new RocksDBStore(path);
-                    NcDebugger.Log("RocksDB is initialized.");
+                    NcDebug.Log("RocksDB is initialized.");
                 }
                 catch (TypeInitializationException e)
                 {
-                    NcDebugger.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
+                    NcDebug.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
                 }
             }
             else
             {
-                NcDebugger.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
+                NcDebug.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
             }
 
             return store ?? new DefaultStore(path, flush: false);
@@ -678,7 +678,7 @@ namespace Nekoyume.Blockchain
         private IEnumerator CoSwarmRunner()
         {
             BootstrapStarted?.Invoke(this, null);
-            NcDebugger.Log("PreloadEndedAsync=" + (PreloadEndedAsync == null ? "null" : "ok"));
+            NcDebug.Log("PreloadEndedAsync=" + (PreloadEndedAsync == null ? "null" : "ok"));
 
             yield return PreloadEndedAsync?.Invoke().ToCoroutine();
 
@@ -719,14 +719,14 @@ namespace Nekoyume.Blockchain
 
                 var actions = new List<ActionBase>();
 
-                NcDebugger.LogFormat("Try Dequeue Actions. Total Count: {0}", _queuedActions.Count);
+                NcDebug.LogFormat("Try Dequeue Actions. Total Count: {0}", _queuedActions.Count);
                 while (_queuedActions.TryDequeue(out ActionBase action))
                 {
                     actions.Add(action);
-                    NcDebugger.LogFormat("Remain Queued Actions Count: {0}", _queuedActions.Count);
+                    NcDebug.LogFormat("Remain Queued Actions Count: {0}", _queuedActions.Count);
                 }
 
-                NcDebugger.LogFormat("Finish Dequeue Actions.");
+                NcDebug.LogFormat("Finish Dequeue Actions.");
 
                 if (actions.Any())
                 {
@@ -758,7 +758,7 @@ namespace Nekoyume.Blockchain
                     avatarIndex
                 )
             );
-            NcDebugger.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
+            NcDebug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
             yield return States.Instance.SelectAvatarAsync(avatarIndex).ToCoroutine();
             var waitForSeconds = new WaitForSeconds(TxProcessInterval);
@@ -773,7 +773,7 @@ namespace Nekoyume.Blockchain
                     new(),
                     1,
                     1).StartAsCoroutine();
-                NcDebugger.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
+                NcDebug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }
 
@@ -793,7 +793,7 @@ namespace Nekoyume.Blockchain
 
         private Transaction MakeTransaction(List<ActionBase> actions)
         {
-            NcDebugger.LogFormat("Make Transaction with Actions: `{0}`",
+            NcDebug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", actions));
             Transaction tx = blocks.MakeTransaction(
                 privateKey: PrivateKey,
@@ -818,7 +818,7 @@ namespace Nekoyume.Blockchain
                         EnqueueAction(action);
                     }
 
-                    NcDebugger.Log($"Load queued actions: {_queuedActions.Count}");
+                    NcDebug.Log($"Load queued actions: {_queuedActions.Count}");
                     File.Delete(path);
                 }
             }
@@ -832,17 +832,17 @@ namespace Nekoyume.Blockchain
                 var path = Platform.GetPersistentDataPath(QueuedActionsFileName);
                 if (!File.Exists(path))
                 {
-                    NcDebugger.Log("Create new queuedActions list.");
+                    NcDebug.Log("Create new queuedActions list.");
                     actionsList = new List<GameAction>();
                 }
                 else
                 {
                     actionsList =
                         ByteSerializer.Deserialize<List<GameAction>>(File.ReadAllBytes(path));
-                    NcDebugger.Log($"Load queuedActions list. : {actionsList.Count}");
+                    NcDebug.Log($"Load queuedActions list. : {actionsList.Count}");
                 }
 
-                NcDebugger.LogWarning($"Save QueuedActions : {_queuedActions.Count}");
+                NcDebug.LogWarning($"Save QueuedActions : {_queuedActions.Count}");
                 while (_queuedActions.TryDequeue(out var action))
                     actionsList.Add((GameAction)action);
 
