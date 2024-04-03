@@ -404,6 +404,13 @@ namespace Nekoyume.Blockchain
             await UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey);
         }
 
+        protected static long GetActionPoint<T>(ActionEvaluation<T> evaluation, Address avatarAddress) where T : ActionBase
+        {
+            return (Bencodex.Types.Integer)StateGetter.GetState(evaluation.OutputState,
+                Addresses.ActionPoint,
+                avatarAddress);
+        }
+
         internal static void UpdateCombinationSlotState(
             Address avatarAddress,
             int slotIndex,
