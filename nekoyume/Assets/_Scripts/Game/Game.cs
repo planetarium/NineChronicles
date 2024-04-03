@@ -1292,7 +1292,7 @@ namespace Nekoyume.Game
                     var sw = new Stopwatch();
                     sw.Reset();
                     sw.Start();
-                    await RxProps.SelectAvatarAsync(slotIndex);
+                    await RxProps.SelectAvatarAsync(slotIndex, true);
                     sw.Stop();
                     Debug.Log("[Game] EnterNext()... SelectAvatarAsync() finished in" +
                               $" {sw.ElapsedMilliseconds}ms.(elapsed)");
@@ -1324,7 +1324,7 @@ namespace Nekoyume.Game
                         var sw = new Stopwatch();
                         sw.Reset();
                         sw.Start();
-                        await RxProps.SelectAvatarAsync(slotIndex);
+                        await RxProps.SelectAvatarAsync(slotIndex, true);
                         sw.Stop();
                         Debug.Log("[Game] EnterNext()... SelectAvatarAsync() finished in" +
                                   $" {sw.ElapsedMilliseconds}ms.(elapsed)");
