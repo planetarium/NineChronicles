@@ -397,9 +397,9 @@ namespace Nekoyume.UI
 
             var collectionState = Game.Game.instance.States.CollectionState;
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
-            var allCollectionSheetRowById = collectionSheet.Where(x => x.Value.Materials.Count(y => y.ItemId == id) > 0);
-            int maxCount = allCollectionSheetRowById.Count();
-            int count = collectionState.Ids.Count(x => allCollectionSheetRowById.Count(y => y.Key == x) > 0);
+            var collectionsByRecipeItem = collectionSheet.Values.Where(row => row.Materials.Any(material => material.ItemId == itemId)).ToList();
+            var maxCount = collectionsByRecipeItem.Count;
+            var count = collectionState.Ids.Count(activated => collectionsByRecipeItem.Any(row => row.Id == activated));
             collectionCount.text = $"{count}/{maxCount}";
         }
 
