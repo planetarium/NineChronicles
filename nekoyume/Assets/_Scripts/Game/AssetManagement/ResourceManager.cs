@@ -122,13 +122,6 @@ namespace Nekoyume
             _resources.Remove(key);
         }
 
-        public void ReleaseAll(string label)
-        {
-            foreach (var resource in _resources)
-                if (resource.Key.Contains(label))
-                    Addressables.Release(resource.Value);
-        }
-
         public void ReleaseAll()
         {
             foreach (var resource in _resources)

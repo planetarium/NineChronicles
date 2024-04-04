@@ -1,19 +1,23 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume
 {
     public static class BattleLogExtension
     {
-        public static List<int> GetMonsterIds(this BattleLog battleLog)
+        public static HashSet<int> GetMonsterIds(this BattleLog battleLog)
         {
-            var monsterIds = new List<int>();
+            var monsterIds = new HashSet<int>();
             foreach (var currentEvent in battleLog)
             {
-                if (currentEvent is SpawnWave spawnWave)
+                if (currentEvent is not SpawnWave spawnWave)
                 {
-                    monsterIds.AddRange(spawnWave.Enemies.Select(enemy => enemy.CharacterId));
+                    continue;
+                }
+
+                foreach (var enemy in spawnWave.Enemies)
+                {
+                    monsterIds.Add(enemy.CharacterId);
                 }
             }
 

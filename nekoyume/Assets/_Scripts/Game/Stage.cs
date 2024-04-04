@@ -272,11 +272,11 @@ namespace Nekoyume.Game
                     }
                     // TODO: 임시코드, 캐싱 전략 정해지면 수정 필요
                     // fade와 동시에 destroy 되는 것을 방지하기 위해 padding을 줌
-                    ReleaseBattleResources(fadeTime + 0.1f);
+                    DestroyBackground(fadeTime + 0.1f);
                 }
                 else
                 {
-                    ReleaseBattleResources();
+                    DestroyBackground();
                 }
             }
 
@@ -313,10 +313,14 @@ namespace Nekoyume.Game
             }
         }
 
-        public void ReleaseBattleResources(float fadeTime = 0f)
+        public void ReleaseBattleAssets()
         {
-            ResourceManager.Instance.ReleaseAll(ResourceManager.BattleLabel);
+            ReleaseMonsterResources();
+            DestroyBackground();
+        }
 
+        private void DestroyBackground(float fadeTime = 0f)
+        {
             Destroy(_background, fadeTime);
 
             _background = null;
@@ -338,6 +342,9 @@ namespace Nekoyume.Game
             _battleCoroutine = StartCoroutine(CoPlayStage(log));
         }
 
+        // TODO: 씬 분리 후 제거
+        private readonly HashSet<int> loadedMonsterIds = new();
+
         private IEnumerator CoPlayStage(BattleLog log)
         {
 #if TEST_LOG
@@ -353,14 +360,8 @@ namespace Nekoyume.Game
 
             Game.instance.IsInWorld = true;
 
-            var resourceManager = ResourceManager.Instance;
-            resourceManager.ReleaseAll(ResourceManager.BattleLabel);
-            var monsterIds = log.GetMonsterIds();
-            foreach (var monsterId in monsterIds)
-            {
-                NcDebug.LogWarning($"LoadAsync: {monsterId}");
-                yield return resourceManager.LoadAsync<GameObject>(monsterId.ToString()).ToCoroutine();
-            }
+            ReleaseMonsterResources();
+            yield return LoadMonsterResources(log.GetMonsterIds());
 
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
@@ -370,6 +371,27 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(CoStageEnd(log));
             ClearBattle();
+        }
+
+        private IEnumerator LoadMonsterResources(HashSet<int> monsterIds)
+        {
+            var resourceManager = ResourceManager.Instance;
+            foreach (var monsterId in monsterIds)
+            {
+                NcDebug.LogWarning($"LoadAsync: {monsterId}");
+                yield return resourceManager.LoadAsync<GameObject>(monsterId.ToString()).ToCoroutine();
+                loadedMonsterIds.Add(monsterId);
+            }
+        }
+
+        private void ReleaseMonsterResources()
+        {
+            var resourceManager = ResourceManager.Instance;
+            foreach (var loadedMonsterId in loadedMonsterIds)
+            {
+                resourceManager.Release(loadedMonsterId.ToString());
+            }
+            loadedMonsterIds.Clear();
         }
 
         public void ClearBattle()
