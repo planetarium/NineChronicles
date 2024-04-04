@@ -6,7 +6,6 @@ using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.State;
 using Nekoyume.UI.Tween;
 using UnityEngine;
 using UnityEngine.U2D;
@@ -15,6 +14,7 @@ using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
+    // TODO: 전투 씬 분리후 제거
     public class StageLoadingEffect : Widget
     {
         public override WidgetType WidgetType => WidgetType.Widget;
@@ -36,6 +36,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private GraphicAlphaTweener loadingDimTweener;
 
+        private CanvasGroup _canvasGroup;
+
         public bool LoadingEnd { get; private set; } = true;
         public List<Image> images;
         public bool closeEnd;
@@ -45,17 +47,22 @@ namespace Nekoyume.UI
         private bool _shouldClose;
         private List<RectTransform> _rects;
 
-        private const int VideoPlayStage = 2;
-        private const int WorkshopDialogStage = 3;
         private const int WorkShopDialogId = 101;
 
         protected override void Awake()
         {
             base.Awake();
 
+            // TODO: GetOrAddComponent
+            _canvasGroup = gameObject.AddComponent<CanvasGroup>();
             CloseWidget = null;
 
             loadingModule.Initialize();
+        }
+
+        protected override void Update()
+        {
+            base.Update();
         }
 
         private static Sprite GetSprite(string background, string spriteNameFormat)
@@ -121,8 +128,10 @@ namespace Nekoyume.UI
             }
 
             base.Show();
-            StartCoroutine(
-                ShowSequence(stageType, worldName, stageId, isNext, clearedStageId));
+
+            _canvasGroup.alpha = 1f;
+
+            StartCoroutine(ShowSequence(stageType, worldName, stageId, isNext, clearedStageId));
             StartCoroutine(CoRun());
         }
 
@@ -139,22 +148,6 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.BattleLoading);
             if (isNext)
             {
-                // if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
-                // {
-                //     switch (stageId)
-                //     {
-                //         case VideoPlayStage:
-                //             coroutine = PlayVideo;
-                //             LoadingEnd = false;
-                //             break;
-                //         case WorkshopDialogStage:
-                //             coroutine = PlaySmallDialog;
-                //             LoadingEnd = false;
-                //             break;
-                //         default: break;
-                //     }
-                // }
-
                 yield return CoDialog(clearedStageId);
             }
 
@@ -163,11 +156,6 @@ namespace Nekoyume.UI
                 worldName,
                 StageInformation.GetStageIdString(stageType, stageId, true));
             loadingModule.Show(message);
-
-            // if (coroutine != null)
-            // {
-            //     StartCoroutine(coroutine());
-            // }
         }
 
         private IEnumerator CoDialog(int worldStage)

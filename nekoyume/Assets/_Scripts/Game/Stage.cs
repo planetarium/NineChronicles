@@ -330,10 +330,12 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(PlayStage)}() enter");
 #endif
-            if (log?.Count > 0)
+            if (!(log?.Count > 0))
             {
-                _battleCoroutine = StartCoroutine(CoPlayStage(log));
+                return;
             }
+
+            _battleCoroutine = StartCoroutine(CoPlayStage(log));
         }
 
         private IEnumerator CoPlayStage(BattleLog log)
@@ -801,7 +803,7 @@ namespace Nekoyume.Game
             var sprite =
                 SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
             battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
-            yield return StartCoroutine(spawner.CoSetData(character, new Vector3(8f, -1.2f)));
+            yield return StartCoroutine(spawner.CoSpawnEnemyPlayer(character, new Vector3(8f, -1.2f)));
         }
 
         #region Skill
