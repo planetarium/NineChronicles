@@ -373,6 +373,7 @@ namespace Nekoyume.Game
             ClearBattle();
         }
 
+        // TODO: 필요한 것만 로드
         private IEnumerator LoadMonsterResources(HashSet<int> monsterIds)
         {
             var resourceManager = ResourceManager.Instance;
