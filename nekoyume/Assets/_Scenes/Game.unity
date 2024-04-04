@@ -3551,7 +3551,6 @@ GameObject:
   - component: {fileID: 1333831687}
   - component: {fileID: 1333831685}
   - component: {fileID: 1333831686}
-  - component: {fileID: 1333831690}
   - component: {fileID: 1333831688}
   - component: {fileID: 1333831684}
   m_Layer: 0
@@ -3574,7 +3573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPool: {fileID: 1333831684}
-  npcFactory: {fileID: 1333831690}
+  npcFactory: {fileID: 0}
   dropItemFactory: {fileID: 1333831686}
   spawner: {fileID: 157041507}
   dummy: {fileID: 282372974}
@@ -3929,18 +3928,6 @@ MonoBehaviour:
     endDelay: 0.2
     scaleUpTime: 0.65
     scaleOutTime: 0.65
---- !u!114 &1333831690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333831681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46aa168a607c4d6e85c0d69f42b9935d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1346351531
 GameObject:
   m_ObjectHideFlags: 0

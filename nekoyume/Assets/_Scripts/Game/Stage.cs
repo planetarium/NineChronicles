@@ -55,7 +55,6 @@ namespace Nekoyume.Game
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
         public ObjectPool objectPool;
-        public NPCFactory npcFactory;
         public DropItemFactory dropItemFactory;
 
         public MonsterSpawner spawner;
