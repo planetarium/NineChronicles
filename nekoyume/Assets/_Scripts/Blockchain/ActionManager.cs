@@ -355,7 +355,6 @@ namespace Nekoyume.Blockchain
             var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
-            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
             foreach (var pair in recipeInfo.Materials)
             {
@@ -447,7 +446,6 @@ namespace Nekoyume.Blockchain
             var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
-            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
             foreach (var pair in recipeInfo.Materials)
             {
@@ -566,7 +564,6 @@ namespace Nekoyume.Blockchain
                 worldId = worldId,
                 stageId = stageId,
             };
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -actionPoint);
             var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
             LocalLayerModifier.RemoveItem(avatarAddress, apStoneRow.ItemId, apStoneCount);
@@ -610,8 +607,6 @@ namespace Nekoyume.Blockchain
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                     .First(r => r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
-                    States.Instance.GameConfigState.ActionPointMax);
             }
 
             if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
@@ -661,8 +656,6 @@ namespace Nekoyume.Blockchain
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                     .First(r => r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
-                    States.Instance.GameConfigState.ActionPointMax);
             }
 
             if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
@@ -700,8 +693,6 @@ namespace Nekoyume.Blockchain
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                     .First(r => r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
-                    States.Instance.GameConfigState.ActionPointMax);
             }
 
             if (GameConfigStateSubject.ActionPointState.ContainsKey(avatarAddress))
@@ -784,12 +775,6 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<DailyReward>> DailyReward()
         {
-            var blockCount = Game.Game.instance.Agent.BlockIndex -
-                States.Instance.CurrentAvatarState.dailyRewardReceivedIndex + 1;
-            LocalLayerModifier.IncreaseAvatarDailyRewardReceivedIndex(
-                States.Instance.CurrentAvatarState.address,
-                blockCount);
-
             var action = new DailyReward
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
@@ -816,8 +801,6 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
 
             if (baseEquipment.ItemSubType == ItemSubType.Aura)
             {
@@ -1072,7 +1055,6 @@ namespace Nekoyume.Blockchain
             var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
-            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
             if (useHammerPoint)
             {
                 var recipeId = recipeInfo.RecipeId;
@@ -1265,8 +1247,6 @@ namespace Nekoyume.Blockchain
                     .OrderedList
                     .First(r => r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
-                    States.Instance.GameConfigState.ActionPointMax);
 
                 var address = States.Instance.CurrentAvatarState.address;
                 if (GameConfigStateSubject.ActionPointState.ContainsKey(address))

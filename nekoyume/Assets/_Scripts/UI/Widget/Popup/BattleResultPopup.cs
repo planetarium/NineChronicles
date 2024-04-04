@@ -51,7 +51,7 @@ namespace Nekoyume.UI
             public int WorldID;
             public int StageID;
             public int ClearedWaveNumber;
-            public int ActionPoint;
+            public long ActionPoint;
             public int LastClearedStageId;
             public bool ActionPointNotEnough;
             public bool IsClear;
@@ -438,7 +438,6 @@ namespace Nekoyume.UI
                 true);
             worldStageId.text = $"{SharedModel.WorldName}" +
                                 $" {stageText}";
-            actionPoint.SetActionPoint(model.ActionPoint);
             actionPoint.SetEventTriggerEnabled(true);
 
             base.Show();

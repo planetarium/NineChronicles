@@ -756,7 +756,8 @@ namespace Nekoyume.Blockchain
                     var agentAddr = States.Instance.AgentState.address;
                     var avatarAddr = Addresses.GetAvatarAddress(agentAddr, eval.Action.index);
                     DialogPopup.DeleteDialogPlayerPrefs(avatarAddr);
-
+                    // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
+                    ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
                     var loginDetail = Widget.Find<LoginDetail>();
                     if (loginDetail && loginDetail.IsActive())
                     {
@@ -987,7 +988,6 @@ namespace Nekoyume.Blockchain
             var avatarState = renderArgs.AvatarState;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -1124,7 +1124,6 @@ namespace Nekoyume.Blockchain
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -1176,7 +1175,6 @@ namespace Nekoyume.Blockchain
             var itemUsable = result.itemUsable;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -1518,6 +1516,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 UpdateCurrentAvatarStateAsync(eval).Forget();
+                ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
                 await ReactiveShopState.RequestSellProductsAsync();
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
@@ -1623,6 +1622,7 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateCurrentAvatarStateAsync(eval);
                 await ReactiveShopState.RequestSellProductsAsync();
+                ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
             }).Forget();
         }
 
@@ -1690,6 +1690,7 @@ namespace Nekoyume.Blockchain
             UniTask.RunOnThreadPool(async () =>
             {
                 await UpdateCurrentAvatarStateAsync(eval);
+                ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
             }).Forget();
         }
 
@@ -1815,6 +1816,9 @@ namespace Nekoyume.Blockchain
                 GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
             }
 
+            States.Instance.SetCurrentAvatarBalance(StateGetter.GetBalance(
+                eval.OutputState, eval.Action.avatarAddress, RuneHelper.DailyRewardRune));
+
             return eval;
         }
 
@@ -1825,50 +1829,45 @@ namespace Nekoyume.Blockchain
         /// <param name="eval">The action evaluation for render daily reward.</param>
         private void ResponseDailyReward(ActionEvaluation<DailyReward> eval)
         {
-            UniTask.RunOnThreadPool(async () =>
+            // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
+            ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(eval.BlockIndex);
+            LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
+                eval.Action.avatarAddress);
+
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
+                NotificationCell.NotificationType.Notification);
+            var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
+                Action.DailyReward.DailyRewardInterval));
+            var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
+            PushNotifier.Push(
+                notificationText,
+                expectedNotifiedTime,
+                PushNotifier.PushType.Reward);
+
+            if (!RuneFrontHelper.TryGetRuneData(
+                    RuneHelper.DailyRewardRune.Ticker,
+                    out var data))
             {
-                await UpdateCurrentAvatarStateAsync(eval);
-                States.Instance.SetCurrentAvatarBalance(StateGetter.GetBalance(
-                    eval.OutputState, eval.Action.avatarAddress, RuneHelper.DailyRewardRune));
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
-                LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
-                    eval.Action.avatarAddress);
+                return;
+            }
 
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
-                    NotificationCell.NotificationType.Notification);
-                var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                    States.Instance.GameConfigState.DailyRewardInterval));
-                var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
-                PushNotifier.Push(
-                    notificationText,
-                    expectedNotifiedTime,
-                    PushNotifier.PushType.Reward);
-
-                if (!RuneFrontHelper.TryGetRuneData(
-                        RuneHelper.DailyRewardRune.Ticker,
-                        out var data))
-                {
-                    return;
-                }
-
-                var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
-                var amount = States.Instance.GameConfigState.DailyRuneRewardAmount;
-                NotificationSystem.Push(
-                    MailType.System,
-                    $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
-                    NotificationCell.NotificationType.RuneAcquisition);
-            });
+            var runeName = L10nManager.Localize($"RUNE_NAME_{data.id}");
+            const int amount = Action.DailyReward.DailyRuneRewardAmount;
+            NotificationSystem.Push(
+                MailType.System,
+                $" {L10nManager.Localize("OBTAIN")} : {runeName} x {amount}",
+                NotificationCell.NotificationType.RuneAcquisition);
         }
 
-        private (ActionEvaluation<HackAndSlash> eval, AvatarState avatarState, CrystalRandomSkillState randomSkillState) PrepareHackAndSlash(
+        private (ActionEvaluation<HackAndSlash> eval, AvatarState avatarState, CrystalRandomSkillState randomSkillState, long actionPoint) PrepareHackAndSlash(
             ActionEvaluation<HackAndSlash> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
-                return (eval, null, null);
+                return (eval, null, null, 0L);
             }
 
             var avatarState = StateGetter.GetAvatarState(eval.OutputState, eval.Action.AvatarAddress);
@@ -1876,12 +1875,15 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
 
-            return (eval, avatarState, randomSkillState);
+            return (eval,
+                avatarState,
+                randomSkillState,
+                GetActionPoint(eval, eval.Action.AvatarAddress));
         }
 
-        private void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState) prepared)
+        private void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState, long) prepared)
         {
-            var (eval, newAvatarState, newRandomSkillState) = prepared;
+            var (eval, newAvatarState, newRandomSkillState, actionPoint) = prepared;
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
                 return;
@@ -1898,6 +1900,7 @@ namespace Nekoyume.Blockchain
                             try
                             {
                                 await UpdateCurrentAvatarStateAsync(newAvatarState);
+                                ReactiveAvatarState.UpdateActionPoint(actionPoint);
                                 States.Instance.SetCrystalRandomSkillState(newRandomSkillState);
                                 RenderQuest(
                                     eval.Action.AvatarAddress,
@@ -2014,19 +2017,18 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarStateAsync(avatarState).Forget();
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+            var actionPoint = GetActionPoint(eval, avatarAddress);
+            ReactiveAvatarState.UpdateActionPoint(actionPoint);
             return eval;
         }
 
-        private async void ResponseHackAndSlashSweepAsync(
+        private void ResponseHackAndSlashSweepAsync(
             ActionEvaluation<HackAndSlashSweep> eval)
         {
             Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
             if (eval.Action.apStoneCount > 0)
             {
                 var avatarAddress = eval.Action.avatarAddress;
-                LocalLayerModifier.ModifyAvatarActionPoint(
-                    avatarAddress,
-                    eval.Action.actionPoint);
                 var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
@@ -2216,6 +2218,8 @@ namespace Nekoyume.Blockchain
                     await UpdateCurrentAvatarStateAsync(eval);
                 }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
                 {
+                    // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
+                    ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
                     var avatarAddress = eval.Action.avatarAddress;
                     var row = TableSheets.Instance.MaterialItemSheet.Values
                         .First(r => r.ItemSubType == ItemSubType.ApStone);
@@ -2329,6 +2333,7 @@ namespace Nekoyume.Blockchain
         {
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
+            ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
             return eval;
         }
 

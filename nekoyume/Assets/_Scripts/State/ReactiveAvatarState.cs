@@ -36,15 +36,15 @@ namespace Nekoyume.State
         public static IObservable<WorldInformation> WorldInformation
             => _worldInformation.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<int> _actionPoint
-            = new ReactiveProperty<int>();
+        private static readonly ReactiveProperty<long> _actionPoint = new();
 
-        public static IObservable<int> ActionPoint => _actionPoint.ObserveOnMainThread();
+        public static long ActionPoint => _actionPoint.Value;
+        public static IObservable<long> ObservableActionPoint => _actionPoint.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<long> _dailyRewardReceivedIndex
-            = new ReactiveProperty<long>();
+        private static readonly ReactiveProperty<long> _dailyRewardReceivedIndex = new();
 
-        public static IObservable<long> DailyRewardReceivedIndex
+        public static long DailyRewardReceivedIndex => _dailyRewardReceivedIndex.Value;
+        public static IObservable<long> ObservableDailyRewardReceivedIndex
             => _dailyRewardReceivedIndex.ObserveOnMainThread();
 
         private static readonly ReactiveProperty<QuestList> _questList
@@ -65,12 +65,10 @@ namespace Nekoyume.State
             _inventory.SetValueAndForceNotify(state.inventory);
             _mailBox.SetValueAndForceNotify(state.mailBox);
             _worldInformation.SetValueAndForceNotify(state.worldInformation);
-            _actionPoint.SetValueAndForceNotify(state.actionPoint);
-            _dailyRewardReceivedIndex.SetValueAndForceNotify(state.dailyRewardReceivedIndex);
             _questList.SetValueAndForceNotify(state.questList);
         }
 
-        public static void UpdateActionPoint(int actionPoint)
+        public static void UpdateActionPoint(long actionPoint)
         {
             _actionPoint.SetValueAndForceNotify(actionPoint);
         }
