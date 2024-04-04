@@ -151,7 +151,7 @@ namespace Nekoyume.Game
         {
             foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
             {
-                var isEnemy = character is Character.Enemy;
+                var isEnemy = character is Character.StageMonster;
                 character.Animator.TimeScale = isEnemy
                     ? Character.CharacterBase.AnimatorTimeScale * AnimationTimeScaleWeight
                     : AnimationTimeScaleWeight;
@@ -505,7 +505,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                var enemies = GetComponentsInChildren<Character.Enemy>();
+                var enemies = GetComponentsInChildren<Character.StageMonster>();
                 if (enemies.Any())
                 {
                     foreach (var enemy in enemies)
@@ -1005,7 +1005,7 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoDropBox)}() enter.");
 #endif
-            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            var prevEnemies = GetComponentsInChildren<Character.StageMonster>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
 
             var isHeaderMenuShown = Widget.Find<HeaderMenuStatic>().IsActive();
@@ -1118,11 +1118,11 @@ namespace Nekoyume.Game
 #endif
             this.waveNumber = waveNumber;
             this.waveTurn = waveTurn;
-            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            var prevEnemies = GetComponentsInChildren<Character.StageMonster>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
             foreach (var prev in prevEnemies)
             {
-                objectPool.Remove<Character.Enemy>(prev.gameObject);
+                objectPool.Remove<Character.StageMonster>(prev.gameObject);
             }
 
             Event.OnWaveStart.Invoke(enemies.Sum(enemy => enemy.HP));

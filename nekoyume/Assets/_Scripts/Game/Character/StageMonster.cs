@@ -3,14 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
     using UniRx;
 
-    public class Enemy : CharacterBase
+    public class StageMonster : CharacterBase
     {
         private Player _player;
 

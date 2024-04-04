@@ -288,7 +288,7 @@ namespace Nekoyume.Game.Character
             if (dmg <= 0)
             {
                 var index = 0;
-                if (this is Enemy)
+                if (this is StageMonster)
                 {
                     index = 1;
                 }

@@ -6,14 +6,14 @@ using Enemy = Nekoyume.Model.Enemy;
 
 namespace Nekoyume.Game.Factory
 {
-    public class EnemyFactory : MonoBehaviour
+    public class StageMonsterFactory : MonoBehaviour
     {
-        public static GameObject Create(Enemy spawnCharacter, Vector2 position, Character.Player player)
+        public static GameObject Create(Enemy spawnCharacter, Vector2 position, Player player)
         {
             var objectPool = Game.instance.Stage.objectPool;
-            var enemy = objectPool.Get<Character.Enemy>(position);
+            var enemy = objectPool.Get<StageMonster>(position);
             if (!enemy)
-                throw new NotFoundComponentException<Character.Enemy>();
+                throw new NotFoundComponentException<StageMonster>();
 
             enemy.Set(spawnCharacter, player, true);
 
@@ -29,9 +29,9 @@ namespace Nekoyume.Game.Factory
         public static EnemyPlayer Create(Model.EnemyPlayer spawnCharacter, Vector2 position)
         {
             var objectPool = Game.instance.Stage.objectPool;
-            var enemy = objectPool.Get<Character.EnemyPlayer>(position);
+            var enemy = objectPool.Get<EnemyPlayer>(position);
             if (!enemy)
-                throw new NotFoundComponentException<Character.EnemyPlayer>();
+                throw new NotFoundComponentException<EnemyPlayer>();
 
             var player = Game.instance.Stage.GetPlayer();
             enemy.Set(spawnCharacter, player,true);
@@ -54,22 +54,18 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<PrologueCharacter>();
 
             enemy.Set(characterId, target);
-            if (summonEffect)
+
+            if (!summonEffect)
             {
-                var effect = objectPool.Get<BattleSummonVFX>();
-                var effectPosition = new Vector2(position.x, position.y + 0.55f);
-                effect.gameObject.transform.position = effectPosition;
-                effect.Play();
+                return enemy.gameObject;
             }
 
-            // y좌표값에 따른 정렬 처리
-            // var sortingGroup = enemy.GetComponent<SortingGroup>();
-            // if (!sortingGroup)
-            //     throw new NotFoundComponentException<SortingGroup>();
+            var effect         = objectPool.Get<BattleSummonVFX>();
+            var effectPosition = new Vector2(position.x, position.y + 0.55f);
+            effect.gameObject.transform.position = effectPosition;
+            effect.Play();
 
-            // sortingGroup.sortingOrder = (int) (position.y * 10) * -1;
             return enemy.gameObject;
         }
-
     }
 }
