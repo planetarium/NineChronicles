@@ -257,31 +257,28 @@ namespace Nekoyume.Game
             Game.instance.IsInWorld = false;
         }
 
-        // todo: 배경 캐싱.
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
-            if (_background)
+            var hasPrevBackground = _background != null;
+            if (hasPrevBackground)
             {
                 if (_background.name.Equals(prefabName))
                     return;
 
                 if (fadeTime > 0.0f)
                 {
-                    var sprites = _background.GetComponentsInChildren<SpriteRenderer>();
-                    foreach (var sprite in sprites)
+                    if (_background.TryGetComponent<BackgroundGroup>(out var prevBackgroundGroup))
                     {
-                        sprite.sortingOrder += 1;
-                        sprite.DOFade(0.0f, fadeTime);
+                        prevBackgroundGroup.FadeOut(fadeTime);
                     }
-
-                    var particles = _background.GetComponentsInChildren<ParticleSystem>();
-                    foreach (var particle in particles)
-                    {
-                        particle.Stop();
-                    }
+                    // TODO: 임시코드, 캐싱 전략 정해지면 수정 필요
+                    // fade와 동시에 destroy 되는 것을 방지하기 위해 padding을 줌
+                    DestroyBackground(fadeTime + 0.1f);
                 }
-
-                DestroyBackground(fadeTime);
+                else
+                {
+                    DestroyBackground();
+                }
             }
 
             var path = $"Prefab/Background/{prefabName}";
@@ -308,6 +305,12 @@ namespace Nekoyume.Game
                         bosswaveBGVFX = child.GetComponent<ParticleSystem>();
                         break;
                 }
+            }
+
+            if (hasPrevBackground && _background.TryGetComponent<BackgroundGroup>(out var backgroundGroup))
+            {
+                backgroundGroup.SetBackgroundAlpha(0);
+                backgroundGroup.FadeIn(fadeTime);
             }
         }
 

@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: -0.1
+  childSizeAdjust: 1
 --- !u!1 &1695666045278567151
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,6 +197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.3
+  childSizeAdjust: 1
 --- !u!1 &1695784027791969149
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,6 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0
+  childSizeAdjust: 1
 --- !u!1 &1696488138466621871
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,6 +395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0
+  childSizeAdjust: 1
 --- !u!1 &1696707214452814555
 GameObject:
   m_ObjectHideFlags: 0
@@ -401,6 +405,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1701538461211497915}
+  - component: {fileID: -2327672954703310267}
   m_Layer: 10
   m_Name: Chapter_03_01
   m_TagString: Untagged
@@ -430,6 +435,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-2327672954703310267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1696707214452814555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71fe791ae7c3d4248b358d7453f94d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites: []
+  particles:
+  - {fileID: 1534744091313036223}
+  backgrounds:
+  - {fileID: 7275966080141236692}
+  - {fileID: 195032089981664890}
+  - {fileID: 2601539219105806796}
+  - {fileID: 4987781349657908485}
+  - {fileID: 268789462500137215}
+  - {fileID: 4639983664330546148}
 --- !u!1 &1697519099433959385
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,6 +555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: 0.21
+  childSizeAdjust: 1
 --- !u!1 &1697548863801788197
 GameObject:
   m_ObjectHideFlags: 0
@@ -5338,3 +5366,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxSpeed: -0.1
+  childSizeAdjust: 1
