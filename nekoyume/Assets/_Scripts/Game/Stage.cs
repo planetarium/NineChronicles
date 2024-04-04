@@ -259,7 +259,7 @@ namespace Nekoyume.Game
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
-            bool hasPrevBackground = _background != null;
+            var hasPrevBackground = _background != null;
             if (hasPrevBackground)
             {
                 if (_background.name.Equals(prefabName))
