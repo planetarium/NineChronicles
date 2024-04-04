@@ -924,7 +924,7 @@ namespace Nekoyume.UI
             AirbridgeUnity.TrackEvent(evt);
 
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleResources();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -945,7 +945,7 @@ namespace Nekoyume.UI
         private void GoToPreparation()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleResources();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1009,7 +1009,7 @@ namespace Nekoyume.UI
         private void GoToMarket()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleResources();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1024,7 +1024,7 @@ namespace Nekoyume.UI
         private void GoToProduct()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleResources();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1039,7 +1039,7 @@ namespace Nekoyume.UI
         private void GoToCraft()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleResources();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1053,7 +1053,7 @@ namespace Nekoyume.UI
         private void GoToFood()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleResources();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 

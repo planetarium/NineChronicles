@@ -273,11 +273,11 @@ namespace Nekoyume.Game
                     }
                     // TODO: 임시코드, 캐싱 전략 정해지면 수정 필요
                     // fade와 동시에 destroy 되는 것을 방지하기 위해 padding을 줌
-                    DestroyBackground(fadeTime + 0.1f);
+                    ReleaseBattleResources(fadeTime + 0.1f);
                 }
                 else
                 {
-                    DestroyBackground();
+                    ReleaseBattleResources();
                 }
             }
 
@@ -314,9 +314,12 @@ namespace Nekoyume.Game
             }
         }
 
-        public void DestroyBackground(float fadeTime = 0f)
+        public void ReleaseBattleResources(float fadeTime = 0f)
         {
+            ResourceManager.Instance.ReleaseAll(ResourceManager.BattleLabel);
+
             Destroy(_background, fadeTime);
+
             _background = null;
 #if UNITY_ANDROID || UNITY_IOS
             objectPool.RemoveAllExceptFirst();

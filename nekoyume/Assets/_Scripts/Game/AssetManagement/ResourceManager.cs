@@ -9,6 +9,8 @@ namespace Nekoyume
 {
     public class ResourceManager
     {
+        public static string BattleLabel => "Battle";
+
         private static class Singleton
         {
             internal static readonly ResourceManager Value = new();
@@ -118,6 +120,13 @@ namespace Nekoyume
             if (!_resources.TryGetValue(key, out var resource)) return;
             Addressables.Release(resource);
             _resources.Remove(key);
+        }
+
+        public void ReleaseAll(string label)
+        {
+            foreach (var resource in _resources)
+                if (resource.Key.Contains(label))
+                    Addressables.Release(resource.Value);
         }
 
         public void ReleaseAll()
