@@ -6,7 +6,7 @@ using Enemy = Nekoyume.Model.Enemy;
 
 namespace Nekoyume.Game.Factory
 {
-    public class StageMonsterFactory : MonoBehaviour
+    public static class StageMonsterFactory
     {
         public static GameObject Create(Enemy spawnCharacter, Vector2 position, Player player)
         {
