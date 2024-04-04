@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4343881229945367615}
   - component: {fileID: 6096368593747715456}
   - component: {fileID: 6127644678064577470}
-  - component: {fileID: 740490344557670425}
+  - component: {fileID: 8959388939528792047}
   m_Layer: 5
   m_Name: RuneLevelBonusEffectCell
   m_TagString: Untagged
@@ -61,7 +61,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &740490344557670425
+--- !u!114 &8959388939528792047
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,12 +70,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2649315477427651392}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b327453f72ee4502b538eac1b05ee3fe, type: 3}
+  m_Script: {fileID: 11500000, guid: 24b5ca6355a14f20b356b3f1c897ee7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconImage: {fileID: 0}
-  nameText: {fileID: 6921571003749133228}
-  percentText: {fileID: 5366061730054081320}
+  bonusText: {fileID: 6921571003749133228}
+  rewardText: {fileID: 5366061730054081320}
+  focusObject: {fileID: 4650106028849958359}
 --- !u!1 &2857153098251500814
 GameObject:
   m_ObjectHideFlags: 0
