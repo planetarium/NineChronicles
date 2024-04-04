@@ -352,6 +352,16 @@ namespace Nekoyume.Game
                 .ToList();
 
             Game.instance.IsInWorld = true;
+
+            var resourceManager = ResourceManager.Instance;
+            resourceManager.ReleaseAll(ResourceManager.BattleLabel);
+            var monsterIds = log.GetMonsterIds();
+            foreach (var monsterId in monsterIds)
+            {
+                NcDebug.LogWarning($"LoadAsync: {monsterId}");
+                yield return resourceManager.LoadAsync<GameObject>(monsterId.ToString()).ToCoroutine();
+            }
+
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
             {
