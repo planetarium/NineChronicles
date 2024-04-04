@@ -6627,6 +6627,10 @@ MonoBehaviour:
     rectTransform: {fileID: 1919135622005391901}
   tutorialActions: 4f420f00
   closeButton: {fileID: 2124392581732449511}
+  runeLevelBonus:
+    bonusText: {fileID: 4176892622087971488}
+    rewardText: {fileID: 7357442939066809845}
+    infoButton: {fileID: 4218871789139373933}
   scroll: {fileID: 760942376991844909}
   runeNameText: {fileID: 7401036531254831993}
   gradeText: {fileID: 4491323151180358953}
@@ -14836,7 +14840,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_RUNE_LEVEL_BONUS
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -32275,7 +32279,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_RUNE_STAT_REWARD
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

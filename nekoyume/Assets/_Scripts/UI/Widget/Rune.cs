@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Libplanet.Action;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
@@ -33,10 +32,21 @@ namespace Nekoyume.UI
             public Button plusButton;
         }
 
+        [Serializable]
+        private struct RuneLevelBonus
+        {
+            public TextMeshProUGUI bonusText;
+            public TextMeshProUGUI rewardText;
+            public Button infoButton;
+        }
+
         [SerializeField]
         private Button closeButton;
 
         [SerializeField] [Header("LeftArea")]
+        private RuneLevelBonus runeLevelBonus;
+
+        [SerializeField]
         private RuneStoneEnhancementInventoryScroll scroll;
 
         [SerializeField] [Header("RightArea")]
@@ -97,6 +107,8 @@ namespace Nekoyume.UI
                 _costItems.Add(costItem.CostType, costItem);
             }
 
+            runeLevelBonus.infoButton.onClick.AddListener(() =>
+                Find<RuneLevelBonusEffectPopup>().Show());
             levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
             levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
             {
@@ -148,6 +160,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            SetRuneLevelBonus();
             SetInventory();
             base.Show(ignoreShowAnimation);
             Set(_selectedRuneItem);
@@ -158,9 +171,7 @@ namespace Nekoyume.UI
             _currentRuneId = runeId;
             _selectedRuneItem = null;
 
-            SetInventory();
-            base.Show(ignoreShowAnimation);
-            Set(_selectedRuneItem);
+            Show(ignoreShowAnimation);
         }
 
         public void OnActionRender(IRandom random, FungibleAssetValue fav)
@@ -174,6 +185,7 @@ namespace Nekoyume.UI
 
             States.Instance.UpdateRuneSlotState();
             _selectedRuneItem.RuneStone = fav;
+            SetRuneLevelBonus();
             SetInventory();
             Set(_selectedRuneItem);
             animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);
@@ -218,6 +230,11 @@ namespace Nekoyume.UI
         {
             _selectedRuneItem = null;
             Set(item.item);
+        }
+
+        private void SetRuneLevelBonus()
+        {
+
         }
 
         private void Enhancement()
