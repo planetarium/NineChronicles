@@ -217,6 +217,8 @@ namespace Nekoyume.Game
         {
             CurrentSocialEmail = string.Empty;
 
+            ResourceManager.Instance.Initialize();
+
             NcDebug.Log("[Game] Awake() invoked");
             GL.Clear(true, true, Color.black);
             Application.runInBackground = true;
