@@ -134,7 +134,17 @@ namespace Nekoyume.Game.Battle
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
-            Event.OnStageStart.AddListener(OnStageStart);
+
+            BattleRenderer.Instance.OnStageStart += PlayStage;
+        }
+
+        private void OnDestroy()
+        {
+            Event.OnNestEnter.RemoveListener(OnNestEnter);
+            Event.OnLoginDetail.RemoveListener(OnLoginDetail);
+            Event.OnRoomEnter.RemoveListener(OnRoomEnter);
+
+            BattleRenderer.Instance.OnStageStart -= PlayStage;
         }
 
         public void Initialize()
@@ -314,7 +324,7 @@ namespace Nekoyume.Game.Battle
 
         public void ReleaseBattleAssets()
         {
-            ReleaseMonsterResources();
+            BattleRenderer.Instance.ReleaseMonsterResources();
             DestroyBackground();
         }
 
@@ -341,9 +351,6 @@ namespace Nekoyume.Game.Battle
             _battleCoroutine = StartCoroutine(CoPlayStage(log));
         }
 
-        // TODO: 씬 분리 후 제거
-        private readonly HashSet<int> loadedMonsterIds = new();
-
         private IEnumerator CoPlayStage(BattleLog log)
         {
 #if TEST_LOG
@@ -359,9 +366,6 @@ namespace Nekoyume.Game.Battle
 
             BattleRenderer.Instance.IsOnBattle = true;
 
-            ReleaseMonsterResources();
-            yield return LoadMonsterResources(log.GetMonsterIds());
-
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
             {
@@ -370,28 +374,6 @@ namespace Nekoyume.Game.Battle
 
             yield return StartCoroutine(CoStageEnd(log));
             ClearBattle();
-        }
-
-        // TODO: 필요한 것만 로드
-        private IEnumerator LoadMonsterResources(HashSet<int> monsterIds)
-        {
-            var resourceManager = ResourceManager.Instance;
-            foreach (var monsterId in monsterIds)
-            {
-                NcDebug.LogWarning($"LoadAsync: {monsterId}");
-                yield return resourceManager.LoadAsync<GameObject>(monsterId.ToString()).ToCoroutine();
-                loadedMonsterIds.Add(monsterId);
-            }
-        }
-
-        private void ReleaseMonsterResources()
-        {
-            var resourceManager = ResourceManager.Instance;
-            foreach (var loadedMonsterId in loadedMonsterIds)
-            {
-                resourceManager.Release(loadedMonsterId.ToString());
-            }
-            loadedMonsterIds.Clear();
         }
 
         public void ClearBattle()

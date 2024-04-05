@@ -886,6 +886,8 @@ namespace Nekoyume.UI
                 yield break;
             }
 
+            // TODO: WhenAll
+            yield return BattleRenderer.Instance.LoadMonsterResources(log);
             yield return StartCoroutine(CoFadeOut());
 
             var stageLoadingEffect = Find<StageLoadingEffect>();
@@ -913,7 +915,6 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
             yield return StartCoroutine(CoFadeOut());
-            Game.Event.OnStageStart.Invoke(log);
             Close();
         }
 

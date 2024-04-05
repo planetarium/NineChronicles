@@ -665,6 +665,13 @@ namespace Nekoyume.UI
             if (!IsActive() || !Find<LoadingScreen>().IsActive())
                 return;
 
+            StartCoroutine(CoGoToStage(battleLog));
+        }
+
+        private IEnumerator CoGoToStage(BattleLog battleLog)
+        {
+            yield return BattleRenderer.Instance.LoadMonsterResources(battleLog);
+
             Find<LoadingScreen>().Close();
             Close(true);
         }

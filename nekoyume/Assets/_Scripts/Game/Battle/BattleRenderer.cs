@@ -2,9 +2,13 @@
 
 using Nekoyume.Model.BattleStatus;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Nekoyume.Game.Battle
 {
+    // TODO: HackAndSlash, EventDungeon, Raid, Area 등 공통 로직 처리
     public class BattleRenderer
     {
         #region Singleton
@@ -52,5 +56,40 @@ namespace Nekoyume.Game.Battle
         {
             _onStageStart?.Invoke(battleLog);
         }
+
+        #region AssetLoad
+        // TODO: 씬 분리 후 제거
+        private readonly HashSet<int> loadedMonsterIds = new();
+
+        // TODO: VFX도 처리
+
+        public IEnumerator LoadMonsterResources(BattleLog battleLog)
+        {
+            ReleaseMonsterResources();
+            yield return LoadMonsterResources(battleLog.GetMonsterIds());
+        }
+
+        // TODO: 필요한 것만 로드
+        private IEnumerator LoadMonsterResources(HashSet<int> monsterIds)
+        {
+            var resourceManager = ResourceManager.Instance;
+            foreach (var monsterId in monsterIds)
+            {
+                NcDebug.LogWarning($"LoadAsync: {monsterId}");
+                yield return resourceManager.LoadAsync<GameObject>(monsterId.ToString());
+                loadedMonsterIds.Add(monsterId);
+            }
+        }
+
+        public void ReleaseMonsterResources()
+        {
+            var resourceManager = ResourceManager.Instance;
+            foreach (var loadedMonsterId in loadedMonsterIds)
+            {
+                resourceManager.Release(loadedMonsterId.ToString());
+            }
+            loadedMonsterIds.Clear();
+        }
+        #endregion AssetLoad
     }
 }
