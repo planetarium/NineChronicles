@@ -16,9 +16,9 @@ MonoBehaviour:
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
-  m_OptimizeCatalogSize: 0
+  m_OptimizeCatalogSize: 1
   m_BuildRemoteCatalog: 1
-  m_BundleLocalCatalog: 0
+  m_BundleLocalCatalog: 1
   m_CatalogRequestsTimeout: 0
   m_DisableCatalogUpdateOnStart: 0
   m_IgnoreUnsupportedFilesInBuild: 0
@@ -34,11 +34,11 @@ MonoBehaviour:
   m_MonoScriptBundleNaming: 0
   m_MonoScriptBundleCustomNaming: 
   m_RemoteCatalogBuildPath:
-    m_Id: 18f28cf46ffb9f840a55763db5f871c6
+    m_Id: 7c2716f8f026698449ee78a7864faa17
   m_RemoteCatalogLoadPath:
-    m_Id: c22c8003492543f4987f0dc668e6f0f7
+    m_Id: a52d99592ba42af4a99597cbdbb95840
   m_ContentStateBuildPath: 
-  m_BuildAddressablesWithPlayerBuild: 0
+  m_BuildAddressablesWithPlayerBuild: 1
   m_overridePlayerVersion: 1
   m_GroupAssets:
   - {fileID: 11400000, guid: c4ad80360eac6864c8d6643e59c490d4, type: 2}
