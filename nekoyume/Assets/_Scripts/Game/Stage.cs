@@ -171,7 +171,7 @@ namespace Nekoyume.Game
 #endif
             if (_battleLog is null)
             {
-                if (!(_battleCoroutine is null))
+                if (_battleCoroutine is not null)
                 {
                     StopCoroutine(_battleCoroutine);
                     _battleCoroutine = null;
@@ -334,7 +334,7 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(PlayStage)}() enter");
 #endif
-            if (!(log?.Count > 0))
+            if (log?.Count <= 0)
             {
                 return;
             }
@@ -398,7 +398,7 @@ namespace Nekoyume.Game
         public void ClearBattle()
         {
             _battleLog = null;
-            if (!(_battleCoroutine is null))
+            if (_battleCoroutine is not null)
             {
                 StopCoroutine(_battleCoroutine);
                 _battleCoroutine = null;
@@ -1087,7 +1087,7 @@ namespace Nekoyume.Game
 
             character.UpdateHpBar();
 
-            if (!(buffInfos is null))
+            if (buffInfos is not null)
             {
                 foreach (var buffInfo in buffInfos)
                 {
@@ -1374,7 +1374,7 @@ namespace Nekoyume.Game
                 .Where(c => c.Id == caster.Id);
             var character = characters?.FirstOrDefault();
 
-            if (!(characters is null) && characters.Any())
+            if (characters is not null && characters.Any())
             {
                 var ch = characters.First();
 
