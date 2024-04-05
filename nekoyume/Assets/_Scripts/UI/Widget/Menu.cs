@@ -175,7 +175,7 @@ namespace Nekoyume.UI
             }
 
             var requiredCost = stageRow.CostAP;
-            if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
+            if (ReactiveAvatarState.ActionPoint < requiredCost)
             {
                 OneLineSystem.Push(
                     MailType.System,

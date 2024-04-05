@@ -8,7 +8,7 @@ namespace Nekoyume.State.Subjects
     {
         private static readonly Subject<(int, HammerPointState)> _hammerPointSubject;
 
-        public static IObservable<(int, HammerPointState)> HammerPointSubject;
+        public static readonly IObservable<(int, HammerPointState)> HammerPointSubject;
 
         static HammerPointStatesSubject()
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nekoyume.Game.Battle;
+using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -53,7 +54,7 @@ namespace Nekoyume.UI.Module
         private Button button;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private int _currentActionPoint;
+        private long _currentActionPoint;
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
 
@@ -78,16 +79,9 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
 
             sliderAnimator.SetValue(0f, false);
+            sliderAnimator.SetMaxValue(DailyReward.ActionPointMax);
             dailyBonus.sliderAnimator.SetValue(0f, false);
-
-            GameConfigStateSubject.GameConfigState
-                .ObserveOnMainThread()
-                .Subscribe(state =>
-                {
-                    sliderAnimator.SetMaxValue(state.ActionPointMax);
-                    dailyBonus.sliderAnimator.SetMaxValue(state.DailyRewardInterval);
-                })
-                .AddTo(gameObject);
+            dailyBonus.sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
 
             GameConfigStateSubject.ActionPointState.ObserveAdd()
                 .Where(x => x.Key == States.Instance.CurrentAvatarState.address)
@@ -105,31 +99,24 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
 
-            if (!syncWithAvatarState)
-                return;
-
-            var gameConfig = States.Instance.GameConfigState;
-            if (gameConfig is not null)
-            {
-                sliderAnimator.SetMaxValue(gameConfig.ActionPointMax);
-                dailyBonus.sliderAnimator.SetMaxValue(gameConfig.DailyRewardInterval);
-            }
+            sliderAnimator.SetMaxValue(DailyReward.ActionPointMax);
+            dailyBonus.sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
 
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is not null)
             {
-                SetActionPoint(avatarState.actionPoint, false);
+                SetActionPoint(ReactiveAvatarState.ActionPoint, false);
                 SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
-                SetRewardReceivedBlockIndex(avatarState.dailyRewardReceivedIndex, false);
+                SetRewardReceivedBlockIndex(ReactiveAvatarState.DailyRewardReceivedIndex, false);
             }
 
-            ReactiveAvatarState.ActionPoint
+            ReactiveAvatarState.ObservableActionPoint
                 .Subscribe(x => SetActionPoint(x, true))
                 .AddTo(_disposables);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(x => SetBlockIndex(x, true))
                 .AddTo(_disposables);
-            ReactiveAvatarState.DailyRewardReceivedIndex
+            ReactiveAvatarState.ObservableDailyRewardReceivedIndex
                 .Subscribe(x => SetRewardReceivedBlockIndex(x, true))
                 .AddTo(_disposables);
 
@@ -143,15 +130,9 @@ namespace Nekoyume.UI.Module
             else
             {
                 var address = States.Instance.CurrentAvatarState.address;
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
-                {
-                    var value = GameConfigStateSubject.ActionPointState[address];
-                    Charger(value);
-                }
-                else
-                {
-                    Charger(false);
-                }
+                Charger(
+                    GameConfigStateSubject.ActionPointState.TryGetValue(address, out var value) &&
+                    value);
             }
         }
 
@@ -165,7 +146,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        private void SetActionPoint(int actionPoint, bool useAnimation)
+        private void SetActionPoint(long actionPoint, bool useAnimation)
         {
             if (_currentActionPoint == actionPoint)
             {
@@ -200,10 +181,9 @@ namespace Nekoyume.UI.Module
 
         private void UpdateDailyBonusSlider(bool useAnimation)
         {
-            var gameConfigState = States.Instance.GameConfigState;
             var endValue = Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex);
-            var value = Math.Min(gameConfigState.DailyRewardInterval, endValue);
-            var remainBlock = gameConfigState.DailyRewardInterval - value;
+            var value = Math.Min(DailyReward.DailyRewardInterval, endValue);
+            var remainBlock = DailyReward.DailyRewardInterval - value;
 
             dailyBonus.sliderAnimator.SetValue(value, useAnimation);
             var timeSpanString =
@@ -221,11 +201,6 @@ namespace Nekoyume.UI.Module
         private void OnDailyBonusSliderChange()
         {
             animator.SetBool(IsFull, dailyBonus.sliderAnimator.IsFull);
-        }
-
-        public void SetActionPoint(int actionPoint)
-        {
-            SetActionPoint(actionPoint, false);
         }
 
         public void SetEventTriggerEnabled(bool value)
@@ -311,8 +286,8 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            if (States.Instance.CurrentAvatarState.actionPoint ==
-                States.Instance.GameConfigState.ActionPointMax) // full?
+            // if full?
+            if (ReactiveAvatarState.ActionPoint == DailyReward.ActionPointMax)
             {
                 return false;
             }

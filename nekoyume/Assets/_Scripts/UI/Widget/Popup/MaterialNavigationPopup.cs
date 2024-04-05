@@ -119,7 +119,7 @@ namespace Nekoyume.UI
 
         private static void InvokeAfterActionPointCheck(System.Action action)
         {
-            if (States.Instance.CurrentAvatarState.actionPoint > 0)
+            if (ReactiveAvatarState.ActionPoint > 0)
             {
                 ActionPoint.ShowRefillConfirmPopup(action);
             }

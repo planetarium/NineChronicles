@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using JetBrains.Annotations;
+using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -64,28 +65,24 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ => OnSliderChange())
                 .AddTo(gameObject);
             sliderAnimator.SetValue(0f, false);
-
-            GameConfigStateSubject.GameConfigState
-                .ObserveOnMainThread()
-                .Subscribe(state => sliderAnimator.SetMaxValue(state.DailyRewardInterval))
-                .AddTo(gameObject);
+            sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
 
-            sliderAnimator.SetMaxValue(States.Instance.GameConfigState?.DailyRewardInterval ?? 0f);
+            sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
             if (States.Instance.CurrentAvatarState is not null)
             {
                 SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
-                SetRewardReceivedBlockIndex(States.Instance.CurrentAvatarState.dailyRewardReceivedIndex, false);
+                SetRewardReceivedBlockIndex(ReactiveAvatarState.DailyRewardReceivedIndex, false);
             }
 
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(x => SetBlockIndex(x, true))
                 .AddTo(_disposables);
-            ReactiveAvatarState.DailyRewardReceivedIndex
+            ReactiveAvatarState.ObservableDailyRewardReceivedIndex
                 .Subscribe(x => SetRewardReceivedBlockIndex(x, true))
                 .AddTo(_disposables);
 
@@ -125,10 +122,9 @@ namespace Nekoyume.UI.Module
 
         private void UpdateSlider(bool useAnimation)
         {
-            var gameConfigState = States.Instance.GameConfigState;
             var endValue = Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex);
-            var value = Math.Min(gameConfigState.DailyRewardInterval, endValue);
-            var remainBlock = gameConfigState.DailyRewardInterval - value;
+            var value = Math.Min(DailyReward.DailyRewardInterval, endValue);
+            var remainBlock = DailyReward.DailyRewardInterval - value;
 
             sliderAnimator.SetValue(value, useAnimation);
             timeSpanText.text =
@@ -147,7 +143,7 @@ namespace Nekoyume.UI.Module
                 additiveImage.enabled = _isFull;
             }
 
-            hasNotificationImage.enabled = _isFull && States.Instance.CurrentAvatarState?.actionPoint == 0;
+            hasNotificationImage.enabled = _isFull && ReactiveAvatarState.ActionPoint == 0;
 
             animator.SetBool(IsFull, _isFull);
         }
@@ -178,7 +174,7 @@ namespace Nekoyume.UI.Module
                     L10nManager.Localize("UI_CHARGING_AP"),
                     NotificationCell.NotificationType.Information);
             }
-            else if (States.Instance.CurrentAvatarState.actionPoint > 0)
+            else if (ReactiveAvatarState.ActionPoint > 0)
             {
                 var confirm = Widget.Find<ConfirmPopup>();
                 confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
