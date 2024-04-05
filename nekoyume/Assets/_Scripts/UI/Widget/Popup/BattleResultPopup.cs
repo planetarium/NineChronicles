@@ -243,13 +243,13 @@ namespace Nekoyume.UI
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
 
-            BattleRenderer.Instance.OnStageStart += NextStage;
+            BattleRenderer.Instance.OnPrepareStage += NextPrepareStage;
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            BattleRenderer.Instance.OnStageStart -= NextStage;
+            BattleRenderer.Instance.OnPrepareStage -= NextPrepareStage;
         }
 
         private IEnumerator OnClickClose()
@@ -871,7 +871,7 @@ namespace Nekoyume.UI
             };
         }
 
-        private void NextStage(BattleLog log)
+        private void NextPrepareStage(BattleLog log)
         {
             if (!IsActive() || !Find<StageLoadingEffect>().IsActive())
                 return;
@@ -886,8 +886,6 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            // TODO: WhenAll
-            yield return BattleRenderer.Instance.LoadMonsterResources(log);
             yield return StartCoroutine(CoFadeOut());
 
             var stageLoadingEffect = Find<StageLoadingEffect>();
@@ -898,6 +896,8 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(stageLoadingEffect.CoClose());
 
+            // TODO: WhenAll
+            yield return BattleRenderer.Instance.LoadStageResources(log);
             Close();
         }
 

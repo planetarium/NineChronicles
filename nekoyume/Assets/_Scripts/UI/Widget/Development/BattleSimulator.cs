@@ -118,7 +118,7 @@ public class BattleSimulator : Widget
     public void OnClickGoStage()
     {
         var log = Simulate();
-        BattleRenderer.Instance.StartStage(log);
+        BattleRenderer.Instance.PrepareStage(log);
         SaveField();
         content.SetActive(false);
     }

@@ -142,13 +142,13 @@ namespace Nekoyume.UI
             CloseWidget = () => Close(true);
             base.Awake();
 
-            BattleRenderer.Instance.OnStageStart += GoToStage;
+            BattleRenderer.Instance.OnPrepareStage += GoToPrepareStage;
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            BattleRenderer.Instance.OnStageStart -= GoToStage;
+            BattleRenderer.Instance.OnPrepareStage -= GoToPrepareStage;
         }
 
         public override void Initialize()
@@ -660,7 +660,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void GoToStage(BattleLog battleLog)
+        private void GoToPrepareStage(BattleLog battleLog)
         {
             if (!IsActive() || !Find<LoadingScreen>().IsActive())
                 return;
@@ -670,7 +670,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoGoToStage(BattleLog battleLog)
         {
-            yield return BattleRenderer.Instance.LoadMonsterResources(battleLog);
+            yield return BattleRenderer.Instance.LoadStageResources(battleLog);
 
             Find<LoadingScreen>().Close();
             Close(true);

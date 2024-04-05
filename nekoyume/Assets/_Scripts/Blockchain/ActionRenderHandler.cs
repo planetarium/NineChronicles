@@ -1971,7 +1971,7 @@ namespace Nekoyume.Blockchain
                 AirbridgeUnity.TrackEvent(evt);
             }
 
-            BattleRenderer.Instance.StartStage(log);
+            BattleRenderer.Instance.PrepareStage(log);
         }
 
         private void ExceptionHackAndSlash(ActionEvaluation<HackAndSlash> eval)
@@ -2108,7 +2108,7 @@ namespace Nekoyume.Blockchain
             stage.StageType = StageType.EventDungeon;
             stage.PlayCount = playCount;
 
-            BattleRenderer.Instance.StartStage(log);
+            BattleRenderer.Instance.PrepareStage(log);
         }
 
         private void ExceptionEventDungeonBattle(ActionEvaluation<EventDungeonBattle> eval)

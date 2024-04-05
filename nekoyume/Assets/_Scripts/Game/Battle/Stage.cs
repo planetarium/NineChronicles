@@ -135,7 +135,7 @@ namespace Nekoyume.Game.Battle
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
 
-            BattleRenderer.Instance.OnStageStart += PlayStage;
+            BattleRenderer.Instance.OnStageStart += OnStartStage;
         }
 
         private void OnDestroy()
@@ -144,7 +144,7 @@ namespace Nekoyume.Game.Battle
             Event.OnLoginDetail.RemoveListener(OnLoginDetail);
             Event.OnRoomEnter.RemoveListener(OnRoomEnter);
 
-            BattleRenderer.Instance.OnStageStart -= PlayStage;
+            BattleRenderer.Instance.OnStageStart -= OnStartStage;
         }
 
         public void Initialize()
@@ -173,7 +173,7 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        private void OnStageStart(BattleLog log)
+        private void OnStartStage(BattleLog log)
         {
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(OnStageStart)}() enter");

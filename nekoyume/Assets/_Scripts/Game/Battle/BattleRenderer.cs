@@ -21,15 +21,11 @@ namespace Nekoyume.Game.Battle
         #endregion Singleton
 
         #region Fields
+        private Action<BattleLog>? _onPrepareStage;
         private Action<BattleLog>? _onStageStart;
         #endregion Fields
 
         #region Properties & Events
-
-        public bool IsOnLoading => IsWaitingBattleLog;
-
-        // TODO: Remove
-        public bool IsWaitingBattleLog { get; set; }
 
         // TODO: don't use public setter
         // TODO: UI코드에서 불리는 부분이 많은데, 다른 방식으로 체크 불가능?
@@ -37,6 +33,22 @@ namespace Nekoyume.Game.Battle
         // 캐릭터 머리 위 UI도 체크해서 고치자
         public bool IsOnBattle { get; set; }
 
+        /// <summary>
+        /// ActionRenderHandler의 응답을 받아 렌더링할 리소르를 준비할 때 호출
+        /// </summary>
+        public event Action<BattleLog>? OnPrepareStage
+        {
+            add
+            {
+                _onPrepareStage -= value;
+                _onPrepareStage += value;
+            }
+            remove => _onPrepareStage -= value;
+        }
+
+        /// <summary>
+        /// OnPrepareStage호출 후 리소스가 준비되어 전투가 시작될 때 호출
+        /// </summary>
         public event Action<BattleLog>? OnStageStart
         {
             add
@@ -52,9 +64,9 @@ namespace Nekoyume.Game.Battle
 
         // Stage, StageLoadingEffect등등.. 확인
 
-        public void StartStage(BattleLog battleLog)
+        public void PrepareStage(BattleLog battleLog)
         {
-            _onStageStart?.Invoke(battleLog);
+            _onPrepareStage?.Invoke(battleLog);
         }
 
         #region AssetLoad
@@ -63,10 +75,11 @@ namespace Nekoyume.Game.Battle
 
         // TODO: VFX도 처리
 
-        public IEnumerator LoadMonsterResources(BattleLog battleLog)
+        public IEnumerator LoadStageResources(BattleLog battleLog)
         {
             ReleaseMonsterResources();
             yield return LoadMonsterResources(battleLog.GetMonsterIds());
+            _onStageStart?.Invoke(battleLog);
         }
 
         // TODO: 필요한 것만 로드
