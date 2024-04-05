@@ -68,7 +68,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var starCount = skillState?.StarCount ?? 0;
+            var starCount = 0;
+            if (skillState != null && skillState.StageId == _stageId)
+            {
+                starCount = skillState.StarCount;
+            }
+
             _hasEnoughStars = starCount >= row.MaxStar;
             if (_hasEnoughStars)
             {
@@ -87,7 +92,7 @@ namespace Nekoyume.UI.Module
             var isBuffAvailable = skillState != null && _hasEnoughStars;
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
+            var key = $"HackAndSlash.SelectedBonusSkillId.{avatarAddress}";
             var selectedId = PlayerPrefs.GetInt(key, 0);
 
             var tableSheets = Game.Game.instance.TableSheets;
