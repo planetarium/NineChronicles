@@ -125,7 +125,7 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show();
             Close();
 
-            Game.Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
             _stage.IsShowHud = true;
 
             ObservableExtensions.Subscribe(Game.Game.instance.ActionManager.HackAndSlash(

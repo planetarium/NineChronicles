@@ -225,7 +225,7 @@ namespace Nekoyume.Game.Battle
             }
 
             Widget.Find<LoadingScreen>().Close();
-            Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
             _waveTurn = 1;
             _wave = 0;
             _currentScore = 0;
@@ -271,7 +271,7 @@ namespace Nekoyume.Game.Battle
             }
             _isPlaying = false;
             ActionRenderHandler.Instance.Pending = false;
-            Game.instance.IsInWorld = false;
+            BattleRenderer.Instance.IsOnBattle = false;
             Widget.Find<WorldBossBattle>().Close();
 
             container.Close();

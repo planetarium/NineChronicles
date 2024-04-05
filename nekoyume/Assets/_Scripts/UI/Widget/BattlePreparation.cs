@@ -14,6 +14,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -149,7 +150,7 @@ namespace Nekoyume.UI
             information.Initialize();
 
             startButton.OnSubmitSubject
-                .Where(_ => !Game.Game.instance.IsInWorld)
+                .Where(_ => !BattleRenderer.Instance.IsOnBattle)
                 .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
@@ -159,10 +160,10 @@ namespace Nekoyume.UI
                 .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction));
 
             boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
+                .Where(_ => EnoughToPlay && !BattleRenderer.Instance.IsOnBattle)
                 .Subscribe(_ => ShowBoosterPopup());
 
-            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !Game.Game.instance.IsInWorld)
+            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !BattleRenderer.Instance.IsOnBattle)
                 .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(
@@ -396,7 +397,7 @@ namespace Nekoyume.UI
         {
             AudioController.PlayClick();
 
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 return;
             }
@@ -479,8 +480,8 @@ namespace Nekoyume.UI
             bool buyTicketIfNeeded = false)
         {
             var game = Game.Game.instance;
-            game.IsInWorld = true;
             game.Stage.IsShowHud = true;
+            BattleRenderer.Instance.IsOnBattle = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
             var currencyImage = costType switch

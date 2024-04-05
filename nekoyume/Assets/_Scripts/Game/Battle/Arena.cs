@@ -152,7 +152,7 @@ namespace Nekoyume.Game.Battle
             AudioController.instance.PlayMusic(AudioController.MusicCode.PVPBattle);
             me.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             Widget.Find<ArenaBattleLoadingScreen>().Close();
-            Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
         }
 
         private IEnumerator CoEnd(
@@ -184,7 +184,7 @@ namespace Nekoyume.Game.Battle
             me.gameObject.SetActive(false);
             enemy.gameObject.SetActive(false);
             objectPool.ReleaseAll();
-            Game.instance.IsInWorld = false;
+            BattleRenderer.Instance.IsOnBattle = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
             Widget.Find<ArenaBoard>().ShowAsync().Forget();

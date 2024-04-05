@@ -252,7 +252,7 @@ namespace Nekoyume.Game.Battle
 #endif
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
-            Game.instance.IsInWorld = false;
+            BattleRenderer.Instance.IsOnBattle = false;
         }
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
@@ -357,7 +357,7 @@ namespace Nekoyume.Game.Battle
                 .Select(r => r.Id)
                 .ToList();
 
-            Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
 
             ReleaseMonsterResources();
             yield return LoadMonsterResources(log.GetMonsterIds());

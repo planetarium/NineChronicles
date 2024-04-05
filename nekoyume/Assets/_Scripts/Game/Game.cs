@@ -143,7 +143,6 @@ namespace Nekoyume.Game
         public ActionManager ActionManager { get; private set; }
 
         public bool IsInitialized { get; private set; }
-        public bool IsInWorld { get; set; }
 
         public int? SavedPetId { get; set; }
 
@@ -1414,7 +1413,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoInitDccAvatar());
             yield return StartCoroutine(CoInitDccConnecting());
 
-            if (IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 NotificationSystem.Push(
                     Model.Mail.MailType.System,

@@ -206,7 +206,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateHpBar()
         {
-            if (!Game.instance.IsInWorld)
+            if (!BattleRenderer.Instance.IsOnBattle)
                 return;
 
             if (!HPBar)
@@ -875,7 +875,7 @@ namespace Nekoyume.Game.Character
                 if (effect != null)
                 {
                     effect.Play();
-                }                    
+                }
 
                 ProcessAttack(target, info, !first, true);
                 if (this is Player && !(this is EnemyPlayer))

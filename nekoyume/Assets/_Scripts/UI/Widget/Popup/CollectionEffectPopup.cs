@@ -1,3 +1,4 @@
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -66,7 +67,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 NotificationSystem.Push(
                     MailType.System,
