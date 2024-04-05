@@ -398,11 +398,13 @@ namespace Nekoyume.Game
         public void ClearBattle()
         {
             _battleLog = null;
-            if (_battleCoroutine is not null)
+            if (_battleCoroutine is null)
             {
-                StopCoroutine(_battleCoroutine);
-                _battleCoroutine = null;
+                return;
             }
+            
+            StopCoroutine(_battleCoroutine);
+            _battleCoroutine = null;
         }
 
         private static IEnumerator CoGuidedQuest(int stageIdToClear)
@@ -450,8 +452,7 @@ namespace Nekoyume.Game
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
                 {
-                    if (!TableSheets.Instance.StageSheet
-                            .TryGetValue(stageId, out var stageRow))
+                    if (!TableSheets.Instance.StageSheet.TryGetValue(stageId, out var stageRow))
                     {
                         yield break;
                     }
@@ -463,8 +464,7 @@ namespace Nekoyume.Game
                 case StageType.EventDungeon:
                 {
                     if (TableSheets.Instance.EventDungeonStageSheet is null ||
-                        !TableSheets.Instance.EventDungeonStageSheet
-                            .TryGetValue(stageId, out var eventDungeonStageRow))
+                        !TableSheets.Instance.EventDungeonStageSheet.TryGetValue(stageId, out var eventDungeonStageRow))
                     {
                         yield break;
                     }

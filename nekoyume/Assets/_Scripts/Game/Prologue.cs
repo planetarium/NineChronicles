@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ using Nekoyume.UI.Module;
 
 namespace Nekoyume.Game
 {
+    [Obsolete]
     public class Prologue : MonoBehaviour
     {
         private Player _player;

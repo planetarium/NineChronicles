@@ -14,6 +14,7 @@ namespace Nekoyume.Game.Character
 {
     using UniRx;
 
+    [Obsolete]
     public class PrologueCharacter : MonoBehaviour
     {
         public bool AttackEndCalled { get; set; }
