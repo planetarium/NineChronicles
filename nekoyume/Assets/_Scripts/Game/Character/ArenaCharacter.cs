@@ -5,6 +5,7 @@ using System.Linq;
 using BTAI;
 using DG.Tweening;
 using Libplanet.Crypto;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;

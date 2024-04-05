@@ -13,14 +13,12 @@ using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.UI;
+using UniRx;
 using UnityEngine;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
-using Skill = Nekoyume.Model.BattleStatus.Skill;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Game.Battle
 {
-    using UniRx;
-
     public class Arena : MonoBehaviour, IArena
     {
         [SerializeField]

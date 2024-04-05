@@ -14,6 +14,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.UI;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.Game

@@ -16,6 +16,7 @@ using UnityEngine.Rendering;
 using Nekoyume.Model.Buff;
 using DG.Tweening.Plugins.Options;
 using Cysharp.Threading.Tasks.Triggers;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume.Game.Character

@@ -33,6 +33,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
+using Nekoyume.Game.Battle;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -80,7 +81,7 @@ namespace Nekoyume.Game
         private Stage stage;
 
         [SerializeField]
-        private Arena arena;
+        private Battle.Arena arena;
 
         [SerializeField]
         private RaidStage raidStage;
@@ -131,7 +132,7 @@ namespace Nekoyume.Game
         public GuildServiceClient GuildServiceClient { get; private set; }
 
         public Stage Stage => stage;
-        public Arena Arena => arena;
+        public Battle.Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
         public Lobby Lobby => lobby;
 

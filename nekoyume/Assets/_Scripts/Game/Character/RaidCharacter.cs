@@ -9,6 +9,7 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Elemental;
 using System.Linq;
 using System;
+using Nekoyume.Game.Battle;
 
 namespace Nekoyume.Game.Character
 {

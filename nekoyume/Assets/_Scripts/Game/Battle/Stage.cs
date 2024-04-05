@@ -7,6 +7,10 @@
 #endif
 //#define TEST_LOG
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
@@ -25,16 +29,13 @@ using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Model.Skill;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -44,10 +45,8 @@ using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Game.Battle
 {
-    using UniRx;
-
     public class Stage : MonoBehaviour, IStage
     {
         public const float DefaultAnimationTimeScaleWeight = 1f;
@@ -402,7 +401,7 @@ namespace Nekoyume.Game
             {
                 return;
             }
-            
+
             StopCoroutine(_battleCoroutine);
             _battleCoroutine = null;
         }
