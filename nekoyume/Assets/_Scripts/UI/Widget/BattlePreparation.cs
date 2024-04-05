@@ -141,6 +141,14 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close(true);
             base.Awake();
+
+            BattleRenderer.Instance.OnStageStart += GoToStage;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            BattleRenderer.Instance.OnStageStart -= GoToStage;
         }
 
         public override void Initialize()
@@ -652,9 +660,11 @@ namespace Nekoyume.UI
             }
         }
 
-        public void GoToStage(BattleLog battleLog)
+        private void GoToStage(BattleLog battleLog)
         {
-            Game.Event.OnStageStart.Invoke(battleLog);
+            if (!IsActive() || !Find<LoadingScreen>().IsActive())
+                return;
+
             Find<LoadingScreen>().Close();
             Close(true);
         }

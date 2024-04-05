@@ -1971,22 +1971,7 @@ namespace Nekoyume.Blockchain
                 AirbridgeUnity.TrackEvent(evt);
             }
 
-            if (Widget.Find<LoadingScreen>().IsActive())
-            {
-                if (Widget.Find<BattlePreparation>().IsActive())
-                {
-                    Widget.Find<BattlePreparation>().GoToStage(log);
-                }
-                else if (Widget.Find<Menu>().IsActive())
-                {
-                    Widget.Find<Menu>().GoToStage(log);
-                }
-            }
-            else if (Widget.Find<StageLoadingEffect>().IsActive() &&
-                     Widget.Find<BattleResultPopup>().IsActive())
-            {
-                Widget.Find<BattleResultPopup>().NextStage(log);
-            }
+            BattleRenderer.Instance.StartStage(log);
         }
 
         private void ExceptionHackAndSlash(ActionEvaluation<HackAndSlash> eval)
@@ -2123,22 +2108,7 @@ namespace Nekoyume.Blockchain
             stage.StageType = StageType.EventDungeon;
             stage.PlayCount = playCount;
 
-            if (Widget.Find<LoadingScreen>().IsActive())
-            {
-                if (Widget.Find<BattlePreparation>().IsActive())
-                {
-                    Widget.Find<BattlePreparation>().GoToStage(log);
-                }
-                else if (Widget.Find<Menu>().IsActive())
-                {
-                    Widget.Find<Menu>().GoToStage(log);
-                }
-            }
-            else if (Widget.Find<StageLoadingEffect>().IsActive() &&
-                     Widget.Find<BattleResultPopup>().IsActive())
-            {
-                Widget.Find<BattleResultPopup>().NextStage(log);
-            }
+            BattleRenderer.Instance.StartStage(log);
         }
 
         private void ExceptionEventDungeonBattle(ActionEvaluation<EventDungeonBattle> eval)

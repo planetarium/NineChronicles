@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
@@ -243,6 +242,14 @@ namespace Nekoyume.UI
             SubmitWidget = nextButton.onClick.Invoke;
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
+
+            BattleRenderer.Instance.OnStageStart += NextStage;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            BattleRenderer.Instance.OnStageStart -= NextStage;
         }
 
         private IEnumerator OnClickClose()
@@ -864,8 +871,11 @@ namespace Nekoyume.UI
             };
         }
 
-        public void NextStage(BattleLog log)
+        private void NextStage(BattleLog log)
         {
+            if (!IsActive() || !Find<StageLoadingEffect>().IsActive())
+                return;
+
             StartCoroutine(CoGoToNextStageClose(log));
         }
 
@@ -886,7 +896,6 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(stageLoadingEffect.CoClose());
 
-            Game.Event.OnStageStart.Invoke(log);
             Close();
         }
 

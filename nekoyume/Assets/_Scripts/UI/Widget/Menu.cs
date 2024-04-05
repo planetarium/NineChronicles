@@ -15,6 +15,7 @@ using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -155,6 +156,13 @@ namespace Nekoyume.UI
                 .Subscribe(level =>
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
+            BattleRenderer.Instance.OnStageStart += GoToStage;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            BattleRenderer.Instance.OnStageStart -= GoToStage;
         }
 
         private static void HackAndSlashForTutorial(int stageId)
@@ -257,9 +265,11 @@ namespace Nekoyume.UI
             player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);
         }
 
-        public void GoToStage(BattleLog battleLog)
+        private void GoToStage(BattleLog battleLog)
         {
-            Game.Event.OnStageStart.Invoke(battleLog);
+            if (!IsActive() || !Find<LoadingScreen>().IsActive())
+                return;
+
             Find<LoadingScreen>().Close();
             Close(true);
         }
