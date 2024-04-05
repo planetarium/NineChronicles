@@ -119,7 +119,7 @@ namespace Nekoyume.UI
             StageType.EventDungeon =>
                 RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost,
             _ =>
-                States.Instance.CurrentAvatarState.actionPoint >= _requiredCost,
+                ReactiveAvatarState.ActionPoint >= _requiredCost,
         };
 
         private bool IsFirstStage => _stageType switch
@@ -224,7 +224,7 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
-                    ReactiveAvatarState.ActionPoint
+                    ReactiveAvatarState.ObservableActionPoint
                         .Subscribe(_ => UpdateStartButton())
                         .AddTo(_disposables);
                     break;

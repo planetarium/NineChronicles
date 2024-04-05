@@ -853,7 +853,7 @@ namespace Nekoyume.UI.Module
                         submitText = L10nManager.Localize("UI_CHARGE_AP");
                         interactable = ActionPoint.IsInteractableMaterial();
 
-                        if (States.Instance.CurrentAvatarState.actionPoint > 0)
+                        if (ReactiveAvatarState.ActionPoint > 0)
                         {
                             submit = () => ActionPoint.ShowRefillConfirmPopup(
                                 () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe()

@@ -44999,6 +44999,7 @@ GameObject:
   m_Component:
   - component: {fileID: 433570064319841744}
   - component: {fileID: 8828416970911819686}
+  - component: {fileID: -6772434578166207997}
   m_Layer: 10
   m_Name: WorldBoss_01_2
   m_TagString: Untagged
@@ -45025,7 +45026,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8828416970911819686
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -45042,7 +45043,106 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-6772434578166207997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8733808878030311164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71fe791ae7c3d4248b358d7453f94d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: 1004294929749613895}
+  - {fileID: 8744333325950584827}
+  - {fileID: 6401321118157123146}
+  - {fileID: 2020276601896382229}
+  - {fileID: 2542810955444808290}
+  - {fileID: 7242506326709336013}
+  - {fileID: 2282431806599230825}
+  - {fileID: 6941922725929499573}
+  - {fileID: 1127287235680640752}
+  - {fileID: 4795435376616215762}
+  - {fileID: 2833722901497339640}
+  - {fileID: 6401482695767189536}
+  - {fileID: 8793183044138888659}
+  - {fileID: 3904169547605590855}
+  - {fileID: 6105584094541906490}
+  - {fileID: 2137977454923942572}
+  - {fileID: 7292204985918135938}
+  - {fileID: 5758809731246443500}
+  - {fileID: 4263221865619828148}
+  - {fileID: 7193404787799353685}
+  - {fileID: 4550333435975827784}
+  - {fileID: 8652288459782892761}
+  - {fileID: 6678782311390483010}
+  - {fileID: 787414064418782773}
+  - {fileID: 1059407327101519098}
+  - {fileID: 2741123897164632356}
+  - {fileID: 3475300205664397894}
+  - {fileID: 8923441993336831991}
+  - {fileID: 8444227482973567193}
+  - {fileID: 2005982864919886519}
+  - {fileID: 4020256036700352319}
+  - {fileID: 1727478465067101347}
+  - {fileID: 4260394522440708681}
+  - {fileID: 3725195523091670372}
+  - {fileID: 8184345622381397775}
+  - {fileID: 6183218699564719766}
+  - {fileID: 4197836232348846897}
+  - {fileID: 2436619056873274230}
+  - {fileID: 9034814047434012224}
+  - {fileID: 7187044714493015937}
+  - {fileID: 2881005417679488810}
+  - {fileID: 8760461225797719359}
+  - {fileID: 1924242142195644330}
+  - {fileID: 3415593889084126992}
+  - {fileID: 5395398007940282674}
+  - {fileID: 7101284878419409706}
+  - {fileID: 6479504228657575343}
+  - {fileID: 4747213638147790221}
+  - {fileID: 9136738142637108931}
+  - {fileID: 7487694052169134513}
+  - {fileID: 5586500788960283974}
+  - {fileID: 7827248296347043461}
+  - {fileID: 8043668464319341959}
+  - {fileID: 6932748074919250195}
+  - {fileID: 1534927766155857060}
+  - {fileID: 2220056116628805798}
+  - {fileID: 6894984456297276812}
+  - {fileID: 3019037009113255172}
+  - {fileID: 5039475935030923332}
+  - {fileID: 4431038945936456500}
+  - {fileID: 5492670557202776701}
+  - {fileID: 3018060468695582565}
+  - {fileID: 1359478297768626398}
+  - {fileID: 6923673305611089170}
+  - {fileID: 6896026874541895963}
+  - {fileID: 1993228005765478742}
+  - {fileID: 2663133320095830922}
+  - {fileID: 772646897638849410}
+  - {fileID: 1613793948126356637}
+  - {fileID: 4053219599341419355}
+  - {fileID: 7478938385609665247}
+  - {fileID: 929966271263955224}
+  - {fileID: 992272785360414452}
+  - {fileID: 7001159962276052703}
+  particles:
+  - {fileID: 1260106001498224530}
+  - {fileID: 4372874940900302122}
+  - {fileID: 1006680407671736683}
+  - {fileID: 7964548119079466201}
+  - {fileID: 5470164449497741092}
+  - {fileID: 4293279856953778350}
+  - {fileID: 6788833904325141990}
+  - {fileID: 1219295690912928165}
+  - {fileID: 6031880908973557403}
+  backgrounds: []
 --- !u!1 &8875050668989477123
 GameObject:
   m_ObjectHideFlags: 0

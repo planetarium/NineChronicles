@@ -82,7 +82,7 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageId = stageId;
 
-            ObservableExtensions.Subscribe(ReactiveAvatarState.ActionPoint, value =>
+            ObservableExtensions.Subscribe(ReactiveAvatarState.ObservableActionPoint, value =>
             {
                 var costOfStage = GetCostOfStage();
                 apSlider.maxValue = value / costOfStage >= maxCount ? maxCount : value / costOfStage;
@@ -97,7 +97,7 @@ namespace Nekoyume.UI
             });
 
             var cost = GetCostOfStage();
-            var actionPoint = Game.Game.instance.States.CurrentAvatarState.actionPoint;
+            var actionPoint = ReactiveAvatarState.ActionPoint;
             ownAPText.text = actionPoint.ToString();
             // Call onValueChanged by Change value
             apSlider.value = 0;

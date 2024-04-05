@@ -21,14 +21,14 @@ namespace Nekoyume.Game.LiveAsset
     {
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
-        private const string CLOEndpointPrefix = "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/CloForAppVersion/clo-app-ver-";
+        private const string CLOEndpointPrefix = "https://assets.nine-chronicles.com/live-assets/Json/CloForAppVersion/clo-app-ver-";
         private const string KoreanImagePostfix = "_KR";
         private const string JapaneseImagePostfix = "_JP";
 
         // TODO: this is temporary url and file.
         private const string StakingLevelImageUrl = "Etc/NcgStaking.png";
         private const string StakingRewardImageUrl = "Etc/StakingReward.png";
-        private const string StakingArenaBonusUrl = "https://rawcdn.githack.com/planetarium/NineChronicles.LiveAssets/Release/Assets/Json/arena-bonus-values";
+        private const string StakingArenaBonusUrl = "https://assets.nine-chronicles.com/live-assets/Json/arena-bonus-values";
 
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();

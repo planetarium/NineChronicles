@@ -157,7 +157,7 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageRow = stageRow;
             _apStoneCount.SetValueAndForceNotify(0);
-            _ap.SetValueAndForceNotify(States.Instance.CurrentAvatarState.actionPoint);
+            _ap.SetValueAndForceNotify((int)ReactiveAvatarState.ActionPoint);
             _cp.SetValueAndForceNotify(Util.TotalCP(BattleType.Adventure));
             _repeatBattleAction = repeatBattleAction;
             var disableRepeat = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId);
@@ -205,7 +205,7 @@ namespace Nekoyume.UI
                     materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
                     Game.Game.instance.Agent?.BlockIndex ?? -1);
 
-                var haveApCount = States.Instance.CurrentAvatarState.actionPoint;
+                var haveApCount = ReactiveAvatarState.ActionPoint;
                 haveApText.text = haveApCount.ToString();
                 haveApStoneText.text = haveApStoneCount.ToString();
 
@@ -214,8 +214,8 @@ namespace Nekoyume.UI
                         _stageRow.CostAP, 1, States.Instance.StakingLevel)
                     : _stageRow.CostAP;
                 apSlider.Set(0,
-                    haveApCount / _costAp,
-                    haveApCount / _costAp,
+                    (int)(haveApCount / _costAp),
+                    (int)haveApCount / _costAp,
                     States.Instance.GameConfigState.ActionPointMax,
                     _costAp,
                     x => _ap.Value = x * _costAp);

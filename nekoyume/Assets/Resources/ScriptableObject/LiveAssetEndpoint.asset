@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8b5b913404f40efa1cd6deb4d8165b8, type: 3}
   m_Name: LiveAssetEndpoint
   m_EditorClassIdentifier: 
-  <EventJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/Event.json
-  <NoticeJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/TextNotice.json
-  <NoticeJsonKoreanUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/TextNotice_KR.json
-  <NoticeJsonJapaneseUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/TextNotice_JP.json
-  <ImageRootUrl>k__BackingField: https://rawcdn.githack.com/planetarium/NineChronicles.LiveAssets/Release/Assets/Images
-  <GameConfigJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/GameConfig.json
-  <CommandLineOptionsJsonUrl>k__BackingField: https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/clo-internal.json
+  <EventJsonUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/Event.json
+  <NoticeJsonUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/TextNotice.json
+  <NoticeJsonKoreanUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/TextNotice_KR.json
+  <NoticeJsonJapaneseUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/TextNotice_JP.json
+  <ImageRootUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Images
+  <GameConfigJsonUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/GameConfig.json
+  <CommandLineOptionsJsonUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/clo-internal.json
