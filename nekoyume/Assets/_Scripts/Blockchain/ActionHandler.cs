@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using LruCacheNet;
@@ -141,13 +143,13 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        protected static CrystalRandomSkillState GetCrystalRandomSkillState<T>(
-            ActionEvaluation<T> evaluation) where T : ActionBase
+        protected static CrystalRandomSkillState GetCrystalRandomSkillState(
+            HashDigest<SHA256> states)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
             if (StateGetter.GetState(
-                    evaluation.OutputState,
+                    states,
                     ReservedAddresses.LegacyAccount,
                     buffStateAddress) is Bencodex.Types.List serialized)
             {
@@ -297,7 +299,7 @@ namespace Nekoyume.Blockchain
         protected static void UpdateCrystalRandomSkillState<T>(
             ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var state = GetCrystalRandomSkillState(evaluation);
+            var state = GetCrystalRandomSkillState(evaluation.OutputState);
 
             if (state is { })
             {
