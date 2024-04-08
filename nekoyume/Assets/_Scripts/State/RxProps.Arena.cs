@@ -228,10 +228,14 @@ namespace Nekoyume.State
                 playerArenaInfoAddr.Derive(BattleArena.PurchasedCountKey);
             var arenaAvatarAddress =
                 ArenaAvatarState.DeriveAddress(currentAvatarAddr);
+            var playerScoreAddr = ArenaScore.DeriveAddress(currentAvatarAddr,
+                currentRoundData.ChampionshipId,
+                currentRoundData.Round);
             var addrBulk = new List<Address>
             {
                 purchasedCountAddress,
                 arenaAvatarAddress,
+                playerScoreAddr
             };
             var stateBulk =
                 await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addrBulk);
@@ -247,8 +251,6 @@ namespace Nekoyume.State
                 var response = await Game.Game.instance.RpcGraphQLClient.QueryArenaInfoAsync(currentAvatarAddr);
                 // Arrange my information so that it comes first when it's the same score.
                 arenaInfo = response.StateQuery.ArenaParticipants
-                    .OrderByDescending(participant => participant.Score)
-                    .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
                     .ToList();
             }
             catch (Exception e)
@@ -321,13 +323,34 @@ namespace Nekoyume.State
             {
                 playerArenaInfo.Cp = cp;
                 playerArenaInfo.PortraitId = portraitId;
+                playerArenaInfo.Score = (Integer)((List)stateBulk[playerScoreAddr])[1];
             }
-            _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
+
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
             _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
             _lastArenaBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
 
-            return arenaInfo;
+            // Calculate and Reset Rank.
+            var arenaInfoList = arenaInfo.OrderByDescending(participant => participant.Score)
+                .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
+                .ToList();
+            var playerIndex =
+                arenaInfoList.FindIndex(model => model.AvatarAddr == currentAvatarAddr);
+            var avatarCount = arenaInfoList.Count;
+            if (playerIndex == 0)
+            {
+                playerArenaInfo.Rank = 1;
+            }
+            else if (playerIndex < avatarCount)
+            {
+                playerArenaInfo.Rank =
+                    arenaInfoList[playerIndex + 1].Score == playerArenaInfo.Score
+                        ? arenaInfoList[playerIndex + 1].Rank
+                        : arenaInfoList[playerIndex - 1].Rank + 1;
+            }
+
+            _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
+            return arenaInfoList;
         }
     }
 }
