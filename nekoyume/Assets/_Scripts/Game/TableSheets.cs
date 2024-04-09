@@ -242,6 +242,7 @@ namespace Nekoyume.Game
         public RuneListSheet RuneListSheet { get; private set; }
         public RuneCostSheet RuneCostSheet { get; private set; }
         public RuneOptionSheet RuneOptionSheet { get; private set; }
+        public RuneLevelBonusSheet RuneLevelBonusSheet { get; private set; }
         public PetSheet PetSheet { get; private set; }
         public PetCostSheet PetCostSheet { get; private set; }
         public PetOptionSheet PetOptionSheet { get; private set; }
