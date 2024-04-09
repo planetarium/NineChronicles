@@ -2598,8 +2598,8 @@ namespace Nekoyume.Blockchain
             }
 
             // NOTE: Start cache some arena info which will be used after battle ends.
-            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            RxProps.ArenaInformationOrderedWithScore.UpdateAsync().Forget();
+            await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
+                RxProps.ArenaInformationOrderedWithScore.UpdateAsync());
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
