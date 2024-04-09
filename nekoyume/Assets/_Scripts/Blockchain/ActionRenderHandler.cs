@@ -1928,7 +1928,7 @@ namespace Nekoyume.Blockchain
 
             var tableSheets = TableSheets.Instance;
             var skillsOnWaveStart = new List<Skill>();
-            if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId)
+            if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId && prevSkillState.SkillIds.Any())
             {
                 var actionArgsBuffId = eval.Action.StageBuffId;
                 var skillId =
