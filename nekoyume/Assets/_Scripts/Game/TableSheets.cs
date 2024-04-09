@@ -9,6 +9,7 @@ using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.Pet;
+using Nekoyume.TableData.Rune;
 using Nekoyume.TableData.Stake;
 using Nekoyume.TableData.Summon;
 using UniRx.Diagnostics;

@@ -12,6 +12,7 @@ using Nekoyume.Model.Rune;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Rune;
 
 namespace Nekoyume.UI.Module
 {

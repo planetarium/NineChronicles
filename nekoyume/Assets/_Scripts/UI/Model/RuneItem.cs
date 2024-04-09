@@ -3,6 +3,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Rune;
 using UniRx;
 
 namespace Nekoyume.UI.Model

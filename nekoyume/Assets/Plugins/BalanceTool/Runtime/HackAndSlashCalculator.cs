@@ -19,6 +19,7 @@ using Nekoyume.Module;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Rune;
 
 namespace BalanceTool
 {
