@@ -67,7 +67,7 @@ namespace Nekoyume.State
 
         public FungibleAssetValue CrystalBalance { get; private set; }
 
-        public List<RuneState> RuneStates { get; } = new();
+        public AllRuneState AllRuneState { get; private set; }
 
         public readonly Dictionary<int, Dictionary<BattleType, RuneSlotState>>
             RuneSlotStates = new();
@@ -195,16 +195,9 @@ namespace Nekoyume.State
                 }));
         }
 
-        public void SetRuneStates(IEnumerable<RuneState> runeStates)
+        public void SetAllRuneState(AllRuneState allRuneState)
         {
-            RuneStates.Clear();
-            RuneStates.AddRange(runeStates);
-        }
-
-        public void SetRuneState(RuneState runeState)
-        {
-            RuneStates.RemoveAll(rune => rune.RuneId == runeState.RuneId);
-            RuneStates.Add(runeState);
+            AllRuneState = allRuneState;
         }
 
         public async UniTask InitRuneSlotStates()
@@ -787,20 +780,13 @@ namespace Nekoyume.State
                     continue;
                 }
 
-                var runeState = RuneStates.FirstOrDefault(x => x.RuneId == slot.RuneId);
-                if (runeState != null)
+                if (AllRuneState.TryGetRuneState(slot.RuneId.Value, out var runeState))
                 {
                     runeStates.Add(runeState);
                 }
             }
 
             return runeStates;
-        }
-
-        public bool TryGetRuneState(int runeId, out RuneState runeState)
-        {
-            runeState = RuneStates.FirstOrDefault(x => x.RuneId == runeId);
-            return runeState != null;
         }
 
         private void SetPetStates(Dictionary<int,IValue> petRawStates)

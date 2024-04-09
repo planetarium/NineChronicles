@@ -639,7 +639,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     var firstRuneId = firstSlot.Value.RuneId.Value;
-                    if(!States.Instance.TryGetRuneState(firstRuneId, out var firstState))
+                    if(!States.Instance.AllRuneState.TryGetRuneState(firstRuneId, out var firstState))
                     {
                         return;
                     }
@@ -654,7 +654,7 @@ namespace Nekoyume.UI.Module
                         }
 
                         var runeId = runeSlot.RuneId.Value;
-                        if(!States.Instance.TryGetRuneState(runeId, out var state))
+                        if(!States.Instance.AllRuneState.TryGetRuneState(runeId, out var state))
                         {
                             return;
                         }

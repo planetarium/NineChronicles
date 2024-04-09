@@ -2776,7 +2776,7 @@ namespace Nekoyume.Blockchain
             var myRuneSlotInfos = myRuneSlotState.GetEquippedRuneSlotInfos();
             foreach (var runeId in myRuneSlotInfos.Select(r => r.RuneId))
             {
-                if (States.Instance.TryGetRuneState(runeId, out var runeState))
+                if (States.Instance.AllRuneState.TryGetRuneState(runeId, out var runeState))
                 {
                     myRuneStates.Add(runeState);
                 }
@@ -2996,14 +2996,16 @@ namespace Nekoyume.Blockchain
         private (ActionEvaluation<RuneEnhancement>, FungibleAssetValue runeStone) PrepareRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
         {
             var action = eval.Action;
-            var runeRow = TableSheets.Instance.RuneSheet.Values
-                .First(r => r.Id == action.RuneId);
-            var runeAddr = RuneState.DeriveAddress(action.AvatarAddress, action.RuneId);
+            var runeRow = TableSheets.Instance.RuneSheet[action.RuneId];
 
-            var list = StateGetter.GetState(
-                eval.OutputState, ReservedAddresses.LegacyAccount, runeAddr) as List;
-            var runeState = new RuneState(list);
-            States.Instance.SetRuneState(runeState);
+            var value = StateGetter.GetState(
+                eval.OutputState,
+                Addresses.RuneState,
+                action.AvatarAddress);
+            if (value is List list)
+            {
+                States.Instance.SetAllRuneState(new AllRuneState(list));
+            }
 
             UpdateCrystalBalance(eval);
             UpdateAgentStateAsync(eval).Forget();

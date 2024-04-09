@@ -197,13 +197,16 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
             _runeItems.Clear();
 
-            var runeStates = States.Instance.RuneStates;
-            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var allRuneState = States.Instance.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var items = new List<RuneStoneEnhancementInventoryItem>();
-            foreach (var value in sheet.Values)
+            foreach (var runeRow in runeListSheet)
             {
-                var state = runeStates.FirstOrDefault(x => x.RuneId == value.Id);
-                var runeItem = new RuneItem(value, state?.Level ?? 0);
+                var runeLevel = allRuneState.TryGetRuneState(runeRow.Id, out var runeState)
+                    ? runeState.Level
+                    : 0;
+
+                var runeItem = new RuneItem(runeRow, runeLevel);
                 if (_selectedRuneItem == null)
                 {
                     if (runeItem.Row.Id == _currentRuneId)
@@ -219,7 +222,7 @@ namespace Nekoyume.UI
                     }
                 }
                 _runeItems.Add(runeItem);
-                items.Add(new RuneStoneEnhancementInventoryItem(state, value, runeItem));
+                items.Add(new RuneStoneEnhancementInventoryItem(runeState, runeRow, runeItem));
             }
 
             scroll.UpdateData(items.OrderBy(x => x.item.SortingOrder));

@@ -226,7 +226,7 @@ namespace Nekoyume.UI.Module
                 AddItem(item.item, item.count);
             }
 
-            foreach (var runeState in States.Instance.RuneStates)
+            foreach (var runeState in States.Instance.AllRuneState.Runes.Values)
             {
                 _runes.Add(new InventoryItem(runeState));
             }

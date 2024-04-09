@@ -166,7 +166,7 @@ namespace Nekoyume.UI.Module
 
         private void Equip(int runeId)
         {
-            if (!States.Instance.TryGetRuneState(runeId, out var state))
+            if (!States.Instance.AllRuneState.TryGetRuneState(runeId, out var state))
             {
                 return;
             }
