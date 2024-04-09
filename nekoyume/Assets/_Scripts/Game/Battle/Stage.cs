@@ -47,7 +47,7 @@ using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game.Battle
 {
-    public class Stage : MonoBehaviour, IStage
+    public partial class Stage : MonoBehaviour, IStage
     {
         public const float DefaultAnimationTimeScaleWeight = 1f;
         public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
@@ -351,6 +351,19 @@ namespace Nekoyume.Game.Battle
             _battleCoroutine = StartCoroutine(CoPlayStage(log));
         }
 
+        IEnumerator AccelerateSpeed()
+        {
+            AnimationTimeScaleWeight = 1;
+            float eleapsedtime = 1;
+            while(eleapsedtime < 30)
+            {
+                eleapsedtime += 0.1f;
+                AnimationTimeScaleWeight += 0.1f;
+                UpdateTimeScale();
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+
         private IEnumerator CoPlayStage(BattleLog log)
         {
 #if TEST_LOG
@@ -367,6 +380,13 @@ namespace Nekoyume.Game.Battle
             BattleRenderer.Instance.IsOnBattle = true;
 
             yield return StartCoroutine(CoStageEnter(log));
+
+            StartCoroutine(AccelerateSpeed());
+
+
+            log.Prepend(new SkipStageEvent(null));
+            
+
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -1227,6 +1247,11 @@ namespace Nekoyume.Game.Battle
 
         public IEnumerator CoCustomEvent(CharacterBase character, EventBase eventBase)
         {
+            if(eventBase is SkipStageEvent stageEvent)
+            {
+
+            }
+
             if (eventBase is Tick tick)
             {
                 var affectedCharacter = GetCharacter(character);
