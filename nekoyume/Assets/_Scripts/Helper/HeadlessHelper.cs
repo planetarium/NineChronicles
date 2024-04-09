@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-
+﻿
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -30,8 +29,6 @@ namespace Nekoyume.Helper
         {
             if (string.IsNullOrEmpty(_docsRoot))
             {
-                EditorUtility.DisplayDialog("Headless path set set",
-                    "Please set headless path first on Menubar > Tools > Headless", "OK");
             }
 
             if (string.IsNullOrEmpty(_headlessPath) ||
@@ -39,8 +36,6 @@ namespace Nekoyume.Helper
                     "appsettings.local.json")))
             {
                 // SetupAppsettingsJson();
-                EditorUtility.DisplayDialog("Headless config not set",
-                    "Please set configs first on Menubar > Tools > Headless", "OK");
                 return false;
             }
 
@@ -88,4 +83,3 @@ namespace Nekoyume.Helper
     }
 }
 
-#endif
