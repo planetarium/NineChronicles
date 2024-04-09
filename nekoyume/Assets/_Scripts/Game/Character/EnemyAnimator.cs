@@ -10,5 +10,10 @@ namespace Nekoyume.Game.Character
         {
 
         }
+
+        public EnemyAnimator(SkipStageCharacter root) : base(root)
+        {
+
+        }
     }
 }

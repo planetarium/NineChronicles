@@ -57,5 +57,28 @@ namespace Nekoyume.Game.Factory
 
             return enemy.gameObject;
         }
+
+        public static GameObject CreateSkipStageCharacter(int characterId, Vector2 position, float offset, Player target,
+            bool summonEffect = false)
+        {
+            var objectPool = Game.instance.Stage.objectPool;
+            var enemy = objectPool.Get<SkipStageCharacter>(new Vector2(position.x + offset, position.y));
+            if (!enemy)
+                throw new NotFoundComponentException<SkipStageCharacter>();
+
+            enemy.Set(characterId, target);
+
+            if (!summonEffect)
+            {
+                return enemy.gameObject;
+            }
+
+            var effect = objectPool.Get<BattleSummonVFX>();
+            var effectPosition = new Vector2(position.x, position.y + 0.55f);
+            effect.gameObject.transform.position = effectPosition;
+            effect.Play();
+
+            return enemy.gameObject;
+        }
     }
 }

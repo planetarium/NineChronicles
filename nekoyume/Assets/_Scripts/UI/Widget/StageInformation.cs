@@ -422,6 +422,7 @@ namespace Nekoyume.UI
             switch (stageType)
             {
                 case StageType.HackAndSlash:
+                case StageType.AdventureBoss:
                     return stageId.ToString(CultureInfo.InvariantCulture);
                 case StageType.Mimisbrunnr:
                     var enter = isTitle ? string.Empty : "\n";

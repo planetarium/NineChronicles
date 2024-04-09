@@ -110,6 +110,9 @@ namespace Nekoyume.Game.Battle
 
         public bool showLoadingScreen;
 
+        public float StageSkipSpeed = 3f;
+        public bool StageSkipCritical = false;
+
         #region Events
 
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
@@ -357,6 +360,25 @@ namespace Nekoyume.Game.Battle
             }
 
             _battleCoroutine = StartCoroutine(CoPlayStage(log));
+        }
+
+        IEnumerator AccelerateSpeed()
+        {
+            AnimationTimeScaleWeight = 1;
+            float eleapsedtime = 1;
+            while(eleapsedtime < 5)
+            {
+                eleapsedtime += 0.2f;
+                AnimationTimeScaleWeight += 0.2f;
+                UpdateTimeScale();
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+
+        private void SetSpeed(float speed)
+        {
+            AnimationTimeScaleWeight = speed;
+            UpdateTimeScale();
         }
 
         private IEnumerator CoPlayStage(BattleLog log)
@@ -641,6 +663,9 @@ namespace Nekoyume.Game.Battle
 
                     break;
                 }
+                case StageType.AdventureBoss:
+                    Widget.Find<AdventureBossResultPopup>().Show();
+                    yield break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -1498,8 +1523,22 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
 #endif
+            SetSpeed(StageSkipSpeed);
+            NcDebug.Log($"[CoCustomEvent] CoBreakthrough Start");
+            List<SkipStageCharacter> createdMonsters = new List<SkipStageCharacter>();
+            yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnSkipStage(monsters, (createdMonseter)=> {
+                if(createdMonseter.TryGetComponent<SkipStageCharacter>(out var monster))
+                {
+                    createdMonsters.Add(monster);
+                }
+            }));
 
-            yield return new WaitForSeconds(3f);
+            yield return new WaitWhile(() => createdMonsters.Any(i => !i.IsTriggerd));
+            NcDebug.Log($"[CoCustomEvent] CoBreakthrough End");
+            foreach (var skipStageMonster in createdMonsters)
+            {
+                skipStageMonster.IsTriggerd = false;
+            }
 
             yield return null;
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
+using Nekoyume.TableData.AdventureBoss;
 using UnityEngine;
 
 namespace Nekoyume.Game.Trigger
@@ -58,6 +59,13 @@ namespace Nekoyume.Game.Trigger
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
+        private IEnumerator CoSpawnSkipStageMonster(int enemyId, Vector2 pos,float offset, Character.Player player, Action<GameObject> createCallback)
+        {
+            var createdObj = StageMonsterFactory.CreateSkipStageCharacter(enemyId, pos, offset, player);
+            createCallback.Invoke(createdObj);
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
+        }
+
         public IEnumerator CoSpawnEnemyPlayer(Model.EnemyPlayer enemy, Vector3 offset)
         {
             var enemyPlayer = StageMonsterFactory.Create(enemy, offset);
@@ -81,6 +89,32 @@ namespace Nekoyume.Game.Trigger
                 yield return new WaitForSeconds(1f);
                 fenrir.Animator.Idle();
                 yield return new WaitForSeconds(0.3f);
+            }
+        }
+
+        public IEnumerator CoSpawnSkipStage(List<FloorWaveSheet.MonsterData> monsterDatas, Action<GameObject> createCallback)
+        {
+            var stage = Game.instance.Stage;
+            for (var index = 0; index < monsterDatas.Count; index++)
+            {
+                var player = stage.SelectedPlayer;
+                var offset = 6;
+                var offsetX = player.transform.position.x + offset;
+                {
+                    Vector3 point;
+                    try
+                    {
+                        point = spawnPoints[index];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new InvalidWaveException();
+                    }
+                    var pos = new Vector2(
+                        offsetX + point.x,
+                        point.y);
+                    yield return StartCoroutine(CoSpawnSkipStageMonster(monsterDatas[index].CharacterId, pos, 0, player, createCallback));
+                }
             }
         }
     }
