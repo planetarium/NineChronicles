@@ -436,7 +436,9 @@ namespace Nekoyume
                     tableSheets.StageSheet[stageId],
                     tableSheets.MaterialItemSheet),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet
+                tableSheets.DeBuffLimitSheet,
+                logEvent: true,
+                States.Instance.GameConfigState.ShatterStrikeMaxDamage
             );
             simulator.Simulate();
             simulator.Log.result = _result;
