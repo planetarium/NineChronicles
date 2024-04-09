@@ -331,7 +331,8 @@ namespace Nekoyume.State
             _lastArenaBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
 
             // Calculate and Reset Rank.
-            var arenaInfoList = arenaInfo.OrderByDescending(participant => participant.Score)
+            var arenaInfoList = arenaInfo
+                .OrderByDescending(participant => participant.Score)
                 .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
                 .ToList();
             var playerIndex =
