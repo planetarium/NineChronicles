@@ -235,7 +235,7 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#if UNITY_ANDROID || UNITY_IOS
             // Load CommandLineOptions at Start() after init
 #else
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
@@ -243,7 +243,10 @@ namespace Nekoyume.Game
 #endif
             URL = Url.Load(UrlJsonPath);
 
-#if UNITY_EDITOR && !(UNITY_ANDROID || UNITY_IOS)
+#if UNITY_ANDROID || UNITY_IOS
+            Agent = GetComponent<RPCAgent>();
+            SubscribeRPCAgent();
+#else
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
@@ -260,9 +263,6 @@ namespace Nekoyume.Game
             {
                 Agent = GetComponent<Agent>();
             }
-#else
-            Agent = GetComponent<RPCAgent>();
-            SubscribeRPCAgent();
 #endif
 
             States = new States();
