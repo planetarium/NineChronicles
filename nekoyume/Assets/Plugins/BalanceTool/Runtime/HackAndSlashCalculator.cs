@@ -16,6 +16,7 @@ using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.Module;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 
@@ -213,7 +214,9 @@ namespace BalanceTool
                     stageRow,
                     materialItemSheet),
                 collectionState.GetEffects(collectionSheet),
-                deBuffLimitSheet
+                deBuffLimitSheet,
+                logEvent: true,
+                States.Instance.GameConfigState.ShatterStrikeMaxDamage
                 );
             simulator.Simulate();
 

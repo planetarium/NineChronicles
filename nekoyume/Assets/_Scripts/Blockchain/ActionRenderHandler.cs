@@ -2134,7 +2134,9 @@ namespace Nekoyume.Blockchain
                     TableSheets.Instance.MaterialItemSheet,
                     Action.EventDungeonBattle.PlayCount),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet);
+                tableSheets.DeBuffLimitSheet,
+                logEvent: true,
+                States.Instance.GameConfigState.ShatterStrikeMaxDamage);
             simulator.Simulate();
             var log = simulator.Log;
             var stage = Game.Game.instance.Stage;
