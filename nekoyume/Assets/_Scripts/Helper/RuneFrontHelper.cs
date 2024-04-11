@@ -6,6 +6,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Rune;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
 
@@ -176,6 +177,36 @@ namespace Nekoyume.Helper
             }
 
             return valueString;
+        }
+
+        public static int CalculateRuneLevelBonusReward(
+            int bonusLevel,
+            RuneLevelBonusSheet runeLevelBonusSheet)
+        {
+            var bonusRow = runeLevelBonusSheet.Values
+                .OrderByDescending(row => row.RuneLevel)
+                .FirstOrDefault(row => row.RuneLevel <= bonusLevel);
+            return bonusRow?.Bonus ?? 0;
+        }
+
+        public static int CalculateRuneLevelBonus(
+            AllRuneState allRuneState,
+            RuneListSheet runeListSheet)
+        {
+            return (from rune in allRuneState.Runes.Values
+                let bonusCoef = runeListSheet[rune.RuneId].BonusCoef
+                select bonusCoef * rune.Level).Sum();
+        }
+
+        public static int CalculateRuneLevelBonus(
+            AllRuneState allRuneState,
+            RuneListSheet runeListSheet,
+            (int id, int level) editRune)
+        {
+            return (from rune in allRuneState.Runes.Values
+                let bonusCoef = runeListSheet[rune.RuneId].BonusCoef
+                let runeLevel = rune.RuneId == editRune.id ? editRune.level : rune.Level
+                select bonusCoef * runeLevel).Sum();
         }
     }
 }

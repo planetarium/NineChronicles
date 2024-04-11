@@ -6726,7 +6726,12 @@ MonoBehaviour:
   scroll: {fileID: 760942376991844909}
   runeNameText: {fileID: 7401036531254831993}
   gradeText: {fileID: 4491323151180358953}
+  levelBonusCoef: {fileID: 5671168645579945854}
   runeOptionView: {fileID: 4447128031363598585}
+  runeLevelBonusDiff:
+    levelBonusArrow: {fileID: 74777238165550853}
+    currentLevelBonusText: {fileID: 7904817715204849659}
+    nextLevelBonusText: {fileID: 3221976565388980261}
   requirement: {fileID: 1058734464169781950}
   runeImage: {fileID: 6058512788753174484}
   costItems:
@@ -34119,7 +34124,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: UI_RUNE_STAT_REWARD
+  l10nKey: UI_RUNE_LEVEL_BONUS_COEFFICIENT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

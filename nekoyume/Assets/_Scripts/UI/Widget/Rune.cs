@@ -40,6 +40,14 @@ namespace Nekoyume.UI
             public Button infoButton;
         }
 
+        [Serializable]
+        private struct RuneLevelBonusDiff
+        {
+            public GameObject levelBonusArrow;
+            public TextMeshProUGUI currentLevelBonusText;
+            public TextMeshProUGUI nextLevelBonusText;
+        }
+
         [SerializeField]
         private Button closeButton;
 
@@ -56,7 +64,13 @@ namespace Nekoyume.UI
         private TextMeshProUGUI gradeText;
 
         [SerializeField]
+        private TextMeshProUGUI levelBonusCoef;
+
+        [SerializeField]
         private RuneOptionView runeOptionView;
+
+        [SerializeField]
+        private RuneLevelBonusDiff runeLevelBonusDiff;
 
         [SerializeField] [Header("CenterArea")]
         private GameObject requirement;
@@ -155,6 +169,17 @@ namespace Nekoyume.UI
                 _costItems[RuneCostType.Ncg].UpdateCount(x);
                 _costItems[RuneCostType.Crystal].UpdateCount(x);
                 runeOptionView.UpdateTryCount(x);
+
+                var isDiff = _selectedRuneItem.Level > 0 &&
+                             _selectedRuneItem.Level < _selectedRuneItem.CostRow.Cost.Count;
+                var bonus = RuneFrontHelper.CalculateRuneLevelBonus(
+                    States.Instance.AllRuneState,
+                    Game.Game.instance.TableSheets.RuneListSheet,
+                    (_selectedRuneItem.Row.Id, _selectedRuneItem.Level + x));
+
+                runeLevelBonusDiff.levelBonusArrow.SetActive(isDiff);
+                runeLevelBonusDiff.nextLevelBonusText.text = $"{bonus / 10000:N4}";
+                runeLevelBonusDiff.nextLevelBonusText.gameObject.SetActive(isDiff);
             }).AddTo(gameObject);
         }
 
@@ -237,7 +262,14 @@ namespace Nekoyume.UI
 
         private void SetRuneLevelBonus()
         {
-
+            var bonus = RuneFrontHelper.CalculateRuneLevelBonus(
+                States.Instance.AllRuneState,
+                Game.Game.instance.TableSheets.RuneListSheet);
+            var reward = RuneFrontHelper.CalculateRuneLevelBonusReward(
+                bonus,
+                Game.Game.instance.TableSheets.RuneLevelBonusSheet);
+            runeLevelBonus.bonusText.text = $"{bonus / 10000:N4}";
+            runeLevelBonus.rewardText.text = $"{reward / 10000:N4}";
         }
 
         private void Enhancement()
@@ -316,8 +348,10 @@ namespace Nekoyume.UI
         {
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
+            levelBonusCoef.text = $"{item.Row.BonusCoef / 10000:N4}";
 
             runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);
+            runeLevelBonusDiff.currentLevelBonusText.text = runeLevelBonus.bonusText.text;
         }
 
         private void UpdateCost(RuneItem item, Sprite runeStoneIcon)
