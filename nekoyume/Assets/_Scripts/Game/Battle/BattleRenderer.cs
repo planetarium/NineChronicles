@@ -88,7 +88,6 @@ namespace Nekoyume.Game.Battle
             var resourceManager = ResourceManager.Instance;
             foreach (var monsterId in monsterIds)
             {
-                NcDebug.LogWarning($"LoadAsync: {monsterId}");
                 yield return resourceManager.LoadAsync<GameObject>(monsterId.ToString());
                 loadedMonsterIds.Add(monsterId);
             }

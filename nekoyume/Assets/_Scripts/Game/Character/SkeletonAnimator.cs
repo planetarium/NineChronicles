@@ -57,7 +57,7 @@ namespace Nekoyume.Game.Character
         {
             base.ResetTarget(value);
 
-            if (Skeleton is { AnimationState: { } })
+            if (Skeleton != null && Skeleton.AnimationState != null)
             {
                 Skeleton.AnimationState.Event -= RaiseEvent;
             }

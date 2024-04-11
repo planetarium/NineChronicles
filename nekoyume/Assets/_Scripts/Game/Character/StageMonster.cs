@@ -110,6 +110,11 @@ namespace Nekoyume.Game.Character
         protected override void OnDeadEnd()
         {
             base.OnDeadEnd();
+
+            if (Animator.Target != null)
+            {
+                Animator.DestroyTarget();
+            }
         }
 
         protected override BoxCollider GetAnimatorHitPointBoxCollider()
