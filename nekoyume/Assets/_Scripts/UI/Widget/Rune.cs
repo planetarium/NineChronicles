@@ -84,6 +84,9 @@ namespace Nekoyume.UI
         private RuneLevelBonus runeLevelBonus;
 
         [SerializeField]
+        private RuneLevelBonusDiff runeLevelBonusDiff;
+
+        [SerializeField]
         private RuneStoneEnhancementInventoryScroll scroll;
 
         [SerializeField] [Header("RightArea")]
@@ -97,9 +100,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private RuneOptionView runeOptionView;
-
-        [SerializeField]
-        private RuneLevelBonusDiff runeLevelBonusDiff;
 
         [SerializeField] [Header("CenterArea")]
         private GameObject requirement;
