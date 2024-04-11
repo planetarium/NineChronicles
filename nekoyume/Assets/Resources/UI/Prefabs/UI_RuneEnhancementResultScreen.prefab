@@ -8404,7 +8404,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_ENHANCEMENT_RESULT_SUCCESS
+  l10nKey: UI_RESULT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -48273,8 +48273,6 @@ MonoBehaviour:
   tutorialActions: 
   runeImage: {fileID: 2753909314371837719}
   runeText: {fileID: 3338016348412345922}
-  successText: {fileID: 3338016346711720348}
-  failText: {fileID: 3338016348148620427}
   currentLevelText: {fileID: 3338016346588537425}
   nextLevelText: {fileID: 3338016348117025480}
   skillNameText: {fileID: 3545817080435526037}
@@ -48303,6 +48301,11 @@ MonoBehaviour:
   optionTagData: {fileID: 11400000, guid: 14bb93de0da9b0540b01c055544f1320, type: 2}
   closeButton: {fileID: 8027277538586212062}
   speechBubble: {fileID: 2274691156647040962}
+  runeLevelBonusDiff:
+    beforeText: {fileID: 2647684267954334379}
+    afterText: {fileID: 1293271954300438888}
+  speechBubbleBeforeText: {fileID: 2205125843274695386}
+  speechBubbleAfterText: {fileID: 2058328414269589783}
 --- !u!1 &3338016348221817435
 GameObject:
   m_ObjectHideFlags: 0
@@ -59277,7 +59280,7 @@ MonoBehaviour:
   - {fileID: 2385056426187818660}
   contentSize: {fileID: 7008939980753760221}
   tempText: {fileID: 3445480133984136604}
-  realText: {fileID: 3194419830260689123}
+  realText: {fileID: 3445480133984136604}
   speechSpeedInterval: 0.04
   speechWaitTime: 2
   bubbleTweenTime: 0.2
@@ -87839,7 +87842,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 38
-  l10nKey: 
+  l10nKey: UI_RUNE_UPGRADE_COMPLETE
   fontMaterialIndexInitialized: 1
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 1

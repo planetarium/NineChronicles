@@ -223,8 +223,6 @@ namespace Nekoyume.UI
         {
             Find<RuneEnhancementResultScreen>().Show(
                 _selectedRuneItem,
-                States.Instance.GoldBalanceState.Gold,
-                States.Instance.CrystalBalance,
                 TryCount.Value,
                 random);
 

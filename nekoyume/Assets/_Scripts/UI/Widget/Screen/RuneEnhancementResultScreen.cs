@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coffee.UIEffects;
 using Libplanet.Action;
-using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -16,17 +16,18 @@ namespace Nekoyume.UI
 {
     public class RuneEnhancementResultScreen : ScreenWidget
     {
+        [Serializable]
+        private struct RuneLevelBonusDiff
+        {
+            public TextMeshProUGUI beforeText;
+            public TextMeshProUGUI afterText;
+        }
+
         [SerializeField]
         private Image runeImage;
 
         [SerializeField]
         private TextMeshProUGUI runeText;
-
-        [SerializeField]
-        private TextMeshProUGUI successText;
-
-        [SerializeField]
-        private TextMeshProUGUI failText;
 
         [SerializeField]
         private TextMeshProUGUI currentLevelText;
@@ -73,11 +74,17 @@ namespace Nekoyume.UI
         [SerializeField]
         private SpeechBubble speechBubble;
 
+        [SerializeField]
+        private RuneLevelBonusDiff runeLevelBonusDiff;
+
+        [SerializeField]
+        private TextMeshProUGUI speechBubbleBeforeText;
+
+        [SerializeField]
+        private TextMeshProUGUI speechBubbleAfterText;
+
         private static readonly int HashToSuccess =
             Animator.StringToHash("Success");
-
-        private static readonly int HashToFail =
-            Animator.StringToHash("Fail");
 
         protected override void Awake()
         {
@@ -96,14 +103,11 @@ namespace Nekoyume.UI
 
         public void Show(
             RuneItem runeItem,
-            FungibleAssetValue ncg,
-            FungibleAssetValue crystal,
             int tryCount,
             IRandom random)
         {
             base.Show(true);
 
-            // FIXME
             var isSuccess = RuneHelper.TryEnhancement(
                 runeItem.Level,
                 runeItem.CostRow,
@@ -115,31 +119,29 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.Success
                 : AudioController.SfxCode.Failed);
 
-            var levelUpCount = tryResult.LevelUpCount;
-            string speech;
-            if (isSuccess)
-            {
-                speech = tryCount != levelUpCount
-                    ? L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_1", tryCount, levelUpCount)
-                    : L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_2", levelUpCount);
-            }
-            else
-            {
-                speech = L10nManager.Localize("UI_RUNE_LEVEL_UP_FAIL", levelUpCount);
-            }
+            var resultLevel = runeItem.Level + tryResult.LevelUpCount;
 
             speechBubble.Show();
-            StartCoroutine(speechBubble.CoShowText(speech, true));
-
-            UpdateInformation(runeItem, isSuccess);
+            UpdateInformation(runeItem, resultLevel);
             currentLevelText.text = $"+{runeItem.Level}";
-            nextLevelText.text = $"+{runeItem.Level + tryResult.LevelUpCount}";
-            successText.gameObject.SetActive(isSuccess);
-            failText.gameObject.SetActive(!isSuccess);
-            animator.Play(isSuccess ? HashToSuccess : HashToFail);
+            nextLevelText.text = $"+{resultLevel}";
+
+            var allRuneState = Game.Game.instance.States.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var before = RuneFrontHelper.CalculateRuneLevelBonus(
+                allRuneState, runeListSheet, (runeItem.Row.Id, runeItem.Level));
+            var current = RuneFrontHelper.CalculateRuneLevelBonus(
+                allRuneState, runeListSheet);
+            runeLevelBonusDiff.beforeText.text = $"{before / 10000f:0.####}";
+            runeLevelBonusDiff.afterText.text = $"{current / 10000f:0.####}";
+
+            speechBubbleBeforeText.text = $"+{runeItem.Level}";
+            speechBubbleAfterText.text = $"+{resultLevel}";
+
+            animator.Play(HashToSuccess);
         }
 
-        private void UpdateInformation(RuneItem item, bool isSuccess)
+        private void UpdateInformation(RuneItem item, int resultLevel)
         {
             if (RuneFrontHelper.TryGetRuneIcon(item.Row.Id, out var icon))
             {
@@ -148,8 +150,7 @@ namespace Nekoyume.UI
 
             runeText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
 
-            var level = isSuccess ? item.Level + 1 : item.Level;
-            if (!item.OptionRow.LevelOptionMap.TryGetValue(level, out var option))
+            if (!item.OptionRow.LevelOptionMap.TryGetValue(resultLevel, out var option))
             {
                 return;
             }
