@@ -58,6 +58,12 @@ namespace Nekoyume.Game.Trigger
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
+        private IEnumerator CoSpawnMonster(int enemyId, Vector2 pos,float offset, Character.Player player)
+        {
+            StageMonsterFactory.Create(enemyId, pos, offset, player);
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
+        }
+
         public IEnumerator CoSpawnEnemyPlayer(Model.EnemyPlayer enemy, Vector3 offset)
         {
             var enemyPlayer = StageMonsterFactory.Create(enemy, offset);
@@ -81,6 +87,31 @@ namespace Nekoyume.Game.Trigger
                 yield return new WaitForSeconds(1f);
                 fenrir.Animator.Idle();
                 yield return new WaitForSeconds(0.3f);
+            }
+        }
+
+        public IEnumerator CoSpawnSkipStage(List<int> monsterIds)
+        {
+            var stage = Game.instance.Stage;
+            for (var index = 0; index < monsterIds.Count; index++)
+            {
+                var player = stage.SelectedPlayer;
+                var offsetX = player.transform.position.x + SpawnOffset;
+                {
+                    Vector3 point;
+                    try
+                    {
+                        point = spawnPoints[index];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new InvalidWaveException();
+                    }
+                    var pos = new Vector2(
+                        point.x + offsetX,
+                        point.y);
+                    yield return StartCoroutine(CoSpawnMonster(monsterIds[index], pos, offsetX, player));
+                }
             }
         }
     }

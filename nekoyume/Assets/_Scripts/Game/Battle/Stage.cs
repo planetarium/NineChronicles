@@ -38,6 +38,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static UnityEditor.Experimental.GraphView.GraphView;
 using CharacterBase = Nekoyume.Model.CharacterBase;
 using Enemy = Nekoyume.Model.Enemy;
 using EnemyPlayer = Nekoyume.Model.EnemyPlayer;
@@ -385,7 +386,9 @@ namespace Nekoyume.Game.Battle
 
 
             log.Prepend(new SkipStageEvent(null));
-            
+
+            log.Prepend(new SkipStageEvent(null));
+
 
             foreach (var e in log)
             {
@@ -1249,7 +1252,13 @@ namespace Nekoyume.Game.Battle
         {
             if(eventBase is SkipStageEvent stageEvent)
             {
-
+                var monsterIds = new List<int>
+                {
+                    202002,
+                    203005,
+                    205000,
+                };
+                yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnSkipStage(monsterIds));
             }
 
             if (eventBase is Tick tick)
