@@ -655,9 +655,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4670874312763266313}
   - component: {fileID: 4673074396655563005}
-  - component: {fileID: 2245074414465856047}
-  - component: {fileID: 4315760703692743321}
   - component: {fileID: 4149671022215430976}
+  - component: {fileID: 4315760703692743321}
   m_Layer: 5
   m_Name: UI_RuneLevelBonusEffectPopup
   m_TagString: Untagged
@@ -695,7 +694,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4884456509566778283}
   m_CullTransparentMesh: 0
---- !u!114 &2245074414465856047
+--- !u!114 &4149671022215430976
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -704,16 +703,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4884456509566778283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e54971208044d0b333da5ebb2501cb, type: 3}
+  m_Script: {fileID: 11500000, guid: a7061e09b0c3495f84d9d33416b7f7c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  title: {fileID: 5837106216748892333}
-  content: {fileID: 3111216332651017633}
-  labelOK: {fileID: 0}
-  titleBorder: {fileID: 6677872903577494358}
-  CloseButton: {fileID: 741213266374788209}
+  closeButton: {fileID: 741213266374788209}
+  scroll: {fileID: 918522099066920983}
 --- !u!95 &4315760703692743321
 Animator:
   serializedVersion: 5
@@ -735,22 +731,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4149671022215430976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4884456509566778283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7061e09b0c3495f84d9d33416b7f7c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
-  closeButton: {fileID: 741213266374788209}
-  scroll: {fileID: 918522099066920983}
 --- !u!1 &5297708728766793253
 GameObject:
   m_ObjectHideFlags: 0

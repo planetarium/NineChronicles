@@ -4,6 +4,12 @@ namespace Nekoyume.UI.Scroller
     {
         public class ContextModel : RectScrollDefaultContext
         {
+            public RuneLevelBonusEffectCell.Model CurrentModel;
+        }
+
+        public RuneLevelBonusEffectCell.Model CurrentModel
+        {
+            set => Context.CurrentModel = value;
         }
     }
 }
