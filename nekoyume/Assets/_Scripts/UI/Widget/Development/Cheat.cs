@@ -8,6 +8,7 @@ using Libplanet.Action.State;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Skill;
@@ -17,7 +18,6 @@ using Nekoyume.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Enemy = Nekoyume.Game.Character.Enemy;
 using Skill = Nekoyume.Model.Skill.Skill;
 using Text = UnityEngine.UI.Text;
 
@@ -382,7 +382,7 @@ namespace Nekoyume
                 Log($"Level Up to {player.Level}");
             }
 
-            var enemy = enemyObj.GetComponent<Enemy>();
+            var enemy = enemyObj.GetComponent<StageMonster>();
             Game.Event.OnEnemyDeadStart.Invoke(enemy);
         }
 

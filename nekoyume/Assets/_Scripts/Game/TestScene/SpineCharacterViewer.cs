@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Toggle = UnityEngine.UI.Toggle;
 
@@ -51,7 +52,7 @@ namespace Nekoyume.TestScene
         private FullCostumeCutscene fullCostumeCutscene;
 
         [SerializeField]
-        private Enemy enemy;
+        private StageMonster stageMonster;
 
         [SerializeField]
         private NPC npc;
@@ -111,7 +112,7 @@ namespace Nekoyume.TestScene
 
         private void LoadSpineObject()
         {
-            enemy.gameObject.SetActive(false);
+            stageMonster.gameObject.SetActive(false);
             npc.gameObject.SetActive(false);
             player.gameObject.SetActive(false);
             resourceWarningText.gameObject.SetActive(false);
@@ -187,9 +188,9 @@ namespace Nekoyume.TestScene
         private void ShowMonster(string id)
         {
             var armorId = int.Parse(id);
-            enemy.gameObject.SetActive(true);
-            enemy.ChangeSpineResource(armorId);
-            ShowCharacterAnimations(enemy.Animator);
+            stageMonster.gameObject.SetActive(true);
+            stageMonster.ChangeSpineResource(armorId);
+            ShowCharacterAnimations(stageMonster.Animator);
         }
 
         private void ShowNPC(string id)

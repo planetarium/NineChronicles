@@ -13,14 +13,12 @@ using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.UI;
+using UniRx;
 using UnityEngine;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
-using Skill = Nekoyume.Model.BattleStatus.Skill;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Game.Battle
 {
-    using UniRx;
-
     public class Arena : MonoBehaviour, IArena
     {
         [SerializeField]
@@ -154,7 +152,7 @@ namespace Nekoyume.Game
             AudioController.instance.PlayMusic(AudioController.MusicCode.PVPBattle);
             me.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             Widget.Find<ArenaBattleLoadingScreen>().Close();
-            Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
         }
 
         private IEnumerator CoEnd(
@@ -186,7 +184,7 @@ namespace Nekoyume.Game
             me.gameObject.SetActive(false);
             enemy.gameObject.SetActive(false);
             objectPool.ReleaseAll();
-            Game.instance.IsInWorld = false;
+            BattleRenderer.Instance.IsOnBattle = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
             Widget.Find<ArenaBoard>().ShowAsync().Forget();

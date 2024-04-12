@@ -1,30 +1,29 @@
-using Nekoyume.Blockchain;
-using Nekoyume.Game.Controller;
-using Nekoyume.Game.Util;
-using Nekoyume.Game.VFX.Skill;
-using Nekoyume.Model;
-using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Item;
-using Nekoyume.UI;
-using Nekoyume.UI.Module;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Blockchain;
 using Nekoyume.Director;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.Util;
+using Nekoyume.Game.VFX.Skill;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
+using Nekoyume.UI;
+using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
+using UniRx;
 using UnityEngine;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Game.Battle
 {
-    using Nekoyume.Helper;
-    using Nekoyume.L10n;
-    using Nekoyume.UI.Scroller;
-    using UniRx;
-
     public class RaidStage : MonoBehaviour, IStage
     {
         public struct RaidStartData
@@ -226,7 +225,7 @@ namespace Nekoyume.Game
             }
 
             Widget.Find<LoadingScreen>().Close();
-            Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
             _waveTurn = 1;
             _wave = 0;
             _currentScore = 0;
@@ -272,7 +271,7 @@ namespace Nekoyume.Game
             }
             _isPlaying = false;
             ActionRenderHandler.Instance.Pending = false;
-            Game.instance.IsInWorld = false;
+            BattleRenderer.Instance.IsOnBattle = false;
             Widget.Find<WorldBossBattle>().Close();
 
             container.Close();

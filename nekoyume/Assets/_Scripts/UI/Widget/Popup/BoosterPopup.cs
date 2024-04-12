@@ -5,6 +5,7 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -124,7 +125,7 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show();
             Close();
 
-            Game.Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
             _stage.IsShowHud = true;
 
             ObservableExtensions.Subscribe(Game.Game.instance.ActionManager.HackAndSlash(

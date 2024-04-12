@@ -27,11 +27,6 @@ namespace Nekoyume.Game.Entrance
             yield return null;
 
             Game.instance.SavedPetId = null;
-            var factory = GetComponent<PlayerFactory>();
-            if (ReferenceEquals(factory, null))
-            {
-                throw new NotFoundComponentException<PlayerFactory>();
-            }
 
             var players = new List<Player>();
             for (var i = 0; i < GameConfig.SlotCount; i++)

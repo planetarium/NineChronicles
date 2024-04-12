@@ -9,6 +9,8 @@ namespace Nekoyume
 {
     public class ResourceManager
     {
+        public static string BattleLabel => "Battle";
+
         private static class Singleton
         {
             internal static readonly ResourceManager Value = new();
@@ -53,7 +55,7 @@ namespace Nekoyume
             var prefab = Load<GameObject>($"{key}");
             if (prefab == null)
             {
-                NcDebug.Log($"Failed to load prefab : {key}");
+                NcDebug.LogError($"Failed to load prefab : {key}");
                 return null;
             }
 

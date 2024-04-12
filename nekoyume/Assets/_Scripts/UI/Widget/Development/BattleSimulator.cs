@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lib9c.Renderers;
 using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -116,7 +118,7 @@ public class BattleSimulator : Widget
     public void OnClickGoStage()
     {
         var log = Simulate();
-        Nekoyume.Game.Event.OnStageStart.Invoke(log);
+        BattleRenderer.Instance.PrepareStage(log);
         SaveField();
         content.SetActive(false);
     }

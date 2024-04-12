@@ -16,6 +16,7 @@ using UnityEngine.Rendering;
 using Nekoyume.Model.Buff;
 using DG.Tweening.Plugins.Options;
 using Cysharp.Threading.Tasks.Triggers;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume.Game.Character
@@ -205,7 +206,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateHpBar()
         {
-            if (!Game.instance.IsInWorld)
+            if (!BattleRenderer.Instance.IsOnBattle)
                 return;
 
             if (!HPBar)
@@ -288,7 +289,7 @@ namespace Nekoyume.Game.Character
             if (dmg <= 0)
             {
                 var index = 0;
-                if (this is Enemy)
+                if (this is StageMonster)
                 {
                     index = 1;
                 }
@@ -874,7 +875,7 @@ namespace Nekoyume.Game.Character
                 if (effect != null)
                 {
                     effect.Play();
-                }                    
+                }
 
                 ProcessAttack(target, info, !first, true);
                 if (this is Player && !(this is EnemyPlayer))

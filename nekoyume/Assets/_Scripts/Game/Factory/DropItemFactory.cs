@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
 using Nekoyume.Model.Item;
-using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game.Factory
@@ -17,7 +16,7 @@ namespace Nekoyume.Game.Factory
         {
             _box = ItemFactory.CreateMaterial(Game.instance.TableSheets.MaterialItemSheet, BoxId);
         }
-        
+
         public IEnumerator CoCreate(List<ItemBase> items, Vector3 position)
         {
             for (var i = 0; i < items.Count; i++)

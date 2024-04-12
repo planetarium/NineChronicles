@@ -3,14 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
     using UniRx;
 
-    public class Enemy : CharacterBase
+    public class StageMonster : CharacterBase
     {
         private Player _player;
 
@@ -111,6 +110,11 @@ namespace Nekoyume.Game.Character
         protected override void OnDeadEnd()
         {
             base.OnDeadEnd();
+
+            if (Animator.Target != null)
+            {
+                Animator.DestroyTarget();
+            }
         }
 
         protected override BoxCollider GetAnimatorHitPointBoxCollider()
@@ -145,24 +149,22 @@ namespace Nekoyume.Game.Character
 
         public void ChangeSpineResource(int id)
         {
-            var spineResourcePath = $"Character/Monster/{id}";
-
-            if (!(Animator.Target is null))
+            var key = id.ToString();
+            if (Animator.Target != null)
             {
-                var animatorTargetName = spineResourcePath.Split('/').Last();
-                if (Animator.Target.name.Contains(animatorTargetName))
+                if (Animator.Target.name.Contains(key))
                     return;
 
                 Animator.DestroyTarget();
             }
 
-            var origin = Resources.Load<GameObject>(spineResourcePath);
-            if (!origin)
+            var go = ResourceManager.Instance.Instantiate(key, gameObject.transform);
+            if (go == null)
             {
-                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+                NcDebug.LogError($"Missing Spine Resource: {key}");
+                return;
             }
 
-            var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
         }

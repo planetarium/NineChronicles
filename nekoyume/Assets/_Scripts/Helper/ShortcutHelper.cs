@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -501,11 +502,11 @@ namespace Nekoyume.Helper
         {
             return type switch
             {
-                PlaceType.Stage => !Game.Game.instance.IsInWorld,
-                PlaceType.EventDungeonStage => !Game.Game.instance.IsInWorld,
-                PlaceType.PCShop => !Game.Game.instance.IsInWorld,
-                PlaceType.MobileShop => !Game.Game.instance.IsInWorld,
-                PlaceType.Arena => !Game.Game.instance.IsInWorld,
+                PlaceType.Stage => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.EventDungeonStage => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.PCShop => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.MobileShop => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.Arena => !BattleRenderer.Instance.IsOnBattle,
                 PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
                                    !Widget.Find<RankingBattleResultPopup>().IsActive(),
                 PlaceType.Staking => true,

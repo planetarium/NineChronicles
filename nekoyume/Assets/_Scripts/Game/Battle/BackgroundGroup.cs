@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Game.Battle
 {
     public class BackgroundGroup : MonoBehaviour
     {
