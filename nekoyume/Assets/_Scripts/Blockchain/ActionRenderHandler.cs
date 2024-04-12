@@ -1863,28 +1863,39 @@ namespace Nekoyume.Blockchain
                 NotificationCell.NotificationType.RuneAcquisition);
         }
 
-        private (ActionEvaluation<HackAndSlash> eval, AvatarState avatarState, CrystalRandomSkillState randomSkillState, long actionPoint) PrepareHackAndSlash(
-            ActionEvaluation<HackAndSlash> eval)
+        private (ActionEvaluation<HackAndSlash> eval,
+            AvatarState avatarState,
+            CrystalRandomSkillState prevSkillState,
+            CrystalRandomSkillState updatedSkillState,
+            long actionPoint) PrepareHackAndSlash(ActionEvaluation<HackAndSlash> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
-                return (eval, null, null, 0L);
+                return (eval, null, null, null, 0L);
             }
 
             var avatarState = StateGetter.GetAvatarState(eval.OutputState, eval.Action.AvatarAddress);
-            var randomSkillState = GetCrystalRandomSkillState(eval);
+            CrystalRandomSkillState prevSkillState = null;
+            if (!States.Instance.CurrentAvatarState.worldInformation
+                    .IsStageCleared(eval.Action.StageId))
+            {
+                prevSkillState = GetCrystalRandomSkillState(eval.PreviousState);
+            }
+
+            var updatedSkillState = GetCrystalRandomSkillState(eval.OutputState);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
 
             return (eval,
                 avatarState,
-                randomSkillState,
+                prevSkillState,
+                updatedSkillState,
                 GetActionPoint(eval, eval.Action.AvatarAddress));
         }
 
-        private void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState, long) prepared)
+        private void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState, CrystalRandomSkillState, long) prepared)
         {
-            var (eval, newAvatarState, newRandomSkillState, actionPoint) = prepared;
+            var (eval, newAvatarState, prevSkillState, newRandomSkillState, actionPoint) = prepared;
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
                 return;
@@ -1918,10 +1929,16 @@ namespace Nekoyume.Blockchain
 
             var tableSheets = TableSheets.Instance;
             var skillsOnWaveStart = new List<Skill>();
-            if (eval.Action.StageBuffId.HasValue)
+            if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId && prevSkillState.SkillIds.Any())
             {
+                var actionArgsBuffId = eval.Action.StageBuffId;
+                var skillId =
+                    actionArgsBuffId.HasValue &&
+                    prevSkillState.SkillIds.Contains(actionArgsBuffId.Value)
+                        ? actionArgsBuffId.Value
+                        : prevSkillState.GetHighestRankSkill(tableSheets.CrystalRandomBuffSheet);
                 var skill = CrystalRandomSkillState.GetSkill(
-                    eval.Action.StageBuffId.Value,
+                    skillId,
                     tableSheets.CrystalRandomBuffSheet,
                     tableSheets.SkillSheet);
                 skillsOnWaveStart.Add(skill);
@@ -2103,7 +2120,9 @@ namespace Nekoyume.Blockchain
                     TableSheets.Instance.MaterialItemSheet,
                     Action.EventDungeonBattle.PlayCount),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet);
+                tableSheets.DeBuffLimitSheet,
+                logEvent: true,
+                States.Instance.GameConfigState.ShatterStrikeMaxDamage);
             simulator.Simulate();
             var log = simulator.Log;
             var stage = Game.Game.instance.Stage;
@@ -2581,8 +2600,8 @@ namespace Nekoyume.Blockchain
             }
 
             // NOTE: Start cache some arena info which will be used after battle ends.
-            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            RxProps.ArenaInformationOrderedWithScore.UpdateAsync().Forget();
+            await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
+                RxProps.ArenaInformationOrderedWithScore.UpdateAsync());
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd

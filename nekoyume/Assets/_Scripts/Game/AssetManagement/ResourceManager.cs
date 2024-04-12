@@ -55,7 +55,7 @@ namespace Nekoyume
             var prefab = Load<GameObject>($"{key}");
             if (prefab == null)
             {
-                NcDebug.Log($"Failed to load prefab : {key}");
+                NcDebug.LogError($"Failed to load prefab : {key}");
                 return null;
             }
 
