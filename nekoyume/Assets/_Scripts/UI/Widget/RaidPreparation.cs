@@ -270,7 +270,7 @@ namespace Nekoyume.UI
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var equipments = itemSlotState.Equipments;
             var costumes = itemSlotState.Costumes;
-            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
+            var allRuneState = States.Instance.GetEquippedAllRuneState(BattleType.Raid);
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
             var tableSheets = Game.Game.instance.TableSheets;
             var avatarState = States.Instance.CurrentAvatarState;
@@ -284,7 +284,7 @@ namespace Nekoyume.UI
                 new PracticeRandom(),
                 avatarState,
                 consumables,
-                runeStates,
+                allRuneState,
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet,
                 collectionState.GetEffects(tableSheets.CollectionSheet),
@@ -294,7 +294,7 @@ namespace Nekoyume.UI
             var digest = new ArenaPlayerDigest(avatarState,
                 itemSlotState.Equipments,
                 itemSlotState.Costumes,
-                runeStates);
+                allRuneState);
             var raidStage = Game.Game.instance.RaidStage;
             var raidStartData = new RaidStage.RaidStartData(
                 avatarState.address,
@@ -419,8 +419,6 @@ namespace Nekoyume.UI
             var isIntervalValid = blockIndex - _lastBattleBlockIndex >= worldBossRequiredInterval;
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Raid)
-                .Select(x=> x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
 
             var isEquipValid = Util.CanBattle(equipments, costumes, consumables);

@@ -249,9 +249,9 @@ namespace Nekoyume.UI.Module
             var itemSlotState = States.Instance.CurrentItemSlotStates[battleType];
             UpdateEquipmentEquipped(itemSlotState.Equipments);
             UpdateCostumes(itemSlotState.Costumes);
-            var equippedRuneState = States.Instance.GetEquippedRuneStates(battleType);
+            var equippedAllRuneState = States.Instance.GetEquippedAllRuneState(battleType);
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-            UpdateRuneEquipped(equippedRuneState, battleType, runeListSheet);
+            UpdateRuneEquipped(equippedAllRuneState, battleType, runeListSheet);
             UpdateRuneNotification(GetBestRunes(battleType));
         }
 
@@ -852,9 +852,9 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void UpdateRunes(List<RuneState> runeStates, BattleType battleType, RuneListSheet sheet)
+        public void UpdateRunes(AllRuneState allRuneState, BattleType battleType, RuneListSheet sheet)
         {
-            UpdateRuneEquipped(runeStates, battleType, sheet);
+            UpdateRuneEquipped(allRuneState, battleType, sheet);
             UpdateRuneNotification(GetBestRunes(battleType));
             var models = GetModels(_activeTabType);
             scroll.UpdateData(models, resetScrollOnEnable);
@@ -895,13 +895,13 @@ namespace Nekoyume.UI.Module
         }
 
         private void UpdateRuneEquipped(
-            List<RuneState> runeStates,
+            AllRuneState allRuneState,
             BattleType battleType,
             RuneListSheet sheet)
         {
             foreach (var rune in _runes)
             {
-                var equipped = runeStates.Exists(x => x.RuneId == rune.RuneState.RuneId);
+                var equipped = allRuneState.Runes.Values.Any(x => x.RuneId == rune.RuneState.RuneId);
                 rune.Equipped.SetValueAndForceNotify(equipped);
 
                 if (!sheet.TryGetValue(rune.RuneState.RuneId, out var row))

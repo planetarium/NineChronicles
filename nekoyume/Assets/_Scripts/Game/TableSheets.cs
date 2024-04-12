@@ -314,7 +314,9 @@ namespace Nekoyume.Game
                 StageSheet,
                 StageWaveSheet,
                 EnemySkillSheet,
-                RuneOptionSheet
+                RuneOptionSheet,
+                RuneListSheet,
+                RuneLevelBonusSheet
             );
         }
 
@@ -365,7 +367,9 @@ namespace Nekoyume.Game
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
                 WeeklyArenaRewardSheet,
-                RuneOptionSheet
+                RuneOptionSheet,
+                RuneListSheet,
+                RuneLevelBonusSheet
             );
         }
 
@@ -406,7 +410,9 @@ namespace Nekoyume.Game
                 WorldBossBattleRewardSheet,
                 RuneWeightSheet,
                 RuneSheet,
-                RuneOptionSheet
+                RuneOptionSheet,
+                RuneListSheet,
+                RuneLevelBonusSheet
             );
         }
 

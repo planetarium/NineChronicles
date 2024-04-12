@@ -120,11 +120,7 @@ namespace BalanceTool
                 ApStoneCount = 0, // Fix to 0.
                 TotalPlayCount = 1, // Fix to 1.
             };
-            var runeStates = playData.Runes
-                .Select(tuple => RuneState.DeriveAddress(avatarAddr, tuple.runeId))
-                .Select(addr => new RuneState((List)states.GetAccount(
-                    ReservedAddresses.LegacyAccount).GetState(addr)!))
-                .ToList();
+            var allRuneState = states.GetRuneState(avatarAddr, out _);
             var collectionState = states.GetCollectionState(avatarAddr);
             var skillsOnWaveStart = new List<Nekoyume.Model.Skill.Skill>();
             if (has.StageBuffId.HasValue)
@@ -152,7 +148,7 @@ namespace BalanceTool
                     blockIndex,
                     has,
                     avatarState,
-                    runeStates,
+                    allRuneState,
                     skillsOnWaveStart,
                     sheets.GetSheet<StageSheet>()[has.StageId],
                     sheets.GetSheet<StageWaveSheet>()[has.StageId],
@@ -180,7 +176,7 @@ namespace BalanceTool
             long blockIndex,
             HackAndSlash has,
             AvatarState avatarState,
-            List<RuneState> runeStates,
+            AllRuneState allRuneState,
             List<Nekoyume.Model.Skill.Skill> skillsOnWaveStart,
             StageSheet.Row stageRow,
             StageWaveSheet.Row stageWaveRow,
@@ -199,7 +195,7 @@ namespace BalanceTool
                 random,
                 avatarState,
                 has.Foods,
-                runeStates,
+                allRuneState,
                 skillsOnWaveStart,
                 has.WorldId,
                 has.StageId,

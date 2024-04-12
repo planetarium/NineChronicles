@@ -176,13 +176,21 @@ namespace Nekoyume.UI
                     tableSheets.CharacterLevelSheet,
                     tableSheets.EquipmentItemSetEffectSheet
                 );
+
+                var allRuneState = States.Instance.AllRuneState;
+                var runeListSheet = tableSheets.RuneListSheet;
+                var runeLevelBonusSheet = tableSheets.RuneLevelBonusSheet;
+                var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(
+                    allRuneState, runeListSheet, runeLevelBonusSheet);
+
                 var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                 var collectionState = States.Instance.CollectionState;
                 var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
                 player.ConfigureStats(
                     costumeStatSheet,
-                    null,
+                    allRuneState,
                     tableSheets.RuneOptionSheet,
+                    runeLevelBonus,
                     tableSheets.SkillSheet,
                     collectionState.GetEffects(collectionSheet));
             }

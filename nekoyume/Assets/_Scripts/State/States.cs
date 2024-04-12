@@ -769,10 +769,10 @@ namespace Nekoyume.State
             return (equipments, costumes);
         }
 
-        public List<RuneState> GetEquippedRuneStates(BattleType battleType)
+        public AllRuneState GetEquippedAllRuneState(BattleType battleType)
         {
             var states = CurrentRuneSlotStates[battleType].GetRuneSlot();
-            var runeStates = new List<RuneState>();
+            var allRuneState = new AllRuneState();
             foreach (var slot in states)
             {
                 if (!slot.RuneId.HasValue)
@@ -782,11 +782,11 @@ namespace Nekoyume.State
 
                 if (AllRuneState.TryGetRuneState(slot.RuneId.Value, out var runeState))
                 {
-                    runeStates.Add(runeState);
+                    allRuneState.AddRuneState(runeState);
                 }
             }
 
-            return runeStates;
+            return allRuneState;
         }
 
         private void SetPetStates(Dictionary<int,IValue> petRawStates)

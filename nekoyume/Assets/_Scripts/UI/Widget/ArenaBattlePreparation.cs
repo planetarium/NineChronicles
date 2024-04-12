@@ -303,8 +303,6 @@ namespace Nekoyume.UI
         private void UpdateStartButton()
         {
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Arena);
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
-                .Select(x => x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
 
             var isEquipmentValid = Util.CanBattle(equipments, costumes, consumables);

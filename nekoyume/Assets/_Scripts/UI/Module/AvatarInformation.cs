@@ -191,7 +191,7 @@ namespace Nekoyume.UI.Module
         private void UpdateRuneView()
         {
             var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
-            var equippedRuneState = States.Instance.GetEquippedRuneStates(_battleType);
+            var equippedRuneState = States.Instance.GetEquippedAllRuneState(_battleType);
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
             inventory.UpdateRunes(equippedRuneState, _battleType, sheet);
             runeSlots.Set(states, OnClickRuneSlot, OnDoubleClickRuneSlot);
@@ -946,9 +946,15 @@ namespace Nekoyume.UI.Module
             var consumables = GetEquippedConsumables();
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
 
+            var equippedAllRuneStates = States.Instance.GetEquippedAllRuneState(_battleType);
+
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(equippedAllRuneStates,
+                runeListSheet, runeLevelBonusSheet);
+
             var runeStatModifiers = new List<StatModifier>();
-            var equippedRuneState = States.Instance.GetEquippedRuneStates(_battleType);
-            foreach (var runeState in equippedRuneState)
+            foreach (var runeState in equippedAllRuneStates.Runes.Values)
             {
                 if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var statRow) ||
                     !statRow.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
@@ -961,7 +967,7 @@ namespace Nekoyume.UI.Module
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.TotalValueAsLong)));
+                            (long)(x.stat.BaseValue * (10000 + runeLevelBonus) / 10000m))));
             }
 
             var collectionState = Game.Game.instance.States.CollectionState;

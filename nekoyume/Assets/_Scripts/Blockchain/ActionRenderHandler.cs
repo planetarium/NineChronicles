@@ -1949,7 +1949,7 @@ namespace Nekoyume.Blockchain
             tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
-                States.Instance.GetEquippedRuneStates(BattleType.Adventure),
+                States.Instance.GetEquippedAllRuneState(BattleType.Adventure),
                 States.Instance.CollectionState,
                 skillsOnWaveStart,
                 tableSheets,
@@ -2102,7 +2102,7 @@ namespace Nekoyume.Blockchain
                 random,
                 States.Instance.CurrentAvatarState,
                 eval.Action.Foods,
-                States.Instance.GetEquippedRuneStates(BattleType.Adventure),
+                States.Instance.GetEquippedAllRuneState(BattleType.Adventure),
                 new List<Skill>(),
                 eval.Action.EventDungeonId,
                 stageId,
@@ -2772,20 +2772,20 @@ namespace Nekoyume.Blockchain
                 : new ItemSlotState(BattleType.Arena);
 
             var myRuneSlotState = States.Instance.CurrentRuneSlotStates[BattleType.Arena];
-            var myRuneStates = new List<RuneState>();
+            var myAllRuneState = new AllRuneState();
             var myRuneSlotInfos = myRuneSlotState.GetEquippedRuneSlotInfos();
             foreach (var runeId in myRuneSlotInfos.Select(r => r.RuneId))
             {
                 if (States.Instance.AllRuneState.TryGetRuneState(runeId, out var runeState))
                 {
-                    myRuneStates.Add(runeState);
+                    myAllRuneState.AddRuneState(runeState);
                 }
             }
 
             var myDigest = new ArenaPlayerDigest(myAvatarState,
                 myItemSlotState.Equipments,
                 myItemSlotState.Costumes,
-                myRuneStates);
+                myAllRuneState);
 
             var enemyItemSlotStateAddress = ItemSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
             var enemyItemSlotState =
@@ -2805,7 +2805,7 @@ namespace Nekoyume.Blockchain
                     ? new RuneSlotState(enemyRawRuneSlotState)
                     : new RuneSlotState(BattleType.Arena);
 
-            var enemyRuneStates = new List<RuneState>();
+            var enemyAllRuneState = new AllRuneState();
             var enemyRuneSlotInfos = enemyRuneSlotState.GetEquippedRuneSlotInfos();
             var runeAddresses = enemyRuneSlotInfos.Select(info =>
                 RuneState.DeriveAddress(enemyAvatarAddress, info.RuneId));
@@ -2816,14 +2816,14 @@ namespace Nekoyume.Blockchain
                         ReservedAddresses.LegacyAccount,
                         address) is List rawRuneState)
                 {
-                    enemyRuneStates.Add(new RuneState(rawRuneState));
+                    enemyAllRuneState.AddRuneState(new RuneState(rawRuneState));
                 }
             }
 
             var enemyDigest = new ArenaPlayerDigest(enemyAvatarState,
                 enemyItemSlotState.Equipments,
                 enemyItemSlotState.Costumes,
-                enemyRuneStates);
+                enemyAllRuneState);
 
             return (myDigest, enemyDigest);
         }
@@ -2900,7 +2900,7 @@ namespace Nekoyume.Blockchain
             var preRaiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var preKillReward = WorldBossStates.GetKillReward(avatarAddress);
             var latestBossLevel = preRaiderState?.LatestBossLevel ?? 0;
-            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
+            var allRuneState = States.Instance.GetEquippedAllRuneState(BattleType.Raid);
             var itemSlotStates = States.Instance.CurrentItemSlotStates[BattleType.Raid];
 
             var simulator = new RaidSimulator(
@@ -2908,7 +2908,7 @@ namespace Nekoyume.Blockchain
                 random,
                 clonedAvatarState,
                 eval.Action.FoodIds,
-                runeStates,
+                allRuneState,
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
@@ -2922,7 +2922,7 @@ namespace Nekoyume.Blockchain
                 clonedAvatarState,
                 itemSlotStates.Equipments,
                 itemSlotStates.Costumes,
-                runeStates);
+                allRuneState);
 
             await WorldBossStates.Set(avatarAddress);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);

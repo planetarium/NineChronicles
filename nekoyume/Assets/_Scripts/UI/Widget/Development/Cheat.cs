@@ -420,7 +420,7 @@ namespace Nekoyume
                 random,
                 avatarState,
                 new List<Guid>(),
-                States.Instance.GetEquippedRuneStates(BattleType.Adventure),
+                States.Instance.GetEquippedAllRuneState(BattleType.Adventure),
                 new List<Skill>(),
                 worldRow.Id,
                 stageId,

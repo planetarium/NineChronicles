@@ -56,7 +56,7 @@ namespace Nekoyume
             return (itemSlotStates, runeSlotStates);
         }
 
-        public static async Task<List<RuneState>> GetRuneStatesAsync(this AvatarState avatarState)
+        public static async Task<AllRuneState> GetAllRuneStateAsync(this AvatarState avatarState)
         {
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
@@ -64,16 +64,16 @@ namespace Nekoyume
             var bulk = await Game.Game.instance.Agent.GetStateBulkAsync(
                 ReservedAddresses.LegacyAccount,
                 addresses);
-            var runeStates = new List<RuneState>();
+            var allRuneState = new AllRuneState();
             foreach (var value in bulk.Values)
             {
                 if (value is List list)
                 {
-                    runeStates.Add(new RuneState(list));
+                    allRuneState.AddRuneState(new RuneState(list));
                 }
             }
 
-            return runeStates;
+            return allRuneState;
         }
 
         public static async Task<CollectionState> GetCollectionStateAsync(this AvatarState avatarState)
