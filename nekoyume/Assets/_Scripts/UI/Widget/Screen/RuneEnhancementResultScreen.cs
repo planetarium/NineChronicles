@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Coffee.UIEffects;
 using Libplanet.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -21,6 +20,16 @@ namespace Nekoyume.UI
         {
             public TextMeshProUGUI beforeText;
             public TextMeshProUGUI afterText;
+        }
+
+        [Serializable]
+        private struct SpeechBubble
+        {
+            public GameObject container;
+            public GameObject arrow;
+            public TextMeshProUGUI beforeText;
+            public TextMeshProUGUI afterText;
+            public TextMeshProUGUI dialogText;
         }
 
         [SerializeField]
@@ -71,12 +80,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private RuneLevelBonusDiff runeLevelBonusDiff;
 
-        [SerializeField]
-        private TextMeshProUGUI speechBubbleBeforeText;
-
-        [SerializeField]
-        private TextMeshProUGUI speechBubbleAfterText;
-
         private static readonly int HashToSuccess =
             Animator.StringToHash("Success");
 
@@ -85,12 +88,12 @@ namespace Nekoyume.UI
             base.Awake();
             closeButton.onClick.AddListener(() =>
             {
-                speechBubble.Close();
+                speechBubble.container.SetActive(false);
                 Close(true);
             });
             CloseWidget = () =>
             {
-                speechBubble.Close();
+                speechBubble.container.SetActive(false);
                 Close(true);
             };
         }
@@ -102,20 +105,17 @@ namespace Nekoyume.UI
         {
             base.Show(true);
 
-            var isSuccess = RuneHelper.TryEnhancement(
+            RuneHelper.TryEnhancement(
                 runeItem.Level,
                 runeItem.CostRow,
                 random,
                 tryCount,
                 out var tryResult);
 
-            AudioController.instance.PlaySfx(isSuccess
-                ? AudioController.SfxCode.Success
-                : AudioController.SfxCode.Failed);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
 
             var resultLevel = runeItem.Level + tryResult.LevelUpCount;
 
-            speechBubble.Show();
             UpdateInformation(runeItem, resultLevel);
             currentLevelText.text = $"+{runeItem.Level}";
             nextLevelText.text = $"+{resultLevel}";
@@ -129,8 +129,15 @@ namespace Nekoyume.UI
             runeLevelBonusDiff.beforeText.text = $"{before / 10000m:0.####}";
             runeLevelBonusDiff.afterText.text = $"{current / 10000m:0.####}";
 
-            speechBubbleBeforeText.text = $"+{runeItem.Level}";
-            speechBubbleAfterText.text = $"+{resultLevel}";
+            var isCombine = runeItem.Level == 0;
+            speechBubble.arrow.SetActive(!isCombine);
+            speechBubble.beforeText.gameObject.SetActive(!isCombine);
+            speechBubble.beforeText.text = $"+{runeItem.Level}";
+            speechBubble.afterText.text = $"+{resultLevel}";
+            speechBubble.dialogText.text = isCombine ?
+                L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE") :
+                L10nManager.Localize("UI_RUNE_UPGRADE_COMPLETE");
+            speechBubble.container.SetActive(true);
 
             animator.Play(HashToSuccess);
         }
