@@ -656,5 +656,19 @@ namespace Nekoyume.Helper
                 NcDebug.LogWarning("[SetActiveSafe] fail");
             }
         }
+
+        public static string ToCurrencyString(this long value)
+        {
+            string[] suffixes = { "", "K", "M", "B" };
+
+            var suffixIndex = 0;
+            while (value >= 1000 && suffixIndex < suffixes.Length)
+            {
+                value /= 1000;
+                suffixIndex++;
+            }
+
+            return string.Format("{0:N2}", value).TrimEnd('0').TrimEnd('.') + suffixes[suffixIndex];
+        }
     }
 }

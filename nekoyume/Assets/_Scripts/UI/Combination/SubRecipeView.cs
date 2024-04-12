@@ -82,6 +82,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private TextMeshProUGUI levelText;
 
+        [SerializeField] private TextMeshProUGUI expText;
+
         [SerializeField] private RequiredItemRecipeView requiredItemRecipeView;
 
         [SerializeField] private ConditionalCostButton button;
@@ -530,7 +532,7 @@ namespace Nekoyume.UI
             return recipeInfo;
         }
 
-        private RecipeInfo GetEquipmentRecipeInfo(ConsumableItemRecipeSheet.Row consumableRow, out long blockIndex)
+        private RecipeInfo GetConsumableRecipeInfo(ConsumableItemRecipeSheet.Row consumableRow, out long blockIndex)
         {
             var recipeInfo = new RecipeInfo();
             var materials  = new Dictionary<int, int>();
@@ -594,6 +596,20 @@ namespace Nekoyume.UI
             return recipeInfo;
         }
 
+        private void SetExpText(EquipmentItemRecipeSheet.Row equipmentRow)
+        {
+            var equipment = equipmentRow.GetResultEquipmentItemRow();
+
+            if (equipment.Exp == null)
+            {
+                expText.text = string.Empty;
+                return;
+            }
+
+            var value = equipment.Exp.Value;
+            expText.text = $"EXP {value.ToCurrencyString()}";
+        }
+
         private void UpdateInformation(int index)
         {
             long blockIndex = 0;
@@ -604,10 +620,11 @@ namespace Nekoyume.UI
                 case EquipmentItemRecipeSheet.Row equipmentRow:
                     _selectedRecipeInfo = GetEquipmentRecipeInfo(equipmentRow, index, out blockIndex, out maxBlockIndex);
                     UpdateButtonForEquipment();
+                    SetExpText(equipmentRow);
                     break;
 
                 case ConsumableItemRecipeSheet.Row consumableRow:
-                    _selectedRecipeInfo = GetEquipmentRecipeInfo(consumableRow, out blockIndex);
+                    _selectedRecipeInfo = GetConsumableRecipeInfo(consumableRow, out blockIndex);
                     UpdateButtonForConsumable();
                     break;
 
