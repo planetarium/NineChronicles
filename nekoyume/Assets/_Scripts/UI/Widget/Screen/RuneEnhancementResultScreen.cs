@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Coffee.UIEffects;
 using Libplanet.Action;
 using Nekoyume.Game.Controller;
@@ -8,6 +7,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -60,13 +60,7 @@ namespace Nekoyume.UI
         private Animator animator;
 
         [SerializeField]
-        private UIHsvModifier optionTagBg = null;
-
-        [SerializeField]
-        private List<Image> optionTagImages = null;
-
-        [SerializeField]
-        private OptionTagDataScriptableObject optionTagData = null;
+        private ItemOptionTag itemOptionTag;
 
         [SerializeField]
         private Button closeButton;
@@ -217,24 +211,11 @@ namespace Nekoyume.UI
 
         private void UpdateOptionTag(RuneOptionSheet.Row.RuneOptionInfo option, int grade)
         {
-            optionTagBg.gameObject.SetActive(false);
-
-            foreach (var image in optionTagImages)
+            var skillOption = option.SkillId != 0;
+            itemOptionTag.gameObject.SetActive(skillOption);
+            if (skillOption)
             {
-                image.gameObject.SetActive(false);
-            }
-
-            if (option.SkillId != 0)
-            {
-                var data = optionTagData.GetOptionTagData(grade);
-                var image = optionTagImages.First();
-                image.gameObject.SetActive(true);
-                image.sprite = optionTagData.SkillOptionSprite;
-                optionTagBg.range = data.GradeHsvRange;
-                optionTagBg.hue = data.GradeHsvHue;
-                optionTagBg.saturation = data.GradeHsvSaturation;
-                optionTagBg.value = data.GradeHsvValue;
-                optionTagBg.gameObject.SetActive(true);
+                itemOptionTag.Set(grade);
             }
         }
     }

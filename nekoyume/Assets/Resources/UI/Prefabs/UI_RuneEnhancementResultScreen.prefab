@@ -2523,8 +2523,9 @@ GameObject:
   - component: {fileID: 8061530510456854385}
   - component: {fileID: 5612870074384436151}
   - component: {fileID: 6032874242226900641}
+  - component: {fileID: 1601380254085292476}
   m_Layer: 5
-  m_Name: OptionTagImage
+  m_Name: OptionTag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2606,6 +2607,25 @@ MonoBehaviour:
   m_Hue: 0
   m_Saturation: 0
   m_Value: 0
+--- !u!114 &1601380254085292476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2555300518406801667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a58fd587e3e1496d8e2a0f7c985c3599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  optionTagData: {fileID: 11400000, guid: 14bb93de0da9b0540b01c055544f1320, type: 2}
+  background: {fileID: 6032874242226900641}
+  optionTagImages:
+  - {fileID: 6777631118199728576}
+  - {fileID: 5425863881987158223}
+  - {fileID: 1767245948197519768}
+  - {fileID: 4836850752186834821}
 --- !u!1 &2743844896155103964
 GameObject:
   m_ObjectHideFlags: 0
@@ -48299,6 +48319,7 @@ MonoBehaviour:
   - {fileID: 1767245948197519768}
   - {fileID: 4836850752186834821}
   optionTagData: {fileID: 11400000, guid: 14bb93de0da9b0540b01c055544f1320, type: 2}
+  itemOptionTag: {fileID: 1601380254085292476}
   closeButton: {fileID: 8027277538586212062}
   speechBubble: {fileID: 2274691156647040962}
   runeLevelBonusDiff:
