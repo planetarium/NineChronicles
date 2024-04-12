@@ -33,7 +33,10 @@ namespace Nekoyume.UI
         }
 
         [SerializeField]
-        private Image runeImage;
+        private VanillaItemView vanillaItemView;
+
+        [SerializeField]
+        private ItemOptionTag itemOptionTag;
 
         [SerializeField]
         private TextMeshProUGUI runeText;
@@ -67,9 +70,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Animator animator;
-
-        [SerializeField]
-        private ItemOptionTag itemOptionTag;
 
         [SerializeField]
         private Button closeButton;
@@ -144,11 +144,7 @@ namespace Nekoyume.UI
 
         private void UpdateInformation(RuneItem item, int resultLevel)
         {
-            if (RuneFrontHelper.TryGetRuneIcon(item.Row.Id, out var icon))
-            {
-                runeImage.sprite = icon;
-            }
-
+            vanillaItemView.SetData(item.RuneStone);
             runeText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
 
             if (!item.OptionRow.LevelOptionMap.TryGetValue(resultLevel, out var option))

@@ -2428,6 +2428,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4701323506412027081}
+  - component: {fileID: 8029815788533952889}
   - component: {fileID: 4565649998405548637}
   - component: {fileID: 4312730932532004775}
   - component: {fileID: 6797414498485240982}
@@ -2460,6 +2461,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8029815788533952889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2743844896155103964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c42f0ed0866e40cfb7a72e7e9aa790a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
+  iconImage: {fileID: 2753909314371837719}
+  gradeImage: {fileID: 2940782224285366963}
+  gradeHsv: {fileID: 4702788136223584441}
 --- !u!114 &4565649998405548637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48085,6 +48102,8 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   runeImage: {fileID: 2753909314371837719}
+  vanillaItemView: {fileID: 8029815788533952889}
+  itemOptionTag: {fileID: 1601380254085292476}
   runeText: {fileID: 3338016348412345922}
   currentLevelText: {fileID: 3338016346588537425}
   nextLevelText: {fileID: 3338016348117025480}
@@ -48105,7 +48124,6 @@ MonoBehaviour:
   - {fileID: 296557019921820049}
   cpText: {fileID: 1849228174857454467}
   animator: {fileID: 683810306821976892}
-  itemOptionTag: {fileID: 1601380254085292476}
   closeButton: {fileID: 8027277538586212062}
   speechBubble:
     container: {fileID: 4056587116940835411}
@@ -97125,7 +97143,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 300, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 44}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &3068540788992398759
@@ -97428,7 +97446,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8190975498027157961
 RectTransform:
   m_ObjectHideFlags: 0
