@@ -9,7 +9,8 @@ namespace Nekoyume.UI.Scroller
         {
             public int LevelBonusMin;
             public int? LevelBonusMax;
-            public int Reward;
+            public int RewardMin;
+            public int? RewardMax;
         }
 
         [SerializeField] private TextMeshProUGUI bonusText;
@@ -18,11 +19,14 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(Model itemData)
         {
-            var maxText = itemData.LevelBonusMax.HasValue
+            var levelBonusMaxText = itemData.LevelBonusMax.HasValue
                 ? $"{itemData.LevelBonusMax.Value}"
                 : string.Empty;
-            bonusText.text = $"{itemData.LevelBonusMin} ~ {maxText}";
-            rewardText.text = $"{itemData.Reward / 100f:0.####}%";
+            bonusText.text = $"{itemData.LevelBonusMin} ~ {levelBonusMaxText}";
+            var rewardMaxText = itemData.RewardMax.HasValue
+                ? $"{itemData.RewardMax / 100m:0.####}%"
+                : string.Empty;
+            rewardText.text = $"{itemData.RewardMin / 100m:0.####}% ~ {rewardMaxText}";
 
             focusObject.SetActive(Context.CurrentModel == itemData);
         }
