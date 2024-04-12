@@ -26,7 +26,7 @@ namespace Nekoyume.UI
             CloseWidget = () => Close();
         }
 
-        public void Show(float runeLevelBonus)
+        public void Show(decimal runeLevelBonus)
         {
             var orderedSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet.OrderedList;
             var models = orderedSheet.Select(row => new RuneLevelBonusEffectCell.Model
