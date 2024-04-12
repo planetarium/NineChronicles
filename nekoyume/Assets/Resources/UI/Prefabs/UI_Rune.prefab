@@ -11207,8 +11207,8 @@ MonoBehaviour:
   loop: 0
   cellContainer: {fileID: 2642608342339477375}
   reuseCellMarginCount: 0
-  paddingHead: 0
-  paddingTail: 0
+  paddingHead: 15
+  paddingTail: 15
   spacing: 10
   startAxisSpacing: 0
   startAxisCellCount: 4
