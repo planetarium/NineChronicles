@@ -320,6 +320,8 @@ public class SeasonPassServiceClient
         public int LastNormalClaim { get; set; }
         [JsonPropertyName("last_premium_claim")]
         public int LastPremiumClaim { get; set; }
+        [JsonPropertyName("claim_limit_timestamp")]
+        public string ClaimLimitTimestamp { get; set; }
     }
 
     public class ValidationError

@@ -42,6 +42,10 @@ namespace Nekoyume.UI
         private GameObject premiumPlusUnlockBtn;
         [SerializeField]
         private GameObject premiumPlusIcon;
+        [SerializeField]
+        private GameObject prevSeasonClaimButton;
+        [SerializeField]
+        private TextMeshProUGUI prevSeasonClaimButtonRemainingText;
 
         private bool isPageEffectComplete;
         public const int SeasonPassMaxLevel = 30;
@@ -93,6 +97,17 @@ namespace Nekoyume.UI
             {
                 RefreshRewardCells(seasonPassManager);
             }).AddTo(gameObject);
+
+            seasonPassManager.PrevSeasonClaimAvailable.Subscribe((visible) =>
+            {
+                prevSeasonClaimButton.SetActive(visible);
+            }).AddTo(gameObject);
+
+            seasonPassManager.PrevSeasonClaimRemainingDateTime.Subscribe((remaining) =>
+            {
+                prevSeasonClaimButtonRemainingText.text = remaining;
+            }).AddTo(gameObject);
+
             rewardCellScrollbar.value = 0;
         }
 
@@ -241,6 +256,20 @@ namespace Nekoyume.UI
                 (result) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"),NotificationCell.NotificationType.Notification);
+                    Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                },
+                (error) =>
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification);
+                });
+        }
+
+        public void PrevSeasonClaim()
+        {
+            Game.Game.instance.SeasonPassServiceManager.PrevClaim(
+                (result) =>
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
                     Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
                 },
                 (error) =>

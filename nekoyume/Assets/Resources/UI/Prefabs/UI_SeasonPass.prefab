@@ -6434,8 +6434,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3896485022891584367}
   m_HandleRect: {fileID: 2405230519495336861}
   m_Direction: 0
-  m_Value: 1.0000001
-  m_Size: 0.26285714
+  m_Value: 1.0000002
+  m_Size: 0.48685715
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6718,7 +6718,7 @@ MonoBehaviour:
   tutorialActions: 
   receiveBtn: {fileID: 5686261164877829650}
   levelText: {fileID: 6960089235252828786}
-  remainingText: {fileID: 5314810726745290908}
+  remainingText: {fileID: 5212978427612392415}
   expText: {fileID: 5110198259043094207}
   rewardCells:
   - {fileID: 7203057162066831058}
@@ -6759,6 +6759,8 @@ MonoBehaviour:
   premiumUnlockBtn: {fileID: 5618137876446749482}
   premiumPlusUnlockBtn: {fileID: 1256621147745764403}
   premiumPlusIcon: {fileID: 6591002473820812945}
+  prevSeasonClaimButton: {fileID: 5319848521498764861}
+  prevSeasonClaimButtonRemainingText: {fileID: 7053704674157856006}
   betweenCellViewDuration: 60
   scrollDuration: 1
   scrollWaitDuration: 300
@@ -14871,7 +14873,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_ACCOUNT_WARNING
+  l10nKey: UI_PRVE_SEASON_CLAIM_LIMIT_WARNING
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -15225,7 +15227,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2319532879278382693}
         m_TargetAssemblyTypeName: Nekoyume.UI.SeasonPass, Nekoyume
-        m_MethodName: ReceiveAllBtn
+        m_MethodName: PrevSeasonClaim
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18054,7 +18056,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -830.0001, y: 0}
+  m_AnchoredPosition: {x: -46.000366, y: 0}
   m_SizeDelta: {x: 3500, y: 360}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8029291072304469993

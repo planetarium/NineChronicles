@@ -26,6 +26,11 @@ namespace Nekoyume
         public ReactiveProperty<DateTime> SeasonEndDate = new(DateTime.MinValue);
         public ReactiveProperty<string> RemainingDateTime = new("");
 
+        public ReactiveProperty<DateTime> PrevSeasonClaimEndDate = new(DateTime.MinValue);
+        public ReactiveProperty<string> PrevSeasonClaimRemainingDateTime = new("");
+        public ReactiveProperty<bool> PrevSeasonClaimAvailable = new(false);
+        private bool _prevSeasonClaimAvailable = false;
+
         public string GoogleMarketURL = "https://play.google.com/store/search?q=Nine%20Chronicles&c=apps&hl=en-EN";// default
         public string AppleMarketURL = "https://nine-chronicles.com/";// default
 
@@ -56,6 +61,7 @@ namespace Nekoyume
             Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1)).Subscribe((time) =>
             {
                 RefreshRemainingTime();
+                RefreshPrevRemainingClaim();
             }).AddTo(Game.Game.instance);
 
             RefreshSeassonpassExpAmount();
@@ -112,11 +118,37 @@ namespace Nekoyume
             var dayText = dayExist ? $"{(int)timeSpan.TotalDays}d " : string.Empty;
             var hourText = hourExist ? $"{(int)timeSpan.Hours}h " : string.Empty;
             var minText = string.Empty;
-            if(!hourExist && !dayExist)
+            if (!hourExist && !dayExist)
             {
                 minText = $"{(int)timeSpan.Minutes}m";
             }
             RemainingDateTime.SetValueAndForceNotify($"{dayText}{hourText}{minText}");
+        }
+
+        private void RefreshPrevRemainingClaim()
+        {
+            if (!_prevSeasonClaimAvailable)
+                return;
+
+            if (PrevSeasonClaimEndDate.Value < DateTime.Now)
+            {
+                PrevSeasonClaimRemainingDateTime.SetValueAndForceNotify("0m");
+                PrevSeasonClaimAvailable.Value = false;
+                return;
+            }
+
+            var prevSeasonTimeSpan = PrevSeasonClaimEndDate.Value - DateTime.Now;
+            var prevSeasonDayExist = prevSeasonTimeSpan.TotalDays > 1;
+            var prevSeasonHourExist = prevSeasonTimeSpan.TotalHours >= 1;
+            var prevSeasonDayText = prevSeasonDayExist ? $"{(int)prevSeasonTimeSpan.TotalDays}d " : string.Empty;
+            var prevSeasonHourText = prevSeasonHourExist ? $"{(int)prevSeasonTimeSpan.Hours}h " : string.Empty;
+            var prevSeasonMinText = string.Empty;
+            if (!prevSeasonHourExist && !prevSeasonDayExist)
+            {
+                prevSeasonMinText = $"{(int)prevSeasonTimeSpan.Minutes}m";
+            }
+            PrevSeasonClaimRemainingDateTime.SetValueAndForceNotify($"{prevSeasonDayText}{prevSeasonHourText}{prevSeasonMinText}");
+            PrevSeasonClaimAvailable.Value = _prevSeasonClaimAvailable;
         }
 
         public async Task AvatarStateRefreshAsync()
@@ -177,6 +209,20 @@ namespace Nekoyume
                     AvatarInfo.SetValueAndForceNotify(null);
                     NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] error: {error}");
                 });
+
+
+            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id -1, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
+                (result) =>
+                {
+                    _prevSeasonClaimAvailable = result.LastNormalClaim != result.Level;
+                    DateTime.TryParse(result.ClaimLimitTimestamp, out var claimLimitTimestamp);
+                    PrevSeasonClaimEndDate.SetValueAndForceNotify(claimLimitTimestamp);
+                    RefreshPrevRemainingClaim();
+                },
+                (error) =>
+                {
+                    NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [PrevSeasonStatus] error: {error}");
+                });
         }
 
         public void ReceiveAll(Action<SeasonPassServiceClient.ClaimResultSchema> onSucces, Action<string> onError)
@@ -195,7 +241,9 @@ namespace Nekoyume
                 AgentAddr = agentAddress.ToString(),
                 AvatarAddr = avatarAddress.ToString(),
                 SeasonId = AvatarInfo.Value.SeasonPassId,
-                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}")
+                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
+                Force = false,
+                Prev = false,
             },
                 (result) =>
                 {
@@ -204,6 +252,37 @@ namespace Nekoyume
                 (error) =>
                 {
                     NcDebug.LogError($"SeasonPassServiceManager [ReceiveAll] error: {error}");
+                    onError?.Invoke(error);
+                }).AsUniTask().Forget();
+        }
+
+        public void PrevClaim(Action<SeasonPassServiceClient.ClaimResultSchema> onSucces, Action<string> onError)
+        {
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (!Game.Game.instance.CurrentPlanetId.HasValue)
+            {
+                var errorString = "$SeasonPassServiceManager [PrevClaim] Game.Game.instance.CurrentPlanetId is null";
+                NcDebug.LogError(errorString);
+                onError?.Invoke(errorString);
+                return;
+            }
+            Client.PostUserClaimAsync(new SeasonPassServiceClient.ClaimRequestSchema
+            {
+                AgentAddr = agentAddress.ToString(),
+                AvatarAddr = avatarAddress.ToString(),
+                SeasonId = AvatarInfo.Value.SeasonPassId - 1,
+                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
+                Force = false,
+                Prev = true,
+            },
+                           (result) =>
+                           {
+                    onSucces?.Invoke(result);
+                },
+                                          (error) =>
+                                          {
+                    NcDebug.LogError($"SeasonPassServiceManager [PrevClaim] error: {error}");
                     onError?.Invoke(error);
                 }).AsUniTask().Forget();
         }
