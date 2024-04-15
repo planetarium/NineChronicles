@@ -30,11 +30,11 @@ namespace Nekoyume.UI
     {
         public struct RecipeInfo
         {
-            public int                  RecipeId;
-            public int?                 SubRecipeId;
-            public BigInteger           CostNCG;
-            public FungibleAssetValue   CostCrystal;
-            public int                  CostAP;
+            public int RecipeId;
+            public int? SubRecipeId;
+            public BigInteger CostNCG;
+            public FungibleAssetValue CostCrystal;
+            public int CostAP;
             public Dictionary<int, int> Materials;
             public Dictionary<int, int> ReplacedMaterials;
         }
@@ -45,12 +45,12 @@ namespace Nekoyume.UI
             [Serializable]
             public struct RecipeTab
             {
-                public Toggle          toggle;
+                public Toggle toggle;
                 public TextMeshProUGUI disableText;
                 public TextMeshProUGUI enableText;
             }
 
-            public ToggleGroup     toggleGroup;
+            public ToggleGroup toggleGroup;
             public List<RecipeTab> recipeTabs;
         }
 
@@ -58,13 +58,13 @@ namespace Nekoyume.UI
         private struct HammerPointView
         {
             public GameObject parentObject;
-            public Slider     nowPoint;
-            public Image      nowPointImage;
-            public Image      increasePointImage;
-            public TMP_Text   hammerPointText;
+            public Slider nowPoint;
+            public Image nowPointImage;
+            public Image increasePointImage;
+            public TMP_Text hammerPointText;
             public GameObject notEnoughHammerPointObject;
             public GameObject enoughHammerPointObject;
-            public Button     superCraftButton;
+            public Button superCraftButton;
         }
 
         [Serializable]
@@ -74,64 +74,82 @@ namespace Nekoyume.UI
             public Sprite    sprite;
         }
 
-        [SerializeField] private RecipeCell recipeCell;
+        [SerializeField]
+        private RecipeCell recipeCell;
 
-        [SerializeField] private TextMeshProUGUI titleText;
+        [SerializeField]
+        private TextMeshProUGUI titleText;
 
-        [SerializeField] private TextMeshProUGUI blockIndexText;
+        [SerializeField]
+        private TextMeshProUGUI blockIndexText;
 
-        [SerializeField] private TextMeshProUGUI levelText;
+        [SerializeField]
+        private TextMeshProUGUI levelText;
 
-        [SerializeField] private TextMeshProUGUI expText;
+        [SerializeField]
+        private TextMeshProUGUI expText;
 
-        [SerializeField] private RequiredItemRecipeView requiredItemRecipeView;
+        [SerializeField]
+        private RequiredItemRecipeView requiredItemRecipeView;
 
-        [SerializeField] private ConditionalCostButton button;
+        [SerializeField]
+        private ConditionalCostButton button;
 
-        [SerializeField] private GameObject lockedObject;
+        [SerializeField]
+        private GameObject lockedObject;
 
-        [SerializeField] private TextMeshProUGUI lockedText;
+        [SerializeField]
+        private TextMeshProUGUI lockedText;
 
-        [SerializeField] private TextMeshProUGUI[] mainStatTexts;
+        [SerializeField]
+        private TextMeshProUGUI[] mainStatTexts;
 
         [SerializeField] [Header("[Equipment]")]
         private RecipeTabGroup normalRecipeTabGroup;
 
-        [SerializeField] private GameObject premiumCraftableIcon;
+        [SerializeField]
+        private GameObject premiumCraftableIcon;
 
-        [SerializeField] private RecipeTabGroup legendaryRecipeTabGroup;
+        [SerializeField]
+        private RecipeTabGroup legendaryRecipeTabGroup;
 
-        [SerializeField] private RecipeOptionView optionView;
+        [SerializeField]
+        private RecipeOptionView optionView;
 
-        [SerializeField] private HammerPointView hammerPointView;
+        [SerializeField]
+        private HammerPointView hammerPointView;
 
-        [SerializeField] private UIHsvModifier[] bgHsvModifiers;
+        [SerializeField]
+        private UIHsvModifier[] bgHsvModifiers;
 
         [SerializeField] [Header("[EventMaterial]")]
         private ConditionalCostButton materialSelectButton;
 
-        [SerializeField] private List<RequiredNormalItemIcon> requiredNormalItemIcons;
+        [SerializeField]
+        private List<RequiredNormalItemIcon> requiredNormalItemIcons;
 
-        [SerializeField] private Image requiredNormalItemImage;
+        [SerializeField]
+        private Image requiredNormalItemImage;
 
-        [SerializeField] private TextMeshProUGUI collectionCount;
+        [SerializeField]
+        private TextMeshProUGUI collectionCount;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
         private SheetRow<int> _recipeRow;
-        private List<int>     _subrecipeIds;
-        private int           _selectedIndex;
-        private RecipeInfo    _selectedRecipeInfo;
+        private List<int> _subrecipeIds;
+        private int _selectedIndex;
+        private RecipeInfo _selectedRecipeInfo;
 
-        private const string      StatTextFormat         = "{0} {1}";
-        private const int         PremiumRecipeIndex     = 1;
-        private const int         MimisbrunnrRecipeIndex = 2;
-        private       IDisposable _disposableForOnDisable;
+        private const string StatTextFormat = "{0} {1}";
+        private const int PremiumRecipeIndex = 1;
+        private const int MimisbrunnrRecipeIndex = 2;
+        private IDisposable _disposableForOnDisable;
 
-        private bool             _canSuperCraft;
+        private bool _canSuperCraft;
         private HammerPointState _hammerPointState;
 
-        public static string[] DefaultTabNames = new string[] { "A", "B", "C" };
+        public static string[] DefaultTabNames = new string[]{ "A", "B", "C" };
 
         private void Awake()
         {
