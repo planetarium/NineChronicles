@@ -61,6 +61,7 @@ using UnityEngine.Android;
 #endif
 using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
+using UnityEngine.AddressableAssets;
 using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
@@ -276,6 +277,9 @@ namespace Nekoyume.Game
 #if LIB9C_DEV_EXTENSIONS && UNITY_ANDROID
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
+            yield return Addressables.InitializeAsync();
+            // yield return Addressables.LoadContentCatalogAsync("https://assets.nine-chronicles.com/live-assets/addressable-test/StandaloneWindows64/catalog_1.json").ToUniTask().ToCoroutine();
+
             NcDebug.Log("[Game] Start() invoked");
             var totalSw = new Stopwatch();
             totalSw.Start();
