@@ -169,9 +169,9 @@ namespace Nekoyume.UI
             _smoothenCoroutine = null;
         }
 
-        private void OnEnemyDeadStart(Enemy enemy)
+        private void OnEnemyDeadStart(StageMonster stageMonster)
         {
-            IncreaseProgress(enemy.HP - enemy.CharacterModel.AdditionalHP);
+            IncreaseProgress(stageMonster.HP - stageMonster.CharacterModel.AdditionalHP);
         }
 
         public void OnValueChanged()

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Factory
 {
-    public class PlayerFactory : MonoBehaviour
+    public static class PlayerFactory
     {
         public static GameObject Create(AvatarState avatarState)
         {

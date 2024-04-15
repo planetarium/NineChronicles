@@ -1,0 +1,435 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: ActorPrefab
+  m_EditorClassIdentifier: 
+  m_GroupName: ActorPrefab
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 4a409c898dcea0641a0743fdaae5f190
+  m_SerializeEntries:
+  - m_GUID: 482e78af12fcd4ca386306ba9b3a9820
+    m_Address: 202003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 3cb41fe0656df2344bf79f5d926e4de7
+    m_Address: 208002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: fa5efa63819821449b9860b98a853888
+    m_Address: 204020
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 6d340666226f141e5858c925dc03bfa1
+    m_Address: 205007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 0c01da0f7a4f22847a1d6890cb2cacd5
+    m_Address: 204010
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 42f6ccb49e4534e2894c27190e6d0655
+    m_Address: 201003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 61ab36a1255b5dc478a4e21c07a16041
+    m_Address: 205002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 66fdffe4e4e501f4db5d771fc5c14cea
+    m_Address: 207000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: cea3f852d515e1a45adb116d610cfad9
+    m_Address: 900001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: e34798ab060cf0e41801c65387b02ccb
+    m_Address: 209001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: eb9e99f16bfcd8a47a489a9ae4f0062b
+    m_Address: 204000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 289ced244f523444fa756ab195ec17de
+    m_Address: 209007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 8747af22be8555d4581d85652e855506
+    m_Address: 204023
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 2f983f4b0f96441419bb91dce3427515
+    m_Address: 208006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: f01ffa148457f21428ecba4d3cbddde1
+    m_Address: 205000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: bd46e85e7f2a0c444aa715099c8ff1e7
+    m_Address: 207007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 1717714c64ca8482fbac665aa39e4104
+    m_Address: 201008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: bff68601739ac074aa738b4a6426cf07
+    m_Address: 204002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: c5d5687d88408af40b10e07cffc20cf8
+    m_Address: 206001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 790c4f5b6fbc1f247a1fa9533dfa50b4
+    m_Address: 208004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: e17af8258b08441aaaf1f9ea60b0c3df
+    m_Address: 201006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 56c63061299863041aee46020bf1700f
+    m_Address: 206003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 02b4b6be4f3ee304686118d9bac877cf
+    m_Address: 207004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: d5e0563f574424581a2e90d656cfa6af
+    m_Address: 203005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: ff2c91d71a1904aa796b316c9fe98065
+    m_Address: 201000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: b4367fa47001d4773a3affa00cfd8e3d
+    m_Address: 201002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: b76ab54d875e6254e862c8d9d4a50181
+    m_Address: 207002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: e946d943f1af32c4690cec1dbfa97a9e
+    m_Address: 209004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: f009970f54e0b42bead21cb4e54d3ea3
+    m_Address: 203000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 6802609afbccbd94cb156dd6d8bbb194
+    m_Address: 204024
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: ea85b96fb71b945819fe691d92db790d
+    m_Address: 202007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 32d76fec6b95a5e4a9579852bea02f86
+    m_Address: 203002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 7e74028ec02701842a320d3968a87532
+    m_Address: 205001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 81936e4609c177a41bcfdfef67d5dbb3
+    m_Address: 204004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 000f63c7297d6b74fa12ec142d15d08d
+    m_Address: 206002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 0cb7646153b6e864f81c739f48f20dd1
+    m_Address: 208003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 063ea617024a370448e19a58fc78e443
+    m_Address: 209005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 3645f07b0f2171e418a8439b6003e795
+    m_Address: 204013
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 36886e50604ea40188e374aeb62aafe5
+    m_Address: 201007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 7cb2a7e1a44960e4782de411ccca476a
+    m_Address: 206006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 1b7210695d8efb6429e098ce74718df8
+    m_Address: 208001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 29899ce76c23cdc44bed894b2f085d9e
+    m_Address: 208000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: e2b452ed44a0b3f4d8f189d58a74d05b
+    m_Address: 202006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 14315e098a2decb418295a73f72344f0
+    m_Address: 209002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: eb82b6404674b5f4b8011b4db1dfe07a
+    m_Address: 205003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 88d51a68cb76d124f948134a0b7b552f
+    m_Address: 203001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 2b2dc21f95386d9449158820be2ebccd
+    m_Address: 207005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: cd299efb44cf449418d8ecbf5837350e
+    m_Address: 203007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 2b3fb5834162ec74d91b91cfbf5e5818
+    m_Address: 204021
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 9a1a1645f2198b84593441a977cc1cec
+    m_Address: 206005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 213ad36f567623644a9eb7fd18b3fcae
+    m_Address: 204012
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: c6ac45c857bcba64397118578567ad24
+    m_Address: 209006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 6d6b617dc959546858c97bc4fc40a44f
+    m_Address: 202002
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: f03a19d68be91634e8c2d9be2f818d67
+    m_Address: 208005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 7da5d2a56c494e149b42adf5b3d3caab
+    m_Address: 204014
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: d19588626bf5abc40b3dc570d0407bdb
+    m_Address: 206000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: af9dbb98feb5a6a4eb752ba8c359b7d5
+    m_Address: 206007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 5688c15621395b743bdfac903e6c9c01
+    m_Address: 209003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 18db58a2e2ee0c44da72fe7a0d8e9dc2
+    m_Address: 201004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 85f80b850d8a548459c8a97a715f75fd
+    m_Address: 204003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: d5625b306a549a540840a776f36947ef
+    m_Address: 207006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: cedfb0005a0a0403c9738e5a581cd14e
+    m_Address: 203004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 35d1c7bc1a53a4ce99981f728808a25a
+    m_Address: 202005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 0b892e9c46944754cac73333d455a46f
+    m_Address: 202004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 4f363689b16a844a89a81fba453d96a3
+    m_Address: 201005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: c0b93852d37744a8bbcd7fa761bf0b60
+    m_Address: 203003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 75a2edb6ef0ac4c0cae17f48589ebbb8
+    m_Address: 202008
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 777ee4d43db197549986adf0ae07a182
+    m_Address: 204001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 145b0f1cb00c62347af3f4430c181f5d
+    m_Address: 205004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 56e11f0bde4f4574b897d78c0dd6837b
+    m_Address: 207001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 6532e5a26608240469f54711c0c8adde
+    m_Address: 205005
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: dcccdd7fce92f2548a82d4d2b57139e7
+    m_Address: 209000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: e1612274a54af438cb4b01113bec5859
+    m_Address: 205006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 2993b4711024d44168ab347d9fe26761
+    m_Address: 202001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 88e6dfff39ace41f4a0acec4817c0f06
+    m_Address: 203006
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 7b19002c1bfd1b2478c01483a969f297
+    m_Address: 206004
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: bc5b77b3a39ed14409a374a19e56e790
+    m_Address: 202000
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: dc6b672cd44382d4ab1ba3a724263ac1
+    m_Address: 204022
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 2a4f9fdce43537f4190fb9e6f39e9739
+    m_Address: 207003
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 01d60b0f809cc6649823d347f0ae7ee7
+    m_Address: 204011
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 8f45a00574dec4ae386f9a286fb0cf99
+    m_Address: 201001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  - m_GUID: 3bddfbf7d5e86a24da9da1248ef3cf68
+    m_Address: 208007
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Battle
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ac541e2ce40a4e441b1e4fe7bb752ac7, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 84d04ec2b3e043049b03c49e50c1c0e9, type: 2}
+    - {fileID: 11400000, guid: 27fbf1919c12d3847a42e1a88e27f65d, type: 2}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,12 @@ using Nekoyume.Model.Stat;
 using Nekoyume.UI;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.Game
 {
+    [Obsolete]
     public class Prologue : MonoBehaviour
     {
         private Player _player;
@@ -63,7 +66,7 @@ namespace Nekoyume.Game
             _battle.ShowForTutorial(true);
             Widget.Find<HeaderMenuStatic>().Close(true);
             yield return new WaitForSeconds(2f);
-            var go2 = EnemyFactory.Create(_characterId, _player.transform.position, 7f, _player);
+            var go2 = StageMonsterFactory.Create(_characterId, _player.transform.position, 7f, _player);
             _fenrir = go2.GetComponent<PrologueCharacter>();
             yield return new WaitUntil(() => 6f > Mathf.Abs(go.transform.position.x - go2.transform.position.x));
             _player.ShowSpeech("PLAYER_PROLOGUE_SPEECH");

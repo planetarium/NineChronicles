@@ -33,6 +33,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
+using Nekoyume.Game.Battle;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -80,7 +81,7 @@ namespace Nekoyume.Game
         private Stage stage;
 
         [SerializeField]
-        private Arena arena;
+        private Battle.Arena arena;
 
         [SerializeField]
         private RaidStage raidStage;
@@ -131,7 +132,7 @@ namespace Nekoyume.Game
         public GuildServiceClient GuildServiceClient { get; private set; }
 
         public Stage Stage => stage;
-        public Arena Arena => arena;
+        public Battle.Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
         public Lobby Lobby => lobby;
 
@@ -142,7 +143,6 @@ namespace Nekoyume.Game
         public ActionManager ActionManager { get; private set; }
 
         public bool IsInitialized { get; private set; }
-        public bool IsInWorld { get; set; }
 
         public int? SavedPetId { get; set; }
 
@@ -216,6 +216,8 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             CurrentSocialEmail = string.Empty;
+
+            ResourceManager.Instance.Initialize();
 
             NcDebug.Log("[Game] Awake() invoked");
             GL.Clear(true, true, Color.black);
@@ -1411,7 +1413,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoInitDccAvatar());
             yield return StartCoroutine(CoInitDccConnecting());
 
-            if (IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 NotificationSystem.Push(
                     Model.Mail.MailType.System,

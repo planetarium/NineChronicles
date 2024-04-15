@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Libplanet;
 using Libplanet.Crypto;
+using Nekoyume.Game.Battle;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -38,7 +39,7 @@ namespace Nekoyume.UI
             petInventory.OnSelectedSubject
                 .Subscribe(_ =>
                 {
-                    if (Game.Game.instance.IsInWorld)
+                    if (BattleRenderer.Instance.IsOnBattle)
                     {
                         NotificationSystem.Push(
                             Nekoyume.Model.Mail.MailType.System,
