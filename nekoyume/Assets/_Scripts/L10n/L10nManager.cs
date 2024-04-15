@@ -433,16 +433,19 @@ namespace Nekoyume.L10n
             try
             {
                 ValidateStateAndKey(key);
-                text = _dictionary[key];
-                return true;
-            }
-            catch (Exception e)
-            {
                 if (GetAdditionalLocalizedString(key, out var localized))
                 {
                     text = localized;
                     return true;
                 }
+                else
+                {
+                    text = _dictionary[key];
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
                 NcDebug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
                 text = $"!{key}!";
                 return false;
@@ -575,37 +578,51 @@ namespace Nekoyume.L10n
                 return;
             }
 
+            client.Timeout = TimeSpan.FromSeconds(10);
+
             var resp = await client.GetAsync(url);
             resp.EnsureSuccessStatusCode();
+            if(resp.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return;
+            }
             var data = await resp.Content.ReadAsByteArrayAsync();
-            using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            try
             {
-                PrepareHeaderForMatch = args => args.Header.ToLower(),
-            };
-            using var csvReader = new CsvReader(streamReader, csvConfig);
-            var records = csvReader.GetRecords<L10nCsvModel>();
-            foreach (var item in records)
-            {
-                var l10nKeyValue = new Dictionary<LanguageType, string>();
-                foreach (var lang in (LanguageType[])Enum.GetValues(typeof(LanguageType)))
+                using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
+                var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    var value = (string)typeof(L10nCsvModel)
-                        .GetProperty(lang.ToString())?
-                        .GetValue(item);
-
-                    if (string.IsNullOrEmpty(value))
+                    PrepareHeaderForMatch = args => args.Header.ToLower(),
+                };
+                using var csvReader = new CsvReader(streamReader, csvConfig);
+                var records = csvReader.GetRecords<L10nCsvModel>();
+                foreach (var item in records)
+                {
+                    var l10nKeyValue = new Dictionary<LanguageType, string>();
+                    foreach (var lang in (LanguageType[])Enum.GetValues(typeof(LanguageType)))
                     {
-                        value = item.English;
+                        var value = (string)typeof(L10nCsvModel)
+                            .GetProperty(lang.ToString())?
+                            .GetValue(item);
+
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = item.English;
+                        }
+
+                        l10nKeyValue.Add(lang, value);
                     }
 
-                    l10nKeyValue.Add(lang, value);
+                    _additionalDic.TryAdd(item.Key, l10nKeyValue);
                 }
 
-                _additionalDic.TryAdd(item.Key, l10nKeyValue);
+                _initializedURLs.Add(url, true);
             }
-
-            _initializedURLs.Add(url, true);
+            catch (Exception e)
+            {
+                NcDebug.LogError(e);
+                return;
+            }
         }
 
         private static bool GetAdditionalLocalizedString(string key, out string text)
@@ -617,16 +634,9 @@ namespace Nekoyume.L10n
                     text = localized;
                     return true;
                 }
-                else
-                {
-                    text = string.Empty;
-                    NcDebug.LogError($"_additionalDic can't find value: {key} {CurrentLanguage}");
-                    return false;
-                }
             }
 
             text = string.Empty;
-            NcDebug.LogError($"_additionalDic can't find key: {key}");
             return false;
         }
     }
