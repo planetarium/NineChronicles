@@ -66,12 +66,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (!PatrolReward.Initialized)
-            {
-                NcDebug.LogError("PatrolReward is not initialized.");
-                return;
-            }
-
             if (Claiming.Value)
             {
                 return;
@@ -94,6 +88,19 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
+            var clientInitialized = Game.Game.instance.PatrolRewardServiceClient.IsInitialized;
+            if (!clientInitialized)
+            {
+                NcDebug.Log(
+                    $"[{nameof(PatrolRewardPopup)}]PatrolRewardServiceClient is not initialized.");
+                return;
+            }
+
+            if (!PatrolReward.Initialized)
+            {
+                await InitializePatrolReward();
+            }
+
             Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>
             {
                 ["PatrolTime"] = PatrolReward.PatrolTime.Value
