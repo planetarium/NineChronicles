@@ -7,6 +7,10 @@
 #endif
 //#define TEST_LOG
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
@@ -25,16 +29,13 @@ using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Model.Skill;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -44,10 +45,8 @@ using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Game.Battle
 {
-    using UniRx;
-
     public class Stage : MonoBehaviour, IStage
     {
         public const float DefaultAnimationTimeScaleWeight = 1f;
@@ -55,7 +54,6 @@ namespace Nekoyume.Game
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
         public ObjectPool objectPool;
-        public NPCFactory npcFactory;
         public DropItemFactory dropItemFactory;
 
         public MonsterSpawner spawner;
@@ -136,7 +134,17 @@ namespace Nekoyume.Game
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
-            Event.OnStageStart.AddListener(OnStageStart);
+
+            BattleRenderer.Instance.OnStageStart += OnStartStage;
+        }
+
+        private void OnDestroy()
+        {
+            Event.OnNestEnter.RemoveListener(OnNestEnter);
+            Event.OnLoginDetail.RemoveListener(OnLoginDetail);
+            Event.OnRoomEnter.RemoveListener(OnRoomEnter);
+
+            BattleRenderer.Instance.OnStageStart -= OnStartStage;
         }
 
         public void Initialize()
@@ -152,7 +160,7 @@ namespace Nekoyume.Game
         {
             foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
             {
-                var isEnemy = character is Character.Enemy;
+                var isEnemy = character is Character.StageMonster;
                 character.Animator.TimeScale = isEnemy
                     ? Character.CharacterBase.AnimatorTimeScale * AnimationTimeScaleWeight
                     : AnimationTimeScaleWeight;
@@ -165,14 +173,14 @@ namespace Nekoyume.Game
             }
         }
 
-        private void OnStageStart(BattleLog log)
+        private void OnStartStage(BattleLog log)
         {
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(OnStageStart)}() enter");
 #endif
             if (_battleLog is null)
             {
-                if (!(_battleCoroutine is null))
+                if (_battleCoroutine is not null)
                 {
                     StopCoroutine(_battleCoroutine);
                     _battleCoroutine = null;
@@ -254,7 +262,7 @@ namespace Nekoyume.Game
 #endif
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
-            Game.instance.IsInWorld = false;
+            BattleRenderer.Instance.IsOnBattle = false;
         }
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
@@ -314,9 +322,16 @@ namespace Nekoyume.Game
             }
         }
 
-        public void DestroyBackground(float fadeTime = 0f)
+        public void ReleaseBattleAssets()
+        {
+            BattleRenderer.Instance.ReleaseMonsterResources();
+            DestroyBackground();
+        }
+
+        private void DestroyBackground(float fadeTime = 0f)
         {
             Destroy(_background, fadeTime);
+
             _background = null;
 #if UNITY_ANDROID || UNITY_IOS
             objectPool.RemoveAllExceptFirst();
@@ -328,10 +343,12 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(PlayStage)}() enter");
 #endif
-            if (log?.Count > 0)
+            if (log?.Count <= 0)
             {
-                _battleCoroutine = StartCoroutine(CoPlayStage(log));
+                return;
             }
+
+            _battleCoroutine = StartCoroutine(CoPlayStage(log));
         }
 
         private IEnumerator CoPlayStage(BattleLog log)
@@ -347,7 +364,8 @@ namespace Nekoyume.Game
                 .Select(r => r.Id)
                 .ToList();
 
-            Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
+
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
             {
@@ -361,11 +379,13 @@ namespace Nekoyume.Game
         public void ClearBattle()
         {
             _battleLog = null;
-            if (!(_battleCoroutine is null))
+            if (_battleCoroutine is null)
             {
-                StopCoroutine(_battleCoroutine);
-                _battleCoroutine = null;
+                return;
             }
+
+            StopCoroutine(_battleCoroutine);
+            _battleCoroutine = null;
         }
 
         private static IEnumerator CoGuidedQuest(int stageIdToClear)
@@ -413,8 +433,7 @@ namespace Nekoyume.Game
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
                 {
-                    if (!TableSheets.Instance.StageSheet
-                            .TryGetValue(stageId, out var stageRow))
+                    if (!TableSheets.Instance.StageSheet.TryGetValue(stageId, out var stageRow))
                     {
                         yield break;
                     }
@@ -426,8 +445,7 @@ namespace Nekoyume.Game
                 case StageType.EventDungeon:
                 {
                     if (TableSheets.Instance.EventDungeonStageSheet is null ||
-                        !TableSheets.Instance.EventDungeonStageSheet
-                            .TryGetValue(stageId, out var eventDungeonStageRow))
+                        !TableSheets.Instance.EventDungeonStageSheet.TryGetValue(stageId, out var eventDungeonStageRow))
                     {
                         yield break;
                     }
@@ -503,7 +521,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                var enemies = GetComponentsInChildren<Character.Enemy>();
+                var enemies = GetComponentsInChildren<Character.StageMonster>();
                 if (enemies.Any())
                 {
                     foreach (var enemy in enemies)
@@ -799,7 +817,7 @@ namespace Nekoyume.Game
             var sprite =
                 SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
             battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
-            yield return StartCoroutine(spawner.CoSetData(character, new Vector3(8f, -1.2f)));
+            yield return StartCoroutine(spawner.CoSpawnEnemyPlayer(character, new Vector3(8f, -1.2f)));
         }
 
         #region Skill
@@ -1003,7 +1021,7 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoDropBox)}() enter.");
 #endif
-            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            var prevEnemies = GetComponentsInChildren<Character.StageMonster>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
 
             var isHeaderMenuShown = Widget.Find<HeaderMenuStatic>().IsActive();
@@ -1050,7 +1068,7 @@ namespace Nekoyume.Game
 
             character.UpdateHpBar();
 
-            if (!(buffInfos is null))
+            if (buffInfos is not null)
             {
                 foreach (var buffInfo in buffInfos)
                 {
@@ -1116,11 +1134,11 @@ namespace Nekoyume.Game
 #endif
             this.waveNumber = waveNumber;
             this.waveTurn = waveTurn;
-            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            var prevEnemies = GetComponentsInChildren<Character.StageMonster>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
             foreach (var prev in prevEnemies)
             {
-                objectPool.Remove<Character.Enemy>(prev.gameObject);
+                objectPool.Remove<Character.StageMonster>(prev.gameObject);
             }
 
             Event.OnWaveStart.Invoke(enemies.Sum(enemy => enemy.HP));
@@ -1337,7 +1355,7 @@ namespace Nekoyume.Game
                 .Where(c => c.Id == caster.Id);
             var character = characters?.FirstOrDefault();
 
-            if (!(characters is null) && characters.Any())
+            if (characters is not null && characters.Any())
             {
                 var ch = characters.First();
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -389,7 +390,7 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case SlotType.Empty:
-                    if (Game.instance.IsInWorld)
+                    if (BattleRenderer.Instance.IsOnBattle)
                     {
                         UI.NotificationSystem.Push(
                             Nekoyume.Model.Mail.MailType.System,

@@ -310,6 +310,11 @@ namespace Nekoyume.Game.Character
 
         private void ColorTween()
         {
+            if (MeshRenderer == null)
+            {
+                return;
+            }
+
             var mat = MeshRenderer.material;
 
             _colorTweenSequence?.Kill();

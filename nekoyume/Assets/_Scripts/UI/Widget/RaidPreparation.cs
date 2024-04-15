@@ -21,6 +21,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model.EnumType;
 using UnityEngine.Serialization;
 using Toggle = UnityEngine.UI.Toggle;

@@ -5,6 +5,7 @@ using System.Linq;
 using BTAI;
 using DG.Tweening;
 using Libplanet.Crypto;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -119,7 +120,7 @@ namespace Nekoyume.Game.Character
 
         public void UpdateStatusUI()
         {
-            if (!Game.instance.IsInWorld)
+            if (!BattleRenderer.Instance.IsOnBattle)
                 return;
 
             _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
