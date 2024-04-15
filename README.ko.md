@@ -16,7 +16,7 @@ Nine Chronicles
 ### 설치 방법
 
  1. [Unity Hub] 설치
- 1. Unity 2021.3.34f1 버전 설치
+ 1. Unity 2021.3.37f1 버전 설치
  1. 저장소 클론
     ```
     git clone https://github.com/planetarium/NineChronicles.git
@@ -74,7 +74,7 @@ $ /UnityPath/Unity -quit -batchmode -projectPath=/path/to/nekoyume/ -executeMeth
 - Example
 
 ```
-$ /Applications/Unity/Hub/Editor/2021.3.34f1/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
+$ /Applications/Unity/Hub/Editor/2021.3.37f1/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
 ```
 
 ### 에디터 빌드
