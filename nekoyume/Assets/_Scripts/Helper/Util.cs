@@ -581,8 +581,13 @@ namespace Nekoyume.Helper
 
                 try
                 {
-                    var rawdata = await DownloadTextureRaw(url);
-                    var result = CreateSprite(rawdata);
+                    var rawData = await DownloadTextureRaw(url);
+                    if (rawData == null)
+                    {
+                        throw new Exception($"DownloadTextureRaw({url}) is null.");
+                    }
+
+                    var result = CreateSprite(rawData);
                     CachedDownloadTextures.Add(url, result);
                     return result;
                 }

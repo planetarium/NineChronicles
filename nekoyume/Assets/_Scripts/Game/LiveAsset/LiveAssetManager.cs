@@ -207,6 +207,7 @@ namespace Nekoyume.Game.LiveAsset
 
         private async UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
         {
+            var retryCount = 3;
             var postfix = L10nManager.CurrentLanguage switch
             {
                 LanguageType.Korean => Platform.IsMobilePlatform()
@@ -215,8 +216,22 @@ namespace Nekoyume.Game.LiveAsset
                 LanguageType.Japanese => JapaneseImagePostfix,
                 _ => string.Empty
             };
-            return await Helper.Util.DownloadTexture(
-                $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
+            var uri = $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png";
+            Sprite res = null;
+            // 최대 3번까지 이미지를 다시 받길 시도한다.
+            while (retryCount-- > 0)
+            {
+                res = await Helper.Util.DownloadTexture(uri);
+                if (res != null)
+                {
+                    return res;
+                }
+
+                // 다운로드 실패시 1초 대기 후 재시도
+                await UniTask.Delay(1000);
+            }
+
+            return res;
         }
 
         private async UniTaskVoid InitializeStakingResource()
