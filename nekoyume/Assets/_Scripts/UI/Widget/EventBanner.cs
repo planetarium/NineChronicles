@@ -64,7 +64,10 @@ namespace Nekoyume.UI.Module
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-
+            if (!LiveAssetManager.instance.IsInitialized)
+            {
+                LiveAssetManager.instance.InitializeEvent();
+            }
 #if UNITY_ANDROID || UNITY_IOS
             this.transform.SetSiblingIndex(Widget.Find<Menu>().transform.GetSiblingIndex()+1);
 #endif

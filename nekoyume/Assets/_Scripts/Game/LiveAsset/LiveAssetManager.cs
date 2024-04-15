@@ -9,7 +9,6 @@ using Nekoyume.Pattern;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
 using Nekoyume.L10n;
 
@@ -19,6 +18,12 @@ namespace Nekoyume.Game.LiveAsset
 
     public class LiveAssetManager : MonoSingleton<LiveAssetManager>
     {
+        public enum InitializingState
+        {
+            NeedInitialize,
+            Initializing,
+            Initialized,
+        }
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
         private const string CLOEndpointPrefix = "https://assets.nine-chronicles.com/live-assets/Json/CloForAppVersion/clo-app-ver-";
@@ -32,6 +37,7 @@ namespace Nekoyume.Game.LiveAsset
 
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
+        private InitializingState _state = InitializingState.NeedInitialize;
         private Notices _notices;
         private LiveAssetEndpointScriptableObject _endpoint;
 
@@ -41,7 +47,7 @@ namespace Nekoyume.Game.LiveAsset
         public bool HasUnreadNotice =>
             _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
 
-        public bool HasUnread => HasUnreadEvent || HasUnreadNotice;
+        public bool HasUnread => IsInitialized && (HasUnreadEvent || HasUnreadNotice);
 
         public IObservable<bool> ObservableHasUnreadEvent => _alreadyReadNotices
             .ObserveAdd()
@@ -62,11 +68,24 @@ namespace Nekoyume.Game.LiveAsset
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
-        public bool IsInitialized { get; private set; }
+        public bool IsInitialized => _state == InitializingState.Initialized;
 
         public void InitializeData()
         {
             _endpoint = Resources.Load<LiveAssetEndpointScriptableObject>("ScriptableObject/LiveAssetEndpoint");
+            StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
+            InitializeStakingResource().Forget();
+            InitializeEvent();
+        }
+
+        public void InitializeEvent()
+        {
+            if (_state != InitializingState.NeedInitialize)
+            {
+                return;
+            }
+
+            _state = InitializingState.Initializing;
             var noticeUrl = L10nManager.CurrentLanguage switch
             {
                 LanguageType.Korean => Platform.IsMobilePlatform()
@@ -77,10 +96,7 @@ namespace Nekoyume.Game.LiveAsset
             };
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
             StartCoroutine(RequestManager.instance.GetJson(noticeUrl, SetNotices));
-            StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
-            InitializeStakingResource().Forget();
         }
-
         public IEnumerator InitializeApplicationCLO()
         {
             var osKey = string.Empty;
@@ -188,7 +204,7 @@ namespace Nekoyume.Game.LiveAsset
             await UniTask.WaitUntil(() =>
                 tasks.TrueForAll(task => task.Status == UniTaskStatus.Succeeded) &&
                 _notices is not null);
-            IsInitialized = true;
+            _state = InitializingState.Initialized;
 
             if (PlayerPrefs.HasKey(AlreadyReadNoticeKey))
             {
