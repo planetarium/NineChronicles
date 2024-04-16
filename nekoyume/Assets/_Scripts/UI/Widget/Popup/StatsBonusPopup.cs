@@ -1,10 +1,13 @@
+using System;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +15,13 @@ namespace Nekoyume.UI
 {
     public class StatsBonusPopup : PopupWidget
     {
+        [Serializable]
+        private struct RuneLevelBonus
+        {
+            public TextMeshProUGUI bonusText;
+            public TextMeshProUGUI rewardText;
+        }
+
         [SerializeField]
         private Button closeButton;
 
@@ -20,6 +30,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button goToCollectionButton;
+
+        [SerializeField]
+        private RuneLevelBonus runeLevelBonus;
+
+        [SerializeField]
+        private Button goToRuneButton;
 
         protected override void Awake()
         {
@@ -40,6 +56,12 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 GoToCollection();
             });
+
+            goToRuneButton.onClick.AddListener(() =>
+            {
+                AudioController.PlayClick();
+                GoToRune();
+            });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -52,6 +74,15 @@ namespace Nekoyume.UI
                 collectionState.Ids.Count,
                 collectionSheet.Count,
                 collectionState.GetEffects(collectionSheet));
+
+            var bonus = RuneFrontHelper.CalculateRuneLevelBonus(
+                States.Instance.AllRuneState,
+                Game.Game.instance.TableSheets.RuneListSheet);
+            var reward = RuneFrontHelper.CalculateRuneLevelBonusReward(
+                bonus,
+                Game.Game.instance.TableSheets.RuneLevelBonusSheet);
+            runeLevelBonus.bonusText.text = $"{bonus / 10000m:0.####}";
+            runeLevelBonus.rewardText.text = $"{reward / 100m:0.####}%";
         }
 
         private void GoToCollection()
@@ -78,6 +109,32 @@ namespace Nekoyume.UI
 
             CloseWithOtherWidgets();
             Find<Collection>().Show();
+        }
+
+        private void GoToRune()
+        {
+            var clearedStageId = States.Instance.CurrentAvatarState
+                .worldInformation.TryGetLastClearedStageId(out var id) ? id : 1;
+            const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.Rune;
+            if (clearedStageId < requiredStage)
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
+            CloseWithOtherWidgets();
+            Find<Rune>().Show();
         }
     }
 }
