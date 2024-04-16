@@ -10,6 +10,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using System.Collections;
+using System.Threading;
 using Nekoyume.L10n;
 
 namespace Nekoyume.Game.LiveAsset
@@ -18,14 +19,14 @@ namespace Nekoyume.Game.LiveAsset
 
     public class LiveAssetManager : MonoSingleton<LiveAssetManager>
     {
-        public enum InitializingState
+        private enum InitializingState
         {
             NeedInitialize,
             Initializing,
             Initialized,
         }
+
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
-        private static readonly Vector2 Pivot = new(0.5f, 0.5f);
         private const string CLOEndpointPrefix = "https://assets.nine-chronicles.com/live-assets/Json/CloForAppVersion/clo-app-ver-";
         private const string KoreanImagePostfix = "_KR";
         private const string JapaneseImagePostfix = "_JP";
@@ -201,9 +202,24 @@ namespace Nekoyume.Game.LiveAsset
                 tasks.Add(popupTask);
             }
 
-            await UniTask.WaitUntil(() =>
-                tasks.TrueForAll(task => task.Status == UniTaskStatus.Succeeded) &&
-                _notices is not null);
+            var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            try
+            {
+                await UniTask.WaitUntil(() =>
+                        tasks.TrueForAll(task =>
+                            task.Status == UniTaskStatus.Succeeded) && _notices is not null,
+                    cancellationToken: cancellation.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                if (e.CancellationToken == cancellation.Token)
+                {
+                    _state = InitializingState.NeedInitialize;
+                    NcDebug.Log($"[{nameof(LiveAssetManager)}] NoticeData making failed by timeout.");
+                    return;
+                }
+            }
+
             _state = InitializingState.Initialized;
 
             if (PlayerPrefs.HasKey(AlreadyReadNoticeKey))
