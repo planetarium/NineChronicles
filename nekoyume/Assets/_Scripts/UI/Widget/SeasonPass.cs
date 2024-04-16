@@ -43,7 +43,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject premiumPlusIcon;
         [SerializeField]
-        private GameObject prevSeasonClaimButton;
+        private ConditionalButton prevSeasonClaimButton;
         [SerializeField]
         private TextMeshProUGUI prevSeasonClaimButtonRemainingText;
 
@@ -90,7 +90,7 @@ namespace Nekoyume.UI
 
             seasonPassManager.RemainingDateTime.Subscribe((endDate) =>
             {
-                remainingText.text = $"{L10nManager.Localize("UI_SEASONPASS_REMAINING_TIME")} {endDate}";
+                remainingText.text = endDate;
             });
 
             seasonPassManager.SeasonEndDate.Subscribe((endTime) =>
@@ -100,7 +100,7 @@ namespace Nekoyume.UI
 
             seasonPassManager.PrevSeasonClaimAvailable.Subscribe((visible) =>
             {
-                prevSeasonClaimButton.SetActive(visible);
+                prevSeasonClaimButton.gameObject.SetActive(visible);
             }).AddTo(gameObject);
 
             seasonPassManager.PrevSeasonClaimRemainingDateTime.Subscribe((remaining) =>
@@ -266,15 +266,20 @@ namespace Nekoyume.UI
 
         public void PrevSeasonClaim()
         {
+            prevSeasonClaimButton.SetConditionalState(false);
+            
             Game.Game.instance.SeasonPassServiceManager.PrevClaim(
                 (result) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
                     Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                    prevSeasonClaimButton.SetConditionalState(true);
+                    prevSeasonClaimButton.gameObject.SetActive(false);
                 },
                 (error) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification);
+                    prevSeasonClaimButton.SetConditionalState(true);
                 });
         }
     }

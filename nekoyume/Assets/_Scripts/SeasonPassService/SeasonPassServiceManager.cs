@@ -127,10 +127,7 @@ namespace Nekoyume
 
         private void RefreshPrevRemainingClaim()
         {
-            if (!_prevSeasonClaimAvailable)
-                return;
-
-            if (PrevSeasonClaimEndDate.Value < DateTime.Now)
+            if (PrevSeasonClaimEndDate.Value < DateTime.Now || !_prevSeasonClaimAvailable)
             {
                 PrevSeasonClaimRemainingDateTime.SetValueAndForceNotify("0m");
                 PrevSeasonClaimAvailable.Value = false;
@@ -267,7 +264,7 @@ namespace Nekoyume
                 onError?.Invoke(errorString);
                 return;
             }
-            Client.PostUserClaimAsync(new SeasonPassServiceClient.ClaimRequestSchema
+            Client.PostUserClaimprevAsync(new SeasonPassServiceClient.ClaimRequestSchema
             {
                 AgentAddr = agentAddress.ToString(),
                 AvatarAddr = avatarAddress.ToString(),
@@ -276,12 +273,12 @@ namespace Nekoyume
                 Force = false,
                 Prev = true,
             },
-                           (result) =>
-                           {
+                (result) =>
+                {
                     onSucces?.Invoke(result);
                 },
-                                          (error) =>
-                                          {
+                (error) =>
+                {
                     NcDebug.LogError($"SeasonPassServiceManager [PrevClaim] error: {error}");
                     onError?.Invoke(error);
                 }).AsUniTask().Forget();
