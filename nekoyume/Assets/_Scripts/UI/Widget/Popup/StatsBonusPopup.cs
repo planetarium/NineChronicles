@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class CollectionEffectPopup : PopupWidget
+    public class StatsBonusPopup : PopupWidget
     {
         [SerializeField]
         private Button closeButton;

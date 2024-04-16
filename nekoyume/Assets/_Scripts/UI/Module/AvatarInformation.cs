@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Module
 
             collectionEffectButton.onClick.AddListener(() =>
             {
-                Widget.Find<CollectionEffectPopup>().Show();
+                Widget.Find<StatsBonusPopup>().Show();
                 AudioController.PlayClick();
             });
 
