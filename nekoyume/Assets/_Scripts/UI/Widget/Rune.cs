@@ -369,7 +369,7 @@ namespace Nekoyume.UI
 
             runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);
             runeLevelBonus.reward.Set(
-                item.Level > 0 && item.Level < item.CostRow.Cost.Count,
+                item.Level < item.CostRow.Cost.Count,
                 _selectedRuneItem.Row.Id, _selectedRuneItem.Level);
         }
 
