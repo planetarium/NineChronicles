@@ -248,6 +248,11 @@ namespace Nekoyume.L10n
             return records;
         }
 
+        public static IReadOnlyDictionary<string, string> GetAdditionalDictionary(LanguageType languageType)
+        {
+            return _additionalDic.ToDictionary(pair => pair.Key, pair => pair.Value[languageType]);
+        }
+
         public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
@@ -570,10 +575,10 @@ namespace Nekoyume.L10n
             return false;
         }
 
-        public static async UniTask AdditionalL10nTableDownload(string url)
+        public static async UniTask AdditionalL10nTableDownload(string url, bool forceDownload = false)
         {
             var client = new HttpClient();
-            if (_initializedURLs.TryGetValue(url, out var initialized))
+            if (_initializedURLs.TryGetValue(url, out var initialized) && !forceDownload)
             {
                 return;
             }
@@ -616,7 +621,7 @@ namespace Nekoyume.L10n
                     _additionalDic.TryAdd(item.Key, l10nKeyValue);
                 }
 
-                _initializedURLs.Add(url, true);
+                _initializedURLs.TryAdd(url, true);
             }
             catch (Exception e)
             {
