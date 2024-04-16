@@ -122,12 +122,14 @@ namespace Nekoyume.UI
 
             var allRuneState = Game.Game.instance.States.AllRuneState;
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-            var before = RuneFrontHelper.CalculateRuneLevelBonus(
-                allRuneState, runeListSheet, (runeItem.Row.Id, runeItem.Level));
-            var current = RuneFrontHelper.CalculateRuneLevelBonus(
-                allRuneState, runeListSheet);
-            runeLevelBonusDiff.beforeText.text = $"{before / 10000m:0.####}";
-            runeLevelBonusDiff.afterText.text = $"{current / 10000m:0.####}";
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var beforeReward = RuneFrontHelper.CalculateRuneLevelBonusReward(
+                allRuneState, runeListSheet, runeLevelBonusSheet,
+                (runeItem.Row.Id, runeItem.Level));
+            var currentReward = RuneHelper.CalculateRuneLevelBonus(
+                allRuneState, runeListSheet, runeLevelBonusSheet);
+            runeLevelBonusDiff.beforeText.text = $"{beforeReward / 100m:0.####}%";
+            runeLevelBonusDiff.afterText.text = $"{currentReward / 100m:0.####}%";
 
             var isCombine = runeItem.Level == 0;
             speechBubble.arrow.SetActive(!isCombine);

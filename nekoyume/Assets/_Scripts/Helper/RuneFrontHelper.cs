@@ -199,15 +199,22 @@ namespace Nekoyume.Helper
                 select bonusCoef * rune.Level).Sum();
         }
 
-        public static decimal CalculateRuneLevelBonus(
+        public static int CalculateRuneLevelBonusReward(
             AllRuneState allRuneState,
             RuneListSheet runeListSheet,
+            RuneLevelBonusSheet runeLevelBonusSheet,
             (int id, int level) editRune)
         {
-            return (from rune in allRuneState.Runes.Values
+            decimal bonusLevel = (from rune in allRuneState.Runes.Values
                 let bonusCoef = runeListSheet[rune.RuneId].BonusCoef
                 let runeLevel = rune.RuneId == editRune.id ? editRune.level : rune.Level
                 select bonusCoef * runeLevel).Sum();
+
+            bonusLevel /= 10000m;
+            var bonusRow = runeLevelBonusSheet.Values
+                .OrderByDescending(row => row.RuneLevel)
+                .FirstOrDefault(row => row.RuneLevel <= bonusLevel);
+            return bonusRow?.Bonus * (int)bonusLevel ?? 0;
         }
     }
 }

@@ -36,28 +36,27 @@ namespace Nekoyume.UI
         private struct RuneLevelBonus
         {
             public TextMeshProUGUI bonusText;
-            public TextMeshProUGUI rewardText;
+            public RuneLevelBonusDiff reward;
             public Button infoButton;
         }
 
         [Serializable]
         private struct RuneLevelBonusDiff
         {
-            public GameObject levelBonusArrow;
-            public TextMeshProUGUI currentLevelBonusText;
-            public TextMeshProUGUI nextLevelBonusText;
+            public GameObject arrow;
+            public TextMeshProUGUI currentText;
+            public TextMeshProUGUI nextText;
 
             private int _runeId;
             private int _startLevel;
 
-            public void Set(decimal currentLevelBonus, bool canEnhancement, int runeId, int startLevel)
+            public void Set(bool canEnhancement, int runeId, int startLevel)
             {
                 _runeId = runeId;
                 _startLevel = startLevel;
 
-                levelBonusArrow.SetActive(canEnhancement);
-                nextLevelBonusText.gameObject.SetActive(canEnhancement);
-                currentLevelBonusText.text = $"{currentLevelBonus / 10000m:0.####}";
+                arrow.SetActive(canEnhancement);
+                nextText.gameObject.SetActive(canEnhancement);
             }
 
             public void UpdateTryCount(int tryCount)
@@ -68,12 +67,13 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                var nextBonus = RuneFrontHelper.CalculateRuneLevelBonus(
+                var nextReward = RuneFrontHelper.CalculateRuneLevelBonusReward(
                     allRuneState,
                     Game.Game.instance.TableSheets.RuneListSheet,
+                    Game.Game.instance.TableSheets.RuneLevelBonusSheet,
                     (_runeId, _startLevel + tryCount));
 
-                nextLevelBonusText.text = $"{nextBonus / 10000m:0.####}";
+                nextText.text = $"{nextReward / 100m:0.####}%";
             }
         }
 
@@ -82,9 +82,6 @@ namespace Nekoyume.UI
 
         [SerializeField] [Header("LeftArea")]
         private RuneLevelBonus runeLevelBonus;
-
-        [SerializeField]
-        private RuneLevelBonusDiff runeLevelBonusDiff;
 
         [SerializeField]
         private RuneStoneEnhancementInventoryScroll scroll;
@@ -199,7 +196,7 @@ namespace Nekoyume.UI
                 _costItems[RuneCostType.Ncg].UpdateCount(x);
                 _costItems[RuneCostType.Crystal].UpdateCount(x);
                 runeOptionView.UpdateTryCount(x);
-                runeLevelBonusDiff.UpdateTryCount(x);
+                runeLevelBonus.reward.UpdateTryCount(x);
             }).AddTo(gameObject);
         }
 
@@ -280,14 +277,16 @@ namespace Nekoyume.UI
 
         private void SetRuneLevelBonus()
         {
-            _runeLevelBonus = RuneFrontHelper.CalculateRuneLevelBonus(
+            var bonus = RuneFrontHelper.CalculateRuneLevelBonus(
                 States.Instance.AllRuneState,
                 Game.Game.instance.TableSheets.RuneListSheet);
             var reward = RuneFrontHelper.CalculateRuneLevelBonusReward(
-                _runeLevelBonus,
+                bonus,
                 Game.Game.instance.TableSheets.RuneLevelBonusSheet);
-            runeLevelBonus.bonusText.text = $"{_runeLevelBonus / 10000m:0.####}";
-            runeLevelBonus.rewardText.text = $"{reward / 100m:0.####}%";
+            runeLevelBonus.bonusText.text = $"{bonus / 10000m:0.####}";
+            runeLevelBonus.reward.currentText.text = $"{reward / 100m:0.####}%";
+
+            _runeLevelBonus = bonus;
         }
 
         private void Enhancement()
@@ -369,8 +368,7 @@ namespace Nekoyume.UI
             levelBonusCoef.text = $"{item.Row.BonusCoef / 10000m:0.####}";
 
             runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);
-            runeLevelBonusDiff.Set(
-                _runeLevelBonus,
+            runeLevelBonus.reward.Set(
                 item.Level > 0 && item.Level < item.CostRow.Cost.Count,
                 _selectedRuneItem.Row.Id, _selectedRuneItem.Level);
         }
