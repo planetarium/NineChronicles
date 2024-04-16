@@ -1919,6 +1919,7 @@ namespace Nekoyume.Blockchain
                                     newAvatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                                Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
                             }
                             catch (Exception e)
                             {
