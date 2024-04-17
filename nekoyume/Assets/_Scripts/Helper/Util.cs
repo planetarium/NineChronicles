@@ -583,7 +583,8 @@ namespace Nekoyume.Helper
                 var rawData = await DownloadTextureRaw(url);
                 if (rawData == null)
                 {
-                    throw new Exception($"DownloadTextureRaw({url}) is null.");
+                    NcDebug.LogError($"[DownloadTexture] DownloadTextureRaw({url}) is null.");
+                    return null;
                 }
 
                 var result = CreateSprite(rawData);
@@ -592,11 +593,6 @@ namespace Nekoyume.Helper
             }
             catch (Exception e)
             {
-                if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                {
-                    return cachedTexture;
-                }
-
                 NcDebug.LogError($"[DownloadTexture] {url}\n{e}");
                 return null;
             }
