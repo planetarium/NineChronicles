@@ -572,34 +572,33 @@ namespace Nekoyume.Helper
                 CachedDownloadTextures.Add(url, result);
                 return result;
             }
-            else
+
+            if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+            {
+                return cachedTexture;
+            }
+
+            try
+            {
+                var rawData = await DownloadTextureRaw(url);
+                if (rawData == null)
+                {
+                    throw new Exception($"DownloadTextureRaw({url}) is null.");
+                }
+
+                var result = CreateSprite(rawData);
+                CachedDownloadTextures.Add(url, result);
+                return result;
+            }
+            catch (Exception e)
             {
                 if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
                 {
                     return cachedTexture;
                 }
 
-                try
-                {
-                    var rawData = await DownloadTextureRaw(url);
-                    if (rawData == null)
-                    {
-                        throw new Exception($"DownloadTextureRaw({url}) is null.");
-                    }
-
-                    var result = CreateSprite(rawData);
-                    CachedDownloadTextures.Add(url, result);
-                    return result;
-                }
-                catch
-                {
-                    if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                    {
-                        return cachedTexture;
-                    }
-                    NcDebug.LogError($"[DownloadTexture] {url}");
-                    return null;
-                }
+                NcDebug.LogError($"[DownloadTexture] {url}\n{e}");
+                return null;
             }
         }
 
