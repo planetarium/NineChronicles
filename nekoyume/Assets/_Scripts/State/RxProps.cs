@@ -81,31 +81,8 @@ namespace Nekoyume.State
                 UniTask.RunOnThreadPool(States.Instance.InitAvatarBalancesAsync).ToObservable().ObserveOnMainThread().ToUniTask(),
                 UniTask.Run(async () =>
                 {
-                    AllRuneState allRuneState;
-
-                    var avatarAddress = States.Instance.CurrentAvatarState.address;
-                    var allRuneStateValue = await Game.Game.instance.Agent.GetStateAsync(
-                        Addresses.RuneState, avatarAddress);
-                    if (allRuneStateValue is List allRuneStateSerialized)
-                    {
-                        allRuneState = new AllRuneState(allRuneStateSerialized);
-                    }
-                    else
-                    {
-                        allRuneState = new AllRuneState();
-
-                        var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-                        var runeAddresses = runeListSheet.Values.Select(row =>
-                            RuneState.DeriveAddress(avatarAddress, row.Id));
-                        var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(
-                            ReservedAddresses.LegacyAccount, runeAddresses);
-                        foreach (var runeSerialized in stateBulk.Values.OfType<List>())
-                        {
-                            allRuneState.AddRuneState(new RuneState(runeSerialized));
-                        }
-                    }
-
-                    States.Instance.SetAllRuneState(allRuneState);
+                    States.Instance.SetAllRuneState(
+                        await States.Instance.CurrentAvatarState.GetAllRuneStateAsync());
                 }),
                 States.Instance.InitRuneSlotStates(),
                 States.Instance.InitItemSlotStates());
