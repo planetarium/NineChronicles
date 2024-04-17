@@ -62,7 +62,6 @@ namespace BalanceTool.Runtime.Util
                 agentAddr.Value,
                 0,
                 tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
                 avatarAddr.Derive("ranking_map"));
             agentState.avatarAddresses.Add(avatarIndex, avatarAddr);
 

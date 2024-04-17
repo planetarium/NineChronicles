@@ -24,7 +24,6 @@ namespace Tests.EditMode.State.Modifiers
                 new PrivateKey().Address,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
                 new PrivateKey().Address);
         }
 
