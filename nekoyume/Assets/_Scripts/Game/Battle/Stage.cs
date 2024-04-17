@@ -48,7 +48,7 @@ using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game.Battle
 {
-    public partial class Stage : MonoBehaviour, IStage
+    public class Stage : MonoBehaviour, IStage
     {
         public const float DefaultAnimationTimeScaleWeight = 1f;
         public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
@@ -189,6 +189,7 @@ namespace Nekoyume.Game.Battle
                 }
 
                 _battleLog = log;
+
                 PlayStage(_battleLog);
             }
             else
@@ -383,12 +384,6 @@ namespace Nekoyume.Game.Battle
             yield return StartCoroutine(CoStageEnter(log));
 
             StartCoroutine(AccelerateSpeed());
-
-
-            log.Prepend(new SkipStageEvent(null));
-
-            log.Prepend(new SkipStageEvent(null));
-
 
             foreach (var e in log)
             {
@@ -1246,19 +1241,13 @@ namespace Nekoyume.Game.Battle
             var character = GetCharacter(model);
             _playerPosition = SelectedPlayer.transform.position;
             character.Dead();
-        }
+         }
 
         public IEnumerator CoCustomEvent(CharacterBase character, EventBase eventBase)
         {
             if(eventBase is SkipStageEvent stageEvent)
             {
-                var monsterIds = new List<int>
-                {
-                    202002,
-                    203005,
-                    205000,
-                };
-                yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnSkipStage(monsterIds));
+                yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnSkipStage(stageEvent.MonsterIds));
             }
 
             if (eventBase is Tick tick)

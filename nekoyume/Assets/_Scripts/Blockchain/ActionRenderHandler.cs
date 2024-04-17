@@ -1992,6 +1992,13 @@ namespace Nekoyume.Blockchain
                 AirbridgeUnity.TrackEvent(evt);
             }
 
+            var test = new List<Model.BattleStatus.EventBase>
+            {
+                new SkipStageEvent(null)
+            };
+            test.AddRange(log.events);
+            log.events = test;
+
             BattleRenderer.Instance.PrepareStage(log);
         }
 

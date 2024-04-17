@@ -9,23 +9,28 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume.Game.Battle
 {
-    public partial class Stage
+    class SkipStageEvent : EventBase
     {
-        class SkipStageEvent : EventBase
+        public List<int> MonsterIds = new List<int>
         {
-            public SkipStageEvent(CharacterBase character) : base(character)
-            {
-            }
+            202002,
+            203005,
+            205000,
+        };
 
-            public override IEnumerator CoExecute(IStage stage)
-            {
-                return stage.CoCustomEvent(Character, this);
-            }
+        public SkipStageEvent(CharacterBase character) : base(character)
+        {
+        }
+
+        public override IEnumerator CoExecute(IStage stage)
+        {
+            return stage.CoCustomEvent(Character, this);
         }
     }
 }

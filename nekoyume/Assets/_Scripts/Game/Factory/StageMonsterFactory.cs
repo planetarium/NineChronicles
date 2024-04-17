@@ -60,7 +60,7 @@ namespace Nekoyume.Game.Factory
                 return enemy.gameObject;
             }
 
-            var effect         = objectPool.Get<BattleSummonVFX>();
+            var effect = objectPool.Get<BattleSummonVFX>();
             var effectPosition = new Vector2(position.x, position.y + 0.55f);
             effect.gameObject.transform.position = effectPosition;
             effect.Play();

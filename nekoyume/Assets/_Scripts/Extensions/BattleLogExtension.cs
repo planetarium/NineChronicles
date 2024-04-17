@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume
@@ -10,15 +11,22 @@ namespace Nekoyume
             var monsterIds = new HashSet<int>();
             foreach (var currentEvent in battleLog)
             {
-                if (currentEvent is not SpawnWave spawnWave)
+                if (currentEvent is SpawnWave spawnWave)
                 {
-                    continue;
+                    foreach (var enemy in spawnWave.Enemies)
+                    {
+                        monsterIds.Add(enemy.CharacterId);
+                    }
                 }
 
-                foreach (var enemy in spawnWave.Enemies)
+                if(currentEvent is SkipStageEvent skipStageEvent)
                 {
-                    monsterIds.Add(enemy.CharacterId);
+                    foreach (var enemy in skipStageEvent.MonsterIds)
+                    {
+                        monsterIds.Add(enemy);
+                    }
                 }
+
             }
 
             return monsterIds;

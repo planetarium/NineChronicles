@@ -35,19 +35,22 @@ namespace Nekoyume.Game.Character
 
         public void Set(int characterId, Player target)
         {
-            var spineResourcePath = $"Character/Monster/{characterId}";
-
-            if (!(Animator.Target is null))
+            var key = characterId.ToString();
+            if (Animator.Target != null)
             {
-                var animatorTargetName = spineResourcePath.Split('/').Last();
-                if (Animator.Target.name.Contains(animatorTargetName))
+                if (Animator.Target.name.Contains(key))
                     return;
 
                 Animator.DestroyTarget();
             }
 
-            var origin = Resources.Load<GameObject>(spineResourcePath);
-            var go = Instantiate(origin, gameObject.transform);
+            var go = ResourceManager.Instance.Instantiate(key, gameObject.transform);
+            if (go == null)
+            {
+                NcDebug.LogError($"Missing Spine Resource: {characterId}");
+                return;
+            }
+
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
             if (characterId == 205007)
