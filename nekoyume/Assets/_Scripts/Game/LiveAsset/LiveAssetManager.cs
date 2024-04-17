@@ -9,8 +9,8 @@ using Nekoyume.Pattern;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UnityEngine;
-using UnityEngine.Networking;
 using System.Collections;
+using System.Threading;
 using Nekoyume.L10n;
 
 namespace Nekoyume.Game.LiveAsset
@@ -19,8 +19,14 @@ namespace Nekoyume.Game.LiveAsset
 
     public class LiveAssetManager : MonoSingleton<LiveAssetManager>
     {
+        private enum InitializingState
+        {
+            NeedInitialize,
+            Initializing,
+            Initialized,
+        }
+
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
-        private static readonly Vector2 Pivot = new(0.5f, 0.5f);
         private const string CLOEndpointPrefix = "https://assets.nine-chronicles.com/live-assets/Json/CloForAppVersion/clo-app-ver-";
         private const string KoreanImagePostfix = "_KR";
         private const string JapaneseImagePostfix = "_JP";
@@ -32,6 +38,7 @@ namespace Nekoyume.Game.LiveAsset
 
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
+        private InitializingState _state = InitializingState.NeedInitialize;
         private Notices _notices;
         private LiveAssetEndpointScriptableObject _endpoint;
 
@@ -41,7 +48,7 @@ namespace Nekoyume.Game.LiveAsset
         public bool HasUnreadNotice =>
             _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
 
-        public bool HasUnread => HasUnreadEvent || HasUnreadNotice;
+        public bool HasUnread => IsInitialized && (HasUnreadEvent || HasUnreadNotice);
 
         public IObservable<bool> ObservableHasUnreadEvent => _alreadyReadNotices
             .ObserveAdd()
@@ -62,11 +69,24 @@ namespace Nekoyume.Game.LiveAsset
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
-        public bool IsInitialized { get; private set; }
+        public bool IsInitialized => _state == InitializingState.Initialized;
 
         public void InitializeData()
         {
             _endpoint = Resources.Load<LiveAssetEndpointScriptableObject>("ScriptableObject/LiveAssetEndpoint");
+            StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
+            InitializeStakingResource().Forget();
+            InitializeEvent();
+        }
+
+        public void InitializeEvent()
+        {
+            if (_state != InitializingState.NeedInitialize)
+            {
+                return;
+            }
+
+            _state = InitializingState.Initializing;
             var noticeUrl = L10nManager.CurrentLanguage switch
             {
                 LanguageType.Korean => Platform.IsMobilePlatform()
@@ -77,10 +97,7 @@ namespace Nekoyume.Game.LiveAsset
             };
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
             StartCoroutine(RequestManager.instance.GetJson(noticeUrl, SetNotices));
-            StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
-            InitializeStakingResource().Forget();
         }
-
         public IEnumerator InitializeApplicationCLO()
         {
             var osKey = string.Empty;
@@ -185,10 +202,25 @@ namespace Nekoyume.Game.LiveAsset
                 tasks.Add(popupTask);
             }
 
-            await UniTask.WaitUntil(() =>
-                tasks.TrueForAll(task => task.Status == UniTaskStatus.Succeeded) &&
-                _notices is not null);
-            IsInitialized = true;
+            var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            try
+            {
+                await UniTask.WaitUntil(() =>
+                        tasks.TrueForAll(task =>
+                            task.Status == UniTaskStatus.Succeeded) && _notices is not null,
+                    cancellationToken: cancellation.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                if (e.CancellationToken == cancellation.Token)
+                {
+                    _state = InitializingState.NeedInitialize;
+                    NcDebug.Log($"[{nameof(LiveAssetManager)}] NoticeData making failed by timeout.");
+                    return;
+                }
+            }
+
+            _state = InitializingState.Initialized;
 
             if (PlayerPrefs.HasKey(AlreadyReadNoticeKey))
             {
@@ -207,6 +239,7 @@ namespace Nekoyume.Game.LiveAsset
 
         private async UniTask<Sprite> GetNoticeTexture(string textureType, string imageName)
         {
+            var retryCount = 3;
             var postfix = L10nManager.CurrentLanguage switch
             {
                 LanguageType.Korean => Platform.IsMobilePlatform()
@@ -215,8 +248,22 @@ namespace Nekoyume.Game.LiveAsset
                 LanguageType.Japanese => JapaneseImagePostfix,
                 _ => string.Empty
             };
-            return await Helper.Util.DownloadTexture(
-                $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
+            var uri = $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png";
+            Sprite res = null;
+            // 최대 3번까지 이미지를 다시 받길 시도한다.
+            while (retryCount-- > 0)
+            {
+                res = await Helper.Util.DownloadTexture(uri);
+                if (res != null)
+                {
+                    return res;
+                }
+
+                // 다운로드 실패시 1초 대기 후 재시도
+                await UniTask.Delay(1000);
+            }
+
+            return res;
         }
 
         private async UniTaskVoid InitializeStakingResource()
