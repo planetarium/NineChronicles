@@ -101,7 +101,8 @@ namespace Nekoyume.UI
         public void Show(
             RuneItem runeItem,
             int tryCount,
-            IRandom random)
+            IRandom random,
+            (int previousCp, int currentCp) cp)
         {
             base.Show(true);
 
@@ -142,6 +143,8 @@ namespace Nekoyume.UI
             speechBubble.container.SetActive(true);
 
             animator.Play(HashToSuccess);
+            var (previousCp, currentCp) = cp;
+            Find<CPScreen>().Show(previousCp, currentCp);
         }
 
         private void UpdateInformation(RuneItem item, int resultLevel)

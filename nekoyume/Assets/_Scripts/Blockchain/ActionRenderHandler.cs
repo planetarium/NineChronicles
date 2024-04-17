@@ -2999,11 +2999,13 @@ namespace Nekoyume.Blockchain
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
         }
 
-        private (ActionEvaluation<RuneEnhancement>, FungibleAssetValue runeStone) PrepareRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
+        private (ActionEvaluation<RuneEnhancement>, FungibleAssetValue runeStone, AllRuneState previousState)
+            PrepareRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
         {
             var action = eval.Action;
             var runeRow = TableSheets.Instance.RuneSheet[action.RuneId];
 
+            var previousState = States.Instance.AllRuneState;
             var value = StateGetter.GetState(
                 eval.OutputState,
                 Addresses.RuneState,
@@ -3020,12 +3022,15 @@ namespace Nekoyume.Blockchain
                 action.AvatarAddress,
                 Currencies.GetRune(runeRow.Ticker));
             States.Instance.SetCurrentAvatarBalance(runeStone);
-            return (eval, runeStone);
+            return (eval, runeStone, previousState);
         }
 
-        private void ResponseRuneEnhancement((ActionEvaluation<RuneEnhancement> eval, FungibleAssetValue runeStone) prepared)
+        private void ResponseRuneEnhancement((ActionEvaluation<RuneEnhancement> eval, FungibleAssetValue runeStone, AllRuneState previousState) prepared)
         {
-            Widget.Find<Rune>().OnActionRender(new LocalRandom(prepared.eval.RandomSeed), prepared.runeStone);
+            Widget.Find<Rune>().OnActionRender(
+                new LocalRandom(prepared.eval.RandomSeed),
+                prepared.runeStone,
+                Util.GetCpChanged(prepared.previousState, States.Instance.AllRuneState));
         }
 
         private ActionEvaluation<UnlockRuneSlot> PreResponseUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)

@@ -216,12 +216,16 @@ namespace Nekoyume.UI
             Show(ignoreShowAnimation);
         }
 
-        public void OnActionRender(IRandom random, FungibleAssetValue fav)
+        public void OnActionRender(
+            IRandom random,
+            FungibleAssetValue fav,
+            (int previousCp, int currentCp) cp)
         {
             Find<RuneEnhancementResultScreen>().Show(
                 _selectedRuneItem,
                 TryCount.Value,
-                random);
+                random,
+                cp);
 
             States.Instance.UpdateRuneSlotState();
             _selectedRuneItem.RuneStone = fav;
