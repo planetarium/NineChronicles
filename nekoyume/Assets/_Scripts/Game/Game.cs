@@ -334,6 +334,9 @@ namespace Nekoyume.Game
                     : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
                 .ToYieldInstruction();
 #endif
+
+            yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
+
             NcDebug.Log("[Game] Start()... L10nManager initialized");
 
 #if RUN_ON_MOBILE

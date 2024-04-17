@@ -572,29 +572,29 @@ namespace Nekoyume.Helper
                 CachedDownloadTextures.Add(url, result);
                 return result;
             }
-            else
-            {
-                if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                {
-                    return cachedTexture;
-                }
 
-                try
+            if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+            {
+                return cachedTexture;
+            }
+
+            try
+            {
+                var rawData = await DownloadTextureRaw(url);
+                if (rawData == null)
                 {
-                    var rawdata = await DownloadTextureRaw(url);
-                    var result = CreateSprite(rawdata);
-                    CachedDownloadTextures.Add(url, result);
-                    return result;
-                }
-                catch
-                {
-                    if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                    {
-                        return cachedTexture;
-                    }
-                    NcDebug.LogError($"[DownloadTexture] {url}");
+                    NcDebug.LogError($"[DownloadTexture] DownloadTextureRaw({url}) is null.");
                     return null;
                 }
+
+                var result = CreateSprite(rawData);
+                CachedDownloadTextures.Add(url, result);
+                return result;
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[DownloadTexture] {url}\n{e}");
+                return null;
             }
         }
 
@@ -655,6 +655,20 @@ namespace Nekoyume.Helper
             {
                 NcDebug.LogWarning("[SetActiveSafe] fail");
             }
+        }
+
+        public static string ToCurrencyString(this long value)
+        {
+            string[] suffixes = { "", "K", "M", "B" };
+
+            var suffixIndex = 0;
+            while (value >= 1000 && suffixIndex < suffixes.Length)
+            {
+                value /= 1000;
+                suffixIndex++;
+            }
+
+            return string.Format("{0:N2}", value).TrimEnd('0').TrimEnd('.') + suffixes[suffixIndex];
         }
     }
 }

@@ -71,7 +71,7 @@ namespace Nekoyume.UI
         public class RequiredNormalItemIcon
         {
             public ArenaType arenaType;
-            public Sprite sprite;
+            public Sprite    sprite;
         }
 
         [SerializeField]
@@ -85,6 +85,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI levelText;
+
+        [SerializeField]
+        private TextMeshProUGUI expText;
 
         [SerializeField]
         private RequiredItemRecipeView requiredItemRecipeView;
@@ -153,7 +156,7 @@ namespace Nekoyume.UI
             for (int i = 0; i < normalRecipeTabGroup.recipeTabs.Count; ++i)
             {
                 var innerIndex = i;
-                var tab = normalRecipeTabGroup.recipeTabs[i];
+                var tab        = normalRecipeTabGroup.recipeTabs[i];
                 tab.toggle.onValueChanged.AddListener(value =>
                 {
                     if (!value) return;
@@ -165,7 +168,7 @@ namespace Nekoyume.UI
             for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; ++i)
             {
                 var innerIndex = i;
-                var tab = legendaryRecipeTabGroup.recipeTabs[i];
+                var tab        = legendaryRecipeTabGroup.recipeTabs[i];
                 tab.toggle.onValueChanged.AddListener(value =>
                 {
                     if (!value) return;
@@ -185,7 +188,8 @@ namespace Nekoyume.UI
                     {
                         if (!CheckSubmittable(out var errorMessage, out var slotIndex))
                         {
-                            OneLineSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
+                            OneLineSystem.Push(MailType.System, errorMessage,
+                                               NotificationCell.NotificationType.Alert);
                         }
                     })
                     .AddTo(gameObject);
@@ -231,11 +235,11 @@ namespace Nekoyume.UI
 
         public void SetData(SheetRow<int> recipeRow, List<int> subRecipeIds)
         {
-            _recipeRow = recipeRow;
+            _recipeRow    = recipeRow;
             _subrecipeIds = subRecipeIds;
 
-            string title = null;
-            var isEquipment = false;
+            string title       = null;
+            var    isEquipment = false;
             switch (recipeRow)
             {
                 case EquipmentItemRecipeSheet.Row equipmentRow:
@@ -249,9 +253,10 @@ namespace Nekoyume.UI
                         var mainStatText = mainStatTexts[i];
                         if (i == 0)
                         {
-                            var stat = resultItem.GetUniqueStat();
+                            var stat          = resultItem.GetUniqueStat();
                             var statValueText = stat.StatType.ValueToString(stat.TotalValueAsLong);
-                            mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
+                            mainStatText.text =
+                                string.Format(StatTextFormat, stat.StatType, statValueText);
                             mainStatText.gameObject.SetActive(true);
                         }
                         else if (i == 1 && Util.IsEventEquipmentRecipe(equipmentRow.Id))
@@ -281,7 +286,8 @@ namespace Nekoyume.UI
                         if (!isNormalRecipe)
                         {
                             var tabNames = DefaultTabNames;
-                            var tab = Craft.SubRecipeTabs.FirstOrDefault(tab => tab.RecipeId == _recipeRow.Key);
+                            var tab = Craft.SubRecipeTabs.FirstOrDefault(
+                                tab => tab.RecipeId == _recipeRow.Key);
                             if (tab != null)
                             {
                                 tabNames = tab.TabNames;
@@ -295,17 +301,20 @@ namespace Nekoyume.UI
                                 if (i < tabNames.Length)
                                 {
                                     recipeTab.disableText.text = tabNames[i];
-                                    recipeTab.enableText.text = tabNames[i];
+                                    recipeTab.enableText.text  = tabNames[i];
                                 }
                             }
                         }
                         else
                         {
-                            var craftable = CheckCraftableSubRecipe(equipmentRow, PremiumRecipeIndex);
+                            var craftable =
+                                CheckCraftableSubRecipe(equipmentRow, PremiumRecipeIndex);
                             premiumCraftableIcon.gameObject.SetActive(craftable);
                         }
 
-                        var recipeGroup = isNormalRecipe ? normalRecipeTabGroup : legendaryRecipeTabGroup;
+                        var recipeGroup = isNormalRecipe
+                            ? normalRecipeTabGroup
+                            : legendaryRecipeTabGroup;
                         if (recipeGroup.recipeTabs.Any())
                         {
                             var selectedRecipeTab = recipeGroup.recipeTabs[0];
@@ -340,9 +349,10 @@ namespace Nekoyume.UI
                         var mainStatText = mainStatTexts[i];
                         if (i < statsCount)
                         {
-                            var stat = resultItem.Stats[i];
+                            var stat          = resultItem.Stats[i];
                             var statValueText = stat.StatType.ValueToString(stat.TotalValueAsLong);
-                            mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
+                            mainStatText.text =
+                                string.Format(StatTextFormat, stat.StatType, statValueText);
                             mainStatText.gameObject.SetActive(true);
                             continue;
                         }
@@ -355,10 +365,10 @@ namespace Nekoyume.UI
                     UpdateCollectionCount(resultItem.Id);
                     break;
                 }
-                case EventMaterialItemRecipeSheet.Row materialRow :
+                case EventMaterialItemRecipeSheet.Row materialRow:
                 {
                     var resultItem = materialRow.GetResultMaterialItemRow();
-                    title = resultItem.GetLocalizedName(false, false);
+                    title                      = resultItem.GetLocalizedName(false, false);
                     mainStatTexts.First().text = resultItem.GetLocalizedDescription();
                     recipeCell.Show(materialRow, false);
                     ChangeTab(0);
@@ -390,16 +400,19 @@ namespace Nekoyume.UI
 
         public void UpdateCollectionCount(int itemId)
         {
-            if(collectionCount == null)
+            if (collectionCount == null)
             {
                 return;
             }
 
             var collectionState = Game.Game.instance.States.CollectionState;
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
-            var collectionsByRecipeItem = collectionSheet.Values.Where(row => row.Materials.Any(material => material.ItemId == itemId)).ToList();
+            var collectionsByRecipeItem = collectionSheet.Values
+                .Where(row => row.Materials.Any(material => material.ItemId == itemId)).ToList();
             var maxCount = collectionsByRecipeItem.Count;
-            var count = collectionState.Ids.Count(activated => collectionsByRecipeItem.Any(row => row.Id == activated));
+            var count = collectionState.Ids.Count(activated =>
+                                                      collectionsByRecipeItem.Any(
+                                                          row => row.Id == activated));
             collectionCount.text = $"{count}/{maxCount}";
         }
 
@@ -425,181 +438,220 @@ namespace Nekoyume.UI
             normalRecipeTabGroup.recipeTabs[1].toggle.isOn = true;
         }
 
+        private RecipeInfo GetEquipmentRecipeInfo(EquipmentItemRecipeSheet.Row equipmentRow,
+            int index, out long blockIndex, out long maxBlockIndex)
+        {
+            var recipeInfo = new RecipeInfo();
+            var materials  = new Dictionary<int, int>();
+            maxBlockIndex = 0;
+
+            var isUnlocked = Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key)
+                             || equipmentRow.CRYSTAL == 0;
+            var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
+                equipmentRow.MaterialId,
+                equipmentRow.MaterialCount);
+            blockIndex = equipmentRow.RequiredBlockIndex;
+
+            recipeInfo.CostNCG  = equipmentRow.RequiredGold;
+            recipeInfo.CostAP   = equipmentRow.RequiredActionPoint;
+            recipeInfo.RecipeId = equipmentRow.Id;
+
+            // Add base material
+            materials.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
+
+            if (_subrecipeIds != null && _subrecipeIds.Any())
+            {
+                recipeInfo.SubRecipeId = _subrecipeIds[index];
+                var subRecipe = TableSheets.Instance
+                    .EquipmentItemSubRecipeSheetV2[recipeInfo.SubRecipeId.Value];
+                var options = subRecipe.Options;
+
+                blockIndex    += subRecipe.RequiredBlockIndex;
+                maxBlockIndex =  blockIndex + options.Sum(o => o.RequiredBlockIndex);
+
+                var isEventEquipment = Util.IsEventEquipmentRecipe(recipeInfo.RecipeId);
+                if (!isEventEquipment)
+                {
+                    var isPremium = index == PremiumRecipeIndex &&
+                                    equipmentRow.GetResultEquipmentItemRow().Grade < 5;
+
+                    Array.ForEach(bgHsvModifiers, modifier => modifier.enabled = isPremium);
+                    optionView.SetOptions(options, isPremium);
+
+                    var isMimisbrunnrSubRecipe = index == MimisbrunnrRecipeIndex &&
+                                                 (subRecipe.IsMimisbrunnrSubRecipe ?? true);
+                    var hammerPointStates = States.Instance.HammerPointStates;
+                    var showHammerPoint = hammerPointStates is not null &&
+                                          hammerPointStates.TryGetValue(
+                                              recipeInfo.RecipeId, out _hammerPointState) &&
+                                          !isMimisbrunnrSubRecipe;
+
+                    hammerPointView.parentObject.SetActive(showHammerPoint);
+                    if (showHammerPoint)
+                    {
+                        var max = TableSheets.Instance.CrystalHammerPointSheet[recipeInfo.RecipeId]
+                            .MaxPoint;
+                        var increasePoint = subRecipe.RewardHammerPoint ?? 1;
+                        var increasedPoint =
+                            Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
+                        _canSuperCraft                    = _hammerPointState.HammerPoint == max;
+                        hammerPointView.nowPoint.maxValue = max;
+                        hammerPointView.hammerPointText.text =
+                            $"{_hammerPointState.HammerPoint}/{max}";
+                        hammerPointView.nowPoint.value = _hammerPointState.HammerPoint;
+                        hammerPointView.nowPointImage.fillAmount =
+                            _hammerPointState.HammerPoint / (float)max;
+                        hammerPointView.increasePointImage.fillAmount = increasedPoint / (float)max;
+                        hammerPointView.notEnoughHammerPointObject.SetActive(!_canSuperCraft);
+                        hammerPointView.enoughHammerPointObject.SetActive(_canSuperCraft);
+                    }
+
+                    var sheet = TableSheets.Instance.ItemRequirementSheet;
+                    if (!sheet.TryGetValue(equipmentRow.ResultEquipmentId, out var row))
+                    {
+                        levelText.enabled = false;
+                    }
+                    else
+                    {
+                        var level = isMimisbrunnrSubRecipe ? row.MimisLevel : row.Level;
+                        levelText.text    = $"Lv {level}";
+                        levelText.enabled = true;
+                    }
+
+                    requiredItemRecipeView.SetData(
+                        baseMaterialInfo,
+                        subRecipe.Materials,
+                        true,
+                        !isUnlocked);
+                }
+                else
+                {
+                    var list = new List<EquipmentItemSubRecipeSheet.MaterialInfo>
+                        { baseMaterialInfo };
+                    list.AddRange(subRecipe.Materials);
+                    requiredItemRecipeView.SetData(list, true);
+                }
+
+                recipeInfo.CostNCG += subRecipe.RequiredGold;
+
+                foreach (var material in subRecipe.Materials)
+                {
+                    materials.Add(material.Id, material.Count);
+                }
+            }
+            else
+            {
+                requiredItemRecipeView.SetData(baseMaterialInfo, null, true, !isUnlocked);
+            }
+
+            recipeInfo.Materials         = materials;
+            recipeInfo.ReplacedMaterials = GetReplacedMaterials(materials);
+
+            return recipeInfo;
+        }
+
+        private RecipeInfo GetConsumableRecipeInfo(ConsumableItemRecipeSheet.Row consumableRow, out long blockIndex)
+        {
+            var recipeInfo = new RecipeInfo();
+            var materials  = new Dictionary<int, int>();
+
+            blockIndex = consumableRow.RequiredBlockIndex;
+            requiredItemRecipeView.SetData(consumableRow.Materials, true);
+            recipeInfo.CostNCG  = (BigInteger)consumableRow.RequiredGold;
+            recipeInfo.CostAP   = consumableRow.RequiredActionPoint;
+            recipeInfo.RecipeId = consumableRow.Id;
+
+            var sheet = TableSheets.Instance.ItemRequirementSheet;
+            if (!sheet.TryGetValue(consumableRow.ResultConsumableItemId, out var row))
+            {
+                levelText.enabled = false;
+            }
+            else
+            {
+                levelText.text    = $"Lv {row.Level}";
+                levelText.enabled = true;
+            }
+
+            foreach (var material in consumableRow.Materials)
+            {
+                materials.Add(material.Id, material.Count);
+            }
+
+            recipeInfo.Materials         = materials;
+            recipeInfo.ReplacedMaterials = GetReplacedMaterials(materials);
+
+            return recipeInfo;
+        }
+
+        private RecipeInfo GetEventMaterialRecipeInfo(EventMaterialItemRecipeSheet.Row eventMaterialRow,
+            out long blockIndex)
+        {
+            var recipeInfo = new RecipeInfo();
+            var materials  = new Dictionary<int, int>();
+
+            blockIndex = 1;
+            requiredItemRecipeView.SetData(
+                eventMaterialRow.RequiredMaterialsId,
+                eventMaterialRow.RequiredMaterialsCount);
+            recipeInfo.RecipeId = eventMaterialRow.Id;
+
+            var defaultItemSprite = requiredNormalItemIcons.First().sprite;
+            if (TableSheets.Instance.ArenaSheet.TryGetArenaType(
+                    eventMaterialRow.RequiredMaterialsId.First(), out var arenaType))
+            {
+                var itemSprite = requiredNormalItemIcons
+                    .FirstOrDefault(icon => icon.arenaType == arenaType)?.sprite;
+                requiredNormalItemImage.overrideSprite = itemSprite ? itemSprite : defaultItemSprite;
+            }
+            else
+            {
+                requiredNormalItemImage.overrideSprite = defaultItemSprite;
+            }
+
+            recipeInfo.Materials         = materials;
+            recipeInfo.ReplacedMaterials = GetReplacedMaterials(materials);
+
+            return recipeInfo;
+        }
+
+        private void SetExpText(EquipmentItemRecipeSheet.Row equipmentRow)
+        {
+            var equipment = equipmentRow.GetResultEquipmentItemRow();
+
+            if (equipment.Exp == null)
+            {
+                expText.text = string.Empty;
+                return;
+            }
+
+            var value = equipment.Exp.Value;
+            expText.text = $"EXP {value.ToCurrencyString()}";
+        }
+
         private void UpdateInformation(int index)
         {
             long blockIndex = 0;
             long maxBlockIndex = 0;
-            BigInteger costNCG = 0;
-            int costAP = 0;
-            int recipeId = 0;
-            int? subRecipeId = null;
-            var materialMap = new Dictionary<int, int>();
 
-            var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
-            var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
-            var eventMaterialRow = _recipeRow as EventMaterialItemRecipeSheet.Row;
-            if (equipmentRow != null)
+            switch (_recipeRow)
             {
-                var isUnlocked = Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key)
-                               || equipmentRow.CRYSTAL == 0;
-                var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
-                    equipmentRow.MaterialId,
-                    equipmentRow.MaterialCount);
-                blockIndex = equipmentRow.RequiredBlockIndex;
-                costNCG = equipmentRow.RequiredGold;
-                costAP = equipmentRow.RequiredActionPoint;
-                recipeId = equipmentRow.Id;
+                case EquipmentItemRecipeSheet.Row equipmentRow:
+                    _selectedRecipeInfo = GetEquipmentRecipeInfo(equipmentRow, index, out blockIndex, out maxBlockIndex);
+                    UpdateButtonForEquipment();
+                    SetExpText(equipmentRow);
+                    break;
 
-                // Add base material
-                materialMap.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
+                case ConsumableItemRecipeSheet.Row consumableRow:
+                    _selectedRecipeInfo = GetConsumableRecipeInfo(consumableRow, out blockIndex);
+                    UpdateButtonForConsumable();
+                    break;
 
-                if (_subrecipeIds != null && _subrecipeIds.Any())
-                {
-                    subRecipeId = _subrecipeIds[index];
-                    var subRecipe = TableSheets.Instance
-                        .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
-                    var options = subRecipe.Options;
-
-                    blockIndex += subRecipe.RequiredBlockIndex;
-                    maxBlockIndex = blockIndex + options.Sum(o => o.RequiredBlockIndex);
-
-                    var isEventEquipment = Util.IsEventEquipmentRecipe(recipeId);
-                    if (!isEventEquipment)
-                    {
-                        var isPremium = index == PremiumRecipeIndex &&
-                                        equipmentRow.GetResultEquipmentItemRow().Grade < 5;
-
-                        Array.ForEach(bgHsvModifiers, modifier => modifier.enabled = isPremium);
-                        optionView.SetOptions(options, isPremium);
-
-                        var isMimisbrunnrSubRecipe = index == MimisbrunnrRecipeIndex &&
-                                                     (subRecipe.IsMimisbrunnrSubRecipe ?? true);
-                        var hammerPointStates = States.Instance.HammerPointStates;
-                        var showHammerPoint = hammerPointStates is not null &&
-                                              hammerPointStates.TryGetValue(recipeId, out _hammerPointState) &&
-                                              !isMimisbrunnrSubRecipe;
-
-                        hammerPointView.parentObject.SetActive(showHammerPoint);
-                        if (showHammerPoint)
-                        {
-                            var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
-                            var increasePoint = subRecipe.RewardHammerPoint ?? 1;
-                            var increasedPoint = Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
-                            _canSuperCraft = _hammerPointState.HammerPoint == max;
-                            hammerPointView.nowPoint.maxValue = max;
-                            hammerPointView.hammerPointText.text = $"{_hammerPointState.HammerPoint}/{max}";
-                            hammerPointView.nowPoint.value = _hammerPointState.HammerPoint;
-                            hammerPointView.nowPointImage.fillAmount = _hammerPointState.HammerPoint / (float)max;
-                            hammerPointView.increasePointImage.fillAmount = increasedPoint / (float)max;
-                            hammerPointView.notEnoughHammerPointObject.SetActive(!_canSuperCraft);
-                            hammerPointView.enoughHammerPointObject.SetActive(_canSuperCraft);
-                        }
-
-                        var sheet = TableSheets.Instance.ItemRequirementSheet;
-                        if (!sheet.TryGetValue(equipmentRow.ResultEquipmentId, out var row))
-                        {
-                            levelText.enabled = false;
-                        }
-                        else
-                        {
-                            var level = isMimisbrunnrSubRecipe ? row.MimisLevel : row.Level;
-                            levelText.text = $"Lv {level}";
-                            levelText.enabled = true;
-                        }
-
-                        requiredItemRecipeView.SetData(
-                            baseMaterialInfo,
-                            subRecipe.Materials,
-                            true,
-                            !isUnlocked);
-                    }
-                    else
-                    {
-                        var list = new List<EquipmentItemSubRecipeSheet.MaterialInfo> {baseMaterialInfo};
-                        list.AddRange(subRecipe.Materials);
-                        requiredItemRecipeView.SetData(list, true);
-                    }
-
-                    costNCG += subRecipe.RequiredGold;
-
-                    foreach (var material in subRecipe.Materials)
-                    {
-                        materialMap.Add(material.Id, material.Count);
-                    }
-                }
-                else
-                {
-                    requiredItemRecipeView.SetData(baseMaterialInfo, null, true, !isUnlocked);
-                }
-            }
-            else if (consumableRow != null)
-            {
-                blockIndex = consumableRow.RequiredBlockIndex;
-                requiredItemRecipeView.SetData(consumableRow.Materials, true);
-                costNCG = (BigInteger)consumableRow.RequiredGold;
-                costAP = consumableRow.RequiredActionPoint;
-                recipeId = consumableRow.Id;
-
-                var sheet = TableSheets.Instance.ItemRequirementSheet;
-                if (!sheet.TryGetValue(consumableRow.ResultConsumableItemId, out var row))
-                {
-                    levelText.enabled = false;
-                }
-                else
-                {
-                    levelText.text = $"Lv {row.Level}";
-                    levelText.enabled = true;
-                }
-
-                foreach (var material in consumableRow.Materials)
-                {
-                    materialMap.Add(material.Id, material.Count);
-                }
-            }
-            else if (eventMaterialRow != null)
-            {
-                blockIndex = 1;
-                requiredItemRecipeView.SetData(
-                    eventMaterialRow.RequiredMaterialsId,
-                    eventMaterialRow.RequiredMaterialsCount);
-                recipeId = eventMaterialRow.Id;
-
-                var defaultItemSprite = requiredNormalItemIcons.First().sprite;
-                if (TableSheets.Instance.ArenaSheet.TryGetArenaType(
-                        eventMaterialRow.RequiredMaterialsId.First(), out var arenaType))
-                {
-                    var itemSprite = requiredNormalItemIcons
-                        .FirstOrDefault(icon => icon.arenaType == arenaType)?.sprite;
-                    requiredNormalItemImage.overrideSprite = itemSprite ? itemSprite : defaultItemSprite;
-                }
-                else
-                {
-                    requiredNormalItemImage.overrideSprite = defaultItemSprite;
-                }
+                case EventMaterialItemRecipeSheet.Row eventMaterialRow:
+                    _selectedRecipeInfo = GetEventMaterialRecipeInfo(eventMaterialRow, out blockIndex);
+                    break;
             }
 
-            blockIndexText.text = blockIndex +
-                                  (maxBlockIndex > 0 ? $" ~ {maxBlockIndex}" : string.Empty);
-
-            var recipeInfo = new RecipeInfo
-            {
-                CostNCG = costNCG,
-                CostAP = costAP,
-                RecipeId = recipeId,
-                SubRecipeId = subRecipeId,
-                Materials = materialMap,
-                ReplacedMaterials = GetReplacedMaterials(materialMap),
-            };
-            _selectedRecipeInfo = recipeInfo;
-
-            if (equipmentRow != null)
-            {
-                UpdateButtonForEquipment();
-            }
-            else if (consumableRow != null)
-            {
-                UpdateButtonForConsumable();
-            }
+            blockIndexText.text = $"{blockIndex}{(maxBlockIndex > 0 ? $" ~ {maxBlockIndex}" : string.Empty)}";
         }
 
         private static Dictionary<int, int> GetReplacedMaterials(Dictionary<int, int> required)
