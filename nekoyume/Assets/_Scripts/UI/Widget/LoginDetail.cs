@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 
 namespace Nekoyume.UI
 {
@@ -177,6 +178,8 @@ namespace Nekoyume.UI
                     tableSheets.EquipmentItemSetEffectSheet
                 );
 
+                var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+
                 var allRuneState = States.Instance.AllRuneState;
                 var runeListSheet = tableSheets.RuneListSheet;
                 var runeLevelBonusSheet = tableSheets.RuneLevelBonusSheet;
@@ -188,7 +191,7 @@ namespace Nekoyume.UI
                 var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
                 player.ConfigureStats(
                     costumeStatSheet,
-                    allRuneState,
+                    runeStates,
                     tableSheets.RuneOptionSheet,
                     runeLevelBonus,
                     tableSheets.SkillSheet,

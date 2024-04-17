@@ -188,7 +188,7 @@ namespace Nekoyume.UI
                 throw new SheetRowNotFoundException("CharacterSheet", avatarState.characterId);
             }
 
-            var equippedAllRuneState = new AllRuneState();
+            var equippedRuneStates = new List<RuneState>();
             foreach (var slot in _runes[battleType].GetRuneSlot())
             {
                 if (!slot.RuneId.HasValue)
@@ -198,7 +198,7 @@ namespace Nekoyume.UI
 
                 if (_allRuneState.TryGetRuneState(slot.RuneId.Value, out var runeState))
                 {
-                    equippedAllRuneState.AddRuneState(runeState);
+                    equippedRuneStates.Add(runeState);
                 }
             }
 
@@ -206,11 +206,11 @@ namespace Nekoyume.UI
             var equipments = _equipments[battleType];
             var costumes = _costumes[battleType];
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-            var runeOptions = Util.GetRuneOptions(equippedAllRuneState, runeOptionSheet);
+            var runeOptions = Util.GetRuneOptions(equippedRuneStates, runeOptionSheet);
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
-            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(equippedAllRuneState,
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(_allRuneState,
                 runeListSheet, runeLevelBonusSheet);
 
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;

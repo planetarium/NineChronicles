@@ -9,6 +9,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -218,7 +219,8 @@ public class BattleSimulator : Widget
             random,
             avatarState,
             consumables,
-            null,
+            States.Instance.AllRuneState,
+            States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
             new List<Skill>(),
             worldId,
             stageId,
