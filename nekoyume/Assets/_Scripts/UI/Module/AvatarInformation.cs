@@ -191,9 +191,9 @@ namespace Nekoyume.UI.Module
         private void UpdateRuneView()
         {
             var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
-            var equippedRuneState = States.Instance.GetEquippedAllRuneState(_battleType);
+            var equippedRuneStates = States.Instance.GetEquippedRuneStates(_battleType);
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
-            inventory.UpdateRunes(equippedRuneState, _battleType, sheet);
+            inventory.UpdateRunes(equippedRuneStates, _battleType, sheet);
             runeSlots.Set(states, OnClickRuneSlot, OnDoubleClickRuneSlot);
         }
 
@@ -946,15 +946,16 @@ namespace Nekoyume.UI.Module
             var consumables = GetEquippedConsumables();
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
 
-            var equippedAllRuneStates = States.Instance.GetEquippedAllRuneState(_battleType);
+            var equippedRuneStates = States.Instance.GetEquippedRuneStates(_battleType);
 
+            var allRuneState = States.Instance.AllRuneState;
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
-            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(equippedAllRuneStates,
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(allRuneState,
                 runeListSheet, runeLevelBonusSheet);
 
             var runeStatModifiers = new List<StatModifier>();
-            foreach (var runeState in equippedAllRuneStates.Runes.Values)
+            foreach (var runeState in equippedRuneStates)
             {
                 if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var statRow) ||
                     !statRow.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))

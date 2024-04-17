@@ -14,6 +14,7 @@ using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.Module;
 using Nekoyume.State;
@@ -120,6 +121,13 @@ namespace BalanceTool
                 ApStoneCount = 0, // Fix to 0.
                 TotalPlayCount = 1, // Fix to 1.
             };
+
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddr, BattleType.Adventure);
+            var runeSlotState = states.TryGetLegacyState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+            runeSlotState.UpdateSlot(has.RuneInfos, sheets.GetSheet<RuneListSheet>());
+
             var allRuneState = states.GetRuneState(avatarAddr, out _);
             var collectionState = states.GetCollectionState(avatarAddr);
             var skillsOnWaveStart = new List<Nekoyume.Model.Skill.Skill>();
@@ -149,6 +157,7 @@ namespace BalanceTool
                     has,
                     avatarState,
                     allRuneState,
+                    runeSlotState,
                     skillsOnWaveStart,
                     sheets.GetSheet<StageSheet>()[has.StageId],
                     sheets.GetSheet<StageWaveSheet>()[has.StageId],
@@ -177,6 +186,7 @@ namespace BalanceTool
             HackAndSlash has,
             AvatarState avatarState,
             AllRuneState allRuneState,
+            RuneSlotState runeSlotState,
             List<Nekoyume.Model.Skill.Skill> skillsOnWaveStart,
             StageSheet.Row stageRow,
             StageWaveSheet.Row stageWaveRow,
@@ -196,6 +206,7 @@ namespace BalanceTool
                 avatarState,
                 has.Foods,
                 allRuneState,
+                runeSlotState,
                 skillsOnWaveStart,
                 has.WorldId,
                 has.StageId,

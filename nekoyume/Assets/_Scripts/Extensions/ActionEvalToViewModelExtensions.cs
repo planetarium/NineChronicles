@@ -21,6 +21,7 @@ namespace Nekoyume
         /// <param name="eval"></param>
         /// <param name="avatarState"></param>
         /// <param name="allRuneState"></param>
+        /// <param name="runeSlotState"></param>
         /// <param name="collectionState"></param>
         /// <param name="skillsOnWaveStart"></param>
         /// <param name="sheets"></param>
@@ -32,6 +33,7 @@ namespace Nekoyume
             this ActionEvaluation<HackAndSlash> eval,
             AvatarState avatarState,
             AllRuneState allRuneState,
+            RuneSlotState runeSlotState,
             CollectionState collectionState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
@@ -52,6 +54,7 @@ namespace Nekoyume
                     avatarState,
                     i == 0 ? eval.Action.Foods : new List<Guid>(),
                     allRuneState,
+                    runeSlotState,
                     i == 0 ? skillsOnWaveStart : new List<Model.Skill.Skill>(),
                     eval.Action.WorldId,
                     eval.Action.StageId,

@@ -267,9 +267,10 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
-            var allRuneState = States.Instance.GetEquippedAllRuneState(battleType);
-            var runeOptionInfos = GetRuneOptions(allRuneState, runeOptionSheet);
+            var runeStates = States.Instance.GetEquippedRuneStates(battleType);
+            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
 
+            var allRuneState = States.Instance.AllRuneState;
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
             var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(allRuneState,
@@ -293,9 +294,10 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var allRuneState = States.Instance.GetEquippedAllRuneState(BattleType.Adventure);
-            var runeOptionInfos = GetRuneOptions(allRuneState, runeOptionSheet);
+            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
 
+            var allRuneState = States.Instance.AllRuneState;
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
             var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(allRuneState,
@@ -310,11 +312,11 @@ namespace Nekoyume.Helper
         }
 
         public static List<RuneOptionSheet.Row.RuneOptionInfo> GetRuneOptions(
-            AllRuneState allRuneState,
+            List<RuneState> runeStates,
             RuneOptionSheet sheet)
         {
             var result = new List<RuneOptionSheet.Row.RuneOptionInfo>();
-            foreach (var runeState in allRuneState.Runes.Values)
+            foreach (var runeState in runeStates)
             {
                 if (!sheet.TryGetValue(runeState.RuneId, out var row))
                 {

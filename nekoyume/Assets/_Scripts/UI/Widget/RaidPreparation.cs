@@ -270,7 +270,8 @@ namespace Nekoyume.UI
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var equipments = itemSlotState.Equipments;
             var costumes = itemSlotState.Costumes;
-            var allRuneState = States.Instance.GetEquippedAllRuneState(BattleType.Raid);
+            var allRuneState = States.Instance.AllRuneState;
+            var runeSlotState = States.Instance.CurrentRuneSlotStates[BattleType.Raid];
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
             var tableSheets = Game.Game.instance.TableSheets;
             var avatarState = States.Instance.CurrentAvatarState;
@@ -285,16 +286,19 @@ namespace Nekoyume.UI
                 avatarState,
                 consumables,
                 allRuneState,
+                runeSlotState,
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet,
                 collectionState.GetEffects(tableSheets.CollectionSheet),
                 tableSheets.DeBuffLimitSheet
             );
             var log = simulator.Simulate();
-            var digest = new ArenaPlayerDigest(avatarState,
+            var digest = new ArenaPlayerDigest(
+                avatarState,
                 itemSlotState.Equipments,
                 itemSlotState.Costumes,
-                allRuneState);
+                allRuneState,
+                runeSlotState);
             var raidStage = Game.Game.instance.RaidStage;
             var raidStartData = new RaidStage.RaidStartData(
                 avatarState.address,
