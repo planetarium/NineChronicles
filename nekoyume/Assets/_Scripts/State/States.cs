@@ -578,15 +578,12 @@ namespace Nekoyume.State
             var petIds = TableSheets.Instance.PetSheet.Values
                 .Select(row => (row.Id, PetState.DeriveAddress(avatarAddr, row.Id)))
                 .ToList();
+
             // [0]: combinationSlots
             // [1]: pet states
             var bulkStates = await Task.WhenAll(
-                agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount,
-                    combinationSlotAddresses),
-                agent.GetStateBulkAsync(
-                    ReservedAddresses.LegacyAccount,
-                    petIds.Select(pair => pair.Item2)
-                )
+                agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, combinationSlotAddresses),
+                agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, petIds.Select(pair => pair.Item2))
             );
             LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(curAvatarState);
             SetCombinationSlotStatesAsync(curAvatarState.address,
@@ -601,12 +598,9 @@ namespace Nekoyume.State
             // [1]: CollectionState
             // [2]: ActionPoint
             // [3]: DailyRewardReceivedBlockIndex
-            var listStates = await Task.WhenAll(agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    skillStateAddress),
-                agent.GetStateAsync(
-                    Addresses.Collection,
-                    avatarAddr),
+            var listStates = await Task.WhenAll(
+                agent.GetStateAsync(ReservedAddresses.LegacyAccount, skillStateAddress),
+                agent.GetStateAsync(Addresses.Collection, avatarAddr),
                 agent.GetStateAsync(Addresses.ActionPoint, avatarAddr),
                 agent.GetStateAsync(Addresses.DailyReward, avatarAddr));
             SetCrystalRandomSkillState(listStates[0] is List serialized
@@ -621,6 +615,9 @@ namespace Nekoyume.State
             ReactiveAvatarState.UpdateDailyRewardReceivedIndex(listStates[3] is Integer index
                 ? index
                 : curAvatarState.dailyRewardReceivedIndex);
+
+            SetAllRuneState(await curAvatarState.GetAllRuneStateAsync());
+            await InitRuneSlotStates();
         }
 
         /// <summary>

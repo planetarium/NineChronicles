@@ -79,12 +79,6 @@ namespace Nekoyume.State
                 EventDungeonInfo.UpdateAsync(),
                 WorldBossStates.Set(States.Instance.CurrentAvatarState.address),
                 UniTask.RunOnThreadPool(States.Instance.InitAvatarBalancesAsync).ToObservable().ObserveOnMainThread().ToUniTask(),
-                UniTask.Run(async () =>
-                {
-                    States.Instance.SetAllRuneState(
-                        await States.Instance.CurrentAvatarState.GetAllRuneStateAsync());
-                }),
-                States.Instance.InitRuneSlotStates(),
                 States.Instance.InitItemSlotStates());
         }
 
