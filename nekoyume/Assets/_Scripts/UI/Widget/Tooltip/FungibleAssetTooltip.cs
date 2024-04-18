@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Coffee.UIEffects;
 using Libplanet.Types.Assets;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
@@ -23,6 +24,9 @@ namespace Nekoyume.UI
     public class FungibleAssetTooltip : NewVerticalTooltipWidget
     {
         protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
+
+        [SerializeField]
+        protected ItemTooltipDetail detail;
 
         [SerializeField]
         private ItemTooltipBuy buy;
@@ -99,7 +103,6 @@ namespace Nekoyume.UI
             string amount,
             System.Action onClose)
         {
-            registerButton.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
 
@@ -112,7 +115,6 @@ namespace Nekoyume.UI
             FungibleAssetValue fav,
             System.Action onClose)
         {
-            registerButton.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
 
@@ -125,7 +127,6 @@ namespace Nekoyume.UI
             InventoryItem item,
             System.Action onClose)
         {
-            registerButton.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
 
@@ -139,7 +140,6 @@ namespace Nekoyume.UI
             System.Action onBuy,
             System.Action onClose)
         {
-            registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
             sell.gameObject.SetActive(false);
             buy.Set((BigInteger)item.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency,
@@ -163,7 +163,6 @@ namespace Nekoyume.UI
             Action<ConditionalButton.State> onSellCancellation,
             System.Action onClose)
         {
-            registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(true);
             sell.Set(apStoneCount,
@@ -187,17 +186,15 @@ namespace Nekoyume.UI
             System.Action onRegister,
             System.Action onClose)
         {
-            registerButton.gameObject.SetActive(true);
-            registerButton.Interactable = item.FungibleAssetValue.MajorUnit > 0;
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             _onRegister = onRegister;
-            UpdateInformation(item.FungibleAssetValue, onClose);
+            UpdateInformation(item.FungibleAssetValue, onClose, true);
             base.Show();
             StartCoroutine(CoUpdate(registerButton.gameObject));
         }
 
-        private void UpdateInformation(FungibleAssetValue fav, System.Action onClose)
+        private void UpdateInformation(FungibleAssetValue fav, System.Action onClose, bool isTradable = false)
         {
             var grade = 1;
             var id = 0;
@@ -230,6 +227,11 @@ namespace Nekoyume.UI
 
             _onClose = onClose;
             scrollbar.value = 1f;
+
+            var isInteractive = !RegisterProduct.NonTradableTickerCurrencies.Contains(fav.Currency);
+            isInteractive = isInteractive && fav.MajorUnit > 0;
+
+            SetTradableState(isTradable, isInteractive);
         }
 
         private void UpdateInformation(string ticker, string amount, System.Action onClose)
@@ -274,6 +276,8 @@ namespace Nekoyume.UI
 
             _onClose = onClose;
             scrollbar.value = 1f;
+
+            SetTradableState(false);
         }
 
         private void UpdateGrade(int grade)
@@ -350,6 +354,16 @@ namespace Nekoyume.UI
         public void OnEnterButtonArea(bool value)
         {
             _isPointerOnScrollArea = value;
+        }
+
+        private void SetTradableState(bool tradable, bool isInteractive = false)
+        {
+            isInteractive = isInteractive && tradable;
+
+            registerButton.gameObject.SetActive(tradable);
+
+            registerButton.Interactable = isInteractive;
+            detail.UpdateTradableText(isInteractive);
         }
     }
 }

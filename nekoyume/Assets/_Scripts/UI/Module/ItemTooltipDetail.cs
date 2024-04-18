@@ -377,5 +377,15 @@ namespace Nekoyume.UI.Module
                 ? Palette.GetColor(ColorType.ButtonEnabled)
                 : Palette.GetColor(ColorType.TextDenial);
         }
+
+        public void UpdateTradableText(bool isTradable)
+        {
+            tradableText.text = isTradable
+                ? L10nManager.Localize("UI_TRADABLE")
+                : L10nManager.Localize("UI_UNTRADABLE");
+            tradableText.color = isTradable
+                ? Palette.GetColor(ColorType.ButtonEnabled)
+                : Palette.GetColor(ColorType.TextDenial);
+        }
     }
 }
