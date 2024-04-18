@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using TMPro.EditorUtilities;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
@@ -100,7 +101,7 @@ namespace Nekoyume.L10n.Editor
         }
 
         [MenuItem("Tools/L10n/Generate Unicode Hex Range Files")]
-        public static void GenerateUnicodeHexRangeFiles()
+        public static async Task GenerateUnicodeHexRangeFiles()
         {
             PrepareCharacterFilesDirectory();
 
@@ -113,10 +114,19 @@ namespace Nekoyume.L10n.Editor
                 .Select(Convert.ToChar)
                 .ToList();
 
+            await L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv", true);
+
             foreach (var languageType in Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>())
             {
                 var dict = L10nManager.GetDictionary(languageType);
                 var charArray = dict.Values.SelectMany(value => value.ToCharArray()).ToList();
+
+                var additionalDict = L10nManager.GetAdditionalDictionary(languageType);
+                if (additionalDict != null)
+                {
+                    charArray.AddRange(additionalDict.Values.SelectMany(value => value.ToCharArray()));
+                }
+                
                 var unicodeHexes = defaultCharacters
                     .Union(charArray.Select(char.ToLower))
                     .Union(charArray.Select(char.ToUpper))
@@ -157,10 +167,9 @@ namespace Nekoyume.L10n.Editor
         }
 
         [MenuItem("Tools/L10n/Generate Font Asset Files at Once")]
-        public static void GenerateFontAssetFiles()
+        public static async void GenerateFontAssetFiles()
         {
-            GenerateUnicodeHexRangeFiles();
-
+            await GenerateUnicodeHexRangeFiles();
             EditorCoroutineUtility.StartCoroutine(CoGenerateFontAssetFile(), EditorCoroutineObject);
         }
 
