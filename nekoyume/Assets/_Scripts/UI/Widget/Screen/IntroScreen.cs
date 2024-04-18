@@ -395,7 +395,7 @@ namespace Nekoyume.UI
                         // ignored
                     }
 
-                    Find<LoginSystem>().Show(privateKeyString: pk?.ToString() ?? string.Empty);
+                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
                     Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
 
                     var evt = new AirbridgeEvent("Intro_QRCodeImported");
