@@ -98,12 +98,12 @@ namespace Nekoyume.UI
                 RefreshRewardCells(seasonPassManager);
             }).AddTo(gameObject);
 
-            seasonPassManager.PrevSeasonClaimAvailable.Subscribe((visible) =>
+            seasonPassManager.PrevSeasonClaimAvailable.Subscribe(visible =>
             {
                 prevSeasonClaimButton.gameObject.SetActive(visible);
             }).AddTo(gameObject);
 
-            seasonPassManager.PrevSeasonClaimRemainingDateTime.Subscribe((remaining) =>
+            seasonPassManager.PrevSeasonClaimRemainingDateTime.Subscribe(remaining =>
             {
                 prevSeasonClaimButtonRemainingText.text = remaining;
             }).AddTo(gameObject);
