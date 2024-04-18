@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Numerics;
 using Libplanet.Types.Assets;
+using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UniRx;
@@ -64,7 +66,7 @@ namespace Nekoyume.UI.Model
             Count = new ReactiveProperty<int>(count);
             Equipped = new ReactiveProperty<bool>(false);
             LevelLimited = new ReactiveProperty<bool>(false);
-            Tradable = new ReactiveProperty<bool>(false);
+            Tradable = new ReactiveProperty<bool>(!RegisterProduct.NonTradableTickerCurrencies.Contains(fungibleAssetValue.Currency));
             DimObjectEnabled = new ReactiveProperty<bool>(count <= 0);
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);

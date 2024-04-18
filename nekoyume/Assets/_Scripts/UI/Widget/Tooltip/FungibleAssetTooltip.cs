@@ -130,7 +130,7 @@ namespace Nekoyume.UI
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
 
-            UpdateInformation(item.FungibleAssetValue, onClose);
+            UpdateInformation(item.FungibleAssetValue, onClose, item.Tradable.Value);
             base.Show();
             StartCoroutine(CoUpdate(panel.gameObject));
         }
@@ -189,12 +189,12 @@ namespace Nekoyume.UI
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             _onRegister = onRegister;
-            UpdateInformation(item.FungibleAssetValue, onClose, true);
+            UpdateInformation(item.FungibleAssetValue, onClose, item.Tradable.Value, true);
             base.Show();
             StartCoroutine(CoUpdate(registerButton.gameObject));
         }
 
-        private void UpdateInformation(FungibleAssetValue fav, System.Action onClose, bool isTradable = false)
+        private void UpdateInformation(FungibleAssetValue fav, System.Action onClose, bool isTradeAble = false, bool isAvailableSell = false)
         {
             var grade = 1;
             var id = 0;
@@ -228,10 +228,8 @@ namespace Nekoyume.UI
             _onClose = onClose;
             scrollbar.value = 1f;
 
-            var isInteractive = !RegisterProduct.NonTradableTickerCurrencies.Contains(fav.Currency);
-            isInteractive = isInteractive && fav.MajorUnit > 0;
-
-            SetTradableState(isTradable, isInteractive);
+            var isInteractive = isTradeAble && fav.MajorUnit > 0;
+            SetTradableState(isAvailableSell, isInteractive);
         }
 
         private void UpdateInformation(string ticker, string amount, System.Action onClose)
