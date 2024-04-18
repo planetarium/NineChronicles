@@ -2032,7 +2032,7 @@ MonoBehaviour:
           guideType: 1
           emojiType: 2
           dialogPositionType: 1
-          scriptKey: TUTORIAL_23_005
+          scriptKey: TUTORIAL_23_007
           arrowAdditionalDelay: 0
           fullScreenButton: 0
           noArrow: 0
@@ -2044,16 +2044,39 @@ MonoBehaviour:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
           targetPositionOffset: {x: 0, y: 0}
-          targetSizeOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 30, y: 30}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-          targetType: 0
+          targetType: 1000022
           actionType: 0
-          guideType: 0
+          guideType: 1
           emojiType: 2
-          dialogPositionType: 0
-          scriptKey: TUTORIAL_23_006
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_23_008
           arrowAdditionalDelay: 0
-          fullScreenButton: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+  - title: Stage 23-1
+    description: Rune level bonus (for old user)
+    tutorialScenario:
+      scenario:
+      - id: 231000
+        nextId: 0
+        checkPointId: 0
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 30, y: 30}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000022
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_23_101
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
           noArrow: 0
           guideSprite: {fileID: 0}
   - title: Stage 35

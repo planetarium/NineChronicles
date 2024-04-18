@@ -140,6 +140,9 @@ namespace Nekoyume.UI
         private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
 
+        private static string TutorialCheckKey =>
+            $"Tutorial_Check_Rune_{Game.Game.instance.States.CurrentAvatarKey}";
+
         protected override void Awake()
         {
             base.Awake();
@@ -206,6 +209,14 @@ namespace Nekoyume.UI
             SetInventory();
             base.Show(ignoreShowAnimation);
             Set(_selectedRuneItem);
+
+            if (_runeLevelBonus > 0 &&
+                PlayerPrefs.GetInt(TutorialCheckKey, 0) == 0)
+            {
+                // Play Tutorial - Rune Level Bonus (for old user)
+                Game.Game.instance.Stage.TutorialController.Play(231000);
+                PlayerPrefs.SetInt(TutorialCheckKey, 1);
+            }
         }
 
         public void Show(int runeId, bool ignoreShowAnimation = false)
@@ -457,6 +468,8 @@ namespace Nekoyume.UI
         public void TutorialActionClickCombinationRuneCombineButton()
         {
             Enhancement();
+            // Rune Level Bonus (for new user)
+            PlayerPrefs.SetInt(TutorialCheckKey, 1);
         }
     }
 }
