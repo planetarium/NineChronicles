@@ -399,10 +399,11 @@ namespace Nekoyume.Game
             if (_commandLineOptions.RequiredUpdate)
             {
                 var popup = Widget.Find<IconAndButtonSystem>();
-                popup.Show(
+                popup.ShowWithTwoButton(
                         "UI_REQUIRED_UPDATE_TITLE",
                         "UI_REQUIRED_UPDATE_CONTENT",
                         "UI_OK",
+                        "UI_SHARE_QR_TITLE",
                         true,
                         IconAndButtonSystem.SystemType.Information);
                 popup.ConfirmCallback = popup.CancelCallback = () =>
@@ -413,6 +414,7 @@ namespace Nekoyume.Game
                     Application.OpenURL(_commandLineOptions.AppleMarketUrl);
 #endif
                 };
+                popup.SetCancelCallbackToBackup();
                 yield break;
             }
 
@@ -1036,6 +1038,7 @@ namespace Nekoyume.Game
             popup = Widget.Find<IconAndButtonSystem>();
             popup.Show("UI_ERROR", "UI_ERROR_RPC_CONNECTION", "UI_QUIT");
             popup.SetConfirmCallbackToExit();
+            popup.SetCancelCallbackToBackup();
         }
 
         /// <summary>
@@ -1473,6 +1476,7 @@ namespace Nekoyume.Game
                 L10nManager.Localize("UI_OK"),
                 false);
             popup.SetConfirmCallbackToExit();
+            popup.SetCancelCallbackToBackup();
         }
 
         public static void Quit()
@@ -1500,19 +1504,13 @@ namespace Nekoyume.Game
             if (_commandLineOptions.Maintenance)
             {
                 var w = Widget.Create<IconAndButtonSystem>();
-                w.CancelCallback = () =>
-                {
-                    Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                    Application.Quit();
-#endif
-                };
-                w.Show(
+                w.ConfirmCallback = () => Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
+                w.SetCancelCallbackToBackup();
+                w.ShowWithTwoButton(
                     "UI_MAINTENANCE",
                     "UI_MAINTENANCE_CONTENT",
                     "UI_OK",
+                    "UI_SHARE_QR_TITLE",
                     true,
                     IconAndButtonSystem.SystemType.Information
                 );

@@ -12,9 +12,11 @@ using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Libplanet.Common;
+using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.OAuth;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Multiplanetary;
@@ -48,6 +50,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
+        [SerializeField] private Button backupButton;
 
         [SerializeField] private TextMeshProUGUI yourPlanetText;
         [SerializeField] private Button yourPlanetButton;
@@ -229,6 +232,16 @@ namespace Nekoyume.UI
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
+
+            backupButton.gameObject.SetActive(Util.GetQrCodePngFromKeystore() != null);
+            backupButton.onClick.AddListener(() =>
+            {
+                new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
+                    .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
+                    .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
+                    .Share();
+            });
+
             GetGuestPrivateKey();
         }
 
@@ -372,7 +385,17 @@ namespace Nekoyume.UI
                     km.Register(resultPpk);
                     codeReaderView.Close();
                     startButtonContainer.SetActive(false);
-                    Find<LoginSystem>().Show(privateKeyString: string.Empty);
+                    PrivateKey pk = null;
+                    try
+                    {
+                        pk = resultPpk.Unprotect(string.Empty);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
+                    Find<LoginSystem>().Show(privateKeyString: pk?.ToString() ?? string.Empty);
                     Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
 
                     var evt = new AirbridgeEvent("Intro_QRCodeImported");

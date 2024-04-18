@@ -5804,6 +5804,7 @@ MonoBehaviour:
   startButtonContainer: {fileID: 3860952466932365792}
   signinButton: {fileID: 636972386927832638}
   guestButton: {fileID: 1379309947048601246}
+  backupButton: {fileID: 1081669423292407343}
   yourPlanetText: {fileID: 4350155878917045938}
   yourPlanetButton: {fileID: 231605217515246203}
   yourPlanetButtonText: {fileID: 1224978541094035838}
@@ -7707,7 +7708,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_SIGNIN_BUTTON
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
