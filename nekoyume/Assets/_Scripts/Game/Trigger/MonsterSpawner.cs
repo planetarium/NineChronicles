@@ -58,9 +58,9 @@ namespace Nekoyume.Game.Trigger
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
-        private IEnumerator CoSpawnMonster(int enemyId, Vector2 pos,float offset, Character.Player player)
+        private IEnumerator CoSpawnSkipStageMonster(int enemyId, Vector2 pos,float offset, Character.Player player)
         {
-            StageMonsterFactory.Create(enemyId, pos, offset, player);
+            StageMonsterFactory.CreateSkipStageCharacter(enemyId, pos, offset, player);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
@@ -110,7 +110,7 @@ namespace Nekoyume.Game.Trigger
                     var pos = new Vector2(
                         point.x + offsetX,
                         point.y);
-                    yield return StartCoroutine(CoSpawnMonster(monsterIds[index], pos, offsetX, player));
+                    yield return StartCoroutine(CoSpawnSkipStageMonster(monsterIds[index], pos, offsetX, player));
                 }
             }
         }

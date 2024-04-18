@@ -357,10 +357,10 @@ namespace Nekoyume.Game.Battle
         {
             AnimationTimeScaleWeight = 1;
             float eleapsedtime = 1;
-            while(eleapsedtime < 30)
+            while(eleapsedtime < 5)
             {
-                eleapsedtime += 0.1f;
-                AnimationTimeScaleWeight += 0.1f;
+                eleapsedtime += 0.2f;
+                AnimationTimeScaleWeight += 0.2f;
                 UpdateTimeScale();
                 yield return new WaitForSeconds(0.1f);
             }
@@ -1248,6 +1248,7 @@ namespace Nekoyume.Game.Battle
             if(eventBase is SkipStageEvent stageEvent)
             {
                 yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnSkipStage(stageEvent.MonsterIds));
+                yield return new WaitForSeconds(2.0f);
             }
 
             if (eventBase is Tick tick)

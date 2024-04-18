@@ -1994,7 +1994,10 @@ namespace Nekoyume.Blockchain
 
             var test = new List<Model.BattleStatus.EventBase>
             {
-                new SkipStageEvent(null)
+                new SkipStageEvent(null),
+                new SkipStageEvent(null),
+                new SkipStageEvent(null),
+                new SkipStageEvent(null),
             };
             test.AddRange(log.events);
             log.events = test;

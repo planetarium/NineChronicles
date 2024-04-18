@@ -27,6 +27,10 @@ namespace Nekoyume.Game.Character
         {
         }
 
+        protected CharacterAnimator(SkipStageCharacter root) : base(root.gameObject)
+        {
+        }
+
         public override void InitTarget(
             GameObject target,
             MeshRenderer meshRenderer,
