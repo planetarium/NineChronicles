@@ -581,7 +581,7 @@ namespace Nekoyume.Blockchain
                 NcDebug.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
             }
 
-            return store ?? new DefaultStore(path);
+            return store ?? new DefaultStore(path, flush: false);
         }
 
         private void StartSystemCoroutines()
