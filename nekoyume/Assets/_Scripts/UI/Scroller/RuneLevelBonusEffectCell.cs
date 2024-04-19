@@ -24,9 +24,9 @@ namespace Nekoyume.UI.Scroller
                 : string.Empty;
             bonusText.text = $"{itemData.LevelBonusMin} ~ {levelBonusMaxText}";
             var rewardMaxText = itemData.RewardMax.HasValue
-                ? $"{itemData.RewardMax / 100m:0.####}%"
+                ? $"+{itemData.RewardMax / 1000m:0.###}%"
                 : string.Empty;
-            rewardText.text = $"{itemData.RewardMin / 100m:0.####}% ~ {rewardMaxText}";
+            rewardText.text = $"+{itemData.RewardMin / 1000m:0.###}% ~ {rewardMaxText}";
 
             focusObject.SetActive(Context.CurrentModel == itemData);
         }

@@ -73,7 +73,7 @@ namespace Nekoyume.UI
                     Game.Game.instance.TableSheets.RuneLevelBonusSheet,
                     (_runeId, _startLevel + tryCount));
 
-                nextText.text = $"{nextReward / 100m:0.####}%";
+                nextText.text = $"+{nextReward / 1000m:0.###}%";
             }
         }
 
@@ -298,8 +298,8 @@ namespace Nekoyume.UI
             var reward = RuneFrontHelper.CalculateRuneLevelBonusReward(
                 bonus,
                 Game.Game.instance.TableSheets.RuneLevelBonusSheet);
-            runeLevelBonus.bonusText.text = $"{bonus / 10000m:0.####}";
-            runeLevelBonus.reward.currentText.text = $"{reward / 100m:0.####}%";
+            runeLevelBonus.bonusText.text = bonus.ToString();
+            runeLevelBonus.reward.currentText.text = $"+{reward / 1000m:0.###}%";
 
             _runeLevelBonus = bonus;
         }
@@ -380,7 +380,7 @@ namespace Nekoyume.UI
         {
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
-            levelBonusCoef.text = $"{item.Row.BonusCoef / 10000m:0.####}";
+            levelBonusCoef.text = item.Row.BonusCoef.ToString();
 
             runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);
             runeLevelBonus.reward.Set(
