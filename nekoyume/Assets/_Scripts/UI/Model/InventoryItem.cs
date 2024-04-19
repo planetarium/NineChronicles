@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<int> Count;
         public readonly ReactiveProperty<bool> LevelLimited;
         public readonly ReactiveProperty<bool> Equipped = new();
+        // TODO: 룬조각을 제외하고는 소유하지 않은 장비가 Tradable = true로 설정되어 있음. 네이밍이 꼬인것으로 추정되며 아이템 상태 개선이 필요해보임
         public readonly ReactiveProperty<bool> Tradable;
         public readonly ReactiveProperty<bool> DimObjectEnabled;
         public readonly ReactiveProperty<bool> Selected;
@@ -66,7 +67,7 @@ namespace Nekoyume.UI.Model
             Count = new ReactiveProperty<int>(count);
             Equipped = new ReactiveProperty<bool>(false);
             LevelLimited = new ReactiveProperty<bool>(false);
-            Tradable = new ReactiveProperty<bool>(!RegisterProduct.NonTradableTickerCurrencies.Contains(fungibleAssetValue.Currency));
+            Tradable = new ReactiveProperty<bool>(RegisterProduct.NonTradableTickerCurrencies.Contains(fungibleAssetValue.Currency));
             DimObjectEnabled = new ReactiveProperty<bool>(count <= 0);
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
