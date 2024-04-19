@@ -110,6 +110,10 @@ namespace Nekoyume.Game.Battle
 
         public bool showLoadingScreen;
 
+        public float StageSkipSpeed = 3f;
+        public bool StageSkipCritical = false;
+        public int SkipedStageCont = 5;
+
         #region Events
 
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
@@ -159,6 +163,7 @@ namespace Nekoyume.Game.Battle
 
         public void UpdateTimeScale()
         {
+            NcDebug.Log($"[UpdateTimeScale] {AnimationTimeScaleWeight}");
             foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
             {
                 var isEnemy = character is Character.StageMonster;
@@ -366,6 +371,12 @@ namespace Nekoyume.Game.Battle
             }
         }
 
+        private void SetSpeed(float speed)
+        {
+            AnimationTimeScaleWeight = speed;
+            UpdateTimeScale();
+        }
+
         private IEnumerator CoPlayStage(BattleLog log)
         {
 #if TEST_LOG
@@ -383,7 +394,7 @@ namespace Nekoyume.Game.Battle
 
             yield return StartCoroutine(CoStageEnter(log));
 
-            StartCoroutine(AccelerateSpeed());
+            //StartCoroutine(AccelerateSpeed());
 
             foreach (var e in log)
             {
@@ -1247,8 +1258,22 @@ namespace Nekoyume.Game.Battle
         {
             if(eventBase is SkipStageEvent stageEvent)
             {
-                yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnSkipStage(stageEvent.MonsterIds));
-                yield return new WaitForSeconds(2.0f);
+                SetSpeed(StageSkipSpeed);
+                NcDebug.Log($"[CoCustomEvent] SkipStageEvent Start");
+                List<SkipStageCharacter> createdMonsters = new List<SkipStageCharacter>();
+                yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnSkipStage(stageEvent.MonsterIds, (createdMonseter)=> {
+                    if(createdMonseter.TryGetComponent<SkipStageCharacter>(out var monster))
+                    {
+                        createdMonsters.Add(monster);
+                    }
+                }));
+
+                yield return new WaitWhile(() => createdMonsters.Any(i => !i.IsTriggerd));
+                NcDebug.Log($"[CoCustomEvent] SkipStageEvent End");
+                foreach (var skipStageMonster in createdMonsters)
+                {
+                    skipStageMonster.IsTriggerd = false;
+                }
             }
 
             if (eventBase is Tick tick)

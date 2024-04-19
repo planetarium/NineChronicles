@@ -58,9 +58,10 @@ namespace Nekoyume.Game.Trigger
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
-        private IEnumerator CoSpawnSkipStageMonster(int enemyId, Vector2 pos,float offset, Character.Player player)
+        private IEnumerator CoSpawnSkipStageMonster(int enemyId, Vector2 pos,float offset, Character.Player player, Action<GameObject> createCallback)
         {
-            StageMonsterFactory.CreateSkipStageCharacter(enemyId, pos, offset, player);
+            var createdObj = StageMonsterFactory.CreateSkipStageCharacter(enemyId, pos, offset, player);
+            createCallback.Invoke(createdObj);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
@@ -90,13 +91,14 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        public IEnumerator CoSpawnSkipStage(List<int> monsterIds)
+        public IEnumerator CoSpawnSkipStage(List<int> monsterIds, Action<GameObject> createCallback)
         {
             var stage = Game.instance.Stage;
             for (var index = 0; index < monsterIds.Count; index++)
             {
                 var player = stage.SelectedPlayer;
-                var offsetX = player.transform.position.x + SpawnOffset;
+                var offset = 6;
+                var offsetX = player.transform.position.x + offset;
                 {
                     Vector3 point;
                     try
@@ -108,9 +110,9 @@ namespace Nekoyume.Game.Trigger
                         throw new InvalidWaveException();
                     }
                     var pos = new Vector2(
-                        point.x + offsetX,
+                        offsetX + point.x,
                         point.y);
-                    yield return StartCoroutine(CoSpawnSkipStageMonster(monsterIds[index], pos, offsetX, player));
+                    yield return StartCoroutine(CoSpawnSkipStageMonster(monsterIds[index], pos, 0, player, createCallback));
                 }
             }
         }

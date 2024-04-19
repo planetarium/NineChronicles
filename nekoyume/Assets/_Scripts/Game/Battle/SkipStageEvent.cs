@@ -22,6 +22,9 @@ namespace Nekoyume.Game.Battle
             202002,
             203005,
             205000,
+            202002,
+            203005,
+            205000,
         };
 
         public SkipStageEvent(CharacterBase character) : base(character)

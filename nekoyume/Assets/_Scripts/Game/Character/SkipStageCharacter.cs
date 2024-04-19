@@ -21,6 +21,7 @@ namespace Nekoyume.Game.Character
         public string TargetTag { get; protected set; }
         private CharacterSpineController SpineController { get; set; }
         private Player _target;
+        public bool IsTriggerd = false;
 
         private void Awake()
         {
@@ -52,6 +53,7 @@ namespace Nekoyume.Game.Character
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
             _target = target;
+            IsTriggerd = false;
         }
 
         private void OnAnimatorEvent(string eventName)
@@ -69,5 +71,28 @@ namespace Nekoyume.Game.Character
                     break;
             }
         }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if(other.gameObject != _target.gameObject)
+            {
+                return;
+            }
+            IsTriggerd = true;
+            NcDebug.Log($"[SkipStageCharacter] OnTriggered~!~!~! {other.name}");
+            Prologue.PopupDmg(14352, gameObject, false, Game.instance.Stage.StageSkipCritical, ElementalType.Fire, false);
+            StartCoroutine(Dying());
+        }
+
+        protected virtual IEnumerator Dying()
+        {
+            Animator.Die();
+            yield return new WaitForSeconds(.2f);
+            //DisableHUD();
+            yield return new WaitForSeconds(.8f);
+            //OnDeadEnd();
+            Animator.DestroyTarget();
+        }
+
     }
 }
