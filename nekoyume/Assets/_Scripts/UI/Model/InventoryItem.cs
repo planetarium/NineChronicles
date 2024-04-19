@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Model
             Count = new ReactiveProperty<int>(count);
             Equipped = new ReactiveProperty<bool>(false);
             LevelLimited = new ReactiveProperty<bool>(false);
-            Tradable = new ReactiveProperty<bool>(RegisterProduct.NonTradableTickerCurrencies.Contains(fungibleAssetValue.Currency));
+            Tradable = new ReactiveProperty<bool>(!RegisterProduct.NonTradableTickerCurrencies.Contains(fungibleAssetValue.Currency));
             DimObjectEnabled = new ReactiveProperty<bool>(count <= 0);
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
