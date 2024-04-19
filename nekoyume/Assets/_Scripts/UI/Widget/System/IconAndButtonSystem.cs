@@ -168,6 +168,7 @@ namespace Nekoyume.UI
                     .Share();
             };
         }
+
         private IEnumerator CoCheckBlockIndex(long blockIndex)
         {
             yield return new WaitWhile(() => Game.Game.instance.Agent.BlockIndex == blockIndex);
