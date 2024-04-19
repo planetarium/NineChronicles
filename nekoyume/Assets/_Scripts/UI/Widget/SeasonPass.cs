@@ -269,16 +269,22 @@ namespace Nekoyume.UI
             prevSeasonClaimButton.SetConditionalState(false);
             
             Game.Game.instance.SeasonPassServiceManager.PrevClaim(
-                (result) =>
+                result =>
                 {
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
+                    OneLineSystem.Push(
+                        MailType.System, 
+                        L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), 
+                        NotificationCell.NotificationType.Notification);
                     Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
                     prevSeasonClaimButton.SetConditionalState(true);
                     prevSeasonClaimButton.gameObject.SetActive(false);
                 },
-                (error) =>
+                error =>
                 {
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification);
+                    OneLineSystem.Push(
+                        MailType.System, 
+                        L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), 
+                        NotificationCell.NotificationType.Notification);
                     prevSeasonClaimButton.SetConditionalState(true);
                 });
         }
