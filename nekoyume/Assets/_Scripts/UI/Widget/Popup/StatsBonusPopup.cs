@@ -81,8 +81,8 @@ namespace Nekoyume.UI
             var reward = RuneFrontHelper.CalculateRuneLevelBonusReward(
                 bonus,
                 Game.Game.instance.TableSheets.RuneLevelBonusSheet);
-            runeLevelBonus.bonusText.text = $"{bonus / 10000m:0.####}";
-            runeLevelBonus.rewardText.text = $"{reward / 100m:0.####}%";
+            runeLevelBonus.bonusText.text = bonus.ToString();
+            runeLevelBonus.rewardText.text = $"+{reward / 1000m:0.###}%";
         }
 
         private void GoToCollection()

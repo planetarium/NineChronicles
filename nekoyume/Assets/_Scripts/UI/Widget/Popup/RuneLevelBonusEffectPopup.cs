@@ -1,5 +1,6 @@
 using System.Linq;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,12 +37,19 @@ namespace Nekoyume.UI
                     .FirstOrDefault(nextRow => nextRow.Id == row.Id + 1)?
                     .RuneLevel - 1;
 
+                var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+                var rewardMin = RuneFrontHelper.CalculateRuneLevelBonusReward(
+                    currentLevelBonus, runeLevelBonusSheet);
+                int? rewardMax = nextLevelBonus.HasValue
+                    ? RuneFrontHelper.CalculateRuneLevelBonusReward(nextLevelBonus.Value, runeLevelBonusSheet)
+                    : null;
+
                 return new RuneLevelBonusEffectCell.Model
                 {
                     LevelBonusMin = currentLevelBonus,
                     LevelBonusMax = nextLevelBonus,
-                    RewardMin = currentLevelBonus * row.Bonus,
-                    RewardMax = nextLevelBonus * row.Bonus
+                    RewardMin = rewardMin,
+                    RewardMax = rewardMax
                 };
             }).ToList();
 

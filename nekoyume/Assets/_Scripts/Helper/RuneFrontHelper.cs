@@ -179,18 +179,29 @@ namespace Nekoyume.Helper
             return valueString;
         }
 
+        // - Bonus level is int, not bp.
+        // - Rune level bonus is not bp. It is 100K-based point.
+        // - Divide 100_000 when modifying rune stat.
         public static int CalculateRuneLevelBonusReward(
-            decimal bonusLevel,
+            int bonusLevel,
             RuneLevelBonusSheet runeLevelBonusSheet)
         {
-            bonusLevel /= 10000m;
-            var bonusRow = runeLevelBonusSheet.Values
-                .OrderByDescending(row => row.RuneLevel)
-                .FirstOrDefault(row => row.RuneLevel <= bonusLevel);
-            return bonusRow?.Bonus * (int)bonusLevel ?? 0;
+            var runeLevelBonus = 0;
+            var prevLevel = 0;
+            foreach (var row in runeLevelBonusSheet.Values.OrderBy(row => row.RuneLevel))
+            {
+                runeLevelBonus += (Math.Min(row.RuneLevel, bonusLevel) - prevLevel) * row.Bonus;
+                prevLevel = row.RuneLevel;
+                if (row.RuneLevel >= bonusLevel)
+                {
+                    break;
+                }
+            }
+
+            return runeLevelBonus;
         }
 
-        public static decimal CalculateRuneLevelBonus(
+        public static int CalculateRuneLevelBonus(
             AllRuneState allRuneState,
             RuneListSheet runeListSheet)
         {
@@ -205,16 +216,12 @@ namespace Nekoyume.Helper
             RuneLevelBonusSheet runeLevelBonusSheet,
             (int id, int level) editRune)
         {
-            decimal bonusLevel = (from rune in allRuneState.Runes.Values
+            var bonusLevel = (from rune in allRuneState.Runes.Values
                 let bonusCoef = runeListSheet[rune.RuneId].BonusCoef
                 let runeLevel = rune.RuneId == editRune.id ? editRune.level : rune.Level
                 select bonusCoef * runeLevel).Sum();
 
-            bonusLevel /= 10000m;
-            var bonusRow = runeLevelBonusSheet.Values
-                .OrderByDescending(row => row.RuneLevel)
-                .FirstOrDefault(row => row.RuneLevel <= bonusLevel);
-            return bonusRow?.Bonus * (int)bonusLevel ?? 0;
+            return CalculateRuneLevelBonusReward(bonusLevel, runeLevelBonusSheet);
         }
     }
 }

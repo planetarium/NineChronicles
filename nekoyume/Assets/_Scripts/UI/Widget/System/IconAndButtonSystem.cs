@@ -150,6 +150,25 @@ namespace Nekoyume.UI
             };
         }
 
+        public void SetCancelCallbackToBackup()
+        {
+            CancelCallback = () =>
+            {
+                new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
+                    .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
+                    .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
+                    .SetCallback((_, _) =>
+                    {
+#if UNITY_EDITOR
+                        UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                UnityEngine.Application.Quit();
+#endif
+                    })
+                    .Share();
+            };
+        }
+
         private IEnumerator CoCheckBlockIndex(long blockIndex)
         {
             yield return new WaitWhile(() => Game.Game.instance.Agent.BlockIndex == blockIndex);

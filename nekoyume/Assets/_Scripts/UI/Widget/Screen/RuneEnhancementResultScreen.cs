@@ -129,8 +129,8 @@ namespace Nekoyume.UI
                 (runeItem.Row.Id, runeItem.Level));
             var currentReward = RuneHelper.CalculateRuneLevelBonus(
                 allRuneState, runeListSheet, runeLevelBonusSheet);
-            runeLevelBonusDiff.beforeText.text = $"{beforeReward / 100m:0.####}%";
-            runeLevelBonusDiff.afterText.text = $"{currentReward / 100m:0.####}%";
+            runeLevelBonusDiff.beforeText.text = $"+{beforeReward / 1000m:0.###}%";
+            runeLevelBonusDiff.afterText.text = $"+{currentReward / 1000m:0.###}%";
 
             var isCombine = runeItem.Level == 0;
             speechBubble.arrow.SetActive(!isCombine);
