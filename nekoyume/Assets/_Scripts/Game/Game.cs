@@ -399,12 +399,27 @@ namespace Nekoyume.Game
             if (_commandLineOptions.RequiredUpdate)
             {
                 var popup = Widget.Find<IconAndButtonSystem>();
-                popup.Show(
+                if (Nekoyume.Helper.Util.GetKeystoreJson() != string.Empty)
+                {
+                    popup.ShowWithTwoButton(
+                        "UI_REQUIRED_UPDATE_TITLE",
+                        "UI_REQUIRED_UPDATE_CONTENT",
+                        "UI_OK",
+                        "UI_KEY_BACKUP",
+                        true,
+                        IconAndButtonSystem.SystemType.Information);
+                    popup.SetCancelCallbackToBackup();
+                }
+                else
+                {
+                    popup.Show(
                         "UI_REQUIRED_UPDATE_TITLE",
                         "UI_REQUIRED_UPDATE_CONTENT",
                         "UI_OK",
                         true,
                         IconAndButtonSystem.SystemType.Information);
+                }
+
                 popup.ConfirmCallback = popup.CancelCallback = () =>
                 {
 #if UNITY_ANDROID
@@ -1500,22 +1515,29 @@ namespace Nekoyume.Game
             if (_commandLineOptions.Maintenance)
             {
                 var w = Widget.Create<IconAndButtonSystem>();
-                w.CancelCallback = () =>
+                w.ConfirmCallback = () => Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
+                if (Nekoyume.Helper.Util.GetKeystoreJson() != string.Empty)
                 {
-                    Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                    Application.Quit();
-#endif
-                };
-                w.Show(
-                    "UI_MAINTENANCE",
-                    "UI_MAINTENANCE_CONTENT",
-                    "UI_OK",
-                    true,
-                    IconAndButtonSystem.SystemType.Information
-                );
+                    w.SetCancelCallbackToBackup();
+                    w.ShowWithTwoButton(
+                        "UI_MAINTENANCE",
+                        "UI_MAINTENANCE_CONTENT",
+                        "UI_OK",
+                        "UI_KEY_BACKUP",
+                        true,
+                        IconAndButtonSystem.SystemType.Information
+                    );
+                }
+                else
+                {
+                    w.Show(
+                        "UI_MAINTENANCE",
+                        "UI_MAINTENANCE_CONTENT",
+                        "UI_OK",
+                        true,
+                        IconAndButtonSystem.SystemType.Information);
+                }
+
                 yield break;
             }
 
