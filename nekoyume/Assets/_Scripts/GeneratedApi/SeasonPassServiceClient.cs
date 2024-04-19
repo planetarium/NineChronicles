@@ -75,6 +75,10 @@ public class SeasonPassServiceClient
         public string AvatarAddr { get; set; }
         [JsonPropertyName("season_id")]
         public int SeasonId { get; set; }
+        [JsonPropertyName("force")]
+        public bool Force { get; set; }
+        [JsonPropertyName("prev")]
+        public bool Prev { get; set; }
     }
 
     public class ClaimResultSchema
@@ -316,6 +320,8 @@ public class SeasonPassServiceClient
         public int LastNormalClaim { get; set; }
         [JsonPropertyName("last_premium_claim")]
         public int LastPremiumClaim { get; set; }
+        [JsonPropertyName("claim_limit_timestamp")]
+        public string ClaimLimitTimestamp { get; set; }
     }
 
     public class ValidationError
@@ -456,6 +462,27 @@ public class SeasonPassServiceClient
     public async Task PostUserClaimAsync(ClaimRequestSchema requestBody, Action<ClaimResultSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/user/claim";
+        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        {
+            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            try
+            {
+                var response = await _client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                ClaimResultSchema result = System.Text.Json.JsonSerializer.Deserialize<ClaimResultSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostUserClaimprevAsync(ClaimRequestSchema requestBody, Action<ClaimResultSchema> onSuccess, Action<string> onError)
+    {
+        string url = Url + "/api/user/claim-prev";
         using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
         {
             request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
