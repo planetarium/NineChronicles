@@ -194,9 +194,22 @@ namespace Nekoyume.Blockchain
             catch (InvalidGenesisBlockException)
             {
                 var popup = Widget.Find<IconAndButtonSystem>();
-                popup.Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
-                popup.SetConfirmCallbackToExit();
-                popup.SetCancelCallbackToBackup();
+                if (Util.GetKeystoreJson() != string.Empty)
+                {
+                    popup.ShowWithTwoButton(
+                        "UI_RESET_STORE",
+                        "UI_RESET_STORE_CONTENT",
+                        "UI_OK",
+                        "UI_KEY_BACKUP",
+                        true,
+                        IconAndButtonSystem.SystemType.Information);
+                    popup.SetCancelCallbackToBackup();
+                }
+                else
+                {
+                    popup.Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
+                    popup.SetConfirmCallbackToExit();
+                }
             }
 
 #if BLOCK_LOG_USE
