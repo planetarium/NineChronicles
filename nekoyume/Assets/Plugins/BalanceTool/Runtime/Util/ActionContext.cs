@@ -1,5 +1,7 @@
 namespace BalanceTool.Util
 {
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Security.Cryptography;
     using Libplanet.Action;
     using Libplanet.Action.State;
@@ -34,6 +36,8 @@ namespace BalanceTool.Util
         public HashDigest<SHA256>? PreviousStateRootHash { get; set; }
 
         public bool BlockAction { get; }
+
+        public IReadOnlyList<ITransaction> Txs => ImmutableList<ITransaction>.Empty;
 
         public void UseGas(long gas)
         {
