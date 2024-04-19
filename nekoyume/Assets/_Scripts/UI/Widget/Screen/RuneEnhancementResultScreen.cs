@@ -1,13 +1,12 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Coffee.UIEffects;
 using Libplanet.Action;
-using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,17 +15,31 @@ namespace Nekoyume.UI
 {
     public class RuneEnhancementResultScreen : ScreenWidget
     {
+        [Serializable]
+        private struct RuneLevelBonusDiff
+        {
+            public TextMeshProUGUI beforeText;
+            public TextMeshProUGUI afterText;
+        }
+
+        [Serializable]
+        private struct SpeechBubble
+        {
+            public GameObject container;
+            public GameObject arrow;
+            public TextMeshProUGUI beforeText;
+            public TextMeshProUGUI afterText;
+            public TextMeshProUGUI dialogText;
+        }
+
         [SerializeField]
-        private Image runeImage;
+        private VanillaItemView vanillaItemView;
+
+        [SerializeField]
+        private ItemOptionTag itemOptionTag;
 
         [SerializeField]
         private TextMeshProUGUI runeText;
-
-        [SerializeField]
-        private TextMeshProUGUI successText;
-
-        [SerializeField]
-        private TextMeshProUGUI failText;
 
         [SerializeField]
         private TextMeshProUGUI currentLevelText;
@@ -59,97 +72,87 @@ namespace Nekoyume.UI
         private Animator animator;
 
         [SerializeField]
-        private UIHsvModifier optionTagBg = null;
-
-        [SerializeField]
-        private List<Image> optionTagImages = null;
-
-        [SerializeField]
-        private OptionTagDataScriptableObject optionTagData = null;
-
-        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
         private SpeechBubble speechBubble;
 
+        [SerializeField]
+        private RuneLevelBonusDiff runeLevelBonusDiff;
+
         private static readonly int HashToSuccess =
             Animator.StringToHash("Success");
-
-        private static readonly int HashToFail =
-            Animator.StringToHash("Fail");
 
         protected override void Awake()
         {
             base.Awake();
             closeButton.onClick.AddListener(() =>
             {
-                speechBubble.Close();
+                speechBubble.container.SetActive(false);
                 Close(true);
             });
             CloseWidget = () =>
             {
-                speechBubble.Close();
+                speechBubble.container.SetActive(false);
                 Close(true);
             };
         }
 
         public void Show(
             RuneItem runeItem,
-            FungibleAssetValue ncg,
-            FungibleAssetValue crystal,
             int tryCount,
-            IRandom random)
+            IRandom random,
+            (int previousCp, int currentCp) cp)
         {
             base.Show(true);
 
-            // FIXME
-            var isSuccess = RuneHelper.TryEnhancement(
+            RuneHelper.TryEnhancement(
                 runeItem.Level,
                 runeItem.CostRow,
                 random,
                 tryCount,
                 out var tryResult);
 
-            AudioController.instance.PlaySfx(isSuccess
-                ? AudioController.SfxCode.Success
-                : AudioController.SfxCode.Failed);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
 
-            var levelUpCount = tryResult.LevelUpCount;
-            string speech;
-            if (isSuccess)
-            {
-                speech = tryCount != levelUpCount
-                    ? L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_1", tryCount, levelUpCount)
-                    : L10nManager.Localize("UI_RUNE_LEVEL_UP_SUCCESS_2", levelUpCount);
-            }
-            else
-            {
-                speech = L10nManager.Localize("UI_RUNE_LEVEL_UP_FAIL", levelUpCount);
-            }
+            var resultLevel = runeItem.Level + tryResult.LevelUpCount;
 
-            speechBubble.Show();
-            StartCoroutine(speechBubble.CoShowText(speech, true));
-
-            UpdateInformation(runeItem, isSuccess);
+            UpdateInformation(runeItem, resultLevel);
             currentLevelText.text = $"+{runeItem.Level}";
-            nextLevelText.text = $"+{runeItem.Level + tryResult.LevelUpCount}";
-            successText.gameObject.SetActive(isSuccess);
-            failText.gameObject.SetActive(!isSuccess);
-            animator.Play(isSuccess ? HashToSuccess : HashToFail);
+            nextLevelText.text = $"+{resultLevel}";
+
+            var allRuneState = Game.Game.instance.States.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var beforeReward = RuneFrontHelper.CalculateRuneLevelBonusReward(
+                allRuneState, runeListSheet, runeLevelBonusSheet,
+                (runeItem.Row.Id, runeItem.Level));
+            var currentReward = RuneHelper.CalculateRuneLevelBonus(
+                allRuneState, runeListSheet, runeLevelBonusSheet);
+            runeLevelBonusDiff.beforeText.text = $"+{beforeReward / 1000m:0.###}%";
+            runeLevelBonusDiff.afterText.text = $"+{currentReward / 1000m:0.###}%";
+
+            var isCombine = runeItem.Level == 0;
+            speechBubble.arrow.SetActive(!isCombine);
+            speechBubble.beforeText.gameObject.SetActive(!isCombine);
+            speechBubble.beforeText.text = $"+{runeItem.Level}";
+            speechBubble.afterText.text = $"+{resultLevel}";
+            speechBubble.dialogText.text = isCombine ?
+                L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE") :
+                L10nManager.Localize("UI_RUNE_UPGRADE_COMPLETE");
+            speechBubble.container.SetActive(true);
+
+            animator.Play(HashToSuccess);
+            var (previousCp, currentCp) = cp;
+            Find<CPScreen>().Show(previousCp, currentCp);
         }
 
-        private void UpdateInformation(RuneItem item, bool isSuccess)
+        private void UpdateInformation(RuneItem item, int resultLevel)
         {
-            if (RuneFrontHelper.TryGetRuneIcon(item.Row.Id, out var icon))
-            {
-                runeImage.sprite = icon;
-            }
-
+            vanillaItemView.SetData(item.RuneStone);
             runeText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
 
-            var level = isSuccess ? item.Level + 1 : item.Level;
-            if (!item.OptionRow.LevelOptionMap.TryGetValue(level, out var option))
+            if (!item.OptionRow.LevelOptionMap.TryGetValue(resultLevel, out var option))
             {
                 return;
             }
@@ -216,24 +219,11 @@ namespace Nekoyume.UI
 
         private void UpdateOptionTag(RuneOptionSheet.Row.RuneOptionInfo option, int grade)
         {
-            optionTagBg.gameObject.SetActive(false);
-
-            foreach (var image in optionTagImages)
+            var skillOption = option.SkillId != 0;
+            itemOptionTag.gameObject.SetActive(skillOption);
+            if (skillOption)
             {
-                image.gameObject.SetActive(false);
-            }
-
-            if (option.SkillId != 0)
-            {
-                var data = optionTagData.GetOptionTagData(grade);
-                var image = optionTagImages.First();
-                image.gameObject.SetActive(true);
-                image.sprite = optionTagData.SkillOptionSprite;
-                optionTagBg.range = data.GradeHsvRange;
-                optionTagBg.hue = data.GradeHsvHue;
-                optionTagBg.saturation = data.GradeHsvSaturation;
-                optionTagBg.value = data.GradeHsvValue;
-                optionTagBg.gameObject.SetActive(true);
+                itemOptionTag.Set(grade);
             }
         }
     }

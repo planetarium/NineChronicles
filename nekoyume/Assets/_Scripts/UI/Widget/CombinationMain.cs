@@ -139,12 +139,15 @@ namespace Nekoyume.UI
 
             // rune
             runeNotificationImage.enabled = false;
-            var runeStates = States.Instance.RuneStates;
-            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
-            foreach (var value in sheet.Values)
+            var allRuneState = States.Instance.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            foreach (var runeRow in runeListSheet)
             {
-                var state = runeStates.FirstOrDefault(x => x.RuneId == value.Id);
-                var runeItem = new RuneItem(value, state?.Level ?? 0);
+                var runeLevel = allRuneState.TryGetRuneState(runeRow.Id, out var runeState)
+                    ? runeState.Level
+                    : 0;
+
+                var runeItem = new RuneItem(runeRow, runeLevel);
                 if (runeItem.HasNotification)
                 {
                     runeNotificationImage.enabled = true;

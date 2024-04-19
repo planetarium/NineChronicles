@@ -29751,6 +29751,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &4409822234465269252
 GameObject:
   m_ObjectHideFlags: 0
@@ -32866,7 +32867,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_COLLECTION_EFFECT
+  l10nKey: UI_STATS_BONUS
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -37669,6 +37670,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!114 &3050095336060669919
 MonoBehaviour:
   m_ObjectHideFlags: 0

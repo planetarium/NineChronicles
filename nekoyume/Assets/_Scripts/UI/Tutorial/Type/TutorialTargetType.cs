@@ -65,6 +65,7 @@ namespace Nekoyume.UI
         ActionPointChargeButton,
         CombinationRuneButton, // Combination -> Rune
         CombinationRuneCombineButton,
+        CombinationRuneLevelBonusArea
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>

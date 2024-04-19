@@ -267,17 +267,24 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
-            var runeStated = States.Instance.GetEquippedRuneStates(battleType);
-            var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
+            var runeStates = States.Instance.GetEquippedRuneStates(battleType);
+            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
+
+            var allRuneState = States.Instance.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(allRuneState,
+                runeListSheet, runeLevelBonusSheet);
 
             var collectionState = Game.Game.instance.States.CollectionState;
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
             var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
-            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet, collectionStatModifiers);
+            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet,
+                collectionStatModifiers, runeLevelBonus);
         }
 
-        public static (int previousCP, int currentCP) GetCpChanged(CollectionState previousState,
-            CollectionState currentState)
+        public static (int previousCP, int currentCP) GetCpChanged(
+            CollectionState previousState, CollectionState currentState)
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
             var level = avatarState.level;
@@ -287,14 +294,53 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var runeStated = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
-            var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
+            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
+
+            var allRuneState = States.Instance.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(allRuneState,
+                runeListSheet, runeLevelBonusSheet);
 
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
             var previousCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
-                costumeSheet, previousState.GetEffects(collectionSheet));
+                costumeSheet, previousState.GetEffects(collectionSheet), runeLevelBonus);
             var currentCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
-                costumeSheet, currentState.GetEffects(collectionSheet));
+                costumeSheet, currentState.GetEffects(collectionSheet), runeLevelBonus);
+            return (previousCp, currentCp);
+        }
+
+        public static (int previousCP, int currentCP) GetCpChanged(
+            AllRuneState previousState, AllRuneState currentState)
+        {
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var level = avatarState.level;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var row = characterSheet[avatarState.characterId];
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
+            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
+
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+
+            var prevRuneLevelBonus = RuneHelper.CalculateRuneLevelBonus(previousState,
+                runeListSheet, runeLevelBonusSheet);
+            var currentRuneLevelBonus = RuneHelper.CalculateRuneLevelBonus(currentState,
+                runeListSheet, runeLevelBonusSheet);
+
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
+
+            var previousCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
+                costumeSheet, collectionStatModifiers, prevRuneLevelBonus);
+            var currentCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
+                costumeSheet, collectionStatModifiers, currentRuneLevelBonus);
             return (previousCp, currentCp);
         }
 

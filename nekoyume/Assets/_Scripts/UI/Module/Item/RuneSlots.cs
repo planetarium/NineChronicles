@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
 
         public void Set(
             List<RuneSlot> runeSlotStates,
-            List<RuneState> runeStates,
+            AllRuneState allRuneState,
             System.Action<RuneSlotView> onClick)
         {
             foreach (var (view, slot) in GetZippedRuneSlotViewsWithRuneSlotStates(slots, runeSlotStates))
@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module
                 RuneState runeState = null;
                 if (slot.RuneId.HasValue)
                 {
-                    runeState = runeStates.FirstOrDefault(x => x.RuneId == slot.RuneId.Value);
+                    allRuneState.TryGetRuneState(slot.RuneId.Value, out runeState);
                 }
 
                 view.Set(slot, runeState, onClick);

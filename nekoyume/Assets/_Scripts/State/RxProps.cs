@@ -79,19 +79,6 @@ namespace Nekoyume.State
                 EventDungeonInfo.UpdateAsync(),
                 WorldBossStates.Set(States.Instance.CurrentAvatarState.address),
                 UniTask.RunOnThreadPool(States.Instance.InitAvatarBalancesAsync).ToObservable().ObserveOnMainThread().ToUniTask(),
-                UniTask.Run(async () =>
-                {
-                    var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-                    var avatarAddress = States.Instance.CurrentAvatarState.address;
-                    var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
-                    var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id))
-                        .ToList();
-                    var stateBulk =
-                        await Game.Game.instance.Agent.GetStateBulkAsync(
-                            ReservedAddresses.LegacyAccount, runeAddresses);
-                    States.Instance.SetRuneStates(stateBulk.Values.OfType<List>().Select(serialized => new RuneState(serialized)));
-                }),
-                States.Instance.InitRuneSlotStates(),
                 States.Instance.InitItemSlotStates());
         }
 

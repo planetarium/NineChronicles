@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Libplanet.Action;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
@@ -33,10 +32,58 @@ namespace Nekoyume.UI
             public Button plusButton;
         }
 
+        [Serializable]
+        private struct RuneLevelBonus
+        {
+            public TextMeshProUGUI bonusText;
+            public RuneLevelBonusDiff reward;
+            public Button infoButton;
+        }
+
+        [Serializable]
+        private struct RuneLevelBonusDiff
+        {
+            public GameObject arrow;
+            public TextMeshProUGUI currentText;
+            public TextMeshProUGUI nextText;
+
+            private int _runeId;
+            private int _startLevel;
+
+            public void Set(bool canEnhancement, int runeId, int startLevel)
+            {
+                _runeId = runeId;
+                _startLevel = startLevel;
+
+                arrow.SetActive(canEnhancement);
+                nextText.gameObject.SetActive(canEnhancement);
+            }
+
+            public void UpdateTryCount(int tryCount)
+            {
+                var allRuneState = States.Instance.AllRuneState;
+                if (allRuneState is null)
+                {
+                    return;
+                }
+
+                var nextReward = RuneFrontHelper.CalculateRuneLevelBonusReward(
+                    allRuneState,
+                    Game.Game.instance.TableSheets.RuneListSheet,
+                    Game.Game.instance.TableSheets.RuneLevelBonusSheet,
+                    (_runeId, _startLevel + tryCount));
+
+                nextText.text = $"+{nextReward / 1000m:0.###}%";
+            }
+        }
+
         [SerializeField]
         private Button closeButton;
 
         [SerializeField] [Header("LeftArea")]
+        private RuneLevelBonus runeLevelBonus;
+
+        [SerializeField]
         private RuneStoneEnhancementInventoryScroll scroll;
 
         [SerializeField] [Header("RightArea")]
@@ -44,6 +91,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI gradeText;
+
+        [SerializeField]
+        private TextMeshProUGUI levelBonusCoef;
 
         [SerializeField]
         private RuneOptionView runeOptionView;
@@ -83,11 +133,15 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
 
         private RuneItem _selectedRuneItem;
+        private decimal _runeLevelBonus;
         private int _maxTryCount = 1;
         private int _currentRuneId = RuneFrontHelper.DefaultRuneId;
 
         private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
+
+        private static string TutorialCheckKey =>
+            $"Tutorial_Check_Rune_{Game.Game.instance.States.CurrentAvatarKey}";
 
         protected override void Awake()
         {
@@ -97,6 +151,8 @@ namespace Nekoyume.UI
                 _costItems.Add(costItem.CostType, costItem);
             }
 
+            runeLevelBonus.infoButton.onClick.AddListener(() =>
+                Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus / 10000m));
             levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
             levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
             {
@@ -143,14 +199,24 @@ namespace Nekoyume.UI
                 _costItems[RuneCostType.Ncg].UpdateCount(x);
                 _costItems[RuneCostType.Crystal].UpdateCount(x);
                 runeOptionView.UpdateTryCount(x);
+                runeLevelBonus.reward.UpdateTryCount(x);
             }).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            SetRuneLevelBonus();
             SetInventory();
             base.Show(ignoreShowAnimation);
             Set(_selectedRuneItem);
+
+            if (_runeLevelBonus > 0 &&
+                PlayerPrefs.GetInt(TutorialCheckKey, 0) == 0)
+            {
+                // Play Tutorial - Rune Level Bonus (for old user)
+                Game.Game.instance.Stage.TutorialController.Play(231000);
+                PlayerPrefs.SetInt(TutorialCheckKey, 1);
+            }
         }
 
         public void Show(int runeId, bool ignoreShowAnimation = false)
@@ -158,22 +224,23 @@ namespace Nekoyume.UI
             _currentRuneId = runeId;
             _selectedRuneItem = null;
 
-            SetInventory();
-            base.Show(ignoreShowAnimation);
-            Set(_selectedRuneItem);
+            Show(ignoreShowAnimation);
         }
 
-        public void OnActionRender(IRandom random, FungibleAssetValue fav)
+        public void OnActionRender(
+            IRandom random,
+            FungibleAssetValue fav,
+            (int previousCp, int currentCp) cp)
         {
             Find<RuneEnhancementResultScreen>().Show(
                 _selectedRuneItem,
-                States.Instance.GoldBalanceState.Gold,
-                States.Instance.CrystalBalance,
                 TryCount.Value,
-                random);
+                random,
+                cp);
 
             States.Instance.UpdateRuneSlotState();
             _selectedRuneItem.RuneStone = fav;
+            SetRuneLevelBonus();
             SetInventory();
             Set(_selectedRuneItem);
             animator.Play(_selectedRuneItem.Level > 1 ? HashToLevelUp : HashToCombine);
@@ -185,13 +252,16 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
             _runeItems.Clear();
 
-            var runeStates = States.Instance.RuneStates;
-            var sheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var allRuneState = States.Instance.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var items = new List<RuneStoneEnhancementInventoryItem>();
-            foreach (var value in sheet.Values)
+            foreach (var runeRow in runeListSheet)
             {
-                var state = runeStates.FirstOrDefault(x => x.RuneId == value.Id);
-                var runeItem = new RuneItem(value, state?.Level ?? 0);
+                var runeLevel = allRuneState.TryGetRuneState(runeRow.Id, out var runeState)
+                    ? runeState.Level
+                    : 0;
+
+                var runeItem = new RuneItem(runeRow, runeLevel);
                 if (_selectedRuneItem == null)
                 {
                     if (runeItem.Row.Id == _currentRuneId)
@@ -207,7 +277,7 @@ namespace Nekoyume.UI
                     }
                 }
                 _runeItems.Add(runeItem);
-                items.Add(new RuneStoneEnhancementInventoryItem(state, value, runeItem));
+                items.Add(new RuneStoneEnhancementInventoryItem(runeState, runeRow, runeItem));
             }
 
             scroll.UpdateData(items.OrderBy(x => x.item.SortingOrder));
@@ -218,6 +288,20 @@ namespace Nekoyume.UI
         {
             _selectedRuneItem = null;
             Set(item.item);
+        }
+
+        private void SetRuneLevelBonus()
+        {
+            var bonus = RuneFrontHelper.CalculateRuneLevelBonus(
+                States.Instance.AllRuneState,
+                Game.Game.instance.TableSheets.RuneListSheet);
+            var reward = RuneFrontHelper.CalculateRuneLevelBonusReward(
+                bonus,
+                Game.Game.instance.TableSheets.RuneLevelBonusSheet);
+            runeLevelBonus.bonusText.text = bonus.ToString();
+            runeLevelBonus.reward.currentText.text = $"+{reward / 1000m:0.###}%";
+
+            _runeLevelBonus = bonus;
         }
 
         private void Enhancement()
@@ -296,8 +380,12 @@ namespace Nekoyume.UI
         {
             runeNameText.text = L10nManager.Localize($"RUNE_NAME_{item.Row.Id}");
             gradeText.text = L10nManager.Localize($"UI_ITEM_GRADE_{item.Row.Grade}");
+            levelBonusCoef.text = item.Row.BonusCoef.ToString();
 
             runeOptionView.Set(item.OptionRow, item.Level, (RuneUsePlace)item.Row.UsePlace);
+            runeLevelBonus.reward.Set(
+                item.Level < item.CostRow.Cost.Count,
+                _selectedRuneItem.Row.Id, _selectedRuneItem.Level);
         }
 
         private void UpdateCost(RuneItem item, Sprite runeStoneIcon)
@@ -380,6 +468,8 @@ namespace Nekoyume.UI
         public void TutorialActionClickCombinationRuneCombineButton()
         {
             Enhancement();
+            // Rune Level Bonus (for new user)
+            PlayerPrefs.SetInt(TutorialCheckKey, 1);
         }
     }
 }

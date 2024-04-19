@@ -270,7 +270,8 @@ namespace Nekoyume.UI
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Raid];
             var equipments = itemSlotState.Equipments;
             var costumes = itemSlotState.Costumes;
-            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Raid);
+            var allRuneState = States.Instance.AllRuneState;
+            var runeSlotState = States.Instance.CurrentRuneSlotStates[BattleType.Raid];
             var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
             var tableSheets = Game.Game.instance.TableSheets;
             var avatarState = States.Instance.CurrentAvatarState;
@@ -284,17 +285,20 @@ namespace Nekoyume.UI
                 new PracticeRandom(),
                 avatarState,
                 consumables,
-                runeStates,
+                allRuneState,
+                runeSlotState,
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet,
                 collectionState.GetEffects(tableSheets.CollectionSheet),
                 tableSheets.DeBuffLimitSheet
             );
             var log = simulator.Simulate();
-            var digest = new ArenaPlayerDigest(avatarState,
+            var digest = new ArenaPlayerDigest(
+                avatarState,
                 itemSlotState.Equipments,
                 itemSlotState.Costumes,
-                runeStates);
+                allRuneState,
+                runeSlotState);
             var raidStage = Game.Game.instance.RaidStage;
             var raidStartData = new RaidStage.RaidStartData(
                 avatarState.address,
@@ -419,8 +423,6 @@ namespace Nekoyume.UI
             var isIntervalValid = blockIndex - _lastBattleBlockIndex >= worldBossRequiredInterval;
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Raid)
-                .Select(x=> x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
 
             var isEquipValid = Util.CanBattle(equipments, costumes, consumables);

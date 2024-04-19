@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
+
 namespace BalanceTool.Util
 {
     using System.Security.Cryptography;
@@ -12,6 +15,7 @@ namespace BalanceTool.Util
     {
         private long _gasUsed;
         private IRandom _random = null;
+        private IReadOnlyList<ITransaction> _txs = null;
 
         public BlockHash? GenesisHash { get; set; }
 
@@ -34,6 +38,12 @@ namespace BalanceTool.Util
         public HashDigest<SHA256>? PreviousStateRootHash { get; set; }
 
         public bool BlockAction { get; }
+
+        public IReadOnlyList<ITransaction> Txs
+        {
+            get => _txs ?? ImmutableList<ITransaction>.Empty;
+            set => _txs = value;
+        }
 
         public void UseGas(long gas)
         {

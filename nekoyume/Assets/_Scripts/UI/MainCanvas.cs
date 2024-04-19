@@ -456,11 +456,13 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<InviteFriendsPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CollectionEffectPopup>());
+            _secondWidgets.Add(Widget.Create<StatsBonusPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionRegistrationPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionResultPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;
 
             // tooltip

@@ -56,24 +56,33 @@ namespace Nekoyume
             return (itemSlotStates, runeSlotStates);
         }
 
-        public static async Task<List<RuneState>> GetRuneStatesAsync(this AvatarState avatarState)
+        public static async Task<AllRuneState> GetAllRuneStateAsync(this AvatarState avatarState)
         {
-            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
-            var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
-            var addresses = runeIds.Select(id => RuneState.DeriveAddress(avatarState.address, id)).ToList();
-            var bulk = await Game.Game.instance.Agent.GetStateBulkAsync(
-                ReservedAddresses.LegacyAccount,
-                addresses);
-            var runeStates = new List<RuneState>();
-            foreach (var value in bulk.Values)
+            AllRuneState allRuneState;
+
+            var avatarAddress = avatarState.address;
+            var allRuneStateValue = await Game.Game.instance.Agent.GetStateAsync(
+                Addresses.RuneState, avatarAddress);
+            if (allRuneStateValue is List allRuneStateSerialized)
             {
-                if (value is List list)
+                allRuneState = new AllRuneState(allRuneStateSerialized);
+            }
+            else
+            {
+                allRuneState = new AllRuneState();
+
+                var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+                var runeAddresses = runeListSheet.Values.Select(row =>
+                    RuneState.DeriveAddress(avatarAddress, row.Id));
+                var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(
+                    ReservedAddresses.LegacyAccount, runeAddresses);
+                foreach (var runeSerialized in stateBulk.Values.OfType<List>())
                 {
-                    runeStates.Add(new RuneState(list));
+                    allRuneState.AddRuneState(new RuneState(runeSerialized));
                 }
             }
 
-            return runeStates;
+            return allRuneState;
         }
 
         public static async Task<CollectionState> GetCollectionStateAsync(this AvatarState avatarState)

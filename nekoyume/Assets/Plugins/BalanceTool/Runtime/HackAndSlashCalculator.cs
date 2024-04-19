@@ -14,11 +14,13 @@ using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.Module;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Rune;
 
 namespace BalanceTool
 {
@@ -119,11 +121,14 @@ namespace BalanceTool
                 ApStoneCount = 0, // Fix to 0.
                 TotalPlayCount = 1, // Fix to 1.
             };
-            var runeStates = playData.Runes
-                .Select(tuple => RuneState.DeriveAddress(avatarAddr, tuple.runeId))
-                .Select(addr => new RuneState((List)states.GetAccount(
-                    ReservedAddresses.LegacyAccount).GetState(addr)!))
-                .ToList();
+
+            var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddr, BattleType.Adventure);
+            var runeSlotState = states.TryGetLegacyState(runeSlotStateAddress, out List rawRuneSlotState)
+                ? new RuneSlotState(rawRuneSlotState)
+                : new RuneSlotState(BattleType.Adventure);
+            runeSlotState.UpdateSlot(has.RuneInfos, sheets.GetSheet<RuneListSheet>());
+
+            var allRuneState = states.GetRuneState(avatarAddr, out _);
             var collectionState = states.GetCollectionState(avatarAddr);
             var skillsOnWaveStart = new List<Nekoyume.Model.Skill.Skill>();
             if (has.StageBuffId.HasValue)
@@ -151,7 +156,8 @@ namespace BalanceTool
                     blockIndex,
                     has,
                     avatarState,
-                    runeStates,
+                    allRuneState,
+                    runeSlotState,
                     skillsOnWaveStart,
                     sheets.GetSheet<StageSheet>()[has.StageId],
                     sheets.GetSheet<StageWaveSheet>()[has.StageId],
@@ -179,7 +185,8 @@ namespace BalanceTool
             long blockIndex,
             HackAndSlash has,
             AvatarState avatarState,
-            List<RuneState> runeStates,
+            AllRuneState allRuneState,
+            RuneSlotState runeSlotState,
             List<Nekoyume.Model.Skill.Skill> skillsOnWaveStart,
             StageSheet.Row stageRow,
             StageWaveSheet.Row stageWaveRow,
@@ -198,7 +205,8 @@ namespace BalanceTool
                 random,
                 avatarState,
                 has.Foods,
-                runeStates,
+                allRuneState,
+                runeSlotState,
                 skillsOnWaveStart,
                 has.WorldId,
                 has.StageId,
