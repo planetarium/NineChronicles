@@ -9,6 +9,7 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using UniRx;
 using UnityEngine;
+using DG.Tweening;
 
 namespace Nekoyume.Game.Character
 {
@@ -82,6 +83,8 @@ namespace Nekoyume.Game.Character
             NcDebug.Log($"[SkipStageCharacter] OnTriggered~!~!~! {other.name}");
             Prologue.PopupDmg(14352, gameObject, false, Game.instance.Stage.StageSkipCritical, ElementalType.Fire, false);
             StartCoroutine(Dying());
+            transform.DOMove(transform.position + new Vector3(8f, 6f, 0), 1.8f).SetEase(Ease.OutExpo);
+            transform.DOBlendablePunchRotation(new Vector3(360, 360, 360), 1.2f).SetEase(Ease.OutExpo);
         }
 
         protected virtual IEnumerator Dying()
