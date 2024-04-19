@@ -315,10 +315,17 @@ namespace Nekoyume.Game.Battle
                 }
             }
 
-            if (hasPrevBackground && _background.TryGetComponent<BackgroundGroup>(out var backgroundGroup))
+            if (_background.TryGetComponent<BackgroundGroup>(out var backgroundGroup))
             {
-                backgroundGroup.SetBackgroundAlpha(0);
-                backgroundGroup.FadeIn(fadeTime);
+                if (hasPrevBackground)
+                {
+                    backgroundGroup.SetBackgroundAlpha(0);
+                    backgroundGroup.FadeIn(fadeTime);
+                }
+                else
+                {
+                    backgroundGroup.SetBackgroundAlpha(1);
+                }
             }
         }
 
