@@ -559,7 +559,7 @@ namespace Nekoyume.Game.Character
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
-                var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
+                var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target.gameObject, buff);
 
 #if TEST_LOG
                 Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");

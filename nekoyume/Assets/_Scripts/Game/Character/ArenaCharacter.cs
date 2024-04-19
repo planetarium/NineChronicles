@@ -317,7 +317,7 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = Game.instance.Arena.BuffController.Get<ArenaCharacter, BuffVFX>(target, buff);
+            var effect = Game.instance.Arena.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Play();
             if (effect.IsPersisting)
             {

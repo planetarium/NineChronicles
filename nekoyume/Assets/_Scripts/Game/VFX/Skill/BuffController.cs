@@ -28,11 +28,9 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public V Get<T, V>(T target, Buff buff)
-            where T : Character.Character
-            where V : BuffVFX
+        public T Get<T>(GameObject target, Buff buff) where T : BuffVFX
         {
-            if (target is null)
+            if (target == null)
             {
                 return null;
             }
@@ -41,13 +39,13 @@ namespace Nekoyume.Game.VFX.Skill
             position.y += 0.55f;
 
             var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
-            var go = _pool.Get(resourceName, false, position);
+            var go           = _pool.Get(resourceName, false, position);
             if (go == null)
             {
                 go = _pool.Get(resourceName, true, position);
             }
 
-            return GetEffect<V>(go);
+            return GetEffect<T>(go);
         }
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
@@ -74,22 +72,6 @@ namespace Nekoyume.Game.VFX.Skill
 
             effect.Stop();
             return effect;
-        }
-
-        public T Get<T>(GameObject target, Buff buff) where T : BuffVFX
-        {
-            var position = target.transform.position;
-            position.y += 0.55f;
-
-
-            var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
-            var go = _pool.Get(resourceName, false, position);
-            if (go == null)
-            {
-                go = _pool.Get(resourceName, true, position);
-            }
-
-            return GetEffect<T>(go);
         }
 
         public static IEnumerator CoChaseTarget(Component vfx, Transform target)

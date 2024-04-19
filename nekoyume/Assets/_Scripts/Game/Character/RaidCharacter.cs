@@ -700,7 +700,7 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = Game.instance.RaidStage.BuffController.Get<RaidCharacter, BuffVFX>(target, buff);
+            var effect = Game.instance.RaidStage.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Play();
             if (effect.IsPersisting)
             {
