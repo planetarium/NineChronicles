@@ -1919,7 +1919,6 @@ namespace Nekoyume.Blockchain
                                     newAvatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                                Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
                             }
                             catch (Exception e)
                             {
@@ -1928,6 +1927,7 @@ namespace Nekoyume.Blockchain
                         });
                     });
 
+            Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
             var tableSheets = TableSheets.Instance;
             var skillsOnWaveStart = new List<Skill>();
             if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId && prevSkillState.SkillIds.Any())
