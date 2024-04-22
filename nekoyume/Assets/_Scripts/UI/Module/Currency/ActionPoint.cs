@@ -83,12 +83,16 @@ namespace Nekoyume.UI.Module
             dailyBonus.sliderAnimator.SetValue(0f, false);
             dailyBonus.sliderAnimator.SetMaxValue(DailyReward.DailyRewardInterval);
 
-            GameConfigStateSubject.ActionPointState.ObserveAdd()
+            GameConfigStateSubject.ActionPointState
+                .ObserveAdd()
+                .ObserveOnMainThread()
                 .Where(x => x.Key == States.Instance.CurrentAvatarState.address)
                 .Subscribe(x => Charger(true))
                 .AddTo(gameObject);
 
-            GameConfigStateSubject.ActionPointState.ObserveRemove()
+            GameConfigStateSubject.ActionPointState
+                .ObserveRemove()
+                .ObserveOnMainThread()
                 .Where(x => x.Key == States.Instance.CurrentAvatarState.address)
                 .Subscribe(x => Charger(false)).AddTo(gameObject);
 

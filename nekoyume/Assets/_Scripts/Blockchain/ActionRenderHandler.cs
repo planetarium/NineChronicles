@@ -340,6 +340,7 @@ namespace Nekoyume.Blockchain
         private void DailyReward()
         {
             _actionRenderer.EveryRender<DailyReward>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Select(PreResponseDailyReward)
