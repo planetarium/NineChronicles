@@ -584,10 +584,17 @@ namespace Nekoyume.Blockchain
                     return null;
                 }
 
-                if (full[2] is not Dictionary questListDict)
+                switch (full[2])
                 {
-                    NcDebug.LogError("Given raw is not a format of the questList.");
-                    return null;
+                    case Dictionary questListDict:
+                        avatarState.questList = new QuestList(questListDict);
+                        break;
+                    case List questList:
+                        avatarState.questList = new QuestList(questList);
+                        break;
+                    default:
+                        NcDebug.LogError("Given raw is not a format of the questList.");
+                        return null;
                 }
 
                 if (full[3] is not Dictionary worldInformationDict)
@@ -597,7 +604,6 @@ namespace Nekoyume.Blockchain
                 }
 
                 avatarState.inventory = new Inventory(inventoryList);
-                avatarState.questList = new QuestList(questListDict);
                 avatarState.worldInformation = new WorldInformation(worldInformationDict);
             }
             else
