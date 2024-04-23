@@ -205,9 +205,9 @@ namespace Nekoyume.Helper
             AllRuneState allRuneState,
             RuneListSheet runeListSheet)
         {
-            return (from rune in allRuneState.Runes.Values
-                let bonusCoef = runeListSheet[rune.RuneId].BonusCoef
-                select bonusCoef * rune.Level).Sum();
+            return allRuneState.Runes.Values
+                .Select(rune => runeListSheet[rune.RuneId].BonusCoef * rune.Level)
+                .Sum();
         }
 
         public static int CalculateRuneLevelBonusReward(
@@ -216,10 +216,12 @@ namespace Nekoyume.Helper
             RuneLevelBonusSheet runeLevelBonusSheet,
             (int id, int level) editRune)
         {
-            var bonusLevel = (from rune in allRuneState.Runes.Values
-                let bonusCoef = runeListSheet[rune.RuneId].BonusCoef
-                let runeLevel = rune.RuneId == editRune.id ? editRune.level : rune.Level
-                select bonusCoef * runeLevel).Sum();
+            var bonusLevel = allRuneState.Runes.Values
+                .Select(rune => runeListSheet[rune.RuneId].BonusCoef *
+                                (rune.RuneId != editRune.id ? rune.Level : 0))
+                .Sum();
+
+            bonusLevel += runeListSheet[editRune.id].BonusCoef * editRune.level;
 
             return CalculateRuneLevelBonusReward(bonusLevel, runeLevelBonusSheet);
         }
