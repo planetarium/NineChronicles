@@ -2802,15 +2802,13 @@ namespace Nekoyume.Blockchain
             {
                 enemyAllRuneState = new AllRuneState();
 
-                var runeAddresses = TableSheets.Instance.RuneListSheet.Values
-                    .Select(row => RuneState.DeriveAddress(enemyAvatarAddress, row.Id));
-                foreach (var address in runeAddresses)
+                var runeAddresses = TableSheets.Instance.RuneListSheet.Values.Select(row =>
+                    RuneState.DeriveAddress(enemyAvatarAddress, row.Id));
+                var stateBulk = StateGetter.GetStates(prevStates,
+                    ReservedAddresses.LegacyAccount, runeAddresses);
+                foreach (var rawRuneState in stateBulk.OfType<List>())
                 {
-                    if (StateGetter.GetState(prevStates, ReservedAddresses.LegacyAccount, address)
-                        is List rawRuneState)
-                    {
-                        enemyAllRuneState.AddRuneState(new RuneState(rawRuneState));
-                    }
+                    enemyAllRuneState.AddRuneState(new RuneState(rawRuneState));
                 }
             }
 
