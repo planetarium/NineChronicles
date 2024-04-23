@@ -228,8 +228,8 @@ namespace Nekoyume.UI
             _onClose = onClose;
             scrollbar.value = 1f;
 
-            var isInteractive = isTradeAble && fav.MajorUnit > 0;
-            SetTradableState(isAvailableSell, isInteractive);
+            isTradeAble = isTradeAble && fav.MajorUnit > 0;
+            SetTradableState(isAvailableSell, isTradeAble);
         }
 
         private void UpdateInformation(string ticker, string amount, System.Action onClose)
@@ -354,14 +354,12 @@ namespace Nekoyume.UI
             _isPointerOnScrollArea = value;
         }
 
-        private void SetTradableState(bool tradable, bool isInteractive = false)
+        private void SetTradableState(bool isAvailableSell, bool isTradable = false)
         {
-            isInteractive = isInteractive && tradable;
+            registerButton.gameObject.SetActive(isAvailableSell);
 
-            registerButton.gameObject.SetActive(tradable);
-
-            registerButton.Interactable = isInteractive;
-            detail.UpdateTradableText(isInteractive);
+            registerButton.Interactable = isTradable && isAvailableSell;
+            detail.UpdateTradableText(isTradable);
         }
     }
 }
