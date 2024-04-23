@@ -322,8 +322,13 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
-            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
+
+            var previousRuneStates =
+                States.Instance.GetEquippedRuneStates(previousState, BattleType.Adventure);
+            var previousRuneOptionInfos = GetRuneOptions(previousRuneStates, runeOptionSheet);
+            var currentRuneStates =
+                States.Instance.GetEquippedRuneStates(currentState, BattleType.Adventure);
+            var currentRuneOptionInfos = GetRuneOptions(currentRuneStates, runeOptionSheet);
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
@@ -337,10 +342,10 @@ namespace Nekoyume.Helper
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
             var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
 
-            var previousCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
-                costumeSheet, collectionStatModifiers, prevRuneLevelBonus);
-            var currentCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
-                costumeSheet, collectionStatModifiers, currentRuneLevelBonus);
+            var previousCp = CPHelper.TotalCP(equipments, costumes, previousRuneOptionInfos,
+                level, row, costumeSheet, collectionStatModifiers, prevRuneLevelBonus);
+            var currentCp = CPHelper.TotalCP(equipments, costumes, currentRuneOptionInfos,
+                level, row, costumeSheet, collectionStatModifiers, currentRuneLevelBonus);
             return (previousCp, currentCp);
         }
 
