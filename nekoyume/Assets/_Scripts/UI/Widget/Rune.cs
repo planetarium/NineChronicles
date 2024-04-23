@@ -152,7 +152,7 @@ namespace Nekoyume.UI
             }
 
             runeLevelBonus.infoButton.onClick.AddListener(() =>
-                Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus / 10000m));
+                Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus));
             levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
             levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
             {
