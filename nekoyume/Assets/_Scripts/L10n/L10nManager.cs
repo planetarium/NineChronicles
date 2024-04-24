@@ -590,6 +590,7 @@ namespace Nekoyume.L10n
                 resp.EnsureSuccessStatusCode();
                 if(resp.StatusCode != System.Net.HttpStatusCode.OK)
                 {
+                    NcDebug.LogError($"[AdditionalL10nTableDownload] Request Failed {resp.StatusCode}");
                     return;
                 }
                 var data = await resp.Content.ReadAsByteArrayAsync();
