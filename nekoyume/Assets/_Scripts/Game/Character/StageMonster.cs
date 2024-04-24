@@ -193,6 +193,7 @@ namespace Nekoyume.Game.Character
                 Animator.Win();
             }
 
+            // TODO: 하드코딩된 수치 이용하지 말고 데이터 관리
             await UniTask.Delay(TimeSpan.FromSeconds(1f));
 
             if (Animator.Target != null)

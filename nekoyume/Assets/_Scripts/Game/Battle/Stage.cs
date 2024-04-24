@@ -536,6 +536,7 @@ namespace Nekoyume.Game.Battle
                         enemy.WinAsync().Forget();
                     }
 
+                    // TODO: 하드코딩된 수치 이용하지 말고 데이터 관리
                     yield return new WaitForSeconds(1f);
                 }
             }
