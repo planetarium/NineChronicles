@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -183,6 +184,21 @@ namespace Nekoyume.Game.Character
         {
             ShowSpeech("ENEMY_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
+        }
+
+        public async UniTask WinAsync()
+        {
+            if (isActiveAndEnabled)
+            {
+                Animator.Win();
+            }
+
+            await UniTask.Delay(TimeSpan.FromSeconds(1f));
+
+            if (Animator.Target != null)
+            {
+                Animator.DestroyTarget();
+            }
         }
     }
 }

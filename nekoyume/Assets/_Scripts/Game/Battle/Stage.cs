@@ -528,15 +528,12 @@ namespace Nekoyume.Game.Battle
             }
             else
             {
-                var enemies = GetComponentsInChildren<Character.StageMonster>();
+                var enemies = GetComponentsInChildren<StageMonster>();
                 if (enemies.Any())
                 {
                     foreach (var enemy in enemies)
                     {
-                        if (enemy.isActiveAndEnabled)
-                        {
-                            enemy.Animator.Win();
-                        }
+                        enemy.WinAsync().Forget();
                     }
 
                     yield return new WaitForSeconds(1f);
