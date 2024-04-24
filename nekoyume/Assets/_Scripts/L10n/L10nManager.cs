@@ -583,17 +583,17 @@ namespace Nekoyume.L10n
                 return;
             }
 
-            client.Timeout = TimeSpan.FromSeconds(10);
-
-            var resp = await client.GetAsync(url);
-            resp.EnsureSuccessStatusCode();
-            if(resp.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                return;
-            }
-            var data = await resp.Content.ReadAsByteArrayAsync();
             try
             {
+                client.Timeout = TimeSpan.FromSeconds(10);
+                var resp = await client.GetAsync(url);
+                resp.EnsureSuccessStatusCode();
+                if(resp.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    NcDebug.LogError($"[AdditionalL10nTableDownload] Request Failed {resp.StatusCode}");
+                    return;
+                }
+                var data = await resp.Content.ReadAsByteArrayAsync();
                 using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
                 var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
