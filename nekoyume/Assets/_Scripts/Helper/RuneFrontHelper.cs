@@ -221,7 +221,10 @@ namespace Nekoyume.Helper
                                 (rune.RuneId != editRune.id ? rune.Level : 0))
                 .Sum();
 
-            bonusLevel += runeListSheet[editRune.id].BonusCoef * editRune.level;
+            if (runeListSheet.TryGetValue(editRune.id, out var runeListRow))
+            {
+                bonusLevel += runeListRow.BonusCoef * editRune.level;
+            }
 
             return CalculateRuneLevelBonusReward(bonusLevel, runeLevelBonusSheet);
         }
