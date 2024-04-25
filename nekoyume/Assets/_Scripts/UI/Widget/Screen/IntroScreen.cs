@@ -236,10 +236,23 @@ namespace Nekoyume.UI
             backupButton.gameObject.SetActive(Util.GetQrCodePngFromKeystore() != null);
             backupButton.onClick.AddListener(() =>
             {
-                new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
-                    .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
-                    .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
-                    .Share();
+                var keys = KeyManager.Instance.GetList().ToList();
+                if (keys.Any())
+                {
+                    var firstKey = keys.First().Item2;
+                    if (KeyManager.Instance.GetCachedPassphrase(firstKey.Address)
+                        .Equals(string.Empty))
+                    {
+                        Find<LoginSystem>().ShowResetPassword();
+                    }
+                    else
+                    {
+                        new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
+                            .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
+                            .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
+                            .Share();
+                    }
+                }
             });
 
             GetGuestPrivateKey();
