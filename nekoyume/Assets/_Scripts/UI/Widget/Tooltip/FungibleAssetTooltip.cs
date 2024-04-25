@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Numerics;
 using Coffee.UIEffects;
+using Lib9c;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
@@ -234,8 +235,9 @@ namespace Nekoyume.UI
 
         private void UpdateInformation(string ticker, string amount, System.Action onClose)
         {
-            var grade = 1;
-            var id = 0;
+            var tradable = true;
+            var grade    = 1;
+            var id       = 0;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
             {
                 var sheet = Game.Game.instance.TableSheets.RuneListSheet;
@@ -244,6 +246,9 @@ namespace Nekoyume.UI
                     grade = row.Grade;
                     id = runeData.id;
                 }
+
+                var rune = Currencies.GetRune(ticker);
+                tradable = !RegisterProduct.NonTradableTickerCurrencies.Contains(rune);
             }
 
             var petSheet = Game.Game.instance.TableSheets.PetSheet;
@@ -275,7 +280,7 @@ namespace Nekoyume.UI
             _onClose = onClose;
             scrollbar.value = 1f;
 
-            SetTradableState(false, true);
+            SetTradableState(false, tradable);
         }
 
         private void UpdateGrade(int grade)
