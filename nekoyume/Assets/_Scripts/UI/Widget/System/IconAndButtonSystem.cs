@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -154,18 +155,30 @@ namespace Nekoyume.UI
         {
             CancelCallback = () =>
             {
-                new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
-                    .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
-                    .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
-                    .SetCallback((_, _) =>
-                    {
+                var agent = Game.Game.instance.Agent;
+                var cachedPassphrase = KeyManager.GetCachedPassphrase(
+                    agent.Address,
+                    Util.AesDecrypt,
+                    defaultValue: string.Empty);
+                if (cachedPassphrase.Equals(string.Empty))
+                {
+                    Find<LoginSystem>().ShowResetPassword();
+                }
+                else
+                {
+                    new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
+                        .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
+                        .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
+                        .SetCallback((_, _) =>
+                        {
 #if UNITY_EDITOR
-                        UnityEditor.EditorApplication.ExitPlaymode();
+                            UnityEditor.EditorApplication.ExitPlaymode();
 #else
-                UnityEngine.Application.Quit();
+                            UnityEngine.Application.Quit();
 #endif
-                    })
-                    .Share();
+                        })
+                        .Share();
+                }
             };
         }
 
