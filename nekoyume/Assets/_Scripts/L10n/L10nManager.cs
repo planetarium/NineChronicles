@@ -575,7 +575,7 @@ namespace Nekoyume.L10n
             return false;
         }
 
-        public static async UniTask AdditionalL10nTableDownload(string url, bool forceDownload = false)
+        public static async UniTask AdditionalL10nTableDownload(string url, bool forceDownload = false, int retryCount = 3)
         {
             var client = new HttpClient();
             if (_initializedURLs.TryGetValue(url, out var initialized) && !forceDownload)
@@ -623,10 +623,35 @@ namespace Nekoyume.L10n
 
                 _initializedURLs.TryAdd(url, true);
             }
+            catch (TaskCanceledException e)
+            {
+                if (e.CancellationToken.IsCancellationRequested)
+                {
+                    NcDebug.LogError($"Task was canceled due to a cancellation request. Cancellation requested by: {e.CancellationToken}");
+                }
+                else
+                {
+                    NcDebug.LogError($"Task was canceled, but no cancellation was requested explicitly. Exception: {e}");
+                }
+                NcDebug.LogError($"{e.InnerException} \n\n {e.Source} \n\n{e.StackTrace}");
+                if (retryCount > 0)
+                {
+                    ReTryAdditionalTableDownload().Forget();
+                }
+                return;
+            }
             catch (Exception e)
             {
                 NcDebug.LogError(e);
+                if (retryCount > 0)
+                {
+                    ReTryAdditionalTableDownload().Forget();
+                }
                 return;
+            }
+            async UniTaskVoid ReTryAdditionalTableDownload()
+            {
+                await AdditionalL10nTableDownload(url, forceDownload,--retryCount);
             }
         }
 
