@@ -211,7 +211,7 @@ namespace Nekoyume
             await Client.GetUserStatusAsync(CurrentSeasonPassData.Id -1, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
                 (result) =>
                 {
-                    _prevSeasonClaimAvailable = result.LastPremiumClaim != result.Level;
+                    _prevSeasonClaimAvailable = result.IsPremium && result.LastPremiumClaim < result.Level;
                     DateTime.TryParse(result.ClaimLimitTimestamp, out var claimLimitTimestamp);
                     PrevSeasonClaimEndDate.SetValueAndForceNotify(claimLimitTimestamp);
                     RefreshPrevRemainingClaim();
