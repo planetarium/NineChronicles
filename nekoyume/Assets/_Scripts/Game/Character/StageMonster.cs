@@ -186,15 +186,14 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 
-        public async UniTask WinAsync()
+        public async UniTask WinAsync(float animDuration)
         {
             if (isActiveAndEnabled)
             {
                 Animator.Win();
             }
 
-            // TODO: 하드코딩된 수치 이용하지 말고 데이터 관리
-            await UniTask.Delay(TimeSpan.FromSeconds(1f));
+            await UniTask.Delay(TimeSpan.FromSeconds(animDuration));
 
             if (Animator.Target != null)
             {

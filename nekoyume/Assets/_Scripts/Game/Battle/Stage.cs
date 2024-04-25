@@ -531,13 +531,14 @@ namespace Nekoyume.Game.Battle
                 var enemies = GetComponentsInChildren<StageMonster>();
                 if (enemies.Any())
                 {
+                    // TODO: 하드코딩된 수치 이용하지 말고 데이터 관리
+                    const float winDuration = 1.0f;
                     foreach (var enemy in enemies)
                     {
-                        enemy.WinAsync().Forget();
+                        enemy.WinAsync(winDuration).Forget();
                     }
 
-                    // TODO: 하드코딩된 수치 이용하지 말고 데이터 관리
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(winDuration);
                 }
             }
 
