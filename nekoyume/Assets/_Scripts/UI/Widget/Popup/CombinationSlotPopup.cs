@@ -36,7 +36,6 @@ namespace Nekoyume.UI
             public CraftType Type;
             public GameObject Icon;
             public GameObject OptionContainer;
-            public TextMeshProUGUI ItemLevel;
             public ItemOptionView MainStatView;
             public List<ItemOptionWithCountView> StatOptions;
             public List<ItemOptionView> SkillOptions;
@@ -234,7 +233,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            information.ItemLevel.text = $"+{equipment.level}";
             var sheet = Game.instance.TableSheets.EnhancementCostSheetV2;
             var grade = equipment.Grade;
             var level = equipment.level;
@@ -331,8 +329,6 @@ namespace Nekoyume.UI
 
             var itemOptionInfoPre = new ItemOptionInfo(preEquipment);
             var itemOptionInfo = new ItemOptionInfo(equipment);
-
-            information.ItemLevel.text = $"+{equipment.level}";
 
             var statType = itemOptionInfo.MainStat.type;
             var statValueString = statType.ValueToString(itemOptionInfo.MainStat.totalValue);

@@ -217,8 +217,6 @@ namespace Nekoyume.Game
         {
             CurrentSocialEmail = string.Empty;
 
-            ResourceManager.Instance.Initialize();
-
             NcDebug.Log("[Game] Awake() invoked");
             GL.Clear(true, true, Color.black);
             Application.runInBackground = true;
@@ -273,6 +271,8 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            yield return ResourceManager.Instance.InitializeAsync().ToCoroutine();
+
 #if LIB9C_DEV_EXTENSIONS && UNITY_ANDROID
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif

@@ -616,6 +616,11 @@ namespace Nekoyume.UI
 
         private void SetExpText(EquipmentItemRecipeSheet.Row equipmentRow)
         {
+            if (expText == null)
+            {
+                return;
+            }
+
             var equipment = equipmentRow.GetResultEquipmentItemRow();
 
             if (equipment.Exp == null)
@@ -625,7 +630,7 @@ namespace Nekoyume.UI
             }
 
             var value = equipment.Exp.Value;
-            expText.text = $"EXP {value.ToCurrencyString()}";
+            expText.text = $"EXP {value.ToCurrencyNotation()}";
         }
 
         private void UpdateInformation(int index)

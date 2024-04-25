@@ -852,9 +852,9 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void UpdateRunes(List<RuneState> allRuneStates, BattleType battleType, RuneListSheet sheet)
+        public void UpdateRunes(List<RuneState> equippedRuneState, BattleType battleType, RuneListSheet sheet)
         {
-            UpdateRuneEquipped(allRuneStates, battleType, sheet);
+            UpdateRuneEquipped(equippedRuneState, battleType, sheet);
             UpdateRuneNotification(GetBestRunes(battleType));
             var models = GetModels(_activeTabType);
             scroll.UpdateData(models, resetScrollOnEnable);

@@ -73,7 +73,10 @@ namespace Nekoyume.UI
             collectionCountMaxText.text = $"/ {maxCount}";
 
             var (previousCp, currentCp) = cp;
-            cpScreen.Show(previousCp, currentCp);
+            if (previousCp != currentCp)
+            {
+                cpScreen.Show(previousCp, currentCp);
+            }
 
             base.Show(ignoreShowAnimation);
         }

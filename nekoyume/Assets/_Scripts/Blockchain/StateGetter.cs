@@ -27,7 +27,7 @@ namespace Nekoyume.Blockchain
         public static IReadOnlyList<IValue> GetStates(
             HashDigest<SHA256> hash,
             Address accountAddress,
-            IReadOnlyList<Address> addresses) =>
+            IEnumerable<Address> addresses) =>
             Game.Game.instance.Agent.GetStateBulkAsync(hash, accountAddress, addresses).Result.Values.ToArray();
 
         public static FungibleAssetValue GetBalance(

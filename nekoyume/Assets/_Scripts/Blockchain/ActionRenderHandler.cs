@@ -340,6 +340,7 @@ namespace Nekoyume.Blockchain
         private void DailyReward()
         {
             _actionRenderer.EveryRender<DailyReward>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Select(PreResponseDailyReward)
@@ -1919,7 +1920,6 @@ namespace Nekoyume.Blockchain
                                     newAvatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                                Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
                             }
                             catch (Exception e)
                             {
@@ -1928,6 +1928,7 @@ namespace Nekoyume.Blockchain
                         });
                     });
 
+            Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
             var tableSheets = TableSheets.Instance;
             var skillsOnWaveStart = new List<Skill>();
             if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId && prevSkillState.SkillIds.Any())
@@ -2801,15 +2802,13 @@ namespace Nekoyume.Blockchain
             {
                 enemyAllRuneState = new AllRuneState();
 
-                var runeAddresses = TableSheets.Instance.RuneListSheet.Values
-                    .Select(row => RuneState.DeriveAddress(enemyAvatarAddress, row.Id));
-                foreach (var address in runeAddresses)
+                var runeAddresses = TableSheets.Instance.RuneListSheet.Values.Select(row =>
+                    RuneState.DeriveAddress(enemyAvatarAddress, row.Id));
+                var stateBulk = StateGetter.GetStates(prevStates,
+                    ReservedAddresses.LegacyAccount, runeAddresses);
+                foreach (var rawRuneState in stateBulk.OfType<List>())
                 {
-                    if (StateGetter.GetState(prevStates, ReservedAddresses.LegacyAccount, address)
-                        is List rawRuneState)
-                    {
-                        enemyAllRuneState.AddRuneState(new RuneState(rawRuneState));
-                    }
+                    enemyAllRuneState.AddRuneState(new RuneState(rawRuneState));
                 }
             }
 

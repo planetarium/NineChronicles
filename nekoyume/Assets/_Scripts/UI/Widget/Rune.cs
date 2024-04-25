@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Libplanet.Action;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
@@ -152,7 +153,7 @@ namespace Nekoyume.UI
             }
 
             runeLevelBonus.infoButton.onClick.AddListener(() =>
-                Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus / 10000m));
+                Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus));
             levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
             levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
             {
@@ -337,6 +338,20 @@ namespace Nekoyume.UI
             _selectedRuneItem = item;
             UpdateRuneItems(item);
             UpdateButtons(item);
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"item.Row is not null : {item.Row is not null}");
+            sb.AppendLine($"item.OptionRow is not null : {item.OptionRow is not null}");
+            sb.AppendLine($"item.CostRow is not null : {item.CostRow is not null}");
+            sb.AppendLine($"item.RuneStone : {item.RuneStone.ToCurrencyNotation()}");
+            sb.AppendLine($"item.Level : {item.Level}");
+            sb.AppendLine($"item.IsMaxLevel : {item.IsMaxLevel}");
+            sb.AppendLine($"item.EnoughRuneStone : {item.EnoughRuneStone}");
+            sb.AppendLine($"item.EnoughCrystal : {item.EnoughCrystal}");
+            sb.AppendLine($"item.EnoughNcg : {item.EnoughNcg}");
+            sb.AppendLine($"item.SortingOrder : {item.SortingOrder}");
+            Debug.LogError(sb);
+
             UpdateRuneOptions(item);
             UpdateCost(item, runeStoneIcon);
             UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
