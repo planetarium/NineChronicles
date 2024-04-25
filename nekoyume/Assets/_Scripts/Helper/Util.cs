@@ -669,23 +669,22 @@ namespace Nekoyume.Helper
                 return cachedTexture;
             }
 
-            var client = new HttpClient();
-            var resp = await client.GetAsync(url);
-            try
+            var req = UnityWebRequestTexture.GetTexture(url);
+            req = await req.SendWebRequest();
+
+            if (req.result != UnityWebRequest.Result.Success)
             {
-                resp.EnsureSuccessStatusCode();
-            }
-            catch
-            {
+                Debug.LogError(req.error);
                 if (CachedDownloadTexturesRaw.TryGetValue(url, out cachedTexture))
                 {
                     return cachedTexture;
                 }
+
                 NcDebug.LogError($"[DownloadTextureRaw] {url}");
                 return null;
             }
 
-            var data = await resp.Content.ReadAsByteArrayAsync();
+            var data = ((DownloadHandlerTexture)req.downloadHandler).data;
             CachedDownloadTexturesRaw.TryAdd(url, data);
             return data;
         }
