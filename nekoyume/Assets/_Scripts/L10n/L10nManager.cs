@@ -577,7 +577,6 @@ namespace Nekoyume.L10n
 
         public static async UniTask AdditionalL10nTableDownload(string url, bool forceDownload = false, int retryCount = 3)
         {
-            var client = new HttpClient();
             if (_initializedURLs.TryGetValue(url, out var initialized) && !forceDownload)
             {
                 return;
@@ -585,15 +584,16 @@ namespace Nekoyume.L10n
 
             try
             {
-                client.Timeout = TimeSpan.FromSeconds(10);
-                var resp = await client.GetAsync(url);
-                resp.EnsureSuccessStatusCode();
-                if(resp.StatusCode != System.Net.HttpStatusCode.OK)
+                var client = UnityWebRequest.Get(url);
+                client.timeout = 10;
+                var resp = await client.SendWebRequest();
+
+                if(resp.result != UnityWebRequest.Result.Success)
                 {
-                    NcDebug.LogError($"[AdditionalL10nTableDownload] Request Failed {resp.StatusCode}");
+                    NcDebug.LogError($"[AdditionalL10nTableDownload] Request Failed {resp.result}");
                     return;
                 }
-                var data = await resp.Content.ReadAsByteArrayAsync();
+                var data = resp.downloadHandler.data;
                 using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
                 var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
