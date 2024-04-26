@@ -339,19 +339,6 @@ namespace Nekoyume.UI
             UpdateRuneItems(item);
             UpdateButtons(item);
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"item.Row is not null : {item.Row is not null}");
-            sb.AppendLine($"item.OptionRow is not null : {item.OptionRow is not null}");
-            sb.AppendLine($"item.CostRow is not null : {item.CostRow is not null}");
-            sb.AppendLine($"item.RuneStone : {item.RuneStone.ToCurrencyNotation()}");
-            sb.AppendLine($"item.Level : {item.Level}");
-            sb.AppendLine($"item.IsMaxLevel : {item.IsMaxLevel}");
-            sb.AppendLine($"item.EnoughRuneStone : {item.EnoughRuneStone}");
-            sb.AppendLine($"item.EnoughCrystal : {item.EnoughCrystal}");
-            sb.AppendLine($"item.EnoughNcg : {item.EnoughNcg}");
-            sb.AppendLine($"item.SortingOrder : {item.SortingOrder}");
-            Debug.LogError(sb);
-
             UpdateRuneOptions(item);
             UpdateCost(item, runeStoneIcon);
             UpdateHeaderMenu(runeStoneIcon, item.RuneStone);
