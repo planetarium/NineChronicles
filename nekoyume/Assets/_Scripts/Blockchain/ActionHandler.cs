@@ -429,15 +429,15 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            if (Game.Game.instance.CachedStates.ContainsKey((accountAddress,state.address)))
+            if (Game.Game.instance.CachedStates.ContainsKey(accountAddress.Derive(state.address.ToByteArray())))
             {
                 try
                 {
-                    Game.Game.instance.CachedStates[(accountAddress,state.address)] = state.Serialize();
+                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
                 }
                 catch (NotSupportedException)
                 {
-                    Game.Game.instance.CachedStates[(accountAddress,state.address)] = state.SerializeList();
+                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.SerializeList();
                 }
             }
         }
