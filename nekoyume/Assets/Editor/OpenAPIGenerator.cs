@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Nekoyume
 {
@@ -262,7 +263,7 @@ namespace Nekoyume
             {
                 foreach (var type in assembly.GetTypes())
                 {
-                    if (type.Name == className && HasField(type, "Url", typeof(string)) && HasField(type, "_client"))
+                    if (type.Name == className && HasField(type, "Url", typeof(string)))
                     {
                         return type;
                     }
@@ -324,6 +325,9 @@ namespace Nekoyume
 
             try
             {
+                responseMessage = "Requesting~";
+                Repaint();
+                
                 object result = method.Invoke(clientInstance, methodParameters.ToArray());
                 if (result is Task task)
                 {
@@ -508,24 +512,23 @@ namespace Nekoyume
             sb.AppendLine("using System.Text.Json;");
             sb.AppendLine("using System.Threading.Tasks;");
             sb.AppendLine("using System.Net.Http;");
+            sb.AppendLine("using UnityEngine.Networking;");
+            sb.AppendLine("using Cysharp.Threading.Tasks;");
+            sb.AppendLine("using System.Text;");
 
             sb.AppendLine();
 
             sb.AppendLine($"public class {rootClassName}");
             sb.AppendLine("{");
             sb.AppendLine("    private string Url;");
-            sb.AppendLine("    private readonly HttpClient _client;");
             sb.AppendLine();
             sb.AppendLine($"    public {rootClassName}(string url)");
             sb.AppendLine("    {");
             sb.AppendLine($"        Url = url;");
-            sb.AppendLine("        _client = new System.Net.Http.HttpClient();");
-            sb.AppendLine($"        _client.Timeout = TimeSpan.FromSeconds({_timeOut});");
             sb.AppendLine("    }");
             sb.AppendLine();
             sb.AppendLine("    public void Dispose()");
             sb.AppendLine("    {");
-            sb.AppendLine("        _client.Dispose();");
             sb.AppendLine("    }");
             sb.AppendLine();
 
@@ -806,11 +809,11 @@ namespace Nekoyume
                                 parameterUsages.AppendLine($"            url += $\"?{queryString}\";");
                             }
 
-                            parameterUsages.AppendLine("            request.RequestUri = new Uri(url);");
+                            parameterUsages.AppendLine("            request.uri = new Uri(url);");
 
                             foreach (var headerName in headerParameters)
                             {
-                                parameterUsages.AppendLine($"            request.Headers.Add(\"{headerName}\", {headerName}.ToString());");
+                                parameterUsages.AppendLine($"            request.SetRequestHeader(\"{headerName}\", {headerName}.ToString());");
                             }
                         }
 
@@ -826,7 +829,10 @@ namespace Nekoyume
                             }
 
                             parameterDefinitions.Append($"{requestBodyType} requestBody, ");
-                            parameterUsages.AppendLine($"            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, \"application/json\");");
+                            parameterUsages.AppendLine($"            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);");
+                            parameterUsages.AppendLine($"            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);");
+                            parameterUsages.AppendLine($"            request.uploadHandler = new UploadHandlerRaw(jsonToSend);");
+                            parameterUsages.AppendLine($"            request.uploadHandler.contentType = \"application/json\";");
                         }
 
                         bool hasReturnType = false;
@@ -866,14 +872,25 @@ namespace Nekoyume
                         sb.AppendLine($"    public async Task {methodName}({parameterDefinitions}Action<{returnType}> onSuccess, Action<string> onError)");
                         sb.AppendLine("    {");
                         sb.AppendLine($"        string url = Url + \"{path}\";");
-                        sb.AppendLine($"        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod(\"{httpMethod}\"), url))");
+                        sb.AppendLine($"        using (var request = new UnityWebRequest(url, \"{httpMethod}\"))");
                         sb.AppendLine("        {");
                         sb.Append(parameterUsages);
+                        if (hasReturnType)
+                        {
+                            sb.AppendLine($"            request.downloadHandler = new DownloadHandlerBuffer();");
+                        }
+                        sb.AppendLine($"            request.SetRequestHeader(\"accept\", \"application/json\");");
+                        sb.AppendLine($"            request.SetRequestHeader(\"Content-Type\", \"application/json\");");
+                        sb.AppendLine($"            request.timeout = {_timeOut};");
                         sb.AppendLine("            try");
                         sb.AppendLine("            {");
-                        sb.AppendLine("                var response = await _client.SendAsync(request);");
-                        sb.AppendLine("                response.EnsureSuccessStatusCode();");
-                        sb.AppendLine("                var responseBody = await response.Content.ReadAsStringAsync();");
+                        sb.AppendLine("                await request.SendWebRequest();");
+                        sb.AppendLine("                if (request.result != UnityWebRequest.Result.Success)");
+                        sb.AppendLine("                {");
+                        sb.AppendLine("                    onError?.Invoke(request.error);");
+                        sb.AppendLine("                    return;");
+                        sb.AppendLine("                }");
+                        sb.AppendLine("                string responseBody = request.downloadHandler.text;");
                         if (hasReturnType)
                         {
                             sb.AppendLine($"                {returnType} result = System.Text.Json.JsonSerializer.Deserialize<{returnType}>(responseBody);");
