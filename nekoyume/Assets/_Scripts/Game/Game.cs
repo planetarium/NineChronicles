@@ -865,8 +865,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            var introscreen = Widget.Find<IntroScreen>();
-            if(introscreen != null)
+            if(Widget.TryFind<IntroScreen>(out var introscreen))
             {
                 introscreen.GetGuestPrivateKey();
             }
