@@ -162,9 +162,9 @@ namespace Nekoyume.Game
 
         public Url URL { get; private set; }
 
-        public readonly LruCache<Address, IValue> CachedStates = new();
+        public readonly LruCache<(Address,Address), IValue> CachedStates = new();
 
-        public readonly Dictionary<Address, bool> CachedStateAddresses = new();
+        public readonly Dictionary<(Address,Address), bool> CachedStateAddresses = new();
 
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
