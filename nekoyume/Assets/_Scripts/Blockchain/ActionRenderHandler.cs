@@ -2792,25 +2792,7 @@ namespace Nekoyume.Blockchain
                     ? new ItemSlotState(enemyRawItemSlotState)
                     : new ItemSlotState(BattleType.Arena);
 
-            AllRuneState enemyAllRuneState;
-            if (StateGetter.GetState(prevStates, Addresses.RuneState, enemyAvatarAddress)
-                is List enemyRawAllRuneState)
-            {
-                enemyAllRuneState = new AllRuneState(enemyRawAllRuneState);
-            }
-            else
-            {
-                enemyAllRuneState = new AllRuneState();
-
-                var runeAddresses = TableSheets.Instance.RuneListSheet.Values.Select(row =>
-                    RuneState.DeriveAddress(enemyAvatarAddress, row.Id));
-                var stateBulk = StateGetter.GetStates(prevStates,
-                    ReservedAddresses.LegacyAccount, runeAddresses);
-                foreach (var rawRuneState in stateBulk.OfType<List>())
-                {
-                    enemyAllRuneState.AddRuneState(new RuneState(rawRuneState));
-                }
-            }
+            var enemyAllRuneState = GetStateExtensions.GetAllRuneState(prevStates, enemyAvatarAddress);
 
             var enemyRuneSlotStateAddress = RuneSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
             var enemyRuneSlotState =
@@ -3005,14 +2987,8 @@ namespace Nekoyume.Blockchain
             var runeRow = TableSheets.Instance.RuneSheet[action.RuneId];
 
             var previousState = States.Instance.AllRuneState;
-            var value = StateGetter.GetState(
-                eval.OutputState,
-                Addresses.RuneState,
-                action.AvatarAddress);
-            if (value is List list)
-            {
-                States.Instance.SetAllRuneState(new AllRuneState(list));
-            }
+            States.Instance.SetAllRuneState(
+                GetStateExtensions.GetAllRuneState(eval.OutputState, action.AvatarAddress));
 
             UpdateCrystalBalance(eval);
             UpdateAgentStateAsync(eval).Forget();

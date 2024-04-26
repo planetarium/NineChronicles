@@ -616,7 +616,8 @@ namespace Nekoyume.State
                 ? index
                 : curAvatarState.dailyRewardReceivedIndex);
 
-            SetAllRuneState(await curAvatarState.GetAllRuneStateAsync());
+            SetAllRuneState(await agent.GetAllRuneStateAsync(curAvatarState.address));
+
             await InitRuneSlotStates();
         }
 
