@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Nekoyume.EnumType;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
@@ -23,7 +24,7 @@ namespace Nekoyume.UI
             evt.SetValue(Game.Game.instance.Stage.stageId);
             AirbridgeUnity.TrackEvent(evt);
 
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 var props = new Dictionary<string, Value>()
                 {

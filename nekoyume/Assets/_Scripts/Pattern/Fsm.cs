@@ -16,7 +16,7 @@ namespace Nekoyume.Pattern
         public bool isRunning { get; private set; }
 
         public T current { get; private set; }
-        
+
         public T next { get; set; }
 
         public bool shouldChange => !EqualityComparer<T>.Default.Equals(current, next);
@@ -27,9 +27,9 @@ namespace Nekoyume.Pattern
             {
                 throw new ArgumentNullException();
             }
-            
+
             _mono = mono;
-            
+
             isRunning = false;
 
             var t = typeof(T);
@@ -54,10 +54,10 @@ namespace Nekoyume.Pattern
         {
             if (isRunning)
             {
-                Debug.LogWarning("Already started.");
+                NcDebug.LogWarning("Already started.");
                 return;
             }
-            
+
             if (!_states.ContainsKey(state))
             {
                 throw new InvalidStateException();
@@ -105,7 +105,7 @@ namespace Nekoyume.Pattern
                 {
                     yield return null;
                 }
-                
+
                 StopCoroutine(ref _stateCoroutineHandle);
 
                 current = next;
@@ -119,12 +119,12 @@ namespace Nekoyume.Pattern
             {
                 return;
             }
-            
+
             _mono.StopCoroutine(coroutine);
             coroutine = null;
         }
     }
-    
+
     public class FsmException : Exception
     {
         public FsmException()
@@ -139,7 +139,7 @@ namespace Nekoyume.Pattern
         {
         }
     }
-    
+
     public class InvalidStateException : Exception
     {
         public InvalidStateException()
@@ -154,7 +154,7 @@ namespace Nekoyume.Pattern
         {
         }
     }
-    
+
     public class StateAlreadyContainedException : Exception
     {
         public StateAlreadyContainedException()

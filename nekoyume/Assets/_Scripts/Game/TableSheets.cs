@@ -9,6 +9,7 @@ using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.Pet;
+using Nekoyume.TableData.Rune;
 using Nekoyume.TableData.Stake;
 using Nekoyume.TableData.Summon;
 using UniRx.Diagnostics;
@@ -76,7 +77,7 @@ namespace Nekoyume.Game
             ItemSheetInitialize();
             QuestSheetInitialize();
             sw.Stop();
-            Debug.Log($"[{nameof(TableSheets)}] Initialize Total: {DateTime.UtcNow - started}");
+            NcDebug.Log($"[{nameof(TableSheets)}] Initialize Total: {DateTime.UtcNow - started}");
         }
 
         public WorldSheet WorldSheet { get; private set; }
@@ -241,6 +242,7 @@ namespace Nekoyume.Game
         public RuneListSheet RuneListSheet { get; private set; }
         public RuneCostSheet RuneCostSheet { get; private set; }
         public RuneOptionSheet RuneOptionSheet { get; private set; }
+        public RuneLevelBonusSheet RuneLevelBonusSheet { get; private set; }
         public PetSheet PetSheet { get; private set; }
         public PetCostSheet PetCostSheet { get; private set; }
         public PetOptionSheet PetOptionSheet { get; private set; }
@@ -312,7 +314,9 @@ namespace Nekoyume.Game
                 StageSheet,
                 StageWaveSheet,
                 EnemySkillSheet,
-                RuneOptionSheet
+                RuneOptionSheet,
+                RuneListSheet,
+                RuneLevelBonusSheet
             );
         }
 
@@ -363,7 +367,9 @@ namespace Nekoyume.Game
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
                 WeeklyArenaRewardSheet,
-                RuneOptionSheet
+                RuneOptionSheet,
+                RuneListSheet,
+                RuneLevelBonusSheet
             );
         }
 
@@ -404,7 +410,9 @@ namespace Nekoyume.Game
                 WorldBossBattleRewardSheet,
                 RuneWeightSheet,
                 RuneSheet,
-                RuneOptionSheet
+                RuneOptionSheet,
+                RuneListSheet,
+                RuneLevelBonusSheet
             );
         }
 

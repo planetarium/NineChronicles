@@ -4,6 +4,7 @@ using System.Linq;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -241,12 +242,15 @@ namespace Nekoyume.UI.Module
 
                 case SlotType.WaitingReceive:
                     SetContainer(false, false, false, true);
-                    waitingReceiveItemView.SetData(new Item(state.Result.itemUsable));
-                    waitingReceiveText.text = string.Format(
-                        L10nManager.Localize("UI_SENDING_THROUGH_MAIL"),
-                        state.Result.itemUsable.GetLocalizedName(
-                            useElementalIcon: false,
-                            ignoreLevel: true));
+                    if(state != null)
+                    {
+                        waitingReceiveItemView.SetData(new Item(state.Result.itemUsable));
+                        waitingReceiveText.text = string.Format(
+                            L10nManager.Localize("UI_SENDING_THROUGH_MAIL"),
+                            state.Result.itemUsable.GetLocalizedName(
+                                useElementalIcon: false,
+                                ignoreLevel: true));
+                    }
                     break;
             }
         }
@@ -386,7 +390,7 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case SlotType.Empty:
-                    if (Game.instance.IsInWorld)
+                    if (BattleRenderer.Instance.IsOnBattle)
                     {
                         UI.NotificationSystem.Push(
                             Nekoyume.Model.Mail.MailType.System,

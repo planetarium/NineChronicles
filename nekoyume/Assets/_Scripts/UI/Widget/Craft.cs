@@ -23,6 +23,7 @@ using Nekoyume.Game;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData.Event;
 using NUnit.Framework;
+using TMPro;
 
 namespace Nekoyume.UI
 {
@@ -76,6 +77,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button collectionButton;
+
+        [SerializeField]
+        private TextMeshProUGUI collectionCount;
+
+        [SerializeField]
+        private TextMeshProUGUI collectionMaxCount;
 
         public static RecipeModel SharedModel { get; set; }
         public static List<SubRecipeTab> SubRecipeTabs { get; private set; }
@@ -336,6 +343,10 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             ShowWithToggleIndex(0, ignoreShowAnimation);
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            collectionCount.text = collectionState.Ids.Count.ToString();
+            collectionMaxCount.text = collectionSheet.Count.ToString();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

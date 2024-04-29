@@ -204,7 +204,8 @@ namespace Nekoyume.UI
 
         public IEnumerator CreateSecondWidgets()
         {
-#if UNITY_ANDROID || UNITY_IOS
+            // 실제 모바일 환경이 아닌경우 사용되는 UI가 포함될 수는 있지만, 감안하고 플래그 사용
+#if APPLY_MEMORY_IOS_OPTIMIZATION || UNITY_ANDROID || UNITY_IOS
             _secondWidgets.Add(Widget.Create<Login>());
             yield return null;
             _secondWidgets.Add(Widget.Create<LoginDetail>());
@@ -455,11 +456,13 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<InviteFriendsPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CollectionEffectPopup>());
+            _secondWidgets.Add(Widget.Create<StatsBonusPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionRegistrationPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionResultPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;
 
             // tooltip
@@ -488,7 +491,7 @@ namespace Nekoyume.UI
             {
                 if (value is null)
                 {
-                    Debug.LogWarning($"value is null. last is {last.name}");
+                    NcDebug.LogWarning($"value is null. last is {last.name}");
                     continue;
                 }
 

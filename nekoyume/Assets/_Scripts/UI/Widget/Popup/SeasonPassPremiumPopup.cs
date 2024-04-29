@@ -205,7 +205,7 @@ namespace Nekoyume.UI
             }
             catch
             {
-                Debug.LogError($"Can't Find Item ID {itemId} in ItemSheet");
+                NcDebug.LogError($"Can't Find Item ID {itemId} in ItemSheet");
             }
         }
 

@@ -130,14 +130,14 @@ namespace Nekoyume.L10n
             switch (CurrentState)
             {
                 case State.InInitializing:
-                    Debug.LogWarning($"[{nameof(L10nManager)}] Already in initializing now.");
+                    NcDebug.LogWarning($"[{nameof(L10nManager)}] Already in initializing now.");
                     return OnInitialize;
                 case State.InLanguageChanging:
-                    Debug.LogWarning(
+                    NcDebug.LogWarning(
                         $"[{nameof(L10nManager)}] Already initialized and in changing language now.");
                     return OnLanguageChange;
                 case State.Initialized:
-                    Debug.LogWarning(
+                    NcDebug.LogWarning(
                         $"[{nameof(L10nManager)}] Already initialized as {CurrentLanguage}.");
                     return Observable.Empty(CurrentLanguage);
             }
@@ -187,7 +187,7 @@ namespace Nekoyume.L10n
                     subject.OnError(new L10nNotInitializedException());
                     return subject;
                 case State.InLanguageChanging:
-                    Debug.LogWarning($"[{nameof(L10nManager)}] Already in changing language now.");
+                    NcDebug.LogWarning($"[{nameof(L10nManager)}] Already in changing language now.");
                     return OnLanguageChange;
             }
 
@@ -246,6 +246,11 @@ namespace Nekoyume.L10n
             }
 
             return records;
+        }
+
+        public static IReadOnlyDictionary<string, string> GetAdditionalDictionary(LanguageType languageType)
+        {
+            return _additionalDic.ToDictionary(pair => pair.Key, pair => pair.Value[languageType]);
         }
 
         public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
@@ -383,7 +388,7 @@ namespace Nekoyume.L10n
 
                                 if (dictionary.ContainsKey(key))
                                 {
-                                    Debug.LogError("[L10nManager] L10n duplication Key." +
+                                    NcDebug.LogError("[L10nManager] L10n duplication Key." +
                                                    " Ignore duplicated key and use first value." +
                                                    $" key: {key}" +
                                                    $", recordsIndex: {recordsIndex}" +
@@ -399,7 +404,7 @@ namespace Nekoyume.L10n
                         }
                         catch (CsvHelper.MissingFieldException e)
                         {
-                            Debug.LogError($"`{csvFileInfo.Name}` file has failed parse \n{e}");
+                            NcDebug.LogError($"`{csvFileInfo.Name}` file has failed parse \n{e}");
                             continue;
                         }
                     }
@@ -433,17 +438,20 @@ namespace Nekoyume.L10n
             try
             {
                 ValidateStateAndKey(key);
-                text = _dictionary[key];
-                return true;
-            }
-            catch (Exception e)
-            {
                 if (GetAdditionalLocalizedString(key, out var localized))
                 {
                     text = localized;
                     return true;
                 }
-                Debug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
+                else
+                {
+                    text = _dictionary[key];
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
                 text = $"!{key}!";
                 return false;
             }
@@ -567,45 +575,84 @@ namespace Nekoyume.L10n
             return false;
         }
 
-        public static async UniTask AdditionalL10nTableDownload(string url)
+        public static async UniTask AdditionalL10nTableDownload(string url, bool forceDownload = false, int retryCount = 3)
         {
-            var client = new HttpClient();
-            if (_initializedURLs.TryGetValue(url, out var initialized))
+            if (_initializedURLs.TryGetValue(url, out var initialized) && !forceDownload)
             {
                 return;
             }
 
-            var resp = await client.GetAsync(url);
-            resp.EnsureSuccessStatusCode();
-            var data = await resp.Content.ReadAsByteArrayAsync();
-            using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            try
             {
-                PrepareHeaderForMatch = args => args.Header.ToLower(),
-            };
-            using var csvReader = new CsvReader(streamReader, csvConfig);
-            var records = csvReader.GetRecords<L10nCsvModel>();
-            foreach (var item in records)
-            {
-                var l10nKeyValue = new Dictionary<LanguageType, string>();
-                foreach (var lang in (LanguageType[])Enum.GetValues(typeof(LanguageType)))
-                {
-                    var value = (string)typeof(L10nCsvModel)
-                        .GetProperty(lang.ToString())?
-                        .GetValue(item);
+                var client = UnityWebRequest.Get(url);
+                client.timeout = 10;
+                var resp = await client.SendWebRequest();
 
-                    if (string.IsNullOrEmpty(value))
+                if(resp.result != UnityWebRequest.Result.Success)
+                {
+                    NcDebug.LogError($"[AdditionalL10nTableDownload] Request Failed {resp.result}");
+                    return;
+                }
+                var data = resp.downloadHandler.data;
+                using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
+                var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    PrepareHeaderForMatch = args => args.Header.ToLower(),
+                };
+                using var csvReader = new CsvReader(streamReader, csvConfig);
+                var records = csvReader.GetRecords<L10nCsvModel>();
+                foreach (var item in records)
+                {
+                    var l10nKeyValue = new Dictionary<LanguageType, string>();
+                    foreach (var lang in (LanguageType[])Enum.GetValues(typeof(LanguageType)))
                     {
-                        value = item.English;
+                        var value = (string)typeof(L10nCsvModel)
+                            .GetProperty(lang.ToString())?
+                            .GetValue(item);
+
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = item.English;
+                        }
+
+                        l10nKeyValue.Add(lang, value);
                     }
 
-                    l10nKeyValue.Add(lang, value);
+                    _additionalDic.TryAdd(item.Key, l10nKeyValue);
                 }
 
-                _additionalDic.TryAdd(item.Key, l10nKeyValue);
+                _initializedURLs.TryAdd(url, true);
             }
-
-            _initializedURLs.Add(url, true);
+            catch (TaskCanceledException e)
+            {
+                if (e.CancellationToken.IsCancellationRequested)
+                {
+                    NcDebug.LogError($"Task was canceled due to a cancellation request. Cancellation requested by: {e.CancellationToken}");
+                }
+                else
+                {
+                    NcDebug.LogError($"Task was canceled, but no cancellation was requested explicitly. Exception: {e}");
+                }
+                NcDebug.LogError($"{e.InnerException} \n\n {e.Source} \n\n{e.StackTrace}");
+                if (retryCount > 0)
+                {
+                    ReTryAdditionalTableDownload().Forget();
+                }
+                return;
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError(e);
+                if (retryCount > 0)
+                {
+                    ReTryAdditionalTableDownload().Forget();
+                }
+                return;
+            }
+            async UniTaskVoid ReTryAdditionalTableDownload()
+            {
+                await AdditionalL10nTableDownload(url, forceDownload,--retryCount);
+            }
         }
 
         private static bool GetAdditionalLocalizedString(string key, out string text)
@@ -617,16 +664,9 @@ namespace Nekoyume.L10n
                     text = localized;
                     return true;
                 }
-                else
-                {
-                    text = string.Empty;
-                    Debug.LogError($"_additionalDic can't find value: {key} {CurrentLanguage}");
-                    return false;
-                }
             }
 
             text = string.Empty;
-            Debug.LogError($"_additionalDic can't find key: {key}");
             return false;
         }
     }

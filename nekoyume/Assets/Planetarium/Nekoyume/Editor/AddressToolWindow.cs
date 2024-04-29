@@ -104,7 +104,7 @@ namespace Planetarium.Nekoyume.Editor
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError(e);
+                    NcDebug.LogError(e);
                     return;
                 }
 
@@ -203,7 +203,7 @@ namespace Planetarium.Nekoyume.Editor
             }
             catch (System.Exception e)
             {
-                Debug.LogError(e);
+                NcDebug.LogError(e);
                 return;
             }
 

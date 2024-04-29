@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -200,7 +201,7 @@ namespace Nekoyume.UI.Module
                             if (value)
                             {
                                 var stage = Game.instance.Stage;
-                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
                                 {
                                     widget.Show(() => { toggleInfo.Toggle.isOn = false; });
                                 }
@@ -226,7 +227,7 @@ namespace Nekoyume.UI.Module
                             if (value)
                             {
                                 var stage = Game.instance.Stage;
-                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
                                 {
                                     confirm.SubmitCallback = () =>
                                     {
@@ -254,7 +255,7 @@ namespace Nekoyume.UI.Module
                             if (value)
                             {
                                 var stage = Game.instance.Stage;
-                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
                                 {
                                     confirm.SubmitCallback = () =>
                                     {
@@ -292,7 +293,7 @@ namespace Nekoyume.UI.Module
                             if (value)
                             {
                                 var stage = Game.instance.Stage;
-                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
                                 {
                                     widget.ShowNotFiltered(() => { toggleInfo.Toggle.isOn = false; });
                                 }
@@ -324,7 +325,7 @@ namespace Nekoyume.UI.Module
                                 }
 
                                 var stage = Game.instance.Stage;
-                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
                                 {
                                     widget.Show(() => { toggleInfo.Toggle.isOn = false; });
                                 }
@@ -562,7 +563,7 @@ namespace Nekoyume.UI.Module
         {
             if (mailBox is null)
             {
-                Debug.LogWarning($"{nameof(mailBox)} is null.");
+                NcDebug.LogWarning($"{nameof(mailBox)} is null.");
                 return;
             }
 
@@ -574,7 +575,7 @@ namespace Nekoyume.UI.Module
         {
             if (questList is null)
             {
-                Debug.LogWarning($"{nameof(questList)} is null.");
+                NcDebug.LogWarning($"{nameof(questList)} is null.");
                 return;
             }
 

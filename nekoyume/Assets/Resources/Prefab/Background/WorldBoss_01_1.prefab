@@ -421,6 +421,7 @@ GameObject:
   m_Component:
   - component: {fileID: 782733669406896525}
   - component: {fileID: 8828416970911819690}
+  - component: {fileID: -6504881250664113914}
   m_Layer: 10
   m_Name: WorldBoss_01_1
   m_TagString: Untagged
@@ -447,7 +448,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8828416970911819690
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -464,7 +465,105 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-6504881250664113914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777275171011567443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71fe791ae7c3d4248b358d7453f94d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: 2708072947942941453}
+  - {fileID: 5845924937519167921}
+  - {fileID: 8119135469427380224}
+  - {fileID: 3779522605654561119}
+  - {fileID: 807015155581457448}
+  - {fileID: 5546310711443917191}
+  - {fileID: 5200620614581569023}
+  - {fileID: 2872756503479836858}
+  - {fileID: 4023450286041205539}
+  - {fileID: 7707407204038830744}
+  - {fileID: 1092579080146722994}
+  - {fileID: 8118964889584342634}
+  - {fileID: 5943995553089754009}
+  - {fileID: 2185543869480156429}
+  - {fileID: 8989639469728169072}
+  - {fileID: 3877993177529021670}
+  - {fileID: 5569234038779273416}
+  - {fileID: 7462921863535637926}
+  - {fileID: 1391885678525731838}
+  - {fileID: 5453545374018410271}
+  - {fileID: 1683485565605150466}
+  - {fileID: 5794412630132806291}
+  - {fileID: 8418692480880339976}
+  - {fileID: 2492617041343381631}
+  - {fileID: 2794831343876143792}
+  - {fileID: 1040495049657118574}
+  - {fileID: 6029359080427831741}
+  - {fileID: 6725304972091754131}
+  - {fileID: 3723447598487012605}
+  - {fileID: 2283369566047080821}
+  - {fileID: 4576718900917326569}
+  - {fileID: 1397539939135081475}
+  - {fileID: 2001978136300444462}
+  - {fileID: 6480217992861415749}
+  - {fileID: 9058372384588030172}
+  - {fileID: 1313728217657554299}
+  - {fileID: 696480186935838012}
+  - {fileID: 6131900020557547530}
+  - {fileID: 5460467229579282891}
+  - {fileID: 1117343767910381920}
+  - {fileID: 5902407135761394549}
+  - {fileID: 7349247643041837836}
+  - {fileID: 4964376155198355663}
+  - {fileID: 5177486784515038157}
+  - {fileID: 5209794720101676889}
+  - {fileID: 4411224976943936238}
+  - {fileID: 3942268515769100012}
+  - {fileID: 8634841677514152902}
+  - {fileID: 116881656853066574}
+  - {fileID: 7896263412570500622}
+  - {fileID: 1514563406210712958}
+  - {fileID: 7224648808890235959}
+  - {fileID: 3340038475645781927}
+  - {fileID: 7191727368704285714}
+  - {fileID: 6265270290531254661}
+  - {fileID: 9092817528627251562}
+  - {fileID: 3834866949011907913}
+  - {fileID: 115043091013417263}
+  - {fileID: 4226398840864011924}
+  - {fileID: 5219440131681143640}
+  - {fileID: 8631538955375185745}
+  - {fileID: 3734512524877006620}
+  - {fileID: 905118729566285248}
+  - {fileID: 2504572413285123528}
+  - {fileID: 4476472608630987479}
+  - {fileID: 1172366184166524177}
+  - {fileID: 5742230001563227285}
+  - {fileID: 2638298427074553682}
+  - {fileID: 7076688371669549247}
+  - {fileID: 4609243795346754466}
+  - {fileID: 1042807318850960459}
+  - {fileID: 2720099142477650110}
+  - {fileID: 5283818512541728917}
+  particles:
+  - {fileID: 4109027433064942040}
+  - {fileID: 1501224258852463456}
+  - {fileID: 2702876014481438497}
+  - {fileID: 5115309921796410003}
+  - {fileID: 7175101174637398382}
+  - {fileID: 1436140706553503460}
+  - {fileID: 8524242495790767020}
+  - {fileID: 4076100632745865199}
+  - {fileID: 8921475483130673361}
+  backgrounds: []
 --- !u!1 &832779089903272062
 GameObject:
   m_ObjectHideFlags: 0

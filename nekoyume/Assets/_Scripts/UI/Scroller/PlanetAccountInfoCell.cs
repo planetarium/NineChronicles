@@ -78,7 +78,7 @@ namespace Nekoyume.UI.Scroller
 
             if (_viewModel is null)
             {
-                Debug.Log("[PlanetAccountInfoCell] UpdateContent()... viewModel is null.");
+                NcDebug.Log("[PlanetAccountInfoCell] UpdateContent()... viewModel is null.");
                 title.text = "null";
                 noAccount.SetActive(false);
                 account.SetActive(false);
@@ -90,7 +90,7 @@ namespace Nekoyume.UI.Scroller
             var planetAccountInfo = _viewModel.PlanetAccountInfo;
             if (planetAccountInfo is null)
             {
-                Debug.LogError("[PlanetAccountInfoCell] UpdateContent()... planetAccountInfo is null.");
+                NcDebug.LogError("[PlanetAccountInfoCell] UpdateContent()... planetAccountInfo is null.");
                 noAccount.SetActive(false);
                 account.SetActive(false);
                 return;

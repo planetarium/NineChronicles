@@ -437,15 +437,15 @@ namespace Nekoyume.L10n.Editor
         }
 
         private FieldInfo referencedFontAsset;
-        
+
         TMP_FontAsset m_ReferencedFontAsset
         {
             get { return GetValue<TMP_FontAsset>(referencedFontAsset); }
             set { SetValue<TMP_FontAsset>(referencedFontAsset, value); }
         }
-        
+
         FieldInfo includeFontFeatures;
-        
+
         bool m_IncludeFontFeatures
         {
             get { return GetValue<bool>(includeFontFeatures); }
@@ -511,12 +511,12 @@ namespace Nekoyume.L10n.Editor
         }
 
         MethodInfo save_SDF_FontAsset;
-        
+
         void Save_SDF_FontAsset(string filePath)
         {
             save_SDF_FontAsset.Invoke(window, new object[] {filePath});
         }
-        
+
         #endregion
 
         public FontAssetGenerator(TMPro_FontAssetCreatorWindow window)
@@ -616,7 +616,7 @@ namespace Nekoyume.L10n.Editor
             SetValue(characterSequence, settings.characterSequence);
             SetValue(glyphRenderMode, settings.renderMode);
             SetValue(includeFontFeatures, settings.includeFontFeatures);
-            
+
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($"sourceFontFile : {AssetDatabase.GetAssetPath(GetValue<Object>(sourceFontFile))}\n");
             stringBuilder.Append($"pointSizeSamplingMode : {GetValue<int>(pointSizeSamplingMode)}\n");
@@ -629,7 +629,7 @@ namespace Nekoyume.L10n.Editor
             stringBuilder.Append($"characterSequence : {GetValue<string>(characterSequence)}\n");
             stringBuilder.Append($"glyphRenderMode : {GetValue<int>(glyphRenderMode)}\n");
             UnityEngine.Debug.Log(stringBuilder.ToString());
-            
+
             if (!m_IsProcessing && m_SourceFontFile != null)
             {
                 try
@@ -1054,24 +1054,24 @@ namespace Nekoyume.L10n.Editor
                 SaveCreationSettingsToEditorPrefs(SaveFontCreationSettings());
             }
         }
-        
+
         public void SaveFontAssetToSDF(string filePath)
         {
             if (filePath.Length == 0)
             {
-                Debug.LogError("SaveFontAssetToSDF: File Path is empty.");
+                NcDebug.LogError("SaveFontAssetToSDF: File Path is empty.");
                 return;
             }
-            
+
             if (!(((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
                   GlyphRasterModes.RASTER_MODE_BITMAP))
             {
                 Save_SDF_FontAsset(filePath);
-                Debug.Log("Font Asset has been saved to disk.");
+                NcDebug.Log("Font Asset has been saved to disk.");
             }
             else
             {
-                Debug.LogError("Glyph Raster Mode is invalid : It must be SDF.");
+                NcDebug.LogError("Glyph Raster Mode is invalid : It must be SDF.");
             }
         }
     }

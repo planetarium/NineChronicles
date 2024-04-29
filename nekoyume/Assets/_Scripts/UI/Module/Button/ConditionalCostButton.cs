@@ -165,7 +165,7 @@ namespace Nekoyume.UI.Module
                 case CostType.Crystal:
                     return States.Instance.CrystalBalance.MajorUnit >= cost;
                 case CostType.ActionPoint:
-                    return States.Instance.CurrentAvatarState.actionPoint >= cost;
+                    return ReactiveAvatarState.ActionPoint >= cost;
                 case CostType.Hourglass:
                     var inventory = States.Instance.CurrentAvatarState.inventory;
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
@@ -192,44 +192,40 @@ namespace Nekoyume.UI.Module
 
         protected override void OnClickButton()
         {
+            if (showCostAlert)
+            {
+                switch (CheckCost())
+                {
+                    case CostType.None:
+                        break;
+                    case CostType.NCG:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                    case CostType.Crystal:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                    case CostType.ActionPoint:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("ERROR_ACTION_POINT"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                    case CostType.Hourglass:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                }
+            }
+
             base.OnClickButton();
-
-            if (!showCostAlert)
-            {
-                return;
-            }
-
-            switch (CheckCost())
-            {
-                case CostType.None:
-                    break;
-                case CostType.NCG:
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                        NotificationCell.NotificationType.Alert);
-                    return;
-                case CostType.Crystal:
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
-                        NotificationCell.NotificationType.Alert);
-                    return;
-                case CostType.ActionPoint:
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("ERROR_ACTION_POINT"),
-                        NotificationCell.NotificationType.Alert);
-                    return;
-                case CostType.Hourglass:
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
-                        NotificationCell.NotificationType.Alert);
-                    return;
-                default:
-                    break;
-            }
         }
     }
 }

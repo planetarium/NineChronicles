@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Animator animator;
         [SerializeField] private TouchHandler touchHandler;
         [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private GameObject grade6Effect;
         [SerializeField] private GameObject grade5Effect;
         [SerializeField] private GameObject grade4Effect;
         [SerializeField] private GameObject gradeEffect;
@@ -54,6 +55,7 @@ namespace Nekoyume.UI.Module
                 canvasGroup.alpha = 0;
             }
 
+            grade6Effect.SetActive(equipment.Grade == 6);
             grade5Effect.SetActive(equipment.Grade == 5);
             grade4Effect.SetActive(equipment.Grade == 4);
             gradeEffect.SetActive(false);
@@ -88,6 +90,7 @@ namespace Nekoyume.UI.Module
             }
 
             var grade = Util.GetTickerGrade(fav.Currency.Ticker);
+            grade6Effect.SetActive(grade == 6);
             grade5Effect.SetActive(grade == 5);
             grade4Effect.SetActive(grade == 4);
             gradeEffect.SetActive(false);
@@ -109,7 +112,7 @@ namespace Nekoyume.UI.Module
             canvasGroup.alpha = 1;
             animator.SetTrigger(AnimatorHashShow);
 
-            if (grade4Effect.activeSelf || grade5Effect.activeSelf)
+            if (grade4Effect.activeSelf || grade5Effect.activeSelf || grade6Effect.activeSelf)
             {
                 gradeEffect.SetActive(true);
             }

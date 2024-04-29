@@ -6,6 +6,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -105,7 +106,7 @@ namespace Nekoyume.UI.Module
 
             collectionEffectButton.onClick.AddListener(() =>
             {
-                Widget.Find<CollectionEffectPopup>().Show();
+                Widget.Find<StatsBonusPopup>().Show();
                 AudioController.PlayClick();
             });
 
@@ -190,9 +191,9 @@ namespace Nekoyume.UI.Module
         private void UpdateRuneView()
         {
             var states = States.Instance.CurrentRuneSlotStates[_battleType].GetRuneSlot();
-            var equippedRuneState = States.Instance.GetEquippedRuneStates(_battleType);
+            var equippedRuneStates = States.Instance.GetEquippedRuneStates(_battleType);
             var sheet = Game.Game.instance.TableSheets.RuneListSheet;
-            inventory.UpdateRunes(equippedRuneState, _battleType, sheet);
+            inventory.UpdateRunes(equippedRuneStates, _battleType, sheet);
             runeSlots.Set(states, OnClickRuneSlot, OnDoubleClickRuneSlot);
         }
 
@@ -248,7 +249,7 @@ namespace Nekoyume.UI.Module
         {
             if (slot.RuneSlot.IsLock)
             {
-                if (Game.Game.instance.IsInWorld)
+                if (BattleRenderer.Instance.IsOnBattle)
                 {
                     return;
                 }
@@ -345,7 +346,7 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClickRuneSlot(RuneSlotView slot)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 return;
             }
@@ -385,7 +386,7 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClickSlot(EquipmentSlot slot)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 return;
             }
@@ -403,7 +404,7 @@ namespace Nekoyume.UI.Module
 
         private void EquipItem(InventoryItem inventoryItem)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 return;
             }
@@ -567,7 +568,7 @@ namespace Nekoyume.UI.Module
 
         private void UnequipItem(InventoryItem inventoryItem)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 return;
             }
@@ -638,7 +639,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     var firstRuneId = firstSlot.Value.RuneId.Value;
-                    if(!States.Instance.TryGetRuneState(firstRuneId, out var firstState))
+                    if(!States.Instance.AllRuneState.TryGetRuneState(firstRuneId, out var firstState))
                     {
                         return;
                     }
@@ -653,7 +654,7 @@ namespace Nekoyume.UI.Module
                         }
 
                         var runeId = runeSlot.RuneId.Value;
-                        if(!States.Instance.TryGetRuneState(runeId, out var state))
+                        if(!States.Instance.AllRuneState.TryGetRuneState(runeId, out var state))
                         {
                             return;
                         }
@@ -675,7 +676,7 @@ namespace Nekoyume.UI.Module
 
         private void UnequipRune(InventoryItem item)
         {
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 return;
             }
@@ -735,11 +736,11 @@ namespace Nekoyume.UI.Module
                 Show(
                 model,
                 L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
-                !Game.Game.instance.IsInWorld && !model.DimObjectEnabled.Value,
+                !BattleRenderer.Instance.IsOnBattle && !model.DimObjectEnabled.Value,
                 () => EquipOrUnequip(model),
                 () =>
                 {
-                    if (Game.Game.instance.IsInWorld)
+                    if (BattleRenderer.Instance.IsOnBattle)
                     {
                         return;
                     }
@@ -793,7 +794,7 @@ namespace Nekoyume.UI.Module
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    if (!Game.Game.instance.IsInWorld)
+                    if (!BattleRenderer.Instance.IsOnBattle)
                     {
                         if (model.DimObjectEnabled.Value)
                         {
@@ -816,7 +817,7 @@ namespace Nekoyume.UI.Module
                     {
                         enhancement = () =>
                         {
-                            if (Game.Game.instance.IsInWorld)
+                            if (BattleRenderer.Instance.IsOnBattle)
                             {
                                 return;
                             }
@@ -833,7 +834,7 @@ namespace Nekoyume.UI.Module
                         };
                     }
 
-                    if (Game.Game.instance.IsInWorld)
+                    if (BattleRenderer.Instance.IsOnBattle)
                     {
                         blocked = () => NotificationSystem.Push(MailType.System,
                             L10nManager.Localize("UI_BLOCK_EQUIP"),
@@ -853,7 +854,7 @@ namespace Nekoyume.UI.Module
                         submitText = L10nManager.Localize("UI_CHARGE_AP");
                         interactable = ActionPoint.IsInteractableMaterial();
 
-                        if (States.Instance.CurrentAvatarState.actionPoint > 0)
+                        if (ReactiveAvatarState.ActionPoint > 0)
                         {
                             submit = () => ActionPoint.ShowRefillConfirmPopup(
                                 () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe()
@@ -864,7 +865,7 @@ namespace Nekoyume.UI.Module
                             submit = () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe();
                         }
 
-                        if (Game.Game.instance.IsInWorld)
+                        if (BattleRenderer.Instance.IsOnBattle)
                         {
                             blocked = () => NotificationSystem.Push(MailType.System,
                                 L10nManager.Localize("UI_BLOCK_CHARGE_AP"),
@@ -896,7 +897,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    if (Game.Game.instance.IsInWorld)
+                    if (BattleRenderer.Instance.IsOnBattle)
                     {
                         return;
                     }
@@ -945,9 +946,16 @@ namespace Nekoyume.UI.Module
             var consumables = GetEquippedConsumables();
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
 
+            var equippedRuneStates = States.Instance.GetEquippedRuneStates(_battleType);
+
+            var allRuneState = States.Instance.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(allRuneState,
+                runeListSheet, runeLevelBonusSheet);
+
             var runeStatModifiers = new List<StatModifier>();
-            var equippedRuneState = States.Instance.GetEquippedRuneStates(_battleType);
-            foreach (var runeState in equippedRuneState)
+            foreach (var runeState in equippedRuneStates)
             {
                 if (!runeOptionSheet.TryGetValue(runeState.RuneId, out var statRow) ||
                     !statRow.LevelOptionMap.TryGetValue(runeState.Level, out var statInfo))
@@ -960,7 +968,7 @@ namespace Nekoyume.UI.Module
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.TotalValueAsLong)));
+                            (long)(x.stat.BaseValue * (100000 + runeLevelBonus) / 100000m))));
             }
 
             var collectionState = Game.Game.instance.States.CollectionState;

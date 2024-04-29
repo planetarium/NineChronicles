@@ -13,6 +13,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Rune;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -225,7 +226,7 @@ namespace Nekoyume.UI.Module
                 AddItem(item.item, item.count);
             }
 
-            foreach (var runeState in States.Instance.RuneStates)
+            foreach (var runeState in States.Instance.AllRuneState.Runes.Values)
             {
                 _runes.Add(new InventoryItem(runeState));
             }
@@ -851,9 +852,9 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void UpdateRunes(List<RuneState> runeStates, BattleType battleType, RuneListSheet sheet)
+        public void UpdateRunes(List<RuneState> equippedRuneState, BattleType battleType, RuneListSheet sheet)
         {
-            UpdateRuneEquipped(runeStates, battleType, sheet);
+            UpdateRuneEquipped(equippedRuneState, battleType, sheet);
             UpdateRuneNotification(GetBestRunes(battleType));
             var models = GetModels(_activeTabType);
             scroll.UpdateData(models, resetScrollOnEnable);
@@ -900,7 +901,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var rune in _runes)
             {
-                var equipped = runeStates.Exists(x => x.RuneId == rune.RuneState.RuneId);
+                var equipped = runeStates.Any(x => x.RuneId == rune.RuneState.RuneId);
                 rune.Equipped.SetValueAndForceNotify(equipped);
 
                 if (!sheet.TryGetValue(rune.RuneState.RuneId, out var row))

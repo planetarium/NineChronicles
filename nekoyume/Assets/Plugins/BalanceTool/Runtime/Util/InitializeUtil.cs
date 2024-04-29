@@ -1,5 +1,6 @@
 // NOTE: This file is copied from Assets/_Scripts/Lib9c/lib9c/.Lib9c.Tests/Util/InitializeUtil.cs
 using Lib9c;
+using Libplanet.Mocks;
 
 namespace BalanceTool.Runtime.Util
 {
@@ -33,7 +34,7 @@ namespace BalanceTool.Runtime.Util
         {
             adminAddr ??= new PrivateKey().Address;
             var context = new ActionContext();
-            var states = new World(new MockWorldState()).SetLegacyState(
+            var states = new World(MockWorldState.CreateModern()).SetLegacyState(
                 Addresses.Admin,
                 new AdminState(adminAddr.Value, long.MaxValue).Serialize());
 
@@ -61,7 +62,6 @@ namespace BalanceTool.Runtime.Util
                 agentAddr.Value,
                 0,
                 tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
                 avatarAddr.Derive("ranking_map"));
             agentState.avatarAddresses.Add(avatarIndex, avatarAddr);
 

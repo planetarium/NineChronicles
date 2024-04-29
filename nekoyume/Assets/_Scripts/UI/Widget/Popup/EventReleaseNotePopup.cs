@@ -55,12 +55,12 @@ namespace Nekoyume.UI
         private EventBannerItem _selectedEventBannerItem;
         private NoticeItem _selectedNoticeItem;
         private readonly ToggleGroup _tabGroup = new();
+        private bool _isInitialized;
 
         private System.Action _onClose;
 
         private const string LastReadingDayKey = "LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
-
         public bool HasUnread
         {
             get
@@ -81,6 +81,12 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
+            var liveAssetManager = LiveAssetManager.instance;
+            if (!liveAssetManager.IsInitialized || _isInitialized)
+            {
+                return;
+            }
+
             try
             {
                 _tabGroup.RegisterToggleable(eventTabButton);
@@ -103,7 +109,6 @@ namespace Nekoyume.UI
                 _tabGroup.SetToggledOn(eventTabButton);
                 closeButton.onClick.AddListener(() => Close());
 
-                var liveAssetManager = LiveAssetManager.instance;
                 eventTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadEvent);
                 noticeTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadNotice);
                 liveAssetManager.ObservableHasUnreadEvent
@@ -119,12 +124,12 @@ namespace Nekoyume.UI
 
                     if(item is null)
                     {
-                        Debug.LogError($"item is Null");
+                        NcDebug.LogError($"item is Null");
                     }
 
                     if (notice is null)
                     {
-                        Debug.LogError($"notice is Null");
+                        NcDebug.LogError($"notice is Null");
                     }
 
                     item.Set(notice,
@@ -156,8 +161,16 @@ namespace Nekoyume.UI
             }
             catch(Exception e)
             {
-                Debug.LogError(e);
+                NcDebug.LogError(e);
             }
+
+            _isInitialized = true;
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            Initialize();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

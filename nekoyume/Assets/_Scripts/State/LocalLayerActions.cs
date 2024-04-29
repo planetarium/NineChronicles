@@ -41,7 +41,7 @@ namespace Nekoyume.State
         {
             if (TryGetRegisteredInfo(gameActionId, out var info))
             {
-                Debug.LogError($"[{nameof(LocalLayerActions)}] Already registered. {gameActionId.ToString()}");
+                NcDebug.LogError($"[{nameof(LocalLayerActions)}] Already registered. {gameActionId.ToString()}");
 
                 return;
             }
@@ -59,7 +59,7 @@ namespace Nekoyume.State
         {
             if (!TryGetRegisteredInfo(gameActionId, out var info))
             {
-                Debug.LogError($"[{nameof(LocalLayerActions)}] There is no registered. {gameActionId.ToString()}");
+                NcDebug.LogError($"[{nameof(LocalLayerActions)}] There is no registered. {gameActionId.ToString()}");
 
                 return;
             }

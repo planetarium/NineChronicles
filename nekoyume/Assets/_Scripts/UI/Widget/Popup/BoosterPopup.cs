@@ -5,6 +5,7 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -82,7 +83,7 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageId = stageId;
 
-            ObservableExtensions.Subscribe(ReactiveAvatarState.ActionPoint, value =>
+            ObservableExtensions.Subscribe(ReactiveAvatarState.ObservableActionPoint, value =>
             {
                 var costOfStage = GetCostOfStage();
                 apSlider.maxValue = value / costOfStage >= maxCount ? maxCount : value / costOfStage;
@@ -97,7 +98,7 @@ namespace Nekoyume.UI
             });
 
             var cost = GetCostOfStage();
-            var actionPoint = Game.Game.instance.States.CurrentAvatarState.actionPoint;
+            var actionPoint = ReactiveAvatarState.ActionPoint;
             ownAPText.text = actionPoint.ToString();
             // Call onValueChanged by Change value
             apSlider.value = 0;
@@ -124,7 +125,7 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show();
             Close();
 
-            Game.Game.instance.IsInWorld = true;
+            BattleRenderer.Instance.IsOnBattle = true;
             _stage.IsShowHud = true;
 
             ObservableExtensions.Subscribe(Game.Game.instance.ActionManager.HackAndSlash(

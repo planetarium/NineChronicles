@@ -53,7 +53,7 @@ namespace Nekoyume
             }
             catch (InvalidOperationException e)
             {
-                Debug.LogException(e);
+                NcDebug.LogException(e);
                 current = null;
                 return false;
             }
@@ -72,7 +72,7 @@ namespace Nekoyume
             }
             catch (InvalidOperationException e)
             {
-                Debug.LogException(e);
+                NcDebug.LogException(e);
                 next = null;
                 return false;
             }

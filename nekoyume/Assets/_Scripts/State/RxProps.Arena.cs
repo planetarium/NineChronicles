@@ -161,7 +161,7 @@ namespace Nekoyume.State
             var sheet = _tableSheets.ArenaSheet;
             if (!sheet.TryGetCurrentRound(blockIndex, out var currentRoundData))
             {
-                Debug.Log($"Failed to get current round data. block index({blockIndex})");
+                NcDebug.Log($"Failed to get current round data. block index({blockIndex})");
                 return previous;
             }
 
@@ -228,10 +228,14 @@ namespace Nekoyume.State
                 playerArenaInfoAddr.Derive(BattleArena.PurchasedCountKey);
             var arenaAvatarAddress =
                 ArenaAvatarState.DeriveAddress(currentAvatarAddr);
+            var playerScoreAddr = ArenaScore.DeriveAddress(currentAvatarAddr,
+                currentRoundData.ChampionshipId,
+                currentRoundData.Round);
             var addrBulk = new List<Address>
             {
                 purchasedCountAddress,
                 arenaAvatarAddress,
+                playerScoreAddr
             };
             var stateBulk =
                 await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addrBulk);
@@ -247,13 +251,11 @@ namespace Nekoyume.State
                 var response = await Game.Game.instance.RpcGraphQLClient.QueryArenaInfoAsync(currentAvatarAddr);
                 // Arrange my information so that it comes first when it's the same score.
                 arenaInfo = response.StateQuery.ArenaParticipants
-                    .OrderByDescending(participant => participant.Score)
-                    .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
                     .ToList();
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                NcDebug.LogException(e);
                 // TODO: this is temporary code for local testing.
                 arenaInfo.AddRange(_states.AvatarStates.Values.Select(avatar => new ArenaParticipantModel
                 {
@@ -300,7 +302,7 @@ namespace Nekoyume.State
 
             if (!arenaInfo.Any())
             {
-                Debug.Log($"Failed to get {nameof(ArenaParticipantModel)}");
+                NcDebug.Log($"Failed to get {nameof(ArenaParticipantModel)}");
 
                 // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
                 // 따로 처리합니다.
@@ -321,13 +323,37 @@ namespace Nekoyume.State
             {
                 playerArenaInfo.Cp = cp;
                 playerArenaInfo.PortraitId = portraitId;
+                playerArenaInfo.Score = (Integer)((List)stateBulk[playerScoreAddr])[1];
             }
-            _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
+
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
             _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
             _lastArenaBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
 
-            return arenaInfo;
+            // Calculate and Reset Rank.
+            var arenaInfoList = arenaInfo
+                .OrderByDescending(participant => participant.Score)
+                .ThenByDescending(participant => participant.AvatarAddr == currentAvatarAddr)
+                .ToList();
+            var playerIndex =
+                arenaInfoList.FindIndex(model => model.AvatarAddr == currentAvatarAddr);
+            var avatarCount = arenaInfoList.Count;
+            if (playerIndex == 0)
+            {
+                playerArenaInfo.Rank = 1;
+            }
+            else if (playerIndex < avatarCount - 1) // avoid out of range exception
+            {
+                // 다음 순서에 위치한 유저가 같은 점수일 경우, 같은 등수로 표기한다.
+                // 같지 않을 경우, 앞 순서에 있는 유저의 등수 - 1로 표기한다.
+                playerArenaInfo.Rank =
+                    arenaInfoList[playerIndex + 1].Score == playerArenaInfo.Score
+                        ? arenaInfoList[playerIndex + 1].Rank
+                        : arenaInfoList[playerIndex - 1].Rank + 1;
+            }
+
+            _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
+            return arenaInfoList;
         }
     }
 }

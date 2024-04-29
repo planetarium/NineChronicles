@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
@@ -51,7 +50,7 @@ namespace Nekoyume.UI
             public int WorldID;
             public int StageID;
             public int ClearedWaveNumber;
-            public int ActionPoint;
+            public long ActionPoint;
             public int LastClearedStageId;
             public bool ActionPointNotEnough;
             public bool IsClear;
@@ -243,6 +242,14 @@ namespace Nekoyume.UI
             SubmitWidget = nextButton.onClick.Invoke;
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
+
+            BattleRenderer.Instance.OnPrepareStage += NextPrepareStage;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            BattleRenderer.Instance.OnPrepareStage -= NextPrepareStage;
         }
 
         private IEnumerator OnClickClose()
@@ -438,7 +445,6 @@ namespace Nekoyume.UI
                 true);
             worldStageId.text = $"{SharedModel.WorldName}" +
                                 $" {stageText}";
-            actionPoint.SetActionPoint(model.ActionPoint);
             actionPoint.SetEventTriggerEnabled(true);
 
             base.Show();
@@ -864,8 +870,11 @@ namespace Nekoyume.UI
             };
         }
 
-        public void NextStage(BattleLog log)
+        private void NextPrepareStage(BattleLog log)
         {
+            if (!IsActive() || !Find<StageLoadingEffect>().IsActive())
+                return;
+
             StartCoroutine(CoGoToNextStageClose(log));
         }
 
@@ -886,7 +895,8 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(stageLoadingEffect.CoClose());
 
-            Game.Event.OnStageStart.Invoke(log);
+            // TODO: WhenAll
+            yield return BattleRenderer.Instance.LoadStageResources(log);
             Close();
         }
 
@@ -904,7 +914,6 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
             yield return StartCoroutine(CoFadeOut());
-            Game.Event.OnStageStart.Invoke(log);
             Close();
         }
 
@@ -924,7 +933,7 @@ namespace Nekoyume.UI
             AirbridgeUnity.TrackEvent(evt);
 
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -945,7 +954,7 @@ namespace Nekoyume.UI
         private void GoToPreparation()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1009,7 +1018,7 @@ namespace Nekoyume.UI
         private void GoToMarket()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1024,7 +1033,7 @@ namespace Nekoyume.UI
         private void GoToProduct()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1039,7 +1048,7 @@ namespace Nekoyume.UI
         private void GoToCraft()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1053,7 +1062,7 @@ namespace Nekoyume.UI
         private void GoToFood()
         {
             Find<Battle>().Close(true);
-            Game.Game.instance.Stage.DestroyBackground();
+            Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
@@ -1100,7 +1109,7 @@ namespace Nekoyume.UI
                 }
                 catch
                 {
-                    Debug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
+                    NcDebug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
                 }
 
                 if (SharedModel.StageType == StageType.EventDungeon)

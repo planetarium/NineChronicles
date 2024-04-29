@@ -8,6 +8,7 @@ using Libplanet.Action.State;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Skill;
@@ -17,7 +18,6 @@ using Nekoyume.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Enemy = Nekoyume.Game.Character.Enemy;
 using Skill = Nekoyume.Model.Skill.Skill;
 using Text = UnityEngine.UI.Text;
 
@@ -286,7 +286,7 @@ namespace Nekoyume
             TableSheetsDropdown.options = TableAssets.Keys.Select(s => new Dropdown.OptionData(s)).ToList();
             if (TableSheetsDropdown.options.Count == 0)
             {
-                Debug.Log("It seems there is no table having difference.");
+                NcDebug.Log("It seems there is no table having difference.");
                 Display(nameof(OnChainTableSheet), "No content.");
                 Display(nameof(LocalTableSheet), "No content.");
                 PatchButton.SetActive(false);
@@ -382,7 +382,7 @@ namespace Nekoyume
                 Log($"Level Up to {player.Level}");
             }
 
-            var enemy = enemyObj.GetComponent<Enemy>();
+            var enemy = enemyObj.GetComponent<StageMonster>();
             Game.Event.OnEnemyDeadStart.Invoke(enemy);
         }
 
@@ -420,7 +420,8 @@ namespace Nekoyume
                 random,
                 avatarState,
                 new List<Guid>(),
-                States.Instance.GetEquippedRuneStates(BattleType.Adventure),
+                States.Instance.AllRuneState,
+                States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
                 new List<Skill>(),
                 worldRow.Id,
                 stageId,
@@ -436,7 +437,9 @@ namespace Nekoyume
                     tableSheets.StageSheet[stageId],
                     tableSheets.MaterialItemSheet),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet
+                tableSheets.DeBuffLimitSheet,
+                logEvent: true,
+                States.Instance.GameConfigState.ShatterStrikeMaxDamage
             );
             simulator.Simulate();
             simulator.Log.result = _result;

@@ -47,7 +47,7 @@ namespace Nekoyume.Game
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                NcDebug.LogException(e);
                 return (new List<ItemProductResponseModel>(), 0);
             }
 
@@ -79,7 +79,7 @@ namespace Nekoyume.Game
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                NcDebug.LogException(e);
                 return (new List<FungibleAssetValueProductResponseModel>(), 0);
             }
 
@@ -102,7 +102,7 @@ namespace Nekoyume.Game
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                NcDebug.LogException(e);
                 return (
                     new List<FungibleAssetValueProductResponseModel>(),
                     new List<ItemProductResponseModel>());
@@ -128,7 +128,7 @@ namespace Nekoyume.Game
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                NcDebug.LogException(e);
                 return (
                     new List<FungibleAssetValueProductResponseModel>(),
                     new List<ItemProductResponseModel>());
@@ -160,7 +160,7 @@ namespace Nekoyume.Game
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                NcDebug.LogException(e);
                 return (string.Empty, null, null);
             }
 

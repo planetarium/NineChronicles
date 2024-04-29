@@ -42,6 +42,10 @@ namespace Nekoyume.UI
         private GameObject premiumPlusUnlockBtn;
         [SerializeField]
         private GameObject premiumPlusIcon;
+        [SerializeField]
+        private ConditionalButton prevSeasonClaimButton;
+        [SerializeField]
+        private TextMeshProUGUI prevSeasonClaimButtonRemainingText;
 
         private bool isPageEffectComplete;
         public const int SeasonPassMaxLevel = 30;
@@ -86,13 +90,24 @@ namespace Nekoyume.UI
 
             seasonPassManager.RemainingDateTime.Subscribe((endDate) =>
             {
-                remainingText.text = $"{L10nManager.Localize("UI_SEASONPASS_REMAINING_TIME")} {endDate}";
+                remainingText.text = endDate;
             });
 
             seasonPassManager.SeasonEndDate.Subscribe((endTime) =>
             {
                 RefreshRewardCells(seasonPassManager);
             }).AddTo(gameObject);
+
+            seasonPassManager.PrevSeasonClaimAvailable.Subscribe(visible =>
+            {
+                prevSeasonClaimButton.gameObject.SetActive(visible);
+            }).AddTo(gameObject);
+
+            seasonPassManager.PrevSeasonClaimRemainingDateTime.Subscribe(remaining =>
+            {
+                prevSeasonClaimButtonRemainingText.text = remaining;
+            }).AddTo(gameObject);
+
             rewardCellScrollbar.value = 0;
         }
 
@@ -100,7 +115,7 @@ namespace Nekoyume.UI
         {
             if (seasonPassManager.CurrentSeasonPassData == null)
             {
-                Debug.LogError("[RefreshRewardCells] RefreshFailed");
+                NcDebug.LogError("[RefreshRewardCells] RefreshFailed");
                 return;
             }
 
@@ -246,6 +261,31 @@ namespace Nekoyume.UI
                 (error) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification);
+                });
+        }
+
+        public void PrevSeasonClaim()
+        {
+            prevSeasonClaimButton.SetConditionalState(false);
+            
+            Game.Game.instance.SeasonPassServiceManager.PrevClaim(
+                result =>
+                {
+                    OneLineSystem.Push(
+                        MailType.System, 
+                        L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), 
+                        NotificationCell.NotificationType.Notification);
+                    Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                    prevSeasonClaimButton.SetConditionalState(true);
+                    prevSeasonClaimButton.gameObject.SetActive(false);
+                },
+                error =>
+                {
+                    OneLineSystem.Push(
+                        MailType.System, 
+                        L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), 
+                        NotificationCell.NotificationType.Notification);
+                    prevSeasonClaimButton.SetConditionalState(true);
                 });
         }
     }

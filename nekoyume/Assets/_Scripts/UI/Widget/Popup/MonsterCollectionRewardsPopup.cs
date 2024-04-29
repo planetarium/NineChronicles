@@ -21,11 +21,11 @@ namespace Nekoyume.UI
         }
 
         private readonly Model _model = new Model();
-        
+
         // View
         [SerializeField]
         private List<SimpleCountableItemView> itemViews;
-        
+
         [SerializeField]
         private SubmitButton submitButton;
         // ~View
@@ -52,18 +52,18 @@ namespace Nekoyume.UI
                         e.Id.Equals(rewardInfo.ItemId));
                     if (itemRow is null)
                     {
-                        Debug.LogWarning($"ItemId({rewardInfo.ItemId}) does not exist in MaterialItemSheet.");
+                        NcDebug.LogWarning($"ItemId({rewardInfo.ItemId}) does not exist in MaterialItemSheet.");
                         itemView.Clear();
                         continue;
                     }
-                    
+
                     var item = ItemFactory.CreateTradableMaterial(itemRow);
                     var data = new CountableItem(item, rewardInfo.Quantity);
                     itemView.SetData(data);
                     itemView.Show();
                 }
             }).AddTo(gameObject);
-            
+
             SubmitWidget = () => submitButton.OnSubmitClick.OnNext(submitButton);
         }
 

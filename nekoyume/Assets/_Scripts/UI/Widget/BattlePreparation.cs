@@ -14,6 +14,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -119,7 +120,7 @@ namespace Nekoyume.UI
             StageType.EventDungeon =>
                 RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost,
             _ =>
-                States.Instance.CurrentAvatarState.actionPoint >= _requiredCost,
+                ReactiveAvatarState.ActionPoint >= _requiredCost,
         };
 
         private bool IsFirstStage => _stageType switch
@@ -140,6 +141,14 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close(true);
             base.Awake();
+
+            BattleRenderer.Instance.OnPrepareStage += GoToPrepareStage;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            BattleRenderer.Instance.OnPrepareStage -= GoToPrepareStage;
         }
 
         public override void Initialize()
@@ -149,7 +158,7 @@ namespace Nekoyume.UI
             information.Initialize();
 
             startButton.OnSubmitSubject
-                .Where(_ => !Game.Game.instance.IsInWorld)
+                .Where(_ => !BattleRenderer.Instance.IsOnBattle)
                 .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
@@ -159,10 +168,10 @@ namespace Nekoyume.UI
                 .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction));
 
             boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
+                .Where(_ => EnoughToPlay && !BattleRenderer.Instance.IsOnBattle)
                 .Subscribe(_ => ShowBoosterPopup());
 
-            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !Game.Game.instance.IsInWorld)
+            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !BattleRenderer.Instance.IsOnBattle)
                 .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(
@@ -224,7 +233,7 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
-                    ReactiveAvatarState.ActionPoint
+                    ReactiveAvatarState.ObservableActionPoint
                         .Subscribe(_ => UpdateStartButton())
                         .AddTo(_disposables);
                     break;
@@ -396,7 +405,7 @@ namespace Nekoyume.UI
         {
             AudioController.PlayClick();
 
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 return;
             }
@@ -479,8 +488,8 @@ namespace Nekoyume.UI
             bool buyTicketIfNeeded = false)
         {
             var game = Game.Game.instance;
-            game.IsInWorld = true;
             game.Stage.IsShowHud = true;
+            BattleRenderer.Instance.IsOnBattle = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
             var currencyImage = costType switch
@@ -651,9 +660,18 @@ namespace Nekoyume.UI
             }
         }
 
-        public void GoToStage(BattleLog battleLog)
+        private void GoToPrepareStage(BattleLog battleLog)
         {
-            Game.Event.OnStageStart.Invoke(battleLog);
+            if (!IsActive() || !Find<LoadingScreen>().IsActive())
+                return;
+
+            StartCoroutine(CoGoToStage(battleLog));
+        }
+
+        private IEnumerator CoGoToStage(BattleLog battleLog)
+        {
+            yield return BattleRenderer.Instance.LoadStageResources(battleLog);
+
             Find<LoadingScreen>().Close();
             Close(true);
         }
@@ -772,14 +790,14 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Debug.LogError($"TutorialActionClickBattlePreparationFirstInventoryCellView() throw error.");
+                    NcDebug.LogError($"TutorialActionClickBattlePreparationFirstInventoryCellView() throw error.");
                 }
 
                 Find<EquipmentTooltip>().OnEnterButtonArea(true);
             }
             catch
             {
-                Debug.LogError($"TryGetFirstCell throw error.");
+                NcDebug.LogError($"TryGetFirstCell throw error.");
             }
         }
 
@@ -790,7 +808,7 @@ namespace Nekoyume.UI
                 var itemCell = information.GetBestEquipmentInventoryItems();
                 if (itemCell is null)
                 {
-                    Debug.LogError($"information.GetBestEquipmentInventoryItems().ElementAtOrDefault(0) is null");
+                    NcDebug.LogError($"information.GetBestEquipmentInventoryItems().ElementAtOrDefault(0) is null");
                     return;
                 }
 
@@ -799,7 +817,7 @@ namespace Nekoyume.UI
             }
             catch
             {
-                Debug.LogError($"GetSecondCell throw error.");
+                NcDebug.LogError($"GetSecondCell throw error.");
             }
         }
 

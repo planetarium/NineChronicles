@@ -132,7 +132,7 @@ namespace Nekoyume.UI
             }
             catch (Exception e)
             {
-                Debug.LogError(e.Message);
+                NcDebug.LogError(e.Message);
                 loading.Close();
                 base.Show(ignoreShowAnimation);
                 Close();
@@ -225,6 +225,7 @@ namespace Nekoyume.UI
         public static async Task LoadL10Ns()
         {
             MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
+            await UniTask.SwitchToMainThread();
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
         }

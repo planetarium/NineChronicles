@@ -22,6 +22,9 @@ namespace Nekoyume.UI.Scroller
             public GameObject text;
         }
 
+        [SerializeField] private Animator animator = null;
+        [SerializeField] private CanvasGroup canvasGroup = null;
+
         [SerializeField] private CollectionStat complete;
         [SerializeField] private CollectionStat incomplete;
         [SerializeField] private CollectionItemView[] collectionItemViews;
@@ -30,6 +33,8 @@ namespace Nekoyume.UI.Scroller
 
         private CollectionModel _itemData;
         private readonly List<IDisposable> _disposables = new();
+
+        private static readonly int AnimationHashShow = Animator.StringToHash("Show");
 
         private void Awake()
         {
@@ -84,6 +89,32 @@ namespace Nekoyume.UI.Scroller
 
                 activeButtonLoading.container.SetActive(loading);
             }).AddTo(_disposables);
+        }
+
+        public void HideWithAlpha()
+        {
+            if (!gameObject.activeSelf)
+            {
+                return;
+            }
+
+            canvasGroup.alpha = 0;
+        }
+
+        public void ShowWithAlpha(bool ignoreShowAnimation = false)
+        {
+            if (!gameObject.activeSelf && !ignoreShowAnimation)
+            {
+                return;
+            }
+
+            canvasGroup.alpha = 1;
+            if (ignoreShowAnimation)
+            {
+                return;
+            }
+
+            animator.SetTrigger(AnimationHashShow);
         }
     }
 }

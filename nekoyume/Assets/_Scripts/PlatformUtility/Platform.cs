@@ -21,7 +21,7 @@ namespace Nekoyume
 
         public static string GetPersistentDataPath(string fileName)
         {
-            Debug.Log($"[GetPersistentDataPath] {PersistentDataPath} , {fileName}");
+            NcDebug.Log($"[GetPersistentDataPath] {PersistentDataPath} , {fileName}");
             return Path.Combine(PersistentDataPath, fileName);
         }
 
@@ -35,7 +35,7 @@ namespace Nekoyume
         }
 
         /// <summary>
-        /// Changes the path of the Android key store by copying the contents from 
+        /// Changes the path of the Android key store by copying the contents from
         /// "storage/emulated/0/Documents/NineChronicles" to the platform's persistent data path.
         /// After copying, it deletes any files in the new location that have the same names as those in the original path.
         /// This method is typically used for data migration or backup purposes in Android applications.
@@ -55,18 +55,18 @@ namespace Nekoyume
         /// <param name="target">The target path where the folder will be copied to.</param>
         private static void CopyFolder(string path, string target)
         {
-            Debug.Log($"[CopyFolder] path:{path}    target:{target}");
+            NcDebug.Log($"[CopyFolder] path:{path}    target:{target}");
 
             if (!Directory.Exists(target))
             {
                 Directory.CreateDirectory(target);
-                Debug.Log($"[Directory.CreateDirectory] target: {target}");
+                NcDebug.Log($"[Directory.CreateDirectory] target: {target}");
             }
 
             foreach (string file in Directory.GetFiles(path))
             {
                 File.Copy(file, Path.Combine(target, Path.GetFileName(file)));
-                Debug.Log($"[File.Copy] path:{Path.GetFileName(file)}    target:{target}");
+                NcDebug.Log($"[File.Copy] path:{Path.GetFileName(file)}    target:{target}");
             }
 
             foreach (string directory in Directory.GetDirectories(path))
@@ -85,7 +85,7 @@ namespace Nekoyume
         /// <param name="target">The target directory path where files will be checked and deleted if a match is found.</param>
         private static void DeleteSameFileName(string path, string target)
         {
-            Debug.Log($"[DeleteCopiedFile] path:{path}    target:{target}");
+            NcDebug.Log($"[DeleteCopiedFile] path:{path}    target:{target}");
             foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
             {
                 string relativePath = file.Substring(path.Length + 1);
@@ -94,7 +94,7 @@ namespace Nekoyume
                 if (File.Exists(targetFile))
                 {
                     File.Delete(targetFile);
-                    Debug.Log($"[File.Delete] Deleted file: {targetFile}");
+                    NcDebug.Log($"[File.Delete] Deleted file: {targetFile}");
                 }
             }
         }

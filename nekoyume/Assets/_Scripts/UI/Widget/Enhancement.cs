@@ -303,7 +303,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            if (States.Instance.CurrentAvatarState.actionPoint < GameConfig.EnhanceEquipmentCostAP)
+            if (ReactiveAvatarState.ActionPoint < GameConfig.EnhanceEquipmentCostAP)
             {
                 _errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_ACTION_POWER");
                 return false;
@@ -537,7 +537,7 @@ namespace Nekoyume.UI
 
                 if (targetRangeRows.Count < 2)
                 {
-                    Debug.LogError("[Enhancement] Faild Get TargetRangeRows");
+                    NcDebug.LogError("[Enhancement] Faild Get TargetRangeRows");
                 }
                 else
                 {

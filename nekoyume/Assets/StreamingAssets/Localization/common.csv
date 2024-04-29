@@ -766,7 +766,7 @@ UI_ITEM_GRADE_2,Rare,레어,Cru,レア,Raro,หายาก,Langka,Редкий,
 UI_ITEM_GRADE_3,Epic,에픽,Épico,エピック,Épico,มหากาพย์,Epik,эпический,史诗,史詩,Epiko,Sử thi
 UI_ITEM_GRADE_4,Unique,유니크,Único,ユニーク,Único,เป็นเอกลักษณ์,Unik,Уникальный,独特,獨特的,Kakaiba,Độc nhất
 UI_ITEM_GRADE_5,Legend,레전드,Lenda,レジェンド,Legendario,ตำนาน,Legenda,легенда,传奇,傳奇,Maalamat,Huyền thoại
-UI_ITEM_GRADE_6,Sacred,신성,Sagrado,神聖,Sagrado,ศักดิ์สิทธิ์,Suci,Священный,神圣,神聖,Sagrado,Thiêng liêng
+UI_ITEM_GRADE_6,Sacred,신성,Sagrado,神聖,Sagrado,ศักดิ์สิทธิ์,Suci,Священный,神圣,神聖,Sagrado,Thần Thánh
 UI_OPTION,Additional options,추가 옵션,Opções adicionais,追加オプション,Opciones Adicionales,ตัวเลือกเพิ่มเติม,Opsi tambahan,Дополнительные опции,附加选项,其他選項,Karagdagang Opsyon,Tùy chọn bổ sung
 ITEM_GROUPNAME_100000,Canned Tuna,참치캔,Atum enlatado,ツナ缶,Lata de atún,ทูน่ากระป๋อง,Tuna kaleng,Консервированный тунец,金枪鱼罐头,金槍魚罐頭,Delatang tuna,Cá ngừ đóng hộp
 ITEM_GROUPNAME_100002,Fried Egg,계란 후라이,Ovo frito,目玉焼き,Huevo Frito,ไข่ดาว,Telur goreng,Жаренное яйцо,煎鸡蛋,煎雞蛋,Pritong itlog,Trứng chiên
@@ -1162,6 +1162,7 @@ UI_ONE_TIME_COST,One-Time Cost,1회 비용,Custo único,一度の費用,Costo ú
 UI_CAN_NOT_ENTER_RUNE_MENU,You cannot enter during other rune crafting and leveling up.,다른 룬 제작 및 레벨업 도중 진입할 수 없습니다.,Você não pode entrar durante outros artesanatos e nivelamento de runas.,他のルーンのクラフトやレベルアップ中に入ることはできません。,No puedes entrar durante la creación y aumento de nivel de otras runas.,คุณไม่สามารถเข้าร่วมในระหว่างการประดิษฐ์รูนอื่น ๆ และปรับระดับได้,Anda tidak dapat masuk selama pembuatan rune lainnya dan naik level.,Вы не можете войти во время других русков и выравнивания.,您不能在其他符文手工制作和升级期间输入。,您不能在其他符文製作和升級期間輸入。,Hindi ka pwedeng pumasok habang may gumagawa at nag-pagtaas ng antas ng hiyas.,Bạn không thể tiến vào trong quá trình chế tạo và nâng cấp cổ ngữ.
 UI_RUNE_COMBINE_START,I'll start combining the runes!,룬 제작을 시작할게!,Vou começar a combinar a runa.,ルーンの組み合わせを始めます！,Voy a empezar a combinar la runa.,ฉันจะเริ่มผสมรูน,Saya akan mulai menggabungkan rune.,Я начну объединить руну.,我将开始结合符文。,我將開始合併符文。,Sisimulan ko nang pagsamahin ang mga hiyas,Dung hợp cổ ngữ!
 UI_RUNE_COMBINE_COMPLETE,The rune combination is complete!,룬 제작을 완료했어!,A combinação de runas está completa.,ルーンの組み合わせが完了しました！,La combinación de la runa está completa.,การผสมของรูนเสร็จสมบูรณ์,Kombinasi rune selesai.,Комбинация руны завершена.,符文组合完成。,符文合併完成。,Nakumpleto na ang kombinasyon ng hiyas.,Dung hợp cổ ngữ hoàn tất!
+UI_RUNE_UPGRADE_COMPLETE,The rune upgrade is complete!,룬 강화를 완료했어!,,,,,,,,,,
 UI_EVENT_DUNGEON,Event Dungeon,이벤트 던전,Event Dungeon,イベントダンジョン,Event Dungeon,Event Dungeon,Event Dungeon,Event Dungeon,Event Dungeon,Event Dungeon,Event Dungeon,Event Dungeon
 UI_REQUIRED_CP,Recommended CP,추천 CP,CP necessário,必要CP,Poder de combate requerido,CP ที่ต้องการ,CP yang direkomendasikan,Требуется CP,必需的CP,必需的CP,Kailangang CP,CP đề xuất
 UI_RECEIVE_ALL,Receive All,모두 받기,Receber tudo,全部受け取る,Recibir todo,รับทั้งหมด,Menerima semua,Получить все,收到全部,全部接收,Tanggapin lahat,Nhận tất cả
@@ -1996,3 +1997,14 @@ UI_ENTER_NCG_TO_STAKE,Enter the amount of NCG to receive rewards.,보상을 받�
 UI_LEVEL_TITLE,MonsterCollection Level,몬스터 컬렉션 레벨,Nível de Coleção de Monstros,モンスターコレクションレベル,Nivel de Colección de Monstruos,ระดับการสะสมมอนสเตอร์,Tingkat Koleksi Monster,Уровень Коллекции Монстров,怪物收集等级,怪物收集等級,Antas ng Koleksyon ng Halimaw,Cấp Độ Bộ Sưu Tập Quái Vật
 UI_SHOP_PC,Shop (PC),마켓 (PC),Comprar (PC),マーケット(PC),Tienda (PC),ร้านค้า (PC),Toko (PC),Магазин (ПК),店铺 (PC),店鋪 (PC),Tindahan (PC),Cửa hàng (PC)
 UI_SHOP_MOBILE,Shop (Mobile),마켓 (모바일),Comprar (Móvel),マーケット(モバイル),Tienda (Móvil),ร้านค้า (Mobai),Toko (Seluler),Магазин (Мобильный ),店铺 (移动 ),店鋪 (移動 ),Tindahan (Mobile),Cửa hàng (Di động)
+UI_KEY_BACKUP,Key backup,키 백업,,,,,,,,,,
+UI_RUNE_LEVEL_BONUS,Rune Level Bonus,룬 레벨 보너스,,,,,,,,,,
+UI_RUNE_STAT_REWARD,Rune Stat Reward,룬 스텟 보상,,,,,,,,,,
+UI_RUNE_LEVEL_BONUS_EFFECT,Rune Level Bonus Effect,,,,,,,,,,,
+UI_RUNE_LEVEL_BONUS_EFFECT_DESC,The stats of the equipped rune increase by the reward.,,,,,,,,,,,
+UI_RUNE_LEVEL_BONUS_COEFFICIENT,Level Bonus Value,,,,,,,,,,,
+UI_RESULT,Result,결과,,,,,,,,,,
+UI_STATS_BONUS,Stats Bonus,스탯 효과,,,,,,,,,,
+UI_RUNE_EFFECT,Rune Effect,,,,,,,,,,,
+UI_RUNE_EFFECT_PHRASE,description (about 2 lines),,,,,,,,,,,
+UI_GO_TO_RUNE,Go to Rune,,,,,,,,,,,

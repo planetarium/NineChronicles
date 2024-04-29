@@ -5,6 +5,7 @@ using System.Linq;
 using Libplanet.Crypto;
 using mixpanel;
 using Nekoyume.Game.Avatar;
+using Nekoyume.Game.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
 using UnityEngine;
@@ -64,7 +65,7 @@ namespace Nekoyume.Game.Character
             touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
                 .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
                 {
-                    if (Game.instance.IsInWorld || ActionCamera.instance.InPrologue)
+                    if (BattleRenderer.Instance.IsOnBattle || ActionCamera.instance.InPrologue)
                     {
                         return;
                     }
@@ -78,7 +79,7 @@ namespace Nekoyume.Game.Character
             base.Update();
             if (HudContainer)
             {
-                if (Game.instance.IsInWorld)
+                if (BattleRenderer.Instance.IsOnBattle)
                 {
                     if (Game.instance.Stage.IsShowHud)
                     {

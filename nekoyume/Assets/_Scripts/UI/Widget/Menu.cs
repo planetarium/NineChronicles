@@ -15,6 +15,7 @@ using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -155,6 +156,13 @@ namespace Nekoyume.UI
                 .Subscribe(level =>
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
+            BattleRenderer.Instance.OnPrepareStage += GoToPrepareStage;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            BattleRenderer.Instance.OnPrepareStage -= GoToPrepareStage;
         }
 
         private static void HackAndSlashForTutorial(int stageId)
@@ -167,7 +175,7 @@ namespace Nekoyume.UI
             }
 
             var requiredCost = stageRow.CostAP;
-            if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
+            if (ReactiveAvatarState.ActionPoint < requiredCost)
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -257,9 +265,18 @@ namespace Nekoyume.UI
             player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);
         }
 
-        public void GoToStage(BattleLog battleLog)
+        private void GoToPrepareStage(BattleLog battleLog)
         {
-            Game.Event.OnStageStart.Invoke(battleLog);
+            if (!IsActive() || !Find<LoadingScreen>().IsActive())
+                return;
+
+            StartCoroutine(CoGoToStage(battleLog));
+        }
+
+        private IEnumerator CoGoToStage(BattleLog battleLog)
+        {
+            yield return BattleRenderer.Instance.LoadStageResources(battleLog);
+
             Find<LoadingScreen>().Close();
             Close(true);
         }
@@ -703,7 +720,7 @@ namespace Nekoyume.UI
             var worldInfo = Game.Game.instance.States.CurrentAvatarState.worldInformation;
             if (worldInfo is null)
             {
-                Debug.LogError("[Menu.PlayTutorial] : worldInformation is null");
+                NcDebug.LogError("[Menu.PlayTutorial] : worldInformation is null");
                 return;
             }
 
@@ -777,7 +794,7 @@ namespace Nekoyume.UI
                 .FirstOrDefault();
             if (firstRecipeRow is null)
             {
-                Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
+                NcDebug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
                 return;
             }
 

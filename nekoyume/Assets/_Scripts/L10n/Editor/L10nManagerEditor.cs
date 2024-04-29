@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using TMPro.EditorUtilities;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
@@ -19,7 +20,7 @@ namespace Nekoyume.L10n.Editor
             Path.Combine(Application.dataPath, "Font/CharacterFiles");
         private const string GenerationSettingsPath = "L10nSettings/FontAssetGenerationSettings";
         private static readonly object EditorCoroutineObject = new object();
-        
+
         // Depending on the computer environment, the corresponding time may change
         private const float WaitTimeForGenerateAtlas = 5f;
         private const float WaitTimeForGenerateSaveSDF = 1f;
@@ -63,7 +64,7 @@ namespace Nekoyume.L10n.Editor
             PrepareCharacterFilesDirectory();
 
             var uri = new Uri("http://hanzidb.org/TGSCC-Unicode.txt");
-            Debug.Log($"Start to downloading simplified chinese unicode range file from \"{uri}\".");
+            NcDebug.Log($"Start to downloading simplified chinese unicode range file from \"{uri}\".");
 
             var request = UnityWebRequest.Get(uri);
             var requestOperation = request.SendWebRequest();
@@ -92,7 +93,7 @@ namespace Nekoyume.L10n.Editor
                         $"simplified-chinese-8105-unicode-range-{i + 1:00}-{counts[i]:0000}.txt");
                     File.WriteAllText(filePath, joined);
 
-                    Debug.Log($"Complete to downloading simplified chinese unicode range file to \"{filePath}\".");
+                    NcDebug.Log($"Complete to downloading simplified chinese unicode range file to \"{filePath}\".");
                 }
 
                 request.Dispose();
@@ -100,7 +101,7 @@ namespace Nekoyume.L10n.Editor
         }
 
         [MenuItem("Tools/L10n/Generate Unicode Hex Range Files")]
-        public static void GenerateUnicodeHexRangeFiles()
+        public static async Task GenerateUnicodeHexRangeFiles()
         {
             PrepareCharacterFilesDirectory();
 
@@ -113,10 +114,19 @@ namespace Nekoyume.L10n.Editor
                 .Select(Convert.ToChar)
                 .ToList();
 
+            await L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv", true);
+
             foreach (var languageType in Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>())
             {
                 var dict = L10nManager.GetDictionary(languageType);
                 var charArray = dict.Values.SelectMany(value => value.ToCharArray()).ToList();
+
+                var additionalDict = L10nManager.GetAdditionalDictionary(languageType);
+                if (additionalDict != null)
+                {
+                    charArray.AddRange(additionalDict.Values.SelectMany(value => value.ToCharArray()));
+                }
+                
                 var unicodeHexes = defaultCharacters
                     .Union(charArray.Select(char.ToLower))
                     .Union(charArray.Select(char.ToUpper))
@@ -128,7 +138,7 @@ namespace Nekoyume.L10n.Editor
                     .Select(characterNumber => characterNumber.ToString("X4"))
                     .ToList();
                 var unicodeHexesCount = unicodeHexes.Count;
-                Debug.LogWarning($"{languageType} unicodeHexes count: {unicodeHexesCount}");
+                NcDebug.LogWarning($"{languageType} unicodeHexes count: {unicodeHexesCount}");
                 var maxCharacterCountForEachFile = GetMaxCharacterCountForEachSDF(languageType);
                 var fileIndex = 0;
                 while (true)
@@ -155,12 +165,11 @@ namespace Nekoyume.L10n.Editor
                 }
             }
         }
-        
-        [MenuItem("Tools/L10n/Generate Font Asset Files at Once")]
-        public static void GenerateFontAssetFiles()
-        {
-            GenerateUnicodeHexRangeFiles();
 
+        [MenuItem("Tools/L10n/Generate Font Asset Files at Once")]
+        public static async void GenerateFontAssetFiles()
+        {
+            await GenerateUnicodeHexRangeFiles();
             EditorCoroutineUtility.StartCoroutine(CoGenerateFontAssetFile(), EditorCoroutineObject);
         }
 
@@ -168,19 +177,19 @@ namespace Nekoyume.L10n.Editor
         {
             var charactersPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
             var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
-            
+
             var languageTypes = Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>();
             var settingsList = Resources.Load<FontAssetGenerationSettings>(GenerationSettingsPath).settings;
             foreach (var languageType in languageTypes)
             {
-                Debug.Log($"-------------Generate Start : {languageType}-------------");
+                NcDebug.Log($"-------------Generate Start : {languageType}-------------");
                 var settings = settingsList[(int)languageType];
 
                 var characterPath = Path.Combine(charactersPath,
                     $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
                 var unicodeHexes = File.ReadAllLines(characterPath);
                 settings.characterSequence = unicodeHexes[0];
-                
+
                 var fontAssetFullPath = Path.GetFullPath(AssetDatabase.GetAssetPath(settings.referencedFontAsset))
                     .Replace("\\", "/");
 
@@ -189,7 +198,7 @@ namespace Nekoyume.L10n.Editor
                 yield return new EditorWaitForSeconds(WaitTimeForGenerateAtlas);
                 generator.SaveFontAssetToSDF(fontAssetFullPath);
                 yield return new EditorWaitForSeconds(WaitTimeForGenerateSaveSDF);
-                Debug.Log($"-------------Generate End : {languageType}-------------");
+                NcDebug.Log($"-------------Generate End : {languageType}-------------");
             }
         }
 

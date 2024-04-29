@@ -36,15 +36,15 @@ namespace Nekoyume.State
         public static IObservable<WorldInformation> WorldInformation
             => _worldInformation.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<int> _actionPoint
-            = new ReactiveProperty<int>();
+        private static readonly ReactiveProperty<long> _actionPoint = new();
 
-        public static IObservable<int> ActionPoint => _actionPoint.ObserveOnMainThread();
+        public static long ActionPoint => _actionPoint.Value;
+        public static IObservable<long> ObservableActionPoint => _actionPoint.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<long> _dailyRewardReceivedIndex
-            = new ReactiveProperty<long>();
+        private static readonly ReactiveProperty<long> _dailyRewardReceivedIndex = new();
 
-        public static IObservable<long> DailyRewardReceivedIndex
+        public static long DailyRewardReceivedIndex => _dailyRewardReceivedIndex.Value;
+        public static IObservable<long> ObservableDailyRewardReceivedIndex
             => _dailyRewardReceivedIndex.ObserveOnMainThread();
 
         private static readonly ReactiveProperty<QuestList> _questList
@@ -57,7 +57,7 @@ namespace Nekoyume.State
             // todo: 선택된 아바타가 없을 경우 null이 들어 오는데, 이 때 아래에서 별도로 처리해줘야 하겠음.. 구독하는 쪽에서도 null 검사를 잘 하도록..
             if (state is null)
             {
-                Debug.Log($"[{nameof(ReactiveAvatarState)}] {nameof(Initialize)}() states is null");
+                NcDebug.Log($"[{nameof(ReactiveAvatarState)}] {nameof(Initialize)}() states is null");
                 return;
             }
 
@@ -65,12 +65,10 @@ namespace Nekoyume.State
             _inventory.SetValueAndForceNotify(state.inventory);
             _mailBox.SetValueAndForceNotify(state.mailBox);
             _worldInformation.SetValueAndForceNotify(state.worldInformation);
-            _actionPoint.SetValueAndForceNotify(state.actionPoint);
-            _dailyRewardReceivedIndex.SetValueAndForceNotify(state.dailyRewardReceivedIndex);
             _questList.SetValueAndForceNotify(state.questList);
         }
 
-        public static void UpdateActionPoint(int actionPoint)
+        public static void UpdateActionPoint(long actionPoint)
         {
             _actionPoint.SetValueAndForceNotify(actionPoint);
         }

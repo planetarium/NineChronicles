@@ -7,6 +7,7 @@ using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 
@@ -19,7 +20,8 @@ namespace Nekoyume
         /// </summary>
         /// <param name="eval"></param>
         /// <param name="avatarState"></param>
-        /// <param name="runeStates"></param>
+        /// <param name="allRuneState"></param>
+        /// <param name="runeSlotState"></param>
         /// <param name="collectionState"></param>
         /// <param name="skillsOnWaveStart"></param>
         /// <param name="sheets"></param>
@@ -30,7 +32,8 @@ namespace Nekoyume
         public static BattleResultPopup.Model GetHackAndSlashReward(
             this ActionEvaluation<HackAndSlash> eval,
             AvatarState avatarState,
-            List<RuneState> runeStates,
+            AllRuneState allRuneState,
+            RuneSlotState runeSlotState,
             CollectionState collectionState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
@@ -50,7 +53,8 @@ namespace Nekoyume
                     random,
                     avatarState,
                     i == 0 ? eval.Action.Foods : new List<Guid>(),
-                    runeStates,
+                    allRuneState,
+                    runeSlotState,
                     i == 0 ? skillsOnWaveStart : new List<Model.Skill.Skill>(),
                     eval.Action.WorldId,
                     eval.Action.StageId,
@@ -63,7 +67,9 @@ namespace Nekoyume
                     sheets.CostumeStatSheet,
                     StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet),
                     collectionState.GetEffects(sheets.CollectionSheet),
-                    sheets.DeBuffLimitSheet);
+                    sheets.DeBuffLimitSheet,
+                    logEvent: true,
+                    States.Instance.GameConfigState.ShatterStrikeMaxDamage);
                 simulator.Simulate();
                 if (simulator.Log.IsClear)
                 {

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using LruCacheNet;
@@ -141,13 +143,13 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        protected static CrystalRandomSkillState GetCrystalRandomSkillState<T>(
-            ActionEvaluation<T> evaluation) where T : ActionBase
+        protected static CrystalRandomSkillState GetCrystalRandomSkillState(
+            HashDigest<SHA256> states)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
             if (StateGetter.GetState(
-                    evaluation.OutputState,
+                    states,
                     ReservedAddresses.LegacyAccount,
                     buffStateAddress) is Bencodex.Types.List serialized)
             {
@@ -243,7 +245,7 @@ namespace Nekoyume.Blockchain
             }
             catch (Exception e)
             {
-                Debug.LogError(
+                NcDebug.LogError(
                     $"Failed to Update AvatarState: {agentAddress}, {avatarAddress}\n{e.Message}");
             }
         }
@@ -259,7 +261,7 @@ namespace Nekoyume.Blockchain
             }
             else
             {
-                Debug.LogError($"Failed to get AvatarState: {avatarAddress}");
+                NcDebug.LogError($"Failed to get AvatarState: {avatarAddress}");
             }
         }
 
@@ -297,7 +299,7 @@ namespace Nekoyume.Blockchain
         protected static void UpdateCrystalRandomSkillState<T>(
             ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var state = GetCrystalRandomSkillState(evaluation);
+            var state = GetCrystalRandomSkillState(evaluation.OutputState);
 
             if (state is { })
             {
@@ -307,7 +309,7 @@ namespace Nekoyume.Blockchain
 
         private static UniTask UpdateAgentStateAsync(AgentState state)
         {
-            UpdateCache(state);
+            UpdateCache(Addresses.Agent, state);
             return States.Instance.SetAgentStateAsync(state);
         }
 
@@ -376,7 +378,7 @@ namespace Nekoyume.Blockchain
             // When in battle, do not immediately update the AvatarState, but pending it.
             if (Pending)
             {
-                Debug.Log($"[{nameof(ActionHandler)}] Pending AvatarState");
+                NcDebug.Log($"[{nameof(ActionHandler)}] Pending AvatarState");
                 Game.Game.instance.Stage.AvatarState = avatarState;
                 return;
             }
@@ -400,8 +402,15 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            UpdateCache(avatarState);
+            UpdateCache(Addresses.Avatar, avatarState);
             await UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+        }
+
+        protected static long GetActionPoint<T>(ActionEvaluation<T> evaluation, Address avatarAddress) where T : ActionBase
+        {
+            return (Bencodex.Types.Integer)StateGetter.GetState(evaluation.OutputState,
+                Addresses.ActionPoint,
+                avatarAddress);
         }
 
         internal static void UpdateCombinationSlotState(
@@ -410,25 +419,25 @@ namespace Nekoyume.Blockchain
             CombinationSlotState state)
         {
             States.Instance.UpdateCombinationSlotState(avatarAddress, slotIndex, state);
-            UpdateCache(state);
+            UpdateCache(ReservedAddresses.LegacyAccount, state);
         }
 
-        private static void UpdateCache(Model.State.State state)
+        private static void UpdateCache(Address accountAddress, Model.State.State state)
         {
             if (state is null)
             {
                 return;
             }
 
-            if (Game.Game.instance.CachedStates.ContainsKey(state.address))
+            if (Game.Game.instance.CachedStates.ContainsKey(accountAddress.Derive(state.address.ToByteArray())))
             {
                 try
                 {
-                    Game.Game.instance.CachedStates[state.address] = state.Serialize();
+                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
                 }
                 catch (NotSupportedException)
                 {
-                    Game.Game.instance.CachedStates[state.address] = state.SerializeList();
+                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.SerializeList();
                 }
             }
         }

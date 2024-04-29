@@ -6,6 +6,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Rune;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
 
@@ -176,6 +177,56 @@ namespace Nekoyume.Helper
             }
 
             return valueString;
+        }
+
+        // - Bonus level is int, not bp.
+        // - Rune level bonus is not bp. It is 100K-based point.
+        // - Divide 100_000 when modifying rune stat.
+        public static int CalculateRuneLevelBonusReward(
+            int bonusLevel,
+            RuneLevelBonusSheet runeLevelBonusSheet)
+        {
+            var runeLevelBonus = 0;
+            var prevLevel = 0;
+            foreach (var row in runeLevelBonusSheet.Values.OrderBy(row => row.RuneLevel))
+            {
+                runeLevelBonus += (Math.Min(row.RuneLevel, bonusLevel) - prevLevel) * row.Bonus;
+                prevLevel = row.RuneLevel;
+                if (row.RuneLevel >= bonusLevel)
+                {
+                    break;
+                }
+            }
+
+            return runeLevelBonus;
+        }
+
+        public static int CalculateRuneLevelBonus(
+            AllRuneState allRuneState,
+            RuneListSheet runeListSheet)
+        {
+            return allRuneState.Runes.Values
+                .Select(rune => runeListSheet[rune.RuneId].BonusCoef * rune.Level)
+                .Sum();
+        }
+
+        public static int CalculateRuneLevelBonusReward(
+            AllRuneState allRuneState,
+            RuneListSheet runeListSheet,
+            RuneLevelBonusSheet runeLevelBonusSheet,
+            (int id, int level) editRune)
+        {
+            var bonusLevel = allRuneState.Runes.Values
+                .Select(rune => runeListSheet[rune.RuneId].BonusCoef *
+                                (rune.RuneId != editRune.id ? rune.Level : 0))
+                .Sum();
+
+            if (runeListSheet.TryGetValue(editRune.id, out var runeListRow))
+            {
+                bonusLevel += runeListRow.BonusCoef * editRune.level;
+            }
+
+            return CalculateRuneLevelBonusReward(bonusLevel, runeLevelBonusSheet);
         }
     }
 }

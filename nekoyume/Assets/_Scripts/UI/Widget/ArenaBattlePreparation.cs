@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.Model.Item;
@@ -118,7 +119,7 @@ namespace Nekoyume.UI
             information.Initialize();
             startButton.SetCost(CostType.ArenaTicket, TicketCountToUse);
             startButton.OnSubmitSubject
-                .Where(_ => !Game.Game.instance.IsInWorld)
+                .Where(_ => !BattleRenderer.Instance.IsOnBattle)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
@@ -187,7 +188,7 @@ namespace Nekoyume.UI
         {
             AudioController.PlayClick();
 
-            if (Game.Game.instance.IsInWorld)
+            if (BattleRenderer.Instance.IsOnBattle)
             {
                 return;
             }
@@ -227,8 +228,8 @@ namespace Nekoyume.UI
         {
             coverToBlockClick.SetActive(true);
             var game = Game.Game.instance;
-            game.IsInWorld = true;
             game.Stage.IsShowHud = true;
+            BattleRenderer.Instance.IsOnBattle = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
             var currencyImage = costType switch
@@ -302,8 +303,6 @@ namespace Nekoyume.UI
         private void UpdateStartButton()
         {
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Arena);
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
-                .Select(x => x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
 
             var isEquipmentValid = Util.CanBattle(equipments, costumes, consumables);

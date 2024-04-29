@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 
 namespace Nekoyume.UI
 {
@@ -176,13 +177,23 @@ namespace Nekoyume.UI
                     tableSheets.CharacterLevelSheet,
                     tableSheets.EquipmentItemSetEffectSheet
                 );
+
+                var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+
+                var allRuneState = States.Instance.AllRuneState;
+                var runeListSheet = tableSheets.RuneListSheet;
+                var runeLevelBonusSheet = tableSheets.RuneLevelBonusSheet;
+                var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(
+                    allRuneState, runeListSheet, runeLevelBonusSheet);
+
                 var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                 var collectionState = States.Instance.CollectionState;
                 var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
                 player.ConfigureStats(
                     costumeStatSheet,
-                    null,
+                    runeStates,
                     tableSheets.RuneOptionSheet,
+                    runeLevelBonus,
                     tableSheets.SkillSheet,
                     collectionState.GetEffects(collectionSheet));
             }

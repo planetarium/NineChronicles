@@ -62,7 +62,7 @@ namespace Nekoyume.Game.Character
             }
             catch (KeyNotFoundException)
             {
-                Debug.LogError($"{nameof(_trackEntry)} is null! :{animationClip.ToString()} : {layer.ToString()}");
+                NcDebug.LogError($"{nameof(_trackEntry)} is null! :{animationClip.ToString()} : {layer.ToString()}");
             }
         }
 

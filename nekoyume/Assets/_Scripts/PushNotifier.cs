@@ -43,7 +43,7 @@ namespace Nekoyume
 #if !UNITY_EDITOR && UNITY_ANDROID
             InitializeAndroid();
 #elif !UNITY_EDITOR && UNITY_IOS
-            
+
 #endif
         }
 
@@ -135,7 +135,7 @@ namespace Nekoyume
                     break;
             }
 
-            Debug.Log($"FireTime : {fireTime}");
+            NcDebug.Log($"FireTime : {fireTime}");
             var title = L10nManager.Localize("TITLE");
             var iconName = pushType.ToString().ToLower();
 
@@ -159,7 +159,7 @@ namespace Nekoyume
                 TimeInterval = timespan,
                 Repeats = false
             };
-            
+
             var identifier = Random.Range(int.MinValue, int.MaxValue).ToString();
             var notification = new iOSNotification()
             {

@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 2048
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 0
+      m_TextureCompression: 1
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -45,9 +45,6 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 02a7141da358f3e4bab2425e82a2b2dd, type: 3}
-    - {fileID: 102900000, guid: 5cb3e08ef4ad448cc9177e2eda5f3b78, type: 3}
-    - {fileID: 102900000, guid: 377bdb0b241bd4b64b3c9bb8038ce058, type: 3}
-    - {fileID: 102900000, guid: a493e3ffabd1f4d67a25fddbaded2e5f, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}

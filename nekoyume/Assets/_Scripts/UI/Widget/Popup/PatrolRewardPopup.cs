@@ -66,12 +66,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (!PatrolReward.Initialized)
-            {
-                Debug.LogError("PatrolReward is not initialized.");
-                return;
-            }
-
             if (Claiming.Value)
             {
                 return;
@@ -94,6 +88,19 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
+            var clientInitialized = Game.Game.instance.PatrolRewardServiceClient.IsInitialized;
+            if (!clientInitialized)
+            {
+                NcDebug.Log(
+                    $"[{nameof(PatrolRewardPopup)}]PatrolRewardServiceClient is not initialized.");
+                return;
+            }
+
+            if (!PatrolReward.Initialized)
+            {
+                await InitializePatrolReward();
+            }
+
             Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>
             {
                 ["PatrolTime"] = PatrolReward.PatrolTime.Value
@@ -252,7 +259,7 @@ namespace Nekoyume.UI
                 var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
                 if (txResultResponse is null)
                 {
-                    Debug.LogError(
+                    NcDebug.LogError(
                         $"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
                     OneLineSystem.Push(
                         MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),

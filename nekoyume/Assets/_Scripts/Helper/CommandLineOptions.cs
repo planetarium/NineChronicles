@@ -641,7 +641,7 @@ namespace Nekoyume.Helper
             var options = CommandLineParser.GetCommandLineOptions<CommandLineOptions>();
             if (options != null && !options.Empty)
             {
-                Debug.Log($"Get options from commandline.");
+                NcDebug.Log($"Get options from commandline.");
                 return options;
             }
 
@@ -656,12 +656,12 @@ namespace Nekoyume.Helper
 #else
             if (File.Exists(localPath))
             {
-                Debug.Log($"Get options from local: {localPath}");
+                NcDebug.Log($"Get options from local: {localPath}");
                 return JsonSerializer.Deserialize<CommandLineOptions>(File.ReadAllText(localPath), JsonOptions);
             }
 #endif
 
-            Debug.LogErrorFormat("Failed to find {0}. Using default options.", localPath);
+            NcDebug.LogErrorFormat("Failed to find {0}. Using default options.", localPath);
             return new CommandLineOptions();
         }
 

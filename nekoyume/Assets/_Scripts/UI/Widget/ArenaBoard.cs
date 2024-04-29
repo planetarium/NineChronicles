@@ -64,12 +64,13 @@ namespace Nekoyume.UI
             loading.Show(LoadingScreen.LoadingType.Arena);
             var sw = new Stopwatch();
             sw.Start();
-            await RxProps.ArenaInformationOrderedWithScore.UpdateAsync();
+            await UniTask.WhenAll(RxProps.ArenaInformationOrderedWithScore.UpdateAsync(),
+                RxProps.ArenaInfoTuple.UpdateAsync());
             loading.Close();
             Show(RxProps.ArenaInformationOrderedWithScore.Value,
                 ignoreShowAnimation);
             sw.Stop();
-            Debug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
+            NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
         }
 
         public void Show(
@@ -117,14 +118,14 @@ namespace Nekoyume.UI
             var player = RxProps.PlayerArenaInfo.Value;
             if (player is null)
             {
-                Debug.Log($"{nameof(RxProps.PlayerArenaInfo)} is null");
+                NcDebug.Log($"{nameof(RxProps.PlayerArenaInfo)} is null");
                 _billboard.SetData();
                 return;
             }
 
             if (!RxProps.ArenaInfoTuple.HasValue)
             {
-                Debug.Log($"{nameof(RxProps.ArenaInfoTuple)} is null");
+                NcDebug.Log($"{nameof(RxProps.ArenaInfoTuple)} is null");
                 _billboard.SetData();
                 return;
             }

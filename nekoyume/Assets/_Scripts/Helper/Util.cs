@@ -136,7 +136,7 @@ namespace Nekoyume.Helper
         {
             if (Game.Game.instance.Agent is null)
             {
-                Debug.LogError("[Util.TryGetStoredSlotIndex] agent is null");
+                NcDebug.LogError("[Util.TryGetStoredSlotIndex] agent is null");
                 slotIndex = 0;
                 return false;
             }
@@ -152,7 +152,7 @@ namespace Nekoyume.Helper
         {
             if (Game.Game.instance.Agent is null)
             {
-                Debug.LogError("[Util.SaveSlotIndex] agent is null");
+                NcDebug.LogError("[Util.SaveSlotIndex] agent is null");
                 return;
             }
 
@@ -188,7 +188,7 @@ namespace Nekoyume.Helper
                     var equipment = (Equipment)itemBase;
                     if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
                     {
-                        Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                        NcDebug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
                         return 0;
                     }
 
@@ -229,7 +229,7 @@ namespace Nekoyume.Helper
             }
             catch (Exception e)
             {
-                Debug.LogError(
+                NcDebug.LogError(
                     $"Check the player is equipped with the valid equipment.\nException: {e}");
             }
 
@@ -267,17 +267,24 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(battleType);
-            var runeStated = States.Instance.GetEquippedRuneStates(battleType);
-            var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
+            var runeStates = States.Instance.GetEquippedRuneStates(battleType);
+            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
+
+            var allRuneState = States.Instance.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(allRuneState,
+                runeListSheet, runeLevelBonusSheet);
 
             var collectionState = Game.Game.instance.States.CollectionState;
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
             var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
-            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet, collectionStatModifiers);
+            return CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row, costumeSheet,
+                collectionStatModifiers, runeLevelBonus);
         }
 
-        public static (int previousCP, int currentCP) GetCpChanged(CollectionState previousState,
-            CollectionState currentState)
+        public static (int previousCP, int currentCP) GetCpChanged(
+            CollectionState previousState, CollectionState currentState)
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
             var level = avatarState.level;
@@ -287,14 +294,58 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var runeStated = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
-            var runeOptionInfos = GetRuneOptions(runeStated, runeOptionSheet);
+            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
+
+            var allRuneState = States.Instance.AllRuneState;
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(allRuneState,
+                runeListSheet, runeLevelBonusSheet);
 
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
             var previousCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
-                costumeSheet, previousState.GetEffects(collectionSheet));
+                costumeSheet, previousState.GetEffects(collectionSheet), runeLevelBonus);
             var currentCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
-                costumeSheet, currentState.GetEffects(collectionSheet));
+                costumeSheet, currentState.GetEffects(collectionSheet), runeLevelBonus);
+            return (previousCp, currentCp);
+        }
+
+        public static (int previousCP, int currentCP) GetCpChanged(
+            AllRuneState previousState, AllRuneState currentState)
+        {
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var level = avatarState.level;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var row = characterSheet[avatarState.characterId];
+
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
+
+            var previousRuneStates =
+                States.Instance.GetEquippedRuneStates(previousState, BattleType.Adventure);
+            var previousRuneOptionInfos = GetRuneOptions(previousRuneStates, runeOptionSheet);
+            var currentRuneStates =
+                States.Instance.GetEquippedRuneStates(currentState, BattleType.Adventure);
+            var currentRuneOptionInfos = GetRuneOptions(currentRuneStates, runeOptionSheet);
+
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+
+            var prevRuneLevelBonus = RuneHelper.CalculateRuneLevelBonus(previousState,
+                runeListSheet, runeLevelBonusSheet);
+            var currentRuneLevelBonus = RuneHelper.CalculateRuneLevelBonus(currentState,
+                runeListSheet, runeLevelBonusSheet);
+
+            var collectionState = Game.Game.instance.States.CollectionState;
+            var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
+            var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
+
+            var previousCp = CPHelper.TotalCP(equipments, costumes, previousRuneOptionInfos,
+                level, row, costumeSheet, collectionStatModifiers, prevRuneLevelBonus);
+            var currentCp = CPHelper.TotalCP(equipments, costumes, currentRuneOptionInfos,
+                level, row, costumeSheet, collectionStatModifiers, currentRuneLevelBonus);
             return (previousCp, currentCp);
         }
 
@@ -438,14 +489,14 @@ namespace Nekoyume.Helper
             apv = 0;
             if (string.IsNullOrEmpty(token))
             {
-                Debug.LogWarning("apv token is null.");
+                NcDebug.LogWarning("apv token is null.");
                 return;
             }
 
             var pos = token.IndexOf('/');
             if (pos < 0)
             {
-                Debug.LogException(new FormatException("Failed to find the first field delimiter."));
+                NcDebug.LogException(new FormatException("Failed to find the first field delimiter."));
                 return;
             }
 
@@ -456,7 +507,7 @@ namespace Nekoyume.Helper
             }
             catch (Exception e) when (e is OverflowException or FormatException)
             {
-                Debug.LogException(new FormatException($"Failed to parse a version number: {e}", e));
+                NcDebug.LogException(new FormatException($"Failed to parse a version number: {e}", e));
                 return;
             }
 
@@ -572,29 +623,29 @@ namespace Nekoyume.Helper
                 CachedDownloadTextures.Add(url, result);
                 return result;
             }
-            else
-            {
-                if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                {
-                    return cachedTexture;
-                }
 
-                try
+            if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+            {
+                return cachedTexture;
+            }
+
+            try
+            {
+                var rawData = await DownloadTextureRaw(url);
+                if (rawData == null)
                 {
-                    var rawdata = await DownloadTextureRaw(url);
-                    var result = CreateSprite(rawdata);
-                    CachedDownloadTextures.Add(url, result);
-                    return result;
-                }
-                catch
-                {
-                    if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                    {
-                        return cachedTexture;
-                    }
-                    Debug.LogError($"[DownloadTexture] {url}");
+                    NcDebug.LogError($"[DownloadTexture] DownloadTextureRaw({url}) is null.");
                     return null;
                 }
+
+                var result = CreateSprite(rawData);
+                CachedDownloadTextures.Add(url, result);
+                return result;
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[DownloadTexture] {url}\n{e}");
+                return null;
             }
         }
 
@@ -618,23 +669,22 @@ namespace Nekoyume.Helper
                 return cachedTexture;
             }
 
-            var client = new HttpClient();
-            var resp = await client.GetAsync(url);
-            try
+            var req = UnityWebRequestTexture.GetTexture(url);
+            req = await req.SendWebRequest();
+
+            if (req.result != UnityWebRequest.Result.Success)
             {
-                resp.EnsureSuccessStatusCode();
-            }
-            catch
-            {
+                Debug.LogError(req.error);
                 if (CachedDownloadTexturesRaw.TryGetValue(url, out cachedTexture))
                 {
                     return cachedTexture;
                 }
-                Debug.LogError($"[DownloadTextureRaw] {url}");
+
+                NcDebug.LogError($"[DownloadTextureRaw] {url}");
                 return null;
             }
 
-            var data = await resp.Content.ReadAsByteArrayAsync();
+            var data = ((DownloadHandlerTexture)req.downloadHandler).data;
             CachedDownloadTexturesRaw.TryAdd(url, data);
             return data;
         }
@@ -653,7 +703,7 @@ namespace Nekoyume.Helper
             }
             else
             {
-                Debug.LogWarning("[SetActiveSafe] fail");
+                NcDebug.LogWarning("[SetActiveSafe] fail");
             }
         }
     }

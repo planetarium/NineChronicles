@@ -25,7 +25,7 @@ namespace Planetarium.Nekoyume.Editor
         [MenuItem("Tools/Report Anything/Check the shop items is made with mimisbrunnr recipe")]
         public static void ShopItemCheckMimisbrunnrReport()
         {
-            Debug.Log("[Report Anything] Start report: \"Check the shop items is made with mimisbrunnr recipe\"");
+            NcDebug.Log("[Report Anything] Start report: \"Check the shop items is made with mimisbrunnr recipe\"");
             var tableSheets = TableSheets.Instance;
             var recipeSheet = tableSheets.EquipmentItemRecipeSheet;
             var subRecipeSheet = tableSheets.EquipmentItemSubRecipeSheetV2;
@@ -53,7 +53,7 @@ namespace Planetarium.Nekoyume.Editor
             // }
 
             // Debug.Log($"[Report Anything] Made with mimisbrunnr recipe items in buy: {mimisCount}/{buyEquipments.Length}");
-            Debug.Log("[Report Anything] End report");
+            NcDebug.Log("[Report Anything] End report");
         }
 
         // public static IEnumerable<Equipment> GetItemBaseArray(IEnumerable<OrderDigest> source) => source?
@@ -82,7 +82,7 @@ namespace Planetarium.Nekoyume.Editor
                               $" {Addresses.GetSheetAddress(sheetType.Name).ToString()}");
             }
 
-            Debug.Log(sb.ToString());
+            NcDebug.Log(sb.ToString());
         }
     }
 }

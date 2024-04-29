@@ -163,7 +163,7 @@ namespace Nekoyume.L10n
                 case "vi":
                     return LanguageType.Vietnam;
                 default:
-                    Debug.LogWarning($"Does not support LanguageType for {iso396}");
+                    NcDebug.LogWarning($"Does not support LanguageType for {iso396}");
                     return LanguageType.English;
             }
         }

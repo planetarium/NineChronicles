@@ -142,7 +142,7 @@ namespace Nekoyume.UI.Tween
 
             if (curve is null)
             {
-                Debug.LogError($"Curve not set.");
+                NcDebug.LogError($"Curve not set.");
                 yield break;
             }
 

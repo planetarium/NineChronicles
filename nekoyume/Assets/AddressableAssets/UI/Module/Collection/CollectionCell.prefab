@@ -332,6 +332,8 @@ GameObject:
   - component: {fileID: 6433128522663832535}
   - component: {fileID: 1980564023633523618}
   - component: {fileID: 6301075277860612463}
+  - component: {fileID: 1912638407942206124}
+  - component: {fileID: 4384565066587814781}
   m_Layer: 5
   m_Name: CollectionCell
   m_TagString: Untagged
@@ -413,6 +415,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 788600dcc49a4b57a9d44a76094a3943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 4384565066587814781}
+  canvasGroup: {fileID: 1912638407942206124}
   complete: {fileID: 3912887134736968813}
   incomplete: {fileID: 1788222781826869817}
   collectionItemViews:
@@ -428,6 +432,39 @@ MonoBehaviour:
     button: {fileID: 2752062535885997572}
     indicator: {fileID: 3485956444331727245}
     text: {fileID: 5466408023835523863}
+--- !u!225 &1912638407942206124
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254706948341112881}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!95 &4384565066587814781
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254706948341112881}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a0eda293079ecfb43b2f3a3fb69f5d6b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &342064630098391580
 GameObject:
   m_ObjectHideFlags: 0

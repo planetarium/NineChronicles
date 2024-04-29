@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;

@@ -37,7 +37,6 @@ namespace Tests.EditMode
                 _agentState.address,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
                 new Address());
         }
 

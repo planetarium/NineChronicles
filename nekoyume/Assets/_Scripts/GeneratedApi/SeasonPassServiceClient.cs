@@ -13,22 +13,21 @@ using System.Collections;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.Http;
+using UnityEngine.Networking;
+using Cysharp.Threading.Tasks;
+using System.Text;
 
 public class SeasonPassServiceClient
 {
     private string Url;
-    private readonly HttpClient _client;
 
     public SeasonPassServiceClient(string url)
     {
         Url = url;
-        _client = new System.Net.Http.HttpClient();
-        _client.Timeout = TimeSpan.FromSeconds(10);
     }
 
     public void Dispose()
     {
-        _client.Dispose();
     }
 
     [JsonConverter(typeof(ActionTypeTypeConverter))]
@@ -75,6 +74,10 @@ public class SeasonPassServiceClient
         public string AvatarAddr { get; set; }
         [JsonPropertyName("season_id")]
         public int SeasonId { get; set; }
+        [JsonPropertyName("force")]
+        public bool Force { get; set; }
+        [JsonPropertyName("prev")]
+        public bool Prev { get; set; }
     }
 
     public class ClaimResultSchema
@@ -316,6 +319,8 @@ public class SeasonPassServiceClient
         public int LastNormalClaim { get; set; }
         [JsonPropertyName("last_premium_claim")]
         public int LastPremiumClaim { get; set; }
+        [JsonPropertyName("claim_limit_timestamp")]
+        public string? ClaimLimitTimestamp { get; set; }
     }
 
     public class ValidationError
@@ -331,13 +336,21 @@ public class SeasonPassServiceClient
     public async Task GetSeasonpassCurrentAsync(Action<SeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/season-pass/current";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 SeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<SeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -351,13 +364,21 @@ public class SeasonPassServiceClient
     public async Task GetSeasonpassCurrentNewAsync(Action<NewSeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/season-pass/current/new";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 NewSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<NewSeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -371,13 +392,21 @@ public class SeasonPassServiceClient
     public async Task GetSeasonpassLevelAsync(Action<LevelInfoSchema[]> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/season-pass/level";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 LevelInfoSchema[] result = System.Text.Json.JsonSerializer.Deserialize<LevelInfoSchema[]>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -391,13 +420,21 @@ public class SeasonPassServiceClient
     public async Task GetSeasonpassExpAsync(Action<ExpInfoSchema[]> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/season-pass/exp";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 ExpInfoSchema[] result = System.Text.Json.JsonSerializer.Deserialize<ExpInfoSchema[]>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -411,15 +448,23 @@ public class SeasonPassServiceClient
     public async Task GetUserStatusAsync(int season_id, string avatar_addr, string planet_id, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/user/status";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?season_id={season_id}&avatar_addr={avatar_addr}&planet_id={planet_id}";
-            request.RequestUri = new Uri(url);
+            request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -433,16 +478,27 @@ public class SeasonPassServiceClient
     public async Task PostUserUpgradeAsync(string authorization, UpgradeRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/user/upgrade";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        using (var request = new UnityWebRequest(url, "POST"))
         {
-            request.RequestUri = new Uri(url);
-            request.Headers.Add("authorization", authorization.ToString());
-            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            request.uri = new Uri(url);
+            request.SetRequestHeader("authorization", authorization.ToString());
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -456,14 +512,57 @@ public class SeasonPassServiceClient
     public async Task PostUserClaimAsync(ClaimRequestSchema requestBody, Action<ClaimResultSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/user/claim";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        using (var request = new UnityWebRequest(url, "POST"))
         {
-            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                ClaimResultSchema result = System.Text.Json.JsonSerializer.Deserialize<ClaimResultSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostUserClaimprevAsync(ClaimRequestSchema requestBody, Action<ClaimResultSchema> onSuccess, Action<string> onError)
+    {
+        string url = Url + "/api/user/claim-prev";
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 ClaimResultSchema result = System.Text.Json.JsonSerializer.Deserialize<ClaimResultSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -477,14 +576,25 @@ public class SeasonPassServiceClient
     public async Task PostTmpRegisterAsync(RegisterRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/tmp/register";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        using (var request = new UnityWebRequest(url, "POST"))
         {
-            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -498,14 +608,25 @@ public class SeasonPassServiceClient
     public async Task PostTmpPremiumAsync(PremiumRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/tmp/premium";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        using (var request = new UnityWebRequest(url, "POST"))
         {
-            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -519,14 +640,25 @@ public class SeasonPassServiceClient
     public async Task PostTmpLevelAsync(LevelRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/tmp/level";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        using (var request = new UnityWebRequest(url, "POST"))
         {
-            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -540,14 +672,25 @@ public class SeasonPassServiceClient
     public async Task PostTmpChangeseasonAsync(SeasonChangeRequestSchema requestBody, Action<SeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/tmp/change-season";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        using (var request = new UnityWebRequest(url, "POST"))
         {
-            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 SeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<SeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
@@ -561,13 +704,20 @@ public class SeasonPassServiceClient
     public async Task GetBlockstatusAsync(Action<string> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/block-status";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 onSuccess?.Invoke(responseBody);
             }
             catch (Exception ex)
@@ -580,13 +730,20 @@ public class SeasonPassServiceClient
     public async Task GetInvalidclaimAsync(Action<string> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/invalid-claim";
-        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
             try
             {
-                var response = await _client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
                 onSuccess?.Invoke(responseBody);
             }
             catch (Exception ex)

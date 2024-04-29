@@ -130,7 +130,7 @@ namespace Nekoyume.UI
 
             if (Pool.ContainsKey(type))
             {
-                Debug.LogWarning($"Duplicated create widget: {type}");
+                NcDebug.LogWarning($"Duplicated create widget: {type}");
                 Pool[type].gameObject.SetActive(activate);
 
                 return (T)Pool[type].widget;
@@ -171,7 +171,7 @@ namespace Nekoyume.UI
             var type = typeof(T);
             if (!Pool.TryGetValue(type, out var model))
             {
-#if UNITY_ANDROID || UNITY_IOS
+#if APPLY_MEMORY_IOS_OPTIMIZATION || UNITY_ANDROID || UNITY_IOS
                 // Memory optimization
                 return MainCanvas.instance.AddWidget<T>();
 #else
@@ -217,7 +217,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                Debug.Log("create new");
+                NcDebug.Log("create new");
                 var prefab = Resources.Load<GameObject>(resName);
                 go = Instantiate(prefab, MainCanvas.instance.RectTransform);
                 go.name = widgetName;
@@ -269,7 +269,7 @@ namespace Nekoyume.UI
 
         public virtual void Show(bool ignoreShowAnimation = false)
         {
-            Debug.Log($"[Widget][{GetType().Name}] Show({ignoreShowAnimation}) invoked.");
+            NcDebug.Log($"[Widget][{GetType().Name}] Show({ignoreShowAnimation}) invoked.");
             if (_coClose is not null)
             {
                 StopCoroutine(_coClose);
@@ -308,7 +308,7 @@ namespace Nekoyume.UI
 
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
-            Debug.Log($"[Widget][{GetType().Name}] Close({ignoreCloseAnimation}) invoked.");
+            NcDebug.Log($"[Widget][{GetType().Name}] Close({ignoreCloseAnimation}) invoked.");
             if (WidgetStack.Count > 0 &&
                 WidgetStack.Peek() == gameObject)
             {

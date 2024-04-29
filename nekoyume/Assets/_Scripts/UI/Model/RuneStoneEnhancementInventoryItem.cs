@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Libplanet.Types.Assets;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Rune;
 
 namespace Nekoyume.UI.Model
 {

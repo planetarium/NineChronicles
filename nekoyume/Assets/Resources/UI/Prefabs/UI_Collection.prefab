@@ -3778,7 +3778,7 @@ MonoBehaviour:
   filterButton: {fileID: 559945989632775343}
   sortButton: {fileID: 2771560094575671121}
   sortFlip: {fileID: 5750570363553565414}
-  sortType: 0
+  currentSortType: 0
 --- !u!1 &1716475420388685582
 GameObject:
   m_ObjectHideFlags: 0
@@ -4061,6 +4061,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &2138836915784615115
 GameObject:
   m_ObjectHideFlags: 0
@@ -7048,6 +7049,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &4295070601325816689
 GameObject:
   m_ObjectHideFlags: 0
@@ -7297,6 +7299,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &4359687552509295189
 GameObject:
   m_ObjectHideFlags: 0
@@ -7765,6 +7768,7 @@ MonoBehaviour:
   forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 0
   noneText: {fileID: 8924879680692512575}
+  animationInterval: 0.03
 --- !u!1 &4710635258222998585
 GameObject:
   m_ObjectHideFlags: 0
@@ -10206,6 +10210,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &6022462030238405878
 GameObject:
   m_ObjectHideFlags: 0
@@ -13833,6 +13838,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &8091621405765619784
 GameObject:
   m_ObjectHideFlags: 0
@@ -15523,6 +15529,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!224 &6696110532707913456 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5274103836773262126, guid: 7fbf666150b81a4489573bebd8b3c266,
@@ -16062,6 +16069,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!114 &3968686874294652808 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1259241223700443032, guid: 7fbf666150b81a4489573bebd8b3c266,
@@ -18742,6 +18750,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!114 &5990221318892297941 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1259241223700443032, guid: 7fbf666150b81a4489573bebd8b3c266,
@@ -18950,6 +18959,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!114 &6221934620502758997 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1259241223700443032, guid: 7fbf666150b81a4489573bebd8b3c266,
@@ -19158,6 +19168,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!114 &6343335563099018984 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1259241223700443032, guid: 7fbf666150b81a4489573bebd8b3c266,
@@ -19366,6 +19377,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!114 &6407111861401645265 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1259241223700443032, guid: 7fbf666150b81a4489573bebd8b3c266,
@@ -21986,6 +21998,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1001 &9129761629385864585
 PrefabInstance:
   m_ObjectHideFlags: 0
