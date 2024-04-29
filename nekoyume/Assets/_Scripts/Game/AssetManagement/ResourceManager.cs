@@ -28,13 +28,12 @@ namespace Nekoyume
         /// </summary>
         private readonly Dictionary<string, Object> _resources = new();
 
-        private ResourceManager()
-        {
-            Initialize();
-        }
+        private ResourceManager() { }
 
-        public void Initialize()
+        public async UniTask InitializeAsync()
         {
+            await Addressables.InitializeAsync();
+
             _dontDestroyOnLoadResources.Clear();
             _resources.Clear();
         }

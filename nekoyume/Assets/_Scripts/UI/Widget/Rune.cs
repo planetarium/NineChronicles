@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Libplanet.Action;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
@@ -152,7 +153,7 @@ namespace Nekoyume.UI
             }
 
             runeLevelBonus.infoButton.onClick.AddListener(() =>
-                Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus / 10000m));
+                Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus));
             levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
             levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
             {
@@ -337,6 +338,7 @@ namespace Nekoyume.UI
             _selectedRuneItem = item;
             UpdateRuneItems(item);
             UpdateButtons(item);
+
             UpdateRuneOptions(item);
             UpdateCost(item, runeStoneIcon);
             UpdateHeaderMenu(runeStoneIcon, item.RuneStone);

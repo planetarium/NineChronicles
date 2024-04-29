@@ -273,7 +273,10 @@ namespace Nekoyume.UI
                 (int)item.Product.Quantity,
                 !Util.IsUsableItem(item.ItemBase) &&
                 (item.ItemBase.ItemType == ItemType.Equipment ||
-                 item.ItemBase.ItemType == ItemType.Costume));
+                 item.ItemBase.ItemType == ItemType.Costume),
+                // it isn't implemented to get equipment.exp in the MarketService.
+                // so, it doesn't show the expText in the shop buy UI.
+                false);
             _onClose = onClose;
 
             scrollbar.value = 1f;

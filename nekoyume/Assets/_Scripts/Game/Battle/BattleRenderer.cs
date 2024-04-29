@@ -4,6 +4,7 @@ using Nekoyume.Model.BattleStatus;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Nekoyume.Game.Battle
@@ -88,7 +89,7 @@ namespace Nekoyume.Game.Battle
             var resourceManager = ResourceManager.Instance;
             foreach (var monsterId in monsterIds)
             {
-                yield return resourceManager.LoadAsync<GameObject>(monsterId.ToString());
+                yield return resourceManager.LoadAsync<GameObject>(monsterId.ToString()).ToCoroutine();
                 loadedMonsterIds.Add(monsterId);
             }
         }
