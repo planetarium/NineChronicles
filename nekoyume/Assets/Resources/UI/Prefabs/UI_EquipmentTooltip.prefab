@@ -3577,7 +3577,6 @@ MonoBehaviour:
   acquisitionPlaceDescription: {fileID: 0}
   _isPointerOnScrollArea: 0
   _isClickedButtonArea: 0
-  expText: {fileID: 3973635177871438889}
 --- !u!114 &2480818816333153785 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7745908641049577409, guid: 208eab8c17f4afb41a89eedbfe42f722,
@@ -3588,18 +3587,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a376123df05e4f1cb7ccc0e8b038842d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3973635177871438889 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9094576804987074065, guid: 208eab8c17f4afb41a89eedbfe42f722,
-    type: 3}
-  m_PrefabInstance: {fileID: 5265654984816919096}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &4395017125806338240 stripped

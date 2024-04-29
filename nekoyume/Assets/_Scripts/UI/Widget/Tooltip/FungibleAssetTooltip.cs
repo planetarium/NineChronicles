@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Numerics;
 using Coffee.UIEffects;
+using Lib9c;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
@@ -130,7 +131,7 @@ namespace Nekoyume.UI
             sell.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
 
-            UpdateInformation(item.FungibleAssetValue, onClose, item.Tradable.Value);
+            UpdateInformation(item.FungibleAssetValue, onClose);
             base.Show();
             StartCoroutine(CoUpdate(panel.gameObject));
         }
@@ -189,13 +190,14 @@ namespace Nekoyume.UI
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             _onRegister = onRegister;
-            UpdateInformation(item.FungibleAssetValue, onClose, item.Tradable.Value, true);
+            UpdateInformation(item.FungibleAssetValue, onClose, true);
             base.Show();
             StartCoroutine(CoUpdate(registerButton.gameObject));
         }
 
-        private void UpdateInformation(FungibleAssetValue fav, System.Action onClose, bool isTradeAble = false, bool isAvailableSell = false)
+        private void UpdateInformation(FungibleAssetValue fav, System.Action onClose, bool isAvailableSell = false)
         {
+            var isTradeAble = fav.IsTradable();
             var grade = 1;
             var id = 0;
             var ticker = fav.Currency.Ticker;
@@ -228,14 +230,14 @@ namespace Nekoyume.UI
             _onClose = onClose;
             scrollbar.value = 1f;
 
-            var isInteractive = isTradeAble && fav.MajorUnit > 0;
-            SetTradableState(isAvailableSell, isInteractive);
+            SetTradableState(isAvailableSell, isTradeAble, fav.MajorUnit > 0);
         }
 
         private void UpdateInformation(string ticker, string amount, System.Action onClose)
         {
-            var grade = 1;
-            var id = 0;
+            var tradable = true;
+            var grade    = 1;
+            var id       = 0;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
             {
                 var sheet = Game.Game.instance.TableSheets.RuneListSheet;
@@ -244,6 +246,9 @@ namespace Nekoyume.UI
                     grade = row.Grade;
                     id = runeData.id;
                 }
+
+                var rune = Currencies.GetRune(ticker);
+                tradable = !RegisterProduct.NonTradableTickerCurrencies.Contains(rune);
             }
 
             var petSheet = Game.Game.instance.TableSheets.PetSheet;
@@ -275,7 +280,7 @@ namespace Nekoyume.UI
             _onClose = onClose;
             scrollbar.value = 1f;
 
-            SetTradableState(false);
+            SetTradableState(false, tradable);
         }
 
         private void UpdateGrade(int grade)
@@ -354,14 +359,12 @@ namespace Nekoyume.UI
             _isPointerOnScrollArea = value;
         }
 
-        private void SetTradableState(bool tradable, bool isInteractive = false)
+        private void SetTradableState(bool isAvailableSell, bool isTradable = false, bool hasItem = false)
         {
-            isInteractive = isInteractive && tradable;
+            registerButton.gameObject.SetActive(isAvailableSell);
 
-            registerButton.gameObject.SetActive(tradable);
-
-            registerButton.Interactable = isInteractive;
-            detail.UpdateTradableText(isInteractive);
+            registerButton.Interactable = isTradable && isAvailableSell && hasItem;
+            detail.UpdateTradableText(isTradable);
         }
     }
 }

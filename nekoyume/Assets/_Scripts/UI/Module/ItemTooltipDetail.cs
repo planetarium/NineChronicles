@@ -74,6 +74,9 @@ namespace Nekoyume.UI.Module
         private GameObject optionAreaRoot;
 
         [SerializeField]
+        private TextMeshProUGUI expText;
+
+        [SerializeField]
         private TextMeshProUGUI tradableText;
 
         [SerializeField]
@@ -85,12 +88,13 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private SkillPositionTooltip skillTooltip;
 
-        public void Set(ItemBase itemBase, int itemCount, bool levelLimit)
+        public void Set(ItemBase itemBase, int itemCount, bool levelLimit, bool displayExp = true)
         {
             UpdateViewIconArea(itemBase, itemCount, levelLimit);
             UpdateDescriptionArea(itemBase);
             UpdateOptionArea(itemBase, itemCount);
             UpdateTradableText(itemBase);
+            UpdateExpText(displayExp ? itemBase : null);
         }
 
         private void UpdateOptionArea(ItemBase itemBase, int itemCount)
@@ -386,6 +390,21 @@ namespace Nekoyume.UI.Module
             tradableText.color = isTradable
                 ? Palette.GetColor(ColorType.ButtonEnabled)
                 : Palette.GetColor(ColorType.TextDenial);
+        }
+
+        private void UpdateExpText(ItemBase itemBase)
+        {
+            var exp = 0L;
+            if (itemBase is Equipment equipment)
+            {
+                exp = equipment.Exp;
+            }
+
+            expText.gameObject.SetActive(exp > 0);
+            if (exp > 0 && expText)
+            {
+                expText.text = $"EXP : {exp.ToCurrencyNotation()}";
+            }
         }
     }
 }

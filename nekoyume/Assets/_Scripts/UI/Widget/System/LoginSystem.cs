@@ -344,7 +344,12 @@ namespace Nekoyume.UI
 
                     var setPasswordEvt = new AirbridgeEvent("SetPassword_Complete");
                     AirbridgeUnity.TrackEvent(setPasswordEvt);
-
+#if RUN_ON_MOBILE
+                    new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
+                        .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
+                        .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
+                        .Share();
+#endif
                     Close();
                     break;
                 case States.Login:

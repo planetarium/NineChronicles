@@ -322,8 +322,13 @@ namespace Nekoyume.Helper
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
-            var runeOptionInfos = GetRuneOptions(runeStates, runeOptionSheet);
+
+            var previousRuneStates =
+                States.Instance.GetEquippedRuneStates(previousState, BattleType.Adventure);
+            var previousRuneOptionInfos = GetRuneOptions(previousRuneStates, runeOptionSheet);
+            var currentRuneStates =
+                States.Instance.GetEquippedRuneStates(currentState, BattleType.Adventure);
+            var currentRuneOptionInfos = GetRuneOptions(currentRuneStates, runeOptionSheet);
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
@@ -337,10 +342,10 @@ namespace Nekoyume.Helper
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
             var collectionStatModifiers = collectionState.GetEffects(collectionSheet);
 
-            var previousCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
-                costumeSheet, collectionStatModifiers, prevRuneLevelBonus);
-            var currentCp = CPHelper.TotalCP(equipments, costumes, runeOptionInfos, level, row,
-                costumeSheet, collectionStatModifiers, currentRuneLevelBonus);
+            var previousCp = CPHelper.TotalCP(equipments, costumes, previousRuneOptionInfos,
+                level, row, costumeSheet, collectionStatModifiers, prevRuneLevelBonus);
+            var currentCp = CPHelper.TotalCP(equipments, costumes, currentRuneOptionInfos,
+                level, row, costumeSheet, collectionStatModifiers, currentRuneLevelBonus);
             return (previousCp, currentCp);
         }
 
@@ -664,23 +669,22 @@ namespace Nekoyume.Helper
                 return cachedTexture;
             }
 
-            var client = new HttpClient();
-            var resp = await client.GetAsync(url);
-            try
+            var req = UnityWebRequestTexture.GetTexture(url);
+            req = await req.SendWebRequest();
+
+            if (req.result != UnityWebRequest.Result.Success)
             {
-                resp.EnsureSuccessStatusCode();
-            }
-            catch
-            {
+                Debug.LogError(req.error);
                 if (CachedDownloadTexturesRaw.TryGetValue(url, out cachedTexture))
                 {
                     return cachedTexture;
                 }
+
                 NcDebug.LogError($"[DownloadTextureRaw] {url}");
                 return null;
             }
 
-            var data = await resp.Content.ReadAsByteArrayAsync();
+            var data = ((DownloadHandlerTexture)req.downloadHandler).data;
             CachedDownloadTexturesRaw.TryAdd(url, data);
             return data;
         }
@@ -701,20 +705,6 @@ namespace Nekoyume.Helper
             {
                 NcDebug.LogWarning("[SetActiveSafe] fail");
             }
-        }
-
-        public static string ToCurrencyString(this long value)
-        {
-            string[] suffixes = { "", "K", "M", "B" };
-
-            var suffixIndex = 0;
-            while (value >= 1000 && suffixIndex < suffixes.Length)
-            {
-                value /= 1000;
-                suffixIndex++;
-            }
-
-            return string.Format("{0:N2}", value).TrimEnd('0').TrimEnd('.') + suffixes[suffixIndex];
         }
     }
 }

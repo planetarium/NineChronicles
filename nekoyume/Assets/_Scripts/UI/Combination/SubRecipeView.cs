@@ -273,6 +273,7 @@ namespace Nekoyume.UI
                     if (Util.IsEventEquipmentRecipe(equipmentRow.Id))
                     {
                         recipeCell.Show(equipmentRow, false);
+                        UpdateCollectionCount(resultItem.Id);
                         ChangeTab(0);
                         break;
                     }
@@ -413,6 +414,7 @@ namespace Nekoyume.UI
             var count = collectionState.Ids.Count(activated =>
                                                       collectionsByRecipeItem.Any(
                                                           row => row.Id == activated));
+            collectionCount.gameObject.transform.parent.gameObject.SetActive(maxCount != 0);
             collectionCount.text = $"{count}/{maxCount}";
         }
 
@@ -616,6 +618,11 @@ namespace Nekoyume.UI
 
         private void SetExpText(EquipmentItemRecipeSheet.Row equipmentRow)
         {
+            if (expText == null)
+            {
+                return;
+            }
+
             var equipment = equipmentRow.GetResultEquipmentItemRow();
 
             if (equipment.Exp == null)
@@ -625,7 +632,7 @@ namespace Nekoyume.UI
             }
 
             var value = equipment.Exp.Value;
-            expText.text = $"EXP {value.ToCurrencyString()}";
+            expText.text = $"EXP {value.ToCurrencyNotation()}";
         }
 
         private void UpdateInformation(int index)

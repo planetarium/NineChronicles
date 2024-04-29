@@ -92,6 +92,7 @@ namespace Nekoyume.UI
         private string _keyStorePath;
         private string _privateKey;
         private PlanetContext _planetContext;
+        private bool _isSetGuestPrivateKey = false;
 
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
@@ -236,13 +237,24 @@ namespace Nekoyume.UI
             backupButton.gameObject.SetActive(Util.GetQrCodePngFromKeystore() != null);
             backupButton.onClick.AddListener(() =>
             {
-                new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
-                    .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
-                    .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
-                    .Share();
+                var keys = KeyManager.Instance.GetList().ToList();
+                if (keys.Any())
+                {
+                    var firstKey = keys.First().Item2;
+                    if (KeyManager.Instance.GetCachedPassphrase(firstKey.Address)
+                        .Equals(string.Empty))
+                    {
+                        Find<LoginSystem>().ShowResetPassword();
+                    }
+                    else
+                    {
+                        new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
+                            .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
+                            .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
+                            .Share();
+                    }
+                }
             });
-
-            GetGuestPrivateKey();
         }
 
         protected override void OnDestroy()
@@ -420,24 +432,33 @@ namespace Nekoyume.UI
             }
         }
 
-        private async void GetGuestPrivateKey()
+        public async void GetGuestPrivateKey()
         {
             string pk;
             try
             {
+                await UniTask.SwitchToMainThread();
                 var request = UnityWebRequest.Get(GuestPrivateKeyUrl);
                 await request.SendWebRequest();
                 pk = request.downloadHandler.text.Trim();
                 ByteUtil.ParseHex(pk);
+                NcDebug.LogWarning($"[IntroScreen] [GetGuestPrivateKey] GuestPrivateKeyUrl success");
             }
             catch (Exception e)
             {
-                NcDebug.LogWarning($"Failed to get guest private key: {e}");
+                NcDebug.LogWarning($"[IntroScreen] [GetGuestPrivateKey] Failed to get guest private key: {e}");
                 return;
             }
 
             if(Game.Game.instance.CommandLineOptions == null || !Game.Game.instance.CommandLineOptions.EnableGuestLogin)
             {
+                NcDebug.LogError($"[IntroScreen] [GetGuestPrivateKey] Failed find Commandlineoptions");
+                return;
+            }
+
+            if (_isSetGuestPrivateKey)
+            {
+                NcDebug.LogWarning($"[IntroScreen] [GetGuestPrivateKey] Already set guest private key");
                 return;
             }
 
@@ -454,6 +475,7 @@ namespace Nekoyume.UI
                 Game.Game.instance.IsGuestLogin = true;
             });
             guestButton.interactable = true;
+            _isSetGuestPrivateKey = true;
         }
 
 #if APPLY_MEMORY_IOS_OPTIMIZATION || RUN_ON_MOBILE

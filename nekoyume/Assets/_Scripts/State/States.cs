@@ -616,7 +616,8 @@ namespace Nekoyume.State
                 ? index
                 : curAvatarState.dailyRewardReceivedIndex);
 
-            SetAllRuneState(await curAvatarState.GetAllRuneStateAsync());
+            SetAllRuneState(await agent.GetAllRuneStateAsync(curAvatarState.address));
+
             await InitRuneSlotStates();
         }
 
@@ -768,6 +769,13 @@ namespace Nekoyume.State
 
         public List<RuneState> GetEquippedRuneStates(BattleType battleType)
         {
+            return GetEquippedRuneStates(AllRuneState, battleType);
+        }
+
+        public List<RuneState> GetEquippedRuneStates(
+            AllRuneState allRuneState,
+            BattleType battleType)
+        {
             var states = CurrentRuneSlotStates[battleType].GetRuneSlot();
             var runeStates = new List<RuneState>();
             foreach (var slot in states)
@@ -777,7 +785,7 @@ namespace Nekoyume.State
                     continue;
                 }
 
-                if (AllRuneState.TryGetRuneState(slot.RuneId.Value, out var runeState))
+                if (allRuneState.TryGetRuneState(slot.RuneId.Value, out var runeState))
                 {
                     runeStates.Add(runeState);
                 }

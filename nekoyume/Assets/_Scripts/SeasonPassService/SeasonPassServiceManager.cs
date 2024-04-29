@@ -47,17 +47,24 @@ namespace Nekoyume
 
         public void Initialize()
         {
-            Client.GetSeasonpassCurrentAsync((result) =>
+            void GetSeasonpassCurrentRetry(int retry)
             {
-                CurrentSeasonPassData = result;
-                DateTime.TryParse(CurrentSeasonPassData.EndTimestamp, out var endDateTime);
-                SeasonEndDate.SetValueAndForceNotify(endDateTime);
-                RefreshRemainingTime();
-            }, (error) =>
-            {
-                NcDebug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassCurrentAsync] error: {error}");
-            }).AsUniTask().Forget();
-
+                Client.GetSeasonpassCurrentAsync((result) =>
+                {
+                    CurrentSeasonPassData = result;
+                    DateTime.TryParse(CurrentSeasonPassData.EndTimestamp, out var endDateTime);
+                    SeasonEndDate.SetValueAndForceNotify(endDateTime);
+                    RefreshRemainingTime();
+                }, (error) =>
+                {
+                    NcDebug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassCurrentAsync] error: {error}");
+                    if (retry <= 0)
+                        return;
+                    GetSeasonpassCurrentRetry(--retry);
+                }).AsUniTask().Forget();
+            }
+            GetSeasonpassCurrentRetry(3);
+            
             Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1)).Subscribe((time) =>
             {
                 RefreshRemainingTime();
@@ -71,43 +78,57 @@ namespace Nekoyume
 
         private void RefreshSeassonpassExpAmount()
         {
-            Client.GetSeasonpassLevelAsync((result) =>
+            void GetSeasonPassLevelRetry(int retry)
             {
-                LevelInfos = result.OrderBy(info => info.Level).ToList();
-            }, (error) =>
-            {
-                NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassLevelAsync] error: {error}");
-            }).AsUniTask().Forget();
-
-            Client.GetSeasonpassExpAsync((result) =>
-            {
-                foreach (var item in result)
+                Client.GetSeasonpassLevelAsync((result) =>
                 {
-                    switch (item.ActionType)
-                    {
-                        case SeasonPassServiceClient.ActionType.hack_and_slash:
-                            AdventureCourageAmount = item.Exp;
-                            break;
-                        case SeasonPassServiceClient.ActionType.hack_and_slash_sweep:
-                            AdventureSweepCourageAmount = item.Exp;
-                            break;
-                        case SeasonPassServiceClient.ActionType.battle_arena:
-                            ArenaCourageAmount = item.Exp;
-                            break;
-                        case SeasonPassServiceClient.ActionType.raid:
-                            WorldBossCourageAmount = item.Exp;
-                            break;
-                        case SeasonPassServiceClient.ActionType.event_dungeon:
-                            EventDungeonCourageAmount = item.Exp;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }, (error) =>
+                    LevelInfos = result.OrderBy(info => info.Level).ToList();
+                }, (error) =>
+                {
+                    NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassLevelAsync] error: {error}");
+                    if (retry <= 0)
+                        return;
+                    GetSeasonPassLevelRetry(--retry);
+                }).AsUniTask().Forget();
+            }
+            GetSeasonPassLevelRetry(3);
+
+            void GetSeasonPassExpRetry(int retry)
             {
-                NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassExpAsync] error: {error}");
-            }).AsUniTask().Forget();
+                Client.GetSeasonpassExpAsync((result) =>
+                {
+                    foreach (var item in result)
+                    {
+                        switch (item.ActionType)
+                        {
+                            case SeasonPassServiceClient.ActionType.hack_and_slash:
+                                AdventureCourageAmount = item.Exp;
+                                break;
+                            case SeasonPassServiceClient.ActionType.hack_and_slash_sweep:
+                                AdventureSweepCourageAmount = item.Exp;
+                                break;
+                            case SeasonPassServiceClient.ActionType.battle_arena:
+                                ArenaCourageAmount = item.Exp;
+                                break;
+                            case SeasonPassServiceClient.ActionType.raid:
+                                WorldBossCourageAmount = item.Exp;
+                                break;
+                            case SeasonPassServiceClient.ActionType.event_dungeon:
+                                EventDungeonCourageAmount = item.Exp;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }, (error) =>
+                {
+                    NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassExpAsync] error: {error}");
+                    if (retry <= 0)
+                        return;
+                    GetSeasonPassExpRetry(--retry);
+                }).AsUniTask().Forget();
+            }
+            GetSeasonPassExpRetry(3);
         }
 
         private void RefreshRemainingTime()
@@ -211,7 +232,7 @@ namespace Nekoyume
             await Client.GetUserStatusAsync(CurrentSeasonPassData.Id -1, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
                 (result) =>
                 {
-                    _prevSeasonClaimAvailable = result.LastNormalClaim != result.Level;
+                    _prevSeasonClaimAvailable = result.IsPremium && result.LastPremiumClaim < result.Level;
                     DateTime.TryParse(result.ClaimLimitTimestamp, out var claimLimitTimestamp);
                     PrevSeasonClaimEndDate.SetValueAndForceNotify(claimLimitTimestamp);
                     RefreshPrevRemainingClaim();

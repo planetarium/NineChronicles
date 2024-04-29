@@ -136,6 +136,7 @@ namespace Nekoyume
         public GameObject MinusObject => minusObject;
         public GameObject FocusObject => focusObject;
         public GameObject ExpiredObject => expiredObject;
+        // TODO: 소유하지 않은 장비가 Tradable = true로 설정되어 있음. 네이밍이 꼬인것으로 추정되며 아이템 상태 개선이 필요해보임
         public GameObject TradableObject => tradableObject;
         public GameObject DimObject => dimObject;
         public GameObject LevelLimitObject => levelLimitObject;

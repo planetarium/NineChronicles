@@ -113,9 +113,12 @@ namespace Nekoyume.UI
             bool ignoreShowAnimation = false)
         {
             _avatarState = avatarState;
-            var (itemSlotStates, runeSlotStates) = await avatarState.GetSlotStatesAsync();
-            var allRuneState = await avatarState.GetAllRuneStateAsync();
-            var collectionState = await avatarState.GetCollectionStateAsync();
+            var (itemSlotStates, runeSlotStates) =
+                await Game.Game.instance.Agent.GetSlotStatesAsync(avatarState.address);
+            var allRuneState =
+                await Game.Game.instance.Agent.GetAllRuneStateAsync(avatarState.address);
+            var collectionState =
+                await Game.Game.instance.Agent.GetCollectionStateAsync(avatarState.address);
             SetItems(avatarState, itemSlotStates, runeSlotStates, allRuneState, collectionState);
 
             base.Show(ignoreShowAnimation);

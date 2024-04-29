@@ -309,7 +309,7 @@ namespace Nekoyume.Blockchain
 
         private static UniTask UpdateAgentStateAsync(AgentState state)
         {
-            UpdateCache(state);
+            UpdateCache(Addresses.Agent, state);
             return States.Instance.SetAgentStateAsync(state);
         }
 
@@ -402,7 +402,7 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            UpdateCache(avatarState);
+            UpdateCache(Addresses.Avatar, avatarState);
             await UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey);
         }
 
@@ -419,25 +419,25 @@ namespace Nekoyume.Blockchain
             CombinationSlotState state)
         {
             States.Instance.UpdateCombinationSlotState(avatarAddress, slotIndex, state);
-            UpdateCache(state);
+            UpdateCache(ReservedAddresses.LegacyAccount, state);
         }
 
-        private static void UpdateCache(Model.State.State state)
+        private static void UpdateCache(Address accountAddress, Model.State.State state)
         {
             if (state is null)
             {
                 return;
             }
 
-            if (Game.Game.instance.CachedStates.ContainsKey(state.address))
+            if (Game.Game.instance.CachedStates.ContainsKey(accountAddress.Derive(state.address.ToByteArray())))
             {
                 try
                 {
-                    Game.Game.instance.CachedStates[state.address] = state.Serialize();
+                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
                 }
                 catch (NotSupportedException)
                 {
-                    Game.Game.instance.CachedStates[state.address] = state.SerializeList();
+                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.SerializeList();
                 }
             }
         }

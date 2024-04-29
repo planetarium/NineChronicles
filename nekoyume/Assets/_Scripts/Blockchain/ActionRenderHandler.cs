@@ -340,6 +340,7 @@ namespace Nekoyume.Blockchain
         private void DailyReward()
         {
             _actionRenderer.EveryRender<DailyReward>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Select(PreResponseDailyReward)
@@ -1919,7 +1920,6 @@ namespace Nekoyume.Blockchain
                                     newAvatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                                Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
                             }
                             catch (Exception e)
                             {
@@ -1928,6 +1928,7 @@ namespace Nekoyume.Blockchain
                         });
                     });
 
+            Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
             var tableSheets = TableSheets.Instance;
             var skillsOnWaveStart = new List<Skill>();
             if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId && prevSkillState.SkillIds.Any())
@@ -2791,27 +2792,7 @@ namespace Nekoyume.Blockchain
                     ? new ItemSlotState(enemyRawItemSlotState)
                     : new ItemSlotState(BattleType.Arena);
 
-            AllRuneState enemyAllRuneState;
-            if (StateGetter.GetState(prevStates, Addresses.RuneState, enemyAvatarAddress)
-                is List enemyRawAllRuneState)
-            {
-                enemyAllRuneState = new AllRuneState(enemyRawAllRuneState);
-            }
-            else
-            {
-                enemyAllRuneState = new AllRuneState();
-
-                var runeAddresses = TableSheets.Instance.RuneListSheet.Values
-                    .Select(row => RuneState.DeriveAddress(enemyAvatarAddress, row.Id));
-                foreach (var address in runeAddresses)
-                {
-                    if (StateGetter.GetState(prevStates, ReservedAddresses.LegacyAccount, address)
-                        is List rawRuneState)
-                    {
-                        enemyAllRuneState.AddRuneState(new RuneState(rawRuneState));
-                    }
-                }
-            }
+            var enemyAllRuneState = GetStateExtensions.GetAllRuneState(prevStates, enemyAvatarAddress);
 
             var enemyRuneSlotStateAddress = RuneSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
             var enemyRuneSlotState =
@@ -3006,14 +2987,8 @@ namespace Nekoyume.Blockchain
             var runeRow = TableSheets.Instance.RuneSheet[action.RuneId];
 
             var previousState = States.Instance.AllRuneState;
-            var value = StateGetter.GetState(
-                eval.OutputState,
-                Addresses.RuneState,
-                action.AvatarAddress);
-            if (value is List list)
-            {
-                States.Instance.SetAllRuneState(new AllRuneState(list));
-            }
+            States.Instance.SetAllRuneState(
+                GetStateExtensions.GetAllRuneState(eval.OutputState, action.AvatarAddress));
 
             UpdateCrystalBalance(eval);
             UpdateAgentStateAsync(eval).Forget();
