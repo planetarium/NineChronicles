@@ -36,7 +36,7 @@ namespace Nekoyume.UI
             public int summonSheetId;
             public Toggle tabToggle;
             public GameObject[] enableObj;
-            public float backgroundPositionY;
+            public CostType costType;
             public string nameEng;
             public string phrase1;
             public string phrase2;
@@ -153,7 +153,7 @@ namespace Nekoyume.UI
             }
 
             summonItem.backgroundRect
-                .DOAnchorPosY(currentInfo.backgroundPositionY, .5f)
+                .DOAnchorPosY(SummonUtil.GetBackGroundPosition(currentInfo.costType), .5f)
                 .SetEase(Ease.InOutCubic);
 
             var enablePhrase1 = !string.IsNullOrEmpty(currentInfo.phrase1);

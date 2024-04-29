@@ -483,7 +483,7 @@ GameObject:
   - component: {fileID: 7620591953606034002}
   - component: {fileID: 454514871044782777}
   m_Layer: 5
-  m_Name: TabButton_Sub (2)
+  m_Name: TabButton_RedAura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1588,12 +1588,30 @@ MonoBehaviour:
   tutorialActions: 52c30000
   closeButton: {fileID: 241345997775891456}
   summonInfos:
+  - summonSheetId: 10001
+    tabToggle: {fileID: 454514871044782777}
+    enableObj:
+    - {fileID: 8901089498572354511}
+    - {fileID: 5125302614372593824}
+    costType: 600202
+    nameEng: Red Aura
+    phrase1: 
+    phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
+  - summonSheetId: 10001
+    tabToggle: {fileID: 8417508641502258821}
+    enableObj:
+    - {fileID: 3095810823935262297}
+    - {fileID: 7449814916306265781}
+    costType: 600202
+    nameEng: Red Rune
+    phrase1: 
+    phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
   - summonSheetId: 10002
     tabToggle: {fileID: 7694223387329242290}
     enableObj:
     - {fileID: 5923611380794271153}
     - {fileID: 3917762921654706892}
-    backgroundPositionY: -690
+    costType: 600201
     nameEng: Golden Aura
     phrase1: UI_SUMMON_GOLDEN_AURA_PHRASE_1
     phrase2: UI_SUMMON_GOLDEN_AURA_PHRASE_2
@@ -1602,7 +1620,7 @@ MonoBehaviour:
     enableObj:
     - {fileID: 5597247345816316038}
     - {fileID: 4420197024892280354}
-    backgroundPositionY: 0
+    costType: 600201
     nameEng: Golden Rune
     phrase1: UI_SUMMON_GOLDEN_RUNE_PHRASE_1
     phrase2: UI_SUMMON_GOLDEN_RUNE_PHRASE_2
@@ -1611,7 +1629,7 @@ MonoBehaviour:
     enableObj:
     - {fileID: 3435501159365475478}
     - {fileID: 3797436776349989978}
-    backgroundPositionY: 690
+    costType: 800201
     nameEng: Normal Aura
     phrase1: 
     phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
@@ -1951,7 +1969,7 @@ GameObject:
   - component: {fileID: 4196652832607952454}
   - component: {fileID: 8417508641502258821}
   m_Layer: 5
-  m_Name: TabButton_Sub (3)
+  m_Name: TabButton_RedRune
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4205,7 +4223,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.5019608}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -6322,7 +6340,7 @@ GameObject:
   - component: {fileID: 344699228922914951}
   - component: {fileID: 2845889457511383640}
   m_Layer: 5
-  m_Name: TabButton_Sub (2)
+  m_Name: TabButton_NimbleAura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6658,7 +6676,7 @@ GameObject:
   - component: {fileID: 5046158957489205447}
   - component: {fileID: 7694223387329242290}
   m_Layer: 5
-  m_Name: TabButton_Sub
+  m_Name: TabButton_GoldenAura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6822,7 +6840,7 @@ GameObject:
   - component: {fileID: 5046158957726712210}
   - component: {fileID: 7694223387165152743}
   m_Layer: 5
-  m_Name: TabButton_Sub (1)
+  m_Name: TabButton_GoldenRune
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11208,7 +11226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f19b7e2285c104f6ca47d583f3e5444f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EffectFactor: 0.12718664
+  m_EffectFactor: 0.26615828
   m_Width: 0.25
   m_Rotation: 135
   m_Softness: 1
