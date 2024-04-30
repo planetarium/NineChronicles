@@ -1588,7 +1588,7 @@ MonoBehaviour:
   tutorialActions: 52c30000
   closeButton: {fileID: 241345997775891456}
   summonInfos:
-  - summonSheetId: 10001
+  - summonSheetId: 30001
     tabToggle: {fileID: 454514871044782777}
     enableObj:
     - {fileID: 8901089498572354511}
@@ -1597,7 +1597,7 @@ MonoBehaviour:
     nameEng: Red Aura
     phrase1: 
     phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
-  - summonSheetId: 10001
+  - summonSheetId: 30002
     tabToggle: {fileID: 8417508641502258821}
     enableObj:
     - {fileID: 3095810823935262297}
@@ -14053,6 +14053,11 @@ PrefabInstance:
     - target: {fileID: 7447962765480628501, guid: 752992a8c1833a0448ce003351a84445,
         type: 3}
       propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7964818608635701868, guid: 752992a8c1833a0448ce003351a84445,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8295143779793309721, guid: 752992a8c1833a0448ce003351a84445,

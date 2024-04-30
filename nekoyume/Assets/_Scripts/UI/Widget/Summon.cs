@@ -368,8 +368,14 @@ namespace Nekoyume.UI
                 {
                     foreach (var recipe in recipes)
                     {
+                        if (!runeSheet.TryGetValue(recipe, out var rune))
+                        {
+                            NcDebug.LogError($"Invalid recipe id: {recipe}");
+                            continue;
+                        }
+
                         var fav = new FungibleAssetValue(
-                            Currencies.GetRune(runeSheet[recipe].Ticker), 1, 0);
+                            Currencies.GetRune(rune.Ticker), 1, 0);
                         loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(fav));
                         yield return new WaitForSeconds(.1f);
                     }

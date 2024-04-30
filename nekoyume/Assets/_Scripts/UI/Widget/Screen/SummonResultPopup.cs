@@ -28,6 +28,7 @@ namespace Nekoyume.UI
         [SerializeField] private Animator animator;
         [SerializeField] private SummonCostButton normalDrawButton;
         [SerializeField] private SummonCostButton goldenDrawButton;
+        [SerializeField] private SummonCostButton redDrawButton;
 
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button skipButton;
@@ -81,6 +82,7 @@ namespace Nekoyume.UI
 
             normalDrawButton.Subscribe(gameObject);
             goldenDrawButton.Subscribe(gameObject);
+            redDrawButton.Subscribe(gameObject);
         }
 
         public void Show(
@@ -192,6 +194,7 @@ namespace Nekoyume.UI
 
             normalDrawButton.gameObject.SetActive(false);
             goldenDrawButton.gameObject.SetActive(false);
+            redDrawButton.gameObject.SetActive(false);
 
             var drawButton = GetDrawButton(costType);
             if (drawButton == null)
@@ -210,6 +213,7 @@ namespace Nekoyume.UI
             {
                 CostType.SilverDust => normalDrawButton,
                 CostType.GoldDust => goldenDrawButton,
+                CostType.RubyDust => redDrawButton,
                 _ => null
             };
         }
