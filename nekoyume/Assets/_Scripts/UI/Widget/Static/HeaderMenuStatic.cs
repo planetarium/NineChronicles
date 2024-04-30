@@ -27,6 +27,8 @@ namespace Nekoyume.UI.Module
 
     public class HeaderMenuStatic : StaticWidget
     {
+        private const int MaxShowMaterialCount = 3;
+
         public enum ToggleType
         {
             Quest,
@@ -503,7 +505,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
                     break;
                 case AssetVisibleState.Summon:
-                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 2);
+                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 3);
                     break;
             }
         }
@@ -517,6 +519,7 @@ namespace Nekoyume.UI.Module
             MaterialAssets[index].SetMaterial(icon, count, costType);
         }
 
+        // TODO: 정확한 상황을 알지 못하지만, SetMaterial 메서드 호출 이후 자동으로 호출되야 할 것같이 생김.
         private void SetActiveAssets(
             bool isNcgActive = false,
             bool isCrystalActive = false,
@@ -529,7 +532,6 @@ namespace Nekoyume.UI.Module
             bool isMileageActive = false,
             int isMaterialActiveCount = 0)
         {
-            ncg.gameObject.SetActive(isNcgActive);
             crystal.gameObject.SetActive(isCrystalActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             hourglass.gameObject.SetActive(isHourglassActive);
@@ -542,6 +544,8 @@ namespace Nekoyume.UI.Module
             {
                 materialAssets[i].gameObject.SetActive(i < isMaterialActiveCount);
             }
+
+            ncg.gameObject.SetActive(isMaterialActiveCount < MaxShowMaterialCount && isNcgActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)
