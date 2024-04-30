@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Nekoyume.Game.LiveAsset
 {
@@ -27,5 +28,12 @@ namespace Nekoyume.Game.LiveAsset
         }
 
         public const string DiscordLink = "https://discord.com/invite/planetarium";
+
+        public const string PackageNameForK = "com.planetariumlabs.ninechroniclesmobilek";
+        public static bool K => Application.identifier switch
+        {
+            PackageNameForK => true,
+            _ => false
+        };
     }
 }
