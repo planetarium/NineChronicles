@@ -574,7 +574,12 @@ namespace Nekoyume.State
             }
 
             var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddr);
-            var combinationSlotAddresses = curAvatarState.combinationSlotAddresses;
+            var combinationSlotAddresses = new List<Address>();
+            for (var i = 0; i < 4; i++)
+            {
+                combinationSlotAddresses.Add(CombinationSlotState.DeriveAddress(curAvatarState.address, i));
+            }
+
             var petIds = TableSheets.Instance.PetSheet.Values
                 .Select(row => (row.Id, PetState.DeriveAddress(avatarAddr, row.Id)))
                 .ToList();
