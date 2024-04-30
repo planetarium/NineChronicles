@@ -1139,6 +1139,13 @@ namespace Nekoyume.Blockchain
             {
                 stringBuilder.AppendLine($"Exception: {exception.Message}");
                 stringBuilder.AppendLine($"StackTrace: {exception.StackTrace}");
+
+                var innerException = exception.InnerException;
+                if (innerException != null)
+                {
+                    stringBuilder.AppendLine($"InnerException: {innerException.Message}");
+                    stringBuilder.AppendLine($"InnerStackTrace: {innerException.StackTrace}");
+                }
             }
 
             NcDebug.LogError(stringBuilder.ToString());
