@@ -1735,6 +1735,42 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
+        public IObservable<ActionEvaluation<Wanted>> Wanted()
+        {
+            var action = new Wanted
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<Wanted>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(_ =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
+        public IObservable<ActionEvaluation<AdventureBossBattle>> AdventureBossBattle()
+        {
+            var action = new AdventureBossBattle
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<AdventureBossBattle>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(_ =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
         public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
