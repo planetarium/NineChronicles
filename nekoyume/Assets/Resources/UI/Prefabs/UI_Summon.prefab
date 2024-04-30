@@ -1596,7 +1596,7 @@ MonoBehaviour:
     costType: 600202
     nameEng: Red Aura
     phrase1: 
-    phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
+    phrase2: UI_SUMMON_GOLDEN_AURA_PHRASE_3
   - summonSheetId: 30002
     tabToggle: {fileID: 8417508641502258821}
     enableObj:
@@ -1604,8 +1604,8 @@ MonoBehaviour:
     - {fileID: 7449814916306265781}
     costType: 600202
     nameEng: Red Rune
-    phrase1: 
-    phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
+    phrase1: UI_SUMMON_GOLDEN_RUNE_PHRASE_1
+    phrase2: UI_SUMMON_GOLDEN_RUNE_PHRASE_3
   - summonSheetId: 10002
     tabToggle: {fileID: 7694223387329242290}
     enableObj:
