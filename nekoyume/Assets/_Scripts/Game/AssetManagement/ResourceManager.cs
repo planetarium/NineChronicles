@@ -10,6 +10,7 @@ namespace Nekoyume
     public class ResourceManager
     {
         public static string BattleLabel => "Battle";
+        public static string CharacterLabel => "Character";
 
         private static class Singleton
         {
