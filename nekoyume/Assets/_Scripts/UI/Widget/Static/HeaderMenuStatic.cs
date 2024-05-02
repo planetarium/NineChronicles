@@ -221,7 +221,7 @@ namespace Nekoyume.UI.Module
                         });
                         break;
                     case ToggleType.PortalReward:
-                        if (Nekoyume.Game.LiveAsset.GameConfig.K)
+                        if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
                         {
                             toggleInfo.Toggle.gameObject.SetActive(false);
                         }

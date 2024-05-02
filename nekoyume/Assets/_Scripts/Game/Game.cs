@@ -313,7 +313,7 @@ namespace Nekoyume.Game
                     KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             }
 
-            if (LiveAsset.GameConfig.K)
+            if (LiveAsset.GameConfig.IsKoreanBuild)
             {
                 yield return L10nManager.Initialize(LanguageType.Korean).ToYieldInstruction();
             }

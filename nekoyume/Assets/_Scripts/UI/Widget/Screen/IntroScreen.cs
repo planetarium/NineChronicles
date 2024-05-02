@@ -118,8 +118,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            logoImage.sprite = Game.LiveAsset.GameConfig.K ? logoKSprite : logoMSprite;
-            touchScreenLogoImage.sprite = Game.LiveAsset.GameConfig.K ? logoKSprite : logoMSprite;
+            logoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild ? logoKSprite : logoMSprite;
+            touchScreenLogoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild ? logoKSprite : logoMSprite;
 
             touchScreenButton.onClick.AddListener(() =>
             {

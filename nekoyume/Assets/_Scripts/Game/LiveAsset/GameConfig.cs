@@ -29,10 +29,10 @@ namespace Nekoyume.Game.LiveAsset
 
         public const string DiscordLink = "https://discord.com/invite/planetarium";
 
-        public const string PackageNameForK = "com.planetariumlabs.ninechroniclesmobilek";
-        public static bool K => Application.identifier switch
+        public const string PackageNameForKorean = "com.planetariumlabs.ninechroniclesmobilek";
+        public static bool IsKoreanBuild => Application.identifier switch
         {
-            PackageNameForK => true,
+            PackageNameForKorean => true,
             _ => false
         };
     }
