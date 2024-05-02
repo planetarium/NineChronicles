@@ -1,29 +1,30 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Crypto;
+using Nekoyume.Blockchain;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 
 namespace Nekoyume
 {
-    public static class AvatarStateExtensions
+    public static class GetStateExtensions
     {
         public static async Task<(List<ItemSlotState>, List<RuneSlotState>)> GetSlotStatesAsync(
-            this AvatarState avatarState)
+            this IAgent agent, Address avatarAddress)
         {
-            var avatarAddress = avatarState.address;
-
             var itemAddresses = new List<Address>
             {
                 ItemSlotState.DeriveAddress(avatarAddress, BattleType.Adventure),
                 ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
                 ItemSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
             };
-            var itemBulk = await Game.Game.instance.Agent.GetStateBulkAsync(
+            var itemBulk = await agent.GetStateBulkAsync(
                 ReservedAddresses.LegacyAccount,
                 itemAddresses);
             var itemSlotStates = new List<ItemSlotState>();
@@ -56,12 +57,12 @@ namespace Nekoyume
             return (itemSlotStates, runeSlotStates);
         }
 
-        public static async Task<AllRuneState> GetAllRuneStateAsync(this AvatarState avatarState)
+        public static async Task<AllRuneState> GetAllRuneStateAsync(
+            this IAgent agent, Address avatarAddress)
         {
             AllRuneState allRuneState;
 
-            var avatarAddress = avatarState.address;
-            var allRuneStateValue = await Game.Game.instance.Agent.GetStateAsync(
+            var allRuneStateValue = await agent.GetStateAsync(
                 Addresses.RuneState, avatarAddress);
             if (allRuneStateValue is List allRuneStateSerialized)
             {
@@ -85,9 +86,37 @@ namespace Nekoyume
             return allRuneState;
         }
 
-        public static async Task<CollectionState> GetCollectionStateAsync(this AvatarState avatarState)
+        public static AllRuneState GetAllRuneState(HashDigest<SHA256> hash, Address avatarAddress)
         {
-            var value = await Game.Game.instance.Agent.GetStateAsync(Addresses.Collection, avatarState.address);
+            AllRuneState allRuneState;
+
+            var allRuneStateValue = StateGetter.GetState(hash, Addresses.RuneState, avatarAddress);
+            if (allRuneStateValue is List allRuneStateSerialized)
+            {
+                allRuneState = new AllRuneState(allRuneStateSerialized);
+            }
+            else
+            {
+                allRuneState = new AllRuneState();
+
+                var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+                var runeAddresses = runeListSheet.Values.Select(row =>
+                    RuneState.DeriveAddress(avatarAddress, row.Id));
+                var stateBulk = StateGetter.GetStates(hash,
+                    ReservedAddresses.LegacyAccount, runeAddresses);
+                foreach (var runeSerialized in stateBulk.OfType<List>())
+                {
+                    allRuneState.AddRuneState(new RuneState(runeSerialized));
+                }
+            }
+
+            return allRuneState;
+        }
+
+        public static async Task<CollectionState> GetCollectionStateAsync(
+            this IAgent agent, Address avatarAddress)
+        {
+            var value = await agent.GetStateAsync(Addresses.Collection, avatarAddress);
             if (value is List list)
             {
                 return new CollectionState(list);

@@ -273,6 +273,7 @@ namespace Nekoyume.UI
                     if (Util.IsEventEquipmentRecipe(equipmentRow.Id))
                     {
                         recipeCell.Show(equipmentRow, false);
+                        UpdateCollectionCount(resultItem.Id);
                         ChangeTab(0);
                         break;
                     }
@@ -413,6 +414,7 @@ namespace Nekoyume.UI
             var count = collectionState.Ids.Count(activated =>
                                                       collectionsByRecipeItem.Any(
                                                           row => row.Id == activated));
+            collectionCount.gameObject.transform.parent.gameObject.SetActive(maxCount != 0);
             collectionCount.text = $"{count}/{maxCount}";
         }
 

@@ -144,7 +144,10 @@ namespace Nekoyume.UI
 
             animator.Play(HashToSuccess);
             var (previousCp, currentCp) = cp;
-            Find<CPScreen>().Show(previousCp, currentCp);
+            if (previousCp != currentCp)
+            {
+                Find<CPScreen>().Show(previousCp, currentCp);
+            }
         }
 
         private void UpdateInformation(RuneItem item, int resultLevel)

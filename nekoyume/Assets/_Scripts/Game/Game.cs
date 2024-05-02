@@ -865,6 +865,11 @@ namespace Nekoyume.Game
                 }
             }
 
+            if(Widget.TryFind<IntroScreen>(out var introscreen))
+            {
+                introscreen.GetGuestPrivateKey();
+            }
+
             NcDebug.Log("[Game] CommandLineOptions loaded");
             NcDebug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
             NcDebug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");

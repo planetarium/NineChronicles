@@ -528,18 +528,17 @@ namespace Nekoyume.Game.Battle
             }
             else
             {
-                var enemies = GetComponentsInChildren<Character.StageMonster>();
+                var enemies = GetComponentsInChildren<StageMonster>();
                 if (enemies.Any())
                 {
+                    // TODO: 하드코딩된 수치 이용하지 말고 데이터 관리
+                    const float winDuration = 1.0f;
                     foreach (var enemy in enemies)
                     {
-                        if (enemy.isActiveAndEnabled)
-                        {
-                            enemy.Animator.Win();
-                        }
+                        enemy.WinAsync(winDuration).Forget();
                     }
 
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(winDuration);
                 }
             }
 

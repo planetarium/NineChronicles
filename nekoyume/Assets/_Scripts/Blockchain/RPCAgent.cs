@@ -247,9 +247,9 @@ namespace Nekoyume.Blockchain
         {
             var game = Game.Game.instance;
             // Check state & cached because force update state after rpc disconnected.
-            if (game.CachedStateAddresses.TryGetValue(address, out var cached) &&
+            if (game.CachedStateAddresses.TryGetValue(accountAddress.Derive(address.ToByteArray()), out var cached) &&
                 cached &&
-                game.CachedStates.TryGetValue(address, out var value) &&
+                game.CachedStates.TryGetValue(accountAddress.Derive(address.ToByteArray()), out var value) &&
                 value is not Null)
             {
                 return value;
@@ -285,14 +285,14 @@ namespace Nekoyume.Blockchain
                 address.ToByteArray());
             var decoded = _codec.Decode(bytes);
             var game = Game.Game.instance;
-            if (game.CachedStateAddresses.ContainsKey(address))
+            if (game.CachedStateAddresses.ContainsKey(accountAddress.Derive(address.ToByteArray())))
             {
-                game.CachedStateAddresses[address] = true;
+                game.CachedStateAddresses[accountAddress.Derive(address.ToByteArray())] = true;
             }
 
-            if (game.CachedStates.ContainsKey(address))
+            if (game.CachedStates.ContainsKey(accountAddress.Derive(address.ToByteArray())))
             {
-                game.CachedStates.AddOrUpdate(address, decoded);
+                game.CachedStates.AddOrUpdate(accountAddress.Derive(address.ToByteArray()), decoded);
             }
 
             return decoded;
@@ -306,14 +306,14 @@ namespace Nekoyume.Blockchain
                 address.ToByteArray());
             var decoded = _codec.Decode(bytes);
             var game = Game.Game.instance;
-            if (game.CachedStateAddresses.ContainsKey(address))
+            if (game.CachedStateAddresses.ContainsKey(accountAddress.Derive(address.ToByteArray())))
             {
-                game.CachedStateAddresses[address] = true;
+                game.CachedStateAddresses[accountAddress.Derive(address.ToByteArray())] = true;
             }
 
-            if (game.CachedStates.ContainsKey(address))
+            if (game.CachedStates.ContainsKey(accountAddress.Derive(address.ToByteArray())))
             {
-                game.CachedStates.AddOrUpdate(address, decoded);
+                game.CachedStates.AddOrUpdate(accountAddress.Derive(address.ToByteArray()), decoded);
             }
 
             return decoded;
@@ -1127,14 +1127,14 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            var addresses = new List<Address> { Address };
+            var addresses = new List<(Address,Address)> {(Addresses.Agent,Address)};
 
             var currentAvatarState = States.Instance.CurrentAvatarState;
             if (!(currentAvatarState is null))
             {
-                addresses.Add(currentAvatarState.address);
-                var slotAddresses = currentAvatarState.combinationSlotAddresses.ToArray();
-                addresses.AddRange(slotAddresses);
+                addresses.Add((Addresses.Avatar,(currentAvatarState.address)));
+                addresses.AddRange(currentAvatarState.combinationSlotAddresses.Select(addr =>
+                    (ReservedAddresses.LegacyAccount, addr)));
             }
 
             NcDebug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
@@ -1142,14 +1142,15 @@ namespace Nekoyume.Blockchain
             foreach (var address in addresses)
             {
                 var game = Game.Game.instance;
-                game.CachedStateAddresses[address] = false;
-                if (!game.CachedStates.ContainsKey(address))
+                var derivedAddr = address.Item1.Derive(address.Item2.ToByteArray());
+                game.CachedStateAddresses[derivedAddr] = false;
+                if (!game.CachedStates.ContainsKey(derivedAddr))
                 {
-                    game.CachedStates.Add(address, Null.Value);
+                    game.CachedStates.Add(derivedAddr, Null.Value);
                 }
             }
 
-            _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(addr => addr.ToByteArray()));
+            _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(pair => pair.Item2.ToByteArray()));
         }
 
         public bool TryGetTxId(Guid actionId, out TxId txId) =>

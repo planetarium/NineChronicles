@@ -2433,7 +2433,7 @@ GameObject:
   - component: {fileID: 9094576804987074065}
   - component: {fileID: 352397688025975906}
   m_Layer: 5
-  m_Name: TradableText
+  m_Name: ExpText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25710,6 +25710,7 @@ MonoBehaviour:
   - {fileID: 1871619808932925450}
   optionSpacer: {fileID: 6968379331854571216}
   optionAreaRoot: {fileID: 1375128913107398177}
+  expText: {fileID: 9094576804987074065}
   tradableText: {fileID: 4799945463820051411}
   statRows:
   - StatView: {fileID: 8898657363792512392}
