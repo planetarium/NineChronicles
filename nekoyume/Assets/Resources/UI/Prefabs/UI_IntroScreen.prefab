@@ -6032,6 +6032,10 @@ MonoBehaviour:
   logoAreaGO: {fileID: 1457498944839203433}
   touchScreenButtonGO: {fileID: 4943159830034945701}
   touchScreenButton: {fileID: 1007397819372763151}
+  logoMSprite: {fileID: 21300000, guid: 2f7d66bada47dfb4f9ea31f6aaf72f01, type: 3}
+  logoKSprite: {fileID: 21300000, guid: df47a074c8cd24a4797ff9e588836f37, type: 3}
+  logoImage: {fileID: 1649277527734345265}
+  touchScreenLogoImage: {fileID: 6117940085627109624}
   startButtonContainer: {fileID: 3860952466932365792}
   signinButton: {fileID: 636972386927832638}
   guestButton: {fileID: 1379309947048601246}
