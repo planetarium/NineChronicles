@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: LocalShader
+  m_Name: LocalAssets
   m_EditorClassIdentifier: 
-  m_GroupName: LocalShader
+  m_GroupName: LocalAssets
   m_Data:
     m_SerializedData: []
   m_GUID: adcecdd3d410aec44874ee4acb5959ec
@@ -55,6 +55,18 @@ MonoBehaviour:
     m_SerializedLabels: []
   - m_GUID: 4e8caa36c07aacf4ab270da00784e4d9
     m_Address: Packages/com.esotericsoftware.spine.spine-unity/Runtime/spine-unity/Shaders/BlendModes/Spine-Skeleton-PMA-Screen.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 21ad0e93f82d940989ca46e7a61db8ac
+    m_Address: Assets/AddressableAssets/Character/CharacterAnimator.controller
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 54f7cd99871c445f3b30f9cde852e2f6
+    m_Address: Assets/AddressableAssets/Character/HIT.anim
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 64234b5555418406ea2c6908885490ad
+    m_Address: Assets/AddressableAssets/Character/IDLE.anim
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
