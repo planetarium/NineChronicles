@@ -137,14 +137,6 @@ namespace Nekoyume.TestScene
                 {
                     ShowNPC(text);
                 }
-                else if (IsPlayer(text))
-                {
-                    ShowPlayer(text);
-                }
-                else if (IsFullCostume(text))
-                {
-                    ShowFullCostume(text);
-                }
                 else
                 {
                     resourceWarningText.text = "Prefab name is invaild.";
@@ -198,20 +190,6 @@ namespace Nekoyume.TestScene
             npc.gameObject.SetActive(true);
             npc.ChangeSpineResource(id);
             ShowCharacterAnimations(npc.Animator, true);
-        }
-
-        private void ShowPlayer(string id)
-        {
-            player.gameObject.SetActive(true);
-            player.ChangeSpineResource(id, false, false);
-            ShowCharacterAnimations(player.Animator);
-        }
-
-        private void ShowFullCostume(string id)
-        {
-            player.gameObject.SetActive(true);
-            player.ChangeSpineResource(id, true, false);
-            ShowCharacterAnimations(player.Animator);
         }
 
         private void LoadBackground()
