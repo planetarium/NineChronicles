@@ -27,18 +27,8 @@ namespace Editor
 #endif
         private const string BuildBasePath = "build";
 
-        public static void BuildAndroid(string identifier)
-        {
-            if (!string.IsNullOrEmpty(identifier))
-            {
-                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, identifier);
-            }
-
-            BuildAndroidWithoutIdentifier();
-        }
-
         [MenuItem("Build/Standalone/Android Arm64")]
-        public static void BuildAndroidWithoutIdentifier()
+        public static void BuildAndroid()
         {
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
@@ -304,6 +294,12 @@ namespace Editor
                     var aab = outPath.EndsWith(".aab");
                     EditorUserBuildSettings.buildAppBundle = aab;
                     PlayerSettings.Android.useAPKExpansionFiles = aab;
+                }
+
+                if (cliOptions.TryGetValue("identifier", out var outIdentifier) &&
+                    !string.IsNullOrEmpty(outIdentifier))
+                {
+                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, outIdentifier);
                 }
             }
 
