@@ -112,7 +112,7 @@ namespace Nekoyume.Game.Battle
         #region Events
 
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
-        public IObservable<Stage> onEnterToStageEnd => _onEnterToStageEnd;
+        public IObservable<Stage> OnEnterToStageEnd => _onEnterToStageEnd;
 
         public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
 
@@ -1072,7 +1072,7 @@ namespace Nekoyume.Game.Battle
             if (!character)
                 throw new ArgumentNullException(nameof(character));
 
-            character.UpdateHpBar();
+            character.UpdateActorHud();
 
             if (buffInfos is not null)
             {
@@ -1081,7 +1081,7 @@ namespace Nekoyume.Game.Battle
                     var buffCharacter = GetCharacter(buffInfo.Target);
                     if (!buffCharacter)
                         throw new ArgumentNullException(nameof(buffCharacter));
-                    buffCharacter.UpdateHpBar();
+                    buffCharacter.UpdateActorHud();
                 }
             }
 
@@ -1101,10 +1101,11 @@ namespace Nekoyume.Game.Battle
             var character = GetCharacter(caster);
             if (character)
             {
-                character.UpdateHpBar();
-                if (character.HPBar.HpVFX != null)
+                character.UpdateBuffVfx();
+                character.UpdateActorHud();
+                if (character.ActorHud.HpVFX != null)
                 {
-                    character.HPBar.HpVFX.Stop();
+                    character.ActorHud.HpVFX.Stop();
                 }
             }
 

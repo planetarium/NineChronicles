@@ -64,10 +64,9 @@ namespace Nekoyume.Game.VFX.Skill
         private static T GetEffect<T>(GameObject go)
             where T : BuffVFX
         {
-            var effect = go.GetComponent<T>();
-            if (effect is null)
+            if (!go.TryGetComponent<T>(out var effect))
             {
-                throw new NotFoundComponentException<T>(go.name);
+                return null;
             }
 
             effect.Stop();
