@@ -120,6 +120,8 @@ namespace Nekoyume.UI
 
             logoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild ? logoKSprite : logoMSprite;
             touchScreenLogoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild ? logoKSprite : logoMSprite;
+            twitterSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            discordSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
 
             touchScreenButton.onClick.AddListener(() =>
             {
