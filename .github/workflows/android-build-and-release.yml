@@ -21,6 +21,8 @@ on:
         description: "Google Play Console VersionCode"
       app-version:
         description: "Google Play Console VersionName ex(40.0.0)"
+      package-name:
+        description: "package name ex(com.planetariumlabs.ninechroniclesmobile)"
       manual_build_option:
         description: "Please turn on the option when manually executing the action"
         type: boolean
@@ -96,6 +98,7 @@ jobs:
           androidVersionCode: ${{ github.event.inputs.version-code }}
           version: ${{ github.event.inputs.app-version }}
           androidTargetSdkVersion: AndroidApiLevel33
+          customParameters: -identifier ${{ github.event.inputs.manual_build_option }}
 
       - name: Set up Python
         uses: actions/setup-python@v4

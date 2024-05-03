@@ -27,8 +27,18 @@ namespace Editor
 #endif
         private const string BuildBasePath = "build";
 
+        public static void BuildAndroid(string identifier)
+        {
+            if (!string.IsNullOrEmpty(identifier))
+            {
+                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, identifier);
+            }
+
+            BuildAndroidWithoutIdentifier();
+        }
+
         [MenuItem("Build/Standalone/Android Arm64")]
-        public static void BuildAndroid()
+        public static void BuildAndroidWithoutIdentifier()
         {
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
