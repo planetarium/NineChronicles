@@ -101,6 +101,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3f005110894220b418a9ae6f1851462b, type: 3}
   - {fileID: 21300000, guid: 938cfb417b0840a49b803180a554aab2, type: 3}
   - {fileID: 21300000, guid: be2c4c02068074d4fba90bc020c7b543, type: 3}
+  - {fileID: 21300000, guid: f1ef3c225826efa4a94471063b01986c, type: 3}
   - {fileID: 21300000, guid: eeb70762cc3cd1d4fa0163349c4f3f2c, type: 3}
   - {fileID: 21300000, guid: 8e956c92761068d4890503e964819c99, type: 3}
   - {fileID: 21300000, guid: 9efdbde28e2564745bff3e3cbf74b052, type: 3}
@@ -116,6 +117,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a657da150014baf47aafc1279b2b2022, type: 3}
   - {fileID: 21300000, guid: 10e0c535f95e068488525551f42e6ea3, type: 3}
   - {fileID: 21300000, guid: 53cad7758370b5049a22031c1f91fa83, type: 3}
+  - {fileID: 21300000, guid: b395c1a55cb86a347a41898394700132, type: 3}
   - {fileID: 21300000, guid: 71b710b5ae59a8841b1259e5060a6216, type: 3}
   - {fileID: 21300000, guid: 88c7d8b5fb552a648b1289db3b82960c, type: 3}
   - {fileID: 21300000, guid: 49adebc5c99aac641936c123de253286, type: 3}
@@ -137,17 +139,22 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a230efaae31c37d45bc5d1a046883150, type: 3}
   - {fileID: 21300000, guid: 06e13bfa2d29d474798691e55ce524d2, type: 3}
   - {fileID: 21300000, guid: 037c380be10060d4bbba4bd43acc7273, type: 3}
+  - {fileID: 21300000, guid: 9bad0fab4b8859f4889a2d0dbcb13f57, type: 3}
   - {fileID: 21300000, guid: 2f75721c5c5de72499ecf4b514d2736f, type: 3}
   - {fileID: 21300000, guid: c49e104cc28a89545a5a5a4de0c55066, type: 3}
   - {fileID: 21300000, guid: 47bddb0d588d23b44bd9798b8adcaa93, type: 3}
   - {fileID: 21300000, guid: e226e85eb6842c24aae01d6c0d56b650, type: 3}
   - {fileID: 21300000, guid: 742b7edef2b303d41888c2900de48db1, type: 3}
+  - {fileID: 21300000, guid: 1a4fb70f0f5693840953d8c183b9bfb7, type: 3}
   - {fileID: 21300000, guid: bc0ad76f810a42642adf129f525182d8, type: 3}
   - {fileID: 21300000, guid: e95804af21dbe8a4999aa9c90c8708b5, type: 3}
+  - {fileID: 21300000, guid: 591c28cf0772ba442a7be289f2a9d15f, type: 3}
+  - {fileID: 21300000, guid: d376a8dff76b4e846a0e618f54d4c6fc, type: 3}
   m_PackedSpriteNamesToIndex:
   - Obj_F_09
   - Obj_F_05
   - Obj_F_13
+  - Boss_01
   - AdventureBoss_bg_05
   - Icon_Ranking
   - Obj_F_02
@@ -163,6 +170,7 @@ SpriteAtlas:
   - Icon_Bonus
   - Door_Lock
   - Obj_B_05
+  - Boss_02
   - Obj_B_04
   - Obj_F_10
   - Tower
@@ -184,13 +192,17 @@ SpriteAtlas:
   - AdventureUI_04
   - Door_Open
   - Obj_F_17
+  - button_Green_01
   - AdventureUI_03
   - Obj_F_11
   - AdventureBoss_bg_04
   - Floor_Bg
   - Obj_F_16
+  - Boss_04
   - Obj_F_03
   - AdventureBoss_bg_07
+  - Boss_03
+  - AdventureUI_06
   m_RenderDataMap: {}
   m_Tag: Atlas_AdventureBoss
   m_IsVariant: 0
