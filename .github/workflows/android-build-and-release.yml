@@ -87,7 +87,7 @@ jobs:
 
       - name: Change cloudProjectId in ProjectSettings.asset
         run: |
-          sed -i 's/^cloudProjectId:/  cloudProjectId: ${{ github.event.inputs.cloud-project-id }}/g' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+          sed -i '/cloudProjectId/c\  cloudProjectId: ${{ github.event.inputs.cloud-project-id }}' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
           cat ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
       - uses: game-ci/unity-builder@v4
         with:
