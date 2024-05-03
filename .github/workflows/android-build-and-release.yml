@@ -87,8 +87,10 @@ jobs:
 
       - name: Change cloudProjectId in ProjectSettings.asset
         run: |
-          sed -i '/cloudProjectId/c\  cloudProjectId: ${{ github.event.inputs.cloud-project-id }}' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
-          cat ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+          if [ -n "${{ github.event.inputs.cloud-project-id }}" ]; then
+            sed -i '/cloudProjectId/c\  cloudProjectId: ${{ github.event.inputs.cloud-project-id }}' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+            cat ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+          fi
       - uses: game-ci/unity-builder@v4
         with:
           androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
@@ -105,6 +107,7 @@ jobs:
           version: ${{ github.event.inputs.app-version }}
           androidTargetSdkVersion: AndroidApiLevel33
           customParameters: -identifier ${{ github.event.inputs.package-name }}
+          allowDirtyBuild: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
