@@ -23,6 +23,8 @@ on:
         description: "Google Play Console VersionName ex(40.0.0)"
       package-name:
         description: "package name ex(com.planetariumlabs.ninechroniclesmobile)"
+      cloud-project-id:
+        description: "cloud project id ex(abcd-1234-xyz0)"
       manual_build_option:
         description: "Please turn on the option when manually executing the action"
         type: boolean
@@ -83,6 +85,10 @@ jobs:
         run: |
           echo "$GOOGLE_SERVICES_JSON" | base64 -d > ${{ matrix.projectPath }}/Assets/NineChronicles/GoogleServices/google-services.json
 
+      - name: Change cloudProjectId in ProjectSettings.asset
+        run: |
+          sed 's/^cloudProjectId:/  cloudProjectId: ${{ github.event.inputs.cloud-project-id }}/g' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+          cat ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
       - uses: game-ci/unity-builder@v4
         with:
           androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
