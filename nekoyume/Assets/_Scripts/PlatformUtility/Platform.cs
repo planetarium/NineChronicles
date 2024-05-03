@@ -9,10 +9,8 @@ namespace Nekoyume
         {
             get
             {
-#if UNITY_EDITOR
-                return Application.persistentDataPath;
-#elif UNITY_ANDROID
-                return "data/data/com.planetariumlabs.ninechroniclesmobile";
+#if (!UNITY_EDITOR) && (UNITY_ANDROID)
+                return $"data/data/{Application.identifier}";
 #else
                 return Application.persistentDataPath;
 #endif
