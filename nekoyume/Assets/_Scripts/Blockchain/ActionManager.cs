@@ -1735,11 +1735,12 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
-        public IObservable<ActionEvaluation<Wanted>> Wanted()
+        public IObservable<ActionEvaluation<Wanted>> Wanted(FungibleAssetValue amount)
         {
             var action = new Wanted
             {
-                AvatarAddress = States.Instance.CurrentAvatarState.address
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Bounty = amount
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<Wanted>()
@@ -1761,6 +1762,25 @@ namespace Nekoyume.Blockchain
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<AdventureBossBattle>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(_ =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
+        public IObservable<ActionEvaluation<ClaimWantedReward>> ClaimWantedReward(long SeasonId)
+        {
+            var action = new ClaimWantedReward
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Season = SeasonId
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimWantedReward>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()
