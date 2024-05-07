@@ -438,6 +438,13 @@ namespace Nekoyume.UI
             var evt = new AirbridgeEvent("Lobby_ShopButton_Click");
             AirbridgeUnity.TrackEvent(evt);
 
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                    "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                return;
+            }
+
             if (shopExclamationMark.gameObject.activeSelf)
             {
                 var addressHex = States.Instance.CurrentAvatarState.address.ToHex();

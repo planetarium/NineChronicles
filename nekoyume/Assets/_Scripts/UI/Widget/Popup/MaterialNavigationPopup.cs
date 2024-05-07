@@ -305,6 +305,13 @@ namespace Nekoyume.UI
                                 return;
                             }
 
+                            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+                            {
+                                Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                                    "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                                return;
+                            }
+
                             CloseWithOtherWidgets();
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                             Find<ShopBuy>().Show();
@@ -358,13 +365,21 @@ namespace Nekoyume.UI
 
                 callback = () =>
                 {
-                    Find<Rune>().Close(true);
                     if (canObtain)
                     {
+                        Find<Rune>().Close(true);
                         Find<WorldBoss>().ShowAsync().Forget();
                     }
                     else
                     {
+                        if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+                        {
+                            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                            return;
+                        }
+
+                        Find<Rune>().Close(true);
                         Find<HeaderMenuStatic>()
                             .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                         Find<ShopBuy>().Show();
