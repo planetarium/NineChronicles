@@ -612,7 +612,7 @@ namespace Nekoyume.Game.Battle
             _currentPlayData = null;
             _isPlaying = false;
 
-            Time.timeScale = 1;
+            Time.timeScale = Game.DefaultTimeScale;
         }
     }
 }

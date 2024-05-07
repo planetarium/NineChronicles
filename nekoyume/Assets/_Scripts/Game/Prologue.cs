@@ -32,8 +32,6 @@ namespace Nekoyume.Game
         private int _weaponId = 10151000;
         private int _characterId = 205007;
 
-        public const float DefaultTimeScale = 1.25f;
-
         public void StartPrologue()
         {
             StartCoroutine(CoStartPrologue());
@@ -271,7 +269,7 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => Widget.Find<PrologueDialogPopup>().isActiveAndEnabled);
             yield return StartCoroutine(_fenrir.CoFinisher(new[] {580214, 999999}, new[] {true, true}));
             yield return new WaitForSeconds(1f);
-            Time.timeScale = DefaultTimeScale;
+            Time.timeScale = Game.DefaultTimeScale;
             _fenrir.Animator.Idle();
         }
     }

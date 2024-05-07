@@ -77,6 +77,8 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
+        public const float DefaultTimeScale = 1.25f;
+
         [SerializeField]
         private Stage stage;
 
