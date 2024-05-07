@@ -50,8 +50,7 @@ namespace Nekoyume.UI
         [Space]
         [SerializeField] private Sprite logoMSprite;
         [SerializeField] private Sprite logoKSprite;
-        [SerializeField] private Image logoImage;
-        [SerializeField] private Image touchScreenLogoImage;
+        [SerializeField] private Image[] logoImages;
 
         [Header("Mobile/StartButton")]
         [SerializeField] private GameObject startButtonContainer;
@@ -118,10 +117,14 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            logoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild ? logoKSprite : logoMSprite;
-            touchScreenLogoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild ? logoKSprite : logoMSprite;
             twitterSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
             discordSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            foreach (var logoImage in logoImages)
+            {
+                logoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild
+                    ? logoKSprite
+                    : logoMSprite;
+            }
 
             touchScreenButton.onClick.AddListener(() =>
             {
