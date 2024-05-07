@@ -561,27 +561,26 @@ namespace Nekoyume.Game.Character
 
         private void ProcessBuff(CharacterBase target, Model.BattleStatus.Skill.SkillInfo info)
         {
-            if (target && !info.Target!.IsDead)
+            if (!target || info.Target!.IsDead)
             {
-                var position = transform.TransformPoint(0f, 1.7f, 0f);
-                var force = new Vector3(-0.1f, 0.5f);
-                var buff = info.Buff;
-                var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target.gameObject, buff);
+                return;
+            }
+
+            var buff   = info.Buff;
+            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target.gameObject, buff);
 
 #if TEST_LOG
-                Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
+            Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
 #endif
 
-                effect.Play();
-                if (effect.IsPersisting)
-                {
-                    target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                    StartCoroutine(BuffController.CoChaseTarget(effect, target.transform));
-                }
-
-                target.UpdateActorHud();
-                //Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
+            effect.Play();
+            if (effect.IsPersisting)
+            {
+                target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
+                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform));
             }
+
+            target.UpdateActorHud();
         }
 
         private void AttachPersistingVFX(int groupId, BuffVFX vfx)
