@@ -432,7 +432,6 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
-            Widget.Find<IntroScreen>().ApplyL10n();
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();

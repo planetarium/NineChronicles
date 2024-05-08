@@ -5493,11 +5493,11 @@ RectTransform:
   m_Father: {fileID: 6032195633821323424}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -68}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -136}
   m_SizeDelta: {x: 550, y: 140}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &6394564000927166381
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6036,7 +6036,7 @@ MonoBehaviour:
   signinButton: {fileID: 636972386927832638}
   guestButton: {fileID: 1379309947048601246}
   backupButton: {fileID: 1081669423292407343}
-  yourPlanetText: {fileID: 4350155878917045938}
+  keyImportButton: {fileID: 7573271556011758400}
   yourPlanetButton: {fileID: 231605217515246203}
   yourPlanetButtonText: {fileID: 1224978541094035838}
   planetAccountInfoText: {fileID: 7332692407551682838}
@@ -6060,12 +6060,12 @@ MonoBehaviour:
   videoSkipButton: {fileID: 2267575148265824976}
   selectPlanetPopup: {fileID: 8186733251249421295}
   selectPlanetPopupBgButton: {fileID: 5458343111607682442}
-  selectPlanetPopupTitleText: {fileID: 8718336588487314175}
   selectPlanetScroll: {fileID: 7225481635793048179}
   planetAccountInfosPopup: {fileID: 29021361385403624}
-  planetAccountInfosTitleText: {fileID: 2825661560120518533}
-  planetAccountInfosDescriptionText: {fileID: 4509868351358636668}
   planetAccountInfoScroll: {fileID: 8616620367078425637}
+  keyImportPopup: {fileID: 74754518965317744}
+  keyImportWithCameraButton: {fileID: 6293954188874997995}
+  keyImportWithGallaryButton: {fileID: 9191556161630106516}
 --- !u!1 &1103510228977098036
 GameObject:
   m_ObjectHideFlags: 0
@@ -7752,7 +7752,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 26
-  l10nKey: 
+  l10nKey: WORD_NOTIFICATION
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -9790,7 +9790,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: OK
+  m_text: Import
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -9877,7 +9877,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_IMPORT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -9900,7 +9900,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5348546375406493694}
   - component: {fileID: 1441483437347599745}
-  - component: {fileID: 891690060773631096}
   - component: {fileID: 6293954188874997995}
   - component: {fileID: 2237729350777208320}
   m_Layer: 5
@@ -9926,11 +9925,11 @@ RectTransform:
   m_Father: {fileID: 3723320052830825853}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 160, y: -2}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -40, y: -2}
   m_SizeDelta: {x: 150, y: 44}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &1441483437347599745
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9939,28 +9938,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3567674948990571004}
   m_CullTransparentMesh: 0
---- !u!114 &891690060773631096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3567674948990571004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  button: {fileID: 6293954188874997995}
-  disabledButton: {fileID: 0}
-  normalObject: {fileID: 229321361178456230}
-  normalText: {fileID: 2166272257399760405}
-  conditionalObject: {fileID: 0}
-  conditionalText: {fileID: 0}
-  disabledObject: {fileID: 0}
-  disabledText: {fileID: 0}
-  effectOverlay: {fileID: 0}
-  conditionInfoKey: 
 --- !u!114 &6293954188874997995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10004,19 +9981,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!95 &2237729350777208320
 Animator:
   serializedVersion: 5
@@ -10274,7 +10239,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -12366,7 +12331,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_KEY_IMPORT_GALLERY
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -12389,7 +12354,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2220678136515533654}
   - component: {fileID: 8582336865951717780}
-  - component: {fileID: 5421617081765534631}
   - component: {fileID: 9191556161630106516}
   - component: {fileID: 6823319250435939512}
   m_Layer: 5
@@ -12415,11 +12379,11 @@ RectTransform:
   m_Father: {fileID: 6698810874200924742}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 160, y: -2}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -40, y: -1.9999924}
   m_SizeDelta: {x: 150, y: 44}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &8582336865951717780
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12428,28 +12392,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5421617081765534630}
   m_CullTransparentMesh: 0
---- !u!114 &5421617081765534631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5421617081765534630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  button: {fileID: 9191556161630106516}
-  disabledButton: {fileID: 0}
-  normalObject: {fileID: 8576568009380368338}
-  normalText: {fileID: 5051863544357152530}
-  conditionalObject: {fileID: 0}
-  conditionalText: {fileID: 0}
-  disabledObject: {fileID: 0}
-  disabledText: {fileID: 0}
-  effectOverlay: {fileID: 0}
-  conditionInfoKey: 
 --- !u!114 &9191556161630106516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12493,19 +12435,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!95 &6823319250435939512
 Animator:
   serializedVersion: 5
@@ -16165,11 +16095,11 @@ RectTransform:
   m_Father: {fileID: 3723320052830825853}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -214, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 38, y: 0}
   m_SizeDelta: {x: 46, y: 35}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3986479699330083098
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16363,7 +16293,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_KEY_IMPORT_CAMERA
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -16995,7 +16925,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: OK
+  m_text: Import
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
@@ -17082,7 +17012,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_IMPORT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -17131,11 +17061,11 @@ RectTransform:
   m_Father: {fileID: 6032195633821323424}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 68}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 550, y: 140}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &6633619761715753707
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17723,7 +17653,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -210}
-  m_SizeDelta: {x: 0, y: 50}
+  m_SizeDelta: {x: 550, y: 276}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8493678220774995476
 GameObject:
@@ -18114,11 +18044,11 @@ RectTransform:
   m_Father: {fileID: 6698810874200924742}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -214, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 46, y: 0}
   m_SizeDelta: {x: 30, y: 47}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5514933960732068903
 CanvasRenderer:
   m_ObjectHideFlags: 0

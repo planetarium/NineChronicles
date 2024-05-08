@@ -51,8 +51,8 @@ namespace Nekoyume.UI
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
         [SerializeField] private Button backupButton;
+        [SerializeField] private Button keyImportButton;
 
-        [SerializeField] private TextMeshProUGUI yourPlanetText;
         [SerializeField] private Button yourPlanetButton;
         [SerializeField] private TextMeshProUGUI yourPlanetButtonText;
         [SerializeField] private TextMeshProUGUI planetAccountInfoText;
@@ -77,13 +77,15 @@ namespace Nekoyume.UI
 
         [SerializeField] private GameObject selectPlanetPopup;
         [SerializeField] private Button selectPlanetPopupBgButton;
-        [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
         [SerializeField] private SelectPlanetScroll selectPlanetScroll;
 
         [SerializeField] private GameObject planetAccountInfosPopup;
-        [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
-        [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
         [SerializeField] private PlanetAccountInfoScroll planetAccountInfoScroll;
+
+        [Header("Mobile/KeyImportPopup")]
+        [SerializeField] private GameObject keyImportPopup;
+        [SerializeField] private Button keyImportWithCameraButton;
+        [SerializeField] private Button keyImportWithGallaryButton;
 
         private const int GuideCount = 3;
         private const int GuideStartIndex = 1;
@@ -255,22 +257,16 @@ namespace Nekoyume.UI
                     }
                 }
             });
+
+            keyImportButton.onClick.AddListener(() => keyImportPopup.gameObject.SetActive(true));
+            keyImportWithCameraButton.onClick.AddListener(ShowForQrCodeGuide);
+            keyImportWithGallaryButton.onClick.AddListener(() => {});
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             OnSocialSignedIn.Dispose();
-        }
-
-        public void ApplyL10n()
-        {
-            yourPlanetText.text = L10nManager.Localize("UI_YOUR_PLANET");
-            // startButton
-            selectPlanetPopupTitleText.text = L10nManager.Localize("UI_SELECT_YOUR_PLANET");
-            planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
-            planetAccountInfosDescriptionText.text =
-                L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
         }
 
         public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
