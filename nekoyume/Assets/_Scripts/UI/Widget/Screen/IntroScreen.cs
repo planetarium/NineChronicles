@@ -7,7 +7,6 @@
 #endif
 
 using System;
-using System.Collections;
 using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -20,12 +19,10 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Multiplanetary;
-using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -177,6 +174,7 @@ namespace Nekoyume.UI
 
                 ShowPortalConnectGuidePopup(SigninContext.SocialType.Discord);
             });
+            // NOTE: this button is not used now.
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
@@ -258,9 +256,58 @@ namespace Nekoyume.UI
                 }
             });
 
+            // NOTE: KeyImportPopup's close button callback is not set here. (It is set in prefab)
             keyImportButton.onClick.AddListener(() => keyImportPopup.gameObject.SetActive(true));
-            keyImportWithCameraButton.onClick.AddListener(ShowForQrCodeGuide);
-            keyImportWithGallaryButton.onClick.AddListener(() => {});
+            keyImportWithCameraButton.onClick.AddListener(() =>
+            {
+                qrCodeGuideBackground.Show();
+                qrCodeGuideContainer.SetActive(true);
+                foreach (var image in qrCodeGuideImages)
+                {
+                    image.SetActive(false);
+                }
+
+                _guideIndex = GuideStartIndex;
+                ShowQrCodeGuide();
+            });
+            keyImportWithGallaryButton.onClick.AddListener(() =>
+            {
+                codeReaderView.ScanQrCodeFromGallery(result =>
+                {
+                    var pk = ImportPrivateKeyFromJson(result.Text);
+                    keyImportPopup.SetActive(false);
+                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                });
+            });
+        }
+
+        private static PrivateKey ImportPrivateKeyFromJson(string json)
+        {
+            var resultPpk = ProtectedPrivateKey.FromJson(json);
+            var requiredAddress = resultPpk.Address;
+            var km = KeyManager.Instance;
+            if (km.Has(requiredAddress))
+            {
+                km.BackupKey(requiredAddress, keyStorePathToBackup: null);
+            }
+
+            km.Register(resultPpk);
+            PrivateKey pk = null;
+            try
+            {
+                pk = resultPpk.Unprotect(string.Empty);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
+
+            var evt = new AirbridgeEvent("Intro_QRCodeImported");
+            AirbridgeUnity.TrackEvent(evt);
+
+            return pk;
         }
 
         protected override void OnDestroy()
@@ -382,32 +429,12 @@ namespace Nekoyume.UI
 
                 codeReaderView.Show(res =>
                 {
-                    var resultPpk = ProtectedPrivateKey.FromJson(res.Text);
-                    var requiredAddress = resultPpk.Address;
-                    var km = KeyManager.Instance;
-                    if (km.Has(requiredAddress))
-                    {
-                        km.BackupKey(requiredAddress, keyStorePathToBackup: null);
-                    }
+                    var pk = ImportPrivateKeyFromJson(res.Text);
 
-                    km.Register(resultPpk);
                     codeReaderView.Close();
                     startButtonContainer.SetActive(false);
-                    PrivateKey pk = null;
-                    try
-                    {
-                        pk = resultPpk.Unprotect(string.Empty);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
 
                     Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
-                    Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
-
-                    var evt = new AirbridgeEvent("Intro_QRCodeImported");
-                    AirbridgeUnity.TrackEvent(evt);
                 });
             }
             else

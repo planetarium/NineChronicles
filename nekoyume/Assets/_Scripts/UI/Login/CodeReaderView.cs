@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 using Nekoyume.L10n;
 using Nekoyume.Native;
 using Nekoyume.Permissions;
@@ -62,6 +63,49 @@ namespace Nekoyume.UI
         public void Close()
         {
             gameObject.SetActive(false);
+        }
+
+        public void ScanQrCodeFromGallery(Action<Result> onSuccess = null)
+        {
+            var permission = NativeGallery.GetImageFromGallery(path =>
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    return;
+                }
+
+                var selected = new FileInfo(path);
+                if (selected.Length > 50_000_000)
+                {
+                    return;
+                }
+
+                var bytes = File.ReadAllBytes(path);
+                var texture = new Texture2D(400, 400);
+                texture.LoadImage(bytes);
+
+                var barcodeReader = new BarcodeReader { Options = { PureBarcode = false, }, };
+                try
+                {
+                    var result = barcodeReader.Decode(
+                        texture.GetPixels32(),
+                        texture.width,
+                        texture.height);
+                    if (result != null)
+                    {
+                        onSuccess?.Invoke(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NcDebug.LogException(ex);
+                }
+            });
+
+            if (permission == NativeGallery.Permission.Denied)
+            {
+                OpenSystemSettingsAndQuit();
+            }
         }
 
         private IEnumerator CoRequestPermission(Action<Result> onSuccess = null)
