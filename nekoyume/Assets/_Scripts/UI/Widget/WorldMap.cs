@@ -474,5 +474,14 @@ namespace Nekoyume.UI
                 worldButton.SetOpenCostTextColor(crystal.MajorUnit);
             }
         }
+
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(260, 500, 100, 100), "Wanted Test"))
+            {
+                var ncg = States.Instance.GoldBalanceState.Gold.Currency;
+                ActionManager.Instance.Wanted(new FungibleAssetValue(ncg, 100, 0));
+            }
+        }
     }
 }
