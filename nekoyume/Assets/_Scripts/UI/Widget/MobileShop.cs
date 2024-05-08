@@ -52,9 +52,9 @@ namespace Nekoyume.UI
 
         public static L10NSchema MOBILE_L10N_SCHEMA;
 
-        public void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            ShowAsync();
+            ShowAsync(ignoreShowAnimation);
         }
 
         public async void ShowAsProduct(ProductSchema product, UnityEngine.Purchasing.Product purchasingData)

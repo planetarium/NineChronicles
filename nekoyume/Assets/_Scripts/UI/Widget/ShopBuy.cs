@@ -81,7 +81,7 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
         }
 
-        public void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
 #if UNITY_ANDROID || UNITY_IOS
             if (Game.LiveAsset.GameConfig.IsKoreanBuild)
