@@ -34,6 +34,7 @@ using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Battle;
+using Nekoyume.Game.Character;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -619,6 +620,7 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(InitializeWithAgent());
 
+            yield return CharacterManager.Instance.LoadCharacterAssetAsync().ToCoroutine();
             var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             yield return createSecondWidgetCoroutine;
 

@@ -1,0 +1,215 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: CharacterSpine
+  m_EditorClassIdentifier: 
+  m_GroupName: CharacterSpine
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 2abf3e7d3110dc940adec50948db5ebf
+  m_SerializeEntries:
+  - m_GUID: d8cf6348e9aafc2469a9e56668efbd08
+    m_Address: body_skin_10200000_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: e5a1bccf257798d42bae6dd5eecd6478
+    m_Address: body_skin_10210000_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 12a0ae22a01eca64e81cbe1ec99bf663
+    m_Address: body_skin_10220000_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: f8358daac023fd34db9620fc7320aa9d
+    m_Address: body_skin_10230000_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 7134486a07361f7408d87b9f68aa6876
+    m_Address: body_skin_10230001_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: a5fc778e749e9ba409c878fc775cee61
+    m_Address: body_skin_10240000_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: a2311b3948ce1844a9845db1adc51674
+    m_Address: body_skin_10240001_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: d523c6d98e3fc93418de7d4fd617987f
+    m_Address: body_skin_10250000_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: d6e0fc3a0b0db36428e8545b35b6aef5
+    m_Address: body_skin_10250001_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: f5e6e535b664b40d59211f0b32ccb48e
+    m_Address: 40100000_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: e2951d4e1dfc440bf8a984036eacbba2
+    m_Address: 40100001_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: e0694e43f7873f94eb09885ae6d764c3
+    m_Address: 40100002_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 6dc8f557bb34418409f87659a52b275d
+    m_Address: 40100003_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 40e655e0b26545348b92e0933ea029ae
+    m_Address: 40100005_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 41ffa3b6c8fb04a419048034222c41aa
+    m_Address: 40100006_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 8565353dff3d8d74caf842de5ead031d
+    m_Address: 40100007_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 20fe342b155aaca4ca57a0bfa5e27ce9
+    m_Address: 40100008_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 3a061f7ca70b37048b3121662af22d03
+    m_Address: 40100009_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: f7a00f4f0ea6c467893508e2204d7f02
+    m_Address: 40100010_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 9fc990d0965a8be43895e999b2ae844d
+    m_Address: 40100011_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 6516c866236f1bc43b78018606ed2b6f
+    m_Address: 40100013_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: a4730b01727896e449312320def0d095
+    m_Address: 40100014_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: ac809db7aa5caaf44bb86df46af6bf1e
+    m_Address: 40100015_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 595421819bcff2248a47cf6934b96c36
+    m_Address: 40100016_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 891a673ba06c897468157773747d0a38
+    m_Address: 40100017_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 96607b74b5f5cb54b8dfdd50868f482c
+    m_Address: 40100018_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 8526e56221eb38245aa06dc627e00d50
+    m_Address: 40100019_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 7ae60259ba785ac4ab35cedb8ecc38ee
+    m_Address: 40100020_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 15e2f57d685c93a48b0598414fa9d200
+    m_Address: 40100021_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 8da0192c22b99a349b6ca878a3dcb1ce
+    m_Address: 40100022_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: aeff17454f4062e48a1a41673a52197c
+    m_Address: 40100023_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: bdfd32597fb8d1440b1acb4f5ab162d2
+    m_Address: 40100024_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 711c0049d55197f41b35aaa7d9952f4c
+    m_Address: 40100025_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 5af2fb61209eeb84391e3c74de9839cc
+    m_Address: 40100026_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: c79e77d67aea531479ee2f950ae1d182
+    m_Address: 40100027_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: edbd4e8d67b690c459dd6eef6ea72001
+    m_Address: 40100028_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: 7171425db3ef53746ba51bbf4790f4a0
+    m_Address: 40100029_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  - m_GUID: b914f4ffe0b781f419ef551d7d2746ad
+    m_Address: 40100030_SkeletonData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Character
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ac541e2ce40a4e441b1e4fe7bb752ac7, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: f68d7d727cb1c1142af4065460037def, type: 2}
+    - {fileID: 11400000, guid: ab60581af4c8e5a45bd545df2c2959e2, type: 2}

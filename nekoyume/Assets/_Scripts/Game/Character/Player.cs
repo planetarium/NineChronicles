@@ -387,17 +387,5 @@ namespace Nekoyume.Game.Character
         {
             AreaAttackCutscene.Show(Helper.Util.GetArmorId());
         }
-
-        #region for viewer
-
-        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
-        {
-            var spineResourcePath =
-                isFullCostume ? $"Character/FullCostume/{id}" : $"Character/Player/{id}";
-            // UpdateBody(Convert.ToInt32(id), 0);
-        }
-
-        #endregion
-
     }
 }
