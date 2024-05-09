@@ -127,6 +127,7 @@ namespace Editor
         public static void BuildiOS()
         {
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
+            SetByCommandLineArguments();
             Debug.Log("Build iOS");
             PreProcessBuildForIOS();
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
@@ -456,7 +457,7 @@ namespace Editor
                     }
                 }
             };
-            
+
             dict["ITSAppUsesNonExemptEncryption"] = false;
 
             dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com";
@@ -468,9 +469,6 @@ namespace Editor
 
         private static void PreProcessBuildForIOS()
         {
-            string identifier = "com." + PlayerSettings.companyName + '.' + PlayerSettings.productName;
-            identifier = "com.planetariumlabs.ninechroniclesmobile";
-            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, identifier);
             PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=30");
             PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
         }
@@ -535,6 +533,19 @@ namespace Editor
                     var aab = outPath.EndsWith(".aab");
                     EditorUserBuildSettings.buildAppBundle = aab;
                     PlayerSettings.Android.useAPKExpansionFiles = aab;
+                }
+
+                if (cliOptions.TryGetValue("identifier", out var outIdentifier) &&
+                    !string.IsNullOrEmpty(outIdentifier))
+                {
+                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, outIdentifier);
+                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, outIdentifier);
+                }
+
+                if (cliOptions.TryGetValue("playerName", out var outPlayerName) &&
+                    !string.IsNullOrEmpty(outPath))
+                {
+                    PlayerName = outPlayerName;
                 }
             }
         }
