@@ -141,6 +141,9 @@ namespace Nekoyume.Game.Character
             if (!_applicationQuitting)
                 DisableHUD();
             _forceStop = false;
+
+            _expiredColorKeys.Clear();
+            _colorPq.Clear();
         }
 
         #endregion
@@ -184,6 +187,7 @@ namespace Nekoyume.Game.Character
         protected virtual void Update()
         {
             _root?.Tick();
+            UpdateColor();
         }
 
         private void InitializeHudContainer()
@@ -300,6 +304,7 @@ namespace Nekoyume.Game.Character
 
             CurrentHP -= dmg;
             Animator.Hit();
+            AddHitColor();
 
             PopUpDmg(position, force, info, isConsiderElementalType);
         }
@@ -745,8 +750,6 @@ namespace Nekoyume.Game.Character
             var skillInfosCount = skillInfos.Count;
             var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
 
-            SetTintColor(Color.blue);
-
             yield return StartCoroutine(
                 CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
@@ -759,7 +762,7 @@ namespace Nekoyume.Game.Character
                     battleWidget.ShowComboText(info.Effect > 0);
             }
 
-            SetTintColor(Color.red);
+            _expiredColorKeys.Add(SpineColorKey.Test);
         }
 
         public IEnumerator CoBlowAttack(
@@ -1134,7 +1137,159 @@ namespace Nekoyume.Game.Character
             AttackEndCalled = false;
         }
 
-        public abstract void SetTintColor(Color color);
+#region SpineColor
+        /// <summary>
+        /// SpineColorSetting에서 특정 Key를 가진 색상그룹을 관리하고 싶을 때 사용
+        /// </summary>
+        public enum SpineColorKey
+        {
+            None,
+            FrostBite1Stack,
+            FrostBite2Stack,
+            FrostBite3Stack,
+            FrostBite4Stack,
+            FrostBite5Stack,
+            Test,
+        }
+
+        // struct을 사용하려 했으나, SimplePQ를 사용하면서 내부적으로 값이 복사되어 class로 변경
+        protected class SpineColorSetting
+        {
+            public static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
+
+            private Color         _color;
+            private bool          _hasDuration;
+            private float         _duration;
+            private SpineColorKey _key;
+            private bool          _isExpired;
+
+            public SpineColorSetting(Color color, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
+            {
+                _color       = color;
+                _hasDuration = hasDuration;
+                _duration    = duration;
+                _key         = key;
+                _isExpired   = false;
+            }
+
+            public Color Color     => _color;
+            public bool  IsExpired => _isExpired;
+
+            public void UpdateDuration(float deltaTime)
+            {
+                if (!_hasDuration)
+                {
+                    return;
+                }
+
+                _duration -= deltaTime;
+
+                if (_duration <= 0)
+                {
+                    _isExpired = true;
+                }
+            }
+
+            public void Expire()
+            {
+                _isExpired = true;
+            }
+
+            public void ExpireByKey(SpineColorKey key)
+            {
+                if (_key == key)
+                {
+                    _isExpired = true;
+                }
+            }
+
+            public static SpineColorSetting Default => new(Color.white);
+
+            public void SetColor(CharacterBase character)
+            {
+                character.SetSpineColor(_color, ColorPropertyId);
+            }
+        }
+
+        private readonly Priority_Queue.SimplePriorityQueue<SpineColorSetting, int> _colorPq = new();
+
+        private readonly HashSet<SpineColorKey> _expiredColorKeys = new();
+
+        // TODO: 잘 보이는곳에 정리? 혹은 데이터 파일로 분리?
+        protected const int HitColorPriority = 5;
+
+        private Color _currentColor;
+
+        private void UpdateColor()
+        {
+            if (_colorPq.Count == 0)
+            {
+                if (_currentColor != Color.white)
+                {
+                    SetSpineColor(Color.white, SpineColorSetting.ColorPropertyId);
+                }
+
+                return;
+            }
+
+            ExpireColors();
+
+            while (_colorPq.Count > 0)
+            {
+                var setting = _colorPq.First;
+                if (setting.IsExpired)
+                {
+                    _colorPq.Dequeue();
+                    continue;
+                }
+
+                if (setting.Color == _currentColor)
+                {
+                    break;
+                }
+
+                setting.SetColor(this);
+                return;
+            }
+        }
+
+        private void ExpireColors()
+        {
+            foreach (var colorSetting in _colorPq)
+            {
+                foreach (var expiredColorKey in _expiredColorKeys)
+                {
+                    colorSetting.ExpireByKey(expiredColorKey);
+                }
+
+                colorSetting.UpdateDuration(Time.deltaTime);
+
+                if (colorSetting.IsExpired)
+                {
+                    colorSetting.Expire();
+                }
+            }
+            _expiredColorKeys.Clear();
+        }
+
+        protected virtual void SetSpineColor(Color color, int propertyID = -1)
+        {
+            _currentColor = color;
+        }
+
+        public void AddHitColor()
+        {
+            // TODO: apply Tint Color
+            // var color = new Color(1 - 0.2452f, 0.6651f - 0.091f, 0.65566f - 0.091f, 1f);
+            var color = new Color(1, 0.6651f, 0.65566f, 1f);
+            _colorPq.Enqueue(new SpineColorSetting(color, true, 0.3f), HitColorPriority);
+        }
+
+        public void AddSpineColor(Color color, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
+        {
+            _colorPq.Enqueue(new SpineColorSetting(color, true, duration, key), 0);
+        }
+#endregion SpineColor
     }
 
     public class ActionParams

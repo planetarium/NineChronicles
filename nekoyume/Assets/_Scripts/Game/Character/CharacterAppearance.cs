@@ -323,9 +323,9 @@ namespace Nekoyume.Game.Character
                 new Vector3(size.x * scale.x, size.y * scale.y, size.z * scale.z);
         }
 
-        public void SetTintColor(Color color)
+        public void SetSpineColor(Color color, int propertyID)
         {
-            SpineController.SetTintColor(color);
+            SpineController.SetSpineColor(color, propertyID);
         }
     }
 }

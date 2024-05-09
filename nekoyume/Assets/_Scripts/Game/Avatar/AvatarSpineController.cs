@@ -13,8 +13,6 @@ namespace Nekoyume.Game.Avatar
 {
     public sealed class AvatarSpineController : MonoBehaviour
     {
-        private static readonly int ColorID = Shader.PropertyToID("_Color");
-
         private const string DefaultPmaShader = "Spine/Skeleton Tint";
         private const string WeaponSlot = "weapon";
 
@@ -613,7 +611,7 @@ namespace Nekoyume.Game.Avatar
             _fadeTweener.Clear();
         }
 
-        public void SetTintColor(Color color)
+        public void SetSpineColor(Color color, int propertyID)
         {
             foreach (var skeletonAnimation in _parts.Values)
             {
@@ -623,7 +621,7 @@ namespace Nekoyume.Game.Avatar
                 }
 
                 var mpb = new MaterialPropertyBlock();
-                mpb.SetColor(ColorID, color);
+                mpb.SetColor(propertyID, color);
 
                 if (skeletonAnimation.TryGetComponent<MeshRenderer>(out var meshRenderer))
                     meshRenderer.SetPropertyBlock(mpb);
