@@ -21,10 +21,12 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Multiplanetary;
 using Nekoyume.UI.Scroller;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using ZXing;
 
 namespace Nekoyume.UI
 {
@@ -83,10 +85,6 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject keyImportPopup;
         [SerializeField] private Button keyImportWithCameraButton;
         [SerializeField] private Button keyImportWithGallaryButton;
-
-        private const int GuideCount = 3;
-        private const int GuideStartIndex = 1;
-        private int _guideIndex = GuideStartIndex;
 
         private string _keyStorePath;
         private string _privateKey;
@@ -182,20 +180,12 @@ namespace Nekoyume.UI
                 var evt = new AirbridgeEvent("Intro_SigninButton_Click");
                 AirbridgeUnity.TrackEvent(evt);
 
-                qrCodeGuideBackground.Show();
-                qrCodeGuideContainer.SetActive(true);
-                foreach (var image in qrCodeGuideImages)
+                ShowQrCodeGuide(result =>
                 {
-                    image.SetActive(false);
-                }
-
-                _guideIndex = GuideStartIndex;
-                ShowQrCodeGuide();
-            });
-            qrCodeGuideNextButton.onClick.AddListener(() =>
-            {
-                _guideIndex++;
-                ShowQrCodeGuide();
+                    var pk = ImportPrivateKeyFromJson(result.Text);
+                    startButtonContainer.SetActive(false);
+                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                });
             });
             yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
             selectPlanetPopupBgButton.onClick.AddListener(() => selectPlanetPopup.SetActive(false));
@@ -260,16 +250,14 @@ namespace Nekoyume.UI
             keyImportButton.onClick.AddListener(() => keyImportPopup.gameObject.SetActive(true));
             keyImportWithCameraButton.onClick.AddListener(() =>
             {
-                qrCodeGuideBackground.Show();
-                qrCodeGuideContainer.SetActive(true);
-                foreach (var image in qrCodeGuideImages)
+                ShowQrCodeGuide(result =>
                 {
-                    image.SetActive(false);
-                }
-
-                _guideIndex = GuideStartIndex;
-                ShowQrCodeGuide();
-                SigninContext.SetHasSignedWithKeyImport(true);
+                    var pk = ImportPrivateKeyFromJson(result.Text);
+                    keyImportPopup.SetActive(false);
+                    startButtonContainer.SetActive(false);
+                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                    SigninContext.SetHasSignedWithKeyImport(true);
+                });
             });
             keyImportWithGallaryButton.onClick.AddListener(() =>
             {
@@ -277,6 +265,7 @@ namespace Nekoyume.UI
                 {
                     var pk = ImportPrivateKeyFromJson(result.Text);
                     keyImportPopup.SetActive(false);
+                    startButtonContainer.SetActive(false);
                     Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
                     SigninContext.SetHasSignedWithKeyImport(true);
                 });
@@ -381,15 +370,11 @@ namespace Nekoyume.UI
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
 
-            qrCodeGuideBackground.Show();
-            qrCodeGuideContainer.SetActive(true);
-            foreach (var image in qrCodeGuideImages)
+            ShowQrCodeGuide(result =>
             {
-                image.SetActive(false);
-            }
-
-            _guideIndex = GuideStartIndex;
-            ShowQrCodeGuide();
+                var pk = ImportPrivateKeyFromJson(result.Text);
+                Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+            });
         }
 
         /// <summary>
@@ -422,38 +407,52 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
 
-        private void ShowQrCodeGuide()
+        private void ShowQrCodeGuide(Action<Result> onSuccess = null)
         {
-            if (_guideIndex >= GuideCount)
-            {
-                _guideIndex = GuideStartIndex;
-                qrCodeGuideContainer.SetActive(false);
+            const int guideStartIndex = 1; // pass 0
+            const int guideCount = 3;
 
-                codeReaderView.Show(res =>
+            qrCodeGuideBackground.Show();
+            qrCodeGuideContainer.SetActive(true);
+
+            var guideIndex = guideStartIndex;
+            GuideImage(guideIndex);
+
+            qrCodeGuideNextButton.onClick.RemoveAllListeners();
+            qrCodeGuideNextButton.onClick.AddListener(() =>
+            {
+                guideIndex++;
+                if (guideIndex >= guideCount)
                 {
-                    var pk = ImportPrivateKeyFromJson(res.Text);
+                    qrCodeGuideContainer.SetActive(false);
+                    codeReaderView.Show(result =>
+                    {
+                        codeReaderView.Close();
+                        onSuccess?.Invoke(result);
+                    });
+                }
+                else
+                {
+                    Analyzer.Instance.Track($"Unity/Intro/GuideDMX/{guideIndex + 1}");
 
-                    codeReaderView.Close();
-                    startButtonContainer.SetActive(false);
+                    var evt = new AirbridgeEvent("Intro_GuideDMX");
+                    evt.SetValue(guideIndex + 1);
+                    AirbridgeUnity.TrackEvent(evt);
 
-                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
-                });
-            }
-            else
+                    GuideImage(guideIndex);
+                }
+            });
+            return;
+
+            void GuideImage(int index)
             {
-                Analyzer.Instance.Track($"Unity/Intro/GuideDMX/{_guideIndex + 1}");
-
-                var evt = new AirbridgeEvent("Intro_GuideDMX");
-                evt.SetValue(_guideIndex + 1);
-                AirbridgeUnity.TrackEvent(evt);
-
                 foreach (var qrCodeGuideImage in qrCodeGuideImages)
                 {
                     qrCodeGuideImage.SetActive(false);
                 }
 
-                qrCodeGuideImages[_guideIndex].SetActive(true);
-                qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
+                qrCodeGuideImages[index].SetActive(true);
+                qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{index}");
             }
         }
 
