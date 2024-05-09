@@ -624,13 +624,13 @@ namespace Nekoyume.Game
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if RUN_ON_MOBILE
-            if (!IsGuestLogin)
+            if (!IsGuestLogin && !SigninContext.HasSignedWithKeyImport)
             {
                 var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
                 yield return checkTokensTask.AsCoroutine();
                 if (!checkTokensTask.Result)
                 {
-                    QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
+                    QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"), "Failed to Get Tokens.");
                     yield break;
                 }
 
@@ -1727,10 +1727,6 @@ namespace Nekoyume.Game
             Address? agentAddrInPortal;
             if (SigninContext.HasLatestSignedInSocialType)
             {
-                var startClicked = false;
-                introScreen.OnClickStart.AsObservable()
-                    .First()
-                    .Subscribe(_ => startClicked = true);
                 dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
                 sw.Reset();
                 sw.Start();
@@ -1740,12 +1736,10 @@ namespace Nekoyume.Game
                 NcDebug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 dimmedLoadingScreen.Close();
                 (email, _, agentAddrInPortal) = getTokensTask.Result;
-                if (!startClicked)
-                {
-                    NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
-                    yield return new WaitUntil(() => startClicked);
-                    NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
-                }
+
+                NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
+                yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
+                NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
             }
             else
             {
@@ -1769,10 +1763,15 @@ namespace Nekoyume.Game
                 // Guest private key login flow
                 if (KeyManager.Instance.IsSignedIn)
                 {
+                    sw.Reset();
+                    sw.Start();
                     yield return Agent.Initialize(
                         _commandLineOptions,
                         KeyManager.Instance.SignedInPrivateKey,
                         callback);
+                    sw.Stop();
+                    NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+
                     yield break;
                 }
                 else

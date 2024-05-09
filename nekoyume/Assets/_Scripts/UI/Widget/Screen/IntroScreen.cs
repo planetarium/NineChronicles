@@ -269,6 +269,7 @@ namespace Nekoyume.UI
 
                 _guideIndex = GuideStartIndex;
                 ShowQrCodeGuide();
+                SigninContext.SetHasSignedWithKeyImport(true);
             });
             keyImportWithGallaryButton.onClick.AddListener(() =>
             {
@@ -277,6 +278,7 @@ namespace Nekoyume.UI
                     var pk = ImportPrivateKeyFromJson(result.Text);
                     keyImportPopup.SetActive(false);
                     Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                    SigninContext.SetHasSignedWithKeyImport(true);
                 });
             });
         }
@@ -323,7 +325,7 @@ namespace Nekoyume.UI
             _planetContext = planetContext;
             ApplyPlanetContext(_planetContext);
 
-            if (SigninContext.HasLatestSignedInSocialType)
+            if (SigninContext.HasLatestSignedInSocialType || SigninContext.HasSignedWithKeyImport)
             {
                 NcDebug.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is true");
                 startButtonGO.SetActive(true);
