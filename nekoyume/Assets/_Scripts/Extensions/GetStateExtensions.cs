@@ -7,9 +7,12 @@ using Bencodex.Types;
 using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
+using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Model.AdventureBoss;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
+using Nekoyume.Module;
 
 namespace Nekoyume
 {
@@ -123,6 +126,55 @@ namespace Nekoyume
             }
 
             return new CollectionState();
+        }
+
+        public static async Task<LatestSeason> GetAdventureBossLatestSeasonAsync(this IAgent agent)
+        {
+            var latestSeason = await agent.GetStateAsync(Addresses.AdventureBoss, AdventureBossModule.LatestSeasonAddress);
+            if (latestSeason is null)
+            {
+                return new LatestSeason(0, 0, 0, 0);
+            }
+
+            return new LatestSeason(latestSeason);
+        }
+
+        public static async Task<SeasonInfo> GetAdventureBossLatestSeasonInfoAsync(this IAgent agent)
+        {
+            var latestSeason = await agent.GetAdventureBossLatestSeasonAsync();
+            var seasonInfo = await agent.GetAdventureBossSeasonInfoAsync(latestSeason.SeasonId);
+            return seasonInfo;
+        }
+
+        public static async Task<SeasonInfo> GetAdventureBossSeasonInfoAsync(this IAgent agent, long seasonId)
+        {
+            var seasonInfo = await agent.GetStateAsync(Addresses.AdventureBoss, new Address(AdventureBossModule.GetSeasonAsAddressForm(seasonId)));
+            if(seasonInfo is null)
+            {
+                return null;
+            }
+            return new SeasonInfo(seasonInfo);
+        }
+
+        public static async Task<BountyBoard> GetBountyBoardAsync(this IAgent agent, long seasonId)
+        {
+            var bountyBoard = await agent.GetStateAsync(Addresses.BountyBoard, new Address(AdventureBossModule.GetSeasonAsAddressForm(seasonId)));
+            if(bountyBoard is null)
+            {
+                return null;
+            }
+            return new BountyBoard(bountyBoard);
+        }
+
+        public static async Task<ExploreInfo> GetExploreInfoAsync(this IAgent agent, Address avatarAddress)
+        {
+            var exploreInfo = await agent.GetStateAsync(Addresses.AdventureBossExplore, avatarAddress);
+            if (exploreInfo is null)
+            {
+                return null;
+            }
+
+            return new ExploreInfo(exploreInfo);
         }
     }
 }
