@@ -322,5 +322,10 @@ namespace Nekoyume.Game.Character
             boxCollider.size =
                 new Vector3(size.x * scale.x, size.y * scale.y, size.z * scale.z);
         }
+
+        public void SetTintColor(Color color)
+        {
+            SpineController.SetTintColor(color);
+        }
     }
 }

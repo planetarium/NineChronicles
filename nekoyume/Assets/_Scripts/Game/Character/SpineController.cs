@@ -18,8 +18,8 @@ namespace Nekoyume.Game.Character
             public AnimationReferenceAsset animation;
         }
 
-        private const string DefaultPMAShader = "Spine/Skeleton";
-        private const string DefaultStraightAlphaShader = "Sprites/Default";
+        private const string DefaultPMAShader = "Spine/Skeleton Tint";
+        private const string DefaultShader    = "Sprites/Default";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new();
 
@@ -53,9 +53,9 @@ namespace Nekoyume.Game.Character
             SkeletonAnimation = GetComponent<SkeletonAnimation>();
             SkeletonAnimation.AnimationState.Complete += delegate { _callback?.Invoke(); };
 
-            _applyPMA = SkeletonAnimation.pmaVertexColors;
-            _shader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
-            _material = new Material(_shader);
+            _applyPMA  = SkeletonAnimation.pmaVertexColors;
+            _shader    = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultShader);
+            _material  = new Material(_shader);
             _atlasPage = _material.ToSpineAtlasPage();
         }
 

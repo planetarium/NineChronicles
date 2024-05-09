@@ -387,5 +387,10 @@ namespace Nekoyume.Game.Character
         {
             AreaAttackCutscene.Show(Helper.Util.GetArmorId());
         }
+
+        public override void SetTintColor(Color color)
+        {
+            appearance.SetTintColor(color);
+        }
     }
 }

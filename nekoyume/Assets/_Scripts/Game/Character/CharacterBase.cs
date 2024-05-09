@@ -745,6 +745,8 @@ namespace Nekoyume.Game.Character
             var skillInfosCount = skillInfos.Count;
             var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
 
+            SetTintColor(Color.blue);
+
             yield return StartCoroutine(
                 CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
@@ -756,6 +758,8 @@ namespace Nekoyume.Game.Character
                 if (this is Player && !(this is EnemyPlayer))
                     battleWidget.ShowComboText(info.Effect > 0);
             }
+
+            SetTintColor(Color.red);
         }
 
         public IEnumerator CoBlowAttack(
@@ -1129,6 +1133,8 @@ namespace Nekoyume.Game.Character
         {
             AttackEndCalled = false;
         }
+
+        public abstract void SetTintColor(Color color);
     }
 
     public class ActionParams

@@ -2,7 +2,6 @@ using Nekoyume.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -12,6 +11,8 @@ namespace Nekoyume.Game.Character
 
     public class StageMonster : CharacterBase
     {
+        private static readonly int ColorID = Shader.PropertyToID("_Color");
+
         private Player _player;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -199,6 +200,24 @@ namespace Nekoyume.Game.Character
             {
                 Animator.DestroyTarget();
             }
+        }
+
+        public override void SetTintColor(Color color)
+        {
+            var skeletonAnimation = SpineController.SkeletonAnimation;
+            if (skeletonAnimation == null)
+            {
+                NcDebug.LogError($"[{nameof(StageMonster)}] No SkeletonAnimation found in {name}.");
+                return;
+            }
+
+            var mpb = new MaterialPropertyBlock();
+            mpb.SetColor(ColorID, color);
+
+            if (skeletonAnimation.TryGetComponent<MeshRenderer>(out var meshRenderer))
+                meshRenderer.SetPropertyBlock(mpb);
+            else
+                NcDebug.LogError($"[{nameof(StageMonster)}] No MeshRenderer found in {name}.");
         }
     }
 }
