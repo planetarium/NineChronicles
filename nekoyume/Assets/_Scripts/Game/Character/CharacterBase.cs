@@ -142,6 +142,7 @@ namespace Nekoyume.Game.Character
                 DisableHUD();
             _forceStop = false;
 
+            SetDefaultColor();
             _expiredColorKeys.Clear();
             _colorPq.Clear();
         }
@@ -1138,97 +1139,16 @@ namespace Nekoyume.Game.Character
         }
 
 #region SpineColor
-        /// <summary>
-        /// SpineColorSetting에서 특정 Key를 가진 색상그룹을 관리하고 싶을 때 사용
-        /// </summary>
-        public enum SpineColorKey
-        {
-            None,
-            FrostBite1Stack,
-            FrostBite2Stack,
-            FrostBite3Stack,
-            FrostBite4Stack,
-            FrostBite5Stack,
-            Test,
-        }
-
-        // struct을 사용하려 했으나, SimplePQ를 사용하면서 내부적으로 값이 복사되어 class로 변경
-        protected class SpineColorSetting
-        {
-            public static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
-
-            private Color         _color;
-            private bool          _hasDuration;
-            private float         _duration;
-            private SpineColorKey _key;
-            private bool          _isExpired;
-
-            public SpineColorSetting(Color color, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
-            {
-                _color       = color;
-                _hasDuration = hasDuration;
-                _duration    = duration;
-                _key         = key;
-                _isExpired   = false;
-            }
-
-            public Color Color     => _color;
-            public bool  IsExpired => _isExpired;
-
-            public void UpdateDuration(float deltaTime)
-            {
-                if (!_hasDuration)
-                {
-                    return;
-                }
-
-                _duration -= deltaTime;
-
-                if (_duration <= 0)
-                {
-                    _isExpired = true;
-                }
-            }
-
-            public void Expire()
-            {
-                _isExpired = true;
-            }
-
-            public void ExpireByKey(SpineColorKey key)
-            {
-                if (_key == key)
-                {
-                    _isExpired = true;
-                }
-            }
-
-            public static SpineColorSetting Default => new(Color.white);
-
-            public void SetColor(CharacterBase character)
-            {
-                character.SetSpineColor(_color, ColorPropertyId);
-            }
-        }
-
         private readonly Priority_Queue.SimplePriorityQueue<SpineColorSetting, int> _colorPq = new();
 
         private readonly HashSet<SpineColorKey> _expiredColorKeys = new();
 
-        // TODO: 잘 보이는곳에 정리? 혹은 데이터 파일로 분리?
-        protected const int HitColorPriority = 5;
-
-        private Color _currentColor;
+        private int _currentColorHash;
 
         private void UpdateColor()
         {
             if (_colorPq.Count == 0)
             {
-                if (_currentColor != Color.white)
-                {
-                    SetSpineColor(Color.white, SpineColorSetting.ColorPropertyId);
-                }
-
                 return;
             }
 
@@ -1240,14 +1160,19 @@ namespace Nekoyume.Game.Character
                 if (setting.IsExpired)
                 {
                     _colorPq.Dequeue();
+                    if (_colorPq.Count == 0)
+                    {
+                        SetDefaultColor();
+                    }
                     continue;
                 }
 
-                if (setting.Color == _currentColor)
+                if (setting.GetHashCode() == _currentColorHash)
                 {
                     break;
                 }
 
+                _currentColorHash = setting.GetHashCode();
                 setting.SetColor(this);
                 return;
             }
@@ -1261,7 +1186,6 @@ namespace Nekoyume.Game.Character
                 {
                     colorSetting.ExpireByKey(expiredColorKey);
                 }
-
                 colorSetting.UpdateDuration(Time.deltaTime);
 
                 if (colorSetting.IsExpired)
@@ -1272,22 +1196,32 @@ namespace Nekoyume.Game.Character
             _expiredColorKeys.Clear();
         }
 
-        protected virtual void SetSpineColor(Color color, int propertyID = -1)
+        public virtual void SetSpineColor(Color color, int propertyID = -1)
         {
-            _currentColor = color;
+        }
+
+        private void SetDefaultColor()
+        {
+            SetSpineColor(Color.white, SpineColorSetting.ColorPropertyId);
+            SetSpineColor(Color.black, SpineColorSetting.BlackPropertyId);
+            _currentColorHash = 0;
         }
 
         public void AddHitColor()
         {
-            // TODO: apply Tint Color
-            // var color = new Color(1 - 0.2452f, 0.6651f - 0.091f, 0.65566f - 0.091f, 1f);
             var color = new Color(1, 0.6651f, 0.65566f, 1f);
-            _colorPq.Enqueue(new SpineColorSetting(color, true, 0.3f), HitColorPriority);
+            var black = new Color(0.2452f, 0.091f, 0.091f, 1f);
+            _colorPq.Enqueue(new SpineColorSetting(color, black, true, 0.3f), (int)SpineColorPriority.Hit);
         }
 
         public void AddSpineColor(Color color, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
         {
-            _colorPq.Enqueue(new SpineColorSetting(color, true, duration, key), 0);
+            _colorPq.Enqueue(new SpineColorSetting(color, hasDuration, duration, key), 0);
+        }
+
+        public void AddSpineColor(Color color, Color black, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
+        {
+            _colorPq.Enqueue(new SpineColorSetting(color, black, hasDuration, duration, key), 0);
         }
 #endregion SpineColor
     }
