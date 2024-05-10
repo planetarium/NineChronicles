@@ -477,6 +477,14 @@ namespace Nekoyume.UI
             // tutorial
             _secondWidgets.Add(Widget.Create<Tutorial>());
             yield return null;
+
+            // adventure boss
+            _secondWidgets.Add(Widget.Create<AdventureBoss>());
+            _secondWidgets.Add(Widget.Create<AdventureBossBattlePopup>());
+            _secondWidgets.Add(Widget.Create<AdventureBossEnterBountyPopup>());
+            _secondWidgets.Add(Widget.Create<AdventureBossRewardPopup>());
+            _secondWidgets.Add(Widget.Create<AdventureBossStartNotificationPopup>());
+            _secondWidgets.Add(Widget.Create<AdventureBossUnlockLockedFloorPopup>());
 #endif
         }
 

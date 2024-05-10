@@ -12935,7 +12935,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7817840582822366922}
   - component: {fileID: 7815666757953284926}
-  - component: {fileID: 3712321441615374828}
+  - component: {fileID: 4866038101288605377}
   - component: {fileID: 1677699267045685594}
   m_Layer: 5
   m_Name: UI_AdventureBossRewardPopup
@@ -12975,7 +12975,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8027060192666493032}
   m_CullTransparentMesh: 0
---- !u!114 &3712321441615374828
+--- !u!114 &4866038101288605377
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12984,16 +12984,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8027060192666493032}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e54971208044d0b333da5ebb2501cb, type: 3}
+  m_Script: {fileID: 11500000, guid: d4076c65b7a45814ba588b4e8c240e50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  title: {fileID: 0}
-  content: {fileID: 0}
-  labelOK: {fileID: 0}
-  titleBorder: {fileID: 0}
-  CloseButton: {fileID: 2802816147560423346}
 --- !u!95 &1677699267045685594
 Animator:
   serializedVersion: 5

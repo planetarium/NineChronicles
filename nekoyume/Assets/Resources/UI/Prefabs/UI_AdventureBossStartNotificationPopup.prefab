@@ -2138,7 +2138,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7737018819014562710}
-  - component: {fileID: 1703886152389973275}
+  - component: {fileID: 4542131673581534004}
   - component: {fileID: 8635163323466392087}
   m_Layer: 15
   m_Name: UI_AdventureBossStartNotificationPopup
@@ -2169,7 +2169,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1703886152389973275
+--- !u!114 &4542131673581534004
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2178,31 +2178,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8871570920674552154}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 970c74c8e0104dffa5341b3c8e10cfa5, type: 3}
+  m_Script: {fileID: 11500000, guid: 44827cc6ab9d19b428b774631732650c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets:
-  - type: 1000016
-    rectTransform: {fileID: 0}
-  tutorialActions: 4b420f004d420f00
-  categoryToggles:
-  - Toggle: {fileID: 0}
-    Type: 3
-    Item: {fileID: 0}
-  - Toggle: {fileID: 0}
-    Type: 2
-    Item: {fileID: 0}
-  - Toggle: {fileID: 0}
-    Type: 0
-    Item: {fileID: 0}
-  - Toggle: {fileID: 0}
-    Type: 1
-    Item: {fileID: 0}
-  - Toggle: {fileID: 0}
-    Type: 4
-    Item: {fileID: 0}
-  backButton: {fileID: 0}
-  notification: {fileID: 0}
+  tutorialTargets: []
+  tutorialActions: 
 --- !u!95 &8635163323466392087
 Animator:
   serializedVersion: 5
