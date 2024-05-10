@@ -56,10 +56,6 @@ namespace Nekoyume.UI
 
         [SerializeField] private Button eventDungeonLockButton;
 
-        [SerializeField] private GameObject adventureBossButtonRoot;
-
-        [SerializeField] private Button adventureBossBtton;
-
         private readonly List<IDisposable> _disposablesAtShow = new();
 
         public ViewModel SharedViewModel { get; private set; }

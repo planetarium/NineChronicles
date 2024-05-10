@@ -302,17 +302,17 @@ PrefabInstance:
     - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Scale3D.x
-      value: 250
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Scale3D.y
-      value: 250
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5044288858569292735, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Scale3D.z
-      value: 250
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7937736088600402549, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
