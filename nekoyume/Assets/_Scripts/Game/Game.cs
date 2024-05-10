@@ -131,6 +131,8 @@ namespace Nekoyume.Game
 
         public GuildServiceClient GuildServiceClient { get; private set; }
 
+        public AdventureBossData AdventureBossData { get; private set; }
+
         public Stage Stage => stage;
         public Battle.Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -783,6 +785,9 @@ namespace Nekoyume.Game
                 AirbridgeUnity.TrackEvent(tableSheetsInitializedEvt);
 
                 RxProps.Start(Agent, States, TableSheets);
+
+                AdventureBossData = new AdventureBossData();
+                AdventureBossData.Initialize();
 
                 Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
                 {
