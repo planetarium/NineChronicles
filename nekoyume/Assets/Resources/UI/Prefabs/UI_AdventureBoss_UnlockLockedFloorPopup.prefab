@@ -142,7 +142,7 @@ GameObject:
   m_Component:
   - component: {fileID: 485861822929171410}
   - component: {fileID: 483714574654969382}
-  - component: {fileID: 6432403575201305844}
+  - component: {fileID: 6076056223248820807}
   - component: {fileID: 9045707236276405314}
   m_Layer: 5
   m_Name: UI_AdventureBoss_UnlockLockedFloorPopup
@@ -181,7 +181,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 406859852586933616}
   m_CullTransparentMesh: 0
---- !u!114 &6432403575201305844
+--- !u!114 &6076056223248820807
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -190,16 +190,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 406859852586933616}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e54971208044d0b333da5ebb2501cb, type: 3}
+  m_Script: {fileID: 11500000, guid: 4dc4609171e409c42973b9a86b3bc819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  title: {fileID: 1688276593175651958}
-  content: {fileID: 7872614808469836666}
-  labelOK: {fileID: 0}
-  titleBorder: {fileID: 1927810803615712653}
-  CloseButton: {fileID: 5486851342587536042}
 --- !u!95 &9045707236276405314
 Animator:
   serializedVersion: 5

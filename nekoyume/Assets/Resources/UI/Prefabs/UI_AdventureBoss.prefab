@@ -18494,7 +18494,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 219328741035152473}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.8484849
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -19555,7 +19555,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7803373123639685296}
-  - component: {fileID: 4228032031169143443}
+  - component: {fileID: 3572073031495219721}
   - component: {fileID: 6846562090926092995}
   m_Layer: 5
   m_Name: UI_AdventureBoss
@@ -19588,7 +19588,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4228032031169143443
+--- !u!114 &3572073031495219721
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -19597,25 +19597,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 829009671682724780}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba08ebb4e28d44afb6577152ab1b250d, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f92eea8644debd4e8b5e5aacaf5ebe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets:
-  - type: 1000001
-    rectTransform: {fileID: 0}
-  tutorialActions: 52420f00
-  _useSo: 0
-  _so: {fileID: 11400000, guid: 41ea502f5144ad84ea5ef6e120dbc361, type: 2}
-  _scroll: {fileID: 0}
-  _barScroll: {fileID: 0}
-  _info: {fileID: 0}
-  _bottomButtonText: {fileID: 0}
-  _joinButton: {fileID: 0}
-  _paymentButton: {fileID: 0}
-  _earlyPaymentButton: {fileID: 0}
-  _missionButton: {fileID: 0}
-  _backButton: {fileID: 3132572419808467587}
-  baseArenaJoinObject: {fileID: 0}
+  tutorialTargets: []
+  tutorialActions: 
 --- !u!95 &6846562090926092995
 Animator:
   serializedVersion: 5
@@ -42525,18 +42511,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29c5c99555c2b5f40a6f757cea5554b3, type: 3}
---- !u!114 &3132572419808467587 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7657312722897278047, guid: 29c5c99555c2b5f40a6f757cea5554b3,
-    type: 3}
-  m_PrefabInstance: {fileID: 4700948070966333148}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &4261426115790601590 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8799680884505899946, guid: 29c5c99555c2b5f40a6f757cea5554b3,
