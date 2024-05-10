@@ -133,10 +133,12 @@ namespace Nekoyume
             var latestSeason = await agent.GetStateAsync(Addresses.AdventureBoss, AdventureBossModule.LatestSeasonAddress);
             if (latestSeason is null)
             {
+                NcDebug.LogWarning("[AdventureBoss] No latest season");
                 return new LatestSeason(0, 0, 0, 0);
             }
-
-            return new LatestSeason(latestSeason);
+            var result = new LatestSeason(latestSeason);
+            NcDebug.Log($"[AdventureBoss] Get LatestSeason SeasonId: {result.SeasonId}  S:{result.StartBlockIndex}  E:{result.EndBlockIndex}  N:{result.NextStartBlockIndex}");
+            return result;
         }
 
         public static async Task<SeasonInfo> GetAdventureBossLatestSeasonInfoAsync(this IAgent agent)
@@ -151,9 +153,12 @@ namespace Nekoyume
             var seasonInfo = await agent.GetStateAsync(Addresses.AdventureBoss, new Address(AdventureBossModule.GetSeasonAsAddressForm(seasonId)));
             if(seasonInfo is null)
             {
+                NcDebug.LogWarning($"[AdventureBoss] No season info for {seasonId}");
                 return null;
             }
-            return new SeasonInfo(seasonInfo);
+            var result = new SeasonInfo(seasonInfo);
+            NcDebug.Log($"[AdventureBoss] Get SeasonInfo SeasonId: {result.Season}  S:{result.StartBlockIndex}  E:{result.EndBlockIndex}  N:{result.NextStartBlockIndex}  ParticiateCount:{result.ParticipantList.Count()}");
+            return result;
         }
 
         public static async Task<BountyBoard> GetBountyBoardAsync(this IAgent agent, long seasonId)
@@ -161,9 +166,12 @@ namespace Nekoyume
             var bountyBoard = await agent.GetStateAsync(Addresses.BountyBoard, new Address(AdventureBossModule.GetSeasonAsAddressForm(seasonId)));
             if(bountyBoard is null)
             {
+                NcDebug.LogWarning($"[AdventureBoss] No bounty board for {seasonId}");
                 return null;
             }
-            return new BountyBoard(bountyBoard);
+            var result = new BountyBoard(bountyBoard);
+            NcDebug.Log($"[AdventureBoss] Get BountyBoard Investors: {result.Investors.Count}");
+            return result;
         }
 
         public static async Task<ExploreInfo> GetExploreInfoAsync(this IAgent agent, Address avatarAddress)
@@ -171,10 +179,12 @@ namespace Nekoyume
             var exploreInfo = await agent.GetStateAsync(Addresses.AdventureBossExplore, avatarAddress);
             if (exploreInfo is null)
             {
+                NcDebug.LogWarning($"[AdventureBoss] No explore info for {avatarAddress}");
                 return null;
             }
-
-            return new ExploreInfo(exploreInfo);
+            var result = new ExploreInfo(exploreInfo);
+            NcDebug.Log($"[AdventureBoss] Get ExploreInfo Avatar: {avatarAddress}  Score: {result.Score}  Floor:{result.Floor}");
+            return result;
         }
     }
 }
