@@ -224,7 +224,20 @@ namespace Nekoyume.UI
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
 
-            backupButton.gameObject.SetActive(Util.GetQrCodePngFromKeystore() != null);
+            Web3KeyStore keyStore;
+            if (Platform.IsMobilePlatform())
+            {
+                var dataPath = Platform.GetPersistentDataPath("keystore");
+                keyStore = new Web3KeyStore(dataPath);
+            }
+            else
+            {
+                keyStore = Web3KeyStore.DefaultKeyStore;
+            }
+
+            var ppkExist = keyStore.ListIds().Any();
+
+            backupButton.gameObject.SetActive(ppkExist);
             backupButton.onClick.AddListener(() =>
             {
                 var keys = KeyManager.Instance.GetList().ToList();
@@ -247,6 +260,7 @@ namespace Nekoyume.UI
             });
 
             // NOTE: KeyImportPopup's close button callback is not set here. (It is set in prefab)
+            keyImportButton.gameObject.SetActive(!ppkExist);
             keyImportButton.onClick.AddListener(() => keyImportPopup.gameObject.SetActive(true));
             keyImportWithCameraButton.onClick.AddListener(() =>
             {
