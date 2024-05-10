@@ -16,6 +16,8 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject Close;
 
         [SerializeField] private TextMeshProUGUI[] RemainingBlockIndexs;
+        [SerializeField] private TextMeshProUGUI UsedNCG;
+        [SerializeField] private TextMeshProUGUI Floor;
 
 
         private readonly List<System.IDisposable> _disposables = new();
@@ -37,6 +39,10 @@ namespace Nekoyume.UI.Module
             var seasonInfo = Game.Game.instance.AdventureBossData.CurrentSeasonInfo.Value;
             if (seasonInfo == null)
             {
+                foreach (var text in RemainingBlockIndexs)
+                {
+                    text.text = "";
+                }
                 return;
             }
             var remainingIndex =  seasonInfo.EndBlockIndex - blockIndex;
@@ -70,18 +76,18 @@ namespace Nekoyume.UI.Module
             Open.SetActive(true);
             Close.SetActive(false);
 
-            if(info.ParticipantList.Count() > 0)
+            if(info.ParticipantList != null && info.ParticipantList.Count() > 0)
+            {
+                WantedOpen.SetActive(true);
+                WantedClose.SetActive(false);
+                UsedNCG.text = info.UsedNcg.ToCurrencyNotation();
+                //Floor.text = 
+            }
+            else
             {
                 WantedOpen.SetActive(false);
                 WantedClose.SetActive(true);
             }
-            else
-            {
-                WantedOpen.SetActive(true);
-                WantedClose.SetActive(false);
-            }
-
-
 
             return;
         }

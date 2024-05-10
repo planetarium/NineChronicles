@@ -154,7 +154,9 @@ namespace Nekoyume
             if(seasonInfo is null)
             {
                 NcDebug.LogWarning($"[AdventureBoss] No season info for {seasonId}");
-                return null;
+                //forTest
+                return new SeasonInfo(0,agent.BlockIndex);    
+                //return null;
             }
             var result = new SeasonInfo(seasonInfo);
             NcDebug.Log($"[AdventureBoss] Get SeasonInfo SeasonId: {result.Season}  S:{result.StartBlockIndex}  E:{result.EndBlockIndex}  N:{result.NextStartBlockIndex}  ParticiateCount:{result.ParticipantList.Count()}");
