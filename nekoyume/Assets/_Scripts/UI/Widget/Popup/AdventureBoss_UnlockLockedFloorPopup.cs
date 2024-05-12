@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class AdventureBossUnlockLockedFloorPopup : PopupWidget
+    public class AdventureBoss_UnlockLockedFloorPopup : PopupWidget
     {
     }
 }
