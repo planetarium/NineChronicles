@@ -488,7 +488,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<AdventureBossEnterBountyPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossRewardPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossStartNotificationPopup>());
-            _secondWidgets.Add(Widget.Create<AdventureBossUnlockLockedFloorPopup>());
+            _secondWidgets.Add(Widget.Create<AdventureBoss_UnlockLockedFloorPopup>());
 #endif
         }
 
