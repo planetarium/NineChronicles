@@ -1,5 +1,8 @@
 using Cysharp.Threading.Tasks;
+using Nekoyume.L10n;
 using Nekoyume.Model.AdventureBoss;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -19,8 +22,8 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI UsedNCG;
         [SerializeField] private TextMeshProUGUI Floor;
 
-
         private readonly List<System.IDisposable> _disposables = new();
+        private long _remainingBlockIndex = 0;
 
         private void Awake()
         {
@@ -45,8 +48,8 @@ namespace Nekoyume.UI.Module
                 }
                 return;
             }
-            var remainingIndex =  seasonInfo.EndBlockIndex - blockIndex;
-            var timeText = $"{remainingIndex:#,0}({remainingIndex.BlockRangeToTimeSpanString()})";
+            _remainingBlockIndex =  seasonInfo.EndBlockIndex - blockIndex;
+            var timeText = $"{_remainingBlockIndex:#,0}({_remainingBlockIndex.BlockRangeToTimeSpanString()})";
             foreach (var text in RemainingBlockIndexs)
             {
                 text.text = timeText;
@@ -56,6 +59,22 @@ namespace Nekoyume.UI.Module
         private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
+        }
+
+        public void OnClickOpenEnterBountyPopup()
+        {
+            Widget.Find<AdventureBossEnterBountyPopup>().Show();
+        }
+
+        public void OnClickOpenAdventureBoss()
+        {
+            Widget.Find<AdventureBoss>().Show();
+        }
+
+        public void OnClickAdventureSeasonAlert()
+        {
+            var remaingTimespan = _remainingBlockIndex.BlockToTimeSpan();
+            OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_REMAINIG_TIME", remaingTimespan.Hours, remaingTimespan.Minutes%60), NotificationCell.NotificationType.Notification);
         }
 
         private void OnSeasonInfoChanged(SeasonInfo info)
