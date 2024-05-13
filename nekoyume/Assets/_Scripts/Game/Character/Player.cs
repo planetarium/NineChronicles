@@ -387,5 +387,11 @@ namespace Nekoyume.Game.Character
         {
             AreaAttackCutscene.Show(Helper.Util.GetArmorId());
         }
+
+        public override void SetSpineColor(Color color, int propertyID = -1)
+        {
+            base.SetSpineColor(color, propertyID);
+            appearance.SetSpineColor(color, propertyID);
+        }
     }
 }

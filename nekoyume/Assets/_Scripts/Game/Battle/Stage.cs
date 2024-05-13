@@ -1243,6 +1243,7 @@ namespace Nekoyume.Game.Battle
                     IEnumerator StunTick(IEnumerable<Skill.SkillInfo> _)
                     {
                         affectedCharacter.Animator.Hit();
+                        affectedCharacter.AddHitColor();
                         yield return new WaitForSeconds(SkillDelay);
                     }
 

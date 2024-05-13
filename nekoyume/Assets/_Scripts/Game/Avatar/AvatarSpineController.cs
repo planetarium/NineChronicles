@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Character;
 using UnityEngine;
 using DG.Tweening;
 using Nekoyume.EnumType;
-using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Spine;
 using Spine.Unity;
@@ -15,7 +13,7 @@ namespace Nekoyume.Game.Avatar
 {
     public sealed class AvatarSpineController : MonoBehaviour
     {
-        private const string DefaultPmaShader = "Spine/Skeleton";
+        private const string DefaultPmaShader = "Spine/Skeleton Tint";
         private const string WeaponSlot = "weapon";
 
         [SerializeField]
@@ -611,6 +609,25 @@ namespace Nekoyume.Game.Avatar
             }
 
             _fadeTweener.Clear();
+        }
+
+        public void SetSpineColor(Color color, int propertyID)
+        {
+            foreach (var skeletonAnimation in _parts.Values)
+            {
+                if (skeletonAnimation == null)
+                {
+                    continue;
+                }
+
+                var mpb = new MaterialPropertyBlock();
+                mpb.SetColor(propertyID, color);
+
+                if (skeletonAnimation.TryGetComponent<MeshRenderer>(out var meshRenderer))
+                    meshRenderer.SetPropertyBlock(mpb);
+                else
+                    NcDebug.LogError($"[{nameof(AvatarSpineController)}] No MeshRenderer found in {skeletonAnimation.name}.");
+            }
         }
     }
 }
