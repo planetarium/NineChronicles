@@ -640,7 +640,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1959622252007439274}
         m_TargetAssemblyTypeName: Nekoyume.UI.Module.WorldMapAdventureBoss, Nekoyume
-        m_MethodName: OnClickOpenAdventureBoss
+        m_MethodName: OnClickOpenEnterBountyPopup
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2698,10 +2698,10 @@ RectTransform:
   m_Father: {fileID: 5506567354616110582}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 7, y: -8}
-  m_SizeDelta: {x: 28, y: 32}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3223805800786577123
 CanvasRenderer:
@@ -4653,10 +4653,10 @@ RectTransform:
   m_Father: {fileID: 5506567354616110582}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 64.42, y: -8}
-  m_SizeDelta: {x: 96.84, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &611836026781820914
 CanvasRenderer:

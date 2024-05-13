@@ -1736,12 +1736,13 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
-        public IObservable<ActionEvaluation<Wanted>> Wanted(FungibleAssetValue amount)
+        public IObservable<ActionEvaluation<Wanted>> Wanted(long season, FungibleAssetValue amount)
         {
             var action = new Wanted
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                Bounty = amount
+                Bounty = amount,
+                Season = (int)season
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<Wanted>()
