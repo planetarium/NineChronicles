@@ -517,7 +517,7 @@ namespace Nekoyume.Game.Battle
 
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() => characters.Any(i => i.Actions.Any()));
+            yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             yield return new WaitForSeconds(1f);
             Boss = null;
             Widget.Find<UI.Battle>().BossStatus.Close();
@@ -962,7 +962,7 @@ namespace Nekoyume.Game.Battle
             foreach (var info in skillInfos)
             {
                 var characters = GetComponentsInChildren<Character.CharacterBase>();
-                yield return new WaitWhile(() => characters.Any(i => i.Actions.Any()));
+                yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
                 yield return StartCoroutine(character.CoProcessDamage(info, true, true));
                 yield return new WaitForSeconds(SkillDelay);
             }
@@ -1117,7 +1117,7 @@ namespace Nekoyume.Game.Battle
             Debug.Log($"[{nameof(Stage)}] {nameof(CoGetReward)}() enter.");
 #endif
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() => characters.Any(i => i.Actions.Any()));
+            yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             foreach (var item in rewards)
             {
                 var countableItem = new CountableItem(item, 1);
@@ -1155,7 +1155,7 @@ namespace Nekoyume.Game.Battle
             }
 
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() => characters.Any(i => i.Actions.Any()));
+            yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             yield return new WaitForSeconds(StageConfig.instance.spawnWaveDelay);
             Widget.Find<UI.Battle>().BossStatus.Close();
             Widget.Find<UI.Battle>().EnemyPlayerStatus.Close();
@@ -1192,13 +1192,13 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} enter. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
-            yield return new WaitWhile(() => SelectedPlayer.Actions.Any());
+            yield return new WaitWhile(() => SelectedPlayer.HasAction());
             Event.OnPlayerTurnEnd.Invoke(turnNumber);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} ing. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
-            yield return new WaitWhile(() => characters.Any(i => i.Actions.Any()));
+            yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             this.waveTurn = waveTurn;
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} exit. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
@@ -1213,7 +1213,7 @@ namespace Nekoyume.Game.Battle
             Debug.Log($"[{nameof(Stage)}] {nameof(CoGetExp)}() enter. exp: {exp}");
 #endif
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() => characters.Any(i => i.Actions.Any()));
+            yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             _battleResultModel.Exp += exp;
             var player = GetPlayer();
             yield return StartCoroutine(player.CoGetExp(exp));
@@ -1225,7 +1225,7 @@ namespace Nekoyume.Game.Battle
             Debug.Log($"[{nameof(Stage)}] {nameof(CoDead)}() enter. model: {model.Id}");
 #endif
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() => characters.Any(i => i.Actions.Any()));
+            yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             var character = GetCharacter(model);
             _playerPosition = SelectedPlayer.transform.position;
             character.Dead();
@@ -1268,7 +1268,7 @@ namespace Nekoyume.Game.Battle
                 {
                     if (affectedCharacter)
                     {
-                        yield return new WaitWhile(() => affectedCharacter.Actions.Any());
+                        yield return new WaitWhile(() => affectedCharacter.HasAction());
                         yield return affectedCharacter.CoHealWithoutAnimation(tick.SkillInfos.ToList());
                         yield return new WaitForSeconds(.1f);
                     }

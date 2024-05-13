@@ -98,8 +98,8 @@ namespace Nekoyume.Game.Character
         protected BoxCollider HitPointBoxCollider { get; private set; }
         public Vector3 HitPointLocalOffset { get; set; }
 
-        private readonly List<ActionParams> _actions = new();
-        public IReadOnlyList<ActionParams> Actions => _actions;
+        private readonly Queue<ActionParams> actionQueue = new();
+        public IReadOnlyCollection<ActionParams> ActionQueue => actionQueue;
 
         private ActionParams _action;
 
@@ -137,7 +137,7 @@ namespace Nekoyume.Game.Character
 
             RunSpeed = 0.0f;
             _root = null;
-            _actions.Clear();
+            actionQueue.Clear();
             _action = null;
             if (!_applicationQuitting)
                 DisableHUD();
@@ -159,7 +159,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual IEnumerator Dying()
         {
-            yield return new WaitWhile(() => Actions.Any());
+            yield return new WaitWhile(HasAction);
             OnDeadStart();
             StopRun();
             Animator.Die();
@@ -199,6 +199,11 @@ namespace Nekoyume.Game.Character
 
         protected virtual void InitializeHpBar()
         {
+            if (!HudContainer)
+            {
+                return;
+            }
+
             HPBar = Widget.Create<HpBar>(true);
             HPBar.transform.SetParent(HudContainer.transform);
             HPBar.transform.localPosition = Vector3.zero;
@@ -317,7 +322,7 @@ namespace Nekoyume.Game.Character
         {
             Animator.Idle();
             gameObject.SetActive(false);
-            _actions.Clear();
+            actionQueue.Clear();
         }
 
         protected void PopUpDmg(
@@ -392,7 +397,7 @@ namespace Nekoyume.Game.Character
                     BT.If(() => !CanRun).OpenBranch(
                         BT.Sequence().OpenBranch(
                             BT.Call(StopRun),
-                            BT.If(() => Actions.Any()).OpenBranch(
+                            BT.If(() => ActionQueue.Any()).OpenBranch(
                                 BT.Call(ExecuteAction)
                             )
                         )
@@ -1074,9 +1079,14 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
+        public bool HasAction()
+        {
+            return actionQueue.Any() || _action is not null;
+        }
+
         public void AddAction(ActionParams actionParams)
         {
-            _actions.Add(actionParams);
+            actionQueue.Enqueue(actionParams);
         }
 
         private void ExecuteAction()
@@ -1090,10 +1100,7 @@ namespace Nekoyume.Game.Character
             {
                 yield break;
             }
-            _action = Actions.First();
-
-            var stage       = Game.instance.Stage;
-            var waitSeconds = StageConfig.instance.actionDelay;
+            _action = actionQueue.Dequeue();
 
             foreach (var info in _action.skillInfos)
             {
@@ -1109,19 +1116,17 @@ namespace Nekoyume.Game.Character
                 }
 
                 var character = Game.instance.Stage.GetCharacter(target);
-                if (!character || !character.Actions.Any())
+                if (!character || !character.HasAction())
                 {
                     continue;
                 }
 
                 var time = Time.time;
-                yield return new WaitWhile(() => Time.time - time > 10f || character.Actions.Any());
+                yield return new WaitWhile(() => Time.time - time > 10f || character.HasAction());
             }
 
-            yield return new WaitForSeconds(waitSeconds);
-            var coroutine = StartCoroutine(stage.CoSkill(_action));
-            yield return coroutine;
-            _actions.Remove(_action);
+            yield return new WaitForSeconds(StageConfig.instance.actionDelay);
+            yield return StartCoroutine(Game.instance.Stage.CoSkill(_action));
             _action     = null;
             _forceStop = false;
         }
