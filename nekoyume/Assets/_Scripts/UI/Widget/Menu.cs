@@ -32,6 +32,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
+    using Nekoyume.UI.Model;
     using Scroller;
     using UniRx;
 
@@ -161,7 +162,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             BattleRenderer.Instance.OnPrepareStage += GoToPrepareStage;
 
-            Game.Game.instance.AdventureBossData.CurrentSeasonInfo
+            Game.Game.instance.AdventureBossData.SeasonInfo
                 .Subscribe(seasonInfo =>
                 {
                     bool activeMark = seasonInfo != null
@@ -322,7 +323,7 @@ namespace Nekoyume.UI
 
             if(GUILayout.Button("GetExploreInfo",style))
             {
-                Game.Game.instance.Agent.GetExploreInfoAsync(Game.Game.instance.States.CurrentAvatarState.address).AsUniTask().ContinueWith((exploreInfo) =>
+                Game.Game.instance.Agent.GetExploreInfoAsync(Game.Game.instance.States.CurrentAvatarState.address, Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season).AsUniTask().ContinueWith((exploreInfo) =>
                 {
 
                 }).Forget();

@@ -176,9 +176,9 @@ namespace Nekoyume
             return result;
         }
 
-        public static async Task<ExploreInfo> GetExploreInfoAsync(this IAgent agent, Address avatarAddress)
+        public static async Task<ExploreInfo> GetExploreInfoAsync(this IAgent agent, Address avatarAddress, long seasonId)
         {
-            var exploreInfo = await agent.GetStateAsync(Addresses.AdventureBossExplore, avatarAddress);
+            var exploreInfo = await agent.GetStateAsync(Addresses.AdventureBossExplore, avatarAddress.Derive(AdventureBossModule.GetSeasonAsAddressForm(seasonId)));
             if (exploreInfo is null)
             {
                 NcDebug.LogWarning($"[AdventureBoss] No explore info for {avatarAddress}");

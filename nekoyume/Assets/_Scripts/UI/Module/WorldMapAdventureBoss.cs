@@ -1,3 +1,4 @@
+using CommandLine;
 using Cysharp.Threading.Tasks;
 using Nekoyume.L10n;
 using Nekoyume.Model.AdventureBoss;
@@ -27,7 +28,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            Game.Game.instance.AdventureBossData.CurrentSeasonInfo.Subscribe(OnSeasonInfoChanged);
+            Game.Game.instance.AdventureBossData.SeasonInfo.Subscribe(OnSeasonInfoChanged);
         }
 
         private void OnEnable()
@@ -39,7 +40,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateViewAsync(long blockIndex)
         {
-            var seasonInfo = Game.Game.instance.AdventureBossData.CurrentSeasonInfo.Value;
+            var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
             if (seasonInfo == null)
             {
                 foreach (var text in RemainingBlockIndexs)
@@ -68,7 +69,20 @@ namespace Nekoyume.UI.Module
 
         public void OnClickOpenAdventureBoss()
         {
-            Widget.Find<AdventureBoss>().Show();
+            Widget.Find<LoadingScreen>().Show();
+            try
+            {
+                Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
+                {
+                    Widget.Find<LoadingScreen>().Close();
+                    Widget.Find<AdventureBoss>().Show();
+                });
+            }
+            catch (System.Exception e)
+            {
+                NcDebug.LogError(e);
+                Widget.Find<LoadingScreen>().Close();
+            }
         }
 
         public void OnClickAdventureSeasonAlert()
