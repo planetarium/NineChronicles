@@ -28,9 +28,6 @@ namespace Nekoyume.Game.Avatar
         private BoxCollider fullCostumeCollider;
 
         [SerializeField]
-        private AvatarScriptableObject avatarScriptableObject;
-
-        [SerializeField]
         private GameObject auraPos;
 
         private Shader _shader;
@@ -276,8 +273,15 @@ namespace Nekoyume.Game.Avatar
         public void UpdateFullCostume(int index, bool isDcc)
         {
             _isActiveFullCostume = true;
-            var name = $"{index}_SkeletonData";
-            var asset = avatarScriptableObject.FullCostume.FirstOrDefault(x => x.name == name);
+            var key   = $"{index}_SkeletonData";
+            var asset = ResourceManager.Instance.Load<SkeletonDataAsset>(key);
+
+            if (asset == null)
+            {
+                NcDebug.LogError($"Failed to load SkeletonDataAsset: {key}");
+                return;
+            }
+
             var isChange = UpdateSkeletonDataAsset(AvatarPartsType.full_costume, asset);
             if (isChange)
             {
@@ -313,10 +317,16 @@ namespace Nekoyume.Game.Avatar
                 skinTone -= 1;
             }
             var skinName = $"{index}-{skinTone}";
-            // Debug.Log($"[UpdateBody] : {preIndex} / {skinName}");
 
-            var name = $"body_skin_{preIndex}_SkeletonData";
-            var asset = avatarScriptableObject.Body.FirstOrDefault(x => x.name == name);
+            var key = $"body_skin_{preIndex}_SkeletonData";
+            var asset = ResourceManager.Instance.Load<SkeletonDataAsset>(key);
+
+            if (asset == null)
+            {
+                NcDebug.LogError($"Failed to load SkeletonDataAsset: {key}");
+                return;
+            }
+
             var isUpdatedAsset = UpdateSkeletonDataAsset(AvatarPartsType.body_back, asset);
             UpdateSkeletonDataAsset(AvatarPartsType.body_front, asset);
             var isUpdatedSkin = UpdateSkin(true, AvatarPartsType.body_back, skinName);

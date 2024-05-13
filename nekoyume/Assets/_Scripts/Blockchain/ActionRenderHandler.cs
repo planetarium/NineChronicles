@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -363,6 +364,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<CombinationEquipment>()
+                           .ObserveOn(Scheduler.ThreadPool)
+                           .Where(ValidateEvaluationForCurrentAgent)
+                           .Where(ValidateEvaluationIsTerminated)
+                           .ObserveOnMainThread()
+                           .Subscribe(ExceptionCombinationEquipment)
+                           .AddTo(_disposables);
         }
 
         private void Grinding()
@@ -1110,6 +1119,38 @@ namespace Nekoyume.Blockchain
             }
 
             return (eval, avatarState, slot);
+        }
+
+        private void ExceptionCombinationEquipment(ActionEvaluation<CombinationEquipment> q)
+        {
+            var currentAction = q.Action;
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("On Exception CombinationEquipment Action");
+            stringBuilder.AppendLine($"avatarAddress: {currentAction.avatarAddress}");
+            stringBuilder.AppendLine($"slotIndex: {currentAction.slotIndex}");
+            stringBuilder.AppendLine($"petId: {currentAction.petId}");
+            stringBuilder.AppendLine($"recipeId: {currentAction.recipeId}");
+            stringBuilder.AppendLine($"payByCrystal: {currentAction.payByCrystal}");
+            stringBuilder.AppendLine($"subRecipeId: {currentAction.subRecipeId}");
+            stringBuilder.AppendLine($"useHammerPoint: {currentAction.useHammerPoint}");
+
+            var exception = q.Exception;
+            if (exception != null)
+            {
+                stringBuilder.AppendLine($"Exception: {exception.Message}");
+                stringBuilder.AppendLine($"StackTrace: {exception.StackTrace}");
+
+                var innerException = exception.InnerException;
+                if (innerException != null)
+                {
+                    stringBuilder.AppendLine($"InnerException: {innerException.Message}");
+                    stringBuilder.AppendLine($"InnerStackTrace: {innerException.StackTrace}");
+                }
+            }
+
+            NcDebug.LogError(stringBuilder.ToString());
+
+            // TODO: workshop ui 갱신
         }
 
         private void ResponseCombinationConsumable(
