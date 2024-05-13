@@ -100,10 +100,10 @@ namespace Nekoyume.Game.Util
                     NcDebug.Log($"[AdventureBoss] Season StartBlockIndex : {Game.instance.AdventureBossData.SeasonInfo.Value.StartBlockIndex}");
                     NcDebug.Log($"[AdventureBoss] Season EndBlockIndex : {Game.instance.AdventureBossData.SeasonInfo.Value.EndBlockIndex}");
                     NcDebug.Log($"[AdventureBoss] Season NextStartBlockIndex : {Game.instance.AdventureBossData.SeasonInfo.Value.NextStartBlockIndex}");
-                    if(Game.instance.AdventureBossData.SeasonInfo.Value.ParticipantList is null)
-                        NcDebug.Log($"[AdventureBoss] Season ParticipantCount : 0");
+                    if(Game.instance.AdventureBossData.SeasonInfo.Value.ExplorerList is null)
+                        NcDebug.Log($"[AdventureBoss] Season ExplorerListCount : 0");
                     else
-                        NcDebug.Log($"[AdventureBoss] Season ParticipantCount : {Game.instance.AdventureBossData.SeasonInfo.Value.ParticipantList.Count()}");
+                        NcDebug.Log($"[AdventureBoss] Season ExplorerListCount : {Game.instance.AdventureBossData.SeasonInfo.Value.ExplorerList.Count()}");
                     NcDebug.Log($"[AdventureBoss] Season UsedApPotion : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedApPotion}");
                     NcDebug.Log($"[AdventureBoss] Season UsedGoldenDust : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedGoldenDust}");
                     NcDebug.Log($"[AdventureBoss] Season UsedNcg : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedNcg}");

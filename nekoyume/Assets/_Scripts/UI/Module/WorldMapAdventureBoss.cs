@@ -7,11 +7,12 @@ using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UniRx;
 using UnityEngine;
+using System;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
     public class WorldMapAdventureBoss : MonoBehaviour
     {
         [SerializeField] private GameObject Open;
@@ -26,16 +27,20 @@ namespace Nekoyume.UI.Module
         private readonly List<System.IDisposable> _disposables = new();
         private long _remainingBlockIndex = 0;
 
-        private void Awake()
-        {
-            Game.Game.instance.AdventureBossData.SeasonInfo.Subscribe(OnSeasonInfoChanged);
-        }
-
         private void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposables);
+
+            Game.Game.instance.AdventureBossData.SeasonInfo.Subscribe(OnSeasonInfoChanged).AddTo(_disposables);
+            Game.Game.instance.AdventureBossData.BountyBoard.Subscribe(OnBountyBoardChanged).AddTo(_disposables);
+            Game.Game.instance.AdventureBossData.ExploreInfo.Subscribe(OnExploreInfoChanged).AddTo(_disposables);
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
         }
 
         private void UpdateViewAsync(long blockIndex)
@@ -55,11 +60,6 @@ namespace Nekoyume.UI.Module
             {
                 text.text = timeText;
             }
-        }
-
-        private void OnDisable()
-        {
-            _disposables.DisposeAllAndClear();
         }
 
         public void OnClickOpenEnterBountyPopup()
@@ -109,20 +109,31 @@ namespace Nekoyume.UI.Module
             Open.SetActive(true);
             Close.SetActive(false);
 
-            if(info.ParticipantList != null && info.ParticipantList.Count() > 0)
+            UsedNCG.text = info.UsedNcg.ToCurrencyNotation();
+
+            return;
+        }
+
+        private void OnBountyBoardChanged(BountyBoard bountyBoard)
+        {
+            if(bountyBoard.Investors != null && bountyBoard.Investors.Count() > 0)
             {
                 WantedOpen.SetActive(true);
                 WantedClose.SetActive(false);
-                UsedNCG.text = info.UsedNcg.ToCurrencyNotation();
-                //Floor.text = 
             }
             else
             {
                 WantedOpen.SetActive(false);
                 WantedClose.SetActive(true);
             }
+        }
 
-            return;
+        private void OnExploreInfoChanged(ExploreInfo info)
+        {
+            if (info != null)
+            {
+                Floor.text = info.Floor.ToString();
+            }
         }
     }
 }

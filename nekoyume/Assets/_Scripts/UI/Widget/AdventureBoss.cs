@@ -38,11 +38,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            Game.Game.instance.AdventureBossData.ExploreInfo.Subscribe((exploreInfo) =>
-            {
-                
-            }).AddTo
-
             base.Show(ignoreShowAnimation);
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor);
         }
