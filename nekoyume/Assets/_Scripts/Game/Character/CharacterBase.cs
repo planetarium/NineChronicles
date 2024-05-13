@@ -1087,38 +1087,44 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoExecuteAction()
         {
-            if (action is null)
+            if (action is not null)
             {
-                action = Actions.First();
+                yield break;
+            }
+            action = Actions.First();
 
-                var stage = Game.instance.Stage;
-                var waitSeconds = StageConfig.instance.actionDelay;
+            var stage       = Game.instance.Stage;
+            var waitSeconds = StageConfig.instance.actionDelay;
 
-                foreach (var info in action.skillInfos)
+            foreach (var info in action.skillInfos)
+            {
+                var target = info.Target;
+                if (target == null)
                 {
-                    var target = info.Target;
-                    if (target.IsDead)
-                    {
-                        var character = Game.instance.Stage.GetCharacter(target);
-                        if (character)
-                        {
-                            if (character.Actions.Any())
-                            {
-                                var time = Time.time;
-                                yield return new WaitWhile(() =>
-                                    Time.time - time > 10f || character.Actions.Any());
-                            }
-                        }
-                    }
+                    break;
                 }
 
-                yield return new WaitForSeconds(waitSeconds);
-                var coroutine = StartCoroutine(stage.CoSkill(action));
-                yield return coroutine;
-                _actions.Remove(action);
-                action = null;
-                _forceStop = false;
+                if (!target.IsDead)
+                {
+                    continue;
+                }
+
+                var character = Game.instance.Stage.GetCharacter(target);
+                if (!character || !character.Actions.Any())
+                {
+                    continue;
+                }
+
+                var time = Time.time;
+                yield return new WaitWhile(() => Time.time - time > 10f || character.Actions.Any());
             }
+
+            yield return new WaitForSeconds(waitSeconds);
+            var coroutine = StartCoroutine(stage.CoSkill(action));
+            yield return coroutine;
+            _actions.Remove(action);
+            action     = null;
+            _forceStop = false;
         }
 
         public void Dead()
