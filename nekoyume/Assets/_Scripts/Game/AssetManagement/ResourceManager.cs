@@ -10,6 +10,7 @@ namespace Nekoyume
     public class ResourceManager
     {
         public static string BattleLabel => "Battle";
+        public static string CharacterLabel => "Character";
 
         private static class Singleton
         {
@@ -87,11 +88,7 @@ namespace Nekoyume
             if (_dontDestroyOnLoadResources.ContainsKey(key))
                 return;
 
-            var loadKey = key;
-            if (key.Contains(".sprite"))
-                loadKey = $"{key}[{key.Replace(".sprite", "")}]";
-
-            var asyncOperation = Addressables.LoadAssetAsync<T>(loadKey);
+            var asyncOperation = Addressables.LoadAssetAsync<T>(key);
             await asyncOperation;
 
             if (isDonDestroy)
@@ -108,10 +105,7 @@ namespace Nekoyume
             NcDebug.Log($"LoadAllAsync : {label}");
 
             foreach (var result in opHandle.Result)
-                if (result.PrimaryKey.Contains(".sprite"))
-                    await LoadAsync<Sprite>(result.PrimaryKey, isDonDestroy);
-                else
-                    await LoadAsync<T>(result.PrimaryKey, isDonDestroy);
+                await LoadAsync<T>(result.PrimaryKey, isDonDestroy);
         }
 
         public void Release(string key)
