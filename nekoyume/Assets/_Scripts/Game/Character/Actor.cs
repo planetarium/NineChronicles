@@ -13,15 +13,12 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Character;
 using UnityEngine.Rendering;
-using Nekoyume.Model.Buff;
-using DG.Tweening.Plugins.Options;
-using Cysharp.Threading.Tasks.Triggers;
 using Nekoyume.Game.Battle;
-using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model;
 
 namespace Nekoyume.Game.Character
 {
-    public abstract class CharacterBase : Character
+    public abstract class Actor : Character
     {
         public const float AnimatorTimeScale = 1.2f;
         protected static readonly WaitForSeconds AttackTimeOut = new WaitForSeconds(5f);
@@ -38,9 +35,9 @@ namespace Nekoyume.Game.Character
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
-        public Model.CharacterBase CharacterModel { get; protected set; }
+        public CharacterBase CharacterModel { get; protected set; }
 
-        public readonly Subject<CharacterBase> OnUpdateActorHud = new Subject<CharacterBase>();
+        public readonly Subject<Actor> OnUpdateActorHud = new Subject<Actor>();
 
         private readonly List<int> removedBuffVfxList = new();
 
@@ -100,9 +97,10 @@ namespace Nekoyume.Game.Character
         protected BoxCollider HitPointBoxCollider { get; private set; }
         public Vector3 HitPointLocalOffset { get; set; }
 
-        public List<ActionParams> actions = new List<ActionParams>();
+        private readonly Queue<ActionParams> actionQueue = new();
+        public IReadOnlyCollection<ActionParams> ActionQueue => actionQueue;
 
-        public ActionParams action;
+        private ActionParams _action;
 
 
         private bool _forceStop = false;
@@ -138,8 +136,8 @@ namespace Nekoyume.Game.Character
 
             RunSpeed = 0.0f;
             _root = null;
-            actions.Clear();
-            action = null;
+            actionQueue.Clear();
+            _action = null;
             if (!_applicationQuitting)
                 DisableHUD();
             _forceStop = false;
@@ -151,7 +149,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public virtual void Set(Model.CharacterBase model, bool updateCurrentHp = false)
+        public virtual void Set(CharacterBase model, bool updateCurrentHp = false)
         {
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
@@ -164,7 +162,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual IEnumerator Dying()
         {
-            yield return new WaitWhile(() => actions.Any());
+            yield return new WaitWhile(HasAction);
             OnDeadStart();
             StopRun();
             Animator.Die();
@@ -205,6 +203,11 @@ namespace Nekoyume.Game.Character
 
         protected virtual void InitializeActorHud()
         {
+            if (!HudContainer)
+            {
+                return;
+            }
+
             ActorHud = Widget.Create<HpBar>(true);
 
             ActorHud.transform.SetParent(HudContainer.transform);
@@ -329,7 +332,7 @@ namespace Nekoyume.Game.Character
         {
             Animator.Idle();
             gameObject.SetActive(false);
-            actions.Clear();
+            actionQueue.Clear();
         }
 
         protected void PopUpDmg(
@@ -404,7 +407,7 @@ namespace Nekoyume.Game.Character
                     BT.If(() => !CanRun).OpenBranch(
                         BT.Sequence().OpenBranch(
                             BT.Call(StopRun),
-                            BT.If(() => actions.Any()).OpenBranch(
+                            BT.If(() => ActionQueue.Any()).OpenBranch(
                                 BT.Call(ExecuteAction)
                             )
                         )
@@ -447,7 +450,7 @@ namespace Nekoyume.Game.Character
             if (!other.gameObject.CompareTag(TargetTag))
                 return;
 
-            var character = other.gameObject.GetComponent<CharacterBase>();
+            var character = other.gameObject.GetComponent<Actor>();
             if (!character)
                 return;
 
@@ -459,14 +462,14 @@ namespace Nekoyume.Game.Character
             if (!other.gameObject.CompareTag(TargetTag))
                 return;
 
-            var character = other.gameObject.GetComponent<CharacterBase>();
+            var character = other.gameObject.GetComponent<Actor>();
             if (!character)
                 return;
 
             StopRunIfTargetInAttackRange(character);
         }
 
-        private void StopRunIfTargetInAttackRange(CharacterBase target)
+        private void StopRunIfTargetInAttackRange(Actor target)
         {
             if (target.IsDead || !TargetInAttackRange(target))
                 return;
@@ -476,7 +479,7 @@ namespace Nekoyume.Game.Character
             StopRun();
         }
 
-        private IEnumerator CoStop(CharacterBase target)
+        private IEnumerator CoStop(Actor target)
         {
             yield return new WaitUntil(() => IsDead || target.IsDead);
             _forceStop = false;
@@ -484,14 +487,14 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public virtual float CalculateRange(CharacterBase target)
+        public virtual float CalculateRange(Actor target)
         {
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
             return attackRangeStartPosition - targetHitPosition;
         }
 
-        public bool TargetInAttackRange(CharacterBase target)
+        public bool TargetInAttackRange(Actor target)
         {
             var diff = CalculateRange(target);
             return AttackRange > diff;
@@ -539,7 +542,7 @@ namespace Nekoyume.Game.Character
         }
 
         protected virtual void ProcessAttack(
-            CharacterBase target,
+            Actor target,
             Model.BattleStatus.Skill.SkillInfo skill,
             bool isLastHit,
             bool isConsiderElementalType)
@@ -550,7 +553,7 @@ namespace Nekoyume.Game.Character
         }
 
         protected virtual void ProcessHeal(
-            CharacterBase target,
+            Actor target,
             Model.BattleStatus.Skill.SkillInfo info)
         {
             if (target && !info.Target!.IsDead)
@@ -565,7 +568,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void ProcessBuff(CharacterBase target, Model.BattleStatus.Skill.SkillInfo info)
+        private void ProcessBuff(Actor target, Model.BattleStatus.Skill.SkillInfo info)
         {
             if (!target || info.Target!.IsDead)
             {
@@ -743,7 +746,7 @@ namespace Nekoyume.Game.Character
 
         private void PostAnimationForTheKindOfAttack()
         {
-            var enemy = GetComponentsInChildren<CharacterBase>()
+            var enemy = GetComponentsInChildren<Actor>()
                 .Where(c => c.gameObject.CompareTag(TargetTag))
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
             if (enemy != null && !TargetInAttackRange(enemy))
@@ -770,7 +773,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 ProcessAttack(target, info, info.Target.IsDead, false);
                 if (this is Player && !(this is EnemyPlayer))
                     battleWidget.ShowComboText(info.Effect > 0);
@@ -802,7 +805,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 if (target is null)
                     continue;
 
@@ -846,7 +849,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfos.Count; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 if (target is null)
                     continue;
 
@@ -878,7 +881,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 if (target is null)
                     continue;
 
@@ -916,7 +919,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 if (target is null)
                     continue;
 
@@ -952,7 +955,7 @@ namespace Nekoyume.Game.Character
             ShowCutscene();
             yield return StartCoroutine(CoAnimationCast(skillInfosFirst));
 
-            var effectTarget = Game.instance.Stage.GetCharacter(skillInfosFirst.Target);
+            var effectTarget = Game.instance.Stage.GetActor(skillInfosFirst.Target);
             if (effectTarget is null)
                 yield break;
 
@@ -976,7 +979,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 if (target is null)
                     continue;
 
@@ -1033,7 +1036,7 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in skillInfos)
             {
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 ProcessHeal(target, info);
             }
 
@@ -1048,7 +1051,7 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in skillInfos)
             {
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 ProcessHeal(target, info);
             }
         }
@@ -1064,10 +1067,10 @@ namespace Nekoyume.Game.Character
                 yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
             }
 
-            HashSet<CharacterBase> dispeledTargets = new HashSet<CharacterBase>();
+            HashSet<Actor> dispeledTargets = new HashSet<Actor>();
             foreach (var info in skillInfos)
             {
-                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetActor(info.Target);
                 ProcessBuff(target, info);
                 if (!info.Affected || (info.DispelList != null && info.DispelList.Count() > 0))
                 {
@@ -1097,6 +1100,16 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
+        public bool HasAction()
+        {
+            return actionQueue.Any() || _action is not null;
+        }
+
+        public void AddAction(ActionParams actionParams)
+        {
+            actionQueue.Enqueue(actionParams);
+        }
+
         private void ExecuteAction()
         {
             StartCoroutine(CoExecuteAction());
@@ -1104,38 +1117,39 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoExecuteAction()
         {
-            if (action is null)
+            if (_action is not null)
             {
-                action = actions.First();
+                yield break;
+            }
+            _action = actionQueue.Dequeue();
 
-                var stage = Game.instance.Stage;
-                var waitSeconds = StageConfig.instance.actionDelay;
-
-                foreach (var info in action.skillInfos)
+            foreach (var info in _action.skillInfos)
+            {
+                var target = info.Target;
+                if (target == null)
                 {
-                    var target = info.Target;
-                    if (target.IsDead)
-                    {
-                        var character = Game.instance.Stage.GetCharacter(target);
-                        if (character)
-                        {
-                            if (character.actions.Any())
-                            {
-                                var time = Time.time;
-                                yield return new WaitWhile(() =>
-                                    Time.time - time > 10f || character.actions.Any());
-                            }
-                        }
-                    }
+                    break;
                 }
 
-                yield return new WaitForSeconds(waitSeconds);
-                var coroutine = StartCoroutine(stage.CoSkill(action));
-                yield return coroutine;
-                actions.Remove(action);
-                action = null;
-                _forceStop = false;
+                if (!target.IsDead)
+                {
+                    continue;
+                }
+
+                var targetActor = Game.instance.Stage.GetActor(target);
+                if (!targetActor || !targetActor.HasAction())
+                {
+                    continue;
+                }
+
+                var time = Time.time;
+                yield return new WaitWhile(() => Time.time - time > 10f || targetActor.HasAction());
             }
+
+            yield return new WaitForSeconds(StageConfig.instance.actionDelay);
+            yield return StartCoroutine(Game.instance.Stage.CoSkill(_action));
+            _action     = null;
+            _forceStop = false;
         }
 
         public void Dead()
@@ -1244,17 +1258,17 @@ namespace Nekoyume.Game.Character
 
     public class ActionParams
     {
-        public CharacterBase character;
+        public Actor character;
         public IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos;
         public IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos;
         public Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> func;
 
-        public ActionParams(CharacterBase characterBase,
+        public ActionParams(Actor actor,
             IEnumerable<Model.BattleStatus.Skill.SkillInfo> enumerable,
             IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos1,
             Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> coNormalAttack)
         {
-            character = characterBase;
+            character = actor;
             skillInfos = enumerable;
             buffInfos = buffInfos1;
             func = coNormalAttack;

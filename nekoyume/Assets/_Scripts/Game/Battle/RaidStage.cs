@@ -6,6 +6,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.Director;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;
@@ -20,6 +21,8 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
+using EnemyPlayer = Nekoyume.Model.EnemyPlayer;
+using Player = Nekoyume.Model.Player;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game.Battle
@@ -233,7 +236,7 @@ namespace Nekoyume.Game.Battle
             _player.Pet.DelayedPlay(Character.PetAnimation.Type.BattleStart, 2.5f);
             yield return StartCoroutine(container.CoPlayAppearCutscene());
             _boss.Animator.Idle();
-            foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
+            foreach (var character in GetComponentsInChildren<Actor>())
             {
                 character.Animator.TimeScale = Stage.AcceleratedAnimationTimeScaleWeight;
             }

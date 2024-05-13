@@ -1,26 +1,8 @@
 using System;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Nekoyume
 {
-    ///
-    /// It overrides UnityEngine.Debug to mute debug messages completely on a platform-specific basis.
-    ///
-    /// Putting this inside of 'Plugins' foloder is ok.
-    ///
-    /// Important:
-    ///     Other preprocessor directives than 'UNITY_EDITOR' does not correctly work.
-    ///
-    /// Note:
-    ///     [Conditional] attribute indicates to compilers that a method call or attribute should be
-    ///     ignored unless a specified conditional compilation symbol is defined.
-    ///
-    /// See Also:
-    ///     http://msdn.microsoft.com/en-us/library/system.diagnostics.conditionalattribute.aspx
-    ///
-    /// 2012.11. @kimsama
-    ///
     public static class NcDebug
     {
         // used for build with 'DEBUG_USE' symbol.
@@ -30,105 +12,108 @@ namespace Nekoyume
             return $"[{DateTime.UtcNow:yyyy-M-d HH:mm:ss}] {message}";
         }
 
-        public static void Log(object message)
+        public static void Log(object message, string channel = "")
         {
 #if UNITY_EDITOR
-            Debug.Log(message);
+            UberDebug.LogChannel(channel, message.ToString());
 #elif DEBUG_USE
-            Debug.Log(InsertTimestamp(message.ToString()));
+            UnityEngine.Debug.Log(InsertTimestamp(message.ToString()));
 #endif
         }
 
-        public static void Log(object message, UnityEngine.Object context)
+        public static void Log(object message, UnityEngine.Object context, string channel = "")
         {
 #if UNITY_EDITOR
-            Debug.Log(message, context);
+            UberDebug.LogChannel(channel, message.ToString(), context);
 #elif DEBUG_USE
-            Debug.Log(InsertTimestamp(message.ToString()), context);
+            UnityEngine.Debug.Log(InsertTimestamp(message.ToString()), context);
 #endif
         }
 
         public static void LogFormat(string format, params object[] args)
         {
+            var message = string.Format(format, args);
 #if UNITY_EDITOR
-            Debug.LogFormat(format, args);
+            UberDebug.Log(message);
 #elif DEBUG_USE
             // LogFormat() in itself expands an array when it takes only one array.
-            Debug.Log(InsertTimestamp(string.Format(format, args)));
+            UnityEngine.Debug.Log(InsertTimestamp(message));
 #endif
         }
 
-        public static void LogWarning(object message)
+        public static void LogWarning(object message, string channel = "")
         {
 #if UNITY_EDITOR
-            Debug.LogWarning(message);
+            UberDebug.LogWarningChannel(channel, message.ToString());
 #elif DEBUG_USE
-            Debug.LogWarning(InsertTimestamp(message.ToString()));
+            UnityEngine.Debug.LogWarning(InsertTimestamp(message.ToString()));
 #endif
         }
 
-        public static void LogWarning(object message, UnityEngine.Object context)
+        public static void LogWarning(object message, UnityEngine.Object context, string channel = "")
         {
 #if UNITY_EDITOR
-            Debug.LogWarning(message, context);
+            UberDebug.LogWarningChannel(channel, message.ToString(), context);
 #elif DEBUG_USE
-            Debug.LogWarning(InsertTimestamp(message.ToString()), context);
+            UnityEngine.Debug.LogWarning(InsertTimestamp(message.ToString()), context);
 #endif
         }
 
         public static void LogWarningFormat(string format, params object[] args)
         {
+            var message = string.Format(format, args);
 #if UNITY_EDITOR
-            Debug.LogWarningFormat(format, args);
+            UberDebug.LogWarning(message);
 #elif DEBUG_USE
             // LogWarningFormat() in itself expands an array when it takes only one array.
-            Debug.LogWarningFormat(InsertTimestamp(string.Format(format, args)));
+            UnityEngine.Debug.LogWarningFormat(InsertTimestamp(message));
 #endif
         }
 
-        public static void LogError(object message)
+        public static void LogError(object message, string channel = "")
         {
 #if UNITY_EDITOR
-            Debug.LogError(message);
+            UberDebug.LogErrorChannel(channel, message.ToString());
 #elif DEBUG_USE
-            Debug.LogError(InsertTimestamp(message.ToString()));
+            UnityEngine.Debug.LogError(InsertTimestamp(message.ToString()));
 #endif
         }
 
-        public static void LogError(object message, UnityEngine.Object context)
+        public static void LogError(object message, UnityEngine.Object context, string channel = "")
         {
 #if UNITY_EDITOR
-            Debug.LogError(message, context);
+            UberDebug.LogErrorChannel(channel, message.ToString(), context);
 #elif DEBUG_USE
-            Debug.LogError(InsertTimestamp(message.ToString()), context);
+            UnityEngine.Debug.LogError(InsertTimestamp(message.ToString()), context);
 #endif
         }
 
         public static void LogErrorFormat(string format, params object[] args)
         {
+            var message = string.Format(format, args);
 #if UNITY_EDITOR
-            Debug.LogErrorFormat(format, args);
+            UberDebug.LogError(message);
 #elif DEBUG_USE
             // LogErrorFormat() in itself expands an array when it takes only one array.
-            Debug.LogErrorFormat(InsertTimestamp(string.Format(format, args)));
+            UnityEngine.Debug.LogErrorFormat(InsertTimestamp(message));
 #endif
         }
 
-        public static void LogException(Exception exception)
+        public static void LogException(Exception exception, string channel = "")
         {
 #if UNITY_EDITOR
-            Debug.LogError(exception.Message);
+            UberDebug.LogErrorChannel(channel, exception.Message);
 #elif DEBUG_USE
-            Debug.LogError(InsertTimestamp(exception.Message));
+            UnityEngine.Debug.LogError(InsertTimestamp(exception.Message));
 #endif
         }
 
-        public static void LogException(Exception exception, UnityEngine.Object context)
+        public static void LogException(Exception exception, UnityEngine.Object context, string channel = "")
         {
 #if UNITY_EDITOR
-            Debug.LogError(exception.Message, context);
+            UberDebug.LogErrorChannel(channel, exception.Message, context);
 #elif DEBUG_USE
-            Debug.LogError(InsertTimestamp(exception.Message), context);
+            UnityEngine.Debug.LogError(InsertTimestamp(exception.Message), context);
 #endif
         }
     }

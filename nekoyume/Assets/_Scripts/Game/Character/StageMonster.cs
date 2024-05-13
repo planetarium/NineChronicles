@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Character
 {
     using UniRx;
 
-    public class StageMonster : CharacterBase
+    public class StageMonster : Actor
     {
         private Player _player;
 
@@ -171,7 +171,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
+        protected override void ProcessAttack(Actor target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
             ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);

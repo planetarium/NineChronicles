@@ -38,7 +38,7 @@ namespace Nekoyume.Game.Character
             attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - CharacterModel.attackRange, 0f);
         }
 
-        public override float CalculateRange(CharacterBase target)
+        public override float CalculateRange(Actor target)
         {
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
