@@ -83,6 +83,7 @@ namespace Nekoyume.UI
 
         [Header("Mobile/KeyImportPopup")]
         [SerializeField] private GameObject keyImportPopup;
+        [SerializeField] private Button keyImportCloseButton;
         [SerializeField] private Button keyImportWithCameraButton;
         [SerializeField] private Button keyImportWithGallaryButton;
 
@@ -259,18 +260,30 @@ namespace Nekoyume.UI
                 }
             });
 
-            // NOTE: KeyImportPopup's close button callback is not set here. (It is set in prefab)
+            var trySigninWithKeyImport = false;
             keyImportButton.gameObject.SetActive(!ppkExist);
-            keyImportButton.onClick.AddListener(() => keyImportPopup.gameObject.SetActive(true));
+            keyImportButton.onClick.AddListener(() =>
+            {
+                keyImportPopup.SetActive(true);
+                keyImportCloseButton.gameObject.SetActive(true);
+                trySigninWithKeyImport = true;
+            });
+            keyImportCloseButton.onClick.AddListener(() =>
+            {
+                keyImportPopup.SetActive(false);
+                keyImportCloseButton.gameObject.SetActive(false);
+                trySigninWithKeyImport = false;
+            });
+
             keyImportWithCameraButton.onClick.AddListener(() =>
             {
+                keyImportPopup.SetActive(false);
                 ShowQrCodeGuide(result =>
                 {
                     var pk = ImportPrivateKeyFromJson(result.Text);
-                    keyImportPopup.SetActive(false);
+                    SigninContext.SetHasSignedWithKeyImport(trySigninWithKeyImport);
                     startButtonContainer.SetActive(false);
                     Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
-                    SigninContext.SetHasSignedWithKeyImport(true);
                 });
             });
             keyImportWithGallaryButton.onClick.AddListener(() =>
@@ -278,10 +291,10 @@ namespace Nekoyume.UI
                 codeReaderView.ScanQrCodeFromGallery(result =>
                 {
                     var pk = ImportPrivateKeyFromJson(result.Text);
+                    SigninContext.SetHasSignedWithKeyImport(trySigninWithKeyImport);
                     keyImportPopup.SetActive(false);
                     startButtonContainer.SetActive(false);
                     Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
-                    SigninContext.SetHasSignedWithKeyImport(true);
                 });
             });
         }
@@ -384,11 +397,7 @@ namespace Nekoyume.UI
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
 
-            ShowQrCodeGuide(result =>
-            {
-                var pk = ImportPrivateKeyFromJson(result.Text);
-                Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
-            });
+            keyImportPopup.SetActive(true);
         }
 
         /// <summary>
