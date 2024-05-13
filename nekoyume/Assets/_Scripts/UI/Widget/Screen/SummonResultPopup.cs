@@ -266,8 +266,9 @@ namespace Nekoyume.UI
             return costType switch
             {
                 CostType.SilverDust => normalVideoClip,
-                CostType.GoldDust => goldenVideoClip,
-                _ => null
+                CostType.GoldDust   => goldenVideoClip,
+                CostType.RubyDust   => redVideoClip,
+                _                   => null
             };
         }
 
