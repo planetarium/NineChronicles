@@ -6,7 +6,7 @@ namespace Nekoyume.Game.VFX.Skill
     public class BuffVFX : VFX
     {
         [field: SerializeField]
-        public CharacterBase Target { get; set; }
+        public Actor Target { get; set; }
 
         [field: SerializeField]
         public virtual bool IsPersisting { get; set; } = false;

@@ -233,7 +233,7 @@ namespace Nekoyume.Game.Battle
             _player.Pet.DelayedPlay(Character.PetAnimation.Type.BattleStart, 2.5f);
             yield return StartCoroutine(container.CoPlayAppearCutscene());
             _boss.Animator.Idle();
-            foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
+            foreach (var character in GetComponentsInChildren<Character.Actor>())
             {
                 character.Animator.TimeScale = Stage.AcceleratedAnimationTimeScaleWeight;
             }
