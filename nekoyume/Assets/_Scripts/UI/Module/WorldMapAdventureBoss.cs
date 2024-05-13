@@ -12,6 +12,7 @@ using System;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.UI.Model;
     using UniRx;
     public class WorldMapAdventureBoss : MonoBehaviour
     {
@@ -33,10 +34,9 @@ namespace Nekoyume.UI.Module
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposables);
 
-            Game.Game.instance.AdventureBossData.SeasonInfo.Subscribe(OnSeasonInfoChanged).AddTo(_disposables);
-            Game.Game.instance.AdventureBossData.BountyBoard.Subscribe(OnBountyBoardChanged).AddTo(_disposables);
-            Game.Game.instance.AdventureBossData.ExploreInfo.Subscribe(OnExploreInfoChanged).AddTo(_disposables);
+            Game.Game.instance.AdventureBossData.CurrentState.Subscribe(OnAdventureBossStateChanged).AddTo(_disposables);
         }
+
 
         private void OnDisable()
         {
@@ -48,10 +48,7 @@ namespace Nekoyume.UI.Module
             var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
             if (seasonInfo == null)
             {
-                foreach (var text in RemainingBlockIndexs)
-                {
-                    text.text = "";
-                }
+                SetDefualtRemainingBlockIndexs();
                 return;
             }
             _remainingBlockIndex =  seasonInfo.EndBlockIndex - blockIndex;
@@ -59,6 +56,14 @@ namespace Nekoyume.UI.Module
             foreach (var text in RemainingBlockIndexs)
             {
                 text.text = timeText;
+            }
+        }
+
+        private void SetDefualtRemainingBlockIndexs()
+        {
+            foreach (var text in RemainingBlockIndexs)
+            {
+                text.text = "(-)";
             }
         }
 
@@ -91,48 +96,33 @@ namespace Nekoyume.UI.Module
             OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_REMAINIG_TIME", remaingTimespan.Hours, remaingTimespan.Minutes%60), NotificationCell.NotificationType.Notification);
         }
 
-        private void OnSeasonInfoChanged(SeasonInfo info)
+        private void OnAdventureBossStateChanged(AdventureBossData.AdventureBossSeasonState state)
         {
-            if (info == null)
+            switch (state)
             {
-                Close.SetActive(true);
-                Open.SetActive(false);
-                return ;
-            }
+                case AdventureBossData.AdventureBossSeasonState.Ready:
+                    Open.SetActive(true);
+                    Close.SetActive(false);
 
-            if (info.EndBlockIndex < Game.Game.instance.Agent.BlockIndex)
-            {
-                Open.SetActive(false);
-                Close.SetActive(true);
-                return;
-            }
-            Open.SetActive(true);
-            Close.SetActive(false);
+                    WantedOpen.SetActive(false);
+                    WantedClose.SetActive(true);
+                    break;
+                case AdventureBossData.AdventureBossSeasonState.Progress:
+                    Open.SetActive(true);
+                    Close.SetActive(false);
 
-            UsedNCG.text = info.UsedNcg.ToCurrencyNotation();
-
-            return;
-        }
-
-        private void OnBountyBoardChanged(BountyBoard bountyBoard)
-        {
-            if(bountyBoard.Investors != null && bountyBoard.Investors.Count() > 0)
-            {
-                WantedOpen.SetActive(true);
-                WantedClose.SetActive(false);
-            }
-            else
-            {
-                WantedOpen.SetActive(false);
-                WantedClose.SetActive(true);
-            }
-        }
-
-        private void OnExploreInfoChanged(ExploreInfo info)
-        {
-            if (info != null)
-            {
-                Floor.text = info.Floor.ToString();
+                    var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+                    var experienceInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                    UsedNCG.text = seasonInfo.UsedNcg.ToCurrencyNotation();
+                    Floor.text = experienceInfo.Floor.ToString();
+                    break;
+                case AdventureBossData.AdventureBossSeasonState.None:
+                case AdventureBossData.AdventureBossSeasonState.End:
+                default:
+                    SetDefualtRemainingBlockIndexs();
+                    Close.SetActive(true);
+                    Open.SetActive(false);
+                    break;
             }
         }
     }

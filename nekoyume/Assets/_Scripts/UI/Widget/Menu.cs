@@ -297,7 +297,7 @@ namespace Nekoyume.UI
 
             if (GUILayout.Button("WantedAction", style))
             {
-                ActionManager.Instance.Wanted(new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, 1000, 0));
+                ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.LatestSeason.Value.SeasonId, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, 1000, 0));
             }
 
             if (GUILayout.Button("AdventureBossBattle", style))
@@ -340,7 +340,7 @@ namespace Nekoyume.UI
             player.localPosition = playerPosition.localPosition + (Vector3.left * 300);
             player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);
 
-            Game.Game.instance.Agent.GetAdventureBossLatestSeasonInfoAsync().AsUniTask().Forget();
+            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().Forget();
         }
 
         private void GoToPrepareStage(BattleLog battleLog)
