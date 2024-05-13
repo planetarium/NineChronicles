@@ -2,6 +2,8 @@ using IngameDebugConsole;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Nekoyume.UI;
+using System.Linq;
+using System.Reactive.Linq;
 
 namespace Nekoyume.Game.Util
 {
@@ -81,6 +83,44 @@ namespace Nekoyume.Game.Util
                 var agentAddress = Game.instance.States.AgentState.address;
                 var patrolReward = Widget.Find<PatrolRewardPopup>().PatrolReward;
                 patrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+            });
+
+            DebugLogConsole.AddCommand("adventureboss-info", "Clear Screen", () =>
+            {
+                NcDebug.Log("------------------------------------------");
+                NcDebug.Log("[AdventureBoss] Info");
+                if(Game.instance.AdventureBossData.SeasonInfo.Value is null)
+                {
+                    NcDebug.Log("[AdventureBoss] No Season Info");
+                }
+                else
+                {
+                    NcDebug.Log($"[AdventureBoss] Season Id : {Game.instance.AdventureBossData.SeasonInfo.Value.Season}");
+                    NcDebug.Log($"[AdventureBoss] Season TotalPoint : {Game.instance.AdventureBossData.SeasonInfo.Value.TotalPoint}");
+                    NcDebug.Log($"[AdventureBoss] Season StartBlockIndex : {Game.instance.AdventureBossData.SeasonInfo.Value.StartBlockIndex}");
+                    NcDebug.Log($"[AdventureBoss] Season EndBlockIndex : {Game.instance.AdventureBossData.SeasonInfo.Value.EndBlockIndex}");
+                    NcDebug.Log($"[AdventureBoss] Season NextStartBlockIndex : {Game.instance.AdventureBossData.SeasonInfo.Value.NextStartBlockIndex}");
+                    if(Game.instance.AdventureBossData.SeasonInfo.Value.ParticipantList is null)
+                        NcDebug.Log($"[AdventureBoss] Season ParticipantCount : 0");
+                    else
+                        NcDebug.Log($"[AdventureBoss] Season ParticipantCount : {Game.instance.AdventureBossData.SeasonInfo.Value.ParticipantList.Count()}");
+                    NcDebug.Log($"[AdventureBoss] Season UsedApPotion : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedApPotion}");
+                    NcDebug.Log($"[AdventureBoss] Season UsedGoldenDust : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedGoldenDust}");
+                    NcDebug.Log($"[AdventureBoss] Season UsedNcg : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedNcg}");
+                    NcDebug.Log($"[AdventureBoss] Season TotalPoint : {Game.instance.AdventureBossData.SeasonInfo.Value.TotalPoint}");
+                }
+                if(Game.instance.AdventureBossData.BountyBoard.Value is null)
+                {
+                    NcDebug.Log("[AdventureBoss] No BountyBoard Info");
+                }
+                else
+                {
+                    NcDebug.Log($"[AdventureBoss] BountyBoard Count : {Game.instance.AdventureBossData.BountyBoard.Value.Investors.Count()}");
+                    foreach (var item in Game.instance.AdventureBossData.BountyBoard.Value.Investors)
+                    {
+                        NcDebug.Log($"[AdventureBoss] BountyBoard Investor : {item.Price}  {item.Count}  {item.AvatarAddress}");
+                    }
+                }
             });
         }
     }
