@@ -114,6 +114,15 @@ namespace Nekoyume.UI
                                     $", Format: {result.BarcodeFormat}");
                         onSuccess?.Invoke(result);
                     }
+                    else
+                    {
+                        // NOTE: 이미지에서 QR 코드를 찾지 못한 경우.
+                        NcDebug.LogError("[CodeReaderView] QR code not detected from Image.");
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("ERROR_IMPORTKEY_LOADIMAGE"),
+                            NotificationCell.NotificationType.Alert);
+                    }
                 }
                 catch (Exception ex)
                 {
