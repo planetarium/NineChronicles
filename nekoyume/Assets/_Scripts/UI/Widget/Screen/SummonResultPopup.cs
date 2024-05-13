@@ -32,8 +32,10 @@ namespace Nekoyume.UI
 
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button skipButton;
+
         [SerializeField] private ResultVideoClip normalVideoClip;
         [SerializeField] private ResultVideoClip goldenVideoClip;
+        [SerializeField] private ResultVideoClip redVideoClip;
 
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
