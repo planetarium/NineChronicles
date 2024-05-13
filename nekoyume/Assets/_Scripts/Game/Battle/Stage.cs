@@ -158,11 +158,11 @@ namespace Nekoyume.Game.Battle
 
         public void UpdateTimeScale()
         {
-            foreach (var character in GetComponentsInChildren<Character.Actor>())
+            foreach (var character in GetComponentsInChildren<Actor>())
             {
                 var isEnemy = character is Character.StageMonster;
                 character.Animator.TimeScale = isEnemy
-                    ? Character.Actor.AnimatorTimeScale * AnimationTimeScaleWeight
+                    ? Actor.AnimatorTimeScale * AnimationTimeScaleWeight
                     : AnimationTimeScaleWeight;
                 if (character.RunSpeed != 0f)
                 {
@@ -516,7 +516,7 @@ namespace Nekoyume.Game.Battle
             var avatarState = States.Instance.CurrentAvatarState;
 
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
-            var characters = GetComponentsInChildren<Character.Actor>();
+            var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             yield return new WaitForSeconds(1f);
             Boss = null;
@@ -961,7 +961,7 @@ namespace Nekoyume.Game.Battle
             var character = GetActor(affectedCharacter);
             foreach (var info in skillInfos)
             {
-                var characters = GetComponentsInChildren<Character.Actor>();
+                var characters = GetComponentsInChildren<Actor>();
                 yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
                 yield return StartCoroutine(character.CoProcessDamage(info, true, true));
                 yield return new WaitForSeconds(SkillDelay);
@@ -992,7 +992,7 @@ namespace Nekoyume.Game.Battle
         }
 
         private IEnumerator CoSkill(
-            Character.Actor character,
+            Actor character,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos,
             Func<IReadOnlyList<Skill.SkillInfo>, IEnumerator> func)
@@ -1042,7 +1042,7 @@ namespace Nekoyume.Game.Battle
             yield return null;
         }
 
-        private IEnumerator CoBeforeSkill(Character.Actor character)
+        private IEnumerator CoBeforeSkill(Actor character)
         {
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoBeforeSkill)}() enter. character: {character.Id}");
@@ -1050,7 +1050,7 @@ namespace Nekoyume.Game.Battle
             if (!character)
                 throw new ArgumentNullException(nameof(character));
 
-            var enemy = GetComponentsInChildren<Character.Actor>()
+            var enemy = GetComponentsInChildren<Actor>()
                 .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive)
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
             if (!enemy || character.TargetInAttackRange(enemy))
@@ -1062,9 +1062,7 @@ namespace Nekoyume.Game.Battle
                 Time.time - time > 2f || character.TargetInAttackRange(enemy));
         }
 
-        private IEnumerator CoAfterSkill(
-            Character.Actor character,
-            IEnumerable<Skill.SkillInfo> buffInfos)
+        private IEnumerator CoAfterSkill(Actor character, IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoAfterSkill)}() enter. character: {character.Id}");
@@ -1086,7 +1084,7 @@ namespace Nekoyume.Game.Battle
             }
 
             yield return new WaitForSeconds(SkillDelay);
-            var enemy = GetComponentsInChildren<Character.Actor>()
+            var enemy = GetComponentsInChildren<Actor>()
                 .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive)
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
             if (enemy && !character.TargetInAttackRange(enemy))
@@ -1116,7 +1114,7 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoGetReward)}() enter.");
 #endif
-            var characters = GetComponentsInChildren<Character.Actor>();
+            var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             foreach (var item in rewards)
             {
@@ -1154,7 +1152,7 @@ namespace Nekoyume.Game.Battle
                 Widget.Find<Tutorial>().PlaySmallGuide(model.Id);
             }
 
-            var characters = GetComponentsInChildren<Character.Actor>();
+            var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             yield return new WaitForSeconds(StageConfig.instance.spawnWaveDelay);
             Widget.Find<UI.Battle>().BossStatus.Close();
@@ -1194,7 +1192,7 @@ namespace Nekoyume.Game.Battle
 #endif
             yield return new WaitWhile(() => SelectedPlayer.HasAction());
             Event.OnPlayerTurnEnd.Invoke(turnNumber);
-            var characters = GetComponentsInChildren<Character.Actor>();
+            var characters = GetComponentsInChildren<Actor>();
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} ing. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
@@ -1212,7 +1210,7 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoGetExp)}() enter. exp: {exp}");
 #endif
-            var characters = GetComponentsInChildren<Character.Actor>();
+            var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             _battleResultModel.Exp += exp;
             var player = GetPlayer();
@@ -1224,7 +1222,7 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoDead)}() enter. model: {model.Id}");
 #endif
-            var characters = GetComponentsInChildren<Character.Actor>();
+            var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             var character = GetActor(model);
             _playerPosition = SelectedPlayer.transform.position;
@@ -1426,7 +1424,7 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        private static void RunAndChasePlayer(Character.Actor player)
+        private static void RunAndChasePlayer(Actor player)
         {
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
