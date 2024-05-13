@@ -202,13 +202,18 @@ namespace Nekoyume.Game.Character
 
         public override void SetSpineColor(Color color, int propertyID = -1)
         {
-            base.SetSpineColor(color, propertyID);
+            if (SpineController == null)
+            {
+                return;
+            }
 
             var skeletonAnimation = SpineController.SkeletonAnimation;
             if (skeletonAnimation == null)
             {
                 return;
             }
+
+            base.SetSpineColor(color, propertyID);
 
             var mpb = new MaterialPropertyBlock();
             mpb.SetColor(propertyID, color);
