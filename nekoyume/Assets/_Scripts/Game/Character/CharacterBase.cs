@@ -98,7 +98,9 @@ namespace Nekoyume.Game.Character
         protected BoxCollider HitPointBoxCollider { get; private set; }
         public Vector3 HitPointLocalOffset { get; set; }
 
-        public List<ActionParams> actions = new List<ActionParams>();
+        public List<ActionParams> _actions = new();
+
+        public IReadOnlyList<ActionParams> Actions => _actions;
 
         public ActionParams action;
 
@@ -136,7 +138,7 @@ namespace Nekoyume.Game.Character
 
             RunSpeed = 0.0f;
             _root = null;
-            actions.Clear();
+            _actions.Clear();
             action = null;
             if (!_applicationQuitting)
                 DisableHUD();
@@ -158,7 +160,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual IEnumerator Dying()
         {
-            yield return new WaitWhile(() => actions.Any());
+            yield return new WaitWhile(() => Actions.Any());
             OnDeadStart();
             StopRun();
             Animator.Die();
@@ -316,7 +318,7 @@ namespace Nekoyume.Game.Character
         {
             Animator.Idle();
             gameObject.SetActive(false);
-            actions.Clear();
+            _actions.Clear();
         }
 
         protected void PopUpDmg(
@@ -391,7 +393,7 @@ namespace Nekoyume.Game.Character
                     BT.If(() => !CanRun).OpenBranch(
                         BT.Sequence().OpenBranch(
                             BT.Call(StopRun),
-                            BT.If(() => actions.Any()).OpenBranch(
+                            BT.If(() => Actions.Any()).OpenBranch(
                                 BT.Call(ExecuteAction)
                             )
                         )
@@ -1073,6 +1075,11 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
+        public void AddAction(ActionParams actionParams)
+        {
+            _actions.Add(actionParams);
+        }
+
         private void ExecuteAction()
         {
             StartCoroutine(CoExecuteAction());
@@ -1082,7 +1089,7 @@ namespace Nekoyume.Game.Character
         {
             if (action is null)
             {
-                action = actions.First();
+                action = Actions.First();
 
                 var stage = Game.instance.Stage;
                 var waitSeconds = StageConfig.instance.actionDelay;
@@ -1095,11 +1102,11 @@ namespace Nekoyume.Game.Character
                         var character = Game.instance.Stage.GetCharacter(target);
                         if (character)
                         {
-                            if (character.actions.Any())
+                            if (character.Actions.Any())
                             {
                                 var time = Time.time;
                                 yield return new WaitWhile(() =>
-                                    Time.time - time > 10f || character.actions.Any());
+                                    Time.time - time > 10f || character.Actions.Any());
                             }
                         }
                     }
@@ -1108,7 +1115,7 @@ namespace Nekoyume.Game.Character
                 yield return new WaitForSeconds(waitSeconds);
                 var coroutine = StartCoroutine(stage.CoSkill(action));
                 yield return coroutine;
-                actions.Remove(action);
+                _actions.Remove(action);
                 action = null;
                 _forceStop = false;
             }
