@@ -98,11 +98,10 @@ namespace Nekoyume.Game.Character
         protected BoxCollider HitPointBoxCollider { get; private set; }
         public Vector3 HitPointLocalOffset { get; set; }
 
-        public List<ActionParams> _actions = new();
-
+        private readonly List<ActionParams> _actions = new();
         public IReadOnlyList<ActionParams> Actions => _actions;
 
-        public ActionParams action;
+        private ActionParams _action;
 
 
         private bool _forceStop = false;
@@ -139,7 +138,7 @@ namespace Nekoyume.Game.Character
             RunSpeed = 0.0f;
             _root = null;
             _actions.Clear();
-            action = null;
+            _action = null;
             if (!_applicationQuitting)
                 DisableHUD();
             _forceStop = false;
@@ -1087,16 +1086,16 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoExecuteAction()
         {
-            if (action is not null)
+            if (_action is not null)
             {
                 yield break;
             }
-            action = Actions.First();
+            _action = Actions.First();
 
             var stage       = Game.instance.Stage;
             var waitSeconds = StageConfig.instance.actionDelay;
 
-            foreach (var info in action.skillInfos)
+            foreach (var info in _action.skillInfos)
             {
                 var target = info.Target;
                 if (target == null)
@@ -1120,10 +1119,10 @@ namespace Nekoyume.Game.Character
             }
 
             yield return new WaitForSeconds(waitSeconds);
-            var coroutine = StartCoroutine(stage.CoSkill(action));
+            var coroutine = StartCoroutine(stage.CoSkill(_action));
             yield return coroutine;
-            _actions.Remove(action);
-            action     = null;
+            _actions.Remove(_action);
+            _action     = null;
             _forceStop = false;
         }
 
