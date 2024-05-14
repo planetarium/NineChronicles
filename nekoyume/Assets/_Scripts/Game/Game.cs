@@ -314,8 +314,12 @@ namespace Nekoyume.Game
                     KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             }
 
+            if (LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                yield return L10nManager.Initialize(LanguageType.Korean).ToYieldInstruction();
+            }
 #if UNITY_EDITOR
-            if (useSystemLanguage)
+            else if (useSystemLanguage)
             {
                 yield return L10nManager.Initialize().ToYieldInstruction();
             }
@@ -325,11 +329,14 @@ namespace Nekoyume.Game
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
-            yield return L10nManager
-                .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
-                    ? L10nManager.CurrentLanguage
-                    : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
-                .ToYieldInstruction();
+            else
+            {
+                yield return L10nManager
+                    .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
+                        ? L10nManager.CurrentLanguage
+                        : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                    .ToYieldInstruction();
+            }
 #endif
 
             yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
