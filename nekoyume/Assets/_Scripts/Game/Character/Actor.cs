@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using BTAI;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -1058,8 +1060,7 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoBuff(IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
         {
-            if (skillInfos is null ||
-                skillInfos.Count == 0)
+            if (skillInfos is null || skillInfos.Count == 0)
                 yield break;
 
             foreach (var skillInfo in skillInfos)
@@ -1123,33 +1124,42 @@ namespace Nekoyume.Game.Character
             }
             _action = actionQueue.Dequeue();
 
+            var cts = new CancellationTokenSource();
+            ActionTimer(cts).Forget();
+
             foreach (var info in _action.skillInfos)
             {
                 var target = info.Target;
-                if (target == null)
-                {
-                    break;
-                }
-
-                if (!target.IsDead)
+                if (target == null || target.IsDead)
                 {
                     continue;
                 }
-
                 var targetActor = Game.instance.Stage.GetActor(target);
-                if (!targetActor || !targetActor.HasAction())
+                if (!targetActor || targetActor == this || !targetActor.HasAction())
                 {
                     continue;
                 }
 
                 var time = Time.time;
-                yield return new WaitWhile(() => Time.time - time > 10f || targetActor.HasAction());
+                yield return new WaitUntil(() => Time.time - time > 10f || !targetActor.HasAction());
             }
 
             yield return new WaitForSeconds(StageConfig.instance.actionDelay);
-            yield return StartCoroutine(Game.instance.Stage.CoSkill(_action));
+            if (_action != null)
+            {
+                yield return StartCoroutine(Game.instance.Stage.CoSkill(_action));
+            }
             _action     = null;
             _forceStop = false;
+            cts.Cancel();
+            cts.Dispose();
+        }
+
+        private async UniTask ActionTimer(CancellationTokenSource cts)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(20), cancellationToken: cts.Token);
+            NcDebug.LogError($"[{nameof(Actor)}] ActionTimer Timeout. {gameObject.name}");
+            _action = null;
         }
 
         public void Dead()
