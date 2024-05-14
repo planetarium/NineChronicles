@@ -21,7 +21,6 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Multiplanetary;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -97,7 +96,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject keyImportPopup;
         [SerializeField] private Button keyImportCloseButton;
         [SerializeField] private Button keyImportWithCameraButton;
-        [SerializeField] private Button keyImportWithGallaryButton;
+        [SerializeField] private Button keyImportWithGalleryButton;
 
         private string _keyStorePath;
         private string _privateKey;
@@ -246,19 +245,7 @@ namespace Nekoyume.UI
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
 
-            Web3KeyStore keyStore;
-            if (Platform.IsMobilePlatform())
-            {
-                var dataPath = Platform.GetPersistentDataPath("keystore");
-                keyStore = new Web3KeyStore(dataPath);
-            }
-            else
-            {
-                keyStore = Web3KeyStore.DefaultKeyStore;
-            }
-
-            var ppkExist = keyStore.ListIds().Any();
-
+            var ppkExist = IsProtectedPrivateKeyExist();
             backupButton.gameObject.SetActive(ppkExist);
             backupButton.onClick.AddListener(() =>
             {
@@ -307,10 +294,19 @@ namespace Nekoyume.UI
                     Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
                 });
             });
-            keyImportWithGallaryButton.onClick.AddListener(() =>
+            keyImportWithGalleryButton.onClick.AddListener(() =>
             {
                 codeReaderView.ScanQrCodeFromGallery(result =>
                 {
+                    if (result == null)
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("ERROR_IMPORTKEY_LOADIMAGE"),
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+
                     var pk = ImportPrivateKeyFromJson(result.Text);
                     SigninContext.SetHasSignedWithKeyImport(trySigninWithKeyImport);
                     keyImportPopup.SetActive(false);
@@ -347,6 +343,22 @@ namespace Nekoyume.UI
             AirbridgeUnity.TrackEvent(evt);
 
             return pk;
+        }
+
+        private static bool IsProtectedPrivateKeyExist()
+        {
+            Web3KeyStore keyStore;
+            if (Platform.IsMobilePlatform())
+            {
+                var dataPath = Platform.GetPersistentDataPath("keystore");
+                keyStore = new Web3KeyStore(dataPath);
+            }
+            else
+            {
+                keyStore = Web3KeyStore.DefaultKeyStore;
+            }
+
+            return keyStore.ListIds().Any();
         }
 
         protected override void OnDestroy()

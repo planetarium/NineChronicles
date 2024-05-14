@@ -633,6 +633,7 @@ namespace Nekoyume.Game
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if RUN_ON_MOBILE
+            // Note : Social Login 과정을 거친 경우만 토큰을 확인합니다.
             if (!IsGuestLogin && !SigninContext.HasSignedWithKeyImport)
             {
                 var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);

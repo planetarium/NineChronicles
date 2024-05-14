@@ -67,7 +67,7 @@ namespace Nekoyume.UI
             gameObject.SetActive(false);
         }
 
-        public void ScanQrCodeFromGallery(Action<Result> onSuccess = null)
+        public void ScanQrCodeFromGallery(Action<Result> callback = null)
         {
             // Note : GetImageFromGallery method에서 권한을 요청하므로, 권한 체크는 하지 않는다.
             var permission = NativeGallery.GetImageFromGallery(path =>
@@ -75,23 +75,17 @@ namespace Nekoyume.UI
                 if (string.IsNullOrEmpty(path))
                 {
                     NcDebug.LogError("[CodeReaderView] Path is null or empty.");
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("ERROR_IMPORTKEY_LOADIMAGE"),
-                        NotificationCell.NotificationType.Alert);
+                    callback?.Invoke(null);
 
                     return;
                 }
 
-                // file size limit 50MB
+                // file size limit 5MB
                 var selected = new FileInfo(path);
-                if (selected.Length > 50_000_000)
+                if (selected.Length > 5_000_000)
                 {
                     NcDebug.LogError("[CodeReaderView] File size is too large.");
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("ERROR_IMPORTKEY_LOADIMAGE"),
-                        NotificationCell.NotificationType.Alert);
+                    callback?.Invoke(null);
 
                     return;
                 }
@@ -112,26 +106,20 @@ namespace Nekoyume.UI
                         NcDebug.Log("[CodeReaderView] QR code detected from Gallery." +
                                     $" Text: {result.Text}" +
                                     $", Format: {result.BarcodeFormat}");
-                        onSuccess?.Invoke(result);
+                        callback?.Invoke(result);
                     }
                     else
                     {
                         // NOTE: 이미지에서 QR 코드를 찾지 못한 경우.
                         NcDebug.LogError("[CodeReaderView] QR code not detected from Image.");
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("ERROR_IMPORTKEY_LOADIMAGE"),
-                            NotificationCell.NotificationType.Alert);
+                        callback?.Invoke(null);
                     }
                 }
                 catch (Exception ex)
                 {
                     // NOTE: 이미지에서 QR 코드를 찾지 못한 경우.
                     NcDebug.LogException(ex);
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("ERROR_IMPORTKEY_LOADIMAGE"),
-                        NotificationCell.NotificationType.Alert);
+                    callback?.Invoke(null);
                 }
             });
 
