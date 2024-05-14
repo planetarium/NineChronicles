@@ -15,11 +15,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private Ease towerMoveEase = Ease.OutCirc;
 
-        private const float floorHeight = 170;
+        private const float _floorHeight = 170;
 
         public void ChangeFloor(int targetIndex, bool isStartPointRefresh = true, bool isAnimation = true)
         {
-            float targetCenter = targetIndex * floorHeight + (floorHeight / 2);
+            float targetCenter = targetIndex * _floorHeight + (_floorHeight / 2);
             float startY = -(targetCenter - (MainCanvas.instance.RectTransform.rect.height/2) - towerCenterAdjuster);
 
             if(isAnimation)

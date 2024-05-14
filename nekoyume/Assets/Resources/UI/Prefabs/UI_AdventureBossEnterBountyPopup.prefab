@@ -7111,6 +7111,8 @@ MonoBehaviour:
   InputCountObj: {fileID: 1859774649801652641}
   InputWarning: {fileID: 1859774649473920078}
   ConfirmButton: {fileID: 2494067212450000699}
+  StakingWarningMassage: {fileID: 8531168766435778192}
+  ShowDetailButton: {fileID: 1859774649455461573}
   bountyRedColor: {r: 1, g: 0.3647059, b: 0.3647059, a: 1}
 --- !u!95 &1677699267045685594
 Animator:

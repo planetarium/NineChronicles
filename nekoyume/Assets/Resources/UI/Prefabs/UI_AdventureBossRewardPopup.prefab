@@ -1940,7 +1940,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 99999
+  m_text: '-'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e14cdec1ec99d4f2ba55eff738f74f8e, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: c0f050ed6b09d5749b590b82febbb882, type: 2}
@@ -2131,8 +2131,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 4866038101288605377}
+        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
         m_MethodName: Close
         m_Mode: 6
         m_Arguments:
@@ -12989,6 +12989,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  blockIndex: {fileID: 0}
+  seasonText: {fileID: 0}
+  receiveAllButton: {fileID: 0}
+  pageButton: []
+  bountyCost: {fileID: 0}
 --- !u!95 &1677699267045685594
 Animator:
   serializedVersion: 5
