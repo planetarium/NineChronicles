@@ -14,16 +14,16 @@ namespace Nekoyume.UI.Module
 {
     using Nekoyume.UI.Model;
     using UniRx;
+
     public class WorldMapAdventureBoss : MonoBehaviour
     {
-        [SerializeField] private GameObject Open;
-        [SerializeField] private GameObject WantedOpen;
-        [SerializeField] private GameObject WantedClose;
-        [SerializeField] private GameObject Close;
-
-        [SerializeField] private TextMeshProUGUI[] RemainingBlockIndexs;
-        [SerializeField] private TextMeshProUGUI UsedNCG;
-        [SerializeField] private TextMeshProUGUI Floor;
+        [SerializeField] private GameObject open;
+        [SerializeField] private GameObject wantedOpen;
+        [SerializeField] private GameObject wantedClose;
+        [SerializeField] private GameObject close;
+        [SerializeField] private TextMeshProUGUI[] remainingBlockIndexs;
+        [SerializeField] private TextMeshProUGUI usedGold;
+        [SerializeField] private TextMeshProUGUI floor;
 
         private readonly List<System.IDisposable> _disposables = new();
         private long _remainingBlockIndex = 0;
@@ -48,12 +48,26 @@ namespace Nekoyume.UI.Module
             var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
             if (seasonInfo == null)
             {
+                if (Game.Game.instance.AdventureBossData.CurrentState.Value == AdventureBossData.AdventureBossSeasonState.End)
+                {
+                    var adventureBossData = Game.Game.instance.AdventureBossData;
+                    if(adventureBossData.EndedSeasonInfos.TryGetValue(adventureBossData.LatestSeason.Value.SeasonId, out var endedSeasonInfo))
+                    {
+                        RefreshBlockIndexText(blockIndex, endedSeasonInfo.NextStartBlockIndex);
+                        return;
+                    }
+                }
                 SetDefualtRemainingBlockIndexs();
                 return;
             }
-            _remainingBlockIndex =  seasonInfo.EndBlockIndex - blockIndex;
+            RefreshBlockIndexText(blockIndex, seasonInfo.EndBlockIndex);
+        }
+
+        private void RefreshBlockIndexText(long blockIndex, long targetBlock)
+        {
+            _remainingBlockIndex = targetBlock - blockIndex;
             var timeText = $"{_remainingBlockIndex:#,0}({_remainingBlockIndex.BlockRangeToTimeSpanString()})";
-            foreach (var text in RemainingBlockIndexs)
+            foreach (var text in remainingBlockIndexs)
             {
                 text.text = timeText;
             }
@@ -61,7 +75,7 @@ namespace Nekoyume.UI.Module
 
         private void SetDefualtRemainingBlockIndexs()
         {
-            foreach (var text in RemainingBlockIndexs)
+            foreach (var text in remainingBlockIndexs)
             {
                 text.text = "(-)";
             }
@@ -101,27 +115,37 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AdventureBossData.AdventureBossSeasonState.Ready:
-                    Open.SetActive(true);
-                    Close.SetActive(false);
+                    open.SetActive(true);
+                    close.SetActive(false);
 
-                    WantedOpen.SetActive(false);
-                    WantedClose.SetActive(true);
+                    wantedOpen.SetActive(false);
+                    wantedClose.SetActive(true);
                     break;
                 case AdventureBossData.AdventureBossSeasonState.Progress:
-                    Open.SetActive(true);
-                    Close.SetActive(false);
+                    open.SetActive(true);
+                    close.SetActive(false);
+
+                    wantedOpen.SetActive(true);
+                    wantedClose.SetActive(false);
 
                     var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
                     var experienceInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
-                    UsedNCG.text = seasonInfo.UsedNcg.ToCurrencyNotation();
-                    Floor.text = experienceInfo.Floor.ToString();
+                    usedGold.text = seasonInfo.UsedNcg.ToCurrencyNotation();
+                    if(experienceInfo == null)
+                    {
+                        floor.text = "-";
+                    }
+                    else
+                    {
+                        floor.text = $"{experienceInfo.Floor.ToString()}F";
+                    }
                     break;
                 case AdventureBossData.AdventureBossSeasonState.None:
                 case AdventureBossData.AdventureBossSeasonState.End:
                 default:
                     SetDefualtRemainingBlockIndexs();
-                    Close.SetActive(true);
-                    Open.SetActive(false);
+                    close.SetActive(true);
+                    open.SetActive(false);
                     break;
             }
         }

@@ -1758,9 +1758,16 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<AdventureBossBattle>> AdventureBossBattle()
         {
+            if(Game.Game.instance.AdventureBossData.SeasonInfo is null ||
+                Game.Game.instance.AdventureBossData.SeasonInfo.Value is null ||
+                States.Instance.CurrentAvatarState is null)
+            {
+                NcDebug.LogError("[AdventureBossBattle] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
+            }
             var action = new AdventureBossBattle
             {
-                AvatarAddress = States.Instance.CurrentAvatarState.address
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<AdventureBossBattle>()

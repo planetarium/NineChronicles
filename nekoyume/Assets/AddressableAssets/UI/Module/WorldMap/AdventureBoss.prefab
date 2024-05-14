@@ -883,15 +883,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6029929a12700554b9560369d0c7faf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Open: {fileID: 2272741625329811881}
-  WantedOpen: {fileID: 3439012337093949177}
-  WantedClose: {fileID: 844824717245126699}
-  Close: {fileID: 8750418791354415726}
-  RemainingBlockIndexs:
-  - {fileID: 3788871848768303182}
+  open: {fileID: 2272741625329811881}
+  wantedOpen: {fileID: 3439012337093949177}
+  wantedClose: {fileID: 844824717245126699}
+  close: {fileID: 8750418791354415726}
+  remainingBlockIndexs:
   - {fileID: 1042321636673211588}
-  UsedNCG: {fileID: 0}
-  Floor: {fileID: 0}
+  - {fileID: 3788871848768303182}
+  usedGold: {fileID: 6172150928653304595}
+  floor: {fileID: 3840062029209082296}
 --- !u!1 &1308152949230714284
 GameObject:
   m_ObjectHideFlags: 0

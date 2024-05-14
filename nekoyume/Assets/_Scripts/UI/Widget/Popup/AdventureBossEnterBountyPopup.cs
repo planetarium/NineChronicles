@@ -8,6 +8,10 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Libplanet.Types.Assets;
+    using Nekoyume.Action.AdventureBoss;
+    using Nekoyume.Blockchain;
+    using Nekoyume.State;
     using UniRx;
     public class AdventureBossEnterBountyPopup : PopupWidget
     {
@@ -21,14 +25,20 @@ namespace Nekoyume.UI
         private ConditionalButton ConfirmButton;
 
         [SerializeField]
+        private GameObject StakingWarningMassage;
+        [SerializeField]
+        private GameObject ShowDetailButton;
+
+        [SerializeField]
         private Color bountyRedColor;
-        private Color bountyDefaultColor;
+
+        private Color _bountyDefaultColor;
 
         private void Awake()
         {
             BountyInputArea.onValueChanged.AddListener(OnBountyInputAreaValueChanged);
             BountyInputArea.onEndEdit.AddListener(OnBountyInputAreaValueChanged);
-            bountyDefaultColor = BountyInputArea.textComponent.color;
+            _bountyDefaultColor = BountyInputArea.textComponent.color;
             ConfirmButton.OnSubmitSubject.Subscribe(_ => OnClickConfirm()).AddTo(gameObject);
         }
 
@@ -53,7 +63,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    BountyInputArea.textComponent.color = bountyDefaultColor;
+                    BountyInputArea.textComponent.color = _bountyDefaultColor;
                     InputWarning.SetActive(false);
                     ConfirmButton.Interactable = true;
                 }
@@ -71,12 +81,64 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if(States.Instance.StakingLevel < Wanted.RequiredStakingLevel)
+            {
+                StakingWarningMassage.SetActive(true);
+                BountyInputArea.gameObject.SetActive(false);
+                return;
+            }
+            else
+            {
+                StakingWarningMassage.SetActive(false);
+                BountyInputArea.gameObject.SetActive(true);
+            }
+
+            switch (Game.Game.instance.AdventureBossData.CurrentState.Value)
+            {
+                case Model.AdventureBossData.AdventureBossSeasonState.Ready:
+                    ShowDetailButton.SetActive(false);
+                    break;
+                case Model.AdventureBossData.AdventureBossSeasonState.Progress:
+                    ShowDetailButton.SetActive(true);
+                    break;
+                case Model.AdventureBossData.AdventureBossSeasonState.None:
+                case Model.AdventureBossData.AdventureBossSeasonState.End:
+                default:
+                    NcDebug.LogError("[AdventureBossEnterBountyPopup] Show: Invalid state");
+                    return;
+            }
+
             base.Show(ignoreShowAnimation);
         }
 
         public void OnClickConfirm()
         {
-            NcDebug.Log("OnClickConfirm");
+            if (!int.TryParse(BountyInputArea.text, out int bounty))
+            {
+                NcDebug.LogError("[AdventureBossEnterBountyPopup] OnClickConfirm: Invalid bounty");
+                return;
+            }
+
+            if(States.Instance.StakingLevel < Wanted.RequiredStakingLevel)
+            {
+                NcDebug.LogError("[AdventureBossEnterBountyPopup] OnClickConfirm: Staking level is not enough");
+                return;
+            }
+
+            switch (Game.Game.instance.AdventureBossData.CurrentState.Value)
+            {
+                case Model.AdventureBossData.AdventureBossSeasonState.Ready:
+                    ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.LatestSeason.Value.SeasonId + 1, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0));
+                    break;
+                case Model.AdventureBossData.AdventureBossSeasonState.Progress:
+                    ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.LatestSeason.Value.SeasonId, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0));
+                    break;
+                case Model.AdventureBossData.AdventureBossSeasonState.None:
+                case Model.AdventureBossData.AdventureBossSeasonState.End:
+                default:
+                    NcDebug.LogError("[AdventureBossEnterBountyPopup] Show: Invalid state");
+                    return;
+            }
         }
     }
 }
