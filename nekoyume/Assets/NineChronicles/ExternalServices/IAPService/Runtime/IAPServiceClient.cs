@@ -31,6 +31,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             _endpoints = new IAPServiceEndpoints(url);
             _client = new HttpClient();
             _client.Timeout = TimeSpan.FromSeconds(10);
+            _client.DefaultRequestHeaders.Add("X-IAP-PackageName", UnityEngine.Application.identifier);
         }
 
         public void Dispose()
@@ -70,7 +71,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 string appleOriginalTransactionID)
         {
             var receiptJson = JsonNode.Parse(receipt);
-            
+
             var reqJson = new JsonObject
             {
                 { "store", (int)store },
