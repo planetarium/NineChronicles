@@ -115,10 +115,7 @@ namespace Nekoyume.UI
                 {
                     Close();
 
-                    if (!Game.LiveAsset.GameConfig.IsKoreanBuild)
-                    {
-                        Find<MobileShop>().ShowAsProduct(_data, _puchasingData);
-                    }
+                    Find<MobileShop>().ShowAsProduct(_data, _puchasingData);
                     return;
                 }
 

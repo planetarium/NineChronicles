@@ -411,13 +411,6 @@ namespace Nekoyume.UI
 
         private void GoToMarket()
         {
-            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-            {
-                Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                    "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                return;
-            }
-
             Find<WorldBoss>().ForceClose();
             Find<RaidPreparation>().Close(true);
             Find<ShopBuy>().Show();

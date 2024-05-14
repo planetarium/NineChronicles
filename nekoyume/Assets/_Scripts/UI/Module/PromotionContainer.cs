@@ -66,8 +66,7 @@ namespace Nekoyume.UI.Module
                 case Season.Arena:
                     var arenaSheet = Game.Game.instance.TableSheets.ArenaSheet;
                     var arenaRoundData = arenaSheet.GetRoundByBlockIndex(blockIndex);
-                    inSeason = arenaRoundData.ArenaType == ArenaType.Season &&
-                               Game.LiveAsset.GameConfig.IsKoreanBuild;
+                    inSeason = arenaRoundData.ArenaType == ArenaType.Season;
                     break;
                 case Season.WorldBoss:
                     var worldBossStatus = WorldBossFrontHelper.GetStatus(blockIndex);

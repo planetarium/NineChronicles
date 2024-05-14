@@ -1039,13 +1039,6 @@ namespace Nekoyume.UI
 
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {
-                if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-                {
-                    Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                        "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                    return;
-                }
-
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                 Find<ShopBuy>().Show();

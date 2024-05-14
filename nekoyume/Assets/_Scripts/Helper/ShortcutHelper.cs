@@ -244,13 +244,6 @@ namespace Nekoyume.Helper
                 case PlaceType.MobileShop:
                     shortcutAction = () =>
                     {
-                        if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-                        {
-                            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                            return;
-                        }
-
                         caller.CloseWithOtherWidgets();
                         Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                         Widget.Find<MobileShop>().ShowAsTab(categoryName);
