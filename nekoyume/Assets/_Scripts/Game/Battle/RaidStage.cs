@@ -520,7 +520,7 @@ namespace Nekoyume.Game.Battle
         {
             if (eventBase is Tick tick)
             {
-                Character.RaidCharacter raidCharacter =
+                RaidCharacter raidCharacter =
                     character.Id == _player.Id ? _player : _boss;
                 // This Tick from 'Stun'
                 if (tick.SkillId == 0)
@@ -541,7 +541,7 @@ namespace Nekoyume.Game.Battle
                         target: character
                     );
                     _actionQueue.Enqueue(
-                        new Character.RaidActionParams(
+                        new RaidActionParams(
                             raidCharacter,
                             tick.SkillId,
                             tick.SkillInfos.Append(tickSkillInfo),
