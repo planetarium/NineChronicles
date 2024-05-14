@@ -43,6 +43,15 @@ namespace Nekoyume.UI.Module
             Game.Game.instance.Agent.BlockIndexSubject
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposablesByEnable);
+            Game.Game.instance.AdventureBossData.IsRewardLoading
+                .Subscribe(isLoading => {
+                    LoadingObj.SetActive(isLoading);
+                    foreach (var text in RemainingBlockIndexs)
+                    {
+                        text.text = "-";
+                    }
+                })
+                .AddTo(_disposablesByEnable);
         }
 
         private void OnDisable()
@@ -52,6 +61,15 @@ namespace Nekoyume.UI.Module
 
         private void UpdateViewAsync(long blockIndex)
         {
+            if(LoadingObj.activeSelf)
+            {
+                foreach (var text in RemainingBlockIndexs)
+                {
+                    text.text = "-";
+                }
+                return;
+            }
+
             if (_lastClaimedBlockIndex <= blockIndex)
             {
                 RefreshLastClaimedBlockIndex(Game.Game.instance.AdventureBossData);

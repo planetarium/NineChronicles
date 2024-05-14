@@ -47,6 +47,7 @@ using Lib9c.DevExtensions.Action;
 namespace Nekoyume.Blockchain
 {
     using Model;
+    using Nekoyume.Action.AdventureBoss;
     using UI.Scroller;
     using UniRx;
 
@@ -205,6 +206,10 @@ namespace Nekoyume.Blockchain
             Testbed();
             ManipulateState();
 #endif
+
+            //AdventureBoss
+            ClaimAdventureBossReward();
+            ClaimWantedReward();
         }
 
         public void Stop()
@@ -3612,6 +3617,61 @@ namespace Nekoyume.Blockchain
             {
                 Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             }
+        }
+
+
+        private void ClaimWantedReward()
+        {
+            _actionRenderer.EveryRender<ClaimWantedReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimWantedReward)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseClaimWantedReward(ActionEvaluation<ClaimWantedReward> eval)
+        {
+            UniTask.RunOnThreadPool(() =>
+            {
+                UpdateCurrentAvatarInventory(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var action = eval.Action;
+                var tableSheets = Game.Game.instance.TableSheets;
+                var mailRewards = new List<MailReward>();
+                Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_WANTED_REWARD_COMPLETE");
+                Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
+            });
+        }
+
+        private void ClaimAdventureBossReward()
+        {
+            _actionRenderer.EveryRender<ClaimAdventureBossReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimAdventureBossReward)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseClaimAdventureBossReward(ActionEvaluation<ClaimAdventureBossReward> eval)
+        {
+            UniTask.RunOnThreadPool(() =>
+            {
+                UpdateCurrentAvatarInventory(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var action = eval.Action;
+                var tableSheets = Game.Game.instance.TableSheets;
+                var mailRewards = new List<MailReward>();
+                Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
+                Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
+            });
         }
     }
 }
