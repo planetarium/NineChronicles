@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Model
         public ReactiveProperty<BountyBoard> BountyBoard = new ReactiveProperty<BountyBoard>();
         public ReactiveProperty<ExploreInfo> ExploreInfo = new ReactiveProperty<ExploreInfo>();
         public ReactiveProperty<AdventureBossSeasonState> CurrentState = new ReactiveProperty<AdventureBossSeasonState>();
+        public ReactiveProperty<bool> IsRewardLoading = new ReactiveProperty<bool>();
 
         public Dictionary<long,SeasonInfo> EndedSeasonInfos = new Dictionary<long, SeasonInfo>();
 
@@ -30,6 +31,7 @@ namespace Nekoyume.UI.Model
 
         public void Initialize()
         {
+            IsRewardLoading.Value = false;
             RefreshAllByCurrentState().Forget();
         }
 

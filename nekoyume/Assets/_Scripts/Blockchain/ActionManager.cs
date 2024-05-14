@@ -1800,6 +1800,25 @@ namespace Nekoyume.Blockchain
                 });
         }
 
+        public IObservable<ActionEvaluation<ClaimAdventureBossReward>> ClaimAdventureBossReward(long SeasonId)
+        {
+            var action = new ClaimAdventureBossReward
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Season = SeasonId
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimAdventureBossReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(_ =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
         public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
