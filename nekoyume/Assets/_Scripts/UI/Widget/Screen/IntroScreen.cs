@@ -43,20 +43,28 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject mobileContainer;
         [SerializeField] private RawImage videoImage;
 
+        [Header("Mobile/Logo")]
         [SerializeField] private GameObject logoAreaGO;
         [SerializeField] private GameObject touchScreenButtonGO;
         [SerializeField] private Button touchScreenButton;
+        [Space]
+        [SerializeField] private Sprite logoMSprite;
+        [SerializeField] private Sprite logoKSprite;
+        [SerializeField] private Image[] logoImages;
 
+        [Header("Mobile/StartButton")]
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
         [SerializeField] private Button backupButton;
 
+        [Header("Mobile/YourPlanet")]
         [SerializeField] private TextMeshProUGUI yourPlanetText;
         [SerializeField] private Button yourPlanetButton;
         [SerializeField] private TextMeshProUGUI yourPlanetButtonText;
         [SerializeField] private TextMeshProUGUI planetAccountInfoText;
 
+        [Header("Mobile/SocialButtons")]
         [SerializeField] private GameObject startButtonGO;
         [SerializeField] private Button startButton;
         [SerializeField] private GameObject socialButtonsGO;
@@ -65,6 +73,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button twitterSignInButton;
         [SerializeField] private Button discordSignInButton;
 
+        [Header("Mobile/QRCodeGuide")]
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
         [SerializeField] private GameObject[] qrCodeGuideImages;
@@ -72,14 +81,17 @@ namespace Nekoyume.UI
         [SerializeField] private Button qrCodeGuideNextButton;
         [SerializeField] private CodeReaderView codeReaderView;
 
+        [Header("Mobile/Video")]
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
 
+        [Header("Mobile/SelectPlanetPopup")]
         [SerializeField] private GameObject selectPlanetPopup;
         [SerializeField] private Button selectPlanetPopupBgButton;
         [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
         [SerializeField] private SelectPlanetScroll selectPlanetScroll;
 
+        [Header("Mobile/PlanetAccountInfosPopup")]
         [SerializeField] private GameObject planetAccountInfosPopup;
         [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
         [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
@@ -104,6 +116,15 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            twitterSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            discordSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            foreach (var logoImage in logoImages)
+            {
+                logoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild
+                    ? logoKSprite
+                    : logoMSprite;
+            }
 
             touchScreenButton.onClick.AddListener(() =>
             {

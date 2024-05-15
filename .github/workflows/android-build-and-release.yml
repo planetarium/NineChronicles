@@ -21,6 +21,26 @@ on:
         description: "Google Play Console VersionCode"
       app-version:
         description: "Google Play Console VersionName ex(40.0.0)"
+      package-name:
+        description: "package name ex(com.planetariumlabs.ninechroniclesmobile)"
+        required: false
+        type: string
+        default: ""
+      cloud-project-id:
+        description: "cloud project id ex(abcd-1234-xyz0)"
+        required: false
+        type: string
+        default: ""
+      player-name:
+        description: "player name ex(Nine Chronicles M)"
+        required: false
+        type: string
+        default: ""
+      other-google-services:
+        description: "Please turn on the option when build other package"
+        required: false
+        type: boolean
+        default: false
       manual_build_option:
         description: "Please turn on the option when manually executing the action"
         type: boolean
@@ -50,6 +70,7 @@ jobs:
           - nekoyume
         targetPlatform:
           - Android
+    environment: ${{ github.event.inputs.other-google-services && 'k' || 'main' }}
     env:
       GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
@@ -76,11 +97,17 @@ jobs:
           if [ -n "${{ github.event.inputs.clo }}" ]; then
             echo ${{ github.event.inputs.clo }} > ${{ matrix.projectPath }}/Assets/StreamingAssets/clo.json
           fi
-      
+
       - name: Decode google-services.json File
         run: |
           echo "$GOOGLE_SERVICES_JSON" | base64 -d > ${{ matrix.projectPath }}/Assets/NineChronicles/GoogleServices/google-services.json
 
+      - name: Change cloudProjectId in ProjectSettings.asset
+        run: |
+          if [ -n "${{ github.event.inputs.cloud-project-id }}" ]; then
+            sed -i '/cloudProjectId/c\  cloudProjectId: ${{ github.event.inputs.cloud-project-id }}' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+            cat ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+          fi
       - uses: game-ci/unity-builder@v4
         with:
           androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
@@ -96,6 +123,8 @@ jobs:
           androidVersionCode: ${{ github.event.inputs.version-code }}
           version: ${{ github.event.inputs.app-version }}
           androidTargetSdkVersion: AndroidApiLevel33
+          customParameters: -identifier ${{ github.event.inputs.package-name }} -playerName ${{ github.event.inputs.player-name }}
+          allowDirtyBuild: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
