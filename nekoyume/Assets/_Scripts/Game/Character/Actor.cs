@@ -1066,6 +1066,9 @@ namespace Nekoyume.Game.Character
 
             foreach (var skillInfo in skillInfos)
             {
+                if (skillInfo.Buff == null)
+                    continue;
+
                 yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
             }
 
