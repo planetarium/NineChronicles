@@ -100,8 +100,7 @@ namespace Nekoyume.UI
             animator.SetTrigger(AnimatorHashHide);
 
             var bonus = summonCount == 10 ? 1 : 0;
-            // TODO: 레드 뽑기에서도 동일한지 확인
-            var great = resultList.First().Grade == 5;
+            var great = resultList.First().Grade >= 5;
 
             var single = summonCount == 1;
             if (single)
