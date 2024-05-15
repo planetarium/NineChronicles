@@ -1236,8 +1236,15 @@ namespace Nekoyume.Game.Battle
             {
                 var affectedCharacter = GetActor(character);
                 // todo: 동상 관련 로직은 추후 수정 필요
-                if (character.Buffs.TryGetValue(FrostBiteVFX.FrostBiteBuffId, out var frostBite))
+                if (tick.SkillId == FrostBiteVFX.FrostBiteBuffId)
                 {
+                    if (!character.Buffs.TryGetValue(FrostBiteVFX.FrostBiteBuffId, out var frostBite))
+                    {
+                        yield break;
+                    }
+
+                    var target = tick.SkillInfos.First().Target;
+
                     var tickSkillInfo = new Skill.SkillInfo(affectedCharacter.Id,
                                                             !affectedCharacter.IsAlive,
                                                             0,
@@ -1251,7 +1258,7 @@ namespace Nekoyume.Game.Battle
                     // TODO: 동상 관련 로직은 추후 수정 필요
                     affectedCharacter.AddAction(
                         new ActionParams(affectedCharacter,
-                                         tick.SkillInfos.Append(tickSkillInfo),
+                                        ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
                                          tick.BuffInfos,
                                          affectedCharacter.CoBuff
                         ));
