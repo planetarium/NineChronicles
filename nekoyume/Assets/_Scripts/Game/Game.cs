@@ -112,6 +112,9 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject debugConsolePrefab;
 
+        [field:SerializeField]
+        public Vector3 EffectPos { get; private set; } = new(0, 0.55f, 0);
+
         public PlanetId? CurrentPlanetId { get; private set; }
 
         public States States { get; private set; }

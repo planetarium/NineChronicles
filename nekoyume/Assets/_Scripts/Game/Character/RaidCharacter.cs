@@ -246,8 +246,7 @@ namespace Nekoyume.Game.Character
                 skillInfos.Count == 0)
                 yield break;
 
-            Vector3 effectPos = transform.position;
-            effectPos.y += 0.55f;
+            Vector3 effectPos = transform.position + Game.instance.EffectPos;
             var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
                             Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
             var castEffect = effectObj.GetComponent<VFX.VFX>();

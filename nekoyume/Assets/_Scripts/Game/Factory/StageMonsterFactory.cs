@@ -49,7 +49,7 @@ namespace Nekoyume.Game.Factory
             }
 
             var effect         = objectPool.Get<BattleSummonVFX>();
-            var effectPosition = new Vector2(position.x, position.y + 0.55f);
+            var effectPosition = new Vector2(position.x + Game.instance.EffectPos.x, position.y + Game.instance.EffectPos.y);
             effect.gameObject.transform.position = effectPosition;
             effect.Play();
 

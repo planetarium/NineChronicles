@@ -508,8 +508,7 @@ namespace Nekoyume.Game.Character
                     if (target is null)
                         continue;
 
-                    Vector3 targetEffectPos = target.transform.position;
-                    targetEffectPos.y += 0.55f;
+                    Vector3 targetEffectPos = target.transform.position + Game.instance.EffectPos;
                     var targetEffectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
                                     Game.instance.Stage.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
                     var strikeEffect = targetEffectObj.GetComponent<VFX.VFX>();
@@ -521,8 +520,7 @@ namespace Nekoyume.Game.Character
                 }
             };
 
-            Vector3 effectPos = transform.position;
-            effectPos.y += 0.55f;
+            Vector3 effectPos = transform.position + Game.instance.EffectPos;
             var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
                             Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
             var castEffect = effectObj.GetComponent<VFX.VFX>();
