@@ -35,7 +35,7 @@ namespace Nekoyume.Game.VFX.Skill
                 return null;
             }
 
-            var position = target.transform.position + Game.instance.EffectPos;
+            var position = target.transform.position + BuffHelper.GetBuffPosition(buff.BuffInfo.Id);
 
             var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
             var go           = _pool.Get(resourceName, false, position);
@@ -50,7 +50,7 @@ namespace Nekoyume.Game.VFX.Skill
         public BuffCastingVFX Get(Vector3 position, Buff buff)
         {
             var resourceName = BuffHelper.GetCastingVFXPrefab(buff).name;
-            position += Game.instance.EffectPos;
+            position += BuffHelper.GetBuffPosition(buff.BuffInfo.Id, true);
             var go = _pool.Get(resourceName, false, position);
             if (go == null)
             {
@@ -72,14 +72,14 @@ namespace Nekoyume.Game.VFX.Skill
             return effect;
         }
 
-        public static IEnumerator CoChaseTarget(Component vfx, Transform target)
+        public static IEnumerator CoChaseTarget(Component vfx, Transform target, Buff buffModel)
         {
             var g = vfx.gameObject;
             var t = vfx.transform;
             while (g.activeSelf &&
                    target)
             {
-                t.position = target.position + Game.instance.EffectPos;
+                t.position = target.position + BuffHelper.GetBuffPosition(buffModel.BuffInfo.Id);
                 yield return null;
             }
         }

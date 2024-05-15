@@ -1,12 +1,7 @@
-using Coffee.UIEffects;
-using Nekoyume.Game.VFX;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Stat;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Nekoyume.Helper
 {
@@ -125,6 +120,18 @@ namespace Nekoyume.Helper
             var data = VFXData.DataList.FirstOrDefault(x => x.StatType == statType);
             return data == null ? VFXData.FallbackIcon :
                 isDebuff ? data.MinusIcon : data.PlusIcon;
+        }
+
+        public static Vector3 GetDefaultBuffPosition()
+        {
+            return VFXData.FallbackPosition;
+        }
+
+        public static Vector3 GetBuffPosition(int id, bool isCasting = false)
+        {
+            var overrideData = VFXData.BuffPosOverrideDataList
+                .FirstOrDefault(x => x.Id == id && x.IsCasting == isCasting);
+            return overrideData?.Position ?? VFXData.FallbackPosition;
         }
     }
 }
