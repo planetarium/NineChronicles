@@ -1236,7 +1236,7 @@ namespace Nekoyume.Game.Battle
             {
                 var affectedCharacter = GetActor(character);
                 // todo: 동상 관련 로직은 추후 수정 필요
-                if (character.Buffs.TryGetValue(801000, out var frostBite))
+                if (character.Buffs.TryGetValue(FrostBiteVFX.FrostBiteBuffId, out var frostBite))
                 {
                     var tickSkillInfo = new Skill.SkillInfo(affectedCharacter.Id,
                                                             !affectedCharacter.IsAlive,

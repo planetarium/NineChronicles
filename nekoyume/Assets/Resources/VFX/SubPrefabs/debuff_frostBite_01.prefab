@@ -19230,7 +19230,6 @@ GameObject:
   - component: {fileID: 2613980369662537664}
   - component: {fileID: 1508881711681305671}
   - component: {fileID: 8609793375427203089}
-  - component: {fileID: 163562601465699478}
   m_Layer: 0
   m_Name: debuff_frostBite_01
   m_TagString: Untagged
@@ -23917,18 +23916,3 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &163562601465699478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8911456528059520173}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff9c74dc6c9aeb2428066d24d9a6763f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _initializeSortingProbsOfChildren: 0
-  <Target>k__BackingField: {fileID: 0}
-  <IsPersisting>k__BackingField: 0
