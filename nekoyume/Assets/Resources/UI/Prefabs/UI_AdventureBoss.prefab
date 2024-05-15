@@ -19838,6 +19838,21 @@ MonoBehaviour:
   addBountyButton: {fileID: 1938418798873336059}
   challengeButton: {fileID: 2392739329678332956}
   entireButton: {fileID: 219328739189728288}
+  investorUserNames:
+  - {fileID: 219328739404356158}
+  - {fileID: 219328740701850802}
+  - {fileID: 219328739400899369}
+  investorBountyCounts:
+  - {fileID: 219328741094109330}
+  - {fileID: 219328741063678197}
+  - {fileID: 219328741261773706}
+  investorBountyPrice:
+  - {fileID: 219328739618251171}
+  - {fileID: 219328740352923949}
+  - {fileID: 219328740681563558}
+  myUserNames: {fileID: 219328740798070535}
+  myBountyCounts: {fileID: 219328739811312465}
+  myBountyPrice: {fileID: 219328739735692645}
 --- !u!95 &6846562090926092995
 Animator:
   serializedVersion: 5

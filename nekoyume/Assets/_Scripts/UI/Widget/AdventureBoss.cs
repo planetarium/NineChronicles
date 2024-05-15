@@ -14,6 +14,7 @@ namespace Nekoyume.UI
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
     using Nekoyume.Model.Mail;
+    using System.Linq;
     using UniRx;
     public class AdventureBoss : Widget
     {
@@ -42,6 +43,20 @@ namespace Nekoyume.UI
         private ConditionalButton challengeButton;
         [SerializeField]
         private ConditionalButton entireButton;
+
+        [SerializeField]
+        private TextMeshProUGUI[] investorUserNames;
+        [SerializeField]
+        private TextMeshProUGUI[] investorBountyCounts;
+        [SerializeField]
+        private TextMeshProUGUI[] investorBountyPrice;
+
+        [SerializeField]
+        private TextMeshProUGUI myUserNames;
+        [SerializeField]
+        private TextMeshProUGUI myBountyCounts;
+        [SerializeField]
+        private TextMeshProUGUI myBountyPrice;
 
         private const float _floorHeight = 170;
         private readonly List<System.IDisposable> _disposablesByEnable = new();
@@ -137,6 +152,10 @@ namespace Nekoyume.UI
             {
                 addBountyButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_ADD", 0, Investor.MaxInvestmentCount));
                 addBountyButton.Interactable = true;
+
+                myUserNames.text = Game.Game.instance.States.CurrentAvatarState.name;
+                myBountyCounts.text = $"(0/{Investor.MaxInvestmentCount})";
+                myBountyPrice.text = "-";
             }
             else
             {
@@ -148,6 +167,32 @@ namespace Nekoyume.UI
                 else
                 {
                     addBountyButton.Interactable = false;
+                }
+                myUserNames.text = Game.Game.instance.States.CurrentAvatarState.name;
+                myBountyCounts.text = $"({investInfo.Count}/{Investor.MaxInvestmentCount})";
+                myBountyPrice.text = investInfo.Price.MajorUnit.ToString("#,0");
+            }
+            if(board.Investors == null)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    investorUserNames[i].transform.parent.parent.gameObject.SetActive(false);
+                }
+                return;
+            }
+            var topInvestorList =  board.Investors.OrderByDescending(investor => investor.Price).Take(3).ToList();
+            for (int i = 0; i < 3; i++)
+            {
+                if(topInvestorList.Count() > i)
+                {
+                    investorUserNames[i].transform.parent.parent.gameObject.SetActive(true);
+                    investorUserNames[i].text = $"#{topInvestorList[i].AvatarAddress.ToHex()[..4]}";
+                    investorBountyCounts[i].text = $"({topInvestorList[i].Count}/{Investor.MaxInvestmentCount})";
+                    investorBountyPrice[i].text = topInvestorList[i].Price.MajorUnit.ToString("#,0");
+                }
+                else
+                {
+                    investorUserNames[i].transform.parent.parent.gameObject.SetActive(false);
                 }
             }
         }
