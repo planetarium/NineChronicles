@@ -103,7 +103,7 @@ public class AirbridgeSettingsWindow : EditorWindow
         }
     }
 
-    private void UpdateAndroidManifest()
+    public static void UpdateAndroidManifest()
     {
         string metaDataPrefix = "airbridge==";
 

@@ -223,32 +223,42 @@ namespace Nekoyume.UI.Module
                         });
                         break;
                     case ToggleType.PortalReward:
-                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
                         {
-                            var confirm = Find<TitleOneButtonSystem>();
-                            if (value)
+                            toggleInfo.Toggle.gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                             {
-                                var stage = Game.instance.Stage;
-                                if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
+                                var confirm = Find<TitleOneButtonSystem>();
+                                if (value)
                                 {
-                                    confirm.SubmitCallback = () =>
+                                    var stage = Game.instance.Stage;
+                                    if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
                                     {
-                                        Game.instance.PortalConnect.OpenPortalRewardUrl();
-                                        confirm.Close();
-                                    };
-                                    confirm.Set("UI_INFORMATION_PORTAL_REWARD", "UI_DESCRIPTION_PORTAL_REWARD", true);
-                                    confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                        confirm.SubmitCallback = () =>
+                                        {
+                                            Game.instance.PortalConnect.OpenPortalRewardUrl();
+                                            confirm.Close();
+                                        };
+                                        confirm.Set("UI_INFORMATION_PORTAL_REWARD",
+                                            "UI_DESCRIPTION_PORTAL_REWARD", true);
+                                        confirm.Show(() => toggleInfo.Toggle.isOn = false);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                if (confirm.isActiveAndEnabled)
+                                else
                                 {
-                                    confirm.Close(true);
+                                    if (confirm.isActiveAndEnabled)
+                                    {
+                                        confirm.Close(true);
+                                    }
                                 }
-                            }
-                            UpdatePortalReward(false);
-                        });
+
+                                UpdatePortalReward(false);
+                            });
+                        }
+
                         break;
                     case ToggleType.Quit:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
