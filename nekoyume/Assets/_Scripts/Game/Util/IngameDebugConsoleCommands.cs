@@ -106,7 +106,7 @@ namespace Nekoyume.Game.Util
                         NcDebug.Log($"[AdventureBoss] Season ExplorerListCount : {Game.instance.AdventureBossData.SeasonInfo.Value.ExplorerList.Count()}");
                     NcDebug.Log($"[AdventureBoss] Season UsedApPotion : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedApPotion}");
                     NcDebug.Log($"[AdventureBoss] Season UsedGoldenDust : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedGoldenDust}");
-                    NcDebug.Log($"[AdventureBoss] Season UsedNcg : {Game.instance.AdventureBossData.SeasonInfo.Value.UsedNcg}");
+                    NcDebug.Log($"[AdventureBoss] Season UsedNcg : {Game.instance.AdventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0")}");
                     NcDebug.Log($"[AdventureBoss] Season TotalPoint : {Game.instance.AdventureBossData.SeasonInfo.Value.TotalPoint}");
                 }
                 if(Game.instance.AdventureBossData.BountyBoard.Value is null)

@@ -5,6 +5,10 @@ using UniRx;
 using Nekoyume.Model.AdventureBoss;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Action.AdventureBoss;
+using System.Linq;
+using Codice.Client.BaseCommands.Merge;
+using Libplanet.Types.Assets;
+using Nekoyume.State;
 
 namespace Nekoyume.UI.Model
 {
@@ -33,6 +37,19 @@ namespace Nekoyume.UI.Model
         {
             IsRewardLoading.Value = false;
             RefreshAllByCurrentState().Forget();
+            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(blockIndex =>
+            {
+                if(LatestSeason.Value == null)
+                {
+                    return;
+                }
+
+                if(LatestSeason.Value.EndBlockIndex == blockIndex ||
+                    LatestSeason.Value.NextStartBlockIndex == blockIndex)
+                {
+                    RefreshAllByCurrentState().Forget();
+                }
+            }) ;
         }
 
         public async UniTask RefreshAllByCurrentState()
@@ -103,6 +120,32 @@ namespace Nekoyume.UI.Model
             }
             CurrentState.Value = AdventureBossSeasonState.End;
             return;
+        }
+
+        public Investor GetCurrentInvestorInfo()
+        {
+            if (BountyBoard.Value == null)
+            {
+                return null;
+            }
+
+            return BountyBoard.Value.Investors.Find(i => i.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address);
+        }
+
+        public FungibleAssetValue GetCurrentBountyPrice()
+        {
+            FungibleAssetValue total = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
+            if(BountyBoard.Value == null || BountyBoard.Value.Investors == null)
+            {
+                return total;
+            }
+
+            foreach (var item in BountyBoard.Value.Investors)
+            {
+                total += item.Price;
+            }
+
+            return total;
         }
     }
 }

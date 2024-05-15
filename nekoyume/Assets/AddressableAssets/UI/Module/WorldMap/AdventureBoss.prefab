@@ -892,6 +892,7 @@ MonoBehaviour:
   - {fileID: 3788871848768303182}
   usedGold: {fileID: 6172150928653304595}
   floor: {fileID: 3840062029209082296}
+  loadingIndicator: {fileID: 4511674208848021940}
 --- !u!1 &1308152949230714284
 GameObject:
   m_ObjectHideFlags: 0
@@ -1680,7 +1681,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1045182195056071619
 RectTransform:
   m_ObjectHideFlags: 0

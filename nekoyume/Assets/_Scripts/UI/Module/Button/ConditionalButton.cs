@@ -129,6 +129,13 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void SetText(string text)
+        {
+            if(normalText != null) { normalText.text = text; }
+            if(conditionalText != null) { conditionalText.text = text; }
+            if(disabledText != null) { disabledText.text = text; }
+        }
+
         public virtual void UpdateObjects()
         {
             var condition = CheckCondition();
