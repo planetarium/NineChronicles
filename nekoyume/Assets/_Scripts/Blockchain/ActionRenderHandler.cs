@@ -210,6 +210,7 @@ namespace Nekoyume.Blockchain
             //AdventureBoss
             ClaimAdventureBossReward();
             ClaimWantedReward();
+            AdventureBossBattle();
         }
 
         public void Stop()
@@ -3672,6 +3673,23 @@ namespace Nekoyume.Blockchain
                 Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
                 Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
             });
+        }
+
+        private void AdventureBossBattle()
+        {
+            _actionRenderer.EveryRender<AdventureBossBattle>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseAdventureBossBattle)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseAdventureBossBattle(ActionEvaluation<AdventureBossBattle> eval)
+        {
+            
         }
     }
 }

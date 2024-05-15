@@ -24,6 +24,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI[] remainingBlockIndexs;
         [SerializeField] private TextMeshProUGUI usedGold;
         [SerializeField] private TextMeshProUGUI floor;
+        [SerializeField] private GameObject loadingIndicator;
 
         private readonly List<System.IDisposable> _disposables = new();
         private long _remainingBlockIndex = 0;
@@ -35,12 +36,42 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
 
             Game.Game.instance.AdventureBossData.CurrentState.Subscribe(OnAdventureBossStateChanged).AddTo(_disposables);
+            Game.Game.instance.AdventureBossData.ExploreInfo.Subscribe(RefreshExploreInfo).AddTo(_disposables);
+            Game.Game.instance.AdventureBossData.BountyBoard.Subscribe(RefreshBountyBoardInfo).AddTo(_disposables);
         }
 
+        private void RefreshBountyBoardInfo(BountyBoard board)
+        {
+            if(board == null)
+            {
+                usedGold.text = "-";
+            }
+            else
+            {
+                usedGold.text = Game.Game.instance.AdventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
+            }
+        }
+
+        private void RefreshExploreInfo(ExploreInfo exploreInfo)
+        {
+            if (exploreInfo == null)
+            {
+                floor.text = "-";
+            }
+            else
+            {
+                floor.text = $"{exploreInfo.Floor.ToString()}F";
+            }
+        }
 
         private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
+        }
+
+        public void SetLoadingIndicator(bool isActive)
+        {
+            loadingIndicator.SetActive(isActive);
         }
 
         private void UpdateViewAsync(long blockIndex)
@@ -127,18 +158,6 @@ namespace Nekoyume.UI.Module
 
                     wantedOpen.SetActive(true);
                     wantedClose.SetActive(false);
-
-                    var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
-                    var experienceInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
-                    usedGold.text = seasonInfo.UsedNcg.ToCurrencyNotation();
-                    if(experienceInfo == null)
-                    {
-                        floor.text = "-";
-                    }
-                    else
-                    {
-                        floor.text = $"{experienceInfo.Floor.ToString()}F";
-                    }
                     break;
                 case AdventureBossData.AdventureBossSeasonState.None:
                 case AdventureBossData.AdventureBossSeasonState.End:

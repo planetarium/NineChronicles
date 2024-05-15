@@ -56,6 +56,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private Button eventDungeonLockButton;
 
+        [SerializeField] private WorldMapAdventureBoss worldMapAdventureBossButton;
+
         private readonly List<IDisposable> _disposablesAtShow = new();
 
         public ViewModel SharedViewModel { get; private set; }
@@ -478,6 +480,11 @@ namespace Nekoyume.UI
             {
                 worldButton.SetOpenCostTextColor(crystal.MajorUnit);
             }
+        }
+
+        public void SetAdventureBossButtonLoading(bool isLoading)
+        {
+            worldMapAdventureBossButton.SetLoadingIndicator(isLoading);
         }
 
     }

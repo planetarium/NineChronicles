@@ -44,7 +44,7 @@ namespace Nekoyume.UI
         private readonly List<System.IDisposable> _disposablesByEnable = new();
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        private void Awake()
+        protected override void Awake()
         {
             receiveAllButton.OnClickSubject.Subscribe(_ =>
             {
@@ -56,6 +56,7 @@ namespace Nekoyume.UI
                 Game.Game.instance.AdventureBossData.IsRewardLoading.Value = true;
                 Close();
             }).AddTo(gameObject);
+            base.Awake();
         }
 
         private void UpdateViewAsync(long blockIndex)

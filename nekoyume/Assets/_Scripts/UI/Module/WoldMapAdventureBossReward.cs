@@ -95,6 +95,11 @@ namespace Nekoyume.UI.Module
 
         private void RefreshLastClaimedBlockIndex(AdventureBossData adventureBossData)
         {
+            if (adventureBossData == null || adventureBossData.EndedSeasonInfos.Count == 0)
+            {
+                return;
+            }
+
             var lastClaimableSeasonInfo = adventureBossData.EndedSeasonInfos
                 .Where(info => info.Value.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration > Game.Game.instance.Agent.BlockIndex)
                 .OrderByDescending(info => info.Value.EndBlockIndex) // EndBlockIndex가 큰 순서대로 정렬
