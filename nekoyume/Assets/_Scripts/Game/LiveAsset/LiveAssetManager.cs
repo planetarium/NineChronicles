@@ -98,6 +98,7 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
             StartCoroutine(RequestManager.instance.GetJson(noticeUrl, SetNotices));
         }
+
         public IEnumerator InitializeApplicationCLO()
         {
             var osKey = string.Empty;
@@ -106,7 +107,14 @@ namespace Nekoyume.Game.LiveAsset
 #elif UNITY_IOS
             osKey = "-ios";
 #endif
-            var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}.json";
+
+            var languageKey = string.Empty;
+            if (GameConfig.IsKoreanBuild)
+            {
+                languageKey = "-kr";
+            }
+
+            var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}{languageKey}.json";
             NcDebug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
             yield return StartCoroutine(
                 RequestManager.instance.GetJson(
