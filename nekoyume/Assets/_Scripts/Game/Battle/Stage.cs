@@ -1245,15 +1245,16 @@ namespace Nekoyume.Game.Battle
 
                     var target = tick.SkillInfos.First().Target;
 
-                    var tickSkillInfo = new Skill.SkillInfo(affectedCharacter.Id,
-                                                            !affectedCharacter.IsAlive,
-                                                            0,
-                                                            0,
-                                                            false,
-                                                            SkillCategory.Debuff,
-                                                            waveTurn,
-                                                            target: character,
-                                                            buff: frostBite
+                    var tickSkillInfo = new Skill.SkillInfo(
+                        affectedCharacter.Id,
+                        !affectedCharacter.IsAlive,
+                        0,
+                        0,
+                        false,
+                        SkillCategory.Debuff,
+                        waveTurn,
+                        target: character,
+                        buff: frostBite
                     );
                     // TODO: 동상 관련 로직은 추후 수정 필요
                     affectedCharacter.AddAction(
