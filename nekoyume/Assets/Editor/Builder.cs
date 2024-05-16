@@ -258,7 +258,7 @@ namespace Editor
                     BuildTarget.StandaloneWindows or BuildTarget.StandaloneWindows64 =>
                         $"{PlayerName}.exe",
                     BuildTarget.Android =>
-                        $"{PlayerName}.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
+                        $"android-build.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
                     _ => PlayerName,
                 }
             );
@@ -544,9 +544,9 @@ namespace Editor
                 }
 
                 if (cliOptions.TryGetValue("playerName", out var outPlayerName) &&
-                    !string.IsNullOrEmpty(outPath))
+                    !string.IsNullOrEmpty(outPlayerName))
                 {
-                    PlayerName = outPlayerName;
+                    PlayerName = outPlayerName.Replace("-", " ");
                 }
             }
         }
