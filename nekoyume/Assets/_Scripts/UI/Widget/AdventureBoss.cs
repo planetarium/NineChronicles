@@ -172,7 +172,7 @@ namespace Nekoyume.UI
                 myBountyCounts.text = $"({investInfo.Count}/{Investor.MaxInvestmentCount})";
                 myBountyPrice.text = investInfo.Price.MajorUnit.ToString("#,0");
             }
-            if(board.Investors == null)
+            if(board == null || board.Investors == null)
             {
                 for (int i = 0; i < 3; i++)
                 {

@@ -105,6 +105,11 @@ namespace Nekoyume.UI.Module
                 .OrderByDescending(info => info.Value.EndBlockIndex) // EndBlockIndex가 큰 순서대로 정렬
                 .FirstOrDefault(); // 첫 번째 요소를 선택
 
+            if(lastClaimableSeasonInfo.Value == null)
+            {
+                return;
+            }
+
             _lastClaimedBlockIndex = lastClaimableSeasonInfo.Value.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration;
         }
 

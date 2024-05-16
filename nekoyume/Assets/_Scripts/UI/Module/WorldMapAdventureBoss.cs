@@ -162,9 +162,9 @@ namespace Nekoyume.UI.Module
                 case AdventureBossData.AdventureBossSeasonState.None:
                 case AdventureBossData.AdventureBossSeasonState.End:
                 default:
-                    SetDefualtRemainingBlockIndexs();
                     close.SetActive(true);
                     open.SetActive(false);
+                    SetDefualtRemainingBlockIndexs();
                     break;
             }
         }

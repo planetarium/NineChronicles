@@ -84,10 +84,17 @@ namespace Nekoyume.UI.Model
                 SeasonInfo.Value = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(LatestSeason.Value.SeasonId);
                 if(SeasonInfo.Value == null)
                 {
-                    SeasonInfo.Value = null;
-                    BountyBoard.Value = null;
-                    ExploreInfo.Value = null;
-                    CurrentState.Value = AdventureBossSeasonState.None;
+                    try
+                    {
+                        SeasonInfo.Value = null;
+                        BountyBoard.Value = null;
+                        ExploreInfo.Value = null;
+                        CurrentState.Value = AdventureBossSeasonState.None;
+                    }
+                    catch (System.Exception e)
+                    {
+                        NcDebug.LogError($"[AdventureBossData]{e}");
+                    }
                     NcDebug.LogError("[AdventureBossData.RefreshAllByCurrentState] SeasonInfo is null When Progress");
                     return;
                 }
@@ -97,17 +104,33 @@ namespace Nekoyume.UI.Model
                     ExploreInfo.Value = await Game.Game.instance.Agent.GetExploreInfoAsync(Game.Game.instance.States.CurrentAvatarState.address, SeasonInfo.Value.Season);
                 }
                 CurrentState.Value = AdventureBossSeasonState.Progress;
+                NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] Progress");
                 return;
             }
 
-            SeasonInfo.Value = null;
-            BountyBoard.Value = null;
-            ExploreInfo.Value = null;
+            try
+            {
+                SeasonInfo.Value = null;
+                BountyBoard.Value = null;
+                ExploreInfo.Value = null;
+            }
+            catch (System.Exception e)
+            {
+                NcDebug.LogError($"[AdventureBossData]{e}");
+            }
 
             //시즌시작은되었으나 아무도 현상금을 걸지않아서 시즌데이터가없는경우.
             if (LatestSeason.Value.NextStartBlockIndex <= Game.Game.instance.Agent.BlockIndex)
             {
-                CurrentState.Value = AdventureBossSeasonState.Ready;
+                try
+                {
+                    CurrentState.Value = AdventureBossSeasonState.Ready;
+                }
+                catch (System.Exception e)
+                {
+                    NcDebug.LogError($"[AdventureBossData]{e}");
+                }
+                NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] Ready");
                 return;
             }
 
@@ -118,7 +141,15 @@ namespace Nekoyume.UI.Model
                 endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(LatestSeason.Value.SeasonId);
                 EndedSeasonInfos.Add(LatestSeason.Value.SeasonId, endedSeasonInfo);
             }
-            CurrentState.Value = AdventureBossSeasonState.End;
+            try
+            {
+                CurrentState.Value = AdventureBossSeasonState.End;
+            }
+            catch (System.Exception e)
+            {
+                NcDebug.LogError($"[AdventureBossData]{e}");
+            }
+            NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] End");
             return;
         }
 
