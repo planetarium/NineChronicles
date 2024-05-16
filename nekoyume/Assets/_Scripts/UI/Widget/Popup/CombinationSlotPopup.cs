@@ -14,6 +14,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -36,7 +37,7 @@ namespace Nekoyume.UI
             public CraftType Type;
             public GameObject Icon;
             public GameObject OptionContainer;
-            public ItemOptionView MainStatView;
+            public List<ItemOptionView> MainStatViews;
             public List<ItemOptionWithCountView> StatOptions;
             public List<ItemOptionView> SkillOptions;
         }
@@ -180,17 +181,26 @@ namespace Nekoyume.UI
             // Consumable case
             if (!resultModel.subRecipeId.HasValue)
             {
-                var (type, value, _) = itemOptionInfo.StatOptions[0];
-                information.MainStatView.UpdateView(
-                    $"{type} {type.ValueToString(value)}",
-                    string.Empty);
+                for (var i = 0; i < information.MainStatViews.Count; i++)
+                {
+                    var mainStatView = information.MainStatViews[i];
+                    if (i >= itemOptionInfo.StatOptions.Count)
+                    {
+                        mainStatView.Hide();
+                        continue;
+                    }
+
+                    var (type, value, _) = itemOptionInfo.StatOptions[i];
+                    mainStatView.UpdateView($"{type} {type.ValueToString(value)}", string.Empty);
+                    mainStatView.Show();
+                }
 
                 return;
             }
 
             var statType = itemOptionInfo.MainStat.type;
             var statValueString = statType.ValueToString(itemOptionInfo.MainStat.totalValue);
-            information.MainStatView.UpdateView($"{statType} {statValueString}", string.Empty);
+            information.MainStatViews[0].UpdateView($"{statType} {statValueString}", string.Empty);
 
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
@@ -250,20 +260,21 @@ namespace Nekoyume.UI
             }
 
             var format = "{0} +({1:N0}% - {2:N0}%)";
+            var mainStatView = information.MainStatViews[0];
             if (row.BaseStatGrowthMin == 0 && row.BaseStatGrowthMax == 0)
             {
-                information.MainStatView.Hide();
+                mainStatView.Hide();
             }
             else
             {
-                information.MainStatView.UpdateView(
+                mainStatView.UpdateView(
                     string.Format(
                         format,
                         itemOptionInfo.MainStat.type,
                         row.BaseStatGrowthMin.NormalizeFromTenThousandths() * 100,
                         row.BaseStatGrowthMax.NormalizeFromTenThousandths() * 100),
                     string.Empty);
-                information.MainStatView.Show();
+                mainStatView.Show();
             }
 
             for (var i = 0; i < information.StatOptions.Count; i++)
@@ -337,10 +348,11 @@ namespace Nekoyume.UI
                 itemOptionInfo.MainStat.totalValue);
             var statRateString = statRate > 0 ? $" (+{statRate}%)" : string.Empty;
 
-            information.MainStatView.UpdateView(
+            var mainStatView = information.MainStatViews[0];
+            mainStatView.UpdateView(
                 $"{statType} {statValueString}{statRateString}",
                 string.Empty);
-            information.MainStatView.Show();
+            mainStatView.Show();
 
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
