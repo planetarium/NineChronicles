@@ -23,8 +23,9 @@ namespace Editor
 #if UNITY_ANDROID || UNITY_IOS
         private static string PlayerName = "Nine Chronicles M";
 #else
-        private static readonly string PlayerName = PlayerSettings.productName;
+        private static string PlayerName = PlayerSettings.productName;
 #endif
+
         private const string BuildBasePath = "build";
 
         [MenuItem("Build/Standalone/Android Arm64")]
