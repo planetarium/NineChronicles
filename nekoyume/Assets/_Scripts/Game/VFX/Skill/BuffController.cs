@@ -76,8 +76,7 @@ namespace Nekoyume.Game.VFX.Skill
         {
             var g = vfx.gameObject;
             var t = vfx.transform;
-            while (g.activeSelf &&
-                   target)
+            while (g.activeSelf && target)
             {
                 t.position = target.position + BuffHelper.GetBuffPosition(buffModel.BuffInfo.Id);
                 yield return null;

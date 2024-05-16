@@ -9,6 +9,7 @@ using Nekoyume.Director;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
+using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -522,8 +523,38 @@ namespace Nekoyume.Game.Battle
             {
                 RaidCharacter raidCharacter =
                     character.Id == _player.Id ? _player : _boss;
+                // todo: 동상 관련 로직은 추후 수정 필요
+                if (tick.SkillId == FrostBiteVFX.FrostBiteBuffId)
+                {
+                    if (!character.Buffs.TryGetValue(FrostBiteVFX.FrostBiteBuffId, out var frostBite))
+                    {
+                        yield break;
+                    }
+
+                    var target = tick.SkillInfos.First().Target;
+
+                    var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
+                                                            raidCharacter.IsDead,
+                                                            0,
+                                                            0,
+                                                            false,
+                                                            SkillCategory.Debuff,
+                                                            _waveTurn,
+                                                            target: character,
+                                                            buff: frostBite
+                    );
+                    // TODO: 동상 관련 로직은 추후 수정 필요
+                    _actionQueue.Enqueue(
+                        new RaidActionParams(
+                            raidCharacter,
+                            tick.SkillId,
+                            ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
+                            tick.BuffInfos,
+                            raidCharacter.CoBuff)
+                    );
+                }
                 // This Tick from 'Stun'
-                if (tick.SkillId == 0)
+                else if (tick.SkillId == 0)
                 {
                     IEnumerator StunTick(IEnumerable<Skill.SkillInfo> _)
                     {
