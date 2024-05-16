@@ -10,6 +10,7 @@ public enum CostType
     EventDungeonTicket,
 
     // Material costs (id)
-    GoldDust = 600201,
+    GoldDust   = 600201,
+    RubyDust   = 600202,
     SilverDust = 800201,
 }

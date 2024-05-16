@@ -268,12 +268,8 @@ namespace Nekoyume.Game.Battle
                 yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             }
 
-            if (_battleCoroutine is not null)
-            {
-                StopCoroutine(_battleCoroutine);
-                _battleCoroutine = null;
-            }
-            _isPlaying = false;
+            ClearBattle();
+
             ActionRenderHandler.Instance.Pending = false;
             BattleRenderer.Instance.IsOnBattle = false;
             Widget.Find<WorldBossBattle>().Close();
@@ -641,14 +637,16 @@ namespace Nekoyume.Game.Battle
 
         private void ClearBattle()
         {
-            if (_battleCoroutine is not null)
+            if (_battleCoroutine != null)
             {
                 StopCoroutine(_battleCoroutine);
                 _battleCoroutine = null;
                 objectPool.ReleaseAll();
             }
             _currentPlayData = null;
-        }
+            _isPlaying = false;
 
+            Time.timeScale = Game.DefaultTimeScale;
+        }
     }
 }
