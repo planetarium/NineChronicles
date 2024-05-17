@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Character
     using UniRx;
 
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
-    public class Player : CharacterBase
+    public class Player : Actor
     {
         [SerializeField]
         private CharacterAppearance appearance;
@@ -216,7 +216,7 @@ namespace Nekoyume.Game.Character
                 new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
         }
 
-        public override float CalculateRange(CharacterBase target)
+        public override float CalculateRange(Actor target)
         {
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
@@ -367,7 +367,7 @@ namespace Nekoyume.Game.Character
             EXPMax = character.Exp.Max;
         }
 
-        protected override void ProcessAttack(CharacterBase target,
+        protected override void ProcessAttack(Actor target,
             Model.BattleStatus.Skill.SkillInfo skill,
             bool isLastHit,
             bool isConsiderElementalType)
