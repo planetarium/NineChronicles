@@ -6,8 +6,6 @@ namespace Nekoyume.Game.VFX
 {
     public class FrostBiteVFX : PersistingVFX
     {
-        public static readonly int FrostBiteBuffId = 801000;
-
         public enum FrostBiteLevel
         {
             NonInitialized,
@@ -99,7 +97,7 @@ namespace Nekoyume.Game.VFX
                 return;
             }
 
-            if (!Target.CharacterModel.Buffs.TryGetValue(FrostBiteBuffId, out var buff))
+            if (!Target.CharacterModel.Buffs.TryGetValue(IceShield.FrostBiteId, out var buff))
             {
                 return;
             }

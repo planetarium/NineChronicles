@@ -28,6 +28,7 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
@@ -1236,9 +1237,9 @@ namespace Nekoyume.Game.Battle
             {
                 var affectedCharacter = GetActor(character);
                 // todo: 동상 관련 로직은 추후 수정 필요
-                if (tick.SkillId == FrostBiteVFX.FrostBiteBuffId)
+                if (tick.SkillId == IceShield.FrostBiteId)
                 {
-                    if (!character.Buffs.TryGetValue(FrostBiteVFX.FrostBiteBuffId, out var frostBite))
+                    if (!character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
                     {
                         yield break;
                     }
