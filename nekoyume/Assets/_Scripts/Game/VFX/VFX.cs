@@ -105,7 +105,10 @@ namespace Nekoyume.Game.VFX
         public void LazyStop()
         {
             ParticlesRoot.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            StartCoroutine(CoLazyStop(_particlesDuration));
+            if (gameObject.activeSelf)
+            {
+                StartCoroutine(CoLazyStop(_particlesDuration));
+            }
         }
 
         public virtual void Play()
