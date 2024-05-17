@@ -274,6 +274,7 @@ namespace Nekoyume.UI
                     break;
                 case CostType.SilverDust:
                 case CostType.GoldDust:
+                case CostType.RubyDust:
                     itemId = (int)costType;
                     var materialCount =
                         States.Instance.CurrentAvatarState.inventory.GetMaterialCount(itemId);
