@@ -18,8 +18,8 @@ namespace Nekoyume.Game.Character
             public AnimationReferenceAsset animation;
         }
 
-        private const string DefaultPMAShader = "Spine/Skeleton";
-        private const string DefaultStraightAlphaShader = "Sprites/Default";
+        private const string DefaultPMAShader = "Spine/Skeleton Tint";
+        private const string DefaultShader    = "Sprites/Default";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new();
 
@@ -53,9 +53,9 @@ namespace Nekoyume.Game.Character
             SkeletonAnimation = GetComponent<SkeletonAnimation>();
             SkeletonAnimation.AnimationState.Complete += delegate { _callback?.Invoke(); };
 
-            _applyPMA = SkeletonAnimation.pmaVertexColors;
-            _shader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultStraightAlphaShader);
-            _material = new Material(_shader);
+            _applyPMA  = SkeletonAnimation.pmaVertexColors;
+            _shader    = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultShader);
+            _material  = new Material(_shader);
             _atlasPage = _material.ToSpineAtlasPage();
         }
 
@@ -220,6 +220,19 @@ namespace Nekoyume.Game.Character
             }
 
             return (body, tail);
+        }
+
+        /// <summary>Returns the axis aligned bounding box (AABB) of the region and mesh attachments for the current pose.</summary>
+        /// <param name="x">The horizontal distance between the skeleton origin and the left side of the AABB.</param>
+        /// <param name="y">The vertical distance between the skeleton origin and the bottom side of the AABB.</param>
+        /// <param name="width">The width of the AABB</param>
+        /// <param name="height">The height of the AABB.</param>
+        /// <returns>Reference to hold a float[]. May be a null reference. This method will assign it a new float[] with the appropriate size as needed.</returns>
+        public float[] GetSpineBound(out float x, out float y, out float width, out float height)
+        {
+            float[] vertexBuffer = null;
+            SkeletonAnimation.Skeleton.GetBounds(out x, out y, out width, out height, ref vertexBuffer);
+            return vertexBuffer;
         }
     }
 }

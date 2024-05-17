@@ -27,6 +27,8 @@ namespace Nekoyume.UI.Module
 
     public class HeaderMenuStatic : StaticWidget
     {
+        private const int MaxShowMaterialCount = 3;
+
         public enum ToggleType
         {
             Quest,
@@ -221,32 +223,42 @@ namespace Nekoyume.UI.Module
                         });
                         break;
                     case ToggleType.PortalReward:
-                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
                         {
-                            var confirm = Find<TitleOneButtonSystem>();
-                            if (value)
+                            toggleInfo.Toggle.gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                             {
-                                var stage = Game.instance.Stage;
-                                if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
+                                var confirm = Find<TitleOneButtonSystem>();
+                                if (value)
                                 {
-                                    confirm.SubmitCallback = () =>
+                                    var stage = Game.instance.Stage;
+                                    if (!BattleRenderer.Instance.IsOnBattle || stage.SelectedPlayer.IsAlive)
                                     {
-                                        Game.instance.PortalConnect.OpenPortalRewardUrl();
-                                        confirm.Close();
-                                    };
-                                    confirm.Set("UI_INFORMATION_PORTAL_REWARD", "UI_DESCRIPTION_PORTAL_REWARD", true);
-                                    confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                        confirm.SubmitCallback = () =>
+                                        {
+                                            Game.instance.PortalConnect.OpenPortalRewardUrl();
+                                            confirm.Close();
+                                        };
+                                        confirm.Set("UI_INFORMATION_PORTAL_REWARD",
+                                            "UI_DESCRIPTION_PORTAL_REWARD", true);
+                                        confirm.Show(() => toggleInfo.Toggle.isOn = false);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                if (confirm.isActiveAndEnabled)
+                                else
                                 {
-                                    confirm.Close(true);
+                                    if (confirm.isActiveAndEnabled)
+                                    {
+                                        confirm.Close(true);
+                                    }
                                 }
-                            }
-                            UpdatePortalReward(false);
-                        });
+
+                                UpdatePortalReward(false);
+                            });
+                        }
+
                         break;
                     case ToggleType.Quit:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
@@ -503,7 +515,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
                     break;
                 case AssetVisibleState.Summon:
-                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 2);
+                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 3);
                     break;
             }
         }
@@ -517,6 +529,7 @@ namespace Nekoyume.UI.Module
             MaterialAssets[index].SetMaterial(icon, count, costType);
         }
 
+        // TODO: 정확한 상황을 알지 못하지만, SetMaterial 메서드 호출 이후 자동으로 호출되야 할 것같이 생김.
         private void SetActiveAssets(
             bool isNcgActive = false,
             bool isCrystalActive = false,
@@ -529,7 +542,6 @@ namespace Nekoyume.UI.Module
             bool isMileageActive = false,
             int isMaterialActiveCount = 0)
         {
-            ncg.gameObject.SetActive(isNcgActive);
             crystal.gameObject.SetActive(isCrystalActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             hourglass.gameObject.SetActive(isHourglassActive);
@@ -542,6 +554,8 @@ namespace Nekoyume.UI.Module
             {
                 materialAssets[i].gameObject.SetActive(i < isMaterialActiveCount);
             }
+
+            ncg.gameObject.SetActive(isMaterialActiveCount < MaxShowMaterialCount && isNcgActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)

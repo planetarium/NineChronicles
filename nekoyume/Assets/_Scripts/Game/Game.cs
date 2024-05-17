@@ -78,6 +78,8 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
+        public const float DefaultTimeScale = 1.25f;
+
         [SerializeField]
         private Stage stage;
 
@@ -314,8 +316,12 @@ namespace Nekoyume.Game
                     KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             }
 
+            if (LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                yield return L10nManager.Initialize(LanguageType.Korean).ToYieldInstruction();
+            }
 #if UNITY_EDITOR
-            if (useSystemLanguage)
+            else if (useSystemLanguage)
             {
                 yield return L10nManager.Initialize().ToYieldInstruction();
             }
@@ -325,11 +331,14 @@ namespace Nekoyume.Game
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
-            yield return L10nManager
-                .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
-                    ? L10nManager.CurrentLanguage
-                    : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
-                .ToYieldInstruction();
+            else
+            {
+                yield return L10nManager
+                    .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
+                        ? L10nManager.CurrentLanguage
+                        : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                    .ToYieldInstruction();
+            }
 #endif
 
             yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
@@ -433,7 +442,6 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
-            Widget.Find<IntroScreen>().ApplyL10n();
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
@@ -627,13 +635,14 @@ namespace Nekoyume.Game
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if RUN_ON_MOBILE
-            if (!IsGuestLogin)
+            // Note : Social Login 과정을 거친 경우만 토큰을 확인합니다.
+            if (!IsGuestLogin && !SigninContext.HasSignedWithKeyImport)
             {
                 var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
                 yield return checkTokensTask.AsCoroutine();
                 if (!checkTokensTask.Result)
                 {
-                    QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
+                    QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"), "Failed to Get Tokens.");
                     yield break;
                 }
 
@@ -1730,10 +1739,6 @@ namespace Nekoyume.Game
             Address? agentAddrInPortal;
             if (SigninContext.HasLatestSignedInSocialType)
             {
-                var startClicked = false;
-                introScreen.OnClickStart.AsObservable()
-                    .First()
-                    .Subscribe(_ => startClicked = true);
                 dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
                 sw.Reset();
                 sw.Start();
@@ -1743,12 +1748,10 @@ namespace Nekoyume.Game
                 NcDebug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 dimmedLoadingScreen.Close();
                 (email, _, agentAddrInPortal) = getTokensTask.Result;
-                if (!startClicked)
-                {
-                    NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
-                    yield return new WaitUntil(() => startClicked);
-                    NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
-                }
+
+                NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
+                yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
+                NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
             }
             else
             {
@@ -1772,10 +1775,15 @@ namespace Nekoyume.Game
                 // Guest private key login flow
                 if (KeyManager.Instance.IsSignedIn)
                 {
+                    sw.Reset();
+                    sw.Start();
                     yield return Agent.Initialize(
                         _commandLineOptions,
                         KeyManager.Instance.SignedInPrivateKey,
                         callback);
+                    sw.Stop();
+                    NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+
                     yield break;
                 }
                 else
