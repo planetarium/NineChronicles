@@ -109,7 +109,7 @@ namespace Nekoyume.Game.Character
 
         public static SpineColorSetting Default => new(Color.white);
 
-        public void SetColor(CharacterBase character)
+        public void SetColor(Actor character)
         {
             character.SetSpineColor(_color, ColorPropertyId);
             character.SetSpineColor(_black, BlackPropertyId);
