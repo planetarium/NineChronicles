@@ -141,6 +141,10 @@ namespace Nekoyume.Game.Character
             if (!_applicationQuitting)
                 DisableHUD();
             _forceStop = false;
+
+            SetDefaultColor();
+            _expiredColorKeys.Clear();
+            _colorPq.Clear();
         }
 
         #endregion
@@ -184,6 +188,7 @@ namespace Nekoyume.Game.Character
         protected virtual void Update()
         {
             _root?.Tick();
+            UpdateColor();
         }
 
         private void InitializeHudContainer()
@@ -300,6 +305,7 @@ namespace Nekoyume.Game.Character
 
             CurrentHP -= dmg;
             Animator.Hit();
+            AddHitColor();
 
             PopUpDmg(position, force, info, isConsiderElementalType);
         }
@@ -756,6 +762,8 @@ namespace Nekoyume.Game.Character
                 if (this is Player && !(this is EnemyPlayer))
                     battleWidget.ShowComboText(info.Effect > 0);
             }
+
+            _expiredColorKeys.Add(SpineColorKey.Test);
         }
 
         public IEnumerator CoBlowAttack(
@@ -1129,6 +1137,93 @@ namespace Nekoyume.Game.Character
         {
             AttackEndCalled = false;
         }
+
+#region SpineColor
+        private readonly Priority_Queue.SimplePriorityQueue<SpineColorSetting, int> _colorPq = new();
+
+        private readonly HashSet<SpineColorKey> _expiredColorKeys = new();
+
+        private int _currentColorHash;
+
+        private void UpdateColor()
+        {
+            if (_colorPq.Count == 0)
+            {
+                return;
+            }
+
+            ExpireColors();
+
+            while (_colorPq.Count > 0)
+            {
+                var setting = _colorPq.First;
+                if (setting.IsExpired)
+                {
+                    _colorPq.Dequeue();
+                    if (_colorPq.Count == 0)
+                    {
+                        SetDefaultColor();
+                    }
+                    continue;
+                }
+
+                if (setting.GetHashCode() == _currentColorHash)
+                {
+                    break;
+                }
+
+                _currentColorHash = setting.GetHashCode();
+                setting.SetColor(this);
+                return;
+            }
+        }
+
+        private void ExpireColors()
+        {
+            foreach (var colorSetting in _colorPq)
+            {
+                foreach (var expiredColorKey in _expiredColorKeys)
+                {
+                    colorSetting.ExpireByKey(expiredColorKey);
+                }
+                colorSetting.UpdateDuration(Time.deltaTime);
+
+                if (colorSetting.IsExpired)
+                {
+                    colorSetting.Expire();
+                }
+            }
+            _expiredColorKeys.Clear();
+        }
+
+        public virtual void SetSpineColor(Color color, int propertyID = -1)
+        {
+        }
+
+        private void SetDefaultColor()
+        {
+            SetSpineColor(Color.white, SpineColorSetting.ColorPropertyId);
+            SetSpineColor(Color.black, SpineColorSetting.BlackPropertyId);
+            _currentColorHash = 0;
+        }
+
+        public void AddHitColor()
+        {
+            var color = new Color(1, 0.6651f, 0.65566f, 1f);
+            var black = new Color(0.2452f, 0.091f, 0.091f, 1f);
+            _colorPq.Enqueue(new SpineColorSetting(color, black, true, 0.3f), (int)SpineColorPriority.Hit);
+        }
+
+        public void AddSpineColor(Color color, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
+        {
+            _colorPq.Enqueue(new SpineColorSetting(color, hasDuration, duration, key), 0);
+        }
+
+        public void AddSpineColor(Color color, Color black, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
+        {
+            _colorPq.Enqueue(new SpineColorSetting(color, black, hasDuration, duration, key), 0);
+        }
+#endregion SpineColor
     }
 
     public class ActionParams

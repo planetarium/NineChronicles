@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Avatar
 {
     public class AvatarWeapon : MonoBehaviour
     {
-        private const string DefaultPmaShader = "Spine/Skeleton";
+        private const string DefaultPmaShader = "Spine/Skeleton Tint";
         private const string WeaponSlot = "weapon";
 
         [SerializeField]
