@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_AdventureBossResult
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    - serializedVersion: 3
+      m_BuildTarget: Server
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: Android
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: iPhone
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: Standalone
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 4
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: b977be72bc13df94fa1c6f7b2a6717f6, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: e02581b18127e254d8687f48d6f640e5, type: 3}
+  - {fileID: 21300000, guid: 8a91fb539f88ae140aaa49b51245c79c, type: 3}
+  - {fileID: 21300000, guid: 6f93c60523623cf4d9cc8cc672b40d9a, type: 3}
+  - {fileID: 21300000, guid: 3e7196769e054ae46b455a81e33499d8, type: 3}
+  - {fileID: 21300000, guid: 1dcf9887baa68c644bc34691a7cf6c92, type: 3}
+  - {fileID: 21300000, guid: ef0d4848905a9434b9567581e7a82552, type: 3}
+  - {fileID: 21300000, guid: ec648939e5143b74d9963055c7f0bd56, type: 3}
+  - {fileID: 21300000, guid: 8bd4a00a73548f244ac8092d27cbf840, type: 3}
+  - {fileID: 21300000, guid: d339cf5acf6159a47a6c7f9cf4a3b4fb, type: 3}
+  - {fileID: 21300000, guid: 46d24d0c27842a64681aa5a7df5bee9d, type: 3}
+  - {fileID: 21300000, guid: 13cded4e2ad393e4eb4bdd580e0395f6, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - AB_Result_Bg_02
+  - AB_Result_Bg_06
+  - AB_Result_Bg_04
+  - AB_Result_Bg_10
+  - AB_Result_Bg_11
+  - AB_Result_Bg_03
+  - AB_Result_Bg_08
+  - AB_Result_Bg_07
+  - AB_Result_Bg_09
+  - AB_Result_Bg_01
+  - AB_Result_Bg_05
+  m_RenderDataMap: {}
+  m_Tag: Atlas_AdventureBossResult
+  m_IsVariant: 0
