@@ -57,6 +57,8 @@ namespace Nekoyume.UI
         private TextMeshProUGUI myBountyCounts;
         [SerializeField]
         private TextMeshProUGUI myBountyPrice;
+        [SerializeField]
+        private AdventureBossFloor[] floors;
 
         private const float _floorHeight = 170;
         private readonly List<System.IDisposable> _disposablesByEnable = new();
@@ -140,6 +142,19 @@ namespace Nekoyume.UI
                 return;
             }
             clearFloor.text = $"F{exploreInfo.Floor}";
+
+            for (int i = 0; i < floors.Count(); i++)
+            {
+                if(i < exploreInfo.Floor)
+                {
+                    floors[i].SetState(AdventureBossFloor.FloorState.Clear);
+                }
+                else
+                {
+                    floors[i].SetState(AdventureBossFloor.FloorState.NotClear);
+                }
+            }
+
             score.text = $"{exploreInfo.Score:#,0}";
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor, false);
         }

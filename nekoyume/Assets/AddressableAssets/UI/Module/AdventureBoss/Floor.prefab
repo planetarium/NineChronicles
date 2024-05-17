@@ -1841,6 +1841,7 @@ GameObject:
   - component: {fileID: 4229587899721691053}
   - component: {fileID: 4229587899721691043}
   - component: {fileID: 4229587899721691052}
+  - component: {fileID: 3569758500190128167}
   m_Layer: 5
   m_Name: Floor
   m_TagString: Untagged
@@ -1910,6 +1911,24 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3569758500190128167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4229587899721691054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 616a5d4d5e64dd24d8d600d6e1f19844, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorOpen: {fileID: 4263115591263909719}
+  floorClear: {fileID: 4229587899534107955}
+  floorNotClear: {fileID: 4229587900524367247}
+  floorLock: {fileID: 4229587900971635767}
+  openNameImage: {fileID: 1440213293719998074}
+  openNameText: {fileID: 8972009977830872533}
 --- !u!1 &4229587899731245467
 GameObject:
   m_ObjectHideFlags: 0
