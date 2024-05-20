@@ -1768,6 +1768,7 @@ GameObject:
   m_Component:
   - component: {fileID: 414936348579641359}
   - component: {fileID: 1822564476368357774}
+  - component: {fileID: 6205555443014481980}
   m_Layer: 15
   m_Name: UI_AdventureBossRewardInfoPopup
   m_TagString: Untagged
@@ -1818,6 +1819,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6205555443014481980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550198459617854147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b329381adf3cac141a58239a6b540740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  toggleGroup: {fileID: 4754938081496561367}
+  contentsScore: {fileID: 8466351612981973887}
+  contentsFloor: {fileID: 3252984847791347236}
+  contentsOperational: {fileID: 5698978625160494237}
 --- !u!1 &1781143271419477325
 GameObject:
   m_ObjectHideFlags: 0
