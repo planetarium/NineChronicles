@@ -23,7 +23,6 @@ namespace BalanceTool.Runtime.Util
             TableSheets tableSheets,
             Address agentAddr,
             Address avatarAddr,
-            IWorld initialStatesWithAvatarStateV1,
             IWorld initialStatesWithAvatarStateV2
             ) InitializeStates(
                 Address? adminAddr = null,
@@ -65,27 +64,14 @@ namespace BalanceTool.Runtime.Util
                 avatarAddr.Derive("ranking_map"));
             agentState.avatarAddresses.Add(avatarIndex, avatarAddr);
 
-            var initialStatesWithAvatarStateV1 = states
-                .SetAgentState(agentAddr.Value, agentState)
-                .SetLegacyState(avatarAddr, MigrationAvatarState.LegacySerializeV1(avatarState));
             var initialStatesWithAvatarStateV2 = states
                 .SetAgentState(agentAddr.Value, agentState)
-                .SetLegacyState(avatarAddr, MigrationAvatarState.LegacySerializeV2(avatarState))
-                .SetLegacyState(
-                    avatarAddr.Derive(SerializeKeys.LegacyInventoryKey),
-                    avatarState.inventory.Serialize())
-                .SetLegacyState(
-                    avatarAddr.Derive(SerializeKeys.LegacyWorldInformationKey),
-                    avatarState.worldInformation.Serialize())
-                .SetLegacyState(
-                    avatarAddr.Derive(SerializeKeys.LegacyQuestListKey),
-                    avatarState.questList.Serialize());
+                .SetAvatarState(avatarAddr, avatarState);
 
             return (
                 tableSheets,
                 agentAddr.Value,
                 avatarAddr,
-                initialStatesWithAvatarStateV1,
                 initialStatesWithAvatarStateV2);
         }
 

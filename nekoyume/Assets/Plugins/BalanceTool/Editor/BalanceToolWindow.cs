@@ -43,7 +43,6 @@ namespace BalanceTool.Editor
                 _,
                 _agentAddr,
                 _,
-                _,
                 _prevStates) = InitializeUtil.InitializeStates(
                 avatarIndex: _avatarIndex);
 
