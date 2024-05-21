@@ -288,5 +288,10 @@ namespace Nekoyume.UI
             }
         }
 
+        public void OnClickShowRewardInfo()
+        {
+            Find<AdventureBossRewardInfoPopup>().Show();
+        }
+
     }
 }

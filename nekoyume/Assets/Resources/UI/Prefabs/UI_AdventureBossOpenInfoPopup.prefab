@@ -21658,7 +21658,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8987183913398411477}
   - component: {fileID: 8984887071543346465}
-  - component: {fileID: 5999299856137976030}
   - component: {fileID: 544383780006516549}
   m_Layer: 5
   m_Name: UI_AdventureBossOpenInfoPopup
@@ -21697,35 +21696,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9197388406494432887}
   m_CullTransparentMesh: 0
---- !u!114 &5999299856137976030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9197388406494432887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4076c65b7a45814ba588b4e8c240e50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
-  blockIndex: {fileID: 651147834766497550}
-  seasonText: {fileID: 0}
-  bountyCost: {fileID: 0}
-  myScore: {fileID: 0}
-  rewardItemsBounty: {fileID: 0}
-  rewardItemsExplore: {fileID: 0}
-  noRewardItemsBounty: {fileID: 0}
-  noRewardItemsExplore: {fileID: 0}
-  receiveAllButton: {fileID: 0}
-  pageButton:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!95 &544383780006516549
 Animator:
   serializedVersion: 5
