@@ -9,6 +9,7 @@ using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
+using Nekoyume.Helper;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.UI;
 using UnityEngine;
@@ -317,12 +318,12 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = Game.instance.Arena.BuffController.Get<ArenaCharacter, BuffVFX>(target, buff);
+            var effect = Game.instance.Arena.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Play();
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform));
+                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform, buff));
             }
 
             target.CharacterModel = info.Target;
@@ -508,8 +509,7 @@ namespace Nekoyume.Game.Character
                     if (target is null)
                         continue;
 
-                    Vector3 targetEffectPos = target.transform.position;
-                    targetEffectPos.y += 0.55f;
+                    Vector3 targetEffectPos = target.transform.position + BuffHelper.GetDefaultBuffPosition();
                     var targetEffectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
                                     Game.instance.Stage.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
                     var strikeEffect = targetEffectObj.GetComponent<VFX.VFX>();
@@ -521,8 +521,7 @@ namespace Nekoyume.Game.Character
                 }
             };
 
-            Vector3 effectPos = transform.position;
-            effectPos.y += 0.55f;
+            Vector3 effectPos = transform.position + BuffHelper.GetDefaultBuffPosition();
             var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
                             Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
             var castEffect = effectObj.GetComponent<VFX.VFX>();

@@ -1,12 +1,7 @@
-using Coffee.UIEffects;
-using Nekoyume.Game.VFX;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Stat;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Nekoyume.Helper
 {
@@ -36,20 +31,25 @@ namespace Nekoyume.Helper
             {
                 if (buff is StatBuff statBuff)
                 {
-                    var modifier = statBuff.GetModifier();
+                    var modifier   = statBuff.GetModifier();
                     var isPositive = modifier.Value >= 0;
                     var data = VFXData.DataList
                         .FirstOrDefault(x => x.StatType == modifier.StatType);
                     return data == null ? VFXData.FallbackCastingVFX :
-                        isPositive ? data.PlusCastingVFX : data.MinusCastingVFX;
+                        isPositive      ? data.PlusCastingVFX : data.MinusCastingVFX;
                 }
 
                 return VFXData.FallbackCastingVFX;
             }
-            else
-            {
-                return overrideData.CastingVFX;
-            }
+            return overrideData.CastingVFX;
+        }
+
+        public static GameObject GetCastingVFXPrefab(int buffId)
+        {
+            var overrideData = VFXData.OverrideDataList
+                .FirstOrDefault(x => x.Id == buffId);
+
+            return overrideData == null ? VFXData.FallbackCastingVFX : overrideData.CastingVFX;
         }
 
         public static GameObject GetBuffVFXPrefab(Buff buff)
@@ -60,20 +60,24 @@ namespace Nekoyume.Helper
             {
                 if (buff is StatBuff statBuff)
                 {
-                    var modifier = statBuff.GetModifier();
+                    var modifier   = statBuff.GetModifier();
                     var isPositive = modifier.Value >= 0;
                     var data = VFXData.DataList
                         .FirstOrDefault(x => x.StatType == modifier.StatType);
                     return data == null ? VFXData.FallbackBuffVFX :
-                        isPositive ? data.PlusVFX : data.MinusVFX;
+                        isPositive      ? data.PlusVFX : data.MinusVFX;
                 }
 
                 return VFXData.FallbackBuffVFX;
             }
-            else
-            {
-                return overrideData.BuffVFX;
-            }
+            return overrideData.BuffVFX;
+        }
+
+        public static GameObject GetBuffVFXPrefab(int buffId)
+        {
+            var overrideData = VFXData.OverrideDataList
+                .FirstOrDefault(x => x.Id == buffId);
+            return overrideData == null ? VFXData.FallbackBuffVFX : overrideData.BuffVFX;
         }
 
         public static Sprite GetBuffIcon(Buff buff)
@@ -116,6 +120,18 @@ namespace Nekoyume.Helper
             var data = VFXData.DataList.FirstOrDefault(x => x.StatType == statType);
             return data == null ? VFXData.FallbackIcon :
                 isDebuff ? data.MinusIcon : data.PlusIcon;
+        }
+
+        public static Vector3 GetDefaultBuffPosition()
+        {
+            return VFXData.FallbackPosition;
+        }
+
+        public static Vector3 GetBuffPosition(int id, bool isCasting = false)
+        {
+            var overrideData = VFXData.BuffPosOverrideDataList
+                .FirstOrDefault(x => x.Id == id && x.IsCasting == isCasting);
+            return overrideData?.Position ?? VFXData.FallbackPosition;
         }
     }
 }

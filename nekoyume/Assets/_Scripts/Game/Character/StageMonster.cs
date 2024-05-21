@@ -47,12 +47,12 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        public override void Set(Model.CharacterBase model, bool updateCurrentHp = false)
         {
             if (!(model is Model.Enemy enemyModel))
                 throw new ArgumentException(nameof(model));
 
-            Set(enemyModel, _player, updateCurrentHP);
+            Set(enemyModel, _player, updateCurrentHp);
         }
 
         public void Set(Model.Enemy model, Player player, bool updateCurrentHP)
@@ -73,16 +73,16 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public override void UpdateHpBar()
+        public override void UpdateActorHud()
         {
-            base.UpdateHpBar();
+            base.UpdateActorHud();
 
             var boss = Game.instance.Stage.Boss;
             if (!(boss is null) && !Id.Equals(boss.Id))
                 return;
 
             var battle = Widget.Find<UI.Battle>();
-            battle.BossStatus.SetHp(CurrentHP, HP);
+            battle.BossStatus.SetHp(CurrentHp, Hp);
             battle.BossStatus.SetBuff(CharacterModel.Buffs);
         }
 

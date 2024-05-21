@@ -12,9 +12,11 @@ namespace Nekoyume
     {
         public List<BuffVFXData> DataList;
         public List<BuffVFXOverrideData> OverrideDataList;
+        public List<BuffPosOverrideData> BuffPosOverrideDataList;
         public Sprite FallbackIcon;
         public GameObject FallbackCastingVFX;
         public GameObject FallbackBuffVFX;
+        public Vector3 FallbackPosition;
 
         [Serializable]
         public class BuffVFXData
@@ -35,6 +37,14 @@ namespace Nekoyume
             public Sprite Icon;
             public GameObject CastingVFX;
             public GameObject BuffVFX;
+        }
+
+        [Serializable]
+        public class BuffPosOverrideData
+        {
+            public int Id;
+            public bool IsCasting;
+            public Vector3 Position;
         }
     }
 }

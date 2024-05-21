@@ -10,6 +10,7 @@ using Nekoyume.Model.Elemental;
 using System.Linq;
 using System;
 using Nekoyume.Game.Battle;
+using Nekoyume.Helper;
 
 namespace Nekoyume.Game.Character
 {
@@ -242,12 +243,10 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator CoShatterStrike(IReadOnlyList<Skill.SkillInfo> skillInfos)
         {
-            if (skillInfos is null ||
-                skillInfos.Count == 0)
+            if (skillInfos is null || skillInfos.Count == 0)
                 yield break;
 
-            Vector3 effectPos = transform.position;
-            effectPos.y += 0.55f;
+            Vector3 effectPos = transform.position + BuffHelper.GetDefaultBuffPosition();
             var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
                             Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
             var castEffect = effectObj.GetComponent<VFX.VFX>();
@@ -700,12 +699,12 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = Game.instance.RaidStage.BuffController.Get<RaidCharacter, BuffVFX>(target, buff);
+            var effect = Game.instance.RaidStage.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Play();
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform));
+                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform, buff));
             }
 
             target.AddNextBuff(buff);

@@ -1,5 +1,6 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Enemy = Nekoyume.Model.Enemy;
@@ -48,8 +49,9 @@ namespace Nekoyume.Game.Factory
                 return enemy.gameObject;
             }
 
+            var effectPos = BuffHelper.GetDefaultBuffPosition();
             var effect         = objectPool.Get<BattleSummonVFX>();
-            var effectPosition = new Vector2(position.x, position.y + 0.55f);
+            var effectPosition = new Vector2(position.x + effectPos.x, position.y + effectPos.y);
             effect.gameObject.transform.position = effectPosition;
             effect.Play();
 

@@ -28,6 +28,7 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
@@ -112,7 +113,7 @@ namespace Nekoyume.Game.Battle
         #region Events
 
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
-        public IObservable<Stage> onEnterToStageEnd => _onEnterToStageEnd;
+        public IObservable<Stage> OnEnterToStageEnd => _onEnterToStageEnd;
 
         public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
 
@@ -1070,7 +1071,7 @@ namespace Nekoyume.Game.Battle
             if (!character)
                 throw new ArgumentNullException(nameof(character));
 
-            character.UpdateHpBar();
+            character.UpdateActorHud();
 
             if (buffInfos is not null)
             {
@@ -1079,7 +1080,7 @@ namespace Nekoyume.Game.Battle
                     var buffCharacter = GetActor(buffInfo.Target);
                     if (!buffCharacter)
                         throw new ArgumentNullException(nameof(buffCharacter));
-                    buffCharacter.UpdateHpBar();
+                    buffCharacter.UpdateActorHud();
                 }
             }
 
@@ -1099,10 +1100,11 @@ namespace Nekoyume.Game.Battle
             var character = GetActor(caster);
             if (character)
             {
-                character.UpdateHpBar();
-                if (character.HPBar.HpVFX != null)
+                character.UpdateBuffVfx();
+                character.UpdateActorHud();
+                if (character.ActorHud.HpVFX != null)
                 {
-                    character.HPBar.HpVFX.Stop();
+                    character.ActorHud.HpVFX.Stop();
                 }
             }
 
@@ -1234,8 +1236,37 @@ namespace Nekoyume.Game.Battle
             if (eventBase is Tick tick)
             {
                 var affectedCharacter = GetActor(character);
+                // todo: 동상 관련 로직은 추후 수정 필요
+                if (tick.SkillId == IceShield.FrostBiteId)
+                {
+                    if (!character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
+                    {
+                        yield break;
+                    }
+
+                    var target = tick.SkillInfos.First().Target;
+
+                    var tickSkillInfo = new Skill.SkillInfo(
+                        affectedCharacter.Id,
+                        !affectedCharacter.IsAlive,
+                        0,
+                        0,
+                        false,
+                        SkillCategory.Debuff,
+                        waveTurn,
+                        target: character,
+                        buff: frostBite
+                    );
+                    // TODO: 동상 관련 로직은 추후 수정 필요
+                    affectedCharacter.AddAction(
+                        new ActionParams(affectedCharacter,
+                                        ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
+                                         tick.BuffInfos,
+                                         affectedCharacter.CoBuff
+                        ));
+                }
                 // This Tick from 'Stun'
-                if (tick.SkillId == 0)
+                else if (tick.SkillId == 0)
                 {
                     IEnumerator StunTick(IEnumerable<Skill.SkillInfo> _)
                     {
@@ -1245,20 +1276,21 @@ namespace Nekoyume.Game.Battle
                     }
 
                     var tickSkillInfo = new Skill.SkillInfo(affectedCharacter.Id,
-                        !affectedCharacter.IsAlive,
-                        0,
-                        0,
-                        false,
-                        SkillCategory.TickDamage,
-                        waveTurn,
-                        target: character
+                                                            !affectedCharacter.IsAlive,
+                                                            0,
+                                                            0,
+                                                            false,
+                                                            SkillCategory.TickDamage,
+                                                            waveTurn,
+                                                            target: character
                     );
                     affectedCharacter.AddAction(
                         new ActionParams(affectedCharacter,
-                            tick.SkillInfos.Append(tickSkillInfo),
-                            tick.BuffInfos,
-                            StunTick
+                                         tick.SkillInfos.Append(tickSkillInfo),
+                                         tick.BuffInfos,
+                                         StunTick
                         ));
+
                     yield return null;
                 }
                 // This Tick from 'Vampiric'

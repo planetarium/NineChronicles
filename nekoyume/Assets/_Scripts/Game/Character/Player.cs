@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Character
         {
             base.Awake();
 
-            OnUpdateHPBar.Subscribe(_ => Event.OnUpdatePlayerStatus.OnNext(this)).AddTo(gameObject);
+            OnUpdateActorHud.Subscribe(_ => Event.OnUpdatePlayerStatus.OnNext(this)).AddTo(gameObject);
 
             Animator = new PlayerAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
@@ -121,7 +121,7 @@ namespace Nekoyume.Game.Character
             Set(model);
         }
 
-        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        public override void Set(Model.CharacterBase model, bool updateCurrentHp = false)
         {
             if (!(model is Model.Player playerModel))
             {
@@ -129,7 +129,7 @@ namespace Nekoyume.Game.Character
             }
 
             var avatarState = Game.instance.States.CurrentAvatarState;
-            Set(avatarState.address, playerModel, updateCurrentHP);
+            Set(avatarState.address, playerModel, updateCurrentHp);
         }
 
         public void Set(Address avatarAddress, Model.Player model, bool updateCurrentHP)
@@ -358,7 +358,7 @@ namespace Nekoyume.Game.Character
                 InitStats(Model);
             }
 
-            UpdateHpBar();
+            UpdateActorHud();
         }
 
         private void InitStats(Model.Player character)
