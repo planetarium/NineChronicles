@@ -127,8 +127,10 @@ namespace Editor
         [MenuItem("Build/Standalone/iOS")]
         public static void BuildiOS()
         {
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.iOS, BuildTarget.iOS);
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
             SetByCommandLineArguments();
+            AirbridgeSettingsWindow.UpdateiOSAppSetting();
             Debug.Log("Build iOS");
             PreProcessBuildForIOS();
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
@@ -259,6 +261,7 @@ namespace Editor
                         $"{PlayerName}.exe",
                     BuildTarget.Android =>
                         $"android-build.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
+                    BuildTarget.iOS => "Nine Chronicles M",
                     _ => PlayerName,
                 }
             );

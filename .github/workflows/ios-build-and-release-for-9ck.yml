@@ -94,6 +94,11 @@ jobs:
           echo "$GOOGLE_SERVICE_INFO" | base64 -d > ${{ matrix.projectPath }}/Assets/GoogleService-Info.plist
           # echo "$GOOGLE_SERVICE_INFO" | base64 -D -o ${{ matrix.projectPath }}/Assets/GoogleService-Info.plist
 
+      - name: Change cloudProjectId in ProjectSettings.asset
+        run: |
+          sed -i '/cloudProjectId/c\  cloudProjectId: fa57c419-1189-418d-951c-055e5f9738d0' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+          cat ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+
       - name: Free Disk Space
         run: |
           sudo swapoff -a
@@ -111,7 +116,7 @@ jobs:
           versioning: Custom
           version: ${{ github.event.inputs.app-version }}
           allowDirtyBuild: true
-          customParameter: -identifier "$IOS_APP_ID" -playerName NineChroniclesK
+          customParameters: -identifier com.planetariumlabs.ninechroniclesmobilek -playerName NineChroniclesK
 
       - uses: actions/upload-artifact@v3
         with:
