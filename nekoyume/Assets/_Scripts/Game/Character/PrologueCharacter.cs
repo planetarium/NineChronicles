@@ -147,7 +147,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             var effect = Game.instance.Stage.SkillController.Get(pos, elementalType);
             effect.Play();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
 
         private IEnumerator CoAnimationCastBlow(ElementalType elementalType)
@@ -222,7 +222,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCastingAttack);
             var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_target.gameObject, buff);
             effect.Play();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
 
         private IEnumerator CoAnimationBuffCast(StatBuff buff)
@@ -234,7 +234,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             var effect = Game.instance.Stage.BuffController.Get(pos, buff);
             effect.Play();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
 
         public IEnumerator CoFinisher(int[] damageMap, bool[] criticalMap)

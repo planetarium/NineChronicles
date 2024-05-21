@@ -723,7 +723,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             var effect = Game.instance.Stage.SkillController.Get(pos, info.ElementalType);
             effect.Play();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
 
             PostAnimationForTheKindOfAttack();
         }
@@ -848,7 +848,7 @@ namespace Nekoyume.Game.Character
 
             PreAnimationForTheKindOfAttack();
             Animator.Cast();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
             PostAnimationForTheKindOfAttack();
 
             yield return StartCoroutine(

@@ -256,7 +256,7 @@ namespace Nekoyume.Game.Character
             }
 
             Animator.Cast();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
 
             yield return StartCoroutine(
                     CoAnimationCastAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
@@ -583,7 +583,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             var effect = Game.instance.RaidStage.SkillController.Get(pos, info.ElementalType);
             effect.Play();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
 
         private IEnumerator CoAnimationBuffCast(Skill.SkillInfo info)
@@ -594,7 +594,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             var effect = Game.instance.RaidStage.BuffController.Get(pos, info.Buff);
             effect.Play();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
 
         public void ShowSpeech(string key, params int[] list)
