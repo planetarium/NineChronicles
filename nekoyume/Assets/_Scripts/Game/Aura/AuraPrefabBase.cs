@@ -32,7 +32,7 @@ namespace Nekoyume.Game
         }
 #endregion MonoBehaviour
 
-        private void AddEventToOwner()
+        protected virtual void AddEventToOwner()
         {
             if (_owner == null)
                 return;
@@ -41,7 +41,7 @@ namespace Nekoyume.Game
             _owner.OnCustomEvent += ProcessCustomEvent;
         }
 
-        private void RemoveEventFromOwner()
+        protected virtual void RemoveEventFromOwner()
         {
             if (_owner == null)
                 return;

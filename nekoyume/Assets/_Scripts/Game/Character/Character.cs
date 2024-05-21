@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Character;
 using UnityEngine;
@@ -15,6 +17,8 @@ namespace Nekoyume.Game.Character
         protected bool AttackEndCalled { get; set; }
 
         protected System.Action ActionPoint;
+
+        public readonly Dictionary<int, IEnumerator> BuffCastCoroutine = new();
 
 #region Event
         public Action<int> OnBuff;

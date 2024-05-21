@@ -421,7 +421,15 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             var effect = Game.instance.Arena.BuffController.Get(pos, info.Buff);
             effect.Play();
-            yield return new WaitForSeconds(0.6f);
+
+            if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
+            {
+                yield return coroutine;
+            }
+            else
+            {
+                yield return new WaitForSeconds(Game.DefaultSkillDelay);
+            }
         }
         #endregion
 

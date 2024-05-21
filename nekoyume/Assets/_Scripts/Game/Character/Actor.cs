@@ -748,7 +748,14 @@ namespace Nekoyume.Game.Character
 #if TEST_LOG
                 Debug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
 #endif
-            yield return new WaitForSeconds(0.6f);
+            if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
+            {
+                yield return coroutine;
+            }
+            else
+            {
+                yield return new WaitForSeconds(Game.DefaultSkillDelay);
+            }
 
             PostAnimationForTheKindOfAttack();
         }
