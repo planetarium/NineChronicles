@@ -341,7 +341,8 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    var target = tick.SkillInfos.First().Target;
+                    var sourceCharacter = caster.Id == me.Id ? enemy : me;
+                    sourceCharacter.OnCustomEvent(IceShield.FrostBiteId);
 
                     var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
                             caster,

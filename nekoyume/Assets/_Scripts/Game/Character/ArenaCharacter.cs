@@ -326,6 +326,8 @@ namespace Nekoyume.Game.Character
                 StartCoroutine(BuffController.CoChaseTarget(effect, target.transform, buff));
             }
 
+            OnBuff?.Invoke(buff.BuffInfo.GroupId);
+
             target.CharacterModel = info.Target;
         }
 

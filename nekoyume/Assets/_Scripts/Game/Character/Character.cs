@@ -16,6 +16,11 @@ namespace Nekoyume.Game.Character
 
         protected System.Action ActionPoint;
 
+#region Event
+        public Action<int> OnBuff;
+        public Action<int> OnCustomEvent;
+#endregion Event
+
         protected void OnAnimatorEvent(string eventName)
         {
             switch (eventName)
@@ -35,6 +40,16 @@ namespace Nekoyume.Game.Character
                     AudioController.PlayFootStep();
                     break;
             }
+        }
+
+        // TODO: 이 클래스에 존재해야할 느낌은 아니지만, 중복 구현을 피하기 위해 일단 여기에 둠
+        /// <summary>
+        /// Stage.CoCustomEvent를 통해 실행된 이벤트를 받아 처리하기 위해 생성
+        /// </summary>
+        /// <param name="customEventId">이벤트 ID</param>
+        public void CustomEvent(int customEventId)
+        {
+            OnCustomEvent?.Invoke(customEventId);
         }
     }
 }

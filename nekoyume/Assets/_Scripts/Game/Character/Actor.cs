@@ -582,6 +582,11 @@ namespace Nekoyume.Game.Character
             var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Target = target;
 
+            if (info.Buff != null)
+            {
+                OnBuff.Invoke(info.Buff.BuffInfo.Id);
+            }
+
 #if TEST_LOG
             Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
 #endif

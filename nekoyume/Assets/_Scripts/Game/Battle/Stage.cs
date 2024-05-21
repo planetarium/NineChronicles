@@ -1244,7 +1244,12 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    var target = tick.SkillInfos.First().Target;
+                    var source = tick.SkillInfos.First().Target;
+                    if (source != null)
+                    {
+                        var sourceCharacter = GetActor(source);
+                        sourceCharacter.CustomEvent(IceShield.FrostBiteId);
+                    }
 
                     var tickSkillInfo = new Skill.SkillInfo(
                         affectedCharacter.Id,

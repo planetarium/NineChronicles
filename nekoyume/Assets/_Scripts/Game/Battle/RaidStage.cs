@@ -528,7 +528,7 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    var target = tick.SkillInfos.First().Target;
+                    _player.CustomEvent(IceShield.FrostBiteId);
 
                     var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
                                                             raidCharacter.IsDead,

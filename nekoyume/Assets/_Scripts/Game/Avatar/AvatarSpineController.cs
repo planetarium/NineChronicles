@@ -17,6 +17,9 @@ namespace Nekoyume.Game.Avatar
         private const string WeaponSlot = "weapon";
 
         [SerializeField]
+        private Player owner;
+
+        [SerializeField]
         private List<AvatarParts> parts;
 
         [SerializeField]
@@ -255,7 +258,7 @@ namespace Nekoyume.Game.Avatar
 
             Destroy(_cachedAuraVFX);
 
-            if(auraVFXPrefab is null)
+            if(auraVFXPrefab == null)
             {
                 auraPos.SetActive(false);
                 return;
@@ -264,6 +267,10 @@ namespace Nekoyume.Game.Avatar
             auraPos.SetActive(true);
             var vfx = Instantiate(auraVFXPrefab, auraPos.transform);
             vfx.transform.localPosition = Vector3.zero;
+            if (vfx.TryGetComponent(out AuraPrefabBase auraPrefabBase))
+            {
+                auraPrefabBase.Owner = owner;
+            }
 
             _cachedAuraVFX = vfx;
         }
