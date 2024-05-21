@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Module
             _costType = costType;
         }
 
-        public void ShowMaterialNavigationPopup()
+        private void ShowMaterialNavigationPopup()
         {
             Widget.Find<MaterialNavigationPopup>().ShowCurrency(_costType);
         }

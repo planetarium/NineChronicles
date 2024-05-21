@@ -59,15 +59,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            closeButton.onClick.AddListener(() =>
-            {
-                Close(true);
-                SetMaterialAssets();
-            });
-            CloseWidget = () =>
-            {
-                Close(true);
-            };
+            closeButton.onClick.AddListener(() => Close(true));
+            CloseWidget = closeButton.onClick.Invoke;
             skipButton.onClick.AddListener(() =>
             {
                 if (_coroutine != null)
@@ -314,11 +307,6 @@ namespace Nekoyume.UI
             {
                 mobileShop.Show();
             }
-        }
-
-        private static void SetMaterialAssets()
-        {
-            Find<Summon>().SetMaterialAssets();
         }
     }
 }

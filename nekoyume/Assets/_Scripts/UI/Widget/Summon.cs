@@ -107,8 +107,6 @@ namespace Nekoyume.UI
                 });
             }
 
-            LoadingHelper.Summon.Subscribe(_ => SetMaterialAssets()).AddTo(gameObject);
-
             summonItem.draw1Button.Subscribe(gameObject);
             summonItem.draw10Button.Subscribe(gameObject);
         }
@@ -132,9 +130,6 @@ namespace Nekoyume.UI
 
             summonInfos[0].tabToggle.isOn = true;
             SetSummonInfo(summonInfos[0]);
-
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
-            SetMaterialAssets();
         }
 
         private void SetSummonInfo(SummonInfo currentInfo)
@@ -181,6 +176,15 @@ namespace Nekoyume.UI
 
             summonItem.draw1Button.Subscribe(summonRow, 1, GoToMarket, _disposables);
             summonItem.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
+
+            var state = (CostType)currentInfo.SummonSheetRow.CostMaterial switch
+            {
+                CostType.SilverDust => HeaderMenuStatic.AssetVisibleState.SummonNormal,
+                _ => HeaderMenuStatic.AssetVisibleState.SummonAdvanced
+            };
+            LoadingHelper.Summon
+                .Subscribe(_ => Find<HeaderMenuStatic>().UpdateAssets(state))
+                .AddTo(_disposables);
         }
 
         #region Action
@@ -302,30 +306,6 @@ namespace Nekoyume.UI
         }
 
         #endregion
-
-        public void SetMaterialAssets()
-        {
-            if (!gameObject.activeSelf)
-            {
-                return;
-            }
-
-            if (!TryFind<HeaderMenuStatic>(out var headerMenu))
-            {
-                return;
-            }
-
-            var materials = summonInfos
-                .Where(info => info.SummonSheetRow != null)
-                .Select(info => (CostType)info.SummonSheetRow.CostMaterial)
-                .Distinct().ToArray();
-
-            for (int i = 0; i < materials.Length; i++)
-            {
-                var material = materials[i];
-                headerMenu.SetMaterial(i, material);
-            }
-        }
 
         private IEnumerator CoShowAuraSummonLoadingScreen(List<int> recipes)
         {
