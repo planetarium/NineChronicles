@@ -394,40 +394,7 @@
             <exception cref="T:System.InvalidOperationException">Thrown when <see cref="P:Libplanet.Blockchain.BlockChain.IsCanonical"/> is
             <see langword="false"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.DetermineGenesisStateRootHash(Libplanet.Action.IActionEvaluator,Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)">
-            <summary>
-            Determines the state root hash of <paramref name="preEvaluationBlock"/>
-            by evaluating on top of empty states.
-            </summary>
-            <param name="actionEvaluator">The <see cref="T:Libplanet.Action.IActionEvaluator"/> to use to
-            evaluate the proposed <see cref="T:Libplanet.Types.Blocks.Block"/>.</param>
-            <param name="preEvaluationBlock">The <see cref="T:Libplanet.Types.Blocks.IPreEvaluationBlock"/> for which
-            to determine the state root hash.</param>
-            <param name="evaluations">The evaluation result from <see cref="M:Libplanet.Blockchain.BlockChain.EvaluateGenesis(Libplanet.Action.IActionEvaluator,Libplanet.Types.Blocks.IPreEvaluationBlock)"/>
-            for <paramref name="preEvaluationBlock"/>.</param>
-            <returns>The state root hash calculated by committing <paramref name="evaluations"/> to
-            an empty <see cref="T:Libplanet.Store.IStateStore"/>.</returns>
-            <remarks>
-            This method computes the state root hash by committing <paramref name="evaluations"/>
-            to an ephemeral empty <see cref="T:Libplanet.Store.IStateStore"/>.
-            </remarks>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain.EvaluateGenesis(Libplanet.Action.IActionEvaluator,Libplanet.Types.Blocks.IPreEvaluationBlock)"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.EvaluateGenesis(Libplanet.Action.IActionEvaluator,Libplanet.Types.Blocks.IPreEvaluationBlock)">
-            <summary>
-            Evaluates <paramref name="preEvaluationBlock"/> on top of empty states.
-            </summary>
-            <param name="actionEvaluator">The <see cref="T:Libplanet.Action.IActionEvaluator"/> to use to
-            evaluate the proposed <see cref="T:Libplanet.Types.Blocks.Block"/>.</param>
-            <param name="preEvaluationBlock">The <see cref="T:Libplanet.Types.Blocks.IPreEvaluationBlock"/> to
-            evaluate.</param>
-            <returns>An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <see cref="T:Libplanet.Action.ICommittedActionEvaluation"/>s
-            resulting from evaluating <paramref name="preEvaluationBlock"/> using
-            <paramref name="actionEvaluator"/>.</returns>
-            <exception cref="T:System.ArgumentException">Thrown if <paramref name="preEvaluationBlock"/>s
-            <see cref="P:Libplanet.Types.Blocks.IBlockMetadata.Index"/> is not zero.</exception>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.DetermineBlockStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)">
+        <member name="M:Libplanet.Blockchain.BlockChain.DetermineNextBlockStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)">
             <summary>
             Determines the state root hash given <paramref name="block"/> and
             <paramref name="evaluations"/>.
@@ -448,10 +415,10 @@
             obdatined through committing to <see cref="P:Libplanet.Blockchain.BlockChain.StateStore"/>
             matches the <paramref name="block"/>'s <see cref="P:Libplanet.Types.Blocks.Block.StateRootHash"/> or not.
             </remarks>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlock(Libplanet.Types.Blocks.IPreEvaluationBlock)"/>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain.ValidateBlockStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlockPrecededStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock)"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.ValidateBlockPrecededStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.EvaluateBlock(Libplanet.Types.Blocks.IPreEvaluationBlock)">
+        <member name="M:Libplanet.Blockchain.BlockChain.EvaluateBlock(Libplanet.Types.Blocks.Block)">
             <summary>
             Evaluates the <see cref="T:Libplanet.Action.IAction"/>s in given <paramref name="block"/>.
             </summary>
@@ -460,7 +427,7 @@
             for given <paramref name="block"/>.</returns>
             <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when given <paramref name="block"/>
             contains an action that cannot be loaded with <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.</exception>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain.ValidateBlockStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.ValidateBlockPrecededStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.EvaluateAndSign(Libplanet.Types.Blocks.PreEvaluationBlock,Libplanet.Crypto.PrivateKey)">
             <summary>
@@ -481,7 +448,44 @@
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
             does not match to the block miner's <see cref="T:Libplanet.Crypto.PublicKey"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.ProposeGenesisBlock(Libplanet.Action.IActionEvaluator,Libplanet.Crypto.PrivateKey,System.Collections.Immutable.ImmutableList{Libplanet.Types.Tx.Transaction},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Blockchain.BlockChain.DetermineBlockPrecededStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)">
+            <summary>
+            Determines the state root hash given <paramref name="block"/> and
+            <paramref name="evaluations"/>.
+            </summary>
+            <param name="block">The <see cref="T:Libplanet.Types.Blocks.IPreEvaluationBlock"/> to execute for
+            <paramref name="evaluations"/>.</param>
+            <param name="evaluations">The list of <see cref="T:Libplanet.Action.IActionEvaluation"/>s
+            from which to extract the states to commit.</param>
+            <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when given <paramref name="block"/>
+            contains an action that cannot be loaded with <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.</exception>
+            <returns>The state root hash given <paramref name="block"/> and
+            its <paramref name="evaluations"/>.
+            </returns>
+            <remarks>
+            Since the state root hash can only be calculated by making a commit
+            to an <see cref="T:Libplanet.Store.IStateStore"/>, this always has a side-effect to
+            <see cref="P:Libplanet.Blockchain.BlockChain.StateStore"/> regardless of whether the state root hash
+            obdatined through committing to <see cref="P:Libplanet.Blockchain.BlockChain.StateStore"/>
+            matches the <paramref name="block"/>'s <see cref="P:Libplanet.Types.Blocks.Block.StateRootHash"/> or not.
+            </remarks>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlockPrecededStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock)"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.ValidateBlockPrecededStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.EvaluateBlockPrecededStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock)">
+            <summary>
+            Evaluates the <see cref="T:Libplanet.Action.IAction"/>s in given <paramref name="preEvaluationBlock"/>.
+            </summary>
+            <param name="preEvaluationBlock">The <see cref="T:Libplanet.Types.Blocks.IPreEvaluationBlock"/> to execute.
+            </param>
+            <returns>An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <ses cref="T:Libplanet.Action.ICommittedActionEvaluation"/>s
+            for given <paramref name="preEvaluationBlock"/>.</returns>
+            <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when given
+            <paramref name="preEvaluationBlock"/>
+            contains an action that cannot be loaded with <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.</exception>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.ValidateBlockPrecededStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.ProposeGenesisBlock(Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Immutable.ImmutableList{Libplanet.Types.Tx.Transaction},System.Nullable{System.DateTimeOffset})">
             <summary>
             <para>
             Propose a genesis block for creating a <see cref="T:Libplanet.Blockchain.BlockChain"/>.
@@ -496,10 +500,10 @@
             each <see cref="P:Libplanet.Types.Tx.Transaction.GenesisHash"/> is set to <see langword="null"/>.
             </para>
             </summary>
-            <param name="actionEvaluator">The <see cref="T:Libplanet.Action.IActionEvaluator"/> to use to
-            evaluate the proposed <see cref="T:Libplanet.Types.Blocks.Block"/>.</param>
             <param name="privateKey">A private key to sign the transaction and the genesis block.
             If it's null, it will use new private key as default.</param>
+            <param name="stateRootHash">A state root hash of genesis block.  If it's null,
+            it will use empty state root hash.</param>
             <param name="transactions">A list of <see cref="T:Libplanet.Types.Tx.Transaction"/>s to include
             in the genesis <see cref="T:Libplanet.Types.Blocks.Block"/>.</param>
             <param name="timestamp">The timestamp of the genesis block.  If it's null, it will
@@ -596,17 +600,26 @@
             <exception cref="T:System.InvalidOperationException">Thrown when not all policies
             can be satisfied.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetWorldState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})" />
-        </member>
         <member name="M:Libplanet.Blockchain.BlockChain.GetWorldState">
             <summary>
             Gets the current world state in the <see cref="T:Libplanet.Blockchain.BlockChain"/>.
             </summary>
             <returns>The current world state.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetWorldState(Libplanet.Types.Blocks.BlockHash)">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(Libplanet.Types.Blocks.BlockHash)" />
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})" />
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetNextWorldState">
+            <summary>
+            Gets the next world state in the <see cref="T:Libplanet.Blockchain.BlockChain"/>.
+            </summary>
+            <returns>The next world state.  If it does not exist, returns null.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetNextWorldState(Libplanet.Types.Blocks.BlockHash)">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetNextWorldState(Libplanet.Types.Blocks.BlockHash)" />
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.RenderActions(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation},Libplanet.Types.Blocks.Block)">
             <summary>
@@ -684,10 +697,27 @@
             <exception cref="T:Libplanet.Types.Blocks.InvalidBlockException">Thrown when given <paramref name="block"/>
             is invalid.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.ValidateBlockStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)">
+        <member name="M:Libplanet.Blockchain.BlockChain.ValidateBlockStateRootHash(Libplanet.Types.Blocks.Block,System.TimeSpan)">
             <summary>
-            Validates a result obtained from <see cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlock(Libplanet.Types.Blocks.IPreEvaluationBlock)"/> by
-            comparing the state root hash calculated using <see cref="M:Libplanet.Blockchain.BlockChain.DetermineBlockStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
+            Validates a result obtained from <see cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlock(Libplanet.Types.Blocks.Block)"/> by
+            comparing the state root hash from <see cref="M:Libplanet.Blockchain.BlockChain.GetNextStateRootHash(Libplanet.Types.Blocks.BlockHash,System.Nullable{System.TimeSpan})"/>
+            which stores state root hash from <see cref="M:Libplanet.Blockchain.BlockChain.DetermineNextBlockStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>,
+            to the one in <paramref name="block"/>.
+            </summary>
+            <param name="block">The <see cref="T:Libplanet.Types.Blocks.Block"/> to validate against.</param>
+            <param name="validationInterval">The interval for fetching calculated state root hash
+            from <see cref="M:Libplanet.Blockchain.BlockChain.Append(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.BlockCommit)"/>.</param>
+            <exception cref="T:Libplanet.Types.Blocks.InvalidBlockStateRootHashException">If the state root hash
+            calculated by committing to the <see cref="T:Libplanet.Store.IStateStore"/> does not match
+            the <paramref name="block"/>'s <see cref="P:Libplanet.Types.Blocks.Block.StateRootHash"/>.</exception>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlock(Libplanet.Types.Blocks.Block)"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.DetermineNextBlockStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.ValidateBlockPrecededStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)">
+            <summary>
+            Validates a result obtained from <see cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlockPrecededStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock)"/> by
+            comparing the state root hash calculated using
+            <see cref="M:Libplanet.Blockchain.BlockChain.DetermineBlockPrecededStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
             to the one in <paramref name="block"/>.
             </summary>
             <param name="block">The <see cref="T:Libplanet.Types.Blocks.Block"/> to validate against.</param>
@@ -703,21 +733,24 @@
             obdatined through committing to the <see cref="T:Libplanet.Store.IStateStore"/>
             matches the <paramref name="block"/>'s <see cref="P:Libplanet.Types.Blocks.Block.StateRootHash"/> or not.
             </remarks>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlock(Libplanet.Types.Blocks.IPreEvaluationBlock)"/>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain.DetermineBlockStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlockPrecededStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock)"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain.DetermineBlockPrecededStateRootHash(Libplanet.Types.Blocks.IPreEvaluationBlock,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
         </member>
         <member name="T:Libplanet.Blockchain.BlockChainStates">
             <summary>
             A default implementation of <see cref="T:Libplanet.Action.State.IBlockChainStates" /> interface.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetWorldState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetWorldState(Libplanet.Types.Blocks.BlockHash)">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(Libplanet.Types.Blocks.BlockHash)"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChainStates.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})">
             <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetWorldState(System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetTrie(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetNextWorldState(Libplanet.Types.Blocks.BlockHash)">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetNextWorldState(Libplanet.Types.Blocks.BlockHash)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetTrie(Libplanet.Types.Blocks.BlockHash)">
             <summary>
             Returns the state root associated with <see cref="T:Libplanet.Types.Blocks.BlockHash"/>
             <paramref name="offset"/>.
