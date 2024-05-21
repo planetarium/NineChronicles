@@ -65,6 +65,7 @@ namespace Nekoyume.UI
             Necklace = 1 << 3,
             Ring = 1 << 4,
             Aura = 1 << 5,
+            Charm = 1 << 6,
         }
 
         [Flags]
@@ -437,6 +438,8 @@ namespace Nekoyume.UI
                     return ItemType.Ring;
                 case ItemSubType.Aura:
                     return ItemType.Aura;
+                case ItemSubType.Charm:
+                    return ItemType.Charm;
                 default:
                     return ItemType.All;
             }
