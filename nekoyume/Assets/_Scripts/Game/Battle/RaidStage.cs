@@ -426,18 +426,18 @@ namespace Nekoyume.Game.Battle
 
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
             target.UpdateStatusUI();
-            if (target)
+            if (!target)
             {
-                if (target.HPBar.HpVFX != null)
-                {
-                    target.HPBar.HpVFX.Stop();
-                }
+                yield break;
             }
-
-            yield break;
+            
+            if (target.HPBar.HpVFX != null)
+            {
+                target.HPBar.HpVFX.Stop();
+            }
         }
 
         public IEnumerator CoDropBox(List<ItemBase> items)

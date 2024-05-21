@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Character
     public abstract class Actor : Character
     {
         public const float AnimatorTimeScale = 1.2f;
-        protected static readonly WaitForSeconds AttackTimeOut = new WaitForSeconds(5f);
+        protected static readonly WaitForSeconds AttackTimeOut = new(5f);
 
         [SerializeField]
         private bool shouldContainHUD = true;
@@ -36,11 +36,11 @@ namespace Nekoyume.Game.Character
         private Root _root;
         private long _currentHp;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
         public CharacterBase CharacterModel { get; protected set; }
 
-        public readonly Subject<Actor> OnUpdateActorHud = new Subject<Actor>();
+        public readonly Subject<Actor> OnUpdateActorHud = new();
 
         private readonly List<int> removedBuffVfxList = new();
 

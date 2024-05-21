@@ -1098,17 +1098,17 @@ namespace Nekoyume.Game.Battle
             Debug.Log($"[CoRemoveBuffs][{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
 #endif
             var character = GetActor(caster);
-            if (character)
+            if (!character)
             {
-                character.UpdateBuffVfx();
-                character.UpdateActorHud();
-                if (character.ActorHud.HpVFX != null)
-                {
-                    character.ActorHud.HpVFX.Stop();
-                }
+                yield break;
             }
-
-            yield break;
+            
+            character.UpdateBuffVfx();
+            character.UpdateActorHud();
+            if (character.ActorHud.HpVFX != null)
+            {
+                character.ActorHud.HpVFX.Stop();
+            }
         }
 
         public IEnumerator CoGetReward(List<ItemBase> rewards)

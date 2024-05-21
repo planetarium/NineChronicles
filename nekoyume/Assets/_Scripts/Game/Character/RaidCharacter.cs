@@ -43,6 +43,8 @@ namespace Nekoyume.Game.Character
         private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
         protected override Vector3 HUDOffset => base.HUDOffset + new Vector3(0f, 0.35f, 0f);
 
+        private readonly List<int> removedBuffVfxList = new();
+
         protected virtual void Awake()
         {
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
@@ -100,9 +102,7 @@ namespace Nekoyume.Game.Character
             UpdateStatusUI();
         }
 
-        public virtual void Set(
-            Model.CharacterBase model,
-            bool updateCurrentHP = false)
+        public virtual void Set(Model.CharacterBase model, bool updateCurrentHP = false)
         {
             _characterModel = model;
             if (updateCurrentHP)
@@ -134,26 +134,31 @@ namespace Nekoyume.Game.Character
             HPBar.Set(_currentHp, _characterModel.AdditionalHP, _characterModel.HP);
             HPBar.SetBuffs(_characterModel.Buffs);
 
-            // delete existing vfx
-            var removedVfx = new List<int>();
-            foreach (var buff in _persistingVFXMap.Keys)
-            {
-                if (Model.IsDead ||
-                    !Model.Buffs.Keys.Contains(buff))
-                {
-                    _persistingVFXMap[buff].LazyStop();
-                    removedVfx.Add(buff);
-                }
-            }
-
-            foreach (var id in removedVfx)
-            {
-                _persistingVFXMap.Remove(id);
-            }
+            UpdateBuffVfx();
 
             HPBar.SetLevel(_characterModel.Level);
 
             //OnUpdateHPBar.OnNext(this);
+        }
+
+        public virtual void UpdateBuffVfx()
+        {
+            // delete existing vfx
+            removedBuffVfxList.Clear();
+            foreach (var buff in _persistingVFXMap.Keys)
+            {
+                if (!Model.IsDead && Model.Buffs.Keys.Contains(buff))
+                {
+                    continue;
+                }
+                _persistingVFXMap[buff].LazyStop();
+                removedBuffVfxList.Add(buff);
+            }
+
+            foreach (var id in removedBuffVfxList)
+            {
+                _persistingVFXMap.Remove(id);
+            }
         }
 
         public void DisableHUD()

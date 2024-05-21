@@ -19,6 +19,7 @@ namespace Nekoyume.Game.Character
 
         protected System.Action ActionPoint;
 
+        public readonly Dictionary<int, IEnumerator> BuffRemoveCoroutine = new();
         public readonly Dictionary<int, Func<BuffCastingVFX, IEnumerator>> BuffCastCoroutine = new();
 
 #region Event

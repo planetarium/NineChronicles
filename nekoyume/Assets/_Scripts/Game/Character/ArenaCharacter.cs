@@ -19,7 +19,7 @@ using Nekoyume.Model.Item;
 
 namespace Nekoyume.Game.Character
 {
-    using Nekoyume.Model;
+    using Model;
     using UniRx;
 
     public class ArenaCharacter : Character
@@ -50,6 +50,8 @@ namespace Nekoyume.Game.Character
         public Pet Pet => appearance.Pet;
 
         private bool IsDead => _currentHp <= 0;
+
+        private readonly List<int> removedBuffVfxList = new();
 
         private void Awake()
         {
@@ -126,21 +128,24 @@ namespace Nekoyume.Game.Character
 
             _hudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
             _arenaBattle.UpdateStatus(CharacterModel.IsEnemy, _currentHp, CharacterModel.HP, CharacterModel.Buffs);
+            UpdateBuffVfx();
+        }
 
-
+        public virtual void UpdateBuffVfx()
+        {
             // delete existing vfx
-            var removedVfx = new List<int>();
+            removedBuffVfxList.Clear();
             foreach (var buff in _persistingVFXMap.Keys)
             {
-                if (CharacterModel.IsDead ||
-                    !CharacterModel.Buffs.Keys.Contains(buff))
+                if (!CharacterModel.IsDead && CharacterModel.Buffs.Keys.Contains(buff))
                 {
-                    _persistingVFXMap[buff].LazyStop();
-                    removedVfx.Add(buff);
+                    continue;
                 }
+                _persistingVFXMap[buff].LazyStop();
+                removedBuffVfxList.Add(buff);
             }
 
-            foreach (var id in removedVfx)
+            foreach (var id in removedBuffVfxList)
             {
                 _persistingVFXMap.Remove(id);
             }
