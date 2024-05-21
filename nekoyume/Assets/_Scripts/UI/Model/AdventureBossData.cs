@@ -9,6 +9,7 @@ using System.Linq;
 using Codice.Client.BaseCommands.Merge;
 using Libplanet.Types.Assets;
 using Nekoyume.State;
+using Amazon.Runtime.Internal.Transform;
 
 namespace Nekoyume.UI.Model
 {
@@ -22,10 +23,10 @@ namespace Nekoyume.UI.Model
             End
         }
 
-        public ReactiveProperty<LatestSeason> LatestSeason = new ReactiveProperty<LatestSeason>();
         public ReactiveProperty<SeasonInfo> SeasonInfo = new ReactiveProperty<SeasonInfo>();
         public ReactiveProperty<BountyBoard> BountyBoard = new ReactiveProperty<BountyBoard>();
-        public ReactiveProperty<ExploreInfo> ExploreInfo = new ReactiveProperty<ExploreInfo>();
+        public ReactiveProperty<ExploreBoard> ExploreBoard = new ReactiveProperty<ExploreBoard>();
+        public ReactiveProperty<Explorer> ExploreInfo = new ReactiveProperty<Explorer>();
         public ReactiveProperty<AdventureBossSeasonState> CurrentState = new ReactiveProperty<AdventureBossSeasonState>();
         public ReactiveProperty<bool> IsRewardLoading = new ReactiveProperty<bool>();
 
@@ -37,29 +38,29 @@ namespace Nekoyume.UI.Model
         {
             IsRewardLoading.Value = false;
             RefreshAllByCurrentState().Forget();
-            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(blockIndex =>
+            Game.Game.instance.Agent.BlockIndexSubject.Subscribe((System.Action<long>)(blockIndex =>
             {
-                if(LatestSeason.Value == null)
+                if(this.SeasonInfo.Value == null)
                 {
                     return;
                 }
 
-                if(LatestSeason.Value.EndBlockIndex == blockIndex ||
-                    LatestSeason.Value.NextStartBlockIndex == blockIndex)
+                if(this.SeasonInfo.Value.EndBlockIndex == blockIndex ||
+                    this.SeasonInfo.Value.NextStartBlockIndex == blockIndex)
                 {
                     RefreshAllByCurrentState().Forget();
                 }
-            }) ;
+            })) ;
         }
 
         public async UniTask RefreshAllByCurrentState()
         {
-            LatestSeason.Value = await Game.Game.instance.Agent.GetAdventureBossLatestSeasonAsync();
+            SeasonInfo.Value = await Game.Game.instance.Agent.GetAdventureBossLatestSeasonAsync();
             
             //최대 10개의 종료된 시즌정보를 가져온다.(만일을 대비 해서)
             for (int i = 1; i < _endedSeasonSearchTryCount; i++)
             {
-                var oldSeasonIndex = LatestSeason.Value.SeasonId - i;
+                var oldSeasonIndex = SeasonInfo.Value.Season - i;
 
                 //최초시즌이 0이하로 내려가면 더이상 찾지않음.
                 if (oldSeasonIndex <= 0)
@@ -79,26 +80,10 @@ namespace Nekoyume.UI.Model
             }
 
             //시즌이 진행중인 경우.
-            if(LatestSeason.Value.StartBlockIndex <= Game.Game.instance.Agent.BlockIndex && Game.Game.instance.Agent.BlockIndex < LatestSeason.Value.EndBlockIndex)
+            if(SeasonInfo.Value.StartBlockIndex <= Game.Game.instance.Agent.BlockIndex && Game.Game.instance.Agent.BlockIndex < SeasonInfo.Value.EndBlockIndex)
             {
-                SeasonInfo.Value = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(LatestSeason.Value.SeasonId);
-                if(SeasonInfo.Value == null)
-                {
-                    try
-                    {
-                        SeasonInfo.Value = null;
-                        BountyBoard.Value = null;
-                        ExploreInfo.Value = null;
-                        CurrentState.Value = AdventureBossSeasonState.None;
-                    }
-                    catch (System.Exception e)
-                    {
-                        NcDebug.LogError($"[AdventureBossData]{e}");
-                    }
-                    NcDebug.LogError("[AdventureBossData.RefreshAllByCurrentState] SeasonInfo is null When Progress");
-                    return;
-                }
                 BountyBoard.Value = await Game.Game.instance.Agent.GetBountyBoardAsync(SeasonInfo.Value.Season);
+                ExploreBoard.Value = await Game.Game.instance.Agent.GetExploreBoardAsync(SeasonInfo.Value.Season);
                 if(Game.Game.instance.States.CurrentAvatarState != null)
                 {
                     ExploreInfo.Value = await Game.Game.instance.Agent.GetExploreInfoAsync(Game.Game.instance.States.CurrentAvatarState.address, SeasonInfo.Value.Season);
@@ -110,9 +95,9 @@ namespace Nekoyume.UI.Model
 
             try
             {
-                SeasonInfo.Value = null;
                 BountyBoard.Value = null;
                 ExploreInfo.Value = null;
+                ExploreBoard.Value = null;
             }
             catch (System.Exception e)
             {
@@ -120,7 +105,7 @@ namespace Nekoyume.UI.Model
             }
 
             //시즌시작은되었으나 아무도 현상금을 걸지않아서 시즌데이터가없는경우.
-            if (LatestSeason.Value.NextStartBlockIndex <= Game.Game.instance.Agent.BlockIndex)
+            if (SeasonInfo.Value.NextStartBlockIndex <= Game.Game.instance.Agent.BlockIndex)
             {
                 try
                 {
@@ -136,10 +121,9 @@ namespace Nekoyume.UI.Model
 
             //시즌이 종료후 대기중인 경우.
             //종료된 상황인경우 시즌정보 받아서 저장.
-            if (LatestSeason.Value.SeasonId > 0 && !EndedSeasonInfos.TryGetValue(LatestSeason.Value.SeasonId, out var endedSeasonInfo))
+            if (SeasonInfo.Value.Season > 0 && !EndedSeasonInfos.TryGetValue(SeasonInfo.Value.Season, out var endedSeasonInfo))
             {
-                endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(LatestSeason.Value.SeasonId);
-                EndedSeasonInfos.Add(LatestSeason.Value.SeasonId, endedSeasonInfo);
+                EndedSeasonInfos.Add(SeasonInfo.Value.Season, SeasonInfo.Value);
             }
             try
             {

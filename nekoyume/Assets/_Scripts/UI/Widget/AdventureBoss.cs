@@ -121,8 +121,13 @@ namespace Nekoyume.UI
             Game.Game.instance.AdventureBossData.BountyBoard.
                 Subscribe(RefreshBountyBoardInfo).
                 AddTo(_disposablesByEnable);
+
             Game.Game.instance.AdventureBossData.ExploreInfo.
                 Subscribe(RefreshExploreInfo).
+                AddTo(_disposablesByEnable);
+
+            Game.Game.instance.AdventureBossData.ExploreBoard.
+                Subscribe(RefreshExploreBoard).
                 AddTo(_disposablesByEnable);
 
             Game.Game.instance.Agent.BlockIndexSubject
@@ -132,7 +137,17 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        private void RefreshExploreInfo(ExploreInfo exploreInfo)
+        private void RefreshExploreBoard(ExploreBoard board)
+        {
+            if(board == null)
+            {
+                participantsCount.text = "0";
+                return;
+            }
+            participantsCount.text = $"{board.ExplorerList.Count:#,0}";
+        }
+
+        private void RefreshExploreInfo(Explorer exploreInfo)
         {
             if(exploreInfo == null)
             {
@@ -214,14 +229,8 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonInfo(SeasonInfo seasonInfo)
         {
-            if(seasonInfo == null)
-            {
-                participantsCount.text = "-";
-                return;
-            }
             _seasonStartBlock = seasonInfo.StartBlockIndex;
             _seasonEndBlock = seasonInfo.EndBlockIndex;
-            participantsCount.text = $"{seasonInfo.ExplorerList.Count:#,0}";
         }
 
         private void UpdateViewAsync(long blockIndex)

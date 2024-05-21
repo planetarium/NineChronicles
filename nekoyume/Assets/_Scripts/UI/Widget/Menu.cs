@@ -297,7 +297,7 @@ namespace Nekoyume.UI
 
             if (GUILayout.Button("WantedAction", style))
             {
-                ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.LatestSeason.Value.SeasonId, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, 1000, 0));
+                ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, 1000, 0));
             }
 
             if (GUILayout.Button("AdventureBossBattle", style))

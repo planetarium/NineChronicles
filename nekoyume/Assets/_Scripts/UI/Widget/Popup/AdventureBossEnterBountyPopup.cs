@@ -186,7 +186,7 @@ namespace Nekoyume.UI
                     Find<WorldMap>().SetAdventureBossButtonLoading(true);
                     try
                     {
-                        ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.LatestSeason.Value.SeasonId + 1, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
+                        ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season + 1, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
                             .Subscribe(eval =>
                             {
                                 if(eval.Exception != null)
@@ -220,7 +220,7 @@ namespace Nekoyume.UI
                     Find<AdventureBoss>().SetBountyLoadingIndicator(true);
                     try
                     {
-                        ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.LatestSeason.Value.SeasonId, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
+                        ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
                             .Subscribe(eval =>
                             {
                                 if (eval.Exception != null)

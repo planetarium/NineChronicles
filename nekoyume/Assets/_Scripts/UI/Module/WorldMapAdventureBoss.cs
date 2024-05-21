@@ -12,6 +12,7 @@ using System;
 
 namespace Nekoyume.UI.Module
 {
+    using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations;
     using Nekoyume.UI.Model;
     using UniRx;
 
@@ -52,7 +53,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void RefreshExploreInfo(ExploreInfo exploreInfo)
+        private void RefreshExploreInfo(Explorer exploreInfo)
         {
             if (exploreInfo == null)
             {
@@ -77,20 +78,23 @@ namespace Nekoyume.UI.Module
         private void UpdateViewAsync(long blockIndex)
         {
             var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
-            if (seasonInfo == null)
+
+            if (Game.Game.instance.AdventureBossData.CurrentState.Value == AdventureBossData.AdventureBossSeasonState.Ready)
             {
-                if (Game.Game.instance.AdventureBossData.CurrentState.Value == AdventureBossData.AdventureBossSeasonState.End)
-                {
-                    var adventureBossData = Game.Game.instance.AdventureBossData;
-                    if(adventureBossData.EndedSeasonInfos.TryGetValue(adventureBossData.LatestSeason.Value.SeasonId, out var endedSeasonInfo))
-                    {
-                        RefreshBlockIndexText(blockIndex, endedSeasonInfo.NextStartBlockIndex);
-                        return;
-                    }
-                }
                 SetDefualtRemainingBlockIndexs();
                 return;
             }
+
+            if (Game.Game.instance.AdventureBossData.CurrentState.Value == AdventureBossData.AdventureBossSeasonState.End)
+            {
+                var adventureBossData = Game.Game.instance.AdventureBossData;
+                if(adventureBossData.EndedSeasonInfos.TryGetValue(adventureBossData.SeasonInfo.Value.Season, out var endedSeasonInfo))
+                {
+                    RefreshBlockIndexText(blockIndex, endedSeasonInfo.NextStartBlockIndex);
+                    return;
+                }
+            }
+
             RefreshBlockIndexText(blockIndex, seasonInfo.EndBlockIndex);
         }
 
