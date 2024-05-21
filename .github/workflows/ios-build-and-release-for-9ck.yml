@@ -1,0 +1,191 @@
+name: iOS Build and Release for 9cK
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+      - fast-track/*
+    tags: ["*"]
+  pull_request:
+    types: [ready_for_review, opened, reopened, auto_merge_enabled]
+  workflow_dispatch:
+    inputs:
+      clo:
+        description: "Assets/StreamingAssets/clo.json"
+        required: false
+        type: string
+        default: ""
+      version-code:
+        description: "App Store Connect VersionCode"
+      app-version:
+        description: "App Store Connect VersionName ex(40.0.0)"
+      manual_build_option:
+        description: "Please turn on the option when manually executing the action"
+        type: boolean
+        required: false
+        default: false
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+
+jobs:
+  build:
+    name: Build for ${{ matrix.targetPlatform }}
+    runs-on: 
+      labels: ["linux", "8cores"]
+    defaults:
+        run:
+          shell: bash
+    strategy:
+      matrix:
+        projectPath:
+          - nekoyume
+        targetPlatform:
+          - iOS
+    env:
+      APPLE_CONNECT_EMAIL: ${{ secrets.APPLE_CONNECT_EMAIL }}
+      APPLE_DEVELOPER_EMAIL: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_TEAM_NAME: ${{ secrets.APPLE_TEAM_NAME }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
+      IOS_APP_ID: com.planetariumlabs.ninechroniclesmobilek
+      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
+      PROJECT_NAME: NineChronicles
+      RELEASE_NOTES: ${{ github.event.release.body }}
+      MATCH_REPOSITORY_ACCOUNT: ${{ secrets.MATCH_REPOSITORY_ACCOUNT }}
+      USYM_UPLOAD_AUTH_TOKEN: 'fake'
+      GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_INFO_K }}
+    
+    steps:
+      - name: Set CRLF
+        run: |
+          git config --global core.autocrlf true
+          
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+          submodules: true
+          
+      - name: Cache restore for debug
+        uses: actions/cache@v3
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}-macos-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-macos-
+
+      - name: Copy clo.json
+        run: |
+          if [ -n "${{ github.event.inputs.clo }}" ]; then
+            echo ${{ github.event.inputs.clo }} > ${{ matrix.projectPath }}/Assets/StreamingAssets/clo.json
+          fi
+          
+      - name: Decode GoogleService-Info.plist File
+        run: |
+          echo "$GOOGLE_SERVICE_INFO" | base64 -d > ${{ matrix.projectPath }}/Assets/GoogleService-Info.plist
+          # echo "$GOOGLE_SERVICE_INFO" | base64 -D -o ${{ matrix.projectPath }}/Assets/GoogleService-Info.plist
+
+      - name: Change cloudProjectId in ProjectSettings.asset
+        run: |
+          sed -i '/cloudProjectId/c\  cloudProjectId: fa57c419-1189-418d-951c-055e5f9738d0' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+          cat ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+
+      - name: Free Disk Space
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
+          
+      - uses: game-ci/unity-builder@v4
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+          buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
+          buildName: ${{ matrix.targetPlatform }}
+          versioning: Custom
+          version: ${{ github.event.inputs.app-version }}
+          allowDirtyBuild: true
+          customParameters: -identifier com.planetariumlabs.ninechroniclesmobilek -playerName NineChroniclesK
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+
+  build-and-upload:      
+    name: Build Archive for iOS and Upload to TestFlight
+    runs-on: macos-13
+    timeout-minutes: 60
+    needs: build
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')|| github.event.inputs.manual_build_option
+    strategy:
+      matrix:
+        projectPath:
+          - nekoyume
+        targetPlatform:
+          - iOS
+    env:
+      APPLE_CONNECT_EMAIL: ${{ secrets.APPLE_CONNECT_EMAIL }}
+      APPLE_DEVELOPER_EMAIL: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_TEAM_NAME: ${{ secrets.APPLE_TEAM_NAME }}
+      FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+      FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
+      MATCH_REPOSITORY_ACCOUNT: ${{ secrets.MATCH_REPOSITORY_ACCOUNT }}
+      IOS_APP_ID: com.planetariumlabs.ninechroniclesmobilek
+      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
+      PROJECT_NAME: NineChronicles
+      RELEASE_NOTES: ${{ github.event.release.body }}
+      USYM_UPLOAD_AUTH_TOKEN: 'fake'
+      GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_INFO_K }}
+      GIT_REPO_CERT: ${{ secrets.GIT_REPO_CERT }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        
+      - name: Download iOS Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+          
+      - name: Cache restore cocoapods
+        uses: actions/cache@v2
+        if: ${{ always() }}
+        with:
+          path: |
+            'build/iOS/Nine Chronicles M/Pods'
+            ~/.cocoapods/repos
+          key: Pods-${{ hashFiles('**/Podfile') }}
+          restore-keys: Pods-
+          
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+          
+      - name: Archive iOS
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: 'ios build'
+          
+      - name: Upload to the App Store
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: 'ios beta'
