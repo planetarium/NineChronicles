@@ -108,6 +108,7 @@ namespace Nekoyume.UI.Module
                 // For material costs
                 case CostType.SilverDust:
                 case CostType.GoldDust:
+                case CostType.RubyDust:
                     inventory = States.Instance.CurrentAvatarState.inventory;
                     var materialCount = inventory.GetMaterialCount((int)type);
                     return materialCount >= cost;
