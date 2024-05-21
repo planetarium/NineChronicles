@@ -744,16 +744,16 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
 
-            effect.Play();
 #if TEST_LOG
                 Debug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
 #endif
             if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
             {
-                yield return coroutine;
+                yield return coroutine.Invoke(effect);
             }
             else
             {
+                effect.Play();
                 yield return new WaitForSeconds(Game.DefaultSkillDelay);
             }
 

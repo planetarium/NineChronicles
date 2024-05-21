@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model.Character;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Nekoyume.Game.Character
 
         protected System.Action ActionPoint;
 
-        public readonly Dictionary<int, IEnumerator> BuffCastCoroutine = new();
+        public readonly Dictionary<int, Func<BuffCastingVFX, IEnumerator>> BuffCastCoroutine = new();
 
 #region Event
         public Action<int> OnBuff;

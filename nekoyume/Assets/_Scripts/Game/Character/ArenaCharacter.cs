@@ -420,14 +420,14 @@ namespace Nekoyume.Game.Character
             Animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.Arena.BuffController.Get(pos, info.Buff);
-            effect.Play();
 
             if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
             {
-                yield return coroutine;
+                yield return coroutine.Invoke(effect);
             }
             else
             {
+                effect.Play();
                 yield return new WaitForSeconds(Game.DefaultSkillDelay);
             }
         }
