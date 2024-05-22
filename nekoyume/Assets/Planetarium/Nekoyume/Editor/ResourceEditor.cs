@@ -24,8 +24,7 @@ public static class ResourceEditor
             }
 
             // SkillVFX & BuffVFX 상대로만 레이어 처리
-            if (!asset.TryGetComponent<SkillVFX>(out _) &&
-                !asset.TryGetComponent<BuffVFX>(out _))
+            if (!asset.TryGetComponent<SkillVFX>(out _) && !asset.TryGetComponent<BuffVFX>(out _))
             {
                 continue;
             }
@@ -36,6 +35,23 @@ public static class ResourceEditor
             {
                 vfxRenderer.sortingLayerName = "CharacterVFX";
             }
+
+            if (asset.TryGetComponent<SkillVFX>(out var skillVFX))
+            {
+                foreach (var backGroundVfx in skillVFX.BackgroundParticleSystems)
+                {
+                    backGroundVfx.sortingLayerName = "InGameBackgroundVFX";
+                }
+            }
+
+            if (asset.TryGetComponent<BuffVFX>(out var buffVFX))
+            {
+                foreach (var backGroundVfx in buffVFX.BackgroundParticleSystems)
+                {
+                    backGroundVfx.sortingLayerName = "InGameBackgroundVFX";
+                }
+            }
+
             EditorUtility.SetDirty(asset);
         }
         Debug.Log(sb.ToString());
