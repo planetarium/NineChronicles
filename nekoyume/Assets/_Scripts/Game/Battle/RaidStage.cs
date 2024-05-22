@@ -433,7 +433,7 @@ namespace Nekoyume.Game.Battle
             {
                 yield break;
             }
-            
+
             if (target.HPBar.HpVFX != null)
             {
                 target.HPBar.HpVFX.Stop();
@@ -528,7 +528,11 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    _player.CustomEvent(IceShield.FrostBiteId);
+                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
+                    {
+                        _player.CustomEvent(IceShield.FrostBiteId);
+                        yield return raidCharacter.CoBuff(skillInfos);
+                    }
 
                     var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
                                                             raidCharacter.IsDead,
@@ -547,7 +551,7 @@ namespace Nekoyume.Game.Battle
                             tick.SkillId,
                             ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
                             tick.BuffInfos,
-                            raidCharacter.CoBuff)
+                            CoFrostBite)
                     );
                 }
                 // This Tick from 'Stun'

@@ -1102,7 +1102,7 @@ namespace Nekoyume.Game.Battle
             {
                 yield break;
             }
-            
+
             character.UpdateBuffVfx();
             character.UpdateActorHud();
             if (character.ActorHud.HpVFX != null)
@@ -1245,10 +1245,11 @@ namespace Nekoyume.Game.Battle
                     }
 
                     var source = tick.SkillInfos.First().Target;
-                    if (source != null)
+                    var sourceCharacter = GetActor(source);
+                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
                     {
-                        var sourceCharacter = GetActor(source);
                         sourceCharacter.CustomEvent(IceShield.FrostBiteId);
+                        yield return affectedCharacter.CoBuff(skillInfos);
                     }
 
                     var tickSkillInfo = new Skill.SkillInfo(
@@ -1267,7 +1268,7 @@ namespace Nekoyume.Game.Battle
                         new ActionParams(affectedCharacter,
                                         ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
                                          tick.BuffInfos,
-                                         affectedCharacter.CoBuff
+                                        CoFrostBite
                         ));
                 }
                 // This Tick from 'Stun'

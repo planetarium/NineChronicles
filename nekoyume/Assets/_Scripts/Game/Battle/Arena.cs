@@ -342,7 +342,11 @@ namespace Nekoyume.Game.Battle
                     }
 
                     var sourceCharacter = caster.Id == me.Id ? enemy : me;
-                    sourceCharacter.OnCustomEvent?.Invoke(IceShield.FrostBiteId);
+                    IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+                    {
+                        sourceCharacter.CustomEvent(IceShield.FrostBiteId);
+                        yield return affectedCharacter.CoBuff(skillInfos);
+                    }
 
                     var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
                             caster,
@@ -356,7 +360,7 @@ namespace Nekoyume.Game.Battle
                         affectedCharacter,
                         ArraySegment<ArenaSkill.ArenaSkillInfo>.Empty.Append(tickSkillInfo),
                         tick.BuffInfos,
-                        affectedCharacter.CoBuff);
+                        CoFrostBite);
                     affectedCharacter.Actions.Add(actionParams);
                     yield return null;
                 }

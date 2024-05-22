@@ -742,7 +742,6 @@ namespace Nekoyume.Game.Character
 
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
-            Animator.Cast();
 
 #if TEST_LOG
                 Debug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
@@ -1076,6 +1075,7 @@ namespace Nekoyume.Game.Character
             if (skillInfos is null || skillInfos.Count == 0)
                 yield break;
 
+            CastingOnceAsync().Forget();
             foreach (var skillInfo in skillInfos)
             {
                 if (skillInfo.Buff == null)
@@ -1094,8 +1094,6 @@ namespace Nekoyume.Game.Character
                     dispeledTargets.Add(target);
                 }
             }
-
-            Animator.Idle();
 
             if(dispeledTargets.Count > 0)
             {

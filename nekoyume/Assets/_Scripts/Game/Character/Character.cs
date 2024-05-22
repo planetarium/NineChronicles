@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model.Character;
@@ -21,11 +22,6 @@ namespace Nekoyume.Game.Character
 
         public readonly Dictionary<int, IEnumerator> BuffRemoveCoroutine = new();
         public readonly Dictionary<int, Func<BuffCastingVFX, IEnumerator>> BuffCastCoroutine = new();
-
-#region Event
-        public Action<int> OnBuff;
-        public Action<int> OnCustomEvent;
-#endregion Event
 
         protected void OnAnimatorEvent(string eventName)
         {
@@ -49,6 +45,12 @@ namespace Nekoyume.Game.Character
         }
 
         // TODO: 이 클래스에 존재해야할 느낌은 아니지만, 중복 구현을 피하기 위해 일단 여기에 둠
+#region Temp
+#region Event
+        public Action<int> OnBuff;
+        public Action<int> OnCustomEvent;
+#endregion Event
+
         /// <summary>
         /// Stage.CoCustomEvent를 통해 실행된 이벤트를 받아 처리하기 위해 생성
         /// </summary>
@@ -57,5 +59,13 @@ namespace Nekoyume.Game.Character
         {
             OnCustomEvent?.Invoke(customEventId);
         }
+
+        protected async UniTask CastingOnceAsync()
+        {
+            Animator.Cast();
+            await UniTask.Delay(TimeSpan.FromSeconds(Game.DefaultSkillDelay));
+            Animator.Idle();
+        }
+#endregion Temp
     }
 }

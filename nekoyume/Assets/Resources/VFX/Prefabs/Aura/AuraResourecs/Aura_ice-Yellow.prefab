@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2360262285949940347}
   - component: {fileID: 2360262285949940344}
   - component: {fileID: 342887738975752712}
+  - component: {fileID: -249442140748058962}
   m_Layer: 0
   m_Name: Aura_ice-Yellow
   m_TagString: Untagged
@@ -36,6 +37,7 @@ Transform:
   - {fileID: 4803915152504815787}
   - {fileID: 2574547006259418236}
   - {fileID: 3596094022758225003}
+  - {fileID: 7335156247343666774}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -152,6 +154,21 @@ MonoBehaviour:
   - {fileID: 5381412617976496558}
   - {fileID: 8588010324485410584}
   - {fileID: 6028193777891006933}
+--- !u!114 &-249442140748058962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2360262285949940345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4376bf22829a7b24cae703fe0a7ff0d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  summonedSpine: {fileID: 7335156247343666769}
+  iceShieldParticle: {fileID: 169877217245872239}
+  frostBiteParticle: {fileID: 3266096103976073537}
 --- !u!1 &4844464424577777829
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,4 +531,108 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7477866554550906201, guid: e5f7e0ada763e274fb6d81a788f589f8,
     type: 3}
   m_PrefabInstance: {fileID: 6206343427541383474}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7443747761556756503
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2360262285949940349}
+    m_Modifications:
+    - target: {fileID: 181890666083323456, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 181890666083323461, guid: 448c2495f28a2854296cf94d40a44208,
+        type: 3}
+      propertyPath: m_Name
+      value: Aura_ice-summon
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 448c2495f28a2854296cf94d40a44208, type: 3}
+--- !u!198 &169877217245872239 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7284017467371575416, guid: 448c2495f28a2854296cf94d40a44208,
+    type: 3}
+  m_PrefabInstance: {fileID: 7443747761556756503}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3266096103976073537 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5340706468405764438, guid: 448c2495f28a2854296cf94d40a44208,
+    type: 3}
+  m_PrefabInstance: {fileID: 7443747761556756503}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7335156247343666769 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 181890666083323462, guid: 448c2495f28a2854296cf94d40a44208,
+    type: 3}
+  m_PrefabInstance: {fileID: 7443747761556756503}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &7335156247343666774 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+    type: 3}
+  m_PrefabInstance: {fileID: 7443747761556756503}
   m_PrefabAsset: {fileID: 0}

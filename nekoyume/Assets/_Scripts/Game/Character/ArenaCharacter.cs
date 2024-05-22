@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BTAI;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Libplanet.Crypto;
 using Nekoyume.Game.Battle;
@@ -422,7 +423,6 @@ namespace Nekoyume.Game.Character
         {
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
-            Animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.Arena.BuffController.Get(pos, info.Buff);
 
@@ -736,7 +736,14 @@ namespace Nekoyume.Game.Character
                 skillInfos.Count == 0)
                 yield break;
 
-            yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
+            CastingOnceAsync().Forget();
+            foreach (var skillInfo in skillInfos)
+            {
+                if (skillInfo.Buff == null)
+                    continue;
+
+                yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
+            }
 
             HashSet<ArenaCharacter> dispeledTargets = new HashSet<ArenaCharacter>();
             foreach (var info in skillInfos)
@@ -748,8 +755,6 @@ namespace Nekoyume.Game.Character
                     dispeledTargets.Add(target);
                 }
             }
-
-            Animator.Idle();
 
             if (dispeledTargets.Count > 0)
             {
@@ -775,15 +780,20 @@ namespace Nekoyume.Game.Character
                 skillInfos.Count == 0)
                 yield break;
 
-            yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
+            CastingOnceAsync().Forget();
+            foreach (var skillInfo in skillInfos)
+            {
+                if (skillInfo.Buff == null)
+                    continue;
+
+                yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
+            }
 
             foreach (var info in skillInfos)
             {
                 var target = info.Target.Id == Id ? this : _target;
                 target.ProcessBuff(target, info);
             }
-
-            Animator.Idle();
         }
 
         #endregion
