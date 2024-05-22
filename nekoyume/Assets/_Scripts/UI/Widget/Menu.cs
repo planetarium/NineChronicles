@@ -321,12 +321,9 @@ namespace Nekoyume.UI
                 }).Forget();
             }
 
-            if(GUILayout.Button("GetExploreInfo",style))
+            if(GUILayout.Button("Show BountyPopup",style))
             {
-                Game.Game.instance.Agent.GetExploreInfoAsync(Game.Game.instance.States.CurrentAvatarState.address, Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season).AsUniTask().ContinueWith((exploreInfo) =>
-                {
-
-                }).Forget();
+                Find<AdventureBossFullBountyStatusPopup>().Show();
             }
 
             GUILayout.EndVertical();

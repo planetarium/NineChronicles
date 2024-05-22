@@ -774,6 +774,7 @@ GameObject:
   - component: {fileID: 3683325905044953569}
   - component: {fileID: 3643042476237187039}
   - component: {fileID: 1424054286408735002}
+  - component: {fileID: 7476671030320528930}
   m_Layer: 5
   m_Name: FullBountyStatusCell
   m_TagString: Untagged
@@ -852,6 +853,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7476671030320528930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4846763705659686689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93c12a8952efab8419ea72aaba61a146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rankText: {fileID: 6207467275321348978}
+  nameText: {fileID: 3576576480149800413}
+  countText: {fileID: 3576576479386526414}
+  ncgText: {fileID: 6207467275414908465}
+  bonusObj: {fileID: 234275045952612414}
+  bonusText: {fileID: 6232907655854667570}
+  nomalStateColor: {r: 1, g: 0.9529412, b: 0.83137256, a: 1}
+  bonusStateColor: {r: 1, g: 0.8039216, b: 0.16470589, a: 1}
 --- !u!1 &6207467275212689201
 GameObject:
   m_ObjectHideFlags: 0

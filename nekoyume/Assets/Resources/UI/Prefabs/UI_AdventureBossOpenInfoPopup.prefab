@@ -21659,6 +21659,7 @@ GameObject:
   - component: {fileID: 8987183913398411477}
   - component: {fileID: 8984887071543346465}
   - component: {fileID: 544383780006516549}
+  - component: {fileID: 5992218583515722126}
   m_Layer: 5
   m_Name: UI_AdventureBossOpenInfoPopup
   m_TagString: Untagged
@@ -21717,6 +21718,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5992218583515722126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9197388406494432887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d46a631df83b0243bc04ff71b9a1d6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
 --- !u!1001 &741245622774421997
 PrefabInstance:
   m_ObjectHideFlags: 0
