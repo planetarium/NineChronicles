@@ -64,7 +64,7 @@ namespace Nekoyume.UI.Module
         private bool _isAvatarInfo;
 
         private readonly Dictionary<Inventory.InventoryTabType, GameObject> _slots = new();
-        private readonly List<Guid> _consumables = new();
+        private readonly List<int> _consumableIds = new();
         private readonly List<IDisposable> _disposables = new();
 
         private void Start()
@@ -131,7 +131,7 @@ namespace Nekoyume.UI.Module
         public void UpdateInventory(BattleType battleType, int? compareCp = null)
         {
             _compareCp = compareCp;
-            _consumables.Clear();
+            _consumableIds.Clear();
             var elementalTypes = GetElementalTypes();
             inventory.SetAvatarInformation(
                 OnClickInventoryItem,
@@ -215,7 +215,7 @@ namespace Nekoyume.UI.Module
             var itemSlotState = States.Instance.CurrentItemSlotStates[_battleType];
             inventory.UpdateCostumes(itemSlotState.Costumes);
             inventory.UpdateEquipments(itemSlotState.Equipments);
-            inventory.UpdateConsumables(_consumables);
+            inventory.UpdateConsumables(_consumableIds);
             UpdateTitle();
         }
 
@@ -237,12 +237,21 @@ namespace Nekoyume.UI.Module
 
         public List<Consumable> GetEquippedConsumables()
         {
-            var avatarState = States.Instance.CurrentAvatarState;
-            var consumablesInventory = avatarState.inventory.Consumables;
-            var consumables = _consumables
-                .Select(guid => consumablesInventory.FirstOrDefault(x => x.ItemId == guid))
-                .Where(item => item != null).ToList();
-            return consumables;
+            var consumablesInventory =
+                States.Instance.CurrentAvatarState.inventory.Consumables.ToArray();
+
+            var equippedConsumables = new List<Consumable>();
+            foreach (var id in _consumableIds)
+            {
+                var item = consumablesInventory.FirstOrDefault(consumable =>
+                    consumable.Id == id && !equippedConsumables.Contains(consumable));
+                if (item != null)
+                {
+                    equippedConsumables.Add(item);
+                }
+            }
+
+            return equippedConsumables;
         }
 
         private void OnClickRuneSlot(RuneSlotView slot)
@@ -527,6 +536,11 @@ namespace Nekoyume.UI.Module
                         return;
                     }
 
+                    if (inventoryItem.Count.Value <= 0)
+                    {
+                        return;
+                    }
+
                     var slotCount = 0;
                     if (gameConfig.RequireCharacterLevel_ConsumableSlot1 <= avatarState.level)
                     {
@@ -549,17 +563,22 @@ namespace Nekoyume.UI.Module
                         slotCount++;
                     }
 
-                    if (_consumables.Any() && _consumables.Count == slotCount)
+                    if (_consumableIds.Any() && _consumableIds.Count == slotCount)
                     {
-                        _consumables.Remove(_consumables.Last());
+                        var lastConsumableId = _consumableIds.Last();
+                        if (inventory.TryGetConsumable(lastConsumableId, out var lastItem))
+                        {
+                            _consumableIds.Remove(lastConsumableId);
+                            lastItem.Count.Value++;
+                        }
                     }
 
                     if (inventoryItem.ItemBase is Consumable consumable)
                     {
-                        _consumables.Add(consumable.ItemId);
+                        _consumableIds.Add(consumable.Id);
                     }
 
-                    inventory.UpdateConsumables(_consumables);
+                    inventory.UpdateConsumables(_consumableIds);
                     break;
             }
 
@@ -595,9 +614,9 @@ namespace Nekoyume.UI.Module
                 case ItemType.Consumable:
                     if (inventoryItem.ItemBase is Consumable consumable)
                     {
-                        _consumables.Remove(consumable.ItemId);
+                        _consumableIds.Remove(consumable.Id);
                     }
-                    inventory.UpdateConsumables(_consumables);
+                    inventory.UpdateConsumables(_consumableIds);
                     break;
             }
 
