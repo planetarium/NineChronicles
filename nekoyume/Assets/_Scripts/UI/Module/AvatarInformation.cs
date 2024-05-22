@@ -380,7 +380,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 inventory.ClearFocus();
-                ShowItemTooltip(model);
+                ShowTooltip(model);
             }
         }
 
@@ -698,27 +698,14 @@ namespace Nekoyume.UI.Module
 
         private void OnClickInventoryItem(InventoryItem model)
         {
-            ShowItemTooltip(model);
+            ShowTooltip(model);
         }
 
-        private void ShowItemTooltip(InventoryItem model)
+        private void ShowTooltip(InventoryItem model)
         {
             if (model.ItemBase is not null)
             {
-                var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-                var (submitText,
-                    interactable,
-                    submit,
-                    blocked,
-                    enhancement) = GetToolTipParams(model);
-                tooltip.Show(
-                    model,
-                    submitText,
-                    interactable,
-                    submit,
-                    () => inventory.ClearSelectedItem(),
-                    blocked,
-                    enhancement);
+                ShowItemTooltip(model);
             }
             else if (model.RuneState is not null)
             {
@@ -728,6 +715,84 @@ namespace Nekoyume.UI.Module
             {
                 ShowFavTooltip(model);
             }
+        }
+
+        private void ShowItemTooltip(InventoryItem model)
+        {
+            var item = model.ItemBase;
+            var submitText = string.Empty;
+            var interactable = false;
+            System.Action submit = null;
+            var blockedMessage = string.Empty;
+
+            switch (item.ItemType)
+            {
+                case ItemType.Consumable or ItemType.Costume or ItemType.Equipment:
+                    submitText = model.Equipped.Value
+                        ? L10nManager.Localize("UI_UNEQUIP")
+                        : L10nManager.Localize("UI_EQUIP");
+
+                    if (!(item.ItemType == ItemType.Consumable && consumeSlots is null) &&
+                        !BattleRenderer.Instance.IsOnBattle)
+                    {
+                        if (model.DimObjectEnabled.Value)
+                        {
+                            interactable = model.Equipped.Value;
+                        }
+                        else
+                        {
+                            interactable = !model.LevelLimited.Value ||
+                                           model.LevelLimited.Value && model.Equipped.Value;
+                        }
+                    }
+
+                    submit = () => EquipOrUnequip(model);
+                    blockedMessage = BattleRenderer.Instance.IsOnBattle
+                        ? L10nManager.Localize("UI_BLOCK_EQUIP")
+                        : L10nManager.Localize("UI_EQUIP_FAILED");
+                    break;
+                case ItemType.Material when item.ItemSubType == ItemSubType.ApStone:
+                    submitText = L10nManager.Localize("UI_CHARGE_AP");
+                    interactable = ActionPoint.IsInteractableMaterial();
+                    submit = ReactiveAvatarState.ActionPoint > 0
+                        ? () => ActionPoint.ShowRefillConfirmPopup(ActionPoint.ChargeAP)
+                        : ActionPoint.ChargeAP;
+                    blockedMessage = BattleRenderer.Instance.IsOnBattle
+                        ? L10nManager.Localize("UI_BLOCK_CHARGE_AP")
+                        : L10nManager.Localize("UI_AP_IS_FULL");
+                    break;
+            }
+
+            System.Action blocked = () => NotificationSystem.Push(
+                MailType.System,
+                blockedMessage,
+                NotificationCell.NotificationType.Alert);
+            System.Action enhancement = item.ItemType == ItemType.Equipment ? () =>
+            {
+                if (BattleRenderer.Instance.IsOnBattle)
+                {
+                    return;
+                }
+
+                if (item is not Equipment equipment)
+                {
+                    return;
+                }
+
+                var e = Widget.Find<Enhancement>();
+                e.CloseWithOtherWidgets();
+                e.Show(item.ItemSubType, equipment.ItemId, true);
+                AudioController.PlayClick();
+            } : null;
+
+            ItemTooltip.Find(model.ItemBase.ItemType).Show(
+                model,
+                submitText,
+                interactable,
+                submit,
+                () => inventory.ClearSelectedItem(),
+                blocked,
+                enhancement);
         }
 
         private void ShowRuneTooltip(InventoryItem model)
@@ -774,117 +839,6 @@ namespace Nekoyume.UI.Module
                         inventory.ClearSelectedItem();
                         UpdateRuneView();
                     });
-        }
-
-        private (string, bool, System.Action, System.Action, System.Action)
-            GetToolTipParams(InventoryItem model)
-        {
-            var item = model.ItemBase;
-            var submitText = string.Empty;
-            var interactable = false;
-            System.Action submit = null;
-            System.Action blocked = null;
-            System.Action enhancement = null;
-
-            switch (item.ItemType)
-            {
-                case ItemType.Consumable:
-                case ItemType.Costume:
-                case ItemType.Equipment:
-                    submitText = model.Equipped.Value
-                        ? L10nManager.Localize("UI_UNEQUIP")
-                        : L10nManager.Localize("UI_EQUIP");
-                    if (!BattleRenderer.Instance.IsOnBattle)
-                    {
-                        if (model.DimObjectEnabled.Value)
-                        {
-                            interactable = model.Equipped.Value;
-                        }
-                        else
-                        {
-                            interactable = !model.LevelLimited.Value || model.LevelLimited.Value && model.Equipped.Value;
-                        }
-                    }
-
-                    if (item.ItemType == ItemType.Consumable && consumeSlots is null)
-                    {
-                        interactable = false;
-                    }
-
-                    submit = () => EquipOrUnequip(model);
-
-                    if (item.ItemType == ItemType.Equipment)
-                    {
-                        enhancement = () =>
-                        {
-                            if (BattleRenderer.Instance.IsOnBattle)
-                            {
-                                return;
-                            }
-
-                            if (item is not Equipment equipment)
-                            {
-                                return;
-                            }
-
-                            var e = Widget.Find<Enhancement>();
-                            e.CloseWithOtherWidgets();
-                            e.Show(item.ItemSubType, equipment.ItemId, true);
-                            AudioController.PlayClick();
-                        };
-                    }
-
-                    if (BattleRenderer.Instance.IsOnBattle)
-                    {
-                        blocked = () => NotificationSystem.Push(MailType.System,
-                            L10nManager.Localize("UI_BLOCK_EQUIP"),
-                            NotificationCell.NotificationType.Alert);
-                    }
-                    else
-                    {
-                        blocked = () => NotificationSystem.Push(MailType.System,
-                            L10nManager.Localize("UI_EQUIP_FAILED"),
-                            NotificationCell.NotificationType.Alert);
-                    }
-
-                    break;
-                case ItemType.Material:
-                    if (item.ItemSubType == ItemSubType.ApStone)
-                    {
-                        submitText = L10nManager.Localize("UI_CHARGE_AP");
-                        interactable = ActionPoint.IsInteractableMaterial();
-
-                        if (ReactiveAvatarState.ActionPoint > 0)
-                        {
-                            submit = () => ActionPoint.ShowRefillConfirmPopup(
-                                () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe()
-                            );
-                        }
-                        else
-                        {
-                            submit = () => Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe();
-                        }
-
-                        if (BattleRenderer.Instance.IsOnBattle)
-                        {
-                            blocked = () => NotificationSystem.Push(MailType.System,
-                                L10nManager.Localize("UI_BLOCK_CHARGE_AP"),
-                                NotificationCell.NotificationType.Alert);
-                        }
-                        else
-                        {
-                            blocked = () => NotificationSystem.Push(MailType.System,
-                                L10nManager.Localize("UI_AP_IS_FULL"),
-                                NotificationCell.NotificationType.Alert);
-                        }
-                    }
-
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return (submitText, interactable, submit, blocked, enhancement);
         }
 
         private void EquipOrUnequip(InventoryItem inventoryItem)
