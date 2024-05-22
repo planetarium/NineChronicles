@@ -342,7 +342,7 @@ namespace Nekoyume.Game.Battle
                     }
 
                     var sourceCharacter = caster.Id == me.Id ? enemy : me;
-                    sourceCharacter.OnCustomEvent(IceShield.FrostBiteId);
+                    sourceCharacter.OnCustomEvent?.Invoke(IceShield.FrostBiteId);
 
                     var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
                             caster,

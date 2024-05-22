@@ -584,7 +584,7 @@ namespace Nekoyume.Game.Character
 
             if (info.Buff != null)
             {
-                OnBuff.Invoke(info.Buff.BuffInfo.Id);
+                OnBuff?.Invoke(info.Buff.BuffInfo.Id);
             }
 
 #if TEST_LOG
