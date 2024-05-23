@@ -175,6 +175,8 @@ namespace Nekoyume.Game.Character
             {
                 Widget.Find<UI.Battle>().ComboText.comboMax = CharacterModel.AttackCountMax;
             }
+
+            IsFlipped = false;
         }
 
         protected override IEnumerator Dying()

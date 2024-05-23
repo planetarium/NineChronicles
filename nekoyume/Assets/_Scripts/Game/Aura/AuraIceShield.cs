@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model.Buff;
@@ -27,10 +28,6 @@ namespace Nekoyume.Game
         protected void Awake()
         {
             summonedSpine.gameObject.SetActive(false);
-        }
-
-        protected void OnEnable()
-        {
         }
 
         protected override void AddEventToOwner()

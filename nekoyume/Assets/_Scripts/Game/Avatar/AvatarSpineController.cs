@@ -17,7 +17,7 @@ namespace Nekoyume.Game.Avatar
         private const string WeaponSlot = "weapon";
 
         [SerializeField]
-        private Player owner;
+        private Character.Character owner;
 
         [SerializeField]
         private List<AvatarParts> parts;

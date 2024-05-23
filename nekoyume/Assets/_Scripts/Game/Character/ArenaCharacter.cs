@@ -87,6 +87,7 @@ namespace Nekoyume.Game.Character
             ArenaCharacter target,
             bool isEnemy)
         {
+            IsFlipped = isEnemy;
             gameObject.SetActive(true);
             transform.localPosition = new Vector3(isEnemy ? StartPos : -StartPos, -1.2f, 0);
 
@@ -325,11 +326,12 @@ namespace Nekoyume.Game.Character
 
             var buff = info.Buff;
             var effect = Game.instance.Arena.BuffController.Get<BuffVFX>(target.gameObject, buff);
+
             effect.Play();
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform, buff));
+                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff));
             }
 
             OnBuff?.Invoke(buff.BuffInfo.GroupId);

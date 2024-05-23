@@ -26,6 +26,8 @@ namespace Nekoyume.Game.Character
             base.Set(model, updateCurrentHP);
             _player = player;
             InitBT();
+
+            IsFlipped = true;
         }
 
         protected override void UpdateHitPoint()
