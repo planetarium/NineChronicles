@@ -323,7 +323,7 @@ namespace Nekoyume.UI
 
             if(GUILayout.Button("Show BountyPopup",style))
             {
-                Find<AdventureBossFullBountyStatusPopup>().Show();
+                Find<AdventureBossOpenInfoPopup>().Show();
             }
 
             GUILayout.EndVertical();
