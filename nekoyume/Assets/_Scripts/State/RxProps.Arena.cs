@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Action;
@@ -323,7 +324,8 @@ namespace Nekoyume.State
             {
                 playerArenaInfo.Cp = cp;
                 playerArenaInfo.PortraitId = portraitId;
-                playerArenaInfo.Score = (Integer)((List)stateBulk[playerScoreAddr])[1];
+                var playerScoreValue = ((List)stateBulk[playerScoreAddr])?[1];
+                playerArenaInfo.Score = playerScoreValue == null ? 0 : (Integer)playerScoreValue;
             }
 
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
@@ -352,8 +354,14 @@ namespace Nekoyume.State
                         : arenaInfoList[playerIndex - 1].Rank + 1;
             }
 
-            _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
+            SetArenaInfoOnMainThreadAsync(playerArenaInfo).Forget();
             return arenaInfoList;
+        }
+
+        private static async UniTask SetArenaInfoOnMainThreadAsync(ArenaParticipantModel playerArenaInfo)
+        {
+            await UniTask.SwitchToMainThread();
+            _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
         }
     }
 }
