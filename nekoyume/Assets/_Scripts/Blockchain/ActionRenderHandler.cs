@@ -211,6 +211,7 @@ namespace Nekoyume.Blockchain
             ClaimAdventureBossReward();
             ClaimWantedReward();
             AdventureBossBattle();
+            Wanted();
         }
 
         public void Stop()
@@ -3620,6 +3621,48 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        private void Wanted()
+        {
+            _actionRenderer.EveryRender<Wanted>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseWanted)
+                .AddTo(_disposables);
+        }
+
+        private bool isFirstWanted;
+        private void ResponseWanted(ActionEvaluation<Wanted> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
+            {
+                isFirstWanted = Game.Game.instance.AdventureBossData.BountyBoard.Value == null;
+                await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState();
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var action = eval.Action;
+
+                if (Widget.Find<LoadingScreen>().isActiveAndEnabled)
+                    return;
+
+                if (Game.Game.instance.AdventureBossData.BountyBoard.Value == null)
+                    return;
+
+                //최초입찰여부
+                if (isFirstWanted && Game.Game.instance.AdventureBossData.BountyBoard.Value.Investors.Count >= 1 && Game.Game.instance.AdventureBossData.BountyBoard.Value.Investors[0].Count >= 1)
+                {
+                    if(Game.Game.instance.AdventureBossData.BountyBoard.Value.Investors[0].AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address)
+                    {
+                        Widget.Find<AdventureBossStartNotificationPopup>().Show();
+                    }
+                    else
+                    {
+                        Widget.Find<AdventureBossOpenInfoPopup>().Show();
+                    }
+                }
+            });
+        }
 
         private void ClaimWantedReward()
         {
