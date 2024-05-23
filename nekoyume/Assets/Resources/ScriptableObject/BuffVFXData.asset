@@ -213,6 +213,12 @@ MonoBehaviour:
       type: 3}
     BuffVFX: {fileID: 5068662467704735941, guid: 36d05c79df5e4a847934261885229a83,
       type: 3}
+  - Id: 707001
+    Icon: {fileID: 21300000, guid: b2c3ad93baec3614baf400a8ac26c2e9, type: 3}
+    CastingVFX: {fileID: 517495102393359299, guid: 271ea9a1d7475434393c24f4739ef06e,
+      type: 3}
+    BuffVFX: {fileID: 5068662467704735941, guid: 36d05c79df5e4a847934261885229a83,
+      type: 3}
   FallbackIcon: {fileID: 21300000, guid: 39d46914ec312d8469b6bb4740099db4, type: 3}
   FallbackCastingVFX: {fileID: 2327172370517842916, guid: 8e07f2c1b187b68428f03f03327fa497,
     type: 3}
