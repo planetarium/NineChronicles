@@ -133,6 +133,9 @@ namespace Nekoyume.UI
             catch (Exception e)
             {
                 NcDebug.LogError(e.Message);
+                Analyzer.Instance.Track("Fail_To_Enter_MobileShop",
+                    ("Exception", e.ToString()),
+                    ("Message", e.Message));
                 loading.Close();
                 base.Show(ignoreShowAnimation);
                 Close();
