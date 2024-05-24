@@ -413,12 +413,22 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
 
-        private void UpdateStartButton(long blockIndex)
+        /// <summary>
+        /// 마지막으로 Raid 전투를 수행했던 BlockIndex값을 가져옵니다.
+        /// RaidState가 없는경우 0을 리턴합니다.
+        /// </summary>
+        /// <returns>마지막으로 Raid전투를 수행했떤 BlockIndex, raidState가 없는경우 0리턴</returns>
+        private long GetUpdatedRaidBlockIndex()
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
+            return raiderState?.UpdatedBlockIndex ?? 0;
+        }
+
+        private void UpdateStartButton(long blockIndex)
+        {
             var worldBossRequiredInterval = States.Instance.GameConfigState.WorldBossRequiredInterval;
-            var isIntervalValid = blockIndex - (raiderState?.UpdatedBlockIndex ?? 0) >= worldBossRequiredInterval;
+            var isIntervalValid = blockIndex - GetUpdatedRaidBlockIndex() >= worldBossRequiredInterval;
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
