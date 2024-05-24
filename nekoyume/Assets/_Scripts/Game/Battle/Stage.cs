@@ -1236,7 +1236,6 @@ namespace Nekoyume.Game.Battle
             if (eventBase is Tick tick)
             {
                 var affectedCharacter = GetActor(character);
-                // todo: 동상 관련 로직은 추후 수정 필요
                 if (tick.SkillId == IceShield.FrostBiteId)
                 {
                     if (!character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
@@ -1263,7 +1262,6 @@ namespace Nekoyume.Game.Battle
                         target: character,
                         buff: frostBite
                     );
-                    // TODO: 동상 관련 로직은 추후 수정 필요
                     affectedCharacter.AddAction(
                         new ActionParams(affectedCharacter,
                                         ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
