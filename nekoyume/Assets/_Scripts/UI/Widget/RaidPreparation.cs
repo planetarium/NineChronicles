@@ -418,7 +418,7 @@ namespace Nekoyume.UI
             var avatarState = States.Instance.CurrentAvatarState;
             var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
             var worldBossRequiredInterval = States.Instance.GameConfigState.WorldBossRequiredInterval;
-            var isIntervalValid = blockIndex - raiderState.UpdatedBlockIndex >= worldBossRequiredInterval;
+            var isIntervalValid = blockIndex - (raiderState?.UpdatedBlockIndex ?? 0) >= worldBossRequiredInterval;
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
