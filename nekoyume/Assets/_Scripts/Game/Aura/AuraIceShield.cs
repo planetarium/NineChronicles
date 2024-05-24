@@ -13,7 +13,7 @@ namespace Nekoyume.Game
 
         protected const string AppearAnimation    = "Appear";
         protected const string CastingAnimation   = "Casting";
-        protected const string DisappearAnimation = "Disappear";
+        protected const string DisappearAnimation = "Disppear";
         protected const string IdleAnimation      = "Idle";
 
         [SerializeField]
@@ -32,7 +32,6 @@ namespace Nekoyume.Game
 
         protected override void AddEventToOwner()
         {
-            StartCoroutine(AppearSummoner());
             if (Owner == null)
             {
                 return;
@@ -51,22 +50,26 @@ namespace Nekoyume.Game
             Owner.BuffCastCoroutine.Remove(IceShieldId);
         }
 
-        protected override void ProcessBuff(int buffId)
-        {
-            if (IceShield.FrostBiteId != IceShieldId)
-            {
-                return;
-            }
-        }
-
         protected override void ProcessCustomEvent(int customEventId)
         {
             if (IceShield.FrostBiteId != customEventId)
             {
                 return;
             }
+            base.ProcessCustomEvent(customEventId);
 
             StartCoroutine(OnFrostBite());
+        }
+
+        protected override void ProcessBuffEnd(int buffId)
+        {
+            if (IceShieldId != buffId)
+            {
+                return;
+            }
+            base.ProcessBuffEnd(buffId);
+
+            StartCoroutine(DisappearSummoner());
         }
 
         private IEnumerator AppearSummoner()
@@ -80,15 +83,22 @@ namespace Nekoyume.Game
             summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
         }
 
-        private IEnumerator OnBuffCast(BuffCastingVFX buffCastingVFX)
+        private IEnumerator DisappearSummoner()
         {
-            var castingTrack = summonedSpine.AnimationState.SetAnimation(0, CastingAnimation, false);
-            buffCastingVFX.Play();
-            iceShieldParticle.Play();
-            while (!castingTrack.IsComplete)
+            var disappearTrack = summonedSpine.AnimationState.SetAnimation(0, DisappearAnimation, false);
+            while (!disappearTrack.IsComplete)
             {
                 yield return null;
             }
+            summonedSpine.gameObject.SetActive(false);
+        }
+
+        private IEnumerator OnBuffCast(BuffCastingVFX buffCastingVFX)
+        {
+            // 버프 연출과 동시에 수행하기 위해 대기하지 않음
+            StartCoroutine(AppearSummoner());
+            buffCastingVFX.Play();
+            iceShieldParticle.Play();
             summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }

@@ -48,6 +48,7 @@ namespace Nekoyume.Game.Character
 #region Temp
 #region Event
         public Action<int> OnBuff;
+        public Action<int> OnBuffEnd;
         public Action<int> OnCustomEvent;
 #endregion Event
 

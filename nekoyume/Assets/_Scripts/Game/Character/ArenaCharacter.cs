@@ -150,6 +150,7 @@ namespace Nekoyume.Game.Character
             foreach (var id in removedBuffVfxList)
             {
                 _persistingVFXMap.Remove(id);
+                OnBuffEnd?.Invoke(id);
             }
         }
 
