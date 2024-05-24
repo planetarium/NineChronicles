@@ -9,6 +9,7 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Elemental;
 using System.Linq;
 using System;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 
@@ -158,6 +159,7 @@ namespace Nekoyume.Game.Character
             foreach (var id in removedBuffVfxList)
             {
                 _persistingVFXMap.Remove(id);
+                OnBuffEnd?.Invoke(id);
             }
         }
 
@@ -446,7 +448,14 @@ namespace Nekoyume.Game.Character
                 skillInfos.Count == 0)
                 yield break;
 
-            yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
+            CastingOnceAsync().Forget();
+            foreach (var skillInfo in skillInfos)
+            {
+                if (skillInfo.Buff == null)
+                    continue;
+
+                yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
+            }
 
             HashSet<RaidCharacter> dispeledTargets = new HashSet<RaidCharacter>();
             foreach (var info in skillInfos)
@@ -598,8 +607,15 @@ namespace Nekoyume.Game.Character
             Animator.Cast();
             var pos = transform.position;
             var effect = Game.instance.RaidStage.BuffController.Get(pos, info.Buff);
-            effect.Play();
-            yield return new WaitForSeconds(Game.DefaultSkillDelay);
+            if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
+            {
+                yield return coroutine.Invoke(effect);
+            }
+            else
+            {
+                effect.Play();
+                yield return new WaitForSeconds(Game.DefaultSkillDelay);
+            }
         }
 
         public void ShowSpeech(string key, params int[] list)
