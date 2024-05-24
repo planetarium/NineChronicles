@@ -14,7 +14,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
     public class IAPServiceManager : IDisposable
     {
         public static readonly TimeSpan DefaultProductsCacheLifetime =
-            TimeSpan.FromMinutes(10);
+            TimeSpan.FromMinutes(20);
 
         private readonly IAPServiceClient _client;
 
