@@ -261,6 +261,9 @@ namespace Nekoyume.IAPStore
             catch (Exception error)
             {
                 NcDebug.LogError("[PurchaseLog] Log Error " + error);
+                Analyzer.Instance.Track("PurchaseLog",
+                    ("Exception", error.ToString()),
+                    ("Message", error.Message));
             }
         }
 

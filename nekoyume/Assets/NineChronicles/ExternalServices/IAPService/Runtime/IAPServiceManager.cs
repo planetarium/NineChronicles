@@ -379,8 +379,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         {
             if (!IsInitialized)
             {
-                Debug.LogWarning("IAPServiceManager is not initialized.");
-                return null;
+                throw new Exception("IAPServiceManager is not initialized.");
             }
 
             var (code, error, mediaType, content) =
@@ -394,23 +393,19 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
-                Debug.LogError(
+                throw new Exception(
                     $"Purchase failed: {code}, {productId}, {error}, {mediaType}, {content}");
-                return null;
             }
 
             if (mediaType != "application/json")
             {
-                Debug.LogError(
+                throw new Exception(
                     $"Unexpected media type: {code}, {productId}, {error}, {mediaType}, {content}");
-                return null;
             }
 
             if (string.IsNullOrEmpty(content))
             {
-                Debug.LogError(
-                    $"Content is empty: {code}, {error}, {mediaType}, {content}");
-                return null;
+                throw new Exception($"Content is empty: {code}, {error}, {mediaType}, {content}");
             }
 
             try
@@ -428,44 +423,32 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         {
             if (!IsInitialized)
             {
-                Debug.LogWarning("IAPServiceManager is not initialized.");
-                return null;
+                throw new Exception("IAPServiceManager is not initialized.");
             }
 
             var (code, error, mediaType, content) = await _client.L10NAsync();
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
-                Debug.LogError(
+                throw new Exception(
                     $"L10N failed: {code}, {error}, {mediaType}, {content}");
-                return null;
             }
 
             if (mediaType != "application/json")
             {
-                Debug.LogError(
+                throw new Exception(
                     $"Unexpected media type: {code}, {error}, {mediaType}, {content}");
-                return null;
             }
 
             if (string.IsNullOrEmpty(content))
             {
-                Debug.LogError(
+                throw new Exception(
                     $"Content is empty: {code}, {error}, {mediaType}, {content}");
-                return null;
             }
 
-            try
-            {
-                return JsonSerializer.Deserialize<L10NSchema?>(
-                    content!,
-                    IAPServiceClient.JsonSerializerOptions)!;
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-                return null;
-            }
+            return JsonSerializer.Deserialize<L10NSchema?>(
+                content!,
+                IAPServiceClient.JsonSerializerOptions)!;
         }
 
         private void UnregisterAndCache(ReceiptDetailSchema result)

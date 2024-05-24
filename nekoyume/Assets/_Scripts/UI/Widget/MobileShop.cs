@@ -227,8 +227,20 @@ namespace Nekoyume.UI
 
         public static async Task LoadL10Ns()
         {
-            MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
-            await UniTask.SwitchToMainThread();
+            try
+            {
+                MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
+                await UniTask.SwitchToMainThread();
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogException(e);
+                Analyzer.Instance.Track("L10NAsync",
+                    ("Exception", e.ToString()),
+                    ("Message", e.Message));
+                return;
+            }
+
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
         }
