@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Model
                     oldSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(oldSeasonIndex);
                     EndedSeasonInfos.Add(oldSeasonIndex, oldSeasonInfo);
                     //보상수령기간이 지날경우 더이상 가져오지않음.
-                    if(oldSeasonInfo.EndBlockIndex + ClaimWantedReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
+                    if(oldSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
                     {
                         break;
                     }

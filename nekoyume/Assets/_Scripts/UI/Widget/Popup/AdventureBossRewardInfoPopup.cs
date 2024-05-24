@@ -8,9 +8,14 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Helper;
     using Nekoyume.Model.AdventureBoss;
+    using Nekoyume.TableData;
+    using System.Linq;
     using TMPro;
     using UniRx;
+    using UnityEngine.UI;
+
     public class AdventureBossRewardInfoPopup : PopupWidget
     {
         [SerializeField] private UnityEngine.UI.ToggleGroup toggleGroup;
@@ -22,6 +27,20 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject contentsOperational;
         [SerializeField] private TextMeshProUGUI remainingBlockTime;
 
+        [Header("Score Contents")]
+        [SerializeField] private TextMeshProUGUI totalScore;
+        [SerializeField] private TextMeshProUGUI myScore;
+        [SerializeField] private BaseItemView[] baseItemViews;
+
+        [Header("Floor Contents")]
+        [SerializeField] private FloorRewardCell[] floorRewardCells;
+
+        [Header("Operational Contents")]
+        [SerializeField] private Image currentSeasonBossImg;
+        [SerializeField] private TextMeshProUGUI currentSeasonBossName;
+        [SerializeField] private BaseItemView[] currentSeasonBossRewardViews;
+        [SerializeField] private BossRewardCell[] bossRewardCells;
+
         private readonly List<System.IDisposable> _disposablesByEnable = new();
         private long _seasonEndBlock;
 
@@ -29,6 +48,43 @@ namespace Nekoyume.UI
         {
             toggleScore.onValueChanged.AddListener((isOn) =>
             {
+                var adventureBossData = Game.Game.instance.AdventureBossData;
+                totalScore.text = adventureBossData.ExploreBoard.Value.TotalPoint.ToString("#,0");
+                var contribution = (long)adventureBossData.ExploreInfo.Value.Score / adventureBossData.ExploreBoard.Value.TotalPoint;
+                myScore.text = $"{adventureBossData.ExploreInfo.Value.Score.ToString("#,0")} ({contribution.ToString("F2")}%)";
+                var myReward = new ClaimableReward
+                {
+                    NcgReward = null,
+                    ItemReward = new Dictionary<int, int>(),
+                    FavReward = new Dictionary<int, int>(),
+                };
+                myReward = AdventureBossHelper.CalculateExploreReward(myReward,
+                                    adventureBossData.BountyBoard.Value,
+                                    adventureBossData.ExploreBoard.Value,
+                                    adventureBossData.ExploreInfo.Value,
+                                    adventureBossData.ExploreInfo.Value.AvatarAddress,
+                                    out var ncgReward);
+                int i = 0;
+                foreach (var item in myReward.ItemReward)
+                {
+                    baseItemViews[i].ItemViewSetItemData(item.Key, item.Value);
+                    i++;
+                }
+                foreach(var fav in myReward.FavReward)
+                {
+                    RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                    runeSheet.TryGetValue(fav.Key, out var runeRow);
+                    if (runeRow != null)
+                    {
+                        baseItemViews[i].ItemViewSetCurrencyData(runeRow.Ticker, fav.Value);
+                        i++;
+                    }
+                }
+                for (; i < baseItemViews.Length; i++)
+                {
+                    baseItemViews[i].gameObject.SetActive(false);
+                }
+
                 contentsScore.SetActive(isOn);
             });
             toggleFloor.onValueChanged.AddListener((isOn) =>

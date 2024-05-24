@@ -209,7 +209,6 @@ namespace Nekoyume.Blockchain
 
             //AdventureBoss
             ClaimAdventureBossReward();
-            ClaimWantedReward();
             AdventureBossBattle();
             Wanted();
         }
@@ -3661,33 +3660,6 @@ namespace Nekoyume.Blockchain
                         Widget.Find<AdventureBossOpenInfoPopup>().Show();
                     }
                 }
-            });
-        }
-
-        private void ClaimWantedReward()
-        {
-            _actionRenderer.EveryRender<ClaimWantedReward>()
-                .ObserveOn(Scheduler.ThreadPool)
-                .Where(ValidateEvaluationForCurrentAgent)
-                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
-                .Where(ValidateEvaluationIsSuccess)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseClaimWantedReward)
-                .AddTo(_disposables);
-        }
-
-        private void ResponseClaimWantedReward(ActionEvaluation<ClaimWantedReward> eval)
-        {
-            UniTask.RunOnThreadPool(() =>
-            {
-                UpdateCurrentAvatarInventory(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-            {
-                var action = eval.Action;
-                var tableSheets = Game.Game.instance.TableSheets;
-                var mailRewards = new List<MailReward>();
-                Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_WANTED_REWARD_COMPLETE");
-                Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
             });
         }
 

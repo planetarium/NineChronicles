@@ -51,7 +51,6 @@ namespace Nekoyume.UI
                 foreach (var seasonInfo in _endedClaimableSeasonInfo)
                 {
                     ActionManager.Instance.ClaimAdventureBossReward(seasonInfo.Season);
-                    ActionManager.Instance.ClaimWantedReward(seasonInfo.Season);  
                 }
                 Game.Game.instance.AdventureBossData.IsRewardLoading.Value = true;
                 Close();

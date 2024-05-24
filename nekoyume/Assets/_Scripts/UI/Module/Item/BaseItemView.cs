@@ -1,8 +1,12 @@
 using Coffee.UIEffects;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.UI;
 using Nekoyume.UI.Module;
+using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -175,6 +179,58 @@ namespace Nekoyume
         public ItemViewData GetItemViewData(int grade)
         {
             return itemViewData.GetItemViewData(grade);
+        }
+
+        protected void ClearItem()
+        {
+            Container.SetActive(true);
+            EmptyObject.SetActive(false);
+            EnoughObject.SetActive(false);
+            MinusObject.SetActive(false);
+            ExpiredObject.SetActive(false);
+            SelectBaseItemObject.SetActive(false);
+            SelectMaterialItemObject.SetActive(false);
+            LockObject.SetActive(false);
+            ShadowObject.SetActive(false);
+            PriceText.gameObject.SetActive(false);
+            LoadingObject.SetActive(false);
+            EquippedObject.SetActive(false);
+            DimObject.SetActive(false);
+            TradableObject.SetActive(false);
+            SelectObject.SetActive(false);
+            FocusObject.SetActive(false);
+            NotificationObject.SetActive(false);
+            GrindingCountObject.SetActive((false));
+            LevelLimitObject.SetActive(false);
+            RewardReceived.SetActive(false);
+            LevelLimitObject.SetActive(false);
+            RuneNotificationObj.SetActiveSafe(false);
+        }
+
+        public void ItemViewSetCurrencyData(string ticker, decimal amount)
+        {
+            gameObject.SetActive(true);
+            ClearItem();
+            ItemImage.overrideSprite = SpriteHelper.GetFavIcon(ticker);
+            CountText.text = ((BigInteger)amount).ToCurrencyNotation();
+            GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(ticker));
+        }
+
+        public void ItemViewSetItemData(int itemId, int amount)
+        {
+            gameObject.SetActive(true);
+            ClearItem();
+            ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemId);
+            CountText.text = $"x{amount}";
+            try
+            {
+                var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemId];
+                GradeImage.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
+            }
+            catch
+            {
+                NcDebug.LogError($"Can't Find Item ID {itemId} in ItemSheet");
+            }
         }
     }
 }

@@ -1781,25 +1781,6 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        public IObservable<ActionEvaluation<ClaimWantedReward>> ClaimWantedReward(long SeasonId)
-        {
-            var action = new ClaimWantedReward
-            {
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
-                Season = SeasonId
-            };
-            ProcessAction(action);
-            return _agent.ActionRenderer.EveryRender<ClaimWantedReward>()
-                .Timeout(ActionTimeout)
-                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
-                .First()
-                .ObserveOnMainThread()
-                .DoOnError(_ =>
-                {
-                    // NOTE: Handle exception outside of this method.
-                });
-        }
-
         public IObservable<ActionEvaluation<ClaimAdventureBossReward>> ClaimAdventureBossReward(long SeasonId)
         {
             var action = new ClaimAdventureBossReward
