@@ -94,8 +94,6 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
 
-        private long _lastBattleBlockIndex;
-
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent && startButton.enabled;
 
@@ -335,8 +333,6 @@ namespace Nekoyume.UI
                 yield return new WaitWhile(() => ticketAnimation.IsPlaying);
             }
 
-            _lastBattleBlockIndex = Game.Game.instance.Agent.BlockIndex;
-
             Raid(false);
         }
 
@@ -419,8 +415,10 @@ namespace Nekoyume.UI
 
         private void UpdateStartButton(long blockIndex)
         {
+            var avatarState = States.Instance.CurrentAvatarState;
+            var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
             var worldBossRequiredInterval = States.Instance.GameConfigState.WorldBossRequiredInterval;
-            var isIntervalValid = blockIndex - _lastBattleBlockIndex >= worldBossRequiredInterval;
+            var isIntervalValid = blockIndex - raiderState.UpdatedBlockIndex >= worldBossRequiredInterval;
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
