@@ -72,13 +72,14 @@ namespace Nekoyume.Game.VFX.Skill
             return effect;
         }
 
-        public static IEnumerator CoChaseTarget(Component vfx, Transform target, Buff buffModel)
+        public static IEnumerator CoChaseTarget(Component vfx, Character.Character target, Buff buffModel)
         {
             var g = vfx.gameObject;
             var t = vfx.transform;
             while (g.activeSelf && target)
             {
-                t.position = target.position + BuffHelper.GetBuffPosition(buffModel.BuffInfo.Id);
+                t.position = target.transform.position + BuffHelper.GetBuffPosition(buffModel.BuffInfo.Id);
+                vfx.transform.FlipX(target.IsFlipped);
                 yield return null;
             }
         }

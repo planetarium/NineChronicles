@@ -98,6 +98,8 @@ namespace Nekoyume.Game.VFX
         {
             if (_isPlaying)
                 OnInterrupted?.Invoke();
+
+            transform.FlipX(false);
         }
 
         #endregion

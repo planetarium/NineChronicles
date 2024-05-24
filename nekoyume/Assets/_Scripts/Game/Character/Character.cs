@@ -48,8 +48,11 @@ namespace Nekoyume.Game.Character
 #region Temp
 #region Event
         public Action<int> OnBuff;
+        public Action<int> OnBuffEnd;
         public Action<int> OnCustomEvent;
 #endregion Event
+
+        public bool IsFlipped { get; set; }
 
         /// <summary>
         /// Stage.CoCustomEvent를 통해 실행된 이벤트를 받아 처리하기 위해 생성

@@ -236,6 +236,7 @@ namespace Nekoyume.Game.Character
             foreach (var id in removedBuffVfxList)
             {
                 _persistingVFXMap.Remove(id);
+                OnBuffEnd?.Invoke(id);
             }
         }
 
@@ -595,7 +596,7 @@ namespace Nekoyume.Game.Character
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform, buff));
+                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff));
             }
 
             target.UpdateActorHud();
@@ -737,7 +738,6 @@ namespace Nekoyume.Game.Character
                 NcDebug.LogError($"[CoAnimationBuffCast] [Buff] {info.Buff.BuffInfo.Id}");
                 yield break;
             }
-
             PreAnimationForTheKindOfAttack();
 
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
