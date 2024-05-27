@@ -15597,7 +15597,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2470856569865849837}
   - component: {fileID: 5349976363713050842}
-  - component: {fileID: 2095581697774887003}
+  - component: {fileID: 1663148354141352889}
   m_Layer: 5
   m_Name: TextArea
   m_TagString: Untagged
@@ -15634,7 +15634,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3132743306238607609}
   m_CullTransparentMesh: 1
---- !u!114 &2095581697774887003
+--- !u!114 &1663148354141352889
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -15647,15 +15647,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5921569, g: 0.40392157, b: 0.21960784, a: 0.5019608}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 7c60e9fa9e29a874aabe20aaaefb207f, type: 3}
+  m_Type: 2
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -15999,7 +15999,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5355303965889801759}
   - component: {fileID: 1885130436542260927}
-  - component: {fileID: 581000377126652236}
+  - component: {fileID: 4658106688635941445}
   m_Layer: 5
   m_Name: TextArea
   m_TagString: Untagged
@@ -16037,7 +16037,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3429764181032450098}
   m_CullTransparentMesh: 1
---- !u!114 &581000377126652236
+--- !u!114 &4658106688635941445
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -16050,15 +16050,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5921569, g: 0.40392157, b: 0.21960784, a: 0.5019608}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 7c60e9fa9e29a874aabe20aaaefb207f, type: 3}
+  m_Type: 2
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -16856,7 +16856,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4354867292384878951}
   m_HandleRect: {fileID: 4354867292384878950}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -34444,7 +34444,7 @@ GameObject:
   - component: {fileID: 2659194691246068855}
   - component: {fileID: 2996798099674833018}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
