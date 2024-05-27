@@ -94,6 +94,8 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
 
+        private long _txStageBlockIndex;
+
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent && startButton.enabled;
 
@@ -333,6 +335,8 @@ namespace Nekoyume.UI
                 yield return new WaitWhile(() => ticketAnimation.IsPlaying);
             }
 
+            _txStageBlockIndex = Game.Game.instance.Agent.BlockIndex;
+
             Raid(false);
         }
 
@@ -422,7 +426,8 @@ namespace Nekoyume.UI
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
-            return raiderState?.UpdatedBlockIndex ?? 0;
+            var raidBlockIndex = Math.Max(raiderState?.UpdatedBlockIndex ?? 0, _txStageBlockIndex);
+            return raidBlockIndex;
         }
 
         private void UpdateStartButton(long blockIndex)
