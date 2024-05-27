@@ -135,7 +135,7 @@ namespace Nekoyume.UI.Module
             var elementalTypes = GetElementalTypes();
             inventory.SetAvatarInformation(
                 OnClickInventoryItem,
-                EquipOrUnequip,
+                model => EquipOrUnequip(model),
                 OnClickTab,
                 elementalTypes,
                 _battleType);
@@ -389,7 +389,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 inventory.ClearFocus();
-                ShowTooltip(model);
+                ShowTooltip(model, true);
             }
         }
 
@@ -576,6 +576,7 @@ namespace Nekoyume.UI.Module
                     if (inventoryItem.ItemBase is Consumable consumable)
                     {
                         _consumableIds.Add(consumable.Id);
+                        inventoryItem.Count.Value--;
                     }
 
                     inventory.UpdateConsumables(_consumableIds);
@@ -615,6 +616,7 @@ namespace Nekoyume.UI.Module
                     if (inventoryItem.ItemBase is Consumable consumable)
                     {
                         _consumableIds.Remove(consumable.Id);
+                        inventoryItem.Count.Value++;
                     }
                     inventory.UpdateConsumables(_consumableIds);
                     break;
@@ -720,11 +722,11 @@ namespace Nekoyume.UI.Module
             ShowTooltip(model);
         }
 
-        private void ShowTooltip(InventoryItem model)
+        private void ShowTooltip(InventoryItem model, bool inSlot = false)
         {
             if (model.ItemBase is not null)
             {
-                ShowItemTooltip(model);
+                ShowItemTooltip(model, inSlot);
             }
             else if (model.RuneState is not null)
             {
@@ -736,7 +738,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void ShowItemTooltip(InventoryItem model)
+        private void ShowItemTooltip(InventoryItem model, bool inSlot)
         {
             var item = model.ItemBase;
             var submitText = string.Empty;
@@ -746,13 +748,20 @@ namespace Nekoyume.UI.Module
 
             switch (item.ItemType)
             {
-                case ItemType.Consumable or ItemType.Costume or ItemType.Equipment:
+                case ItemType.Consumable:
+                    submitText = inSlot
+                        ? L10nManager.Localize("UI_UNEQUIP")
+                        : L10nManager.Localize("UI_EQUIP");
+                    interactable = consumeSlots is not null && (inSlot || model.Count.Value > 0);
+                    submit = () => EquipOrUnequip(model, inSlot);
+                    blockedMessage = L10nManager.Localize("UI_EQUIP_FAILED");
+                    break;
+                case ItemType.Costume or ItemType.Equipment:
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
 
-                    if (!(item.ItemType == ItemType.Consumable && consumeSlots is null) &&
-                        !BattleRenderer.Instance.IsOnBattle)
+                    if (!BattleRenderer.Instance.IsOnBattle)
                     {
                         if (model.DimObjectEnabled.Value)
                         {
@@ -860,7 +869,7 @@ namespace Nekoyume.UI.Module
                     });
         }
 
-        private void EquipOrUnequip(InventoryItem inventoryItem)
+        private void EquipOrUnequip(InventoryItem inventoryItem, bool inSlot = false)
         {
             if (inventoryItem.RuneState != null)
             {
@@ -884,6 +893,17 @@ namespace Nekoyume.UI.Module
                     }
 
                     EquipRune(inventoryItem);
+                }
+            }
+            else if (inventoryItem.ItemBase.ItemType == ItemType.Consumable)
+            {
+                if (inSlot)
+                {
+                    UnequipItem(inventoryItem);
+                }
+                else
+                {
+                    EquipItem(inventoryItem);
                 }
             }
             else
