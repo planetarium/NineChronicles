@@ -80,6 +80,8 @@ namespace Nekoyume.Game
     {
         public const float DefaultTimeScale = 1.25f;
 
+        public const float DefaultSkillDelay = 0.6f;
+
         [SerializeField]
         private Stage stage;
 

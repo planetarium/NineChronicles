@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Character
     public abstract class Actor : Character
     {
         public const float AnimatorTimeScale = 1.2f;
-        protected static readonly WaitForSeconds AttackTimeOut = new WaitForSeconds(5f);
+        protected static readonly WaitForSeconds AttackTimeOut = new(5f);
 
         [SerializeField]
         private bool shouldContainHUD = true;
@@ -36,11 +36,11 @@ namespace Nekoyume.Game.Character
         private Root _root;
         private long _currentHp;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
         public CharacterBase CharacterModel { get; protected set; }
 
-        public readonly Subject<Actor> OnUpdateActorHud = new Subject<Actor>();
+        public readonly Subject<Actor> OnUpdateActorHud = new();
 
         private readonly List<int> removedBuffVfxList = new();
 
@@ -236,6 +236,7 @@ namespace Nekoyume.Game.Character
             foreach (var id in removedBuffVfxList)
             {
                 _persistingVFXMap.Remove(id);
+                OnBuffEnd?.Invoke(id);
             }
         }
 
@@ -582,6 +583,11 @@ namespace Nekoyume.Game.Character
             var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Target = target;
 
+            if (info.Buff != null)
+            {
+                OnBuff?.Invoke(info.Buff.BuffInfo.Id);
+            }
+
 #if TEST_LOG
             Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
 #endif
@@ -590,7 +596,7 @@ namespace Nekoyume.Game.Character
             if (effect.IsPersisting)
             {
                 target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform, buff));
+                StartCoroutine(BuffController.CoChaseTarget(effect, target, buff));
             }
 
             target.UpdateActorHud();
@@ -718,7 +724,7 @@ namespace Nekoyume.Game.Character
             var pos = transform.position;
             var effect = Game.instance.Stage.SkillController.Get(pos, info.ElementalType);
             effect.Play();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
 
             PostAnimationForTheKindOfAttack();
         }
@@ -732,18 +738,23 @@ namespace Nekoyume.Game.Character
                 NcDebug.LogError($"[CoAnimationBuffCast] [Buff] {info.Buff.BuffInfo.Id}");
                 yield break;
             }
-
             PreAnimationForTheKindOfAttack();
 
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
-            Animator.Cast();
 
-            effect.Play();
 #if TEST_LOG
                 Debug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
 #endif
-            yield return new WaitForSeconds(0.6f);
+            if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
+            {
+                yield return coroutine.Invoke(effect);
+            }
+            else
+            {
+                effect.Play();
+                yield return new WaitForSeconds(Game.DefaultSkillDelay);
+            }
 
             PostAnimationForTheKindOfAttack();
         }
@@ -843,7 +854,7 @@ namespace Nekoyume.Game.Character
 
             PreAnimationForTheKindOfAttack();
             Animator.Cast();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
             PostAnimationForTheKindOfAttack();
 
             yield return StartCoroutine(
@@ -1064,6 +1075,7 @@ namespace Nekoyume.Game.Character
             if (skillInfos is null || skillInfos.Count == 0)
                 yield break;
 
+            CastingOnceAsync().Forget();
             foreach (var skillInfo in skillInfos)
             {
                 if (skillInfo.Buff == null)
@@ -1082,8 +1094,6 @@ namespace Nekoyume.Game.Character
                     dispeledTargets.Add(target);
                 }
             }
-
-            Animator.Idle();
 
             if(dispeledTargets.Count > 0)
             {

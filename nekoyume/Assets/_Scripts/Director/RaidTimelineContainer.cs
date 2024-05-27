@@ -253,6 +253,8 @@ namespace Nekoyume.Director
                     vfx.localScale.y,
                     vfx.localScale.z);
             }
+
+            player.IsFlipped = transform.localScale.x < 0;
         }
 
         private static void FlipRectTransformWithAnchor(RectTransform rectTrans)

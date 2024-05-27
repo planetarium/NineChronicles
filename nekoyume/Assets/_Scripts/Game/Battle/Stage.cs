@@ -1098,17 +1098,17 @@ namespace Nekoyume.Game.Battle
             Debug.Log($"[CoRemoveBuffs][{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
 #endif
             var character = GetActor(caster);
-            if (character)
+            if (!character)
             {
-                character.UpdateBuffVfx();
-                character.UpdateActorHud();
-                if (character.ActorHud.HpVFX != null)
-                {
-                    character.ActorHud.HpVFX.Stop();
-                }
+                yield break;
             }
 
-            yield break;
+            character.UpdateBuffVfx();
+            character.UpdateActorHud();
+            if (character.ActorHud.HpVFX != null)
+            {
+                character.ActorHud.HpVFX.Stop();
+            }
         }
 
         public IEnumerator CoGetReward(List<ItemBase> rewards)
@@ -1236,7 +1236,6 @@ namespace Nekoyume.Game.Battle
             if (eventBase is Tick tick)
             {
                 var affectedCharacter = GetActor(character);
-                // todo: 동상 관련 로직은 추후 수정 필요
                 if (tick.SkillId == IceShield.FrostBiteId)
                 {
                     if (!character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
@@ -1244,7 +1243,13 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    var target = tick.SkillInfos.First().Target;
+                    var source = tick.SkillInfos.First().Target;
+                    var sourceCharacter = GetActor(source);
+                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
+                    {
+                        sourceCharacter.CustomEvent(IceShield.FrostBiteId);
+                        yield return affectedCharacter.CoBuff(skillInfos);
+                    }
 
                     var tickSkillInfo = new Skill.SkillInfo(
                         affectedCharacter.Id,
@@ -1257,12 +1262,11 @@ namespace Nekoyume.Game.Battle
                         target: character,
                         buff: frostBite
                     );
-                    // TODO: 동상 관련 로직은 추후 수정 필요
                     affectedCharacter.AddAction(
                         new ActionParams(affectedCharacter,
                                         ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
                                          tick.BuffInfos,
-                                         affectedCharacter.CoBuff
+                                        CoFrostBite
                         ));
                 }
                 // This Tick from 'Stun'

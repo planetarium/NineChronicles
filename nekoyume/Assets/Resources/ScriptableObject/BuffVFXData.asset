@@ -217,7 +217,7 @@ MonoBehaviour:
     Icon: {fileID: 21300000, guid: 7eddbb706b01b0048bf1e2958013ba31, type: 3}
     CastingVFX: {fileID: 5986082888471747642, guid: d2dbf19aefdb0fd42b42c65c4d46301c,
       type: 3}
-    BuffVFX: {fileID: 8072034677190283031, guid: f68c6a77c7d83cf4db510d9dbf0f4fec,
+    BuffVFX: {fileID: 8503561367185379965, guid: 756b29425ce20a848ba8a8686b086942,
       type: 3}
   - Id: 709000
     Icon: {fileID: 21300000, guid: 8bc7f399af0f54c4a83c9f407283e061, type: 3}
@@ -228,7 +228,7 @@ MonoBehaviour:
   BuffPosOverrideDataList:
   - Id: 708000
     IsCasting: 0
-    Position: {x: 0, y: 1.1, z: 0}
+    Position: {x: 0, y: 0, z: 0}
   - Id: 709000
     IsCasting: 0
     Position: {x: 0, y: 1.1, z: 0}

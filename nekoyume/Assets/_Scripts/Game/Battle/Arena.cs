@@ -333,7 +333,6 @@ namespace Nekoyume.Game.Battle
             if (eventBase is ArenaTick tick)
             {
                 var affectedCharacter = caster.Id == me.Id ? me : enemy;
-                // todo: 동상 관련 로직은 추후 수정 필요
                 if (tick.SkillId == IceShield.FrostBiteId)
                 {
                     if (!caster.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
@@ -341,7 +340,12 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    var target = tick.SkillInfos.First().Target;
+                    var sourceCharacter = caster.Id == me.Id ? enemy : me;
+                    IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+                    {
+                        sourceCharacter.CustomEvent(IceShield.FrostBiteId);
+                        yield return affectedCharacter.CoBuff(skillInfos);
+                    }
 
                     var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
                             caster,
@@ -355,7 +359,7 @@ namespace Nekoyume.Game.Battle
                         affectedCharacter,
                         ArraySegment<ArenaSkill.ArenaSkillInfo>.Empty.Append(tickSkillInfo),
                         tick.BuffInfos,
-                        affectedCharacter.CoBuff);
+                        CoFrostBite);
                     affectedCharacter.Actions.Add(actionParams);
                     yield return null;
                 }

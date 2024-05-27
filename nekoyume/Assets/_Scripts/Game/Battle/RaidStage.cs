@@ -426,18 +426,18 @@ namespace Nekoyume.Game.Battle
 
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
             target.UpdateStatusUI();
-            if (target)
+            if (!target)
             {
-                if (target.HPBar.HpVFX != null)
-                {
-                    target.HPBar.HpVFX.Stop();
-                }
+                yield break;
             }
 
-            yield break;
+            if (target.HPBar.HpVFX != null)
+            {
+                target.HPBar.HpVFX.Stop();
+            }
         }
 
         public IEnumerator CoDropBox(List<ItemBase> items)
@@ -520,7 +520,6 @@ namespace Nekoyume.Game.Battle
             {
                 RaidCharacter raidCharacter =
                     character.Id == _player.Id ? _player : _boss;
-                // todo: 동상 관련 로직은 추후 수정 필요
                 if (tick.SkillId == IceShield.FrostBiteId)
                 {
                     if (!character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
@@ -528,7 +527,11 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    var target = tick.SkillInfos.First().Target;
+                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
+                    {
+                        _player.CustomEvent(IceShield.FrostBiteId);
+                        yield return raidCharacter.CoBuff(skillInfos);
+                    }
 
                     var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
                                                             raidCharacter.IsDead,
@@ -540,14 +543,13 @@ namespace Nekoyume.Game.Battle
                                                             target: character,
                                                             buff: frostBite
                     );
-                    // TODO: 동상 관련 로직은 추후 수정 필요
                     _actionQueue.Enqueue(
                         new RaidActionParams(
                             raidCharacter,
                             tick.SkillId,
                             ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
                             tick.BuffInfos,
-                            raidCharacter.CoBuff)
+                            CoFrostBite)
                     );
                 }
                 // This Tick from 'Stun'
