@@ -11,6 +11,11 @@ namespace Nekoyume.Game.VFX.Skill
         [field: SerializeField]
         public virtual bool IsPersisting { get; set; } = false;
 
+#if UNITY_EDITOR
+        [field: SerializeField]
+        public ParticleSystemRenderer[] BackgroundParticleSystems;
+#endif
+
         public override void Play()
         {
             base.Play();
