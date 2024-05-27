@@ -187,7 +187,7 @@ namespace Nekoyume.Game
             var castingEffect = Game.instance.Stage.SkillController.Get(pos, ElementalType.Fire);
             castingEffect.Play();
             AreaAttackCutscene.Show(_armorId);
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
             var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();
             yield return new WaitForSeconds(0.5f);
@@ -226,7 +226,7 @@ namespace Nekoyume.Game
             var buff = new StatBuff(buffRow);
             var castingEffect = Game.instance.Stage.BuffController.Get(_player.transform.position, buff);
             castingEffect.Play();
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(Game.DefaultSkillDelay);
             var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_player.gameObject, buff);
             effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);

@@ -1945,7 +1945,7 @@ namespace Nekoyume.Blockchain
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
-                Game.Game.instance.Stage.onEnterToStageEnd
+                Game.Game.instance.Stage.OnEnterToStageEnd
                     .First()
                     .Subscribe(_ =>
                     {
@@ -2108,7 +2108,7 @@ namespace Nekoyume.Blockchain
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
-                Game.Game.instance.Stage.onEnterToStageEnd
+                Game.Game.instance.Stage.OnEnterToStageEnd
                     .First()
                     .Subscribe(_ =>
                     {

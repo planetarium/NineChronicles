@@ -379,5 +379,15 @@ namespace Nekoyume
                     throw new ArgumentOutOfRangeException(nameof(pivotPresetType), pivotPresetType, null);
             }
         }
+
+        public static void FlipX(this Transform vfx, bool isFlip)
+        {
+            var isFlipped = vfx.localScale.x < 0;
+            var flipFlag = isFlipped ^ isFlip;
+
+            var localScale = vfx.transform.localScale;
+            localScale               = new Vector3(localScale.x * (flipFlag ? -1 : 1), localScale.y, localScale.z);
+            vfx.transform.localScale = localScale;
+        }
     }
 }

@@ -7,9 +7,11 @@ using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
+using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus.Arena;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.UI;
@@ -331,6 +333,36 @@ namespace Nekoyume.Game.Battle
             if (eventBase is ArenaTick tick)
             {
                 var affectedCharacter = caster.Id == me.Id ? me : enemy;
+                if (tick.SkillId == IceShield.FrostBiteId)
+                {
+                    if (!caster.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
+                    {
+                        yield break;
+                    }
+
+                    var sourceCharacter = caster.Id == me.Id ? enemy : me;
+                    IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+                    {
+                        sourceCharacter.CustomEvent(IceShield.FrostBiteId);
+                        yield return affectedCharacter.CoBuff(skillInfos);
+                    }
+
+                    var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
+                            caster,
+                            0,
+                            false,
+                            SkillCategory.Debuff,
+                            _turnNumber,
+                            buff: frostBite
+                        );
+                    var actionParams = new ArenaActionParams(
+                        affectedCharacter,
+                        ArraySegment<ArenaSkill.ArenaSkillInfo>.Empty.Append(tickSkillInfo),
+                        tick.BuffInfos,
+                        CoFrostBite);
+                    affectedCharacter.Actions.Add(actionParams);
+                    yield return null;
+                }
                 // This Tick from 'Stun'
                 if (!tick.SkillInfos.Any())
                 {

@@ -98,7 +98,6 @@ MonoBehaviour:
   appearance: {fileID: 8123556890621118600}
   EXP: 0
   touchHandler: {fileID: 8697454501930479228}
-  pet: {fileID: 0}
 --- !u!114 &8123556890621118600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -519,6 +518,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 1.4390372
       objectReference: {fileID: 0}
+    - target: {fileID: 8475462605558417563, guid: 2dc2c18bbee806c45aad7b2d0adf2065,
+        type: 3}
+      propertyPath: owner
+      value: 
+      objectReference: {fileID: 114435614812669052}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2dc2c18bbee806c45aad7b2d0adf2065, type: 3}
 --- !u!114 &1516351556497876939 stripped
