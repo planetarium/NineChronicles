@@ -8,13 +8,16 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Helper;
+    using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
     using Nekoyume.TableData;
     using System.Linq;
     using TMPro;
     using UniRx;
     using UnityEngine.UI;
+    using static Nekoyume.Model.State.RedeemCodeState;
 
     public class AdventureBossRewardInfoPopup : PopupWidget
     {
@@ -52,18 +55,7 @@ namespace Nekoyume.UI
                 totalScore.text = adventureBossData.ExploreBoard.Value.TotalPoint.ToString("#,0");
                 var contribution = (long)adventureBossData.ExploreInfo.Value.Score / adventureBossData.ExploreBoard.Value.TotalPoint;
                 myScore.text = $"{adventureBossData.ExploreInfo.Value.Score.ToString("#,0")} ({contribution.ToString("F2")}%)";
-                var myReward = new ClaimableReward
-                {
-                    NcgReward = null,
-                    ItemReward = new Dictionary<int, int>(),
-                    FavReward = new Dictionary<int, int>(),
-                };
-                myReward = AdventureBossHelper.CalculateExploreReward(myReward,
-                                    adventureBossData.BountyBoard.Value,
-                                    adventureBossData.ExploreBoard.Value,
-                                    adventureBossData.ExploreInfo.Value,
-                                    adventureBossData.ExploreInfo.Value.AvatarAddress,
-                                    out var ncgReward);
+                var myReward = adventureBossData.GetCurrentTotalRewards();
                 int i = 0;
                 foreach (var item in myReward.ItemReward)
                 {
@@ -94,6 +86,89 @@ namespace Nekoyume.UI
             toggleOperational.onValueChanged.AddListener((isOn) =>
             {
                 contentsOperational.SetActive(isOn);
+                if(Game.Game.instance.AdventureBossData.SeasonInfo.Value != null)
+                {
+                    var bossId = Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId;
+                    currentSeasonBossImg.sprite = SpriteHelper.GetBigCharacterIcon(bossId);
+                    currentSeasonBossImg.SetNativeSize();
+                    currentSeasonBossName.text = L10nManager.LocalizeCharacterName(bossId);
+                }
+                if(Game.Game.instance.AdventureBossData.BountyBoard.Value != null)
+                {
+                    var bountyBoard = Game.Game.instance.AdventureBossData.BountyBoard.Value;
+                    RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+
+                    var currentInvestorInfo = Game.Game.instance.AdventureBossData.GetCurrentInvestorInfo();
+                    if(currentInvestorInfo != null)
+                    {
+                        var wantedReward = Game.Game.instance.AdventureBossData.GetCurrentBountyRewards();
+                        int itemIndex = 0;
+                        foreach (var item in wantedReward.ItemReward)
+                        {
+                            currentSeasonBossRewardViews[itemIndex].ItemViewSetItemData(item.Key, item.Value);
+                            itemIndex++;
+                            if (itemIndex >= currentSeasonBossRewardViews.Length)
+                            {
+                                NcDebug.LogError("currentSeasonBossRewardViews is not enough");
+                                break;
+                            }
+                        }
+                        foreach (var fav in wantedReward.FavReward)
+                        {
+                            runeSheet.TryGetValue(fav.Key, out var runeRow);
+                            if (runeRow != null)
+                            {
+                                baseItemViews[itemIndex].ItemViewSetCurrencyData(runeRow.Ticker, fav.Value);
+                                itemIndex++;
+                            }
+                            if(itemIndex >= currentSeasonBossRewardViews.Length)
+                            {
+                                NcDebug.LogError("currentSeasonBossRewardViews is not enough");
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(bountyBoard.FixedRewardItemId != null)
+                        {
+                            currentSeasonBossRewardViews[0].ItemViewSetItemData(bountyBoard.FixedRewardItemId.Value, 0);
+                        }
+                        if(bountyBoard.FixedRewardFavId != null)
+                        {
+                            runeSheet.TryGetValue(bountyBoard.FixedRewardFavId.Value, out var runeRow);
+                            if (runeRow != null)
+                            {
+                                currentSeasonBossRewardViews[0].ItemViewSetCurrencyData(runeRow.Ticker, 0);
+                            }
+                        }
+
+                        if(bountyBoard.RandomRewardItemId != null)
+                        {
+                            currentSeasonBossRewardViews[1].ItemViewSetItemData(bountyBoard.RandomRewardItemId.Value, 0);
+                        }
+                        if(bountyBoard.RandomRewardFavId != null)
+                        {
+                            runeSheet.TryGetValue(bountyBoard.RandomRewardFavId.Value, out var runeRow);
+                            if (runeRow != null)
+                            {
+                                currentSeasonBossRewardViews[1].ItemViewSetCurrencyData(runeRow.Ticker, 0);
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < bossRewardCells.Length; i++)
+                    {
+                        if(i < Game.Game.instance.AdventureBossData.WantedRewardList.Count())
+                        {
+                            bossRewardCells[i].SetData(Game.Game.instance.AdventureBossData.WantedRewardList[i]);
+                        }
+                        else
+                        {
+                            bossRewardCells[i].gameObject.SetActive(false);
+                        }
+                    }
+                }
             }); 
         }
 

@@ -10,6 +10,7 @@ using Codice.Client.BaseCommands.Merge;
 using Libplanet.Types.Assets;
 using Nekoyume.State;
 using Amazon.Runtime.Internal.Transform;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI.Model
 {
@@ -22,6 +23,130 @@ namespace Nekoyume.UI.Model
             Progress,
             End
         }
+        // FIXME: This may temporary
+        public AdventureBossReward[] WantedRewardList =
+        {
+            new ()
+            {
+                BossId = 206007,
+                wantedReward = new RewardInfo
+                {
+                    FixedRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600201, 100 }
+                    },
+                    FixedRewardFavIdDict = new Dictionary<int, int>(),
+                    RandomRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600201, 20 }, { 600202, 20 }, { 600203, 20 }
+                    },
+                    RandomRewardFavTickerDict = new Dictionary<int, int>
+                    {
+                        { 20001, 20 }, { 30001, 20 }
+                    }
+                },
+                exploreReward = new RewardInfo
+                {
+                    FixedRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600202, 100 }
+                    },
+                    FixedRewardFavIdDict = new Dictionary<int, int>(),
+                    RandomRewardItemIdDict = new Dictionary<int, int>(),
+                    RandomRewardFavTickerDict = new Dictionary<int, int>(),
+                }
+            },
+            new ()
+            {
+                BossId = 208007,
+                wantedReward = new RewardInfo
+                {
+                    FixedRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600202, 100 }
+                    },
+                    FixedRewardFavIdDict = new Dictionary<int, int>(),
+                    RandomRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600201, 20 }, { 600202, 20 }, { 600203, 20 }
+                    },
+                    RandomRewardFavTickerDict = new Dictionary<int, int>
+                    {
+                        { 20001, 20 }, { 30001, 20 }
+                    }
+                },
+                exploreReward = new RewardInfo
+                {
+                    FixedRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600202, 100 }
+                    },
+                    FixedRewardFavIdDict = new Dictionary<int, int>(),
+                    RandomRewardItemIdDict = new Dictionary<int, int>(),
+                    RandomRewardFavTickerDict = new Dictionary<int, int>(),
+                }
+            },
+            new ()
+            {
+                BossId = 207007,
+                wantedReward = new RewardInfo
+                {
+                    FixedRewardItemIdDict = new Dictionary<int, int>(),
+                    FixedRewardFavIdDict = new Dictionary<int, int>
+                    {
+                        { 20001, 50 }, { 30001, 50 }
+                    },
+                    RandomRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600201, 20 }, { 600202, 20 }, { 600203, 20 }
+                    },
+                    RandomRewardFavTickerDict = new Dictionary<int, int>
+                    {
+                        { 20001, 20 }, { 30001, 20 }
+                    }
+                },
+                exploreReward = new RewardInfo
+                {
+                    FixedRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600203, 100 }
+                    },
+                    FixedRewardFavIdDict = new Dictionary<int, int>(),
+                    RandomRewardItemIdDict = new Dictionary<int, int>(),
+                    RandomRewardFavTickerDict = new Dictionary<int, int>(),
+                }
+            },
+            new ()
+            {
+                BossId = 209007,
+                wantedReward = new RewardInfo
+                {
+                    FixedRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600203, 100 }
+                    },
+                    FixedRewardFavIdDict = new Dictionary<int, int>(),
+                    RandomRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600201, 20 }, { 600202, 20 }, { 600203, 20 }
+                    },
+                    RandomRewardFavTickerDict = new Dictionary<int, int>
+                    {
+                        { 20001, 20 }, { 30001, 20 }
+                    }
+                },
+                exploreReward = new RewardInfo
+                {
+                    FixedRewardItemIdDict = new Dictionary<int, int>
+                    {
+                        { 600203, 100 }
+                    },
+                    FixedRewardFavIdDict = new Dictionary<int, int>(),
+                    RandomRewardItemIdDict = new Dictionary<int, int>(),
+                    RandomRewardFavTickerDict = new Dictionary<int, int>(),
+                }
+            },
+        };
 
         public ReactiveProperty<SeasonInfo> SeasonInfo = new ReactiveProperty<SeasonInfo>();
         public ReactiveProperty<BountyBoard> BountyBoard = new ReactiveProperty<BountyBoard>();
@@ -33,6 +158,7 @@ namespace Nekoyume.UI.Model
         public Dictionary<long,SeasonInfo> EndedSeasonInfos = new Dictionary<long, SeasonInfo>();
 
         private const int _endedSeasonSearchTryCount = 10;
+
 
         public void Initialize()
         {
@@ -161,6 +287,46 @@ namespace Nekoyume.UI.Model
             }
 
             return total;
+        }
+
+        public ClaimableReward GetCurrentTotalRewards()
+        {
+            var myReward = new ClaimableReward
+            {
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+
+            if(SeasonInfo.Value == null ||
+                BountyBoard.Value == null ||
+                ExploreBoard.Value == null ||
+                ExploreInfo.Value == null)
+            {
+                return myReward;
+            }
+
+            myReward = AdventureBossHelper.CalculateExploreReward(myReward,
+                                BountyBoard.Value,
+                                ExploreBoard.Value,
+                                ExploreInfo.Value,
+                                ExploreInfo.Value.AvatarAddress,
+                                out var ncgReward);
+
+            myReward = AdventureBossHelper.CalculateWantedReward(myReward, BountyBoard.Value, Game.Game.instance.States.CurrentAvatarState.address, out var wantedReward);
+            return myReward;
+        }
+
+        public ClaimableReward GetCurrentBountyRewards()
+        {
+            var myReward = new ClaimableReward
+            {
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+            myReward = AdventureBossHelper.CalculateWantedReward(myReward, BountyBoard.Value, Game.Game.instance.States.CurrentAvatarState.address, out var wantedReward);
+            return myReward;
         }
     }
 }
