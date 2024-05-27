@@ -11,11 +11,15 @@ namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
     using Nekoyume.Blockchain;
+    using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
     using Nekoyume.Model.Mail;
+    using Nekoyume.TableData;
     using System.Linq;
     using UniRx;
+    using UnityEngine.UI;
+
     public class AdventureBoss : Widget
     {
         [SerializeField]
@@ -59,6 +63,10 @@ namespace Nekoyume.UI
         private TextMeshProUGUI myBountyPrice;
         [SerializeField]
         private AdventureBossFloor[] floors;
+        [SerializeField]
+        private BaseItemView[] baseItemViews;
+        [SerializeField]
+        private Image bossImg;
 
         private const float _floorHeight = 170;
         private readonly List<System.IDisposable> _disposablesByEnable = new();
@@ -172,6 +180,41 @@ namespace Nekoyume.UI
 
             score.text = $"{exploreInfo.Score:#,0}";
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor, false);
+
+            var adventureBossData = Game.Game.instance.AdventureBossData;
+            var myReward = new ClaimableReward
+            {
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+            myReward = AdventureBossHelper.CalculateExploreReward(myReward,
+                                adventureBossData.BountyBoard.Value,
+                                adventureBossData.ExploreBoard.Value,
+                                adventureBossData.ExploreInfo.Value,
+                                adventureBossData.ExploreInfo.Value.AvatarAddress,
+                                out var ncgReward);
+
+            int itenViewIndex = 0;
+            foreach (var item in myReward.ItemReward)
+            {
+                baseItemViews[itenViewIndex].ItemViewSetItemData(item.Key, item.Value);
+                itenViewIndex++;
+            }
+            foreach (var fav in myReward.FavReward)
+            {
+                RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                runeSheet.TryGetValue(fav.Key, out var runeRow);
+                if (runeRow != null)
+                {
+                    baseItemViews[itenViewIndex].ItemViewSetCurrencyData(runeRow.Ticker, fav.Value);
+                    itenViewIndex++;
+                }
+            }
+            for (; itenViewIndex < baseItemViews.Length; itenViewIndex++)
+            {
+                baseItemViews[itenViewIndex].gameObject.SetActive(false);
+            }
         }
 
         private void RefreshBountyBoardInfo(BountyBoard board)
@@ -229,8 +272,15 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonInfo(SeasonInfo seasonInfo)
         {
+            if(seasonInfo == null)
+            {
+                NcDebug.LogError("[UI_AdventureBoss] RefreshSeasonInfo: seasonInfo is null");
+                return;
+            }
             _seasonStartBlock = seasonInfo.StartBlockIndex;
             _seasonEndBlock = seasonInfo.EndBlockIndex;
+            bossImg.sprite = SpriteHelper.GetBigCharacterIcon(seasonInfo.BossId);
+            bossImg.SetNativeSize();
         }
 
         private void UpdateViewAsync(long blockIndex)
@@ -305,6 +355,11 @@ namespace Nekoyume.UI
         public void OnClickBossParticipantBonusPopup()
         {
             Find<AdventureBossParticipantBonusPopup>().Show();
+        }
+
+        public void OnClickFullBountyStatusPopup()
+        {
+            Find<AdventureBossFullBountyStatusPopup>().Show();
         }
 
     }

@@ -40,6 +40,15 @@ namespace Nekoyume.Helper
         private const string FavIconPathFormat = "UI/Icons/FungibleAssetValue/{0}";
         private const string DefaultFavIconPathFormat = "UI/Icons/FungibleAssetValue/RUNE_ADVENTURER";
 
+        private const string BigCharacterIconDefaultPath = "UI/Icons/BigCharacter/Default";
+        private const string BigCharacterIconPathFormat = "UI/Icons/BigCharacter/{0}";
+
+        public static Sprite GetBigCharacterIcon(int characterId)
+        {
+            return Resources.Load<Sprite>(string.Format(BigCharacterIconPathFormat, characterId)) ??
+                   Resources.Load<Sprite>(BigCharacterIconDefaultPath);
+        }
+
         public static Sprite GetCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
