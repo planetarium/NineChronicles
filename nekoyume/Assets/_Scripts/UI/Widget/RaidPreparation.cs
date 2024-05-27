@@ -94,7 +94,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
 
-        private long _lastBattleBlockIndex;
+        private long _txStageBlockIndex;
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent && startButton.enabled;
@@ -335,7 +335,7 @@ namespace Nekoyume.UI
                 yield return new WaitWhile(() => ticketAnimation.IsPlaying);
             }
 
-            _lastBattleBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            _txStageBlockIndex = Game.Game.instance.Agent.BlockIndex;
 
             Raid(false);
         }
@@ -417,10 +417,23 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
 
+        /// <summary>
+        /// 마지막으로 Raid 전투를 수행했던 BlockIndex값을 가져옵니다.
+        /// RaidState가 없는경우 0을 리턴합니다.
+        /// </summary>
+        /// <returns>마지막으로 Raid전투를 수행했떤 BlockIndex, raidState가 없는경우 0리턴</returns>
+        private long GetUpdatedRaidBlockIndex()
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
+            var raidBlockIndex = Math.Max(raiderState?.UpdatedBlockIndex ?? 0, _txStageBlockIndex);
+            return raidBlockIndex;
+        }
+
         private void UpdateStartButton(long blockIndex)
         {
             var worldBossRequiredInterval = States.Instance.GameConfigState.WorldBossRequiredInterval;
-            var isIntervalValid = blockIndex - _lastBattleBlockIndex >= worldBossRequiredInterval;
+            var isIntervalValid = blockIndex - GetUpdatedRaidBlockIndex() >= worldBossRequiredInterval;
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
