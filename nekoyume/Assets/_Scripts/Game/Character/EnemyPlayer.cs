@@ -12,12 +12,12 @@ namespace Nekoyume.Game.Character
 
         public override string TargetTag => Tag.Player;
 
-        public override void UpdateHpBar()
+        public override void UpdateActorHud()
         {
-            base.UpdateHpBar();
+            base.UpdateActorHud();
 
             var battle = Widget.Find<UI.Battle>();
-            battle.EnemyPlayerStatus.SetHp(CurrentHP, HP);
+            battle.EnemyPlayerStatus.SetHp(CurrentHp, Hp);
             battle.EnemyPlayerStatus.SetBuff(CharacterModel.Buffs);
         }
 

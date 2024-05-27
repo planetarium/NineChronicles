@@ -16,6 +16,7 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Character;
 using UnityEngine.Rendering;
 using Nekoyume.Game.Battle;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 
 namespace Nekoyume.Game.Character
@@ -39,7 +40,9 @@ namespace Nekoyume.Game.Character
 
         public CharacterBase CharacterModel { get; protected set; }
 
-        public readonly Subject<Actor> OnUpdateHPBar = new Subject<Actor>();
+        public readonly Subject<Actor> OnUpdateActorHud = new Subject<Actor>();
+
+        private readonly List<int> removedBuffVfxList = new();
 
         protected abstract float RunSpeedDefault { get; }
         protected abstract Vector3 DamageTextForce { get; }
@@ -56,25 +59,25 @@ namespace Nekoyume.Game.Character
             set => CharacterModel.Level = value;
         }
 
-        public long HP => CharacterModel.HP;
+        public long Hp => CharacterModel.HP;
 
-        public long CurrentHP
+        public long CurrentHp
         {
             get => _currentHp;
             private set
             {
-                _currentHp = Math.Min(Math.Max(value, 0l), HP);
-                UpdateHpBar();
+                _currentHp = Math.Min(Math.Max(value, 0L), Hp);
+                UpdateActorHud();
             }
         }
 
-        protected bool IsDead => CurrentHP <= 0;
+        protected bool IsDead => CurrentHp <= 0;
 
         public bool IsAlive => !IsDead;
 
         public float RunSpeed { get; set; }
 
-        public HpBar HPBar { get; private set; }
+        public HpBar ActorHud { get; private set; }
         public HudContainer HudContainer { get; private set; }
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
@@ -149,14 +152,14 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public virtual void Set(CharacterBase model, bool updateCurrentHP = false)
+        public virtual void Set(CharacterBase model, bool updateCurrentHp = false)
         {
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
             InitializeHudContainer();
-            if (updateCurrentHP)
+            if (updateCurrentHp)
             {
-                CurrentHP = HP;
+                CurrentHp = Hp;
             }
         }
 
@@ -201,53 +204,58 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected virtual void InitializeHpBar()
+        protected virtual void InitializeActorHud()
         {
             if (!HudContainer)
             {
                 return;
             }
 
-            HPBar = Widget.Create<HpBar>(true);
-            HPBar.transform.SetParent(HudContainer.transform);
-            HPBar.transform.localPosition = Vector3.zero;
-            HPBar.transform.localScale = Vector3.one;
+            ActorHud = Widget.Create<HpBar>(true);
+
+            ActorHud.transform.SetParent(HudContainer.transform);
+            ActorHud.transform.localPosition = Vector3.zero;
+            ActorHud.transform.localScale = Vector3.one;
         }
 
-        public virtual void UpdateHpBar()
+        public virtual void UpdateBuffVfx()
+        {
+            removedBuffVfxList.Clear();
+            // delete existing vfx
+            foreach (var buff in _persistingVFXMap.Keys)
+            {
+                if (!CharacterModel.IsDead && CharacterModel.Buffs.Keys.Contains(buff))
+                {
+                    continue;
+                }
+
+                _persistingVFXMap[buff].LazyStop();
+                removedBuffVfxList.Add(buff);
+            }
+
+            foreach (var id in removedBuffVfxList)
+            {
+                _persistingVFXMap.Remove(id);
+            }
+        }
+
+        public virtual void UpdateActorHud()
         {
             if (!BattleRenderer.Instance.IsOnBattle)
                 return;
 
-            if (!HPBar)
+            if (!ActorHud)
             {
-                InitializeHpBar();
+                InitializeActorHud();
                 HudContainer.UpdateAlpha(1);
             }
 
             HudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
-            HPBar.Set(CurrentHP, CharacterModel.AdditionalHP, HP);
-            HPBar.SetBuffs(CharacterModel.Buffs);
-            HPBar.SetLevel(Level);
+            ActorHud.Set(CurrentHp, CharacterModel.AdditionalHP, Hp);
+            ActorHud.SetBuffs(CharacterModel.Buffs);
+            ActorHud.SetLevel(Level);
 
-            // delete existing vfx
-            var removedVfx = new List<int>();
-            foreach (var buff in _persistingVFXMap.Keys)
-            {
-                if (CharacterModel.IsDead ||
-                    !CharacterModel.Buffs.Keys.Contains(buff))
-                {
-                    _persistingVFXMap[buff].LazyStop();
-                    removedVfx.Add(buff);
-                }
-            }
-
-            foreach (var id in removedVfx)
-            {
-                _persistingVFXMap.Remove(id);
-            }
-
-            OnUpdateHPBar.OnNext(this);
+            OnUpdateActorHud.OnNext(this);
         }
 
         public bool ShowSpeech(string key, params int[] list)
@@ -308,7 +316,7 @@ namespace Nekoyume.Game.Character
                 yield break;
             }
 
-            CurrentHP -= dmg;
+            CurrentHp -= dmg;
             Animator.Hit();
             AddHitColor();
 
@@ -498,10 +506,10 @@ namespace Nekoyume.Game.Character
         public void DisableHUD()
         {
             // No pooling. HUD Pooling causes HUD positioning bug.
-            if (HPBar)
+            if (ActorHud)
             {
-                Destroy(HPBar.gameObject);
-                HPBar = null;
+                Destroy(ActorHud.gameObject);
+                ActorHud = null;
             }
 
             // No pooling. HUD Pooling causes HUD positioning bug.
@@ -553,7 +561,7 @@ namespace Nekoyume.Game.Character
         {
             if (target && !info.Target!.IsDead)
             {
-                target.CurrentHP = Math.Min(target.CurrentHP + info.Effect, target.HP);
+                target.CurrentHp = Math.Min(target.CurrentHp + info.Effect, target.Hp);
 
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
@@ -565,27 +573,27 @@ namespace Nekoyume.Game.Character
 
         private void ProcessBuff(Actor target, Model.BattleStatus.Skill.SkillInfo info)
         {
-            if (target && !info.Target!.IsDead)
+            if (!target || info.Target!.IsDead)
             {
-                var position = transform.TransformPoint(0f, 1.7f, 0f);
-                var force = new Vector3(-0.1f, 0.5f);
-                var buff = info.Buff;
-                var effect = Game.instance.Stage.BuffController.Get<Actor, BuffVFX>(target, buff);
+                return;
+            }
+
+            var buff   = info.Buff;
+            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target.gameObject, buff);
+            effect.Target = target;
 
 #if TEST_LOG
-                Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
+            Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
 #endif
 
-                effect.Play();
-                if (effect.IsPersisting)
-                {
-                    target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
-                    StartCoroutine(BuffController.CoChaseTarget(effect, target.transform));
-                }
-
-                target.UpdateHpBar();
-                //Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
+            effect.Play();
+            if (effect.IsPersisting)
+            {
+                target.AttachPersistingVFX(buff.BuffInfo.GroupId, effect);
+                StartCoroutine(BuffController.CoChaseTarget(effect, target.transform, buff));
             }
+
+            target.UpdateActorHud();
         }
 
         private void AttachPersistingVFX(int groupId, BuffVFX vfx)
@@ -717,13 +725,20 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoAnimationBuffCast(Model.BattleStatus.Skill.SkillInfo info)
         {
+            var pos = transform.position;
+            var effect = Game.instance.Stage.BuffController.Get(pos, info.Buff);
+            if (effect is null)
+            {
+                NcDebug.LogError($"[CoAnimationBuffCast] [Buff] {info.Buff.BuffInfo.Id}");
+                yield break;
+            }
+
             PreAnimationForTheKindOfAttack();
 
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
-            var pos = transform.position;
-            var effect = Game.instance.Stage.BuffController.Get(pos, info.Buff);
+
             effect.Play();
 #if TEST_LOG
                 Debug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
@@ -817,8 +832,7 @@ namespace Nekoyume.Game.Character
                 skillInfos.Count == 0)
                 yield break;
 
-            Vector3 effectPos = transform.position;
-            effectPos.y += 0.55f;
+            Vector3 effectPos = transform.position + BuffHelper.GetDefaultBuffPosition();
             var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
                             Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
             var castEffect = effectObj.GetComponent<VFX.VFX>();
@@ -1050,7 +1064,13 @@ namespace Nekoyume.Game.Character
             if (skillInfos is null || skillInfos.Count == 0)
                 yield break;
 
-            yield return StartCoroutine(CoAnimationBuffCast(skillInfos.First()));
+            foreach (var skillInfo in skillInfos)
+            {
+                if (skillInfo.Buff == null)
+                    continue;
+
+                yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
+            }
 
             HashSet<Actor> dispeledTargets = new HashSet<Actor>();
             foreach (var info in skillInfos)
