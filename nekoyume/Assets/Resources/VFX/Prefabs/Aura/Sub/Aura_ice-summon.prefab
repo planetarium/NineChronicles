@@ -166,7 +166,7 @@ PrefabInstance:
     - target: {fileID: 7174929017865815950, guid: 6224ac340fcb4d1488955244d82959f4,
         type: 3}
       propertyPath: m_Name
-      value: aurasub_iceShield_InvokeFrostBite
+      value: aurasub_iceShield_InvokeShield
       objectReference: {fileID: 0}
     - target: {fileID: 7178483414301136940, guid: 6224ac340fcb4d1488955244d82959f4,
         type: 3}
@@ -336,7 +336,7 @@ PrefabInstance:
     - target: {fileID: 8954414808375820709, guid: 9b09d56765b899e488d841d79306072e,
         type: 3}
       propertyPath: m_Name
-      value: aurasub_iceShield_InvokeShield
+      value: aurasub_iceShield_InvokeFrostBite
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b09d56765b899e488d841d79306072e, type: 3}

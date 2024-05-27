@@ -5,10 +5,7 @@ on:
     branches:
       - main
       - release/*
-      - fast-track/*
     tags: ["*"]
-  pull_request:
-    types: [ready_for_review, opened, reopened, auto_merge_enabled]
   workflow_dispatch:
     inputs:
       clo:
@@ -63,7 +60,7 @@ jobs:
       MATCH_REPOSITORY_ACCOUNT: ${{ secrets.MATCH_REPOSITORY_ACCOUNT }}
       USYM_UPLOAD_AUTH_TOKEN: 'fake'
       GOOGLE_SERVICE_INFO: ${{ secrets.GOOGLE_SERVICE_INFO_K }}
-    
+
     steps:
       - name: Set CRLF
         run: |

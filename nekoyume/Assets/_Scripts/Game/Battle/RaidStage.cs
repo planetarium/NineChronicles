@@ -520,7 +520,6 @@ namespace Nekoyume.Game.Battle
             {
                 RaidCharacter raidCharacter =
                     character.Id == _player.Id ? _player : _boss;
-                // todo: 동상 관련 로직은 추후 수정 필요
                 if (tick.SkillId == IceShield.FrostBiteId)
                 {
                     if (!character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
@@ -544,7 +543,6 @@ namespace Nekoyume.Game.Battle
                                                             target: character,
                                                             buff: frostBite
                     );
-                    // TODO: 동상 관련 로직은 추후 수정 필요
                     _actionQueue.Enqueue(
                         new RaidActionParams(
                             raidCharacter,
