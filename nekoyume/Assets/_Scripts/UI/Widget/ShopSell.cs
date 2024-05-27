@@ -641,8 +641,10 @@ namespace Nekoyume.UI
                         : ProductType.NonFungible
                 };
 
+                var infos = new List<IRegisterInfo> { info };
+
                 Game.Game.instance.ActionManager
-                    .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
+                    .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value).Subscribe();
                 if (tradableItem is not TradableMaterial)
                 {
                     LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId,
@@ -666,9 +668,10 @@ namespace Nekoyume.UI
                     Asset = fungibleAsset,
                     Type = ProductType.FungibleAssetValue
                 };
+                var infos = new List<IRegisterInfo> { info };
 
                 Game.Game.instance.ActionManager
-                    .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
+                    .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value).Subscribe();
                 var preBalance = States.Instance.CurrentAvatarBalances[currency.Ticker];
                 States.Instance.SetCurrentAvatarBalance(preBalance - fungibleAsset);
                 inventory.UpdateFungibleAssets();
