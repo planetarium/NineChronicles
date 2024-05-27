@@ -302,5 +302,10 @@ namespace Nekoyume.UI
             Find<AdventureBossRewardInfoPopup>().Show();
         }
 
+        public void OnClickBossParticipantBonusPopup()
+        {
+            Find<AdventureBossParticipantBonusPopup>().Show();
+        }
+
     }
 }

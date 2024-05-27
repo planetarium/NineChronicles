@@ -652,8 +652,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 1719170347526267440}
+        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
         m_MethodName: Close
         m_Mode: 6
         m_Arguments:
@@ -848,7 +848,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5590238369446025985}
   - component: {fileID: 5592585881790070517}
-  - component: {fileID: 1328236528833969191}
+  - component: {fileID: 1719170347526267440}
   - component: {fileID: 3936825724599839889}
   m_Layer: 5
   m_Name: UI_AdventureBossParticipantBonusPopup
@@ -887,7 +887,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5660972006917862819}
   m_CullTransparentMesh: 0
---- !u!114 &1328236528833969191
+--- !u!114 &1719170347526267440
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -896,16 +896,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5660972006917862819}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e54971208044d0b333da5ebb2501cb, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a813343db5de9b4b962ac2b612f21ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  title: {fileID: 6649374018306330277}
-  content: {fileID: 2768448887149050793}
-  labelOK: {fileID: 0}
-  titleBorder: {fileID: 5902619714897046878}
-  CloseButton: {fileID: 508786726228265593}
 --- !u!95 &3936825724599839889
 Animator:
   serializedVersion: 5
