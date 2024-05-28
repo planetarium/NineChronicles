@@ -203,11 +203,8 @@ namespace Nekoyume.UI
             }
             foreach (var fav in myReward.FavReward)
             {
-                RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-                runeSheet.TryGetValue(fav.Key, out var runeRow);
-                if (runeRow != null)
+                if (baseItemViews[itenViewIndex].ItemViewSetCurrencyData(fav.Key, fav.Value))
                 {
-                    baseItemViews[itenViewIndex].ItemViewSetCurrencyData(runeRow.Ticker, fav.Value);
                     itenViewIndex++;
                 }
             }

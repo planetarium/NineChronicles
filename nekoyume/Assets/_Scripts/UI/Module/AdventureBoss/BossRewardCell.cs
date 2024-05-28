@@ -19,7 +19,6 @@ namespace Nekoyume
 
         public void SetData(AdventureBossReward adventureBossReward)
         {
-            RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             bossImg.sprite = SpriteHelper.GetBigCharacterIcon(adventureBossReward.BossId);
             bossImg.SetNativeSize();
             if(adventureBossReward.wantedReward.FixedRewardItemIdDict.Count > 0)
@@ -28,11 +27,7 @@ namespace Nekoyume
             }
             else if(adventureBossReward.wantedReward.FixedRewardFavIdDict.Count > 0)
             {
-                runeSheet.TryGetValue(adventureBossReward.wantedReward.FixedRewardFavIdDict.First().Key, out var runeRow);
-                if (runeRow != null)
-                {
-                    confirmRewardItemView.ItemViewSetCurrencyData(runeRow.Ticker, 1);
-                }
+                confirmRewardItemView.ItemViewSetCurrencyData(adventureBossReward.wantedReward.FixedRewardFavIdDict.First().Key, 1);
             }
             else
             {
@@ -47,10 +42,8 @@ namespace Nekoyume
             }
             foreach (var randomReward in adventureBossReward.wantedReward.RandomRewardFavTickerDict)
             {
-                runeSheet.TryGetValue(randomReward.Key, out var runeRow);
-                if (runeRow != null)
+                if (randomRewardItemViews[i].ItemViewSetCurrencyData(randomReward.Key, 1))
                 {
-                    randomRewardItemViews[i].ItemViewSetCurrencyData(runeRow.Ticker, 1);
                     i++;
                 }
             }

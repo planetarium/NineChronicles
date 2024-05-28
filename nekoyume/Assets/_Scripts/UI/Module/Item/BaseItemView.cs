@@ -4,6 +4,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using System.Numerics;
@@ -214,6 +215,20 @@ namespace Nekoyume
             ItemImage.overrideSprite = SpriteHelper.GetFavIcon(ticker);
             CountText.text = ((BigInteger)amount).ToCurrencyNotation();
             GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(ticker));
+        }
+
+        public bool ItemViewSetCurrencyData(int favId, decimal amount)
+        {
+            RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            runeSheet.TryGetValue(favId, out var runeRow);
+            if (runeRow != null)
+            {
+                ItemViewSetCurrencyData(runeRow.Ticker, amount);
+                return true;
+            }
+            NcDebug.LogError($"[ItemViewSetCurrencyData] Can't Find Fav ID {favId} in RuneSheet");
+            gameObject.SetActive(false);
+            return false;
         }
 
         public void ItemViewSetItemData(int itemId, int amount)

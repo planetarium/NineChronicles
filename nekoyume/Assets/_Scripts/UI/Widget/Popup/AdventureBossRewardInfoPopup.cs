@@ -64,11 +64,8 @@ namespace Nekoyume.UI
                 }
                 foreach(var fav in myReward.FavReward)
                 {
-                    RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-                    runeSheet.TryGetValue(fav.Key, out var runeRow);
-                    if (runeRow != null)
+                    if (baseItemViews[i].ItemViewSetCurrencyData(fav.Key, fav.Value))
                     {
-                        baseItemViews[i].ItemViewSetCurrencyData(runeRow.Ticker, fav.Value);
                         i++;
                     }
                 }
@@ -96,9 +93,8 @@ namespace Nekoyume.UI
                 if(Game.Game.instance.AdventureBossData.BountyBoard.Value != null)
                 {
                     var bountyBoard = Game.Game.instance.AdventureBossData.BountyBoard.Value;
-                    RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-
                     var currentInvestorInfo = Game.Game.instance.AdventureBossData.GetCurrentInvestorInfo();
+
                     if(currentInvestorInfo != null)
                     {
                         var wantedReward = Game.Game.instance.AdventureBossData.GetCurrentBountyRewards();
@@ -115,10 +111,8 @@ namespace Nekoyume.UI
                         }
                         foreach (var fav in wantedReward.FavReward)
                         {
-                            runeSheet.TryGetValue(fav.Key, out var runeRow);
-                            if (runeRow != null)
-                            {
-                                baseItemViews[itemIndex].ItemViewSetCurrencyData(runeRow.Ticker, fav.Value);
+                            if (baseItemViews[itemIndex].ItemViewSetCurrencyData(fav.Key, fav.Value))
+                            {       
                                 itemIndex++;
                             }
                             if(itemIndex >= currentSeasonBossRewardViews.Length)
@@ -136,11 +130,7 @@ namespace Nekoyume.UI
                         }
                         if(bountyBoard.FixedRewardFavId != null)
                         {
-                            runeSheet.TryGetValue(bountyBoard.FixedRewardFavId.Value, out var runeRow);
-                            if (runeRow != null)
-                            {
-                                currentSeasonBossRewardViews[0].ItemViewSetCurrencyData(runeRow.Ticker, 0);
-                            }
+                            currentSeasonBossRewardViews[0].ItemViewSetCurrencyData(bountyBoard.FixedRewardFavId.Value, 0);
                         }
 
                         if(bountyBoard.RandomRewardItemId != null)
@@ -149,11 +139,7 @@ namespace Nekoyume.UI
                         }
                         if(bountyBoard.RandomRewardFavId != null)
                         {
-                            runeSheet.TryGetValue(bountyBoard.RandomRewardFavId.Value, out var runeRow);
-                            if (runeRow != null)
-                            {
-                                currentSeasonBossRewardViews[1].ItemViewSetCurrencyData(runeRow.Ticker, 0);
-                            }
+                            currentSeasonBossRewardViews[1].ItemViewSetCurrencyData(bountyBoard.RandomRewardFavId.Value, 0);
                         }
                     }
 
