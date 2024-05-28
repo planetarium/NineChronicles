@@ -49,6 +49,7 @@ namespace Nekoyume.Game.VFX.Skill
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
         {
+            // TODO: ID대신 GroupID사용 고려 혹은 ID와 GroupID사이의 정의 정리
             var resourceName = BuffHelper.GetCastingVFXPrefab(buff).name;
             position += BuffHelper.GetBuffPosition(buff.BuffInfo.Id, true);
             var go = _pool.Get(resourceName, false, position);
