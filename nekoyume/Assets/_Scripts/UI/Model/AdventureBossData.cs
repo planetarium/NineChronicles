@@ -156,6 +156,7 @@ namespace Nekoyume.UI.Model
         public ReactiveProperty<bool> IsRewardLoading = new ReactiveProperty<bool>();
 
         public Dictionary<long,SeasonInfo> EndedSeasonInfos = new Dictionary<long, SeasonInfo>();
+        public Dictionary<long, BountyBoard> EndedBountyBoards = new Dictionary<long, BountyBoard>();
 
         private const int _endedSeasonSearchTryCount = 10;
 
@@ -196,7 +197,10 @@ namespace Nekoyume.UI.Model
                 if(!EndedSeasonInfos.TryGetValue(oldSeasonIndex, out var oldSeasonInfo))
                 {
                     oldSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(oldSeasonIndex);
+                    var oldBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(oldSeasonIndex);
                     EndedSeasonInfos.Add(oldSeasonIndex, oldSeasonInfo);
+                    EndedBountyBoards.Add(oldSeasonIndex, oldBountyBoard);
+
                     //보상수령기간이 지날경우 더이상 가져오지않음.
                     if(oldSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
                     {
@@ -250,6 +254,7 @@ namespace Nekoyume.UI.Model
             if (SeasonInfo.Value.Season > 0 && !EndedSeasonInfos.TryGetValue(SeasonInfo.Value.Season, out var endedSeasonInfo))
             {
                 EndedSeasonInfos.Add(SeasonInfo.Value.Season, SeasonInfo.Value);
+                EndedBountyBoards.Add(SeasonInfo.Value.Season, BountyBoard.Value);
             }
             try
             {

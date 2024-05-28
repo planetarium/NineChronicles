@@ -3667,8 +3667,6 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<ClaimAdventureBossReward>()
                 .ObserveOn(Scheduler.ThreadPool)
-                .Where(ValidateEvaluationForCurrentAgent)
-                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimAdventureBossReward)
@@ -3679,14 +3677,28 @@ namespace Nekoyume.Blockchain
         {
             UniTask.RunOnThreadPool(() =>
             {
-                UpdateCurrentAvatarInventory(eval);
+                if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                {
+                    UpdateCurrentAvatarInventory(eval);
+                }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                var action = eval.Action;
-                var tableSheets = Game.Game.instance.TableSheets;
-                var mailRewards = new List<MailReward>();
-                Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
-                Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
+                if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address)){
+                    var action = eval.Action;
+                    var tableSheets = Game.Game.instance.TableSheets;
+                    var mailRewards = new List<MailReward>();
+                    Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
+                    Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
+                }
+
+                if(Game.Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(eval.Action.Season,out var bountyBoard))
+                {
+                    if(bountyBoard.RaffleWinner == null)
+                    {
+                        //최초
+                        Widget.Find<AdventureBossNcgRandomRewardPopup>().Show();
+                    }
+                }
             });
         }
 

@@ -348,7 +348,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1730975080649044515}
   - component: {fileID: 1733313823169009623}
-  - component: {fileID: 4034248779106609704}
+  - component: {fileID: 7570370937322589921}
   - component: {fileID: 7148134707930187187}
   m_Layer: 5
   m_Name: UI_AdventureBossNcgRandomRewardPopup
@@ -387,7 +387,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1954276964444511361}
   m_CullTransparentMesh: 0
---- !u!114 &4034248779106609704
+--- !u!114 &7570370937322589921
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -396,26 +396,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1954276964444511361}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4076c65b7a45814ba588b4e8c240e50, type: 3}
+  m_Script: {fileID: 11500000, guid: 647f0611166167442be52836850bdc73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  blockIndex: {fileID: 0}
-  seasonText: {fileID: 5694317681051957995}
-  bountyCost: {fileID: 5763546019693920004}
-  myScore: {fileID: 0}
-  rewardItemsBounty: {fileID: 0}
-  rewardItemsExplore: {fileID: 0}
-  noRewardItemsBounty: {fileID: 9111487793917885329}
-  noRewardItemsExplore: {fileID: 0}
-  receiveAllButton: {fileID: 0}
-  pageButton:
-  - {fileID: 6262133058513064914}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  oKButton: {fileID: 6262133058513064914}
+  bountyWinnerName: {fileID: 3136990383260996472}
+  bountyReward: {fileID: 5763546019693920004}
+  exploreWinnerName: {fileID: 3449070746750582288}
+  exploreReward: {fileID: 8232789818800085816}
 --- !u!95 &7148134707930187187
 Animator:
   serializedVersion: 5
@@ -1361,7 +1351,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 25
-  l10nKey: 
+  l10nKey: UI_ADVENTURE_BOSS_RANDOM_REWARD_POPUP_TITLE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -3161,7 +3151,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 25
-  l10nKey: 
+  l10nKey: UI_ADVENTURE_BOSS_RANDOM_REWARD_OPERATOR_WINNER
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -3815,7 +3805,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 25
-  l10nKey: 
+  l10nKey: UI_ADVENTURE_BOSS_RANDOM_REWARD_PARTICIPANT_WINNER
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -4315,7 +4305,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 25
-  l10nKey: 
+  l10nKey: UI_ADVENTURE_BOSS_RANDOM_REWARD_POPUP_DESC
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
