@@ -49,6 +49,19 @@ namespace Nekoyume.UI
         [SerializeField]
         private Color bountyRedColor;
 
+        [SerializeField]
+        private Image bossImg;
+        [SerializeField]
+        private TextMeshProUGUI bossName;
+        [SerializeField]
+        private GameObject[] firstBountyObjs;
+        [SerializeField]
+        private GameObject[] secondBountyObjs;
+        [SerializeField]
+        private BaseItemView[] expectedRewardItems;
+        [SerializeField]
+        private BountyBossCell[] bountyBossCells;
+
         private Color _bountyDefaultColor;
         private readonly List<System.IDisposable> _disposablesByEnable = new();
 
@@ -67,12 +80,12 @@ namespace Nekoyume.UI
             if (string.IsNullOrEmpty(input))
             {
                 inputCountObj.SetActive(false);
-                additionalBountyObj.SetActive(false);
+                //additionalBountyObj.SetActive(false);
             }
             else
             {
                 inputCountObj.SetActive(true);
-                additionalBountyObj.SetActive(true);
+                //additionalBountyObj.SetActive(true);
             }
             if (int.TryParse(input, out int bounty))
             {
@@ -124,9 +137,35 @@ namespace Nekoyume.UI
                     totalBountyPrice.text = "0";
                     bountyCount.text = $"The bounty I placed ({0}/3)";
                     showDetailButton.SetActive(false);
+                    foreach (var item in firstBountyObjs)
+                    {
+                        item.SetActive(true);
+                    }
+                    foreach (var item in secondBountyObjs)
+                    {
+                        item.SetActive(false);
+                    }
+                    var rewards = Game.Game.instance.AdventureBossData.WantedRewardList;
+                    for(int bossIndex = 0; bossIndex < bountyBossCells.Length; bossIndex++)
+                    {
+                        if(bossIndex >= rewards.Length)
+                        {
+                            bountyBossCells[bossIndex].gameObject.SetActive(false);
+                            break;
+                        }
+                        bountyBossCells[bossIndex].SetData(Game.Game.instance.AdventureBossData.WantedRewardList[bossIndex]);
+                    }
                     break;
                 case Model.AdventureBossData.AdventureBossSeasonState.Progress:
                     showDetailButton.SetActive(true);
+                    foreach (var item in firstBountyObjs)
+                    {
+                        item.SetActive(false);
+                    }
+                    foreach (var item in secondBountyObjs)
+                    {
+                        item.SetActive(true);
+                    }
                     var currentBountyInfo = Game.Game.instance.AdventureBossData.GetCurrentInvestorInfo();
                     if (currentBountyInfo != null)
                     {
@@ -139,6 +178,20 @@ namespace Nekoyume.UI
                         bountyCount.text = $"The bounty I placed ({currentBountyInfo.Count}/3)";
                     }
                     totalBountyPrice.text = Game.Game.instance.AdventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
+                    var rewards = Game.Game.instance.AdventureBossData.GetCurrentBountyRewards();
+                    int i = 0;
+                    foreach (var item in rewards.ItemReward)
+                    {
+                        expectedRewardItems[i].ItemViewSetItemData(item.Key, item.Value);
+                        i++;
+                    }
+                    foreach (var item in rewards.FavReward)
+                    {
+                        if(expectedRewardItems[i].ItemViewSetCurrencyData(item.Key, item.Value))
+                        {
+                            i++;
+                        }
+                    }
                     break;
                 case Model.AdventureBossData.AdventureBossSeasonState.None:
                 case Model.AdventureBossData.AdventureBossSeasonState.End:
