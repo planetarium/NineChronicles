@@ -29,7 +29,6 @@ namespace Nekoyume.Game.Character
 
         #region Mono
 
-        MaterialPropertyBlock _mpb;
         protected override void Awake()
         {
             base.Awake();
@@ -39,7 +38,6 @@ namespace Nekoyume.Game.Character
             Animator.TimeScale = AnimatorTimeScale * Game.instance.Stage.AnimationTimeScaleWeight;
 
             TargetTag = Tag.Player;
-            _mpb = new MaterialPropertyBlock();
         }
 
         private void OnDestroy()
@@ -217,11 +215,12 @@ namespace Nekoyume.Game.Character
 
             base.SetSpineColor(color, propertyID);
 
-            _mpb.SetColor(propertyID, color);
-
             if (skeletonAnimation.TryGetComponent<MeshRenderer>(out var meshRenderer))
             {
-                meshRenderer.SetPropertyBlock(_mpb);
+                var mpb = new MaterialPropertyBlock();
+                meshRenderer.GetPropertyBlock(mpb);
+                mpb.SetColor(propertyID, color);
+                meshRenderer.SetPropertyBlock(mpb);
             }
             else
             {
