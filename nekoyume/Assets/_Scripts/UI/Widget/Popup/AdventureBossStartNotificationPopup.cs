@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using System;
 using System.Collections;
@@ -7,12 +8,14 @@ using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class AdventureBossStartNotificationPopup : PopupWidget
     {
         [SerializeField] private TextMeshProUGUI continueText;
+        [SerializeField] private Image bossImage;
 
         private CancellationTokenSource cancellationTokenSource;
         protected override void Awake()
@@ -25,6 +28,16 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             cancellationTokenSource?.Cancel();
             cancellationTokenSource = new CancellationTokenSource();
+            if(Game.Game.instance.AdventureBossData.SeasonInfo.Value != null)
+            {
+                bossImage.sprite = SpriteHelper.GetBigCharacterIcon(Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId);
+                bossImage.SetNativeSize();
+            }
+            else
+            {
+                bossImage.sprite = SpriteHelper.GetBigCharacterIcon(0);
+                bossImage.SetNativeSize();
+            }
             ShowCount(cancellationTokenSource.Token).Forget();
         }
 

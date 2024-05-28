@@ -313,7 +313,11 @@ namespace Nekoyume.UI.Model
                                 ExploreInfo.Value.AvatarAddress,
                                 out var ncgReward);
 
-            myReward = AdventureBossHelper.CalculateWantedReward(myReward, BountyBoard.Value, Game.Game.instance.States.CurrentAvatarState.address, out var wantedReward);
+            myReward = AdventureBossHelper.CalculateWantedReward(myReward,
+                                BountyBoard.Value,
+                                Game.Game.instance.States.CurrentAvatarState.address,
+                                out var wantedReward);
+
             return myReward;
         }
 

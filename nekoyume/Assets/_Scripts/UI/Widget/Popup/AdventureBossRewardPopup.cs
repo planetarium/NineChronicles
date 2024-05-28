@@ -14,13 +14,10 @@ using System;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Helper;
     using UniRx;
     public class AdventureBossRewardPopup : PopupWidget
     {
-        [SerializeField]
-        private TextMeshProUGUI blockIndex;
-        [SerializeField]
-        private TextMeshProUGUI seasonText;
         [SerializeField]
         private TextMeshProUGUI bountyCost;
         [SerializeField]
@@ -36,8 +33,11 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private ConditionalButton receiveAllButton;
+
         [SerializeField]
-        private ConditionalButton[] pageButton;
+        private BaseItemView[] rewardItems;
+        [SerializeField]
+        private BaseItemView[] rewardItemsExplores;
 
         private long _targetBlockIndex;
         private List<SeasonInfo> _endedClaimableSeasonInfo = new List<SeasonInfo>();
@@ -58,18 +58,13 @@ namespace Nekoyume.UI
             base.Awake();
         }
 
-        private void UpdateViewAsync(long blockIndex)
-        {
-            RefreshBlockIndex();
-        }
-
         public override void Show(bool ignoreShowAnimation = false)
         {
             var adventureBossData = Game.Game.instance.AdventureBossData;
             _endedClaimableSeasonInfo = adventureBossData.EndedSeasonInfos.Values.
                 Where(seasonInfo => seasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration > Game.Game.instance.Agent.BlockIndex).
                 OrderBy(seasonInfo => seasonInfo.EndBlockIndex).
-                Take(pageButton.Count()).ToList();
+                ToList();
 
             if (_endedClaimableSeasonInfo.Count == 0)
             {
@@ -79,38 +74,92 @@ namespace Nekoyume.UI
 
             RefreshWithSeasonInfo(_endedClaimableSeasonInfo[0]);
 
-            if(_endedClaimableSeasonInfo.Count == 1)
+
+            base.Show(ignoreShowAnimation);
+        }
+
+        public async UniTaskVoid LoadTotalRewards()
+        {
+            ClaimableReward wantedClaimableReward = new ClaimableReward
             {
-                foreach (var button in pageButton)
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+            ClaimableReward exprolerClaimableReward = new ClaimableReward
+            {
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+            foreach (var seasonInfo in _endedClaimableSeasonInfo)
+            {
+                var bountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(seasonInfo.Season);
+                var exploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonInfo.Season);
+                var exploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, seasonInfo.Season);
+
+                var investor = bountyBoard.Investors.FirstOrDefault(
+                    inv => inv.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address);
+
+                if(investor != null && !investor.Claimed)
                 {
-                    button.gameObject.SetActive(false);
+                    wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward, bountyBoard, Game.Game.instance.States.CurrentAvatarState.address, out var wantedReward);
+                }
+                if(exploreInfo != null && !exploreInfo.Claimed)
+                {
+                    exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward, bountyBoard, exploreBoard, exploreInfo, Game.Game.instance.States.CurrentAvatarState.address, out var explorerReward);
+                }
+            }
+
+            if (wantedClaimableReward.ItemReward.Count > 0 || wantedClaimableReward.FavReward.Count > 0)
+            {
+                rewardItemsBounty.SetActive(true);
+                noRewardItemsBounty.SetActive(false);
+                int i = 0;
+                foreach (var itemReward in wantedClaimableReward.ItemReward)
+                {
+                    rewardItems[i].ItemViewSetItemData(itemReward.Key, itemReward.Value);
+                    i++;
+                }
+                foreach (var favReward in wantedClaimableReward.FavReward)
+                {
+                    rewardItems[i].ItemViewSetCurrencyData(favReward.Key, favReward.Value);
+                    i++;
                 }
             }
             else
             {
-                for(int i = 0; i < pageButton.Length; i++)
-                {
-                    if(i >= _endedClaimableSeasonInfo.Count)
-                    {
-                        pageButton[i].gameObject.SetActive(false);
-                        continue;
-                    }
-                    pageButton[i].gameObject.SetActive(true);
+                rewardItemsBounty.SetActive(false);
+                noRewardItemsBounty.SetActive(true);
+            }
 
-                    pageButton[i].OnClickDisabledSubject.Subscribe(_ =>
-                    {
-                        RefreshWithSeasonInfo(_endedClaimableSeasonInfo[i]);
-                        for (int z = 0; z < pageButton.Length; z++)
-                        {
-                            pageButton[z].Interactable = i == z;
-                        }
-                    }).AddTo(gameObject);
+            if (exprolerClaimableReward.ItemReward.Count > 0 || exprolerClaimableReward.FavReward.Count > 0)
+            {
+                rewardItemsExplore.SetActive(true);
+                noRewardItemsExplore.SetActive(false);
+                int i = 0;
+                foreach (var itemReward in exprolerClaimableReward.ItemReward)
+                {
+                    rewardItemsExplores[i].ItemViewSetItemData(itemReward.Key, itemReward.Value);
+                    i++;
+                }
+                foreach (var favReward in exprolerClaimableReward.FavReward)
+                {
+                    rewardItemsExplores[i].ItemViewSetCurrencyData(favReward.Key, favReward.Value);
+                    i++;
                 }
             }
-            Game.Game.instance.Agent.BlockIndexSubject
-                .Subscribe(UpdateViewAsync)
-                .AddTo(_disposablesByEnable);
-            base.Show(ignoreShowAnimation);
+            else
+            {
+                rewardItemsExplore.SetActive(false);
+                noRewardItemsExplore.SetActive(true);
+            }
+
+            if(noRewardItemsBounty.activeSelf && noRewardItemsExplore.activeSelf)
+            {
+                Close();
+            }
+            return;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -123,10 +172,6 @@ namespace Nekoyume.UI
         {
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource = new CancellationTokenSource();
-
-            _targetBlockIndex = info.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration;
-            RefreshBlockIndex();
-            seasonText.text = $"Season {info.Season}";
 
             bountyCost.text = "-";
             myScore.text = "-";
@@ -184,12 +229,6 @@ namespace Nekoyume.UI
         {
             rewardItemsExplore.SetActive(visible);
             noRewardItemsExplore.SetActive(!visible);
-        }
-
-        private void RefreshBlockIndex()
-        {
-            var remainingBlockIndex = _targetBlockIndex - Game.Game.instance.Agent.BlockIndex;
-            blockIndex.text = $"{remainingBlockIndex:#,0}({remainingBlockIndex.BlockRangeToTimeSpanString()})";
         }
     }
 }
