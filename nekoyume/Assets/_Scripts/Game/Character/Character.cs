@@ -44,6 +44,18 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        protected virtual void Update()
+        {
+            UpdateColor();
+        }
+
+        protected virtual void OnDisable()
+        {
+            SetDefaultColor();
+            _expiredColorKeys.Clear();
+            _colorPq.Clear();
+        }
+
         // TODO: 이 클래스에 존재해야할 느낌은 아니지만, 중복 구현을 피하기 위해 일단 여기에 둠
 #region Temp
 #region Event
@@ -70,5 +82,117 @@ namespace Nekoyume.Game.Character
             Animator.Idle();
         }
 #endregion Temp
+
+// TODO: 별도 클래스로 분리?
+#region SpineColor
+        private readonly Priority_Queue.SimplePriorityQueue<SpineColorSetting, int> _colorPq = new();
+
+        private readonly HashSet<SpineColorKey> _expiredColorKeys = new();
+
+        private int _currentColorHash;
+
+        private void UpdateColor()
+        {
+            if (_colorPq.Count == 0)
+            {
+                return;
+            }
+
+            ExpireColors();
+
+            while (_colorPq.Count > 0)
+            {
+                var setting = _colorPq.First;
+                if (setting.IsExpired)
+                {
+                    _colorPq.Dequeue();
+                    if (_colorPq.Count == 0)
+                    {
+                        SetDefaultColor();
+                    }
+                    continue;
+                }
+
+                if (setting.GetHashCode() == _currentColorHash)
+                {
+                    break;
+                }
+
+                _currentColorHash = setting.GetHashCode();
+                setting.SetColor(this);
+                return;
+            }
+        }
+
+        private void ExpireColors()
+        {
+            foreach (var colorSetting in _colorPq)
+            {
+                foreach (var expiredColorKey in _expiredColorKeys)
+                {
+                    colorSetting.ExpireByKey(expiredColorKey);
+                }
+                colorSetting.UpdateDuration(Time.deltaTime);
+
+                if (colorSetting.IsExpired)
+                {
+                    colorSetting.Expire();
+                }
+            }
+            _expiredColorKeys.Clear();
+        }
+
+        public virtual void SetSpineColor(Color color, int propertyID = -1)
+        {
+        }
+
+        private void SetDefaultColor()
+        {
+            SetSpineColor(Color.white, SpineColorSetting.ColorPropertyId);
+            SetSpineColor(Color.black, SpineColorSetting.BlackPropertyId);
+            _currentColorHash = 0;
+        }
+
+        public void AddHitColor()
+        {
+            var color = new Color(1, 0.6651f, 0.65566f, 1f);
+            var black = new Color(0.2452f, 0.091f, 0.091f, 1f);
+            _colorPq.Enqueue(new SpineColorSetting(color, black, true, 0.3f), (int)SpineColorPriority.Hit);
+        }
+
+        public void AddFrostbiteColor()
+        {
+            // color: 31FFF4
+            // black: 0F3069
+            var color = new Color(0.1921f, 1f, 0.9568f, 1f);
+            var black = new Color(0.0588f, 0.1882f, 0.4117f, 1f);
+
+            //
+            foreach (var colorSetting in _colorPq)
+            {
+                if (colorSetting.Key == SpineColorKey.FrostBite)
+                {
+                    return;
+                }
+            }
+
+            _colorPq.Enqueue(new SpineColorSetting(color, black, key: SpineColorKey.FrostBite), (int)SpineColorPriority.Frostbite);
+        }
+
+        public void RemoveFrostbiteColor()
+        {
+            _expiredColorKeys.Add(SpineColorKey.FrostBite);
+        }
+
+        public void AddSpineColor(Color color, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
+        {
+            _colorPq.Enqueue(new SpineColorSetting(color, hasDuration, duration, key), 0);
+        }
+
+        public void AddSpineColor(Color color, Color black, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
+        {
+            _colorPq.Enqueue(new SpineColorSetting(color, black, hasDuration, duration, key), 0);
+        }
+#endregion SpineColor
     }
 }
