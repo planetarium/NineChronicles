@@ -13,22 +13,41 @@ using System;
 namespace Nekoyume.UI.Module
 {
     using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer.Operations;
+    using Nekoyume.Helper;
     using Nekoyume.UI.Model;
     using UniRx;
 
     public class WorldMapAdventureBoss : MonoBehaviour
     {
         [SerializeField] private GameObject open;
-        [SerializeField] private GameObject wantedOpen;
         [SerializeField] private GameObject wantedClose;
-        [SerializeField] private GameObject close;
         [SerializeField] private TextMeshProUGUI[] remainingBlockIndexs;
-        [SerializeField] private TextMeshProUGUI usedGold;
-        [SerializeField] private TextMeshProUGUI floor;
         [SerializeField] private GameObject loadingIndicator;
+        [SerializeField] private WorldButton worldButton;
+        [SerializeField] private Transform bossImageParent;
 
         private readonly List<System.IDisposable> _disposables = new();
         private long _remainingBlockIndex = 0;
+
+        private int _bossId;
+        private GameObject _bossImage;
+
+        private void Awake()
+        {
+            worldButton.OnClickSubject.Subscribe(button =>
+            {
+                var curState = Game.Game.instance.AdventureBossData.CurrentState.Value;
+                if(curState == AdventureBossData.AdventureBossSeasonState.Ready)
+                {
+                    OnClickOpenEnterBountyPopup();
+                }
+
+                if(curState == AdventureBossData.AdventureBossSeasonState.Progress)
+                {
+                    OnClickOpenAdventureBoss();
+                }
+            }).AddTo(gameObject);
+        }
 
         private void OnEnable()
         {
@@ -37,32 +56,6 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
 
             Game.Game.instance.AdventureBossData.CurrentState.Subscribe(OnAdventureBossStateChanged).AddTo(_disposables);
-            Game.Game.instance.AdventureBossData.ExploreInfo.Subscribe(RefreshExploreInfo).AddTo(_disposables);
-            Game.Game.instance.AdventureBossData.BountyBoard.Subscribe(RefreshBountyBoardInfo).AddTo(_disposables);
-        }
-
-        private void RefreshBountyBoardInfo(BountyBoard board)
-        {
-            if(board == null)
-            {
-                usedGold.text = "-";
-            }
-            else
-            {
-                usedGold.text = Game.Game.instance.AdventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
-            }
-        }
-
-        private void RefreshExploreInfo(Explorer exploreInfo)
-        {
-            if (exploreInfo == null)
-            {
-                floor.text = "-";
-            }
-            else
-            {
-                floor.text = $"{exploreInfo.Floor.ToString()}F";
-            }
         }
 
         private void OnDisable()
@@ -150,23 +143,32 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AdventureBossData.AdventureBossSeasonState.Ready:
+                    worldButton.Unlock();
                     open.SetActive(true);
-                    close.SetActive(false);
-
-                    wantedOpen.SetActive(false);
                     wantedClose.SetActive(true);
+                    worldButton.HasNotification.Value = true;
                     break;
                 case AdventureBossData.AdventureBossSeasonState.Progress:
+                    worldButton.Unlock();
                     open.SetActive(true);
-                    close.SetActive(false);
-
-                    wantedOpen.SetActive(true);
                     wantedClose.SetActive(false);
+                    if(_bossId != Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId)
+                    {
+                        if(_bossImage != null)
+                        {
+                            DestroyImmediate(_bossImage);
+                        }
+                        _bossId = Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId;
+                        _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageParent);
+                        _bossImage.transform.localScale = Vector3.one * 0.5f;
+                    }
+                    worldButton.HasNotification.Value = true;
                     break;
                 case AdventureBossData.AdventureBossSeasonState.None:
                 case AdventureBossData.AdventureBossSeasonState.End:
                 default:
-                    close.SetActive(true);
+                    worldButton.HasNotification.Value = false;
+                    worldButton.Lock();
                     open.SetActive(false);
                     SetDefualtRemainingBlockIndexs();
                     break;
