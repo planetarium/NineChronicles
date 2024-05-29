@@ -377,6 +377,7 @@ namespace Nekoyume.Game.Battle
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
             {
+                e.LogEvent();
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
