@@ -13,6 +13,7 @@ namespace Nekoyume.UI
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Blockchain;
+    using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
     using Nekoyume.Model.Mail;
@@ -61,6 +62,8 @@ namespace Nekoyume.UI
         private BaseItemView[] expectedRewardItems;
         [SerializeField]
         private BountyBossCell[] bountyBossCells;
+        [SerializeField]
+        private ConditionalButton bountyViewAllButton;
 
         private Color _bountyDefaultColor;
         private readonly List<System.IDisposable> _disposablesByEnable = new();
@@ -71,6 +74,7 @@ namespace Nekoyume.UI
             bountyInputArea.onEndEdit.AddListener(OnBountyInputAreaValueChanged);
             _bountyDefaultColor = bountyInputArea.textComponent.color;
             confirmButton.OnSubmitSubject.Subscribe(_ => OnClickConfirm()).AddTo(gameObject);
+            bountyViewAllButton.OnSubmitSubject.Subscribe(_ => Find<AdventureBossFullBountyStatusPopup>().Show()).AddTo(gameObject);
             base.Awake();
         }
 
@@ -135,7 +139,7 @@ namespace Nekoyume.UI
                 case Model.AdventureBossData.AdventureBossSeasonState.Ready:
                     bountyedPrice.text = "0";
                     totalBountyPrice.text = "0";
-                    bountyCount.text = $"The bounty I placed ({0}/3)";
+                    bountyCount.text = $"({0}/3)";
                     showDetailButton.SetActive(false);
                     foreach (var item in firstBountyObjs)
                     {
@@ -155,6 +159,7 @@ namespace Nekoyume.UI
                         }
                         bountyBossCells[bossIndex].SetData(Game.Game.instance.AdventureBossData.WantedRewardList[bossIndex]);
                     }
+                    bossName.text = string.Empty;
                     break;
                 case Model.AdventureBossData.AdventureBossSeasonState.Progress:
                     showDetailButton.SetActive(true);
@@ -170,12 +175,12 @@ namespace Nekoyume.UI
                     if (currentBountyInfo != null)
                     {
                         bountyedPrice.text = currentBountyInfo.Price.ToCurrencyNotation();
-                        bountyCount.text = $"The bounty I placed ({currentBountyInfo.Count}/3)";
+                        bountyCount.text = $"({currentBountyInfo.Count}/3)";
                     }
                     else
                     {
                         bountyedPrice.text = "0";
-                        bountyCount.text = $"The bounty I placed ({currentBountyInfo.Count}/3)";
+                        bountyCount.text = $"({currentBountyInfo.Count}/3)";
                     }
                     totalBountyPrice.text = Game.Game.instance.AdventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
                     var bountyRewards = Game.Game.instance.AdventureBossData.GetCurrentBountyRewards();
@@ -192,6 +197,8 @@ namespace Nekoyume.UI
                             i++;
                         }
                     }
+                    bossName.text = L10nManager.LocalizeCharacterName(Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId);
+                    bossImg.sprite = SpriteHelper.GetBigCharacterIcon(Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId);
                     break;
                 case Model.AdventureBossData.AdventureBossSeasonState.None:
                 case Model.AdventureBossData.AdventureBossSeasonState.End:
