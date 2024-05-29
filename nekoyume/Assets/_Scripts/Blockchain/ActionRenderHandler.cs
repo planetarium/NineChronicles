@@ -3634,12 +3634,12 @@ namespace Nekoyume.Blockchain
         private bool isFirstWanted;
         private void ResponseWanted(ActionEvaluation<Wanted> eval)
         {
-            UniTask.RunOnThreadPool(async () =>
+            UniTask.RunOnThreadPool(() =>
             {
                 isFirstWanted = Game.Game.instance.AdventureBossData.BountyBoard.Value == null;
-                await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState();
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            }).ToObservable().ObserveOnMainThread().Subscribe(async _ =>
             {
+                await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState();
                 var action = eval.Action;
 
                 if (Widget.Find<LoadingScreen>().isActiveAndEnabled)

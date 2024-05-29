@@ -160,6 +160,7 @@ namespace Nekoyume.UI.Module
                         }
                         _bossId = Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId;
                         _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageParent);
+                        _bossImage.transform.localPosition = Vector3.zero;
                         _bossImage.transform.localScale = Vector3.one * 0.5f;
                     }
                     worldButton.HasNotification.Value = true;

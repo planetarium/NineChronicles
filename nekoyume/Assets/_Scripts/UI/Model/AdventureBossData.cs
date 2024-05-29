@@ -311,18 +311,24 @@ namespace Nekoyume.UI.Model
                 return myReward;
             }
 
-            myReward = AdventureBossHelper.CalculateExploreReward(myReward,
-                                BountyBoard.Value,
-                                ExploreBoard.Value,
-                                ExploreInfo.Value,
-                                ExploreInfo.Value.AvatarAddress,
-                                out var ncgReward);
+            try
+            {
+                myReward = AdventureBossHelper.CalculateExploreReward(myReward,
+                                    BountyBoard.Value,
+                                    ExploreBoard.Value,
+                                    ExploreInfo.Value,
+                                    ExploreInfo.Value.AvatarAddress,
+                                    out var ncgReward);
 
-            myReward = AdventureBossHelper.CalculateWantedReward(myReward,
-                                BountyBoard.Value,
-                                Game.Game.instance.States.CurrentAvatarState.address,
-                                out var wantedReward);
-
+                myReward = AdventureBossHelper.CalculateWantedReward(myReward,
+                                    BountyBoard.Value,
+                                    Game.Game.instance.States.CurrentAvatarState.address,
+                                    out var wantedReward);
+            }
+            catch (System.Exception e)
+            {
+                NcDebug.LogError($"[AdventureBossData.GetCurrentTotalRewards]{e}");
+            }
             return myReward;
         }
 

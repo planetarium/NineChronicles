@@ -44,9 +44,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private ConditionalButton addBountyButton;
         [SerializeField]
-        private ConditionalButton challengeButton;
+        private ConditionalButton viewAllButton;
         [SerializeField]
-        private ConditionalButton entireButton;
+        private ConditionalButton enterButton;
 
         [SerializeField]
         private TextMeshProUGUI[] investorUserNames;
@@ -66,7 +66,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private BaseItemView[] baseItemViews;
         [SerializeField]
-        private Image bossImg;
+        private TextMeshProUGUI bossName;
+        [SerializeField]
+        private Transform bossImageParent;
+        private int _bossId;
+        private GameObject _bossImage;
 
         private const float _floorHeight = 170;
         private readonly List<System.IDisposable> _disposablesByEnable = new();
@@ -80,12 +84,14 @@ namespace Nekoyume.UI
                 Widget.Find<AdventureBossEnterBountyPopup>().Show();
             }).AddTo(gameObject);
 
-            //todo
-            challengeButton.OnClickSubject.Subscribe(_ =>
+            viewAllButton.OnClickSubject.Subscribe(_ =>
             {
-                AdventureBossBattleAction();
+                Widget.Find<AdventureBossFullBountyStatusPopup>().Show();
             }).AddTo(gameObject);
-            entireButton.OnClickSubject.Subscribe(_ =>
+            viewAllButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_VIEW_ALL"));
+
+            //todo
+            enterButton.OnClickSubject.Subscribe(_ =>
             {
                 AdventureBossBattleAction();
             }).AddTo(gameObject);
@@ -108,6 +114,20 @@ namespace Nekoyume.UI
             {
                 Widget.Find<LoadingScreen>().Close();
                 NcDebug.LogError(e);
+            }
+        }
+
+        private void SetBossData(int bossId)
+        {
+            if (_bossId != bossId)
+            {
+                if (_bossImage != null)
+                {
+                    DestroyImmediate(_bossImage);
+                }
+                _bossId = bossId;
+                _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageParent);
+                _bossImage.transform.localPosition = Vector3.zero;
             }
         }
 
@@ -188,12 +208,19 @@ namespace Nekoyume.UI
                 ItemReward = new Dictionary<int, int>(),
                 FavReward = new Dictionary<int, int>(),
             };
-            myReward = AdventureBossHelper.CalculateExploreReward(myReward,
-                                adventureBossData.BountyBoard.Value,
-                                adventureBossData.ExploreBoard.Value,
-                                adventureBossData.ExploreInfo.Value,
-                                adventureBossData.ExploreInfo.Value.AvatarAddress,
-                                out var ncgReward);
+            try
+            {
+                myReward = AdventureBossHelper.CalculateExploreReward(myReward,
+                                    adventureBossData.BountyBoard.Value,
+                                    adventureBossData.ExploreBoard.Value,
+                                    adventureBossData.ExploreInfo.Value,
+                                    adventureBossData.ExploreInfo.Value.AvatarAddress,
+                                    out var ncgReward);
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError(e);
+            }
 
             int itenViewIndex = 0;
             foreach (var item in myReward.ItemReward)
@@ -276,8 +303,14 @@ namespace Nekoyume.UI
             }
             _seasonStartBlock = seasonInfo.StartBlockIndex;
             _seasonEndBlock = seasonInfo.EndBlockIndex;
-            bossImg.sprite = SpriteHelper.GetBigCharacterIcon(seasonInfo.BossId);
-            bossImg.SetNativeSize();
+            try
+            {
+                SetBossData(seasonInfo.BossId);
+                bossName.text = L10nManager.LocalizeCharacterName(seasonInfo.BossId);
+            }catch(Exception e)
+            {
+                NcDebug.LogError(e);
+            }
         }
 
         private void UpdateViewAsync(long blockIndex)

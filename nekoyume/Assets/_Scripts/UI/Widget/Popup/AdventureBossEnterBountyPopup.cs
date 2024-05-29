@@ -124,12 +124,16 @@ namespace Nekoyume.UI
             {
                 stakingWarningMassage.SetActive(true);
                 bountyInputArea.gameObject.SetActive(false);
+                confirmButton.Interactable = false;
             }
             else
             {
                 stakingWarningMassage.SetActive(false);
                 bountyInputArea.gameObject.SetActive(true);
             }
+
+            inputCountObj.SetActive(false);
+
             bountyedPrice.text = "-";
             totalBountyPrice.text = "-";
             bountyCount.text = "-";

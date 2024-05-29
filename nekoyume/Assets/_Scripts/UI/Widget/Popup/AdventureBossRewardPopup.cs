@@ -101,13 +101,20 @@ namespace Nekoyume.UI
                 var investor = bountyBoard.Investors.FirstOrDefault(
                     inv => inv.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address);
 
-                if(investor != null && !investor.Claimed)
+                try
                 {
-                    wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward, bountyBoard, Game.Game.instance.States.CurrentAvatarState.address, out var wantedReward);
+                    if(investor != null && !investor.Claimed)
+                    {
+                        wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward, bountyBoard, Game.Game.instance.States.CurrentAvatarState.address, out var wantedReward);
+                    }
+                    if(exploreInfo != null && !exploreInfo.Claimed)
+                    {
+                        exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward, bountyBoard, exploreBoard, exploreInfo, Game.Game.instance.States.CurrentAvatarState.address, out var explorerReward);
+                    }
                 }
-                if(exploreInfo != null && !exploreInfo.Claimed)
+                catch (Exception e)
                 {
-                    exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward, bountyBoard, exploreBoard, exploreInfo, Game.Game.instance.States.CurrentAvatarState.address, out var explorerReward);
+                    NcDebug.LogError(e);
                 }
             }
 
