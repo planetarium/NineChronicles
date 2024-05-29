@@ -178,14 +178,14 @@ namespace Nekoyume.UI
                         bountyCount.text = $"The bounty I placed ({currentBountyInfo.Count}/3)";
                     }
                     totalBountyPrice.text = Game.Game.instance.AdventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
-                    var rewards = Game.Game.instance.AdventureBossData.GetCurrentBountyRewards();
+                    var bountyRewards = Game.Game.instance.AdventureBossData.GetCurrentBountyRewards();
                     int i = 0;
-                    foreach (var item in rewards.ItemReward)
+                    foreach (var item in bountyRewards.ItemReward)
                     {
                         expectedRewardItems[i].ItemViewSetItemData(item.Key, item.Value);
                         i++;
                     }
-                    foreach (var item in rewards.FavReward)
+                    foreach (var item in bountyRewards.FavReward)
                     {
                         if(expectedRewardItems[i].ItemViewSetCurrencyData(item.Key, item.Value))
                         {
