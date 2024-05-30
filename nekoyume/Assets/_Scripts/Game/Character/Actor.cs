@@ -1141,7 +1141,7 @@ namespace Nekoyume.Game.Character
             foreach (var info in _action.skillInfos)
             {
                 var target = info.Target;
-                if (target == null || target.IsDead)
+                if (target == null || !target.IsDead)
                 {
                     continue;
                 }
