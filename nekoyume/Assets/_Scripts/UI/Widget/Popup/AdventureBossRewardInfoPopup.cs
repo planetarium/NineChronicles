@@ -51,30 +51,12 @@ namespace Nekoyume.UI
         {
             toggleScore.onValueChanged.AddListener((isOn) =>
             {
-                var adventureBossData = Game.Game.instance.AdventureBossData;
-                totalScore.text = adventureBossData.ExploreBoard.Value.TotalPoint.ToString("#,0");
-                var contribution = (long)adventureBossData.ExploreInfo.Value.Score / adventureBossData.ExploreBoard.Value.TotalPoint;
-                myScore.text = $"{adventureBossData.ExploreInfo.Value.Score.ToString("#,0")} ({contribution.ToString("F2")}%)";
-                var myReward = adventureBossData.GetCurrentTotalRewards();
-                int i = 0;
-                foreach (var item in myReward.ItemReward)
-                {
-                    baseItemViews[i].ItemViewSetItemData(item.Key, item.Value);
-                    i++;
-                }
-                foreach(var fav in myReward.FavReward)
-                {
-                    if (baseItemViews[i].ItemViewSetCurrencyData(fav.Key, fav.Value))
-                    {
-                        i++;
-                    }
-                }
-                for (; i < baseItemViews.Length; i++)
-                {
-                    baseItemViews[i].gameObject.SetActive(false);
-                }
-
                 contentsScore.SetActive(isOn);
+                if (!isOn)
+                {
+                    return;
+                }
+                RefreshToggleScore();
             });
             toggleFloor.onValueChanged.AddListener((isOn) =>
             {
@@ -83,6 +65,10 @@ namespace Nekoyume.UI
             toggleOperational.onValueChanged.AddListener((isOn) =>
             {
                 contentsOperational.SetActive(isOn);
+                if(!isOn)
+                {
+                    return;
+                }
                 if(Game.Game.instance.AdventureBossData.SeasonInfo.Value != null)
                 {
                     var bossId = Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId;
@@ -158,6 +144,45 @@ namespace Nekoyume.UI
             }); 
         }
 
+        private void RefreshToggleScore()
+        {
+            var adventureBossData = Game.Game.instance.AdventureBossData;
+            int myScoreValue = 0;
+            if (adventureBossData.ExploreInfo.Value != null)
+            {
+                myScoreValue = adventureBossData.ExploreInfo.Value.Score;
+            }
+            long contribution = 0;
+            if (adventureBossData.ExploreBoard.Value.TotalPoint != 0)
+            {
+                totalScore.text = adventureBossData.ExploreBoard.Value.TotalPoint.ToString("#,0");
+                contribution = (long)myScoreValue / adventureBossData.ExploreBoard.Value.TotalPoint;
+            }
+            else
+            {
+                totalScore.text = "0";
+            }
+            myScore.text = $"{myScoreValue.ToString("#,0")} ({contribution.ToString("F2")}%)";
+            var myReward = adventureBossData.GetCurrentTotalRewards();
+            int i = 0;
+            foreach (var item in myReward.ItemReward)
+            {
+                baseItemViews[i].ItemViewSetItemData(item.Key, item.Value);
+                i++;
+            }
+            foreach (var fav in myReward.FavReward)
+            {
+                if (baseItemViews[i].ItemViewSetCurrencyData(fav.Key, fav.Value))
+                {
+                    i++;
+                }
+            }
+            for (; i < baseItemViews.Length; i++)
+            {
+                baseItemViews[i].gameObject.SetActive(false);
+            }
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             Game.Game.instance.AdventureBossData.SeasonInfo.
@@ -166,7 +191,15 @@ namespace Nekoyume.UI
             Game.Game.instance.Agent.BlockIndexSubject
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposablesByEnable);
+
             base.Show(ignoreShowAnimation);
+
+            contentsFloor.SetActive(false);
+            contentsOperational.SetActive(false);
+            toggleScore.isOn = true;
+            /*toggleScore.SetIsOnWithoutNotify(true);
+            contentsScore.SetActive(true);
+            RefreshToggleScore();*/
         }
 
         private void RefreshSeasonInfo(SeasonInfo seasonInfo)
