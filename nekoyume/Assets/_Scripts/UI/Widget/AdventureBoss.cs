@@ -126,7 +126,7 @@ namespace Nekoyume.UI
                     DestroyImmediate(_bossImage);
                 }
                 _bossId = bossId;
-                _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageParent);
+                _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconBody(_bossId), bossImageParent);
                 _bossImage.transform.localPosition = Vector3.zero;
             }
         }
