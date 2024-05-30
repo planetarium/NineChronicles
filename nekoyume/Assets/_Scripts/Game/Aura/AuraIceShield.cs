@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model.Buff;
 using Spine.Unity;
@@ -9,7 +10,12 @@ namespace Nekoyume.Game
 {
     public class AuraIceShield : AuraPrefabBase
     {
-        private const int IceShieldId = 708000;
+        public static int FrostBiteId => 709000;
+        
+        // TODO: ID대신 GroupID사용 고려 혹은 ID와 GroupID사이의 정의 정리
+        private static readonly int[] IceShieldIds = {
+            708000, 708001, 708002
+        };
 
         protected const string AppearAnimation    = "Appear";
         protected const string CastingAnimation   = "Casting";
@@ -37,7 +43,11 @@ namespace Nekoyume.Game
                 return;
             }
             base.AddEventToOwner();
-            Owner.BuffCastCoroutine.Add(IceShieldId, OnBuffCast);
+
+            foreach (var iceShieldId in IceShieldIds)
+            {
+                Owner.BuffCastCoroutine.Add(iceShieldId, OnBuffCast);
+            }
         }
 
         protected override void RemoveEventFromOwner()
@@ -47,12 +57,16 @@ namespace Nekoyume.Game
                 return;
             }
             base.RemoveEventFromOwner();
-            Owner.BuffCastCoroutine.Remove(IceShieldId);
+
+            foreach (var iceShieldId in IceShieldIds)
+            {
+                Owner.BuffCastCoroutine.Remove(iceShieldId);
+            }
         }
 
         protected override void ProcessCustomEvent(int customEventId)
         {
-            if (IceShield.FrostBiteId != customEventId)
+            if (FrostBiteId != customEventId)
             {
                 return;
             }
@@ -63,7 +77,7 @@ namespace Nekoyume.Game
 
         protected override void ProcessBuffEnd(int buffId)
         {
-            if (IceShieldId != buffId)
+            if (!IceShieldIds.Contains(buffId))
             {
                 return;
             }

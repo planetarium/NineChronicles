@@ -333,9 +333,9 @@ namespace Nekoyume.Game.Battle
             if (eventBase is ArenaTick tick)
             {
                 var affectedCharacter = caster.Id == me.Id ? me : enemy;
-                if (tick.SkillId == IceShield.FrostBiteId)
+                if (tick.SkillId == AuraIceShield.FrostBiteId)
                 {
-                    if (!caster.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
+                    if (!caster.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
                     {
                         yield break;
                     }
@@ -343,7 +343,7 @@ namespace Nekoyume.Game.Battle
                     var sourceCharacter = caster.Id == me.Id ? enemy : me;
                     IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
                     {
-                        sourceCharacter.CustomEvent(IceShield.FrostBiteId);
+                        sourceCharacter.CustomEvent(AuraIceShield.FrostBiteId);
                         yield return affectedCharacter.CoBuff(skillInfos);
                     }
 

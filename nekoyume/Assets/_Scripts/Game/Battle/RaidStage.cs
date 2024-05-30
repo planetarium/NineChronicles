@@ -520,16 +520,16 @@ namespace Nekoyume.Game.Battle
             {
                 RaidCharacter raidCharacter =
                     character.Id == _player.Id ? _player : _boss;
-                if (tick.SkillId == IceShield.FrostBiteId)
+                if (tick.SkillId == AuraIceShield.FrostBiteId)
                 {
-                    if (!character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
+                    if (!character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
                     {
                         yield break;
                     }
 
                     IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
                     {
-                        _player.CustomEvent(IceShield.FrostBiteId);
+                        _player.CustomEvent(AuraIceShield.FrostBiteId);
                         yield return raidCharacter.CoBuff(skillInfos);
                     }
 

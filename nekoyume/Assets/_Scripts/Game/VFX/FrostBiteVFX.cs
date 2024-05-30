@@ -97,7 +97,7 @@ namespace Nekoyume.Game.VFX
                 return;
             }
 
-            if (!Target.CharacterModel.Buffs.TryGetValue(IceShield.FrostBiteId, out var buff))
+            if (!Target.CharacterModel.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var buff))
             {
                 return;
             }

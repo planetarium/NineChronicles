@@ -167,8 +167,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   summonedSpine: {fileID: 6168488055080785601}
-  iceShieldParticle: {fileID: 2090492182866393553}
-  frostBiteParticle: {fileID: 3605954931630260479}
+  iceShieldParticle: {fileID: 4631657645334279262}
+  frostBiteParticle: {fileID: 8020615586306821488}
 --- !u!1 &3629409267591857694
 GameObject:
   m_ObjectHideFlags: 0
@@ -606,15 +606,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 448c2495f28a2854296cf94d40a44208, type: 3}
---- !u!198 &2090492182866393553 stripped
+--- !u!198 &4631657645334279262 stripped
 ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 5340706468405764438, guid: 448c2495f28a2854296cf94d40a44208,
-    type: 3}
-  m_PrefabInstance: {fileID: 6277151108499478663}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &3605954931630260479 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 7284017467371575416, guid: 448c2495f28a2854296cf94d40a44208,
+  m_CorrespondingSourceObject: {fileID: 1682692295990750425, guid: 448c2495f28a2854296cf94d40a44208,
     type: 3}
   m_PrefabInstance: {fileID: 6277151108499478663}
   m_PrefabAsset: {fileID: 0}
@@ -633,6 +627,12 @@ MonoBehaviour:
 --- !u!4 &6168488055080785606 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 181890666083323457, guid: 448c2495f28a2854296cf94d40a44208,
+    type: 3}
+  m_PrefabInstance: {fileID: 6277151108499478663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &8020615586306821488 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4058333485415798263, guid: 448c2495f28a2854296cf94d40a44208,
     type: 3}
   m_PrefabInstance: {fileID: 6277151108499478663}
   m_PrefabAsset: {fileID: 0}
