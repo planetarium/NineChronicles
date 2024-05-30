@@ -3456,7 +3456,7 @@ MonoBehaviour:
   player: {fileID: 4074258769654277578}
   playerPosition: {fileID: 8599435477895653661}
   titleSocket: {fileID: 2768896114814177233}
-  adventureBossMark: {fileID: 5005163228581455867}
+  adventureBossMark: {fileID: 4897672548650666897}
 --- !u!95 &2103180334685861810
 Animator:
   serializedVersion: 5
@@ -9549,9 +9549,9 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 2501659536266527903}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &5005163228581455867 stripped
+--- !u!1 &4897672548650666897 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 7476616843698070372, guid: e6d7b535158669e49bc77f0431126854,
+  m_CorrespondingSourceObject: {fileID: 7012009116396932878, guid: e6d7b535158669e49bc77f0431126854,
     type: 3}
   m_PrefabInstance: {fileID: 2501659536266527903}
   m_PrefabAsset: {fileID: 0}

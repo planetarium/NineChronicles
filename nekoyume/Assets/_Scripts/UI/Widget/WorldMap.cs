@@ -168,6 +168,8 @@ namespace Nekoyume.UI
             {
                 ShowManyWorldUnlockPopup(worldInformation);
             }
+
+            Widget.Find<AdventureBossRewardPopup>().Show();
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
@@ -175,6 +177,7 @@ namespace Nekoyume.UI
             SubscribeAtShow();
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show(true);
+            Widget.Find<AdventureBossRewardPopup>().Show();
         }
 
         private void SubscribeAtShow()

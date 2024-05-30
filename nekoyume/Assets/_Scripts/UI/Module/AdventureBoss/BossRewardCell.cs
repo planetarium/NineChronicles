@@ -37,14 +37,20 @@ namespace Nekoyume
             int i = 0;
             foreach (var randomReward in adventureBossReward.wantedReward.RandomRewardItemIdDict)
             {
-                randomRewardItemViews[i].ItemViewSetItemData(randomReward.Key, 0);
-                i++;
+                if(i < randomRewardItemViews.Length)
+                {
+                    randomRewardItemViews[i].ItemViewSetItemData(randomReward.Key, 0);
+                    i++;
+                }
             }
             foreach (var randomReward in adventureBossReward.wantedReward.RandomRewardFavTickerDict)
             {
-                if (randomRewardItemViews[i].ItemViewSetCurrencyData(randomReward.Key, 1))
+                if (i < randomRewardItemViews.Length)
                 {
-                    i++;
+                    if (randomRewardItemViews[i].ItemViewSetCurrencyData(randomReward.Key, 1))
+                    {
+                        i++;
+                    }
                 }
             }
             for (; i < randomRewardItemViews.Length; i++)

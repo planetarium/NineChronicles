@@ -74,7 +74,9 @@ namespace Nekoyume.UI
             bountyInputArea.onEndEdit.AddListener(OnBountyInputAreaValueChanged);
             _bountyDefaultColor = bountyInputArea.textComponent.color;
             confirmButton.OnSubmitSubject.Subscribe(_ => OnClickConfirm()).AddTo(gameObject);
-            bountyViewAllButton.OnSubmitSubject.Subscribe(_ => Find<AdventureBossFullBountyStatusPopup>().Show()).AddTo(gameObject);
+            bountyViewAllButton.OnSubmitSubject.Subscribe(_ =>
+                Find<AdventureBossFullBountyStatusPopup>().Show()
+            ).AddTo(gameObject);
             base.Awake();
         }
 

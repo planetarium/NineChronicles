@@ -87,25 +87,29 @@ namespace Nekoyume.UI
                         int itemIndex = 0;
                         foreach (var item in wantedReward.ItemReward)
                         {
-                            currentSeasonBossRewardViews[itemIndex].ItemViewSetItemData(item.Key, item.Value);
-                            itemIndex++;
                             if (itemIndex >= currentSeasonBossRewardViews.Length)
                             {
                                 NcDebug.LogError("currentSeasonBossRewardViews is not enough");
                                 break;
                             }
+                            currentSeasonBossRewardViews[itemIndex].ItemViewSetItemData(item.Key, item.Value);
+                            itemIndex++;
                         }
                         foreach (var fav in wantedReward.FavReward)
                         {
-                            if (baseItemViews[itemIndex].ItemViewSetCurrencyData(fav.Key, fav.Value))
-                            {       
-                                itemIndex++;
-                            }
                             if(itemIndex >= currentSeasonBossRewardViews.Length)
                             {
                                 NcDebug.LogError("currentSeasonBossRewardViews is not enough");
                                 break;
                             }
+                            if (currentSeasonBossRewardViews[itemIndex].ItemViewSetCurrencyData(fav.Key, fav.Value))
+                            {       
+                                itemIndex++;
+                            }
+                        }
+                        for (; itemIndex < currentSeasonBossRewardViews.Length; itemIndex++)
+                        {
+                            currentSeasonBossRewardViews[itemIndex].gameObject.SetActive(false);
                         }
                     }
                     else
@@ -156,14 +160,14 @@ namespace Nekoyume.UI
             if (adventureBossData.ExploreBoard.Value.TotalPoint != 0)
             {
                 totalScore.text = adventureBossData.ExploreBoard.Value.TotalPoint.ToString("#,0");
-                contribution = (long)myScoreValue / adventureBossData.ExploreBoard.Value.TotalPoint;
+                contribution = (long)myScoreValue / adventureBossData.ExploreBoard.Value.TotalPoint * 100;
             }
             else
             {
                 totalScore.text = "0";
             }
             myScore.text = $"{myScoreValue.ToString("#,0")} ({contribution.ToString("F2")}%)";
-            var myReward = adventureBossData.GetCurrentTotalRewards();
+            var myReward = adventureBossData.GetCurrentExploreRewards();
             int i = 0;
             foreach (var item in myReward.ItemReward)
             {
@@ -197,9 +201,7 @@ namespace Nekoyume.UI
             contentsFloor.SetActive(false);
             contentsOperational.SetActive(false);
             toggleScore.isOn = true;
-            /*toggleScore.SetIsOnWithoutNotify(true);
-            contentsScore.SetActive(true);
-            RefreshToggleScore();*/
+            RefreshToggleScore();
         }
 
         private void RefreshSeasonInfo(SeasonInfo seasonInfo)

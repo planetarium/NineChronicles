@@ -37,6 +37,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI participantsCount;
         [SerializeField]
+        private TextMeshProUGUI usedApPotion;
+        [SerializeField]
         private TextMeshProUGUI remainingBlockTime;
         [SerializeField]
         private ShaderPropertySlider remainingBlockTimeSlider;
@@ -95,6 +97,7 @@ namespace Nekoyume.UI
             {
                 AdventureBossBattleAction();
             }).AddTo(gameObject);
+            enterButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_ENTER"));
         }
 
         private void AdventureBossBattleAction()
@@ -142,37 +145,55 @@ namespace Nekoyume.UI
 
             towerRect.anchoredPosition = new Vector2(towerRect.anchoredPosition.x, 0);
 
-            Game.Game.instance.AdventureBossData.SeasonInfo.
-                Subscribe(RefreshSeasonInfo).
-                AddTo(_disposablesByEnable);
+            try
+            {
+                Game.Game.instance.AdventureBossData.SeasonInfo.
+                    Subscribe(RefreshSeasonInfo).
+                    AddTo(_disposablesByEnable);
 
-            Game.Game.instance.AdventureBossData.BountyBoard.
-                Subscribe(RefreshBountyBoardInfo).
-                AddTo(_disposablesByEnable);
+                Game.Game.instance.AdventureBossData.BountyBoard.
+                    Subscribe(RefreshBountyBoardInfo).
+                    AddTo(_disposablesByEnable);
 
-            Game.Game.instance.AdventureBossData.ExploreInfo.
-                Subscribe(RefreshExploreInfo).
-                AddTo(_disposablesByEnable);
+                Game.Game.instance.AdventureBossData.ExploreInfo.
+                    Subscribe(RefreshExploreInfo).
+                    AddTo(_disposablesByEnable);
 
-            Game.Game.instance.AdventureBossData.ExploreBoard.
-                Subscribe(RefreshExploreBoard).
-                AddTo(_disposablesByEnable);
+                Game.Game.instance.AdventureBossData.ExploreBoard.
+                    Subscribe(RefreshExploreBoard).
+                    AddTo(_disposablesByEnable);
 
-            Game.Game.instance.Agent.BlockIndexSubject
-                .Subscribe(UpdateViewAsync)
-                .AddTo(_disposablesByEnable);
+                Game.Game.instance.Agent.BlockIndexSubject
+                    .Subscribe(UpdateViewAsync)
+                    .AddTo(_disposablesByEnable);
 
-            base.Show(ignoreShowAnimation);
+                base.Show(ignoreShowAnimation);
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogException(e);
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_INVALID"), Scroller.NotificationCell.NotificationType.Alert);
+                throw;
+            }
         }
 
         private void RefreshExploreBoard(ExploreBoard board)
         {
-            if(board == null)
+            try
             {
-                participantsCount.text = "0";
-                return;
+                if(board == null)
+                {
+                    participantsCount.text = "0";
+                    usedApPotion.text = "0";
+                    return;
+                }
+                participantsCount.text = $"{board.ExplorerList.Count:#,0}";
+                usedApPotion.text = $"{board.UsedApPotion:#,0}";
             }
-            participantsCount.text = $"{board.ExplorerList.Count:#,0}";
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private void RefreshExploreInfo(Explorer exploreInfo)
@@ -182,24 +203,49 @@ namespace Nekoyume.UI
                 clearFloor.text = $"-";
                 score.text = "0";
                 ChangeFloor(1);
+                for (int i = 0; i < floors.Count(); i++)
+                {
+                    if(i< 5)
+                    {
+                        floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
+                    }
+                    else if(i == 5)
+                    {
+                        floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
+                    }
+                    else
+                    {
+                        floors[i].SetState(AdventureBossFloor.FloorState.Lock, i);
+                    }
+                }
                 return;
             }
             clearFloor.text = $"F{exploreInfo.Floor}";
+
+            enterButton.Interactable = exploreInfo.MaxFloor > exploreInfo.Floor;
 
             for (int i = 0; i < floors.Count(); i++)
             {
                 if(i < exploreInfo.Floor)
                 {
-                    floors[i].SetState(AdventureBossFloor.FloorState.Clear);
+                    floors[i].SetState(AdventureBossFloor.FloorState.Clear, i);
+                }
+                else if(i > exploreInfo.MaxFloor)
+                {
+                    floors[i].SetState(AdventureBossFloor.FloorState.Lock, i);
+                }
+                else if (Game.Game.instance.AdventureBossData.UnlockDict.TryGetValue(i, out var unlockData) && i >= exploreInfo.MaxFloor)
+                {
+                    floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
                 }
                 else
                 {
-                    floors[i].SetState(AdventureBossFloor.FloorState.NotClear);
+                    floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                 }
             }
 
             score.text = $"{exploreInfo.Score:#,0}";
-            ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor, false);
+            ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor + 1, false);
 
             var adventureBossData = Game.Game.instance.AdventureBossData;
             var myReward = new ClaimableReward
@@ -210,35 +256,44 @@ namespace Nekoyume.UI
             };
             try
             {
-                myReward = AdventureBossHelper.CalculateExploreReward(myReward,
+                /*myReward = AdventureBossHelper.CalculateExploreReward(myReward,
                                     adventureBossData.BountyBoard.Value,
                                     adventureBossData.ExploreBoard.Value,
                                     adventureBossData.ExploreInfo.Value,
                                     adventureBossData.ExploreInfo.Value.AvatarAddress,
                                     false,
-                                    out var ncgReward);
+                                    out var ncgReward);*/
+                myReward = adventureBossData.GetCurrentTotalRewards();
             }
             catch (Exception e)
             {
                 NcDebug.LogError(e);
             }
 
-            int itenViewIndex = 0;
+            int itemViewIndex = 0;
             foreach (var item in myReward.ItemReward)
             {
-                baseItemViews[itenViewIndex].ItemViewSetItemData(item.Key, item.Value);
-                itenViewIndex++;
+                if(itemViewIndex >= baseItemViews.Length)
+                {
+                    break;
+                }
+                baseItemViews[itemViewIndex].ItemViewSetItemData(item.Key, item.Value);
+                itemViewIndex++;
             }
             foreach (var fav in myReward.FavReward)
             {
-                if (baseItemViews[itenViewIndex].ItemViewSetCurrencyData(fav.Key, fav.Value))
+                if (itemViewIndex >= baseItemViews.Length)
                 {
-                    itenViewIndex++;
+                    break;
+                }
+                if (baseItemViews[itemViewIndex].ItemViewSetCurrencyData(fav.Key, fav.Value))
+                {
+                    itemViewIndex++;
                 }
             }
-            for (; itenViewIndex < baseItemViews.Length; itenViewIndex++)
+            for (; itemViewIndex < baseItemViews.Length; itemViewIndex++)
             {
-                baseItemViews[itenViewIndex].gameObject.SetActive(false);
+                baseItemViews[itemViewIndex].gameObject.SetActive(false);
             }
         }
 
@@ -320,6 +375,7 @@ namespace Nekoyume.UI
             if(remainingBlockIndex < 0)
             {
                 Close();
+                Widget.Find<AdventureBossRewardPopup>().Show();
                 return;
             }
             remainingBlockTime.text = $"{remainingBlockIndex:#,0}({remainingBlockIndex.BlockRangeToTimeSpanString()})";

@@ -3696,7 +3696,7 @@ namespace Nekoyume.Blockchain
                     if(bountyBoard.RaffleWinner == null)
                     {
                         //최초
-                        Widget.Find<AdventureBossNcgRandomRewardPopup>().Show();
+                        Widget.Find<AdventureBossNcgRandomRewardPopup>().Show(eval.Action.Season);
                     }
                 }
             });

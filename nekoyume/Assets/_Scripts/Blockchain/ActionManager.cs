@@ -1781,6 +1781,32 @@ namespace Nekoyume.Blockchain
                 });
         }
 
+        public IObservable<ActionEvaluation<UnlockFloor>> UnlockFloor(bool useNCG)
+        {
+            if (Game.Game.instance.AdventureBossData.SeasonInfo is null ||
+                Game.Game.instance.AdventureBossData.SeasonInfo.Value is null ||
+                States.Instance.CurrentAvatarState is null)
+            {
+                NcDebug.LogError("[UnlockFloor] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
+            }
+            var action = new UnlockFloor
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season,
+                UseNcg = useNCG
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<UnlockFloor>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(_ =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
         public IObservable<ActionEvaluation<ClaimAdventureBossReward>> ClaimAdventureBossReward(long SeasonId)
         {
             var action = new ClaimAdventureBossReward

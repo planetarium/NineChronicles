@@ -498,7 +498,6 @@ namespace Nekoyume.UI
             Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
-            Widget.Find<AdventureBossRewardPopup>().Show();
             AudioController.PlayClick();
         }
 

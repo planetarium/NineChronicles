@@ -23,6 +23,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI myScore;
         [SerializeField]
+        private TextMeshProUGUI myScoreRatioText;
+        [SerializeField]
         private GameObject rewardItemsBounty;
         [SerializeField]
         private GameObject rewardItemsExplore;
@@ -39,19 +41,17 @@ namespace Nekoyume.UI
         [SerializeField]
         private BaseItemView[] rewardItemsExplores;
 
-        private long _targetBlockIndex;
         private List<SeasonInfo> _endedClaimableSeasonInfo = new List<SeasonInfo>();
         private readonly List<System.IDisposable> _disposablesByEnable = new();
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private bool _isRefreshed = false;
+        private long _lastSeasonId = 0;
+
 
         protected override void Awake()
         {
             receiveAllButton.OnClickSubject.Subscribe(_ =>
             {
-                foreach (var seasonInfo in _endedClaimableSeasonInfo)
-                {
-                    ActionManager.Instance.ClaimAdventureBossReward(seasonInfo.Season);
-                }
+                ActionManager.Instance.ClaimAdventureBossReward(_lastSeasonId);
                 Game.Game.instance.AdventureBossData.IsRewardLoading.Value = true;
                 Close();
             }).AddTo(gameObject);
@@ -72,8 +72,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            RefreshWithSeasonInfo(_endedClaimableSeasonInfo[0]);
-
+            LoadTotalRewards().Forget();
 
             base.Show(ignoreShowAnimation);
         }
@@ -92,9 +91,14 @@ namespace Nekoyume.UI
                 ItemReward = new Dictionary<int, int>(),
                 FavReward = new Dictionary<int, int>(),
             };
+            _isRefreshed = false;
             foreach (var seasonInfo in _endedClaimableSeasonInfo)
             {
                 var bountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(seasonInfo.Season);
+                if(Game.Game.instance.AdventureBossData.EndedBountyBoards.ContainsKey(seasonInfo.Season))
+                {
+                    Game.Game.instance.AdventureBossData.EndedBountyBoards[seasonInfo.Season] = bountyBoard;
+                }
                 var exploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonInfo.Season);
                 var exploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, seasonInfo.Season);
 
@@ -106,6 +110,11 @@ namespace Nekoyume.UI
                     if(investor != null && !investor.Claimed)
                     {
                         wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward, bountyBoard, Game.Game.instance.States.CurrentAvatarState.address, false, out var wantedReward);
+                        RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
+                        if(_lastSeasonId < seasonInfo.Season)
+                        {
+                            _lastSeasonId = seasonInfo.Season;
+                        }
                     }
                     if(exploreInfo != null && !exploreInfo.Claimed)
                     {
@@ -125,13 +134,27 @@ namespace Nekoyume.UI
                 int i = 0;
                 foreach (var itemReward in wantedClaimableReward.ItemReward)
                 {
+                    if(i > rewardItems.Length)
+                    {
+                        NcDebug.LogError("rewardItems is not enough");
+                        break;
+                    }
                     rewardItems[i].ItemViewSetItemData(itemReward.Key, itemReward.Value);
                     i++;
                 }
                 foreach (var favReward in wantedClaimableReward.FavReward)
                 {
+                    if(i > rewardItems.Length)
+                    {
+                        NcDebug.LogError("rewardItems is not enough");
+                        break;
+                    }
                     rewardItems[i].ItemViewSetCurrencyData(favReward.Key, favReward.Value);
                     i++;
+                }
+                for (; i < rewardItems.Length; i++)
+                {
+                    rewardItems[i].gameObject.SetActive(false);
                 }
             }
             else
@@ -147,13 +170,27 @@ namespace Nekoyume.UI
                 int i = 0;
                 foreach (var itemReward in exprolerClaimableReward.ItemReward)
                 {
+                    if(i > rewardItemsExplores.Length)
+                    {
+                        NcDebug.LogError("rewardItemsExplores is not enough");
+                        break;
+                    }
                     rewardItemsExplores[i].ItemViewSetItemData(itemReward.Key, itemReward.Value);
                     i++;
                 }
                 foreach (var favReward in exprolerClaimableReward.FavReward)
                 {
+                    if(i > rewardItemsExplores.Length)
+                    {
+                        NcDebug.LogError("rewardItemsExplores is not enough");
+                        break;
+                    }
                     rewardItemsExplores[i].ItemViewSetCurrencyData(favReward.Key, favReward.Value);
                     i++;
+                }
+                for (; i < rewardItems.Length; i++)
+                {
+                    rewardItems[i].gameObject.SetActive(false);
                 }
             }
             else
@@ -175,11 +212,13 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        private void RefreshWithSeasonInfo(SeasonInfo info)
+        private void RefreshWithSeasonInfo(ExploreBoard exploreBoard, Explorer exploreInfo, BountyBoard bountyBoard)
         {
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource = new CancellationTokenSource();
-
+            if(_isRefreshed)
+            {
+                return;
+            }
+            _isRefreshed = true;
             bountyCost.text = "-";
             myScore.text = "-";
 
@@ -188,42 +227,27 @@ namespace Nekoyume.UI
             noRewardItemsBounty.SetActive(false);
             noRewardItemsExplore.SetActive(false);
 
-            Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, info.Season).ContinueWith(task =>
+            if (exploreInfo != null)
             {
-                if(task.IsCanceled || task.IsFaulted)
+                myScore.text = $"{exploreInfo.Score:#,0}";
+                SetExploreInfoVIew(true);
+                var myScoreRatio = (long)exploreInfo.Score / exploreBoard.TotalPoint;
+                myScoreRatioText.text = $"{myScoreRatio * 100:F2}%";
+            }
+            SetExploreInfoVIew(false);
+            if (bountyBoard != null)
+            {
+                var bountyInfo = bountyBoard.Investors.
+                    Where(i => i.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address)).
+                    FirstOrDefault();
+                if (bountyInfo != null)
                 {
+                    bountyCost.text = $"{bountyInfo.Price.ToCurrencyNotation()}";
+                    SetBountyInfoView(true);
                     return;
                 }
-                var exploreInfo = task.Result;
-                if (exploreInfo != null)
-                {
-                    myScore.text = $"{exploreInfo.Score:#,0}";
-                    SetExploreInfoVIew(true);
-                }
-
-                SetExploreInfoVIew(false);
-            }, _cancellationTokenSource.Token);
-            Game.Game.instance.Agent.GetBountyBoardAsync(info.Season).ContinueWith((task) =>
-            {
-                if (task.IsCanceled || task.IsFaulted)
-                {
-                    return;
-                }
-                var bountyBoard = task.Result;
-                if (bountyBoard != null)
-                {
-                    var bountyInfo = bountyBoard.Investors.
-                        Where(i => i.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address)).
-                        FirstOrDefault();
-                    if (bountyInfo != null)
-                    {
-                        bountyCost.text = $"{bountyInfo.Price.ToCurrencyNotation()}";
-                        SetBountyInfoView(true);
-                        return;
-                    }
-                }
-                SetBountyInfoView(false);
-            }, _cancellationTokenSource.Token);
+            }
+            SetBountyInfoView(false);
         }
 
         private void SetBountyInfoView(bool visible)

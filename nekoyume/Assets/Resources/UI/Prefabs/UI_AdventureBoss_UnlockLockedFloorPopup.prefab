@@ -195,6 +195,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  floorName: {fileID: 8438862489868754652}
+  floorDescription: {fileID: 7872614808469836666}
+  goldenDustUnlockButton: {fileID: 1306552421266474076}
+  goldUnlockButton: {fileID: 1306552422380079540}
 --- !u!95 &9045707236276405314
 Animator:
   serializedVersion: 5
@@ -842,7 +846,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 26
-  l10nKey: 
+  l10nKey: UI_ADVENTURE_BOSS_UNLOCK_FLOOR_TITLE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -3752,8 +3756,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 6076056223248820807}
+        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
         m_MethodName: Close
         m_Mode: 6
         m_Arguments:
@@ -5303,6 +5307,18 @@ PrefabInstance:
     - {fileID: 7478207742819768578, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
     - {fileID: 7897994086446589500, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
+--- !u!114 &1306552421266474076 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6277880972764344563, guid: 9067b4811aa0241b7a96a2cc09536ced,
+    type: 3}
+  m_PrefabInstance: {fileID: 4989511175957820591}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5530613065291959156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3879271578114439595 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
@@ -6569,6 +6585,18 @@ PrefabInstance:
     - {fileID: 7478207742819768578, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
     - {fileID: 7897994086446589500, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
+--- !u!114 &1306552422380079540 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6277880972764344563, guid: 9067b4811aa0241b7a96a2cc09536ced,
+    type: 3}
+  m_PrefabInstance: {fileID: 4989511176861350215}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5530613064115373724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3879271577273005123 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,

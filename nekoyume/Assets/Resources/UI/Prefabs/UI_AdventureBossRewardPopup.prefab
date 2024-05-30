@@ -27751,6 +27751,7 @@ MonoBehaviour:
   tutorialActions: 
   bountyCost: {fileID: 2172908924834156984}
   myScore: {fileID: 1441872672871135133}
+  myScoreRatioText: {fileID: 1794092573985590260}
   rewardItemsBounty: {fileID: 4354867292498166673}
   rewardItemsExplore: {fileID: 2840152150176669123}
   noRewardItemsBounty: {fileID: 3434278842447205677}
@@ -35174,6 +35175,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SortingLayer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6647271789449859631, guid: 8b469cf316352604b9ff8a701c62687f,
+        type: 3}
+      propertyPath: m_Scale3D.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6647271789449859631, guid: 8b469cf316352604b9ff8a701c62687f,
+        type: 3}
+      propertyPath: m_Scale3D.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6647271789449859631, guid: 8b469cf316352604b9ff8a701c62687f,
+        type: 3}
+      propertyPath: m_Scale3D.z
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 7318435997188271748, guid: 8b469cf316352604b9ff8a701c62687f,
         type: 3}

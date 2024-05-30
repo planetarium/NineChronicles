@@ -154,7 +154,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 35
-  l10nKey: UI_BATTLE_REWARDS
+  l10nKey: UI_ADVENTURE_BOSS_REWARD_INFO_FLOOR
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -2897,7 +2897,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 35
-  l10nKey: UI_SEASON_REWARDS
+  l10nKey: UI_ADVENTURE_BOSS_REWARD_INFO_SCORE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -9923,7 +9923,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &275538232206102109
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10576,7 +10576,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8655364993229564125
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12804,7 +12804,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 35
-  l10nKey: UI_GRADE_REWARDS
+  l10nKey: UI_ADVENTURE_BOSS_REWARD_INFO_OPERATIONAL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
