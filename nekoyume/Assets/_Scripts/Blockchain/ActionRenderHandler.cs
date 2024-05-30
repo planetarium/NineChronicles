@@ -3683,14 +3683,6 @@ namespace Nekoyume.Blockchain
                 }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address)){
-                    var action = eval.Action;
-                    var tableSheets = Game.Game.instance.TableSheets;
-                    var mailRewards = new List<MailReward>();
-                    Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
-                    Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
-                }
-
                 if(Game.Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(eval.Action.Season,out var bountyBoard))
                 {
                     if(bountyBoard.RaffleWinner == null)
@@ -3698,7 +3690,11 @@ namespace Nekoyume.Blockchain
                         //최초
                         Widget.Find<AdventureBossNcgRandomRewardPopup>().Show(eval.Action.Season);
                     }
+
+                    //기존정보 업데이트 보상수령 정보를 갱신하기위함.
+                    Game.Game.instance.AdventureBossData.RefreshEndedSeasons().Forget();
                 }
+
             });
         }
 

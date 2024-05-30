@@ -11,6 +11,8 @@ using Libplanet.Types.Assets;
 using Nekoyume.State;
 using Amazon.Runtime.Internal.Transform;
 using Nekoyume.Helper;
+using System.Text.RegularExpressions;
+using UnityEngine.Windows;
 
 namespace Nekoyume.UI.Model
 {
@@ -208,6 +210,41 @@ namespace Nekoyume.UI.Model
             }));
         }
 
+        public async UniTask RefreshEndedSeasons()
+        {
+            //최근시즌이 종료된경우 끝난시즌정보에 추가.
+            int startIndex = SeasonInfo.Value.EndBlockIndex < Game.Game.instance.Agent.BlockIndex ? 0 : 1;
+
+            //최대 10개의 종료된 시즌정보를 가져온다.(만일을 대비 해서)
+            for (int i = startIndex; i < _endedSeasonSearchTryCount; i++)
+            {
+                var oldSeasonIndex = SeasonInfo.Value.Season - i;
+
+                //최초시즌이 0이하로 내려가면 더이상 찾지않음.
+                if (oldSeasonIndex <= 0)
+                    break;
+
+                var oldSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(oldSeasonIndex);
+                var oldBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(oldSeasonIndex);
+
+                if (!EndedSeasonInfos.ContainsKey(oldSeasonIndex))
+                {
+                    EndedSeasonInfos.Add(oldSeasonIndex, oldSeasonInfo);
+                    EndedBountyBoards.Add(oldSeasonIndex, oldBountyBoard);
+                }
+                else
+                {
+                    EndedSeasonInfos[oldSeasonIndex] = oldSeasonInfo;
+                    EndedBountyBoards[oldSeasonIndex] = oldBountyBoard;
+                }
+                //보상수령기간이 지날경우 더이상 가져오지않음.
+                if (oldSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
+                {
+                    break;
+                }
+            }
+        }
+
         public async UniTask RefreshAllByCurrentState()
         {
             SeasonInfo.Value = await Game.Game.instance.Agent.GetAdventureBossLatestSeasonAsync();
@@ -254,20 +291,19 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            try
-            {
-                BountyBoard.Value = null;
-                ExploreInfo.Value = null;
-                ExploreBoard.Value = null;
-            }
-            catch (System.Exception e)
-            {
-                NcDebug.LogError($"[AdventureBossData]{e}");
-            }
-
             //시즌시작은되었으나 아무도 현상금을 걸지않아서 시즌데이터가없는경우.
             if (SeasonInfo.Value.NextStartBlockIndex <= Game.Game.instance.Agent.BlockIndex)
             {
+                try
+                {
+                    BountyBoard.Value = null;
+                    ExploreInfo.Value = null;
+                    ExploreBoard.Value = null;
+                }
+                catch (System.Exception e)
+                {
+                    NcDebug.LogError($"[AdventureBossData]{e}");
+                }
                 try
                 {
                     CurrentState.Value = AdventureBossSeasonState.Ready;
@@ -289,6 +325,9 @@ namespace Nekoyume.UI.Model
             }
             try
             {
+                BountyBoard.Value = null;
+                ExploreInfo.Value = null;
+                ExploreBoard.Value = null;
                 CurrentState.Value = AdventureBossSeasonState.End;
             }
             catch (System.Exception e)
@@ -397,6 +436,34 @@ namespace Nekoyume.UI.Model
                                     out var ncgReward);
             }
             return myReward;
+        }
+
+        static public ClaimableReward AddClaimableReward(ClaimableReward origin, ClaimableReward addable)
+        {
+            origin.NcgReward += addable.NcgReward;
+            foreach (var item in addable.ItemReward)
+            {
+                if (origin.ItemReward.ContainsKey(item.Key))
+                {
+                    origin.ItemReward[item.Key] += item.Value;
+                }
+                else
+                {
+                    origin.ItemReward.Add(item.Key, item.Value);
+                }
+            }
+            foreach (var fav in addable.FavReward)
+            {
+                if (origin.FavReward.ContainsKey(fav.Key))
+                {
+                    origin.FavReward[fav.Key] += fav.Value;
+                }
+                else
+                {
+                    origin.FavReward.Add(fav.Key, fav.Value);
+                }
+            }
+            return origin;
         }
     }
 }

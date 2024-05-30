@@ -1243,6 +1243,7 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   scrollView: {fileID: 7006725200785534467}
+  myBountyCell: {fileID: 7965668807958734884}
 --- !u!1 &2126686962902723784
 GameObject:
   m_ObjectHideFlags: 0
@@ -2788,6 +2789,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 669282777253762566}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7965668807958734884 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7476671030320528930, guid: a099476b11bca2740822f765f6f0d2a2,
+    type: 3}
+  m_PrefabInstance: {fileID: 669282777253762566}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93c12a8952efab8419ea72aaba61a146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2737061418683161456
 PrefabInstance:
   m_ObjectHideFlags: 0

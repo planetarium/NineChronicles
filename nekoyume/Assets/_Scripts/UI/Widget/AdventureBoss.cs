@@ -10,12 +10,14 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
+    using Nekoyume.ActionExtensions;
     using Nekoyume.Blockchain;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
     using Nekoyume.Model.Mail;
     using Nekoyume.TableData;
+    using Nekoyume.UI.Model;
     using System.Linq;
     using UniRx;
     using UnityEngine.UI;
@@ -78,6 +80,12 @@ namespace Nekoyume.UI
         private readonly List<System.IDisposable> _disposablesByEnable = new();
         private long _seasonStartBlock;
         private long _seasonEndBlock;
+        private ClaimableReward _myReward = new ClaimableReward
+        {
+            NcgReward = null,
+            ItemReward = new Dictionary<int, int>(),
+            FavReward = new Dictionary<int, int>(),
+        };
 
         protected override void Awake()
         {
@@ -198,18 +206,18 @@ namespace Nekoyume.UI
 
         private void RefreshExploreInfo(Explorer exploreInfo)
         {
-            if(exploreInfo == null)
+            if (exploreInfo == null)
             {
                 clearFloor.text = $"-";
                 score.text = "0";
                 ChangeFloor(1);
                 for (int i = 0; i < floors.Count(); i++)
                 {
-                    if(i< 5)
+                    if (i < 5)
                     {
                         floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                     }
-                    else if(i == 5)
+                    else if (i == 5)
                     {
                         floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
                     }
@@ -226,11 +234,11 @@ namespace Nekoyume.UI
 
             for (int i = 0; i < floors.Count(); i++)
             {
-                if(i < exploreInfo.Floor)
+                if (i < exploreInfo.Floor)
                 {
                     floors[i].SetState(AdventureBossFloor.FloorState.Clear, i);
                 }
-                else if(i > exploreInfo.MaxFloor)
+                else if (i > exploreInfo.MaxFloor)
                 {
                     floors[i].SetState(AdventureBossFloor.FloorState.Lock, i);
                 }
@@ -248,39 +256,30 @@ namespace Nekoyume.UI
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor + 1, false);
 
             var adventureBossData = Game.Game.instance.AdventureBossData;
-            var myReward = new ClaimableReward
-            {
-                NcgReward = null,
-                ItemReward = new Dictionary<int, int>(),
-                FavReward = new Dictionary<int, int>(),
-            };
             try
             {
-                /*myReward = AdventureBossHelper.CalculateExploreReward(myReward,
-                                    adventureBossData.BountyBoard.Value,
-                                    adventureBossData.ExploreBoard.Value,
-                                    adventureBossData.ExploreInfo.Value,
-                                    adventureBossData.ExploreInfo.Value.AvatarAddress,
-                                    false,
-                                    out var ncgReward);*/
-                myReward = adventureBossData.GetCurrentTotalRewards();
+                _myReward = AdventureBossData.AddClaimableReward(_myReward, adventureBossData.GetCurrentExploreRewards());
             }
             catch (Exception e)
             {
                 NcDebug.LogError(e);
             }
+            RefreshMyReward();
+        }
 
+        private void RefreshMyReward()
+        {
             int itemViewIndex = 0;
-            foreach (var item in myReward.ItemReward)
+            foreach (var item in _myReward.ItemReward)
             {
-                if(itemViewIndex >= baseItemViews.Length)
+                if (itemViewIndex >= baseItemViews.Length)
                 {
                     break;
                 }
                 baseItemViews[itemViewIndex].ItemViewSetItemData(item.Key, item.Value);
                 itemViewIndex++;
             }
-            foreach (var fav in myReward.FavReward)
+            foreach (var fav in _myReward.FavReward)
             {
                 if (itemViewIndex >= baseItemViews.Length)
                 {
@@ -339,7 +338,7 @@ namespace Nekoyume.UI
                 if(topInvestorList.Count() > i)
                 {
                     investorUserNames[i].transform.parent.parent.gameObject.SetActive(true);
-                    investorUserNames[i].text = $"#{topInvestorList[i].AvatarAddress.ToHex()[..4]}";
+                    investorUserNames[i].text = topInvestorList[i].GetParsedName();
                     investorBountyCounts[i].text = $"({topInvestorList[i].Count}/{Investor.MaxInvestmentCount})";
                     investorBountyPrice[i].text = topInvestorList[i].Price.MajorUnit.ToString("#,0");
                 }
@@ -348,11 +347,26 @@ namespace Nekoyume.UI
                     investorUserNames[i].transform.parent.parent.gameObject.SetActive(false);
                 }
             }
+            try
+            {
+                _myReward = AdventureBossData.AddClaimableReward(_myReward, Game.Game.instance.AdventureBossData.GetCurrentBountyRewards());
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError(e);
+            }
+            RefreshMyReward();
         }
 
         private void RefreshSeasonInfo(SeasonInfo seasonInfo)
         {
-            if(seasonInfo == null)
+            _myReward = new ClaimableReward
+            {
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+            if (seasonInfo == null)
             {
                 NcDebug.LogError("[UI_AdventureBoss] RefreshSeasonInfo: seasonInfo is null");
                 return;

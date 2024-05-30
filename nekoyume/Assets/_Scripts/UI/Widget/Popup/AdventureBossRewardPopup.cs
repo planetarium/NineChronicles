@@ -15,6 +15,8 @@ using System;
 namespace Nekoyume.UI
 {
     using Nekoyume.Helper;
+    using Nekoyume.TableData;
+    using Nekoyume.UI.Model;
     using UniRx;
     public class AdventureBossRewardPopup : PopupWidget
     {
@@ -45,13 +47,47 @@ namespace Nekoyume.UI
         private readonly List<System.IDisposable> _disposablesByEnable = new();
         private bool _isRefreshed = false;
         private long _lastSeasonId = 0;
-
+        ClaimableReward lastClaimableReward = new ClaimableReward
+        {
+            NcgReward = null,
+            ItemReward = new Dictionary<int, int>(),
+            FavReward = new Dictionary<int, int>(),
+        };
 
         protected override void Awake()
         {
             receiveAllButton.OnClickSubject.Subscribe(_ =>
             {
-                ActionManager.Instance.ClaimAdventureBossReward(_lastSeasonId);
+                ActionManager.Instance.ClaimAdventureBossReward(_lastSeasonId).Subscribe(eval =>
+                {
+                    if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                    {
+                        var action = eval.Action;
+                        var tableSheets = Game.Game.instance.TableSheets;
+                        var mailRewards = new List<MailReward>();
+                        
+                        if(lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.RawValue > 0)
+                        {
+                            mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
+                        }
+                        foreach (var itemReward in lastClaimableReward.ItemReward)
+                        {
+                            mailRewards.Add(new MailReward(itemReward.Key, itemReward.Value));
+                        }
+                        foreach (var favReward in lastClaimableReward.FavReward)
+                        {
+                            RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                            runeSheet.TryGetValue(favReward.Key, out var runeRow);
+                            if (runeRow != null)
+                            {
+                                mailRewards.Add(new MailReward(runeRow.Ticker, favReward.Value));
+                            }
+                        }
+
+                        Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
+                        Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
+                    }
+                });
                 Game.Game.instance.AdventureBossData.IsRewardLoading.Value = true;
                 Close();
             }).AddTo(gameObject);
@@ -66,7 +102,12 @@ namespace Nekoyume.UI
                 OrderBy(seasonInfo => seasonInfo.EndBlockIndex).
                 ToList();
 
-            if (_endedClaimableSeasonInfo.Count == 0)
+            var claimableInfo = adventureBossData.EndedBountyBoards.Values.
+                Where(bountyBoard => _endedClaimableSeasonInfo.Any(seasondata => seasondata.Season == bountyBoard.Season) &&
+                    bountyBoard.Investors.Any(inv => inv.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address && !inv.Claimed)).
+                ToList();
+
+            if (claimableInfo.Count == 0)
             {
                 Close();
                 return;
@@ -86,6 +127,12 @@ namespace Nekoyume.UI
                 FavReward = new Dictionary<int, int>(),
             };
             ClaimableReward exprolerClaimableReward = new ClaimableReward
+            {
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+            lastClaimableReward = new ClaimableReward
             {
                 NcgReward = null,
                 ItemReward = new Dictionary<int, int>(),
@@ -190,7 +237,7 @@ namespace Nekoyume.UI
                 }
                 for (; i < rewardItems.Length; i++)
                 {
-                    rewardItems[i].gameObject.SetActive(false);
+                    rewardItemsExplores[i].gameObject.SetActive(false);
                 }
             }
             else
@@ -198,8 +245,9 @@ namespace Nekoyume.UI
                 rewardItemsExplore.SetActive(false);
                 noRewardItemsExplore.SetActive(true);
             }
-
-            if(noRewardItemsBounty.activeSelf && noRewardItemsExplore.activeSelf)
+            lastClaimableReward = AdventureBossData.AddClaimableReward(lastClaimableReward, wantedClaimableReward);
+            lastClaimableReward = AdventureBossData.AddClaimableReward(lastClaimableReward, exprolerClaimableReward);
+            if (noRewardItemsBounty.activeSelf && noRewardItemsExplore.activeSelf)
             {
                 Close();
             }
@@ -221,6 +269,7 @@ namespace Nekoyume.UI
             _isRefreshed = true;
             bountyCost.text = "-";
             myScore.text = "-";
+            myScoreRatioText.text = "-";
 
             rewardItemsBounty.SetActive(false);
             rewardItemsExplore.SetActive(false);
