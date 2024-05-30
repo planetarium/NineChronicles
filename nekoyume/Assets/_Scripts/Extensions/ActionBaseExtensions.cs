@@ -1,6 +1,7 @@
 ﻿using System;
 using Libplanet.Action;
 using Nekoyume.Action;
+using Nekoyume.Game;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Buff;
 using Buff = Nekoyume.Model.BattleStatus.Buff;
@@ -123,7 +124,7 @@ namespace Nekoyume
                     // TODO: 하드코딩 수정
                     if (tick.SkillId == 209000)
                     {
-                        if (tick.Character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBuff))
+                        if (tick.Character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBuff))
                         {
                             if (frostBuff is StatBuff frostBite)
                             {
