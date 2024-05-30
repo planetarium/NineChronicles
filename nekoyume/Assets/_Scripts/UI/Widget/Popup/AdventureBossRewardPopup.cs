@@ -105,11 +105,11 @@ namespace Nekoyume.UI
                 {
                     if(investor != null && !investor.Claimed)
                     {
-                        wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward, bountyBoard, Game.Game.instance.States.CurrentAvatarState.address, out var wantedReward);
+                        wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward, bountyBoard, Game.Game.instance.States.CurrentAvatarState.address, false, out var wantedReward);
                     }
                     if(exploreInfo != null && !exploreInfo.Claimed)
                     {
-                        exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward, bountyBoard, exploreBoard, exploreInfo, Game.Game.instance.States.CurrentAvatarState.address, out var explorerReward);
+                        exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward, bountyBoard, exploreBoard, exploreInfo, Game.Game.instance.States.CurrentAvatarState.address, false, out var explorerReward);
                     }
                 }
                 catch (Exception e)

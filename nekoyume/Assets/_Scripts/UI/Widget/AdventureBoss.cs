@@ -215,6 +215,7 @@ namespace Nekoyume.UI
                                     adventureBossData.ExploreBoard.Value,
                                     adventureBossData.ExploreInfo.Value,
                                     adventureBossData.ExploreInfo.Value.AvatarAddress,
+                                    false,
                                     out var ncgReward);
             }
             catch (Exception e)

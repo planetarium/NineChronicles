@@ -318,11 +318,13 @@ namespace Nekoyume.UI.Model
                                     ExploreBoard.Value,
                                     ExploreInfo.Value,
                                     ExploreInfo.Value.AvatarAddress,
+                                    false,
                                     out var ncgReward);
 
                 myReward = AdventureBossHelper.CalculateWantedReward(myReward,
                                     BountyBoard.Value,
                                     Game.Game.instance.States.CurrentAvatarState.address,
+                                    false,
                                     out var wantedReward);
             }
             catch (System.Exception e)
@@ -340,7 +342,7 @@ namespace Nekoyume.UI.Model
                 ItemReward = new Dictionary<int, int>(),
                 FavReward = new Dictionary<int, int>(),
             };
-            myReward = AdventureBossHelper.CalculateWantedReward(myReward, BountyBoard.Value, Game.Game.instance.States.CurrentAvatarState.address, out var wantedReward);
+            myReward = AdventureBossHelper.CalculateWantedReward(myReward, BountyBoard.Value, Game.Game.instance.States.CurrentAvatarState.address, false, out var wantedReward);
             return myReward;
         }
     }
