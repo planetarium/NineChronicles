@@ -28,7 +28,6 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
@@ -1013,6 +1012,10 @@ namespace Nekoyume.Game.Battle
             if (infosFirstWaveTurn > 0)
             {
                 yield return new WaitUntil(() => Time.time - time > 5f || waveTurn == infosFirstWaveTurn);
+                if (Time.time - time > 5f)
+                {
+                    NcDebug.LogWarning($"Time out. waveTurn: {waveTurn}, infosFirstWaveTurn: {infosFirstWaveTurn}");
+                }
             }
 
             yield return StartCoroutine(CoBeforeSkill(character));
@@ -1062,6 +1065,11 @@ namespace Nekoyume.Game.Battle
             var time = Time.time;
             yield return new WaitUntil(() =>
                 Time.time - time > 2f || character.TargetInAttackRange(enemy));
+            
+            if (Time.time - time > 2f)
+            {
+                NcDebug.LogWarning($"Time out. character: {character.Id}, enemy: {enemy.Id}");
+            }
         }
 
         private IEnumerator CoAfterSkill(Actor character, IEnumerable<Skill.SkillInfo> buffInfos)
