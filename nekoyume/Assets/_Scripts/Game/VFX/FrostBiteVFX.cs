@@ -81,6 +81,19 @@ namespace Nekoyume.Game.VFX
         {
             base.Play();
             Level = FrostBiteLevel.Level1;
+            if (Target != null)
+            {
+                Target.AddFrostbiteColor();
+            }
+        }
+
+        public override void LazyStop()
+        {
+            base.LazyStop();
+            if (Target != null)
+            {
+                Target.RemoveFrostbiteColor();
+            }
         }
 
         protected override void OnDisable()
@@ -97,12 +110,7 @@ namespace Nekoyume.Game.VFX
                 return;
             }
 
-            if (!Target.CharacterModel.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var buff))
-            {
-                return;
-            }
-
-            Level = GetFrostBiteLevel(buff);
+            Level = GetFrostBiteLevel(Buff);
         }
 
         private FrostBiteLevel GetFrostBiteLevel(Buff buff)

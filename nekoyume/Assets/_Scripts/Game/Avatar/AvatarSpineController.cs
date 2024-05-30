@@ -627,13 +627,17 @@ namespace Nekoyume.Game.Avatar
                     continue;
                 }
 
-                var mpb = new MaterialPropertyBlock();
-                mpb.SetColor(propertyID, color);
-
                 if (skeletonAnimation.TryGetComponent<MeshRenderer>(out var meshRenderer))
+                {
+                    var mpb = new MaterialPropertyBlock();
+                    meshRenderer.GetPropertyBlock(mpb);
+                    mpb.SetColor(propertyID, color);
                     meshRenderer.SetPropertyBlock(mpb);
+                }
                 else
+                {
                     NcDebug.LogError($"[{nameof(AvatarSpineController)}] No MeshRenderer found in {skeletonAnimation.name}.");
+                }
             }
         }
     }
