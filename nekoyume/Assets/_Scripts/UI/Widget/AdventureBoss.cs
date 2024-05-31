@@ -270,6 +270,11 @@ namespace Nekoyume.UI
         private void RefreshMyReward()
         {
             int itemViewIndex = 0;
+            if(_myReward.NcgReward != null)
+            {
+                baseItemViews[itemViewIndex].ItemViewSetCurrencyData(_myReward.NcgReward.Value.Currency.Ticker, (decimal)_myReward.NcgReward.Value.RawValue);
+                itemViewIndex++;
+            }
             foreach (var item in _myReward.ItemReward)
             {
                 if (itemViewIndex >= baseItemViews.Length)

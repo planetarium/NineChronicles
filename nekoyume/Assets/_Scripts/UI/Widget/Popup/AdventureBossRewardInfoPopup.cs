@@ -169,6 +169,11 @@ namespace Nekoyume.UI
             myScore.text = $"{myScoreValue.ToString("#,0")} ({contribution.ToString("F2")}%)";
             var myReward = adventureBossData.GetCurrentExploreRewards();
             int i = 0;
+            if (myReward.NcgReward != null)
+            {
+                baseItemViews[i].ItemViewSetCurrencyData(myReward.NcgReward.Value.Currency.Ticker, (decimal)myReward.NcgReward.Value.RawValue);
+                i++;
+            }
             foreach (var item in myReward.ItemReward)
             {
                 baseItemViews[i].ItemViewSetItemData(item.Key, item.Value);

@@ -3652,14 +3652,7 @@ namespace Nekoyume.Blockchain
                 //최초입찰여부
                 if (isFirstWanted && Game.Game.instance.AdventureBossData.BountyBoard.Value.Investors.Count >= 1 && Game.Game.instance.AdventureBossData.BountyBoard.Value.Investors[0].Count >= 1)
                 {
-                    if(Game.Game.instance.AdventureBossData.BountyBoard.Value.Investors[0].AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address)
-                    {
-                        Widget.Find<AdventureBossStartNotificationPopup>().Show();
-                    }
-                    else
-                    {
-                        Widget.Find<AdventureBossOpenInfoPopup>().Show();
-                    }
+                    Widget.Find<AdventureBossOpenInfoPopup>().Show();
                 }
             });
         }

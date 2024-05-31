@@ -147,6 +147,10 @@ namespace Nekoyume.UI.Module
                     open.SetActive(true);
                     wantedClose.SetActive(true);
                     worldButton.HasNotification.Value = true;
+                    if (_bossImage != null)
+                    {
+                        DestroyImmediate(_bossImage);
+                    }
                     break;
                 case AdventureBossData.AdventureBossSeasonState.Progress:
                     worldButton.Unlock();
@@ -171,6 +175,10 @@ namespace Nekoyume.UI.Module
                     worldButton.Lock();
                     open.SetActive(false);
                     SetDefualtRemainingBlockIndexs();
+                    if (_bossImage != null)
+                    {
+                        DestroyImmediate(_bossImage);
+                    }
                     break;
             }
         }

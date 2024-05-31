@@ -179,6 +179,11 @@ namespace Nekoyume.UI
                 rewardItemsBounty.SetActive(true);
                 noRewardItemsBounty.SetActive(false);
                 int i = 0;
+                if (wantedClaimableReward.NcgReward != null)
+                {
+                    rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)wantedClaimableReward.NcgReward.Value.RawValue);
+                    i++;
+                }
                 foreach (var itemReward in wantedClaimableReward.ItemReward)
                 {
                     if(i > rewardItems.Length)
@@ -215,6 +220,11 @@ namespace Nekoyume.UI
                 rewardItemsExplore.SetActive(true);
                 noRewardItemsExplore.SetActive(false);
                 int i = 0;
+                if(exprolerClaimableReward.NcgReward != null)
+                {
+                    rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)exprolerClaimableReward.NcgReward.Value.RawValue);
+                    i++;
+                }
                 foreach (var itemReward in exprolerClaimableReward.ItemReward)
                 {
                     if(i > rewardItemsExplores.Length)
