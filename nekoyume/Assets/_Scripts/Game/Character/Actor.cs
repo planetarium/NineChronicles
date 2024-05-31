@@ -1141,7 +1141,7 @@ namespace Nekoyume.Game.Character
             foreach (var info in _action.skillInfos)
             {
                 var target = info.Target;
-                if (target == null || target.IsDead)
+                if (target == null || !target.IsDead)
                 {
                     continue;
                 }
@@ -1153,6 +1153,11 @@ namespace Nekoyume.Game.Character
 
                 var time = Time.time;
                 yield return new WaitUntil(() => Time.time - time > 10f || !targetActor.HasAction());
+                if (Time.time - time > 10f)
+                {
+                    NcDebug.LogError($"[{nameof(Actor)}] CoExecuteAction Timeout. {gameObject.name}");
+                    break;
+                }
             }
 
             yield return new WaitForSeconds(StageConfig.instance.actionDelay);
