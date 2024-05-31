@@ -96,6 +96,8 @@ namespace Nekoyume.Blockchain
         public int AppProtocolVersion { get; private set; }
         public BlockHash BlockTipHash => blocks.Tip.Hash;
 
+        public HashDigest<SHA256> BlockTipStateRootHash => blocks.Tip.StateRootHash;
+
         private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
             new Subject<(NCTx tx, List<ActionBase> actions)>();
 

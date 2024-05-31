@@ -39,6 +39,8 @@ namespace Nekoyume.Blockchain
 
         BlockHash BlockTipHash { get; }
 
+        HashDigest<SHA256> BlockTipStateRootHash { get; }
+
         IObservable<(Transaction tx, List<ActionBase> actions)>
             OnMakeTransaction { get; }
 
