@@ -3634,9 +3634,10 @@ namespace Nekoyume.Blockchain
         private bool isFirstWanted;
         private void ResponseWanted(ActionEvaluation<Wanted> eval)
         {
-            UniTask.RunOnThreadPool(() =>
+            UniTask.RunOnThreadPool(async () =>
             {
                 isFirstWanted = Game.Game.instance.AdventureBossData.BountyBoard.Value == null;
+                await UpdateAgentStateAsync(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(async _ =>
             {
                 await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState();
@@ -3675,15 +3676,18 @@ namespace Nekoyume.Blockchain
 
         private void ResponseClaimAdventureBossReward(ActionEvaluation<ClaimAdventureBossReward> eval)
         {
-            UniTask.RunOnThreadPool(() =>
+            UniTask.RunOnThreadPool(async () =>
             {
                 if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 {
+                    await UpdateAgentStateAsync(eval);
+                    await UpdateCurrentAvatarStateAsync(eval);
+                    UpdateCurrentAvatarRuneStoneBalance(eval);
                     UpdateCurrentAvatarInventory(eval);
                 }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                if(Game.Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(eval.Action.Season,out var bountyBoard))
+                if (Game.Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(eval.Action.Season,out var bountyBoard))
                 {
                     if(bountyBoard.RaffleWinner == null)
                     {
