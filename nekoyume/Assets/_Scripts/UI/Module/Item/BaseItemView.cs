@@ -1,4 +1,6 @@
 using Coffee.UIEffects;
+using Nekoyume.Blockchain;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.ScriptableObject;
@@ -7,6 +9,8 @@ using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
+using System.Collections.Generic;
+using System;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
@@ -15,6 +19,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume
 {
+    using Libplanet.Types.Assets;
+    using UniRx;
     public class BaseItemView : MonoBehaviour
     {
         [SerializeField]
@@ -160,6 +166,8 @@ namespace Nekoyume
         public GameObject SelectCollectionObject => selectCollectionObject;
         public GameObject SelectArrowObject => selectArrowObject;
 
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
         public static Sprite GetItemIcon(ItemBase itemBase)
         {
             var icon = itemBase.GetIconSprite();
@@ -224,6 +232,11 @@ namespace Nekoyume
             if (runeRow != null)
             {
                 ItemViewSetCurrencyData(runeRow.Ticker, amount);
+                _disposables.DisposeAllAndClear();
+                touchHandler.OnClick.Subscribe(_ =>
+                {
+                    Widget.Find<FungibleAssetTooltip>().Show(runeRow.Ticker, ((BigInteger)amount).ToCurrencyNotation(), null);
+                }).AddTo(_disposables);
                 return true;
             }
             NcDebug.LogError($"[ItemViewSetCurrencyData] Can't Find Fav ID {favId} in RuneSheet");
@@ -231,10 +244,44 @@ namespace Nekoyume
             return false;
         }
 
+        private void AddSimpleTooltip(int id, decimal amount)
+        {
+            _disposables.DisposeAllAndClear();
+            if (!TableSheets.Instance.ItemSheet.TryGetValue(id, out var itemRow))
+            {
+                NcDebug.LogWarning($"Can't Find Item ID {id} in ItemSheet");
+                return;
+            }
+            ItemBase itemBase = null;
+            if (itemRow is MaterialItemSheet.Row materialRow)
+            {
+                itemBase = ItemFactory.CreateMaterial(materialRow);
+            }
+            else
+            {
+                for (var i = 0; i < amount; i++)
+                {
+                    if (itemRow.ItemSubType != ItemSubType.Aura)
+                    {
+                        itemBase = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                    }
+                }
+            }
+            if (itemBase != null)
+            {
+                touchHandler.OnClick.Subscribe(_ =>
+                {
+                    var tooltip = ItemTooltip.Find(itemBase.ItemType);
+                    tooltip.Show(itemBase, string.Empty, false, null);
+                }).AddTo(_disposables);
+            }
+        }
+
         public void ItemViewSetItemData(int itemId, int amount)
         {
             gameObject.SetActive(true);
             ClearItem();
+            AddSimpleTooltip(itemId, amount);
             ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemId);
             CountText.text = $"x{amount}";
             try
