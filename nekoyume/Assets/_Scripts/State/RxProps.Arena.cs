@@ -19,6 +19,8 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.State
 {
+    using Libplanet.Common;
+    using System.Security.Cryptography;
     using UniRx;
 
     public static partial class RxProps
@@ -142,7 +144,7 @@ namespace Nekoyume.State
 
         private static async Task<(ArenaInformation current, ArenaInformation next)>
             UpdateArenaInfoTupleAsync(
-                (ArenaInformation current, ArenaInformation next) previous)
+                (ArenaInformation current, ArenaInformation next) previous, HashDigest<SHA256> stateRootHash)
         {
             var avatarAddress = _states.CurrentAvatarState?.address;
             if (!avatarAddress.HasValue)
@@ -176,6 +178,7 @@ namespace Nekoyume.State
                     nextRoundData.Round)
                 : default;
             var dict = await _agent.GetStateBulkAsync(
+                stateRootHash,
                 ReservedAddresses.LegacyAccount,
                 new[]
                 {
@@ -195,7 +198,8 @@ namespace Nekoyume.State
         }
 
         private static async Task<List<ArenaParticipantModel>>
-            UpdateArenaInformationOrderedWithScoreAsync(List<ArenaParticipantModel> previous)
+            UpdateArenaInformationOrderedWithScoreAsync(
+            List<ArenaParticipantModel> previous, HashDigest<SHA256> stateRootHash)
         {
             var avatarAddress = _states.CurrentAvatarState?.address;
             List<ArenaParticipantModel> avatarAddrAndScoresWithRank =
@@ -238,7 +242,7 @@ namespace Nekoyume.State
                 playerScoreAddr
             };
             var stateBulk =
-                await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, addrBulk);
+                await agent.GetStateBulkAsync(stateRootHash, ReservedAddresses.LegacyAccount, addrBulk);
             var purchasedCountDuringInterval = stateBulk[purchasedCountAddress] is Integer iValue
                 ? (int)iValue
                 : 0;

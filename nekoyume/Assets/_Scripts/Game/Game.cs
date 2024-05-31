@@ -1301,7 +1301,7 @@ namespace Nekoyume.Game
             return container.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
         }
 
-        private static async void EnterNext()
+        private async void EnterNext()
         {
             NcDebug.Log("[Game] EnterNext() invoked");
             if (!GameConfig.IsEditor)
@@ -1317,7 +1317,7 @@ namespace Nekoyume.Game
                     var sw = new Stopwatch();
                     sw.Reset();
                     sw.Start();
-                    await RxProps.SelectAvatarAsync(slotIndex, true);
+                    await RxProps.SelectAvatarAsync(slotIndex, Agent.BlockTipStateRootHash, true);
                     sw.Stop();
                     NcDebug.Log("[Game] EnterNext()... SelectAvatarAsync() finished in" +
                               $" {sw.ElapsedMilliseconds}ms.(elapsed)");
@@ -1349,7 +1349,7 @@ namespace Nekoyume.Game
                         var sw = new Stopwatch();
                         sw.Reset();
                         sw.Start();
-                        await RxProps.SelectAvatarAsync(slotIndex, true);
+                        await RxProps.SelectAvatarAsync(slotIndex, Agent.BlockTipStateRootHash, true);
                         sw.Stop();
                         NcDebug.Log("[Game] EnterNext()... SelectAvatarAsync() finished in" +
                                   $" {sw.ElapsedMilliseconds}ms.(elapsed)");

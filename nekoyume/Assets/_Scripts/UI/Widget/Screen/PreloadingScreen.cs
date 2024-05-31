@@ -55,7 +55,8 @@ namespace Nekoyume.UI
                     loadingScreen.Show(
                         LoadingScreen.LoadingType.Entering,
                         L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
-                    await RxProps.SelectAvatarAsync(slotIndex);
+                    await RxProps.SelectAvatarAsync(
+                        slotIndex, Game.Game.instance.Agent.BlockTipStateRootHash);
                     loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);
                     Game.Event.OnUpdateAddresses.Invoke();
@@ -81,7 +82,8 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        await RxProps.SelectAvatarAsync(slotIndex);
+                        await RxProps.SelectAvatarAsync(
+                            slotIndex, Game.Game.instance.Agent.BlockTipStateRootHash);
                         Game.Event.OnRoomEnter.Invoke(false);
                         Game.Event.OnUpdateAddresses.Invoke();
                     }

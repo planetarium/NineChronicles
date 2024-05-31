@@ -754,7 +754,7 @@ namespace Nekoyume.Blockchain
                 {
                     await UpdateAgentStateAsync(eval);
                     await UpdateAvatarState(eval, eval.Action.index);
-                    await RxProps.SelectAvatarAsync(eval.Action.index);
+                    await RxProps.SelectAvatarAsync(eval.Action.index, eval.OutputState);
                 }).ToObservable()
                 .ObserveOnMainThread()
                 .Subscribe(x =>
@@ -2108,7 +2108,7 @@ namespace Nekoyume.Blockchain
                         var task = UniTask.RunOnThreadPool(() =>
                         {
                             UpdateCurrentAvatarStateAsync(eval).Forget();
-                            RxProps.EventDungeonInfo.UpdateAsync().Forget();
+                            RxProps.EventDungeonInfo.UpdateAsync(eval.OutputState).Forget();
                             _disposableForBattleEnd = null;
                             Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                         }, configureAwait: false);
@@ -2594,12 +2594,12 @@ namespace Nekoyume.Blockchain
                 eval.Action.round == currentRound.Round)
             {
                 await UniTask.WhenAll(
-                    RxProps.ArenaInfoTuple.UpdateAsync(),
-                    RxProps.ArenaInformationOrderedWithScore.UpdateAsync());
+                    RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState),
+                    RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
             }
             else
             {
-                await RxProps.ArenaInfoTuple.UpdateAsync();
+                await RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState);
             }
 
             if (arenaJoin && arenaJoin.IsActive())
@@ -2638,8 +2638,8 @@ namespace Nekoyume.Blockchain
             }
 
             // NOTE: Start cache some arena info which will be used after battle ends.
-            await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync());
+            await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState),
+                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
@@ -3155,6 +3155,7 @@ namespace Nekoyume.Blockchain
                 {
                     RxProps.SelectAvatarAsync(
                         States.Instance.CurrentAvatarKey,
+                        eval.OutputState,
                         forceNewSelection: true).Forget();
                     NotificationSystem.Push(
                         MailType.System,
