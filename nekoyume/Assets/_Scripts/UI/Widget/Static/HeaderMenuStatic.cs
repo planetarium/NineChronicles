@@ -421,7 +421,9 @@ namespace Nekoyume.UI.Module
                 }).AddTo(gameObject);
             }
 
-            _toggleNotifications[ToggleType.PortalReward].Value = PlayerPrefs.GetInt(PortalRewardNotificationKey, 0) == 0 ? false : true;
+            _toggleNotifications[ToggleType.PortalReward].Value =
+                !Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild &&
+                PlayerPrefs.GetInt(PortalRewardNotificationKey, 0) != 0;
         }
 
         protected override void OnEnable()
