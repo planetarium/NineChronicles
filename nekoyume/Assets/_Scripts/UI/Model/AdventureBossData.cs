@@ -440,7 +440,14 @@ namespace Nekoyume.UI.Model
 
         static public ClaimableReward AddClaimableReward(ClaimableReward origin, ClaimableReward addable)
         {
-            origin.NcgReward += addable.NcgReward;
+            if(origin.NcgReward == null || origin.NcgReward.Value == null)
+            {
+                origin.NcgReward = addable.NcgReward;
+            }
+            else
+            {
+                origin.NcgReward += addable.NcgReward;
+            }
             foreach (var item in addable.ItemReward)
             {
                 if (origin.ItemReward.ContainsKey(item.Key))

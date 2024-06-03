@@ -100,32 +100,11 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
             viewAllButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_VIEW_ALL"));
 
-            //todo
             enterButton.OnClickSubject.Subscribe(_ =>
             {
-                AdventureBossBattleAction();
+                Find<AdventureBossBattlePopup>().Show();
             }).AddTo(gameObject);
             enterButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_ENTER"));
-        }
-
-        private void AdventureBossBattleAction()
-        {
-            Widget.Find<LoadingScreen>().Show();
-            try
-            {
-                ActionManager.Instance.AdventureBossBattle().Subscribe(eval =>
-                {
-                    Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
-                    {
-                        Widget.Find<LoadingScreen>().Close();
-                    });
-                });
-            }
-            catch (Exception e)
-            {
-                Widget.Find<LoadingScreen>().Close();
-                NcDebug.LogError(e);
-            }
         }
 
         private void SetBossData(int bossId)
