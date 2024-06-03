@@ -125,6 +125,7 @@ namespace Nekoyume.UI
 
             if (permission == NativeGallery.Permission.Denied)
             {
+                NcDebug.Log("[CodeReaderView] Camera permission already denied.");
                 OpenSystemSettingsAndQuit();
             }
         }
@@ -150,9 +151,24 @@ namespace Nekoyume.UI
                 Debug.Log("[CodeReaderView] Camera permission granted.");
             }
 #elif UNITY_IOS
-            if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
+            if (Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
+                Debug.Log("[CodeReaderView] Camera permission already granted.");
+            }
+            else
+            {
+                Debug.Log("[CodeReaderView] Request camera permission.");
                 yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
+
+                if (Application.HasUserAuthorization(UserAuthorization.WebCam))
+                {
+                    Debug.Log("[CodeReaderView] Camera permission granted.");
+                }
+                else
+                {
+                    Debug.Log("[CodeReaderView] Camera permission already denied.");
+                    OpenSystemSettingsAndQuit();
+                }
             }
 #endif
 
