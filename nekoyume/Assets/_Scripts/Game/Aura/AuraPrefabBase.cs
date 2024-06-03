@@ -11,9 +11,6 @@ namespace Nekoyume.Game
             get => _owner;
             set
             {
-                if (_owner == value)
-                    return;
-
                 RemoveEventFromOwner();
                 _owner = value;
                 AddEventToOwner();
