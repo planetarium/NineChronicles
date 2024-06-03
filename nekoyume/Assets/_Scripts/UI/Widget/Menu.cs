@@ -105,6 +105,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private GameObject adventureBossMark;
 
+        [SerializeField] private GameObject adventureBossUnMark;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
@@ -172,6 +174,7 @@ namespace Nekoyume.UI
                     NcDebug.Log($"[AdventureBoss] AdventureBossMark Refresh {activeMark}");
 
                     adventureBossMark.SetActive(activeMark);
+                    adventureBossUnMark.SetActive(!activeMark);
                 })
                 .AddTo(gameObject);
         }

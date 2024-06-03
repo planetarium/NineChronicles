@@ -228,7 +228,7 @@ namespace Nekoyume.UI
                 }
                 return;
             }
-            clearFloor.text = $"F{exploreInfo.Floor}";
+            clearFloor.text = $"{exploreInfo.Floor}F";
 
             enterButton.Interactable = exploreInfo.MaxFloor > exploreInfo.Floor;
 
