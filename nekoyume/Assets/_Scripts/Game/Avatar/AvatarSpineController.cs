@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Avatar
         private readonly List<Tweener> _fadeTweener = new();
         private bool _isActiveFullCostume;
         private readonly Dictionary<AvatarPartsType, SkeletonAnimation> _parts = new();
-        private GameObject _prevAuraObj;
+        private GameObject _prevAuraPrefab;
         private GameObject _prevWeaponObj;
 
         public BoxCollider Collider => _isActiveFullCostume ? fullCostumeCollider : bodyCollider;
@@ -250,11 +250,20 @@ namespace Nekoyume.Game.Avatar
 
         public void UpdateAura(GameObject auraVFXPrefab = null)
         {
-            if (_prevAuraObj == auraVFXPrefab)
+            if (_prevAuraPrefab == auraVFXPrefab)
             {
+                if (auraVFXPrefab == null || _cachedAuraVFX == null)
+                {
+                    return;
+                }
+                
+                if (_cachedAuraVFX.TryGetComponent(out AuraPrefabBase cachedAuraObject))
+                {
+                    cachedAuraObject.Owner = owner;
+                }
                 return;
             }
-            _prevAuraObj = auraVFXPrefab;
+            _prevAuraPrefab = auraVFXPrefab;
 
             Destroy(_cachedAuraVFX);
 
