@@ -21,7 +21,7 @@ namespace Nekoyume.Game
         }
 
 #region MonoBehaviour
-        protected void OnDisable()
+        protected virtual void OnDisable()
         {
             RemoveEventFromOwner();
         }
