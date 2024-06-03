@@ -35,7 +35,7 @@ namespace Nekoyume.UI
 
         [SerializeField] private ResultVideoClip normalVideoClip;
         [SerializeField] private ResultVideoClip goldenVideoClip;
-        [SerializeField] private ResultVideoClip redVideoClip;
+        [SerializeField] private ResultVideoClip rubyVideoClip;
 
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
@@ -266,7 +266,7 @@ namespace Nekoyume.UI
             {
                 CostType.SilverDust => normalVideoClip,
                 CostType.GoldDust   => goldenVideoClip,
-                CostType.RubyDust   => redVideoClip,
+                CostType.RubyDust   => rubyVideoClip,
                 _                   => null
             };
         }
