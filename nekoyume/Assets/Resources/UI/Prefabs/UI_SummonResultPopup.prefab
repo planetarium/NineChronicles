@@ -30158,9 +30158,9 @@ MonoBehaviour:
     summoning: {fileID: 32900000, guid: 49083264c1a1adc438dff5d135da9bf6, type: 3}
     result: {fileID: 32900000, guid: 903dd4623f969124a9780aaeb1be3a0b, type: 3}
     great: {fileID: 0}
-  redVideoClip:
-    summoning: {fileID: 32900000, guid: 1a7728e5a873ce14a86bbd1af09c2f73, type: 3}
-    result: {fileID: 32900000, guid: a1ec6056fd780ba4dab2954fe861d200, type: 3}
+  rubyVideoClip:
+    summoning: {fileID: 32900000, guid: 1a01eec87f72f4c4fa6e6be374ff1837, type: 3}
+    result: {fileID: 32900000, guid: 3bcd172408fc84843843749bc85f27c0, type: 3}
     great: {fileID: 0}
   summonItemViews:
   - {fileID: 3038227469596484099}
@@ -51228,6 +51228,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6161220586840151808, guid: 13ae1c4ea549af847a0dd8917103c564,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6264494664632758256, guid: 13ae1c4ea549af847a0dd8917103c564,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -52700,6 +52705,11 @@ PrefabInstance:
     - target: {fileID: 6161220586840151808, guid: 13ae1c4ea549af847a0dd8917103c564,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6161220586840151808, guid: 13ae1c4ea549af847a0dd8917103c564,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6264494664632758256, guid: 13ae1c4ea549af847a0dd8917103c564,
@@ -54384,6 +54394,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2564305710739577272, guid: 13ae1c4ea549af847a0dd8917103c564,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3139417448121705640, guid: 13ae1c4ea549af847a0dd8917103c564,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -54573,6 +54588,11 @@ PrefabInstance:
     - target: {fileID: 8223954766089130625, guid: 13ae1c4ea549af847a0dd8917103c564,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8223954766089130625, guid: 13ae1c4ea549af847a0dd8917103c564,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8261827014740876137, guid: 13ae1c4ea549af847a0dd8917103c564,
