@@ -1339,11 +1339,11 @@ GameObject:
   m_Component:
   - component: {fileID: 596342407671630535}
   - component: {fileID: 598131015587327275}
-  - component: {fileID: 775203504012927939}
+  - component: {fileID: 7581996672772555983}
   - component: {fileID: 4275271734013621130}
   - component: {fileID: 6096845671206882399}
   m_Layer: 5
-  m_Name: UI_AdventurebossPreparation
+  m_Name: UI_AdventureBossPreparation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1383,7 +1383,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 819239891798544067}
   m_CullTransparentMesh: 0
---- !u!114 &775203504012927939
+--- !u!114 &7581996672772555983
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1392,45 +1392,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 819239891798544067}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49bc911b5f8040358b8638552db99274, type: 3}
+  m_Script: {fileID: 11500000, guid: f227133b11b713047afb426a03103c9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets:
-  - type: 30001
-    rectTransform: {fileID: 6093762751998039300}
-  - type: 10
-    rectTransform: {fileID: 4514855197427064471}
-  - type: 20
-    rectTransform: {fileID: 1947755692668975048}
-  tutorialActions: 307500003175000053c30000
+  tutorialTargets: []
+  tutorialActions: 
   information: {fileID: 6096845671206882399}
   closeButtonText: {fileID: 7621881320258465692}
   particles:
   - {fileID: 5316342953306006946}
   startButton: {fileID: 3877513839568761560}
-  randomBuffButton: {fileID: 0}
   closeButton: {fileID: 7202417188386983004}
   buttonStarImageTransform: {fileID: 7742381152354770861}
-  repeatToggle: {fileID: 0}
   animationTime: 0.8
   moveToLeft: 1
   middleXGap: 0.82
   coverToBlockClick: {fileID: 3162831151915785299}
-  sweepPopupButton: {fileID: 0}
-  sweepButtonText: {fileID: 0}
-  enemyCp: {fileID: 3528213706216964485}
-  boostPopupButton: {fileID: 0}
-  mimisbrunnrBg: {fileID: 0}
-  eventDungeonBgs:
-  - eventType: 3
-    background: {fileID: 0}
-  - eventType: 4
-    background: {fileID: 0}
-  - eventType: 5
-    background: {fileID: 0}
   hasBg: {fileID: 3221432453336514071}
   blockStartingTextObject: {fileID: 4583398183979494684}
-  enemyCpContainer: {fileID: 7097508943123980753}
 --- !u!95 &4275271734013621130
 Animator:
   serializedVersion: 5
@@ -20649,12 +20628,12 @@ PrefabInstance:
     - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -20664,12 +20643,12 @@ PrefabInstance:
     - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 102.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -31
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2025596628537201525, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -21129,22 +21108,22 @@ PrefabInstance:
     - target: {fileID: 6147752482000111254, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6147752482000111254, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6147752482000111254, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 219.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6147752482000111254, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -31
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6277880972764344563, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
