@@ -52,7 +52,7 @@ namespace Nekoyume
             return description;
         }
 
-        public static string ValueToString(this StatType statType, long value, bool isSigned = false)
+        public static string ValueToString(this StatType statType, decimal value, bool isSigned = false)
         {
             switch (statType)
             {
