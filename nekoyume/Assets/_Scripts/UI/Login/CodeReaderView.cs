@@ -284,9 +284,13 @@ namespace Nekoyume.UI
                 confirmText: L10nManager.Localize("BTN_OPEN_SYSTEM_SETTINGS"),
                 confirmCallback: () =>
                 {
+#if UNITY_ANDROID
                     NcDebug.Log("[CodeReaderView] Open system settings.");
                     _shouldRequestPermissionWhenApplicationFocusedIn = true;
                     SystemSettingsOpener.OpenApplicationDetailSettings();
+#elif UNITY_IOS
+                    Application.Quit();
+#endif
                 });
         }
 
