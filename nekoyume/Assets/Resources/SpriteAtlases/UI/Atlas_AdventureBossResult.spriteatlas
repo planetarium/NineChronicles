@@ -100,27 +100,45 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: e02581b18127e254d8687f48d6f640e5, type: 3}
   - {fileID: 21300000, guid: 8a91fb539f88ae140aaa49b51245c79c, type: 3}
+  - {fileID: 21300000, guid: 1130f9142dadacd4dabf58b2628c27d2, type: 3}
+  - {fileID: 21300000, guid: a38ac894a45221b4ba9ab252a09cb6f0, type: 3}
+  - {fileID: 21300000, guid: 58112005f4a52954cbb9d2e4fb837fd1, type: 3}
   - {fileID: 21300000, guid: 6f93c60523623cf4d9cc8cc672b40d9a, type: 3}
   - {fileID: 21300000, guid: 3e7196769e054ae46b455a81e33499d8, type: 3}
   - {fileID: 21300000, guid: 1dcf9887baa68c644bc34691a7cf6c92, type: 3}
   - {fileID: 21300000, guid: ef0d4848905a9434b9567581e7a82552, type: 3}
+  - {fileID: 21300000, guid: e76581e8caa10fa41b8e897b891d4aab, type: 3}
   - {fileID: 21300000, guid: ec648939e5143b74d9963055c7f0bd56, type: 3}
+  - {fileID: 21300000, guid: 3e6059e9cf3604245a6803d3a6188311, type: 3}
   - {fileID: 21300000, guid: 8bd4a00a73548f244ac8092d27cbf840, type: 3}
   - {fileID: 21300000, guid: d339cf5acf6159a47a6c7f9cf4a3b4fb, type: 3}
+  - {fileID: 21300000, guid: d1b2fb4b12aa07542b8abaec256c65ec, type: 3}
   - {fileID: 21300000, guid: 46d24d0c27842a64681aa5a7df5bee9d, type: 3}
+  - {fileID: 21300000, guid: 484e394d5641c8545b4facc861961fc7, type: 3}
   - {fileID: 21300000, guid: 13cded4e2ad393e4eb4bdd580e0395f6, type: 3}
+  - {fileID: 21300000, guid: e463780ff8eb8b14f97c08b7bab07b49, type: 3}
+  - {fileID: 21300000, guid: 5d3426bf562be5f47bbc5dca6ea7a060, type: 3}
   m_PackedSpriteNamesToIndex:
   - AB_Result_Bg_02
   - AB_Result_Bg_06
+  - AdventureUI_22
+  - button_green_02
+  - AB_Ingame_Bg_03
   - AB_Result_Bg_04
-  - AB_Result_Bg_10
-  - AB_Result_Bg_11
+  - AB_OpenInfo_Bg_02
+  - AB_OpenInfo_Bg_03
   - AB_Result_Bg_03
+  - AdventureUI_24
   - AB_Result_Bg_08
+  - AB_Ingame_Bg_01
   - AB_Result_Bg_07
-  - AB_Result_Bg_09
+  - AB_OpenInfo_Bg_01
+  - AdventureUI_23
   - AB_Result_Bg_01
+  - AB_Ingame_Bg_02
   - AB_Result_Bg_05
+  - UI_result_bg_green_3
+  - AB_Ingame_Bg_04
   m_RenderDataMap: {}
   m_Tag: Atlas_AdventureBossResult
   m_IsVariant: 0
