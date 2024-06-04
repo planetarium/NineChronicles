@@ -239,6 +239,11 @@ namespace Nekoyume.UI
                         _camTexture.Stop();
                     }
 
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("ERROR_IMPORTKEY_SCANIMAGE"),
+                        NotificationCell.NotificationType.Alert);
+
                     NcDebug.LogException(ex);
                     // Don't invoke onSuccess? with null. Just try again.
                 }
