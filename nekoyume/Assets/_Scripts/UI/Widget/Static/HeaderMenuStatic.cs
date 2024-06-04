@@ -405,24 +405,28 @@ namespace Nekoyume.UI.Module
                 .SubscribeTo(_toggleNotifications[ToggleType.Notice])
                 .AddTo(gameObject);
 
-            var mergedMenuNoti = Observable.CombineLatest(_toggleNotifications[ToggleType.Notice], _toggleNotifications[ToggleType.PortalReward], _toggleNotifications[ToggleType.Rank]);
+            IObservable<IList<bool>> mergedMenuNoti;
+            if (!Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                mergedMenuNoti = Observable.CombineLatest(
+                    _toggleNotifications[ToggleType.Notice],
+                    _toggleNotifications[ToggleType.PortalReward],
+                    _toggleNotifications[ToggleType.Rank]);
+            }
+            else
+            {
+                mergedMenuNoti = Observable.CombineLatest(
+                    _toggleNotifications[ToggleType.Notice],
+                    _toggleNotifications[ToggleType.Rank]);
+            }
+
             foreach (var item in menuToggleNotifications)
             {
-                mergedMenuNoti.Subscribe(notices=> {
-                    foreach (var noti in notices)
-                    {
-                        if (noti)
-                        {
-                            item.enabled = true;
-                            return;
-                        }
-                    }
-                    item.enabled = false;
-                }).AddTo(gameObject);
+                mergedMenuNoti.Subscribe(notices => item.enabled = notices.Any(noti => noti))
+                    .AddTo(gameObject);
             }
 
             _toggleNotifications[ToggleType.PortalReward].Value =
-                !Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild &&
                 PlayerPrefs.GetInt(PortalRewardNotificationKey, 0) != 0;
         }
 
