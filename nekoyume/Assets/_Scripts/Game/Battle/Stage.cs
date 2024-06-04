@@ -566,7 +566,6 @@ namespace Nekoyume.Game.Battle
                 _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
                 _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
                 yield return new WaitForSeconds(2.2f);
-                objectPool.ReleaseExcept(ReleaseWhiteList);
                 if (isClear)
                 {
                     StartCoroutine(CoSlideBg());
@@ -581,8 +580,9 @@ namespace Nekoyume.Game.Battle
                 }
 
                 ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
-                objectPool.ReleaseExcept(ReleaseWhiteList);
             }
+            objectPool.ReleaseExcept(ReleaseWhiteList);
+            _stageRunningPlayer.ClearVfx();
 
             _battleResultModel.ActionPoint = ReactiveAvatarState.ActionPoint;
             _battleResultModel.State = log.result;
