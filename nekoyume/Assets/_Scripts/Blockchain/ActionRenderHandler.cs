@@ -209,7 +209,7 @@ namespace Nekoyume.Blockchain
 
             //AdventureBoss
             ClaimAdventureBossReward();
-            AdventureBossBattle();
+            ExploreAdventureBoss();
             Wanted();
         }
 
@@ -3695,19 +3695,19 @@ namespace Nekoyume.Blockchain
             });
         }
 
-        private void AdventureBossBattle()
+        private void ExploreAdventureBoss()
         {
-            _actionRenderer.EveryRender<AdventureBossBattle>()
+            _actionRenderer.EveryRender<ExploreAdventureBoss>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseAdventureBossBattle)
+                .Subscribe(ResponseExploreAdventureBoss)
                 .AddTo(_disposables);
         }
 
-        private void ResponseAdventureBossBattle(ActionEvaluation<AdventureBossBattle> eval)
+        private void ResponseExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
         {
             
         }

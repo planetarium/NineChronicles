@@ -13,6 +13,7 @@ using Amazon.Runtime.Internal.Transform;
 using Nekoyume.Helper;
 using System.Text.RegularExpressions;
 using UnityEngine.Windows;
+using static Nekoyume.Data.AdventureBossGameData;
 
 namespace Nekoyume.UI.Model
 {
@@ -25,130 +26,6 @@ namespace Nekoyume.UI.Model
             Progress,
             End
         }
-        // FIXME: This may temporary
-        public AdventureBossReward[] WantedRewardList =
-        {
-            new ()
-            {
-                BossId = 206007,
-                wantedReward = new RewardInfo
-                {
-                    FixedRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600201, 100 }
-                    },
-                    FixedRewardFavIdDict = new Dictionary<int, int>(),
-                    RandomRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600201, 20 }, { 600202, 20 }, { 600203, 20 }
-                    },
-                    RandomRewardFavTickerDict = new Dictionary<int, int>
-                    {
-                        { 20001, 20 }, { 30001, 20 }
-                    }
-                },
-                exploreReward = new RewardInfo
-                {
-                    FixedRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600202, 100 }
-                    },
-                    FixedRewardFavIdDict = new Dictionary<int, int>(),
-                    RandomRewardItemIdDict = new Dictionary<int, int>(),
-                    RandomRewardFavTickerDict = new Dictionary<int, int>(),
-                }
-            },
-            new ()
-            {
-                BossId = 208007,
-                wantedReward = new RewardInfo
-                {
-                    FixedRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600202, 100 }
-                    },
-                    FixedRewardFavIdDict = new Dictionary<int, int>(),
-                    RandomRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600201, 20 }, { 600202, 20 }, { 600203, 20 }
-                    },
-                    RandomRewardFavTickerDict = new Dictionary<int, int>
-                    {
-                        { 20001, 20 }, { 30001, 20 }
-                    }
-                },
-                exploreReward = new RewardInfo
-                {
-                    FixedRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600202, 100 }
-                    },
-                    FixedRewardFavIdDict = new Dictionary<int, int>(),
-                    RandomRewardItemIdDict = new Dictionary<int, int>(),
-                    RandomRewardFavTickerDict = new Dictionary<int, int>(),
-                }
-            },
-            new ()
-            {
-                BossId = 207007,
-                wantedReward = new RewardInfo
-                {
-                    FixedRewardItemIdDict = new Dictionary<int, int>(),
-                    FixedRewardFavIdDict = new Dictionary<int, int>
-                    {
-                        { 20001, 50 }, { 30001, 50 }
-                    },
-                    RandomRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600201, 20 }, { 600202, 20 }, { 600203, 20 }
-                    },
-                    RandomRewardFavTickerDict = new Dictionary<int, int>
-                    {
-                        { 20001, 20 }, { 30001, 20 }
-                    }
-                },
-                exploreReward = new RewardInfo
-                {
-                    FixedRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600203, 100 }
-                    },
-                    FixedRewardFavIdDict = new Dictionary<int, int>(),
-                    RandomRewardItemIdDict = new Dictionary<int, int>(),
-                    RandomRewardFavTickerDict = new Dictionary<int, int>(),
-                }
-            },
-            new ()
-            {
-                BossId = 209007,
-                wantedReward = new RewardInfo
-                {
-                    FixedRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600203, 100 }
-                    },
-                    FixedRewardFavIdDict = new Dictionary<int, int>(),
-                    RandomRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600201, 20 }, { 600202, 20 }, { 600203, 20 }
-                    },
-                    RandomRewardFavTickerDict = new Dictionary<int, int>
-                    {
-                        { 20001, 20 }, { 30001, 20 }
-                    }
-                },
-                exploreReward = new RewardInfo
-                {
-                    FixedRewardItemIdDict = new Dictionary<int, int>
-                    {
-                        { 600203, 100 }
-                    },
-                    FixedRewardFavIdDict = new Dictionary<int, int>(),
-                    RandomRewardItemIdDict = new Dictionary<int, int>(),
-                    RandomRewardFavTickerDict = new Dictionary<int, int>(),
-                }
-            },
-        };
 
         // NOTE: This may temporary
         // Use MaxFloor as key. If not find key, this means already opened all floors.

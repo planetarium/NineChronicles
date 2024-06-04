@@ -1,6 +1,7 @@
 using Nekoyume.UI.Module;
 using System;
 using System.Collections;
+using System.Collections.Immutable;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Nekoyume.UI
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Blockchain;
+    using Nekoyume.Data;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
@@ -155,7 +157,7 @@ namespace Nekoyume.UI
                     {
                         item.SetActive(false);
                     }
-                    var rewards = Game.Game.instance.AdventureBossData.WantedRewardList;
+                    var rewards = AdventureBossGameData.AdventureBossRewards;
                     for(int bossIndex = 0; bossIndex < bountyBossCells.Length; bossIndex++)
                     {
                         if(bossIndex >= rewards.Length)
@@ -163,7 +165,7 @@ namespace Nekoyume.UI
                             bountyBossCells[bossIndex].gameObject.SetActive(false);
                             break;
                         }
-                        bountyBossCells[bossIndex].SetData(Game.Game.instance.AdventureBossData.WantedRewardList[bossIndex]);
+                        bountyBossCells[bossIndex].SetData(AdventureBossGameData.AdventureBossRewards[bossIndex]);
                     }
                     bossName.text = string.Empty;
                     break;

@@ -245,7 +245,7 @@ namespace Nekoyume.UI
             Widget.Find<LoadingScreen>().Show();
             try
             {
-                ActionManager.Instance.AdventureBossBattle().Subscribe(eval =>
+                ActionManager.Instance.ExploreAdventureBoss().Subscribe(eval =>
                 {
                     Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
                     {

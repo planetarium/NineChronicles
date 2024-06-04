@@ -18,6 +18,8 @@ namespace Nekoyume.UI
     using Nekoyume.TableData;
     using Nekoyume.UI.Model;
     using UniRx;
+    using static Nekoyume.Data.AdventureBossGameData;
+
     public class AdventureBossRewardPopup : PopupWidget
     {
         [SerializeField]

@@ -21,6 +21,7 @@ namespace Nekoyume.UI
     using System.Linq;
     using UniRx;
     using UnityEngine.UI;
+    using static Nekoyume.Data.AdventureBossGameData;
 
     public class AdventureBoss : Widget
     {

@@ -1756,21 +1756,46 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        public IObservable<ActionEvaluation<AdventureBossBattle>> AdventureBossBattle()
+        public IObservable<ActionEvaluation<ExploreAdventureBoss>> ExploreAdventureBoss()
         {
-            if(Game.Game.instance.AdventureBossData.SeasonInfo is null ||
+            if (Game.Game.instance.AdventureBossData.SeasonInfo is null ||
                 Game.Game.instance.AdventureBossData.SeasonInfo.Value is null ||
                 States.Instance.CurrentAvatarState is null)
             {
-                NcDebug.LogError("[AdventureBossBattle] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
+                NcDebug.LogError("[ExploreAdventureBoss] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
             }
-            var action = new AdventureBossBattle
+            var action = new ExploreAdventureBoss
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season
             };
             ProcessAction(action);
-            return _agent.ActionRenderer.EveryRender<AdventureBossBattle>()
+            return _agent.ActionRenderer.EveryRender<ExploreAdventureBoss>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(_ =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
+        public IObservable<ActionEvaluation<SweepAdventureBoss>> SweepAdventureBoss()
+        {
+            if (Game.Game.instance.AdventureBossData.SeasonInfo is null ||
+                Game.Game.instance.AdventureBossData.SeasonInfo.Value is null ||
+                States.Instance.CurrentAvatarState is null)
+            {
+                NcDebug.LogError("[SweepAdventureBoss] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
+            }
+            var action = new SweepAdventureBoss
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<SweepAdventureBoss>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()

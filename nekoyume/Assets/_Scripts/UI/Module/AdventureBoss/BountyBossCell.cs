@@ -1,10 +1,12 @@
 using Nekoyume.Action.AdventureBoss;
+using Nekoyume.Data;
 using Nekoyume.Helper;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static Nekoyume.Data.AdventureBossGameData;
 
 namespace Nekoyume
 {

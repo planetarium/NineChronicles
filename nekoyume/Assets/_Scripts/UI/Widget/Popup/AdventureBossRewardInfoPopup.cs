@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using Nekoyume.Action.AdventureBoss;
+    using Nekoyume.Data;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
@@ -135,9 +136,9 @@ namespace Nekoyume.UI
 
                     for (int i = 0; i < bossRewardCells.Length; i++)
                     {
-                        if(i < Game.Game.instance.AdventureBossData.WantedRewardList.Count())
+                        if(i < AdventureBossGameData.AdventureBossRewards.Count())
                         {
-                            bossRewardCells[i].SetData(Game.Game.instance.AdventureBossData.WantedRewardList[i]);
+                            bossRewardCells[i].SetData(AdventureBossGameData.AdventureBossRewards[i]);
                         }
                         else
                         {
