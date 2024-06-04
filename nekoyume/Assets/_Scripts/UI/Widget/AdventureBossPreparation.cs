@@ -22,6 +22,7 @@ using System;
 
 namespace Nekoyume.UI
 {
+    using Cysharp.Threading.Tasks;
     using Nekoyume.UI.Module;
     using Scroller;
     using System.Linq;
@@ -67,26 +68,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject blockStartingTextObject;
 
-        private StageType _stageType;
-        private int? _scheduleId;
-        private int _worldId;
-        private int _stageId;
-        private int _requiredCost;
-        private bool _trackGuideQuest;
+        private long _requiredCost;
 
         private readonly List<IDisposable> _disposables = new();
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (startButton.Interactable || !EnoughToPlay);
-
-        private bool EnoughToPlay => _stageType switch
-        {
-            StageType.EventDungeon =>
-                RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost,
-            _ =>
-                ReactiveAvatarState.ActionPoint >= _requiredCost,
-        };
+            (startButton.Interactable);
 
         #region override
 
@@ -126,35 +114,25 @@ namespace Nekoyume.UI
         }
 
         public void Show(
-            StageType stageType,
-            int worldId,
-            int stageId,
             string closeButtonName,
-            bool ignoreShowAnimation = false,
-            bool showByGuideQuest = false)
+            bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            _trackGuideQuest = showByGuideQuest;
 
-            Analyzer.Instance.Track("Unity/Click Stage", new Dictionary<string, Value>()
+            Analyzer.Instance.Track("Unity/Click AdventureBoss Floor", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
-            var evt = new AirbridgeEvent("Click_Stage");
+            var evt = new AirbridgeEvent("Click_AdventureBoss_Floor");
             evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
             evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
             AirbridgeUnity.TrackEvent(evt);
 
 
-            _stageType = stageType;
-            _worldId = worldId;
-            _stageId = stageId;
-
             UpdateStartButton();
-            var cp = UpdateCp();
-            information.UpdateInventory(BattleType.Adventure, cp);
+            information.UpdateInventory(BattleType.Adventure);
             UpdateRequiredCostByStageId();
 
             closeButtonText.text = closeButtonName;
@@ -187,28 +165,14 @@ namespace Nekoyume.UI
             }
         }
 
-        private int? UpdateCp()
-        {
-            var sweepRequiredCpSheet = TableSheets.Instance.SweepRequiredCPSheet;
-            if (!sweepRequiredCpSheet.TryGetValue(_stageId, out var row))
-            {
-                return null;
-            }
-
-            var cp = row.RequiredCP;
-            return cp;
-        }
-
         public void UpdateInventory()
         {
-            var cp = UpdateCp();
-            information.UpdateInventory(BattleType.Adventure, cp);
+            information.UpdateInventory(BattleType.Adventure);
         }
 
         public void UpdateInventoryView()
         {
-            var cp = UpdateCp();
-            information.UpdateInventory(BattleType.Adventure, cp);
+            information.UpdateInventory(BattleType.Adventure);
             information.UpdateView(BattleType.Adventure);
         }
 
@@ -222,11 +186,6 @@ namespace Nekoyume.UI
 
         private void UpdateRequiredCostByStageId()
         {
-            TableSheets.Instance.StageSheet.TryGetValue(
-                _stageId, out var stage, true);
-            _requiredCost = stage.CostAP;
-            var stakingLevel = States.Instance.StakingLevel;
-
             startButton.SetCost(CostType.ActionPoint, _requiredCost);
         }
 
@@ -239,15 +198,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            StartCoroutine(CoBattleStart(_stageType, CostType.ActionPoint));
+            StartCoroutine(CoBattleStart(CostType.ActionPoint));
 
             coverToBlockClick.SetActive(true);
         }
 
         private IEnumerator CoBattleStart(
-            StageType stageType,
-            CostType costType,
-            bool buyTicketIfNeeded = false)
+            CostType costType)
         {
             var game = Game.Game.instance;
             game.Stage.IsShowHud = true;
@@ -277,42 +234,33 @@ namespace Nekoyume.UI
                 middleXGap);
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
-            SendBattleAction(
+            AdventureBossBattleAction();
+/*            SendBattleAction(
                 stageType,
-                buyTicketIfNeeded: buyTicketIfNeeded);
+                buyTicketIfNeeded: buyTicketIfNeeded);*/
         }
 
-        private void ShowBoosterPopup()
+        private void AdventureBossBattleAction()
         {
-            if (_stageType == StageType.Mimisbrunnr && !CheckEquipmentElementalType())
+            Widget.Find<LoadingScreen>().Show();
+            try
             {
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAILED"),
-                    NotificationCell.NotificationType.UnlockCondition);
-                return;
+                ActionManager.Instance.AdventureBossBattle().Subscribe(eval =>
+                {
+                    Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
+                    {
+                        Widget.Find<LoadingScreen>().Close();
+                        Close();
+                        //임시
+                        BattleRenderer.Instance.IsOnBattle = false;
+                    });
+                });
             }
-
-            var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
-            var costumes = itemSlotState.Costumes;
-            var equipments = itemSlotState.Equipments;
-            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
-                .GetEquippedRuneSlotInfos();
-            var consumables = information.GetEquippedConsumables();
-            var stage = Game.Game.instance.Stage;
-            stage.IsExitReserved = false;
-            stage.foodCount = consumables.Count;
-            ActionRenderHandler.Instance.Pending = true;
-
-            Find<BoosterPopup>().Show(
-                stage,
-                costumes,
-                equipments,
-                consumables,
-                runeInfos,
-                GetBoostMaxCount(_stageId),
-                _worldId,
-                _stageId);
+            catch (Exception e)
+            {
+                Widget.Find<LoadingScreen>().Close();
+                NcDebug.LogError(e);
+            }
         }
 
         private void SendBattleAction(
@@ -321,7 +269,7 @@ namespace Nekoyume.UI
             int apStoneCount = 0,
             bool buyTicketIfNeeded = false)
         {
-            Find<WorldMap>().Close(true);
+            /*Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
             Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
 
@@ -386,7 +334,7 @@ namespace Nekoyume.UI
                 apStoneCount,
                 _trackGuideQuest
             ).Subscribe();
-            PlayerPrefs.SetInt(key, 0);
+            PlayerPrefs.SetInt(key, 0);*/
         }
 
         private void GoToPrepareStage(BattleLog battleLog)
@@ -444,14 +392,6 @@ namespace Nekoyume.UI
             return maxActionPoint / stage.CostAP;
         }
 
-        private bool CheckEquipmentElementalType()
-        {
-            var (equipments, _) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var elementalTypes = GetElementalTypes();
-            return equipments.All(x =>
-                elementalTypes.Contains(x.ElementalType));
-        }
-
         private void UpdateStartButton()
         {
             startButton.UpdateObjects();
@@ -475,19 +415,6 @@ namespace Nekoyume.UI
 
             startButton.gameObject.SetActive(canBattle);
             blockStartingTextObject.SetActive(!canBattle);
-        }
-
-        public List<ElementalType> GetElementalTypes()
-        {
-            if (_stageType != StageType.Mimisbrunnr)
-            {
-                return ElementalTypeExtension.GetAllTypes();
-            }
-
-            var mimisbrunnrSheet = TableSheets.Instance.MimisbrunnrSheet;
-            return mimisbrunnrSheet.TryGetValue(_stageId, out var mimisbrunnrSheetRow)
-                ? mimisbrunnrSheetRow.ElementalTypes
-                : ElementalTypeExtension.GetAllTypes();
         }
 
         public void TutorialActionClickBattlePreparationFirstInventoryCellView()

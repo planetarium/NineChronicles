@@ -35,17 +35,21 @@ namespace Nekoyume.UI
         {
             base.Awake();
             challengeButton.OnClickSubject.Subscribe(_ => {
-                AdventureBossBattleAction();
+                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_CHALLENGE"));
                 Close();
             }).AddTo(gameObject);
             breakThroughButton.OnClickSubject.Subscribe(_ => {
-                AdventureBossBattleAction();
+                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"));
                 Close();
             }).AddTo(gameObject);
             gotoUnlock.onClick.AddListener(() =>
             {
                 Close();
-                Widget.Find<AdventureBoss_UnlockLockedFloorPopup>().Show();
+                var floor = Find<AdventureBoss>().CurrentUnlockFloor;
+                if (floor != null)
+                {
+                    floor.OnClickUnlockAction();
+                }
             });
         }
 
@@ -65,11 +69,13 @@ namespace Nekoyume.UI
             {
                 challengeLockObj.SetActive(true);
                 challengeContents.SetActive(false);
+                challengeFloorText.text = "";
             }
             else
             {
                 challengeLockObj.SetActive(false);
                 challengeContents.SetActive(true);
+                challengeFloorText.text = $"{currentFloor+1}F ~ {maxFloor}F";
             }
 
             if(currentFloor == 0)
@@ -90,32 +96,11 @@ namespace Nekoyume.UI
                 breakThroughFloors[i].SetActive(i < currentFloor);
                 challengeFloors[i].SetActive(i >= currentFloor && i < maxFloor);
             }
-            challengeFloorText.text = $"{currentFloor+1}F ~ {maxFloor}F";
 
             breakThroughApCostText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", currentFloor);
             challengeApCostText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", maxFloor-currentFloor);
 
             base.Show(ignoreShowAnimation);
-        }
-
-        private void AdventureBossBattleAction()
-        {
-            Widget.Find<LoadingScreen>().Show();
-            try
-            {
-                ActionManager.Instance.AdventureBossBattle().Subscribe(eval =>
-                {
-                    Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
-                    {
-                        Widget.Find<LoadingScreen>().Close();
-                    });
-                });
-            }
-            catch (Exception e)
-            {
-                Widget.Find<LoadingScreen>().Close();
-                NcDebug.LogError(e);
-            }
         }
     }
 }

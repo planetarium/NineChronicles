@@ -73,6 +73,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI bossName;
         [SerializeField]
         private Transform bossImageParent;
+
+        public AdventureBossFloor CurrentUnlockFloor;
+
         private int _bossId;
         private GameObject _bossImage;
 
@@ -185,6 +188,7 @@ namespace Nekoyume.UI
 
         private void RefreshExploreInfo(Explorer exploreInfo)
         {
+            CurrentUnlockFloor = null;
             if (exploreInfo == null)
             {
                 clearFloor.text = $"-";
@@ -199,6 +203,10 @@ namespace Nekoyume.UI
                     else if (i == 5)
                     {
                         floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
+                        if(CurrentUnlockFloor == null)
+                        {
+                            CurrentUnlockFloor = floors[i];
+                        }
                     }
                     else
                     {
@@ -208,8 +216,6 @@ namespace Nekoyume.UI
                 return;
             }
             clearFloor.text = $"{exploreInfo.Floor}F";
-
-            enterButton.Interactable = exploreInfo.MaxFloor > exploreInfo.Floor;
 
             for (int i = 0; i < floors.Count(); i++)
             {
@@ -224,6 +230,10 @@ namespace Nekoyume.UI
                 else if (Game.Game.instance.AdventureBossData.UnlockDict.TryGetValue(i, out var unlockData) && i >= exploreInfo.MaxFloor)
                 {
                     floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
+                    if (CurrentUnlockFloor == null)
+                    {
+                        CurrentUnlockFloor = floors[i];
+                    }
                 }
                 else
                 {
