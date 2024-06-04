@@ -216,6 +216,15 @@ namespace Nekoyume.Game.Character
             ActorHud.transform.localScale = Vector3.one;
         }
 
+        public void ClearVfx()
+        {
+            foreach (var id in _persistingVFXMap.Keys)
+            {
+                OnBuffEnd?.Invoke(id);
+            }
+            _persistingVFXMap.Clear();
+        }
+
         public virtual void UpdateBuffVfx()
         {
             removedBuffVfxList.Clear();
