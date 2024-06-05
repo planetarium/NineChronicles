@@ -57,6 +57,7 @@ namespace Nekoyume.UI.Module
             RuneStone,
             Mileage,
             Summon,
+            AdventureBoss,
         }
 
         [Serializable]
@@ -95,6 +96,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private WorldBossTickets worldBossTickets;
+
+        [SerializeField]
+        private ApPotion apPotion;
 
         [SerializeField]
         private MaterialAsset[] materialAssets;
@@ -158,6 +162,7 @@ namespace Nekoyume.UI.Module
         public ArenaTickets ArenaTickets => arenaTickets;
         public EventDungeonTickets EventDungeonTickets => eventDungeonTickets;
         public WorldBossTickets WorldBossTickets => worldBossTickets;
+        public ApPotion ApPotion => apPotion;
         public MaterialAsset[] MaterialAssets => materialAssets;
 
         public override bool CanHandleInputEvent => false;
@@ -523,6 +528,9 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.Summon:
                     SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 3);
                     break;
+                case AssetVisibleState.AdventureBoss:
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isApPotionActive: true);
+                    break;
             }
         }
 
@@ -546,6 +554,7 @@ namespace Nekoyume.UI.Module
             bool isEventWorldBossTicketsActive = false,
             bool isRuneStoneActive = false,
             bool isMileageActive = false,
+            bool isApPotionActive = false,
             int isMaterialActiveCount = 0)
         {
             crystal.gameObject.SetActive(isCrystalActive);
@@ -556,6 +565,8 @@ namespace Nekoyume.UI.Module
             worldBossTickets.gameObject.SetActive(isEventWorldBossTicketsActive);
             runeStone.gameObject.SetActive(isRuneStoneActive);
             mileage.gameObject.SetActive(isMileageActive);
+            apPotion.gameObject.SetActive(isApPotionActive);
+
             for (var i = 0; i < materialAssets.Length; i++)
             {
                 materialAssets[i].gameObject.SetActive(i < isMaterialActiveCount);

@@ -103,9 +103,13 @@ namespace Nekoyume.UI
 
             _breakThroughApPotionCost = currentFloor * ExploreAdventureBoss.UnitApPotion;
             _challengeApPotionCost = (maxFloor - currentFloor) * SweepAdventureBoss.UnitApPotion;
+            var currentApPotionCount = Game.Game.instance.States.CurrentAvatarState.inventory.GetMaterialCount((int)CostType.ApPotion);
 
-            breakThroughApCostText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", _breakThroughApPotionCost);
-            challengeApCostText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", _challengeApPotionCost);
+            var breakThroughColorString = currentApPotionCount >= _breakThroughApPotionCost ? "" : "<color=#ff5d5d>";
+            var challengeColorString = currentApPotionCount >= _challengeApPotionCost ? "" : "<color=#ff5d5d>";
+
+            breakThroughApCostText.text = breakThroughColorString + L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", _breakThroughApPotionCost);
+            challengeApCostText.text = challengeColorString + L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", _challengeApPotionCost);
 
             base.Show(ignoreShowAnimation);
         }

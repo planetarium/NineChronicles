@@ -158,6 +158,8 @@ namespace Nekoyume.UI
                     .Subscribe(UpdateViewAsync)
                     .AddTo(_disposablesByEnable);
 
+                Widget.Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.AdventureBoss);
+
                 base.Show(ignoreShowAnimation);
             }
             catch (Exception e)
@@ -395,6 +397,7 @@ namespace Nekoyume.UI
         {
             base.Close(ignoreCloseAnimation);
             _disposablesByEnable.DisposeAllAndClear();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
         }
 
         public void SetBountyLoadingIndicator(bool isActive)
