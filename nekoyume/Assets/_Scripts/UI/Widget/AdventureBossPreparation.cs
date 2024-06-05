@@ -115,21 +115,22 @@ namespace Nekoyume.UI
 
         public void Show(
             string closeButtonName,
+            long requiredCost,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
-            Analyzer.Instance.Track("Unity/Click AdventureBoss Floor", new Dictionary<string, Value>()
+            _requiredCost = requiredCost;
+            Analyzer.Instance.Track("Unity/Click AdventureBoss Prepareation", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
 
-            var evt = new AirbridgeEvent("Click_AdventureBoss_Floor");
+            var evt = new AirbridgeEvent("Click_AdventureBoss_Prepareation");
             evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
             evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
             AirbridgeUnity.TrackEvent(evt);
-
 
             UpdateStartButton();
             information.UpdateInventory(BattleType.Adventure);
@@ -186,7 +187,7 @@ namespace Nekoyume.UI
 
         private void UpdateRequiredCostByStageId()
         {
-            startButton.SetCost(CostType.ActionPoint, _requiredCost);
+            startButton.SetCost(CostType.ApPotion, _requiredCost);
         }
 
         private void OnClickBattle()
@@ -198,31 +199,21 @@ namespace Nekoyume.UI
                 return;
             }
 
-            StartCoroutine(CoBattleStart(CostType.ActionPoint));
+            StartCoroutine(CoBattleStart());
 
             coverToBlockClick.SetActive(true);
         }
 
-        private IEnumerator CoBattleStart(
-            CostType costType)
+        private IEnumerator CoBattleStart()
         {
             var game = Game.Game.instance;
             game.Stage.IsShowHud = true;
             BattleRenderer.Instance.IsOnBattle = true;
 
             var headerMenuStatic = Find<HeaderMenuStatic>();
-            var currencyImage = costType switch
-            {
-                CostType.NCG => headerMenuStatic.Gold.IconImage,
-                CostType.ActionPoint => headerMenuStatic.ActionPoint.IconImage,
-                CostType.Hourglass => headerMenuStatic.Hourglass.IconImage,
-                CostType.Crystal => headerMenuStatic.Crystal.IconImage,
-                CostType.ArenaTicket => headerMenuStatic.ArenaTickets.IconImage,
-                CostType.WorldBossTicket => headerMenuStatic.WorldBossTickets.IconImage,
-                CostType.EventDungeonTicket => headerMenuStatic.EventDungeonTickets.IconImage,
-                _ or CostType.None => throw new ArgumentOutOfRangeException(
-                    nameof(costType), costType, null)
-            };
+
+            //todo change AP Potion
+            var currencyImage = headerMenuStatic.ActionPoint.IconImage;
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,
                 currencyImage.transform.position,
@@ -370,26 +361,6 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(tradeType), tradeType, null);
             }
-        }
-
-        private static int GetBoostMaxCount(int stageId)
-        {
-            if (!TableSheets.Instance.GameConfigSheet.TryGetValue(
-                    "action_point_max",
-                    out var ap))
-            {
-                return 1;
-            }
-
-            var stage = TableSheets.Instance.StageSheet.OrderedList
-                .FirstOrDefault(i => i.Id == stageId);
-            if (stage is null)
-            {
-                return 1;
-            }
-
-            var maxActionPoint = TableExtensions.ParseInt(ap.Value);
-            return maxActionPoint / stage.CostAP;
         }
 
         private void UpdateStartButton()

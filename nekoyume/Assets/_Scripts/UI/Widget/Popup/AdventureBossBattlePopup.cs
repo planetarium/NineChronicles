@@ -9,6 +9,7 @@ using System;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
+    using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Blockchain;
     using Nekoyume.L10n;
     using UniRx;
@@ -31,15 +32,18 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject breakThroughContent;
         [SerializeField] private GameObject breakThroughNoContent;
 
+        private long _challengeApPotionCost;
+        private long _breakThroughApPotionCost;
+
         protected override void Awake()
         {
             base.Awake();
             challengeButton.OnClickSubject.Subscribe(_ => {
-                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_CHALLENGE"));
+                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_CHALLENGE"), _challengeApPotionCost);
                 Close();
             }).AddTo(gameObject);
             breakThroughButton.OnClickSubject.Subscribe(_ => {
-                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"));
+                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"), _breakThroughApPotionCost);
                 Close();
             }).AddTo(gameObject);
             gotoUnlock.onClick.AddListener(() =>
@@ -97,8 +101,11 @@ namespace Nekoyume.UI
                 challengeFloors[i].SetActive(i >= currentFloor && i < maxFloor);
             }
 
-            breakThroughApCostText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", currentFloor);
-            challengeApCostText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", maxFloor-currentFloor);
+            _breakThroughApPotionCost = currentFloor * ExploreAdventureBoss.UnitApPotion;
+            _challengeApPotionCost = (maxFloor - currentFloor) * SweepAdventureBoss.UnitApPotion;
+
+            breakThroughApCostText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", _breakThroughApPotionCost);
+            challengeApCostText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", _challengeApPotionCost);
 
             base.Show(ignoreShowAnimation);
         }
