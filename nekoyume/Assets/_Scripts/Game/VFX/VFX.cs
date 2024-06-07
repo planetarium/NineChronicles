@@ -104,7 +104,7 @@ namespace Nekoyume.Game.VFX
 
         #endregion
 
-        public void LazyStop()
+        public virtual void LazyStop()
         {
             ParticlesRoot.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             if (gameObject.activeSelf)

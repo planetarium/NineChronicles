@@ -28,7 +28,6 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
@@ -377,6 +376,7 @@ namespace Nekoyume.Game.Battle
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
             {
+                e.LogEvent();
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
@@ -566,7 +566,6 @@ namespace Nekoyume.Game.Battle
                 _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
                 _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
                 yield return new WaitForSeconds(2.2f);
-                objectPool.ReleaseExcept(ReleaseWhiteList);
                 if (isClear)
                 {
                     StartCoroutine(CoSlideBg());
@@ -581,8 +580,9 @@ namespace Nekoyume.Game.Battle
                 }
 
                 ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
-                objectPool.ReleaseExcept(ReleaseWhiteList);
             }
+            objectPool.ReleaseExcept(ReleaseWhiteList);
+            _stageRunningPlayer.ClearVfx();
 
             _battleResultModel.ActionPoint = ReactiveAvatarState.ActionPoint;
             _battleResultModel.State = log.result;
@@ -1012,6 +1012,10 @@ namespace Nekoyume.Game.Battle
             if (infosFirstWaveTurn > 0)
             {
                 yield return new WaitUntil(() => Time.time - time > 5f || waveTurn == infosFirstWaveTurn);
+                if (Time.time - time > 5f)
+                {
+                    NcDebug.LogWarning($"Time out. waveTurn: {waveTurn}, infosFirstWaveTurn: {infosFirstWaveTurn}");
+                }
             }
 
             yield return StartCoroutine(CoBeforeSkill(character));
@@ -1061,6 +1065,11 @@ namespace Nekoyume.Game.Battle
             var time = Time.time;
             yield return new WaitUntil(() =>
                 Time.time - time > 2f || character.TargetInAttackRange(enemy));
+            
+            if (Time.time - time > 2f)
+            {
+                NcDebug.LogWarning($"Time out. character: {character.Id}, enemy: {enemy.Id}");
+            }
         }
 
         private IEnumerator CoAfterSkill(Actor character, IEnumerable<Skill.SkillInfo> buffInfos)
@@ -1236,9 +1245,9 @@ namespace Nekoyume.Game.Battle
             if (eventBase is Tick tick)
             {
                 var affectedCharacter = GetActor(character);
-                if (tick.SkillId == IceShield.FrostBiteId)
+                if (tick.SkillId == AuraIceShield.FrostBiteId)
                 {
-                    if (!character.Buffs.TryGetValue(IceShield.FrostBiteId, out var frostBite))
+                    if (!character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
                     {
                         yield break;
                     }
@@ -1247,7 +1256,7 @@ namespace Nekoyume.Game.Battle
                     var sourceCharacter = GetActor(source);
                     IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
                     {
-                        sourceCharacter.CustomEvent(IceShield.FrostBiteId);
+                        sourceCharacter.CustomEvent(AuraIceShield.FrostBiteId);
                         yield return affectedCharacter.CoBuff(skillInfos);
                     }
 

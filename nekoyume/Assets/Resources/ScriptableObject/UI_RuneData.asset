@@ -80,9 +80,17 @@ MonoBehaviour:
   - id: 10029
     ticker: RUNESTONE_FREYA_LIBERATION
     icon: {fileID: 21300000, guid: 8c4b5e584c0759b4daf285d1b0a20e5e, type: 3}
-    sortingOrder: 0
+    sortingOrder: 2
   - id: 10030
     ticker: RUNESTONE_FREYA_BLESSING
     icon: {fileID: 21300000, guid: cd935896f5d10b347aa429f70c1c3920, type: 3}
+    sortingOrder: 3
+  - id: 10031
+    ticker: RUNESTONE_ODIN_WEAKNESS
+    icon: {fileID: 21300000, guid: c413b42940605d24bb88dee67b65b501, type: 3}
+    sortingOrder: 0
+  - id: 10032
+    ticker: RUNESTONE_ODIN_WISDOM
+    icon: {fileID: 21300000, guid: 32844bd146ed4e44eae79d72987d62be, type: 3}
     sortingOrder: 1
   DefaultRuneIcon: {fileID: 21300000, guid: 474642c630309ed45a9942c6fa07ebb5, type: 3}

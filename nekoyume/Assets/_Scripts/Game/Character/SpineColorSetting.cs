@@ -8,11 +8,7 @@ namespace Nekoyume.Game.Character
     public enum SpineColorKey
     {
         None,
-        FrostBite1Stack,
-        FrostBite2Stack,
-        FrostBite3Stack,
-        FrostBite4Stack,
-        FrostBite5Stack,
+        FrostBite,
         Test,
     }
 
@@ -23,7 +19,7 @@ namespace Nekoyume.Game.Character
     {
         Always = 0,
         Hit = 5,
-        FrostBite = 10,
+        Frostbite = 10,
         Test = 10000,
     }
 
@@ -78,6 +74,7 @@ namespace Nekoyume.Game.Character
 
         public Color Color     => _color;
         public bool  IsExpired => _isExpired;
+        public SpineColorKey Key => _key;
 
         public void UpdateDuration(float deltaTime)
         {
@@ -109,7 +106,7 @@ namespace Nekoyume.Game.Character
 
         public static SpineColorSetting Default => new(Color.white);
 
-        public void SetColor(Actor character)
+        public void SetColor(Character character)
         {
             character.SetSpineColor(_color, ColorPropertyId);
             character.SetSpineColor(_black, BlackPropertyId);

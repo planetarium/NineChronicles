@@ -170,6 +170,7 @@ namespace BalanceTool
                     sheets.GetSheet<WorldSheet>(),
                     sheets.GetSheet<WorldUnlockSheet>(),
                     sheets.GetSheet<DeBuffLimitSheet>(),
+                    sheets.GetSheet<BuffLinkSheet>(),
                     exp);
                 result = ApplyToPlayResult(
                     exp,
@@ -199,6 +200,7 @@ namespace BalanceTool
             WorldSheet worldSheet,
             WorldUnlockSheet worldUnlockSheet,
             DeBuffLimitSheet deBuffLimitSheet,
+            BuffLinkSheet buffLinkSheet,
             int exp)
         {
             var simulator = new StageSimulator(
@@ -223,6 +225,7 @@ namespace BalanceTool
                     materialItemSheet),
                 collectionState.GetEffects(collectionSheet),
                 deBuffLimitSheet,
+                buffLinkSheet,
                 logEvent: true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage
                 );

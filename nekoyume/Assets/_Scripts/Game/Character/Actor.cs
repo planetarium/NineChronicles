@@ -129,7 +129,7 @@ namespace Nekoyume.Game.Character
             InitializeHudContainer();
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
             foreach (var vfx in _persistingVFXMap.Values)
             {
@@ -145,9 +145,7 @@ namespace Nekoyume.Game.Character
                 DisableHUD();
             _forceStop = false;
 
-            SetDefaultColor();
-            _expiredColorKeys.Clear();
-            _colorPq.Clear();
+            base.OnDisable();
         }
 
         #endregion
@@ -188,10 +186,10 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected virtual void Update()
+        protected override void Update()
         {
             _root?.Tick();
-            UpdateColor();
+            base.Update();
         }
 
         private void InitializeHudContainer()
@@ -216,6 +214,15 @@ namespace Nekoyume.Game.Character
             ActorHud.transform.SetParent(HudContainer.transform);
             ActorHud.transform.localPosition = Vector3.zero;
             ActorHud.transform.localScale = Vector3.one;
+        }
+
+        public void ClearVfx()
+        {
+            foreach (var id in _persistingVFXMap.Keys)
+            {
+                OnBuffEnd?.Invoke(id);
+            }
+            _persistingVFXMap.Clear();
         }
 
         public virtual void UpdateBuffVfx()
@@ -582,6 +589,7 @@ namespace Nekoyume.Game.Character
             var buff   = info.Buff;
             var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Target = target;
+            effect.Buff = buff;
 
             if (info.Buff != null)
             {
@@ -793,8 +801,6 @@ namespace Nekoyume.Game.Character
                 if (this is Player && !(this is EnemyPlayer))
                     battleWidget.ShowComboText(info.Effect > 0);
             }
-
-            _expiredColorKeys.Add(SpineColorKey.Test);
         }
 
         public IEnumerator CoBlowAttack(
@@ -1070,17 +1076,26 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        // Stage에서 같은 버프연출을 여러번 수행하지 않기 위한 임시처리
+        private readonly Dictionary<string, Model.BattleStatus.Skill.SkillInfo> _buffSkillInfoMap = new();
         public IEnumerator CoBuff(IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
         {
             if (skillInfos is null || skillInfos.Count == 0)
                 yield break;
 
             CastingOnceAsync().Forget();
+            _buffSkillInfoMap.Clear();
             foreach (var skillInfo in skillInfos)
             {
                 if (skillInfo.Buff == null)
                     continue;
+                
+                var buffPrefab = BuffHelper.GetCastingVFXPrefab(skillInfo.Buff.BuffInfo.Id);
+                _buffSkillInfoMap[buffPrefab.name] = skillInfo;
+            }
 
+            foreach (var (_, skillInfo) in _buffSkillInfoMap)
+            {
                 yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
             }
 
@@ -1144,7 +1159,7 @@ namespace Nekoyume.Game.Character
             foreach (var info in _action.skillInfos)
             {
                 var target = info.Target;
-                if (target == null || target.IsDead)
+                if (target == null || !target.IsDead)
                 {
                     continue;
                 }
@@ -1156,6 +1171,11 @@ namespace Nekoyume.Game.Character
 
                 var time = Time.time;
                 yield return new WaitUntil(() => Time.time - time > 10f || !targetActor.HasAction());
+                if (Time.time - time > 10f)
+                {
+                    NcDebug.LogError($"[{nameof(Actor)}] CoExecuteAction Timeout. {gameObject.name}");
+                    break;
+                }
             }
 
             yield return new WaitForSeconds(StageConfig.instance.actionDelay);
@@ -1191,93 +1211,6 @@ namespace Nekoyume.Game.Character
         {
             AttackEndCalled = false;
         }
-
-#region SpineColor
-        private readonly Priority_Queue.SimplePriorityQueue<SpineColorSetting, int> _colorPq = new();
-
-        private readonly HashSet<SpineColorKey> _expiredColorKeys = new();
-
-        private int _currentColorHash;
-
-        private void UpdateColor()
-        {
-            if (_colorPq.Count == 0)
-            {
-                return;
-            }
-
-            ExpireColors();
-
-            while (_colorPq.Count > 0)
-            {
-                var setting = _colorPq.First;
-                if (setting.IsExpired)
-                {
-                    _colorPq.Dequeue();
-                    if (_colorPq.Count == 0)
-                    {
-                        SetDefaultColor();
-                    }
-                    continue;
-                }
-
-                if (setting.GetHashCode() == _currentColorHash)
-                {
-                    break;
-                }
-
-                _currentColorHash = setting.GetHashCode();
-                setting.SetColor(this);
-                return;
-            }
-        }
-
-        private void ExpireColors()
-        {
-            foreach (var colorSetting in _colorPq)
-            {
-                foreach (var expiredColorKey in _expiredColorKeys)
-                {
-                    colorSetting.ExpireByKey(expiredColorKey);
-                }
-                colorSetting.UpdateDuration(Time.deltaTime);
-
-                if (colorSetting.IsExpired)
-                {
-                    colorSetting.Expire();
-                }
-            }
-            _expiredColorKeys.Clear();
-        }
-
-        public virtual void SetSpineColor(Color color, int propertyID = -1)
-        {
-        }
-
-        private void SetDefaultColor()
-        {
-            SetSpineColor(Color.white, SpineColorSetting.ColorPropertyId);
-            SetSpineColor(Color.black, SpineColorSetting.BlackPropertyId);
-            _currentColorHash = 0;
-        }
-
-        public void AddHitColor()
-        {
-            var color = new Color(1, 0.6651f, 0.65566f, 1f);
-            var black = new Color(0.2452f, 0.091f, 0.091f, 1f);
-            _colorPq.Enqueue(new SpineColorSetting(color, black, true, 0.3f), (int)SpineColorPriority.Hit);
-        }
-
-        public void AddSpineColor(Color color, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
-        {
-            _colorPq.Enqueue(new SpineColorSetting(color, hasDuration, duration, key), 0);
-        }
-
-        public void AddSpineColor(Color color, Color black, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
-        {
-            _colorPq.Enqueue(new SpineColorSetting(color, black, hasDuration, duration, key), 0);
-        }
-#endregion SpineColor
     }
 
     public class ActionParams

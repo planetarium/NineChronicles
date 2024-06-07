@@ -2166,6 +2166,7 @@ namespace Nekoyume.Blockchain
                     Action.EventDungeonBattle.PlayCount),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
                 tableSheets.DeBuffLimitSheet,
+                tableSheets.BuffLinkSheet,
                 logEvent: true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage);
             simulator.Simulate();
@@ -2754,6 +2755,7 @@ namespace Nekoyume.Blockchain
                         myCollectionState.GetEffects(tableSheets.CollectionSheet),
                         enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
                         tableSheets.DeBuffLimitSheet,
+                        tableSheets.BuffLinkSheet,
                         true);
 
                     var reward = RewardSelector.Select(
@@ -2939,7 +2941,8 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
-                TableSheets.Instance.DeBuffLimitSheet
+                TableSheets.Instance.DeBuffLimitSheet,
+                TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
             var log = simulator.Log;

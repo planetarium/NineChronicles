@@ -215,13 +215,17 @@ namespace Nekoyume.Game.Character
 
             base.SetSpineColor(color, propertyID);
 
-            var mpb = new MaterialPropertyBlock();
-            mpb.SetColor(propertyID, color);
-
             if (skeletonAnimation.TryGetComponent<MeshRenderer>(out var meshRenderer))
+            {
+                var mpb = new MaterialPropertyBlock();
+                meshRenderer.GetPropertyBlock(mpb);
+                mpb.SetColor(propertyID, color);
                 meshRenderer.SetPropertyBlock(mpb);
+            }
             else
+            {
                 NcDebug.LogError($"[{nameof(StageMonster)}] No MeshRenderer found in {name}.");
+            }
         }
     }
 }

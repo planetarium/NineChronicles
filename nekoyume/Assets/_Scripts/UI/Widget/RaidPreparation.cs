@@ -290,7 +290,8 @@ namespace Nekoyume.UI
                 tableSheets.GetRaidSimulatorSheets(),
                 tableSheets.CostumeStatSheet,
                 collectionState.GetEffects(tableSheets.CollectionSheet),
-                tableSheets.DeBuffLimitSheet
+                tableSheets.DeBuffLimitSheet,
+                tableSheets.BuffLinkSheet
             );
             var log = simulator.Simulate();
             var digest = new ArenaPlayerDigest(

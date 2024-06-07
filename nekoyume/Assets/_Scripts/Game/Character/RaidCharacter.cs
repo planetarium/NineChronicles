@@ -721,6 +721,9 @@ namespace Nekoyume.Game.Character
 
             var buff = info.Buff;
             var effect = Game.instance.RaidStage.BuffController.Get<BuffVFX>(target.gameObject, buff);
+            effect.Target = target;
+            effect.Buff = buff;
+
             effect.Play();
             if (effect.IsPersisting)
             {
