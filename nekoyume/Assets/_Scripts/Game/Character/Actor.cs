@@ -1191,8 +1191,8 @@ namespace Nekoyume.Game.Character
 
         private async UniTask ActionTimer(CancellationTokenSource cts)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(20), cancellationToken: cts.Token);
-            NcDebug.LogError($"[{nameof(Actor)}] ActionTimer Timeout. {gameObject.name}");
+            await UniTask.Delay(TimeSpan.FromSeconds(15), cancellationToken: cts.Token);
+            NcDebug.LogWarning($"[{nameof(Actor)}] ActionTimer Timeout. {gameObject.name}");
             _action = null;
         }
 
