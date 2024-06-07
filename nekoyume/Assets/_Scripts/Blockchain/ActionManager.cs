@@ -1756,7 +1756,7 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        public IObservable<ActionEvaluation<ExploreAdventureBoss>> ExploreAdventureBoss()
+        public IObservable<ActionEvaluation<ExploreAdventureBoss>> ExploreAdventureBoss(List<Guid> costume, List<Guid> equipments, List<Guid> food, List<RuneSlotInfo> runeInfo)
         {
             if (Game.Game.instance.AdventureBossData.SeasonInfo is null ||
                 Game.Game.instance.AdventureBossData.SeasonInfo.Value is null ||
@@ -1767,7 +1767,11 @@ namespace Nekoyume.Blockchain
             var action = new ExploreAdventureBoss
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season
+                Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season,
+                Costumes = costume,
+                Equipments = equipments,
+                Foods = food,
+                RuneInfos = runeInfo
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ExploreAdventureBoss>()

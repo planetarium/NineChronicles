@@ -288,7 +288,7 @@ namespace Nekoyume.UI
             style.normal.textColor = Color.white;
 
             int buttonHeight = (int)(style.fontSize * 2.5f);
-            int totalButtons = 4; 
+            int totalButtons = 3; 
             int verticalSpacing = 10;
             int totalHeight = totalButtons * (buttonHeight + verticalSpacing);
 
@@ -301,11 +301,6 @@ namespace Nekoyume.UI
             if (GUILayout.Button("WantedAction", style))
             {
                 ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, 1000, 0));
-            }
-
-            if (GUILayout.Button("ExploreAdventureBoss", style))
-            {
-                ActionManager.Instance.ExploreAdventureBoss();
             }
 
             if(GUILayout.Button("GetSeasonInfoAndBounty", style))

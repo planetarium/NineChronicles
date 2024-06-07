@@ -226,51 +226,18 @@ namespace Nekoyume.UI
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
             AdventureBossBattleAction();
-/*            SendBattleAction(
-                stageType,
-                buyTicketIfNeeded: buyTicketIfNeeded);*/
         }
 
         private void AdventureBossBattleAction()
         {
             Widget.Find<LoadingScreen>().Show();
-            try
-            {
-                ActionManager.Instance.ExploreAdventureBoss().Subscribe(eval =>
-                {
-                    Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
-                    {
-                        Widget.Find<LoadingScreen>().Close();
-                        Close();
-                        //임시
-                        BattleRenderer.Instance.IsOnBattle = false;
-                    });
-                });
-            }
-            catch (Exception e)
-            {
-                Widget.Find<LoadingScreen>().Close();
-                NcDebug.LogError(e);
-            }
-        }
-
-        private void SendBattleAction(
-            StageType stageType,
-            int playCount = 1,
-            int apStoneCount = 0,
-            bool buyTicketIfNeeded = false)
-        {
-            /*Find<WorldMap>().Close(true);
-            Find<StageInformation>().Close(true);
-            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
-
             startButton.gameObject.SetActive(false);
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
             var equipments = itemSlotState.Equipments;
             var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Adventure]
                 .GetEquippedRuneSlotInfos();
-            var consumables = information.GetEquippedConsumables();
+            var consumables = information.GetEquippedConsumables().Select(x => x.ItemId).ToList();
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
@@ -279,53 +246,22 @@ namespace Nekoyume.UI
 
             var skillState = States.Instance.CrystalRandomSkillState;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
-            var skillId = PlayerPrefs.GetInt(key, 0);
-            if (skillId == 0)
+            try
             {
-                if (skillState == null ||
-                    !skillState.SkillIds.Any())
+                ActionManager.Instance.ExploreAdventureBoss(costumes, equipments, consumables, runeInfos).Subscribe(eval =>
                 {
-                    ActionManager.Instance.HackAndSlash(
-                        costumes,
-                        equipments,
-                        consumables,
-                        runeInfos,
-                        _worldId,
-                        _stageId,
-                        playCount: playCount,
-                        apStoneCount: apStoneCount,
-                        trackGuideQuest: _trackGuideQuest
-                    ).Subscribe();
-                    return;
-                }
-
-                skillId = skillState.SkillIds
-                    .Select(buffId =>
-                        TableSheets.Instance.CrystalRandomBuffSheet
-                            .TryGetValue(buffId, out var bonusBuffRow)
-                            ? bonusBuffRow
-                            : null)
-                    .Where(x => x != null)
-                    .OrderBy(x => x.Rank)
-                    .ThenBy(x => x.Id)
-                    .First()
-                    .Id;
+                    Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
+                    {
+                        Widget.Find<LoadingScreen>().Close();
+                        Close();
+                    });
+                });
             }
-
-            ActionManager.Instance.HackAndSlash(
-                costumes,
-                equipments,
-                consumables,
-                runeInfos,
-                _worldId,
-                _stageId,
-                skillId,
-                playCount,
-                apStoneCount,
-                _trackGuideQuest
-            ).Subscribe();
-            PlayerPrefs.SetInt(key, 0);*/
+            catch (Exception e)
+            {
+                Widget.Find<LoadingScreen>().Close();
+                NcDebug.LogError(e);
+            }
         }
 
         private void GoToPrepareStage(BattleLog battleLog)

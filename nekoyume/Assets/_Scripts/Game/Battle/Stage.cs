@@ -32,6 +32,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -1488,6 +1489,15 @@ namespace Nekoyume.Game.Battle
                 character.AddAction(actionParams);
                 yield return null;
             }
+        }
+
+        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<FloorWaveSheet.MonsterData> monsters)
+        {
+#if TEST_LOG
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
+#endif
+            
+            yield return null;
         }
     }
 }
