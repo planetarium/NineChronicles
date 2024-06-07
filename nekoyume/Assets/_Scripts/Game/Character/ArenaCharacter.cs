@@ -49,7 +49,7 @@ namespace Nekoyume.Game.Character
         private readonly List<Equipment> _equipments = new List<Equipment>();
         private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
-        public List<ArenaActionParams> Actions { get; } = new List<ArenaActionParams>();
+        private readonly List<ArenaActionParams> _actions = new();
         public Pet Pet => appearance.Pet;
 
         private bool IsDead => _currentHp <= 0;
@@ -229,7 +229,7 @@ namespace Nekoyume.Game.Character
             _root = new Root();
             _root.OpenBranch(
                 BT.Selector().OpenBranch(
-                    BT.If(() => Actions.Any()).OpenBranch(
+                    BT.If(() => _actions.Any()).OpenBranch(
                         BT.Call(ExecuteAction)
                     )
                 )
@@ -248,8 +248,8 @@ namespace Nekoyume.Game.Character
                 yield break;
             }
             // TODO: Change Queue
-            _runningAction = Actions.First();
-            Actions.Remove(_runningAction);
+            _runningAction = _actions.First();
+            _actions.Remove(_runningAction);
 
             var cts = new CancellationTokenSource();
             ActionTimer(cts).Forget();
@@ -297,7 +297,12 @@ namespace Nekoyume.Game.Character
 
         public bool HasAction()
         {
-            return Actions.Any() || _runningAction is not null;
+            return _actions.Any() || _runningAction is not null;
+        }
+
+        public void AddAction(ArenaActionParams actionParams)
+        {
+            _actions.Add(actionParams);
         }
 
         private void ProcessAttack(ArenaCharacter target, ArenaSkill.ArenaSkillInfo skill, bool isConsiderElementalType)
@@ -837,7 +842,7 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator Dying()
         {
-            yield return new WaitWhile(() => Actions.Any());
+            yield return new WaitWhile(HasAction);
             OnDeadStart();
             yield return new WaitForSeconds(0.2f);
             _speechBubble.gameObject.SetActive(false);
@@ -858,7 +863,7 @@ namespace Nekoyume.Game.Character
         private void OnDeadEnd()
         {
             Animator.Idle();
-            Actions.Clear();
+            _actions.Clear();
             gameObject.SetActive(false);
             _root = null;
             _runningAction = null;
