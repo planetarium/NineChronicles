@@ -240,8 +240,7 @@ namespace Nekoyume.Game.Character
 
         public void Hit()
         {
-            if (!ValidateAnimator() ||
-                !Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex)
+            if (!ValidateAnimator() || !Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex)
                     .IsName(nameof(CharacterAnimation.Type.Idle)))
             {
                 return;

@@ -11,7 +11,7 @@ namespace Nekoyume
         {
             var scriptPlayable = ScriptPlayable<TimeScaleBehaviour>.Create(graph, inputCount);
             var behaviour = scriptPlayable.GetBehaviour();
-            behaviour.timeScale = Game.Prologue.DefaultTimeScale;
+            behaviour.timeScale = Game.Game.DefaultTimeScale;
             return scriptPlayable;
         }
     }

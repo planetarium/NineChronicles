@@ -28,26 +28,29 @@ namespace Nekoyume.UI
         [SerializeField] private Animator animator;
         [SerializeField] private SummonCostButton normalDrawButton;
         [SerializeField] private SummonCostButton goldenDrawButton;
+        [SerializeField] private SummonCostButton redDrawButton;
 
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button skipButton;
+
         [SerializeField] private ResultVideoClip normalVideoClip;
         [SerializeField] private ResultVideoClip goldenVideoClip;
+        [SerializeField] private ResultVideoClip rubyVideoClip;
 
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
         [SerializeField] private RectTransform background;
 
-        private const int NormalSummonId = 10001;
         private bool _isGreat;
         private Coroutine _coroutine;
         private string _previousMusicName;
         private System.Action _completeCallback;
-        private const float DefaultBackgroundPosY = 690;
 
         private readonly List<IDisposable> _disposables = new();
+
         private static readonly WaitForSeconds ItemViewAnimInterval = new(0.1f);
         private static readonly WaitForSeconds DefaultAnimInterval = new(1f);
+
         private static readonly int AnimatorHashHide = Animator.StringToHash("Hide");
         private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
         private static readonly int AnimatorHashShowButton = Animator.StringToHash("ShowButton");
@@ -81,6 +84,7 @@ namespace Nekoyume.UI
 
             normalDrawButton.Subscribe(gameObject);
             goldenDrawButton.Subscribe(gameObject);
+            redDrawButton.Subscribe(gameObject);
         }
 
         public void Show(
@@ -95,9 +99,8 @@ namespace Nekoyume.UI
 
             animator.SetTrigger(AnimatorHashHide);
 
-            var normal = summonRow.CostMaterial == (int)CostType.SilverDust;
             var bonus = summonCount == 10 ? 1 : 0;
-            var great = resultList.First().Grade == 5;
+            var great = resultList.First().Grade >= 5;
 
             var single = summonCount == 1;
             if (single)
@@ -124,26 +127,9 @@ namespace Nekoyume.UI
                 }
             }
 
-            if (_coroutine != null)
-            {
-                StopCoroutine(_coroutine);
-                _coroutine = null;
-            }
-
-            _coroutine = StartCoroutine(PlayVideo(normal, great));
-
-            _disposables.DisposeAllAndClear();
-            var drawButton = normal ? normalDrawButton : goldenDrawButton;
-            drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
-            drawButton.Subscribe(summonRow, summonCount, GoToMarket,_disposables);
-
-            normalDrawButton.gameObject.SetActive(normal);
-            goldenDrawButton.gameObject.SetActive(!normal);
-
-            closeButton.interactable = true;
-            skipButton.interactable = true;
-            background.anchoredPosition =
-                (normal ? Vector2.up : Vector2.down) * DefaultBackgroundPosY;
+            var costType = (CostType)summonRow.CostMaterial;
+            StartPlayVideo(costType, great);
+            RefreshUI(costType, summonRow, summonCount, bonus);
         }
 
         public void Show(SummonSheet.Row summonRow,
@@ -157,9 +143,7 @@ namespace Nekoyume.UI
 
             animator.SetTrigger(AnimatorHashHide);
 
-            var normal = summonRow.CostMaterial == (int)CostType.SilverDust;
             var bonus = summonCount == 10 ? 1 : 0;
-
             var single = summonCount == 1;
             if (single)
             {
@@ -185,65 +169,106 @@ namespace Nekoyume.UI
                 }
             }
 
+            var costType = (CostType)summonRow.CostMaterial;
+            StartPlayVideo(costType, true);
+            RefreshUI(costType, summonRow, summonCount, bonus);
+        }
+
+        private void StartPlayVideo(CostType costType, bool great)
+        {
             if (_coroutine != null)
             {
                 StopCoroutine(_coroutine);
                 _coroutine = null;
             }
 
-            _coroutine = StartCoroutine(PlayVideo(normal, true));
+            _coroutine = StartCoroutine(PlayVideo(costType, great));
+        }
 
+        private void RefreshUI(CostType costType, SummonSheet.Row data, int summonCount, int bonus)
+        {
             _disposables.DisposeAllAndClear();
-            var drawButton = normal ? normalDrawButton : goldenDrawButton;
-            drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
-            drawButton.Subscribe(summonRow, summonCount, GoToMarket, _disposables);
-
-            normalDrawButton.gameObject.SetActive(normal);
-            goldenDrawButton.gameObject.SetActive(!normal);
 
             closeButton.interactable = true;
             skipButton.interactable = true;
-            background.anchoredPosition =
-                (normal ? Vector2.up : Vector2.down) * DefaultBackgroundPosY;
+            background.anchoredPosition = Vector2.up * SummonUtil.GetBackGroundPosition((CostType)data.CostMaterial);
+
+            normalDrawButton.gameObject.SetActive(false);
+            goldenDrawButton.gameObject.SetActive(false);
+            redDrawButton.gameObject.SetActive(false);
+
+            var drawButton = GetDrawButton(costType);
+            if (drawButton == null)
+            {
+                return;
+            }
+
+            drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
+            drawButton.Subscribe(data, summonCount, GoToMarket,_disposables);
+            drawButton.gameObject.SetActive(true);
         }
 
-        private IEnumerator PlayVideo(bool normal, bool great)
+        private SummonCostButton GetDrawButton(CostType costType)
+        {
+            return costType switch
+            {
+                CostType.SilverDust => normalDrawButton,
+                CostType.GoldDust => goldenDrawButton,
+                CostType.RubyDust => redDrawButton,
+                _ => null
+            };
+        }
+
+        private IEnumerator PlayVideo(CostType costType, bool great)
         {
             _isGreat = great;
             var audioController = AudioController.instance;
             _previousMusicName = audioController.CurrentPlayingMusicName;
             audioController.StopAll(0.5f);
 
-            var currentVideoClip = normal ? normalVideoClip : goldenVideoClip;
-
-            videoPlayer.clip = currentVideoClip.summoning;
-            videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
-            videoPlayer.gameObject.SetActive(true);
-            skipButton.gameObject.SetActive(true);
-            videoPlayer.Play();
-
-            yield return new WaitUntil(() => videoPlayer.isPlaying);
-            yield return new WaitUntil(() => !videoPlayer.isPlaying);
-
-            if (great && currentVideoClip.great)
+            var currentVideoClip = GetCurrentVideoClip(costType);
+            if (currentVideoClip != null)
             {
-                videoPlayer.clip = currentVideoClip.great;
+                videoPlayer.clip = currentVideoClip.summoning;
+                videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
+                videoPlayer.gameObject.SetActive(true);
+                skipButton.gameObject.SetActive(true);
+                videoPlayer.Play();
+
+                yield return new WaitUntil(() => videoPlayer.isPlaying);
+                yield return new WaitUntil(() => !videoPlayer.isPlaying);
+
+                if (great && currentVideoClip.great)
+                {
+                    videoPlayer.clip = currentVideoClip.great;
+                }
+                else
+                {
+                    videoPlayer.clip = currentVideoClip.result;
+                }
+
+                videoPlayer.Play();
+
+                yield return new WaitUntil(() => videoPlayer.isPlaying);
+                yield return new WaitUntil(() => !videoPlayer.isPlaying);
+
+                videoPlayer.Stop();
+                videoPlayer.gameObject.SetActive(false);
+                skipButton.gameObject.SetActive(false);
             }
-            else
-            {
-                videoPlayer.clip = currentVideoClip.result;
-            }
-
-            videoPlayer.Play();
-
-            yield return new WaitUntil(() => videoPlayer.isPlaying);
-            yield return new WaitUntil(() => !videoPlayer.isPlaying);
-
-            videoPlayer.Stop();
-            videoPlayer.gameObject.SetActive(false);
-            skipButton.gameObject.SetActive(false);
 
             yield return PlayResultAnimation(great);
+        }
+
+        private ResultVideoClip GetCurrentVideoClip(CostType costType)
+        {
+            return costType switch
+            {
+                CostType.SilverDust => normalVideoClip,
+                CostType.GoldDust   => goldenVideoClip,
+                CostType.RubyDust   => rubyVideoClip,
+                _                   => null
+            };
         }
 
         private IEnumerator PlayResultAnimation(bool great)

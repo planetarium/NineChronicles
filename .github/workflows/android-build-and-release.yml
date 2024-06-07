@@ -21,6 +21,26 @@ on:
         description: "Google Play Console VersionCode"
       app-version:
         description: "Google Play Console VersionName ex(40.0.0)"
+      package-name:
+        description: "package name ex(com.planetariumlabs.ninechroniclesmobile)"
+        required: false
+        type: string
+        default: "com.planetariumlabs.ninechroniclesmobile"
+      cloud-project-id:
+        description: "cloud project id ex(abcd-1234-xyz0)"
+        required: false
+        type: string
+        default: ""
+      player-name:
+        description: "player name ex(Nine-Chronicles-M -> Nine Chronicles M)"
+        required: false
+        type: string
+        default: "Nine-Chronicles-M"
+      other-google-services:
+        description: "Please turn on the option when build other package"
+        required: false
+        type: boolean
+        default: false
       manual_build_option:
         description: "Please turn on the option when manually executing the action"
         type: boolean
@@ -28,7 +48,7 @@ on:
         default: false
 
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.inputs.player-name }}
   cancel-in-progress: true
 
 env:
@@ -50,6 +70,11 @@ jobs:
           - nekoyume
         targetPlatform:
           - Android
+    environment: |-
+      ${{ github.event.inputs.other-google-services == 'true' && 'k'
+      || github.ref_name == 'main' && 'main'
+      || startsWith(github.ref_name, 'release/') == 'true' && 'internal'
+      || '' }}
     env:
       GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
@@ -76,11 +101,23 @@ jobs:
           if [ -n "${{ github.event.inputs.clo }}" ]; then
             echo ${{ github.event.inputs.clo }} > ${{ matrix.projectPath }}/Assets/StreamingAssets/clo.json
           fi
-      
+
       - name: Decode google-services.json File
         run: |
           echo "$GOOGLE_SERVICES_JSON" | base64 -d > ${{ matrix.projectPath }}/Assets/NineChronicles/GoogleServices/google-services.json
 
+      - name: Resolve AAR files
+        run: |
+          if [ '${{ github.event.inputs.other-google-services }}' == 'true' ]; then
+            sudo \cp -R ${{ matrix.projectPath }}/ResolvedAAR/. ${{ matrix.projectPath }}/Assets/Plugins/Android/
+          fi
+
+      - name: Change cloudProjectId in ProjectSettings.asset
+        run: |
+          if [ -n "${{ github.event.inputs.cloud-project-id }}" ]; then
+            sed -i '/cloudProjectId/c\  cloudProjectId: ${{ github.event.inputs.cloud-project-id }}' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+            cat ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+          fi
       - uses: game-ci/unity-builder@v4
         with:
           androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
@@ -96,6 +133,8 @@ jobs:
           androidVersionCode: ${{ github.event.inputs.version-code }}
           version: ${{ github.event.inputs.app-version }}
           androidTargetSdkVersion: AndroidApiLevel33
+          customParameters: -identifier ${{ github.event.inputs.package-name }} -playerName ${{ github.event.inputs.player-name }}
+          allowDirtyBuild: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -126,10 +165,10 @@ jobs:
       - name: Move Folder
         run: |
           sudo mv $GITHUB_WORKSPACE/build /tmp/player
-          
+
       - name: Convert AAB to APKS
         run: |
-          sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/Nine Chronicles M.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/keyalias.pwd --mode=universal --local-testing
+          sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/android-build.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/keyalias.pwd --mode=universal --local-testing
 
       - name: Pack
         run: |
@@ -153,7 +192,7 @@ jobs:
           if-no-files-found: error
 
   extract:
-    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/') || github.event.inputs.manual_build_option
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')
     needs: build
     runs-on: ubuntu-latest
     outputs:
@@ -172,7 +211,7 @@ jobs:
           fi
 
   release-to-google-play:
-    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')|| github.event.inputs.manual_build_option
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')
     name: Release to the Google Play Store
     runs-on: ubuntu-latest
     needs: ["extract"]
@@ -182,7 +221,7 @@ jobs:
       GOOGLE_PLAY_KEY_FILE: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}
       GOOGLE_PLAY_KEY_FILE_PATH:
         ${{ format('{0}/fastlane/google-fastlane.json', github.workspace) }}
-      ANDROID_BUILD_FILE_PATH: ${{ format('{0}/build/Android/Nine Chronicles M.aab', github.workspace) }}
+      ANDROID_BUILD_FILE_PATH: ${{ format('{0}/build/Android/android-build.aab', github.workspace) }}
       ANDROID_PACKAGE_NAME: ${{ secrets.ANDROID_PACKAGE_NAME }}
     steps:
       - name: Checkout Repository

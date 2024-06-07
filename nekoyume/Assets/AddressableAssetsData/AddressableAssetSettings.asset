@@ -44,6 +44,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c4ad80360eac6864c8d6643e59c490d4, type: 2}
   - {fileID: 11400000, guid: e92b5d1b57b9fb44eafce77799d29ca1, type: 2}
   - {fileID: 11400000, guid: e6d59e0850ffb444e8bb9919caec47cc, type: 2}
+  - {fileID: 11400000, guid: 0033a757bfbaeac479ed5dd1b08f19b1, type: 2}
+  - {fileID: 11400000, guid: ae964126ea486de4aba5da44e684ffde, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -102,6 +104,7 @@ MonoBehaviour:
     - banner
     - notice
     - Battle
+    - Character
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 9f4f41e954ec39941904844ab832b4ea, type: 2}

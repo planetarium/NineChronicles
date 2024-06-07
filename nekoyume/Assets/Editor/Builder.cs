@@ -23,15 +23,19 @@ namespace Editor
 #if UNITY_ANDROID || UNITY_IOS
         private static string PlayerName = "Nine Chronicles M";
 #else
-        private static readonly string PlayerName = PlayerSettings.productName;
+        private static string PlayerName = PlayerSettings.productName;
 #endif
+
         private const string BuildBasePath = "build";
 
         [MenuItem("Build/Standalone/Android Arm64")]
         public static void BuildAndroid()
         {
+            SetByCommandLineArguments();
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
+            AirbridgeSettingsWindow.UpdateAndroidManifest();
+            AssetDatabase.Refresh();
             Debug.Log("Build Android");
             BuildOptions options = BuildOptions.None;
             Build(BuildTarget.Android, options, "Android", false);
@@ -123,7 +127,10 @@ namespace Editor
         [MenuItem("Build/Standalone/iOS")]
         public static void BuildiOS()
         {
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.iOS, BuildTarget.iOS);
             EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
+            SetByCommandLineArguments();
+            AirbridgeSettingsWindow.UpdateiOSAppSetting();
             Debug.Log("Build iOS");
             PreProcessBuildForIOS();
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
@@ -243,60 +250,6 @@ namespace Editor
 #if UNITY_ANDROID || UNITY_IOS
             PlayerSettings.productName = PlayerName;
 #endif
-
-            // This code snippets from: https://github.com/game-ci/documentation/blob/main/example/BuildScript.cs
-            var cliOptions = new Dictionary<string, string>();
-            var args = Environment.GetCommandLineArgs();
-            // Extract flags with optional values
-            for (int current = 0, next = 1; current < args.Length; current++, next++)
-            {
-                // Parse flag
-                var isFlag = args[current].StartsWith("-");
-                if (!isFlag)
-                {
-                    continue;
-                }
-
-                var flag = args[current].TrimStart('-');
-                // Parse optional value
-                var flagHasValue = next < args.Length && !args[next].StartsWith("-");
-                var value = flagHasValue ? args[next].TrimStart('-') : "";
-                cliOptions.Add(flag, value);
-
-                if (cliOptions.TryGetValue("androidKeystoreName", out var keystoreName) &&
-                    !string.IsNullOrEmpty(keystoreName))
-                {
-                    PlayerSettings.Android.useCustomKeystore = true;
-                    PlayerSettings.Android.keystoreName = keystoreName;
-                }
-
-                if (cliOptions.TryGetValue("androidKeystorePass", out var keystorePass) &&
-                    !string.IsNullOrEmpty(keystorePass))
-                {
-                    PlayerSettings.Android.keystorePass = keystorePass;
-                }
-
-                if (cliOptions.TryGetValue("androidKeyaliasName", out var keyaliasName) &&
-                    !string.IsNullOrEmpty(keyaliasName))
-                {
-                    PlayerSettings.Android.keyaliasName = keyaliasName;
-                }
-
-                if (cliOptions.TryGetValue("androidKeyaliasPass", out var keyaliasPass) &&
-                    !string.IsNullOrEmpty(keyaliasPass))
-                {
-                    PlayerSettings.Android.keyaliasPass = keyaliasPass;
-                }
-
-                if (cliOptions.TryGetValue("customBuildPath", out var outPath) &&
-                    !string.IsNullOrEmpty(outPath))
-                {
-                    var aab = outPath.EndsWith(".aab");
-                    EditorUserBuildSettings.buildAppBundle = aab;
-                    PlayerSettings.Android.useAPKExpansionFiles = aab;
-                }
-            }
-
             targetDirName ??= buildTarget.ToString();
             var locationPathName = Path.Combine(
                 "../",
@@ -307,7 +260,8 @@ namespace Editor
                     BuildTarget.StandaloneWindows or BuildTarget.StandaloneWindows64 =>
                         $"{PlayerName}.exe",
                     BuildTarget.Android =>
-                        $"{PlayerName}.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
+                        $"android-build.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
+                    BuildTarget.iOS => "Nine Chronicles M",
                     _ => PlayerName,
                 }
             );
@@ -507,7 +461,7 @@ namespace Editor
                     }
                 }
             };
-            
+
             dict["ITSAppUsesNonExemptEncryption"] = false;
 
             dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com";
@@ -519,9 +473,6 @@ namespace Editor
 
         private static void PreProcessBuildForIOS()
         {
-            string identifier = "com." + PlayerSettings.companyName + '.' + PlayerSettings.productName;
-            identifier = "com.planetariumlabs.ninechroniclesmobile";
-            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, identifier);
             PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=30");
             PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
         }
@@ -532,6 +483,75 @@ namespace Editor
             var source = Path.Combine(basePath, filename);
             var destination = Path.Combine(BuildBasePath, targetDirName, filename);
             File.Copy(source, destination, true);
+        }
+
+        private static void SetByCommandLineArguments()
+        {
+            // This code snippets from: https://github.com/game-ci/documentation/blob/main/example/BuildScript.cs
+            var cliOptions = new Dictionary<string, string>();
+            var args = Environment.GetCommandLineArgs();
+            // Extract flags with optional values
+            for (int current = 0, next = 1; current < args.Length; current++, next++)
+            {
+                // Parse flag
+                var isFlag = args[current].StartsWith("-");
+                if (!isFlag)
+                {
+                    continue;
+                }
+
+                var flag = args[current].TrimStart('-');
+                // Parse optional value
+                var flagHasValue = next < args.Length && !args[next].StartsWith("-");
+                var value = flagHasValue ? args[next].TrimStart('-') : "";
+                cliOptions.Add(flag, value);
+
+                if (cliOptions.TryGetValue("androidKeystoreName", out var keystoreName) &&
+                    !string.IsNullOrEmpty(keystoreName))
+                {
+                    PlayerSettings.Android.useCustomKeystore = true;
+                    PlayerSettings.Android.keystoreName = keystoreName;
+                }
+
+                if (cliOptions.TryGetValue("androidKeystorePass", out var keystorePass) &&
+                    !string.IsNullOrEmpty(keystorePass))
+                {
+                    PlayerSettings.Android.keystorePass = keystorePass;
+                }
+
+                if (cliOptions.TryGetValue("androidKeyaliasName", out var keyaliasName) &&
+                    !string.IsNullOrEmpty(keyaliasName))
+                {
+                    PlayerSettings.Android.keyaliasName = keyaliasName;
+                }
+
+                if (cliOptions.TryGetValue("androidKeyaliasPass", out var keyaliasPass) &&
+                    !string.IsNullOrEmpty(keyaliasPass))
+                {
+                    PlayerSettings.Android.keyaliasPass = keyaliasPass;
+                }
+
+                if (cliOptions.TryGetValue("customBuildPath", out var outPath) &&
+                    !string.IsNullOrEmpty(outPath))
+                {
+                    var aab = outPath.EndsWith(".aab");
+                    EditorUserBuildSettings.buildAppBundle = aab;
+                    PlayerSettings.Android.useAPKExpansionFiles = aab;
+                }
+
+                if (cliOptions.TryGetValue("identifier", out var outIdentifier) &&
+                    !string.IsNullOrEmpty(outIdentifier))
+                {
+                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, outIdentifier);
+                    PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, outIdentifier);
+                }
+
+                if (cliOptions.TryGetValue("playerName", out var outPlayerName) &&
+                    !string.IsNullOrEmpty(outPlayerName))
+                {
+                    PlayerName = outPlayerName.Replace("-", " ");
+                }
+            }
         }
     }
 }

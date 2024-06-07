@@ -964,8 +964,7 @@ namespace Nekoyume.Blockchain
                 BlockTipHashSubject.OnNext(BlockTipHash);
                 _lastTipChangedAt = DateTimeOffset.UtcNow;
 
-                NcDebug.Log(
-                    $"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}");
+                NcDebug.Log($"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}", channel: "RenderBlock");
                 BlockRenderer.RenderBlock(null, null);
             });
         }

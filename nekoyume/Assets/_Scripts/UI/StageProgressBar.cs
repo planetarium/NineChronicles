@@ -171,7 +171,7 @@ namespace Nekoyume.UI
 
         private void OnEnemyDeadStart(StageMonster stageMonster)
         {
-            IncreaseProgress(stageMonster.HP - stageMonster.CharacterModel.AdditionalHP);
+            IncreaseProgress(stageMonster.Hp - stageMonster.CharacterModel.AdditionalHP);
         }
 
         public void OnValueChanged()

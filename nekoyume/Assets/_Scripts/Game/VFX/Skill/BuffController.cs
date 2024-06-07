@@ -28,32 +28,30 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public V Get<T, V>(T target, Buff buff)
-            where T : Character.Character
-            where V : BuffVFX
+        public T Get<T>(GameObject target, Buff buff) where T : BuffVFX
         {
-            if (target is null)
+            if (target == null)
             {
                 return null;
             }
 
-            var position = target.transform.position;
-            position.y += 0.55f;
+            var position = target.transform.position + BuffHelper.GetBuffPosition(buff.BuffInfo.Id);
 
             var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
-            var go = _pool.Get(resourceName, false, position);
+            var go           = _pool.Get(resourceName, false, position);
             if (go == null)
             {
                 go = _pool.Get(resourceName, true, position);
             }
 
-            return GetEffect<V>(go);
+            return GetEffect<T>(go);
         }
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
         {
+            // TODO: ID대신 GroupID사용 고려 혹은 ID와 GroupID사이의 정의 정리
             var resourceName = BuffHelper.GetCastingVFXPrefab(buff).name;
-            position.y += 0.55f;
+            position += BuffHelper.GetBuffPosition(buff.BuffInfo.Id, true);
             var go = _pool.Get(resourceName, false, position);
             if (go == null)
             {
@@ -66,40 +64,23 @@ namespace Nekoyume.Game.VFX.Skill
         private static T GetEffect<T>(GameObject go)
             where T : BuffVFX
         {
-            var effect = go.GetComponent<T>();
-            if (effect is null)
+            if (!go.TryGetComponent<T>(out var effect))
             {
-                throw new NotFoundComponentException<T>(go.name);
+                return null;
             }
 
             effect.Stop();
             return effect;
         }
 
-        public T Get<T>(GameObject target, Buff buff) where T : BuffVFX
-        {
-            var position = target.transform.position;
-            position.y += 0.55f;
-
-
-            var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
-            var go = _pool.Get(resourceName, false, position);
-            if (go == null)
-            {
-                go = _pool.Get(resourceName, true, position);
-            }
-
-            return GetEffect<T>(go);
-        }
-
-        public static IEnumerator CoChaseTarget(Component vfx, Transform target)
+        public static IEnumerator CoChaseTarget(Component vfx, Character.Character target, Buff buffModel)
         {
             var g = vfx.gameObject;
             var t = vfx.transform;
-            while (g.activeSelf &&
-                   target)
+            while (g.activeSelf && target)
             {
-                t.position = target.position + new Vector3(0f, 0.55f, 0f);
+                t.position = target.transform.position + BuffHelper.GetBuffPosition(buffModel.BuffInfo.Id);
+                vfx.transform.FlipX(target.IsFlipped);
                 yield return null;
             }
         }

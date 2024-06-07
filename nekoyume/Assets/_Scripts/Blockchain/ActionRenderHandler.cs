@@ -1139,6 +1139,13 @@ namespace Nekoyume.Blockchain
             {
                 stringBuilder.AppendLine($"Exception: {exception.Message}");
                 stringBuilder.AppendLine($"StackTrace: {exception.StackTrace}");
+
+                var innerException = exception.InnerException;
+                if (innerException != null)
+                {
+                    stringBuilder.AppendLine($"InnerException: {innerException.Message}");
+                    stringBuilder.AppendLine($"InnerStackTrace: {innerException.StackTrace}");
+                }
             }
 
             NcDebug.LogError(stringBuilder.ToString());
@@ -1938,7 +1945,7 @@ namespace Nekoyume.Blockchain
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
-                Game.Game.instance.Stage.onEnterToStageEnd
+                Game.Game.instance.Stage.OnEnterToStageEnd
                     .First()
                     .Subscribe(_ =>
                     {
@@ -2101,7 +2108,7 @@ namespace Nekoyume.Blockchain
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
-                Game.Game.instance.Stage.onEnterToStageEnd
+                Game.Game.instance.Stage.OnEnterToStageEnd
                     .First()
                     .Subscribe(_ =>
                     {
@@ -2159,6 +2166,7 @@ namespace Nekoyume.Blockchain
                     Action.EventDungeonBattle.PlayCount),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
                 tableSheets.DeBuffLimitSheet,
+                tableSheets.BuffLinkSheet,
                 logEvent: true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage);
             simulator.Simulate();
@@ -2747,6 +2755,7 @@ namespace Nekoyume.Blockchain
                         myCollectionState.GetEffects(tableSheets.CollectionSheet),
                         enemyCollectionState.GetEffects(tableSheets.CollectionSheet),
                         tableSheets.DeBuffLimitSheet,
+                        tableSheets.BuffLinkSheet,
                         true);
 
                     var reward = RewardSelector.Select(
@@ -2932,7 +2941,8 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.GetRaidSimulatorSheets(),
                 TableSheets.Instance.CostumeStatSheet,
                 States.Instance.CollectionState.GetEffects(TableSheets.Instance.CollectionSheet),
-                TableSheets.Instance.DeBuffLimitSheet
+                TableSheets.Instance.DeBuffLimitSheet,
+                TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
             var log = simulator.Log;

@@ -83,7 +83,7 @@ ZIP = {
 
 
 def cleanup_debug_dir(build_result_dir: str, isMobile: bool):
-    build_name = "Nine Chronicles M" if isMobile else "NineChronicles" 
+    build_name = "android-build" if isMobile else "NineChronicles" 
     shutil.rmtree(os.path.join(build_result_dir,
                   f"{build_name}_BurstDebugInformation_DoNotShip"))
 

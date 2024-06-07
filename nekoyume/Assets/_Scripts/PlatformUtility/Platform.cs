@@ -12,7 +12,7 @@ namespace Nekoyume
 #if UNITY_EDITOR
                 return Application.persistentDataPath;
 #elif UNITY_ANDROID
-                return "data/data/com.planetariumlabs.ninechroniclesmobile";
+                return $"data/data/{Application.identifier}";
 #else
                 return Application.persistentDataPath;
 #endif

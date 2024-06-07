@@ -21,6 +21,9 @@ namespace Nekoyume.UI
     public class SettingPopup : PopupWidget
     {
         [SerializeField]
+        private GameObject addressContainer;
+
+        [SerializeField]
         private TextMeshProUGUI addressTitleText;
 
         [SerializeField]
@@ -122,6 +125,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            addressContainer.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
             addressTitleText.text = L10nManager.Localize("UI_YOUR_ADDRESS");
             privateKeyTitleText.text = L10nManager.Localize("UI_YOUR_PRIVATE_KEY");
             warningText.text = L10nManager.Localize("UI_ACCOUNT_WARNING");

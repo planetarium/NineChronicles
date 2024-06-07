@@ -249,7 +249,14 @@ namespace Nekoyume.UI
             }
             else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
             {
-                Check(clearedStageId);
+                if (Game.LiveAsset.GameConfig.IsKoreanBuild && clearedStageId == 7)
+                {
+                    // Skip tutorial 7 (portal reward) in K version
+                }
+                else
+                {
+                    Check(clearedStageId);
+                }
             }
             // If PlayerPrefs doesn't exist
             else if (clearedStageId == 0 && checkPoint != -1)

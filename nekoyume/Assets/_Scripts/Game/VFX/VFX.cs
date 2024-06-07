@@ -15,9 +15,21 @@ namespace Nekoyume.Game.VFX
         private int _particlesLength = 0;
         private float _particlesDuration = 0f;
 
-        protected ParticleSystem _particlesRoot = null;
-        protected Renderer _rootRenderer = null;
-        protected virtual float EmitDuration { get; set; } = 1.0f;
+        private ParticleSystem _particleRoot;
+
+        protected virtual ParticleSystem ParticlesRoot
+        {
+            get => _particleRoot;
+            set
+            {
+                _particleRoot = value;
+                _rootRenderer = ParticlesRoot.GetComponent<Renderer>();
+            }
+        }
+
+        private Renderer _rootRenderer;
+
+        protected virtual float EmitDuration  { get; set; } = 1.0f;
 
         protected bool _isPlaying = false;
         protected bool _isFinished = false;
@@ -45,8 +57,7 @@ namespace Nekoyume.Game.VFX
             _particles = GetComponentsInChildren<ParticleSystem>();
             _particlesLength = _particles.Length;
             Assert.Greater(_particlesLength, 0);
-            _particlesRoot = _particles[0];
-            _rootRenderer = _particlesRoot.GetComponent<Renderer>();
+            ParticlesRoot = _particles[0];
 
             foreach (var particle in _particles)
             {
@@ -63,7 +74,7 @@ namespace Nekoyume.Game.VFX
                     r.sortingLayerName = StringVFX;
                 }
 
-                if (_initializeSortingProbsOfChildren && !particle.Equals(_particlesRoot))
+                if (_initializeSortingProbsOfChildren && !particle.Equals(ParticlesRoot))
                 {
                     InitializeSortingProbsOfChildren(particle, r);
                 }
@@ -72,7 +83,7 @@ namespace Nekoyume.Game.VFX
 
         protected virtual void OnEnable()
         {
-            if (ReferenceEquals(_particlesRoot, null))
+            if (ReferenceEquals(ParticlesRoot, null))
             {
                 return;
             }
@@ -87,14 +98,19 @@ namespace Nekoyume.Game.VFX
         {
             if (_isPlaying)
                 OnInterrupted?.Invoke();
+
+            transform.FlipX(false);
         }
 
         #endregion
 
-        public void LazyStop()
+        public virtual void LazyStop()
         {
-            _particlesRoot.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            StartCoroutine(CoLazyStop(_particlesDuration));
+            ParticlesRoot.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            if (gameObject.activeSelf)
+            {
+                StartCoroutine(CoLazyStop(_particlesDuration));
+            }
         }
 
         public virtual void Play()
@@ -143,7 +159,7 @@ namespace Nekoyume.Game.VFX
 
         private void InitializeSortingProbsOfChildren(ParticleSystem particle, Renderer r)
         {
-            particle.gameObject.layer = _particlesRoot.gameObject.layer;
+            particle.gameObject.layer = ParticlesRoot.gameObject.layer;
             if (_rootRenderer)
             {
                 r.sortingLayerName = _rootRenderer.sortingLayerName;

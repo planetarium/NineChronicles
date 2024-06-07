@@ -47,3 +47,17 @@ ERROR_COMBINATION_SLOT_UNLOCK_EXCEPTION,Workshop slot not ready.,워크샵 슬�
 ERROR_NO_CONTINUOUS_BATTLES,Continuous world boss battles cannot proceed.,연속으로 월드 보스 전투를 수행할 수 없습니다.,As batalhas contínuas do World Boss não podem prosseguir.,継続的にワールドボスと戦うことはできません。,Las continuas batallas de jefes del mundo no pueden proceder.,การต่อสู้หัวหน้าโลกอย่างต่อเนื่องไม่สามารถดำเนินการต่อได้,Pertempuran bos dunia berkelanjutan tidak dapat dilanjutkan.,,连续的世界老板战斗无法进行。,連續的世界老闆戰鬥無法進行。,Ang patuloy na mga labanan sa boss ng mundo ay hindi maaaring magpatuloy.,Các trận chiến trùm thế giới liên tục không thể tiến hành.
 ERROR_NO_ENTRY_SHOP,Connection failed. Please try again.,연결에 실패했습니다. 재시도 해주세요.,"A conexão falhou. Por favor, tente novamente.",接続に失敗しました。もう一度やり直してください。,La conexión falló. Inténtalo de nuevo.,การเชื่อมต่อล้มเหลว. กรุณาลองอีกครั้ง.,Koneksi gagal. Silakan coba lagi.,,连接失败。请再试一次。,連接失敗。請再試一次。,Nabigo ang koneksyon. Pakisubukang muli.,Kết nối thất bại. Vui lòng thử lại.
 ERROR_INITIALIZE_FAILED,Initialization failed.,초기화에 실패했습니다.,Falha na inicialização.,初期化に失敗しました。,Falló la inicialización.,การเริ่มต้นล้มเหลว,Inisialisasi gagal.,Ошибка инициализации.,初始化失敗。,初始化失敗。,Nabigo ang pagpapatakbo.,Khởi tạo thất bại.
+ERROR_IMPORTKEY_LOADIMAGE,"Failed to retrieve the key from the selected file.
+Please check if the QR code is backed up correctly.","선택한 파일에서 키를 가져오는데 실패했습니다.
+키가 백업된 QR 코드가 맞는지 확인해주세요.","Falhou em recuperar a chave do arquivo selecionado.
+Por favor, verifique se o código QR está corretamente copiado.","選択されたファイルからキーを取得できませんでした。
+QRコードが正しくバックアップされているか確認してください。","No se pudo recuperar la clave del archivo seleccionado.
+Por favor, verifique si el código QR está respaldado correctamente.","ไม่สามารถเรียกคีย์จากไฟล์ที่เลือกได้ โปรดตรวจสอบว่ามีการสำรองข้อมูล
+QR คอ้ดอย่างถูกต้องหรือไม่","Gagal mengambil kunci dari file yang dipilih.
+Silakan periksa apakah kode QR telah di-backup dengan benar.","Не удалось получить ключ из выбранного файла.
+Пожалуйста, проверьте, правильно ли сохранен QR-код.","未能从选定文件中检索密钥。
+请检查二维码是否已正确备份。","無法從所選文件中檢索金鑰。
+請檢查二維碼是否已正確備份。","Nabigong makuha ang susi mula sa napiling file.
+Pakisuri kung tama ang backup ng QR code.","Không thể lấy khóa từ tệp đã chọn.
+Vui lòng kiểm tra xem mã QR đã được sao lưu chính xác chưa."
+ERROR_IMPORTKEY_SCANIMAGE,ERROR_IMPORTKEY_SCANIMAGE,ERROR_IMPORTKEY_SCANIMAGE,,,,,,,,,,

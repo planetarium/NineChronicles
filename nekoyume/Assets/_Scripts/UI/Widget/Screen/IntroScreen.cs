@@ -7,7 +7,6 @@
 #endif
 
 using System;
-using System.Collections;
 using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -20,14 +19,13 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Multiplanetary;
-using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using ZXing;
 
 namespace Nekoyume.UI
 {
@@ -43,20 +41,28 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject mobileContainer;
         [SerializeField] private RawImage videoImage;
 
+        [Header("Mobile/Logo")]
         [SerializeField] private GameObject logoAreaGO;
         [SerializeField] private GameObject touchScreenButtonGO;
         [SerializeField] private Button touchScreenButton;
+        [Space]
+        [SerializeField] private Sprite logoMSprite;
+        [SerializeField] private Sprite logoKSprite;
+        [SerializeField] private Image[] logoImages;
 
+        [Header("Mobile/StartButton")]
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
         [SerializeField] private Button backupButton;
+        [SerializeField] private Button keyImportButton;
 
-        [SerializeField] private TextMeshProUGUI yourPlanetText;
+        [Header("Mobile/YourPlanet")]
         [SerializeField] private Button yourPlanetButton;
         [SerializeField] private TextMeshProUGUI yourPlanetButtonText;
         [SerializeField] private TextMeshProUGUI planetAccountInfoText;
 
+        [Header("Mobile/SocialButtons")]
         [SerializeField] private GameObject startButtonGO;
         [SerializeField] private Button startButton;
         [SerializeField] private GameObject socialButtonsGO;
@@ -65,6 +71,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button twitterSignInButton;
         [SerializeField] private Button discordSignInButton;
 
+        [Header("Mobile/QRCodeGuide")]
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
         [SerializeField] private GameObject[] qrCodeGuideImages;
@@ -72,22 +79,24 @@ namespace Nekoyume.UI
         [SerializeField] private Button qrCodeGuideNextButton;
         [SerializeField] private CodeReaderView codeReaderView;
 
+        [Header("Mobile/Video")]
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
 
+        [Header("Mobile/SelectPlanetPopup")]
         [SerializeField] private GameObject selectPlanetPopup;
         [SerializeField] private Button selectPlanetPopupBgButton;
-        [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
         [SerializeField] private SelectPlanetScroll selectPlanetScroll;
 
+        [Header("Mobile/PlanetAccountInfosPopup")]
         [SerializeField] private GameObject planetAccountInfosPopup;
-        [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
-        [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
         [SerializeField] private PlanetAccountInfoScroll planetAccountInfoScroll;
 
-        private const int GuideCount = 3;
-        private const int GuideStartIndex = 1;
-        private int _guideIndex = GuideStartIndex;
+        [Header("Mobile/KeyImportPopup")]
+        [SerializeField] private GameObject keyImportPopup;
+        [SerializeField] private Button keyImportCloseButton;
+        [SerializeField] private Button keyImportWithCameraButton;
+        [SerializeField] private Button keyImportWithGalleryButton;
 
         private string _keyStorePath;
         private string _privateKey;
@@ -104,6 +113,15 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            twitterSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            discordSignInButton.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            foreach (var logoImage in logoImages)
+            {
+                logoImage.sprite = Game.LiveAsset.GameConfig.IsKoreanBuild
+                    ? logoKSprite
+                    : logoMSprite;
+            }
 
             touchScreenButton.onClick.AddListener(() =>
             {
@@ -175,6 +193,7 @@ namespace Nekoyume.UI
 
                 ShowPortalConnectGuidePopup(SigninContext.SocialType.Discord);
             });
+            // NOTE: this button is not used now.
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
@@ -182,20 +201,12 @@ namespace Nekoyume.UI
                 var evt = new AirbridgeEvent("Intro_SigninButton_Click");
                 AirbridgeUnity.TrackEvent(evt);
 
-                qrCodeGuideBackground.Show();
-                qrCodeGuideContainer.SetActive(true);
-                foreach (var image in qrCodeGuideImages)
+                ShowQrCodeGuide(result =>
                 {
-                    image.SetActive(false);
-                }
-
-                _guideIndex = GuideStartIndex;
-                ShowQrCodeGuide();
-            });
-            qrCodeGuideNextButton.onClick.AddListener(() =>
-            {
-                _guideIndex++;
-                ShowQrCodeGuide();
+                    var pk = ImportPrivateKeyFromJson(result.Text);
+                    startButtonContainer.SetActive(false);
+                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                });
             });
             yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
             selectPlanetPopupBgButton.onClick.AddListener(() => selectPlanetPopup.SetActive(false));
@@ -234,7 +245,8 @@ namespace Nekoyume.UI
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
 
-            backupButton.gameObject.SetActive(Util.GetQrCodePngFromKeystore() != null);
+            var ppkExist = IsProtectedPrivateKeyExist();
+            backupButton.gameObject.SetActive(ppkExist);
             backupButton.onClick.AddListener(() =>
             {
                 var keys = KeyManager.Instance.GetList().ToList();
@@ -255,22 +267,104 @@ namespace Nekoyume.UI
                     }
                 }
             });
+
+            var trySigninWithKeyImport = false;
+            keyImportButton.gameObject.SetActive(!ppkExist);
+            keyImportButton.onClick.AddListener(() =>
+            {
+                keyImportPopup.SetActive(true);
+                keyImportCloseButton.gameObject.SetActive(true);
+                trySigninWithKeyImport = true;
+            });
+            keyImportCloseButton.onClick.AddListener(() =>
+            {
+                keyImportPopup.SetActive(false);
+                keyImportCloseButton.gameObject.SetActive(false);
+                trySigninWithKeyImport = false;
+            });
+
+            keyImportWithCameraButton.onClick.AddListener(() =>
+            {
+                keyImportPopup.SetActive(false);
+                ShowQrCodeGuide(result =>
+                {
+                    var pk = ImportPrivateKeyFromJson(result.Text);
+                    SigninContext.SetHasSignedWithKeyImport(trySigninWithKeyImport);
+                    startButtonContainer.SetActive(false);
+                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                });
+            });
+            keyImportWithGalleryButton.onClick.AddListener(() =>
+            {
+                codeReaderView.ScanQrCodeFromGallery(result =>
+                {
+                    if (result == null)
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("ERROR_IMPORTKEY_LOADIMAGE"),
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+
+                    var pk = ImportPrivateKeyFromJson(result.Text);
+                    SigninContext.SetHasSignedWithKeyImport(trySigninWithKeyImport);
+                    keyImportPopup.SetActive(false);
+                    startButtonContainer.SetActive(false);
+                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                });
+            });
+        }
+
+        private static PrivateKey ImportPrivateKeyFromJson(string json)
+        {
+            var resultPpk = ProtectedPrivateKey.FromJson(json);
+            var requiredAddress = resultPpk.Address;
+            var km = KeyManager.Instance;
+            if (km.Has(requiredAddress))
+            {
+                km.BackupKey(requiredAddress, keyStorePathToBackup: null);
+            }
+
+            km.Register(resultPpk);
+            PrivateKey pk = null;
+            try
+            {
+                pk = resultPpk.Unprotect(string.Empty);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
+
+            var evt = new AirbridgeEvent("Intro_QRCodeImported");
+            AirbridgeUnity.TrackEvent(evt);
+
+            return pk;
+        }
+
+        private static bool IsProtectedPrivateKeyExist()
+        {
+            Web3KeyStore keyStore;
+            if (Platform.IsMobilePlatform())
+            {
+                var dataPath = Platform.GetPersistentDataPath("keystore");
+                keyStore = new Web3KeyStore(dataPath);
+            }
+            else
+            {
+                keyStore = Web3KeyStore.DefaultKeyStore;
+            }
+
+            return keyStore.ListIds().Any();
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             OnSocialSignedIn.Dispose();
-        }
-
-        public void ApplyL10n()
-        {
-            yourPlanetText.text = L10nManager.Localize("UI_YOUR_PLANET");
-            // startButton
-            selectPlanetPopupTitleText.text = L10nManager.Localize("UI_SELECT_YOUR_PLANET");
-            planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
-            planetAccountInfosDescriptionText.text =
-                L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
         }
 
         public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
@@ -280,7 +374,7 @@ namespace Nekoyume.UI
             _planetContext = planetContext;
             ApplyPlanetContext(_planetContext);
 
-            if (SigninContext.HasLatestSignedInSocialType)
+            if (SigninContext.HasLatestSignedInSocialType || SigninContext.HasSignedWithKeyImport)
             {
                 NcDebug.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is true");
                 startButtonGO.SetActive(true);
@@ -336,15 +430,7 @@ namespace Nekoyume.UI
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
 
-            qrCodeGuideBackground.Show();
-            qrCodeGuideContainer.SetActive(true);
-            foreach (var image in qrCodeGuideImages)
-            {
-                image.SetActive(false);
-            }
-
-            _guideIndex = GuideStartIndex;
-            ShowQrCodeGuide();
+            keyImportPopup.SetActive(true);
         }
 
         /// <summary>
@@ -377,58 +463,52 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
 
-        private void ShowQrCodeGuide()
+        private void ShowQrCodeGuide(Action<Result> onSuccess = null)
         {
-            if (_guideIndex >= GuideCount)
-            {
-                _guideIndex = GuideStartIndex;
-                qrCodeGuideContainer.SetActive(false);
+            const int guideStartIndex = 1; // pass 0
+            const int guideCount = 3;
 
-                codeReaderView.Show(res =>
+            qrCodeGuideBackground.Show();
+            qrCodeGuideContainer.SetActive(true);
+
+            var guideIndex = guideStartIndex;
+            GuideImage(guideIndex);
+
+            qrCodeGuideNextButton.onClick.RemoveAllListeners();
+            qrCodeGuideNextButton.onClick.AddListener(() =>
+            {
+                guideIndex++;
+                if (guideIndex >= guideCount)
                 {
-                    var resultPpk = ProtectedPrivateKey.FromJson(res.Text);
-                    var requiredAddress = resultPpk.Address;
-                    var km = KeyManager.Instance;
-                    if (km.Has(requiredAddress))
+                    qrCodeGuideContainer.SetActive(false);
+                    codeReaderView.Show(result =>
                     {
-                        km.BackupKey(requiredAddress, keyStorePathToBackup: null);
-                    }
+                        codeReaderView.Close();
+                        onSuccess?.Invoke(result);
+                    });
+                }
+                else
+                {
+                    Analyzer.Instance.Track($"Unity/Intro/GuideDMX/{guideIndex + 1}");
 
-                    km.Register(resultPpk);
-                    codeReaderView.Close();
-                    startButtonContainer.SetActive(false);
-                    PrivateKey pk = null;
-                    try
-                    {
-                        pk = resultPpk.Unprotect(string.Empty);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-
-                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
-                    Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
-
-                    var evt = new AirbridgeEvent("Intro_QRCodeImported");
+                    var evt = new AirbridgeEvent("Intro_GuideDMX");
+                    evt.SetValue(guideIndex + 1);
                     AirbridgeUnity.TrackEvent(evt);
-                });
-            }
-            else
+
+                    GuideImage(guideIndex);
+                }
+            });
+            return;
+
+            void GuideImage(int index)
             {
-                Analyzer.Instance.Track($"Unity/Intro/GuideDMX/{_guideIndex + 1}");
-
-                var evt = new AirbridgeEvent("Intro_GuideDMX");
-                evt.SetValue(_guideIndex + 1);
-                AirbridgeUnity.TrackEvent(evt);
-
                 foreach (var qrCodeGuideImage in qrCodeGuideImages)
                 {
                     qrCodeGuideImage.SetActive(false);
                 }
 
-                qrCodeGuideImages[_guideIndex].SetActive(true);
-                qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
+                qrCodeGuideImages[index].SetActive(true);
+                qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{index}");
             }
         }
 

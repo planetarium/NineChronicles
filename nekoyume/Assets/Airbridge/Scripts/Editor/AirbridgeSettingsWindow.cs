@@ -103,7 +103,7 @@ public class AirbridgeSettingsWindow : EditorWindow
         }
     }
 
-    private void UpdateAndroidManifest()
+    public static void UpdateAndroidManifest()
     {
         string metaDataPrefix = "airbridge==";
 
@@ -199,7 +199,7 @@ public class AirbridgeSettingsWindow : EditorWindow
         manifest.Save(manifestPath);
     }
 
-    private void UpdateiOSAppSetting()
+    public static void UpdateiOSAppSetting()
     {
         string path = Path.Combine(Application.dataPath, "Plugins/Airbridge/iOS/Delegate/AUAppSetting.h");
         if (!File.Exists(path))
