@@ -13,13 +13,26 @@ namespace Nekoyume
     public class BountyBossCell : MonoBehaviour
     {
         [SerializeField]
-        private Image bossImage;
+        private Transform bossImageRoot;
         [SerializeField]
         private BaseItemView baseItemView;
+
+        private int _bossId;
+        private GameObject _bossImage;
+
         public void SetData(AdventureBossReward data)
         {
-            bossImage.sprite = SpriteHelper.GetBigCharacterIcon(data.BossId);
-            bossImage.SetNativeSize();
+            if (_bossId != data.BossId)
+            {
+                if (_bossImage != null)
+                {
+                    DestroyImmediate(_bossImage);
+                }
+                _bossId = data.BossId;
+                _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageRoot);
+                _bossImage.transform.localPosition = Vector3.zero;
+            }
+
             if(data.wantedReward.FixedRewardItemIdDict.Count > 0)
             {
                 var item = data.wantedReward.FixedRewardItemIdDict.First();
