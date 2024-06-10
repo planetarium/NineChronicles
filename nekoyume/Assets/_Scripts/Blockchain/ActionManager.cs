@@ -1773,6 +1773,7 @@ namespace Nekoyume.Blockchain
                 Foods = food,
                 RuneInfos = runeInfo
             };
+            _lastBattleActionId = action.Id;
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ExploreAdventureBoss>()
                 .Timeout(ActionTimeout)
@@ -1798,6 +1799,7 @@ namespace Nekoyume.Blockchain
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season
             };
+            _lastBattleActionId = action.Id;
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<SweepAdventureBoss>()
                 .Timeout(ActionTimeout)

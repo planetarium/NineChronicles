@@ -1496,7 +1496,9 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
 #endif
-            
+
+            yield return new WaitForSeconds(3f);
+
             yield return null;
         }
     }

@@ -261,24 +261,10 @@ namespace Nekoyume.UI
                 switch(_type)
                 {
                     case AdventureBossPreparationType.Challenge:
-                        ActionManager.Instance.ExploreAdventureBoss(costumes, equipments, consumables, runeInfos).Subscribe(eval =>
-                        {
-                            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
-                            {
-                                Widget.Find<LoadingScreen>().Close();
-                                Close();
-                            });
-                        });
+                        ActionManager.Instance.ExploreAdventureBoss(costumes, equipments, consumables, runeInfos);
                         break;
                     case AdventureBossPreparationType.BreakThrough:
-                        ActionManager.Instance.SweepAdventureBoss().Subscribe(eval =>
-                        {
-                            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
-                            {
-                                Widget.Find<LoadingScreen>().Close();
-                                Close();
-                            });
-                        });
+                        ActionManager.Instance.SweepAdventureBoss();
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

@@ -3727,8 +3727,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Select(PrepareExploreAdventureBoss)
-                .ObserveOnMainThread()
                 .Subscribe(ResponseExploreAdventureBoss)
                 .AddTo(_disposables);
 
@@ -3741,144 +3739,150 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
-        private ActionEvaluation<ExploreAdventureBoss> PrepareExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
-        {
-            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
-            {
-                return eval;
-            }
-
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
-            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
-
-            _disposableForBattleEnd?.Dispose();
-            _disposableForBattleEnd =
-                Game.Game.instance.Stage.OnEnterToStageEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        var task = UniTask.RunOnThreadPool(() =>
-                        {
-                            UpdateCurrentAvatarStateAsync(eval).Forget();
-                            _disposableForBattleEnd = null;
-                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                        }, configureAwait: false);
-                        task.ToObservable()
-                            .First()
-                            // ReSharper disable once ConvertClosureToMethodGroup
-                            .DoOnError(e => NcDebug.LogException(e));
-                    });
-            return eval;
-        }
-
         private void ResponseExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
         {
-            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            int firstFloor = 1;
+            int maxFloor = 5;
+            int lastFloor = firstFloor;
+            UniTask.RunOnThreadPool(() =>
             {
-                NcDebug.LogError("Not last battle action id.");
-                return;
-            }
-            var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
-            if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
-            {
-                NcDebug.LogError("SeasonInfo is null or season is not matched.");
-                return;
-            }
-
-            var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
-            var random = new LocalRandom(eval.RandomSeed);
-            var selector = new WeightedSelector<AdventureBossGameData.ExploreReward>(random);
-            var tableSheets = TableSheets.Instance;
-
-            AdventureBossSimulator simulator = null;
-            var firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
-            var maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
-            var lastFloor = firstFloor;
-            var score = 0;
-            var rewardList = new List<AdventureBossGameData.ExploreReward>();
-
-            for (var fl = firstFloor; fl <= maxFloor; fl++)
-            {
-                if(!tableSheets.FloorSheet.TryGetValue(fl, out var floorRow))
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
-                    NcDebug.LogError($"FloorSheet is not found. Floor: {fl}");
+                    return eval;
+                }
+                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
+                maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
+                lastFloor = firstFloor;
+
+                UpdateAgentStateAsync(eval).Forget();
+                /*UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);*/
+
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd =
+                    Game.Game.instance.Stage.OnEnterToStageEnd
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            var task = UniTask.RunOnThreadPool(() =>
+                            {
+                                UpdateCurrentAvatarStateAsync(eval).Forget();
+                                _disposableForBattleEnd = null;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            }, configureAwait: false);
+                            task.ToObservable()
+                                .First()
+                                // ReSharper disable once ConvertClosureToMethodGroup
+                                .DoOnError(e => NcDebug.LogException(e));
+                        });
+                return eval;
+
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    NcDebug.LogError("Not last battle action id.");
                     return;
                 }
-                if(!tableSheets.FloorWaveSheet.TryGetValue(fl, out var waveRows))
+                var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+                if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
                 {
-                    NcDebug.LogError($"FloorWaveSheet is not found. Floor: {fl}");
+                    NcDebug.LogError("SeasonInfo is null or season is not matched.");
                     return;
                 }
 
-                var rewards = AdventureBossSimulator.GetWaveRewards(random, floorRow, tableSheets.MaterialItemSheet);
+                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                var random = new LocalRandom(eval.RandomSeed);
+                var selector = new WeightedSelector<AdventureBossGameData.ExploreReward>(random);
+                var tableSheets = TableSheets.Instance;
 
-                simulator = new AdventureBossSimulator(
-                    bossId: seasonInfo.BossId,
-                    floorId: fl,
-                    random,
-                    States.Instance.CurrentAvatarState,
-                    fl == firstFloor ? eval.Action.Foods : new List<Guid>(),
-                    runeStates: States.Instance.AllRuneState,
-                    runeSlotState: States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
-                    floorRow,
-                    waveRows,
-                    tableSheets.GetStageSimulatorSheets(),
-                    tableSheets.EnemySkillSheet,
-                    tableSheets.CostumeStatSheet,
-                    rewards,
-                    States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
-                    tableSheets.DeBuffLimitSheet,
-                    false,
-                    States.Instance.GameConfigState.ShatterStrikeMaxDamage);
+                AdventureBossSimulator simulator = null;
+                var score = 0;
+                var rewardList = new List<AdventureBossGameData.ExploreReward>();
 
-                simulator.Simulate();
-                lastFloor = fl;
-
-                // Get Reward if cleared
-                if (simulator.Log.IsClear)
+                for (var fl = firstFloor; fl <= maxFloor; fl++)
                 {
-                    // Add point, reward
-                    var (minPoint, maxPoint) = AdventureBossGameData.PointDict[fl];
-                    var point = random.Next(minPoint, maxPoint + 1);
-
-                    score += point;
-
-                    selector.Clear();
-                    var floorReward = AdventureBossGameData.AdventureBossRewards
-                        .First(rw => rw.BossId == seasonInfo.BossId).exploreReward[fl];
-                    foreach (var reward in floorReward.FirstReward)
+                    if(!tableSheets.FloorSheet.TryGetValue(fl, out var floorRow))
                     {
-                        selector.Add(reward, reward.Ratio);
+                        NcDebug.LogError($"FloorSheet is not found. Floor: {fl}");
+                        return;
+                    }
+                    if(!tableSheets.FloorWaveSheet.TryGetValue(fl, out var waveRows))
+                    {
+                        NcDebug.LogError($"FloorWaveSheet is not found. Floor: {fl}");
+                        return;
                     }
 
-                    // Explore clear is always first because we explore from last failed floor.
-                    rewardList.Add(selector.Select(1).First());
+                    var rewards = AdventureBossSimulator.GetWaveRewards(random, floorRow, tableSheets.MaterialItemSheet);
 
-                    selector.Clear();
-                    foreach (var reward in floorReward.Reward)
+                    simulator = new AdventureBossSimulator(
+                        bossId: seasonInfo.BossId,
+                        floorId: fl,
+                        random,
+                        States.Instance.CurrentAvatarState,
+                        fl == firstFloor ? eval.Action.Foods : new List<Guid>(),
+                        runeStates: States.Instance.AllRuneState,
+                        runeSlotState: States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                        floorRow,
+                        waveRows,
+                        tableSheets.GetStageSimulatorSheets(),
+                        tableSheets.EnemySkillSheet,
+                        tableSheets.CostumeStatSheet,
+                        rewards,
+                        States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                        tableSheets.DeBuffLimitSheet,
+                        false,
+                        States.Instance.GameConfigState.ShatterStrikeMaxDamage);
+
+                    simulator.Simulate();
+                    lastFloor = fl;
+
+                    // Get Reward if cleared
+                    if (simulator.Log.IsClear)
                     {
-                        selector.Add(reward, reward.Ratio);
+                        // Add point, reward
+                        var (minPoint, maxPoint) = AdventureBossGameData.PointDict[fl];
+                        var point = random.Next(minPoint, maxPoint + 1);
+
+                        score += point;
+
+                        selector.Clear();
+                        var floorReward = AdventureBossGameData.AdventureBossRewards
+                            .First(rw => rw.BossId == seasonInfo.BossId).exploreReward[fl];
+                        foreach (var reward in floorReward.FirstReward)
+                        {
+                            selector.Add(reward, reward.Ratio);
+                        }
+
+                        // Explore clear is always first because we explore from last failed floor.
+                        rewardList.Add(selector.Select(1).First());
+
+                        selector.Clear();
+                        foreach (var reward in floorReward.Reward)
+                        {
+                            selector.Add(reward, reward.Ratio);
+                        }
+
+                        rewardList.Add(selector.Select(1).First());
                     }
-
-                    rewardList.Add(selector.Select(1).First());
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
+
+                if (simulator is not null && lastFloor > firstFloor)
                 {
-                    break;
+                    simulator.AddBreakthrough(firstFloor, lastFloor, tableSheets.FloorWaveSheet);
                 }
-            }
 
-            if (simulator is not null && lastFloor > firstFloor)
-            {
-                simulator.AddBreakthrough(firstFloor, lastFloor, tableSheets.FloorWaveSheet);
-            }
+                var log = simulator.Log;
+                var stage = Game.Game.instance.Stage;
+                stage.StageType = StageType.HackAndSlash;
 
-            var log = simulator.Log;
-            var stage = Game.Game.instance.Stage;
-            stage.StageType = StageType.HackAndSlash;
-
-            BattleRenderer.Instance.PrepareStage(log);
+                BattleRenderer.Instance.PrepareStage(log);
+            });
         }
 
         private void ExceptionExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
@@ -3915,8 +3919,8 @@ namespace Nekoyume.Blockchain
             }
 
             UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
-            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+            /*UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);*/
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
