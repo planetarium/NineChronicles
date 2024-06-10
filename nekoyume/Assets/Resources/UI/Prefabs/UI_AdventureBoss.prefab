@@ -11249,6 +11249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 464653549607037809}
   - component: {fileID: 8951802691897792344}
+  - component: {fileID: 7361586126149561725}
   m_Layer: 5
   m_Name: BossImgRect
   m_TagString: Untagged
@@ -11284,6 +11285,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 936442750642960326}
   m_CullTransparentMesh: 1
+--- !u!95 &7361586126149561725
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936442750642960326}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 724a8e8749cec0044812abea4916e8c4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &943927021515419840
 GameObject:
   m_ObjectHideFlags: 0
