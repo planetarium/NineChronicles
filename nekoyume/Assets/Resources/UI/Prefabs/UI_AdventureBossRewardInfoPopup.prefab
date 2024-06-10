@@ -9151,8 +9151,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uD604\uC0C1\uAE08 \uCD1D\uC561\uC758 5%\uC778        99\uB97C 1\uBA85\uC5D0\uAC8C
-    \uBCF4\uC0C1\uC73C\uB85C \uC90D\uB2C8\uB2E4!"
+  m_text: "\uD604\uC0C1\uAE08 \uCD1D\uC561\uC758 5%\uC778 <size=24><color=#ffcd2a><b><Style=G0>99</b></color></size>\uB97C
+    1\uBA85\uC5D0\uAC8C \uBCF4\uC0C1\uC73C\uB85C \uC90D\uB2C8\uB2E4!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 93f36a575f8f742b398cc6ea349bb206, type: 2}
@@ -9161,8 +9161,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292146175
+  m_fontColor: {r: 1, g: 0.9529412, b: 0.83137256, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
