@@ -204,7 +204,7 @@ namespace Nekoyume.UI.Module
 
                     var stats = itemUsable.StatsMap.GetDecimalStats(true).ToList();
                     var usableStatCount = stats.Count;
-                    for(var i = 0; i < statViewList.Count; i++)
+                    for (var i = 0; i < statViewList.Count; i++)
                     {
                         var statView = statViewList[i];
                         if (i < usableStatCount)
@@ -215,6 +215,9 @@ namespace Nekoyume.UI.Module
 
                         statView.Hide();
                     }
+
+                    iconArea.countText.text = L10nManager.Localize("UI_COUNT_FORMAT", itemCount);
+                    iconArea.countObject.SetActive(true);
 
                     break;
                 }
