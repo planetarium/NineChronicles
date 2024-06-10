@@ -27,7 +27,7 @@ namespace Nekoyume.Game.LiveAsset
         }
 
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
-        private const string CLOEndpointPrefix = "https://assets.nine-chronicles.com/live-assets/Json/CloForAppVersion/clo-app-ver-";
+
         private const string KoreanImagePostfix = "_KR";
         private const string JapaneseImagePostfix = "_JP";
 
@@ -114,7 +114,7 @@ namespace Nekoyume.Game.LiveAsset
                 languageKey = "-kr";
             }
 
-            var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}{languageKey}.json";
+            var cloEndpoint = $"{_endpoint.CommandLineOptionsJsonUrlPrefix}{Application.version.Replace(".", "-")}{osKey}{languageKey}.json";
             NcDebug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
             yield return StartCoroutine(
                 RequestManager.instance.GetJson(
@@ -125,7 +125,9 @@ namespace Nekoyume.Game.LiveAsset
             {
                 yield return StartCoroutine(
                     RequestManager.instance.GetJson(
-                        _endpoint.CommandLineOptionsJsonUrl,
+                        GameConfig.IsKoreanBuild
+                            ? _endpoint.CommandLineOptionsJsonDefaultUrlKr
+                            : _endpoint.CommandLineOptionsJsonDefaultUrl,
                         SetCommandLineOptions));
             }
         }
