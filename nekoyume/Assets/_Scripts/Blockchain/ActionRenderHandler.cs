@@ -3832,7 +3832,7 @@ namespace Nekoyume.Blockchain
                         rewards,
                         States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
                         tableSheets.DeBuffLimitSheet,
-                        false,
+                        true,
                         States.Instance.GameConfigState.ShatterStrikeMaxDamage);
 
                     simulator.Simulate();
@@ -3874,12 +3874,12 @@ namespace Nekoyume.Blockchain
 
                 if (simulator is not null && lastFloor > firstFloor)
                 {
-                    simulator.AddBreakthrough(firstFloor, lastFloor, tableSheets.FloorWaveSheet);
+                    simulator.AddBreakthrough(firstFloor, lastFloor-1, tableSheets.FloorWaveSheet);
                 }
 
                 var log = simulator.Log;
                 var stage = Game.Game.instance.Stage;
-                stage.StageType = StageType.HackAndSlash;
+                stage.StageType = StageType.AdventureBoss;
 
                 BattleRenderer.Instance.PrepareStage(log);
             });

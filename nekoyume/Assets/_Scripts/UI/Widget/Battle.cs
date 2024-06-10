@@ -169,6 +169,7 @@ namespace Nekoyume.UI
                 {
                     case StageType.HackAndSlash:
                     case StageType.Mimisbrunnr:
+                    case StageType.AdventureBoss:
                         guidedQuest.SetWorldQuestToInProgress(stageId);
                         break;
                     case StageType.EventDungeon:
@@ -197,6 +198,7 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
+                case StageType.AdventureBoss:
                     guidedQuest.ClearWorldQuest(stageId, cleared =>
                     {
                         if (!cleared)

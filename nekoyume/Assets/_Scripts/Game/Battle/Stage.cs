@@ -441,6 +441,7 @@ namespace Nekoyume.Game.Battle
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
+                case StageType.AdventureBoss:
                 {
                     if (!TableSheets.Instance.StageSheet.TryGetValue(stageId, out var stageRow))
                     {
@@ -764,6 +765,7 @@ namespace Nekoyume.Game.Battle
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
+                case StageType.AdventureBoss:
                 {
                     var sheet = TableSheets.Instance.StageSheet;
                     apCost = sheet.OrderedList

@@ -240,6 +240,8 @@ namespace Nekoyume.UI
 
         private void AdventureBossBattleAction()
         {
+            Find<WorldMap>().Close(true);
+            Find<AdventureBoss>().Close(true);
             Widget.Find<LoadingScreen>().Show();
             startButton.gameObject.SetActive(false);
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
