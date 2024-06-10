@@ -30,6 +30,12 @@ namespace Nekoyume.UI
 
     public class AdventureBossPreparation : Widget
     {
+        public enum AdventureBossPreparationType
+        {
+            Challenge,
+            BreakThrough,
+        }
+
         [SerializeField]
         private AvatarInformation information;
 
@@ -67,6 +73,8 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject blockStartingTextObject;
+
+        private AdventureBossPreparationType _type;
 
         private long _requiredCost;
 
@@ -116,10 +124,12 @@ namespace Nekoyume.UI
         public void Show(
             string closeButtonName,
             long requiredCost,
+            AdventureBossPreparationType type,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
+            _type = type;
             _requiredCost = requiredCost;
             Analyzer.Instance.Track("Unity/Click AdventureBoss Prepareation", new Dictionary<string, Value>()
             {
@@ -248,14 +258,31 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             try
             {
-                ActionManager.Instance.ExploreAdventureBoss(costumes, equipments, consumables, runeInfos).Subscribe(eval =>
+                switch(_type)
                 {
-                    Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
-                    {
-                        Widget.Find<LoadingScreen>().Close();
-                        Close();
-                    });
-                });
+                    case AdventureBossPreparationType.Challenge:
+                        ActionManager.Instance.ExploreAdventureBoss(costumes, equipments, consumables, runeInfos).Subscribe(eval =>
+                        {
+                            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
+                            {
+                                Widget.Find<LoadingScreen>().Close();
+                                Close();
+                            });
+                        });
+                        break;
+                    case AdventureBossPreparationType.BreakThrough:
+                        ActionManager.Instance.SweepAdventureBoss().Subscribe(eval =>
+                        {
+                            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
+                            {
+                                Widget.Find<LoadingScreen>().Close();
+                                Close();
+                            });
+                        });
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
             catch (Exception e)
             {

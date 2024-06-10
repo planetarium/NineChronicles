@@ -39,11 +39,11 @@ namespace Nekoyume.UI
         {
             base.Awake();
             challengeButton.OnClickSubject.Subscribe(_ => {
-                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_CHALLENGE"), _challengeApPotionCost);
+                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_CHALLENGE"), _challengeApPotionCost, AdventureBossPreparation.AdventureBossPreparationType.Challenge);
                 Close();
             }).AddTo(gameObject);
             breakThroughButton.OnClickSubject.Subscribe(_ => {
-                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"), _breakThroughApPotionCost);
+                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"), _breakThroughApPotionCost, AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
                 Close();
             }).AddTo(gameObject);
             gotoUnlock.onClick.AddListener(() =>
