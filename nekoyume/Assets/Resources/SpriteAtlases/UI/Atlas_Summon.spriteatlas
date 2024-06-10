@@ -51,10 +51,14 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: eb5a2140c51cc464b8bf7a260b727539, type: 3}
+  - {fileID: 21300000, guid: 4c7b97f0674419944a11c17b477f8031, type: 3}
   - {fileID: 21300000, guid: ae7ce25249315c7499eb5ff0289bf69b, type: 3}
+  - {fileID: 21300000, guid: 912cba92e84798848a6f23c68bc016ce, type: 3}
+  - {fileID: 21300000, guid: d4c1fd1365d09c14d9f771c7031870a6, type: 3}
   - {fileID: 21300000, guid: 06db5f344e15f6e4b98b98929a4026b4, type: 3}
   - {fileID: 21300000, guid: 87636254dc558d644ba7f54d0bb18aa5, type: 3}
   - {fileID: 21300000, guid: bf37abb4e06b7cb4bb034164c0e6eed9, type: 3}
+  - {fileID: 21300000, guid: 551df9f54775f58439aab7250cb2081c, type: 3}
   - {fileID: 21300000, guid: f06a9ca721279d142b07498f3b630587, type: 3}
   - {fileID: 21300000, guid: 73b94218bff0b4f43a45a7989cc81f77, type: 3}
   - {fileID: 21300000, guid: d698c8b81f81f414d98fed356e927ea6, type: 3}
@@ -63,20 +67,29 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 083aece9cf535994180b60e8058cfdb6, type: 3}
   - {fileID: 21300000, guid: d991eb3aa5b4fc34b806267756b7af21, type: 3}
   - {fileID: 21300000, guid: 9439424af706c3f42a76382ff17aa751, type: 3}
+  - {fileID: 21300000, guid: 3cc98c8a08ebfc649b03b000dfa107e0, type: 3}
   - {fileID: 21300000, guid: 94a254ca0c1316b448b623ab8bef80e3, type: 3}
   - {fileID: 21300000, guid: 4c277d6b9626e2e44ad81067db1e55e1, type: 3}
+  - {fileID: 21300000, guid: 9375721ceaff0524385199a6d3f37560, type: 3}
   - {fileID: 21300000, guid: 882f814c2441b7144ae81327a3d83b9a, type: 3}
   - {fileID: 21300000, guid: 510d589cedb66b049b0430d5aab76677, type: 3}
   - {fileID: 21300000, guid: 5cf7871d17ede394db81c3a57a3f5d04, type: 3}
   - {fileID: 21300000, guid: f2f8752d563123d40b765ad43a4ae9bc, type: 3}
+  - {fileID: 21300000, guid: ea27572d42e431f4d95483bdf8ad4859, type: 3}
+  - {fileID: 21300000, guid: c2b20a0fc57062c44bc0f74baeb6d451, type: 3}
   - {fileID: 21300000, guid: 2f9e3baf81b18a24d81eb192b8fd1dfd, type: 3}
+  - {fileID: 21300000, guid: 75edc8efa155ebd4fa1b708a210ccaa7, type: 3}
   - {fileID: 21300000, guid: a44debef3b32e4e4d96a707e58c32bf2, type: 3}
   m_PackedSpriteNamesToIndex:
   - Summon_Bottom
+  - RedRune
   - Summon_Character_3_2
+  - Summon_Character_5_2
+  - RedAura
   - Aura_Front2
   - Aura_Front
   - Summon_line
+  - Summon_Character_5
   - NormalAura
   - Aura_Pattern
   - Aura_Back2
@@ -85,13 +98,18 @@ SpriteAtlas:
   - Summon_Character_2_2
   - SummonCategory_Bg
   - GoldenAura
+  - icon_Summon_RedRune
   - icon_Summon_NimbleAura
   - GoldenRune
+  - Aura_Back3
   - Summon_Character_3
   - Summon_Character_1_2
   - icon_Summon_BeastAura
   - icon_Summon_GoldenRune
+  - Summon_Character_4
+  - Summon_Character_4_2
   - Aura_Back
+  - Aura_Front3
   - Summon_Character_2
   m_RenderDataMap: {}
   m_Tag: Atlas_Summon

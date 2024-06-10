@@ -139,11 +139,23 @@ namespace Nekoyume.UI
                 loading.Close();
                 base.Show(ignoreShowAnimation);
                 Close();
-                Find<IconAndButtonSystem>().Show(
-                    "UI_ERROR",
-                    "ERROR_NO_ENTRY_SHOP",
-                    "UI_OK",
-                    true);
+                if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+                {
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                        "UI_ALERT_NOT_IMPLEMENTED_CONTENT",
+                        "UI_OK",
+                        true,
+                        IconAndButtonSystem.SystemType.Information);
+                }
+                else
+                {
+                    Find<IconAndButtonSystem>().Show(
+                        "UI_ERROR",
+                        "ERROR_NO_ENTRY_SHOP",
+                        "UI_OK",
+                        true);
+                }
                 return;
             }
 

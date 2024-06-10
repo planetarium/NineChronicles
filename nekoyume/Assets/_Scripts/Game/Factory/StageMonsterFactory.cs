@@ -1,5 +1,6 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Enemy = Nekoyume.Model.Enemy;
@@ -17,12 +18,6 @@ namespace Nekoyume.Game.Factory
 
             enemy.Set(spawnCharacter, player, true);
 
-            // y좌표값에 따른 정렬 처리
-            var sortingGroup = enemy.GetComponent<SortingGroup>();
-            if (!sortingGroup)
-                throw new NotFoundComponentException<SortingGroup>();
-
-            sortingGroup.sortingOrder = (int) (position.y * 10) * -1;
             return enemy.gameObject;
         }
 
@@ -36,12 +31,6 @@ namespace Nekoyume.Game.Factory
             var player = Game.instance.Stage.GetPlayer();
             enemy.Set(spawnCharacter, player,true);
 
-            // y좌표값에 따른 정렬 처리
-            var sortingGroup = enemy.GetComponent<SortingGroup>();
-            if (!sortingGroup)
-                throw new NotFoundComponentException<SortingGroup>();
-
-            sortingGroup.sortingOrder = (int) (position.y * 10) * -1;
             return enemy;
         }
 
@@ -60,8 +49,9 @@ namespace Nekoyume.Game.Factory
                 return enemy.gameObject;
             }
 
+            var effectPos = BuffHelper.GetDefaultBuffPosition();
             var effect         = objectPool.Get<BattleSummonVFX>();
-            var effectPosition = new Vector2(position.x, position.y + 0.55f);
+            var effectPosition = new Vector2(position.x + effectPos.x, position.y + effectPos.y);
             effect.gameObject.transform.position = effectPosition;
             effect.Play();
 

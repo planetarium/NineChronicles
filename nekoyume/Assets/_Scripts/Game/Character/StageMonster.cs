@@ -2,7 +2,6 @@ using Nekoyume.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace Nekoyume.Game.Character
 {
     using UniRx;
 
-    public class StageMonster : CharacterBase
+    public class StageMonster : Actor
     {
         private Player _player;
 
@@ -48,12 +47,12 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        public override void Set(Model.CharacterBase model, bool updateCurrentHp = false)
         {
             if (!(model is Model.Enemy enemyModel))
                 throw new ArgumentException(nameof(model));
 
-            Set(enemyModel, _player, updateCurrentHP);
+            Set(enemyModel, _player, updateCurrentHp);
         }
 
         public void Set(Model.Enemy model, Player player, bool updateCurrentHP)
@@ -74,16 +73,16 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public override void UpdateHpBar()
+        public override void UpdateActorHud()
         {
-            base.UpdateHpBar();
+            base.UpdateActorHud();
 
             var boss = Game.instance.Stage.Boss;
             if (!(boss is null) && !Id.Equals(boss.Id))
                 return;
 
             var battle = Widget.Find<UI.Battle>();
-            battle.BossStatus.SetHp(CurrentHP, HP);
+            battle.BossStatus.SetHp(CurrentHp, Hp);
             battle.BossStatus.SetBuff(CharacterModel.Buffs);
         }
 
@@ -172,7 +171,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
+        protected override void ProcessAttack(Actor target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
             ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
@@ -198,6 +197,34 @@ namespace Nekoyume.Game.Character
             if (Animator.Target != null)
             {
                 Animator.DestroyTarget();
+            }
+        }
+
+        public override void SetSpineColor(Color color, int propertyID = -1)
+        {
+            if (SpineController == null)
+            {
+                return;
+            }
+
+            var skeletonAnimation = SpineController.SkeletonAnimation;
+            if (skeletonAnimation == null)
+            {
+                return;
+            }
+
+            base.SetSpineColor(color, propertyID);
+
+            if (skeletonAnimation.TryGetComponent<MeshRenderer>(out var meshRenderer))
+            {
+                var mpb = new MaterialPropertyBlock();
+                meshRenderer.GetPropertyBlock(mpb);
+                mpb.SetColor(propertyID, color);
+                meshRenderer.SetPropertyBlock(mpb);
+            }
+            else
+            {
+                NcDebug.LogError($"[{nameof(StageMonster)}] No MeshRenderer found in {name}.");
             }
         }
     }

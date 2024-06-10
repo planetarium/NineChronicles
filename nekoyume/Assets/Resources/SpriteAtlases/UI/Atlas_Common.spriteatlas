@@ -127,6 +127,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3483b1826aa594389a7d7299dcab8151, type: 3}
   - {fileID: 21300000, guid: 85c0d68258ca635469a2cc53753800d0, type: 3}
   - {fileID: 21300000, guid: cee37092b244a4405ae707ea1ba04755, type: 3}
+  - {fileID: 21300000, guid: 31555392a5736b04491c2dffcc264ae5, type: 3}
   - {fileID: 21300000, guid: a9e238a253e87d14c96bd7c73c25b4c1, type: 3}
   - {fileID: -1588226438, guid: 987f16c2d6aa147ea866703863e298ab, type: 3}
   - {fileID: 21300000, guid: 96bfb5d200c3e8343b743dac7bc262cb, type: 3}
@@ -298,6 +299,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6d513859fa98946a6a0f6301872710d3, type: 3}
   - {fileID: 21300000, guid: e3c5d9591a017db4ea2cb5cb42c50304, type: 3}
   - {fileID: 21300000, guid: e45a3e59f6b5dde4888d89f976ee2eac, type: 3}
+  - {fileID: 21300000, guid: 6a2a9f590af44844aaef7b843cb5b743, type: 3}
   - {fileID: 21300000, guid: 2a9f5a79fd2a044b8ac35bde25795a9a, type: 3}
   - {fileID: 21300000, guid: 093443892e6924920b499f4237e90c6f, type: 3}
   - {fileID: 21300000, guid: 2cd99a89c732f4748aa92f637a1b70d1, type: 3}
@@ -357,6 +359,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: bf1c4b7b7cb1f4261b99562ecec2cc1e, type: 3}
   - {fileID: 21300000, guid: 9e9b008bd39ec4fdda2ba2614e002eda, type: 3}
   - {fileID: 21300000, guid: df87cf8b0efa2824ab4f19a5a87cfc7e, type: 3}
+  - {fileID: 21300000, guid: cf5b06abea751604eaa1d81b40f0ff1d, type: 3}
   - {fileID: 21300000, guid: 54b387ab1a8c3a2408e32dd774f8a9c2, type: 3}
   - {fileID: 21300000, guid: cabce9ab7c463dd40818f34b350fd3be, type: 3}
   - {fileID: 21300000, guid: c43ae1bb7d282440bb841f000f2f6284, type: 3}
@@ -537,6 +540,7 @@ SpriteAtlas:
   - button_Orange_03
   - UI_bg_frame_07_02
   - UI_bg_frame_06
+  - Icon_RuneLevelBonus
   - UI_main_icon_quest_02
   - UI_Popup_Tab_Normal_0
   - Icon_Rune_01_Black
@@ -708,6 +712,7 @@ SpriteAtlas:
   - Common_Tooltipbg5
   - UI_stage_icon_star_02_bg_s
   - UI_icon_Block3
+  - UI_icon_Clock
   - UI_icon_item_bg_15
   - icon_Reregister
   - icon_buff_down
@@ -767,6 +772,7 @@ SpriteAtlas:
   - Icon_Retrieve
   - UI_popup_list_bg
   - UI_icon_item_bg_01
+  - UI_main_icon_Redpowder
   - UI_stage_star_03
   - Common_Bg_Gradiant
   - UI_Combination_Slot_Question

@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Character
     using UniRx;
 
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
-    public class Player : CharacterBase
+    public class Player : Actor
     {
         [SerializeField]
         private CharacterAppearance appearance;
@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Character
         {
             base.Awake();
 
-            OnUpdateHPBar.Subscribe(_ => Event.OnUpdatePlayerStatus.OnNext(this)).AddTo(gameObject);
+            OnUpdateActorHud.Subscribe(_ => Event.OnUpdatePlayerStatus.OnNext(this)).AddTo(gameObject);
 
             Animator = new PlayerAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
@@ -121,7 +121,7 @@ namespace Nekoyume.Game.Character
             Set(model);
         }
 
-        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        public override void Set(Model.CharacterBase model, bool updateCurrentHp = false)
         {
             if (!(model is Model.Player playerModel))
             {
@@ -129,7 +129,7 @@ namespace Nekoyume.Game.Character
             }
 
             var avatarState = Game.instance.States.CurrentAvatarState;
-            Set(avatarState.address, playerModel, updateCurrentHP);
+            Set(avatarState.address, playerModel, updateCurrentHp);
         }
 
         public void Set(Address avatarAddress, Model.Player model, bool updateCurrentHP)
@@ -175,6 +175,8 @@ namespace Nekoyume.Game.Character
             {
                 Widget.Find<UI.Battle>().ComboText.comboMax = CharacterModel.AttackCountMax;
             }
+
+            IsFlipped = false;
         }
 
         protected override IEnumerator Dying()
@@ -216,7 +218,7 @@ namespace Nekoyume.Game.Character
                 new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
         }
 
-        public override float CalculateRange(CharacterBase target)
+        public override float CalculateRange(Actor target)
         {
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
@@ -358,7 +360,7 @@ namespace Nekoyume.Game.Character
                 InitStats(Model);
             }
 
-            UpdateHpBar();
+            UpdateActorHud();
         }
 
         private void InitStats(Model.Player character)
@@ -367,7 +369,7 @@ namespace Nekoyume.Game.Character
             EXPMax = character.Exp.Max;
         }
 
-        protected override void ProcessAttack(CharacterBase target,
+        protected override void ProcessAttack(Actor target,
             Model.BattleStatus.Skill.SkillInfo skill,
             bool isLastHit,
             bool isConsiderElementalType)
@@ -388,16 +390,13 @@ namespace Nekoyume.Game.Character
             AreaAttackCutscene.Show(Helper.Util.GetArmorId());
         }
 
-        #region for viewer
-
-        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
+        public override void SetSpineColor(Color color, int propertyID = -1)
         {
-            var spineResourcePath =
-                isFullCostume ? $"Character/FullCostume/{id}" : $"Character/Player/{id}";
-            // UpdateBody(Convert.ToInt32(id), 0);
+            base.SetSpineColor(color, propertyID);
+            if (appearance != null)
+            {
+                appearance.SetSpineColor(color, propertyID);
+            }
         }
-
-        #endregion
-
     }
 }

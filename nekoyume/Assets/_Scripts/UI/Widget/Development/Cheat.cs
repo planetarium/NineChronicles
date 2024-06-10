@@ -438,6 +438,7 @@ namespace Nekoyume
                     tableSheets.MaterialItemSheet),
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
                 tableSheets.DeBuffLimitSheet,
+                tableSheets.BuffLinkSheet,
                 logEvent: true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage
             );

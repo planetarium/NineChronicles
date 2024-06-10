@@ -178,7 +178,6 @@ namespace Nekoyume.UI
                 Widget.Create<SettingPopup>(),
 
                 // 팝업 영역: 알림.
-                Widget.Create<BlockFailTitleOneButtonSystem>(),
                 Widget.Create<LoginSystem>(),
                 Widget.Create<TitleOneButtonSystem>(),
                 Widget.Create<Alert>(),
@@ -378,8 +377,6 @@ namespace Nekoyume.UI
             yield return null;
 
             // popup
-            _secondWidgets.Add(Widget.Create<IconPopup>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
@@ -472,7 +469,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<CostumeTooltip>());
             _secondWidgets.Add(Widget.Create<RuneTooltip>());
             _secondWidgets.Add(Widget.Create<FungibleAssetTooltip>());
-            _secondWidgets.Add(Widget.Create<AvatarTooltip>());
             _secondWidgets.Add(Widget.Create<HelpTooltip>());
             _secondWidgets.Add(Widget.Create<VanilaTooltip>());
             _secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));

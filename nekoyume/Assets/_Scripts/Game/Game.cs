@@ -34,6 +34,7 @@ using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Battle;
+using Nekoyume.Game.Character;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -77,6 +78,10 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
+        public const float DefaultTimeScale = 1.25f;
+
+        public const float DefaultSkillDelay = 0.6f;
+
         [SerializeField]
         private Stage stage;
 
@@ -625,6 +630,7 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(InitializeWithAgent());
 
+            yield return CharacterManager.Instance.LoadCharacterAssetAsync().ToCoroutine();
             var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             yield return createSecondWidgetCoroutine;
 

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
@@ -91,7 +92,7 @@ namespace Nekoyume.Game
         public CharacterLevelSheet CharacterLevelSheet { get; private set; }
 
         public SkillSheet SkillSheet { get; private set; }
-
+        
         public StatBuffSheet StatBuffSheet { get; private set; }
 
         public BuffSheet BuffSheet { get; private set; }
@@ -258,6 +259,8 @@ namespace Nekoyume.Game
         public CollectionSheet CollectionSheet { get; private set; }
 
         public DeBuffLimitSheet DeBuffLimitSheet { get; private set; }
+        
+        public BuffLinkSheet BuffLinkSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

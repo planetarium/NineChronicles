@@ -6,13 +6,16 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.Director;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
+using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.UI;
@@ -20,6 +23,8 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
+using EnemyPlayer = Nekoyume.Model.EnemyPlayer;
+using Player = Nekoyume.Model.Player;
 using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game.Battle
@@ -233,7 +238,7 @@ namespace Nekoyume.Game.Battle
             _player.Pet.DelayedPlay(Character.PetAnimation.Type.BattleStart, 2.5f);
             yield return StartCoroutine(container.CoPlayAppearCutscene());
             _boss.Animator.Idle();
-            foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
+            foreach (var character in GetComponentsInChildren<Actor>())
             {
                 character.Animator.TimeScale = Stage.AcceleratedAnimationTimeScaleWeight;
             }
@@ -264,12 +269,8 @@ namespace Nekoyume.Game.Battle
                 yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             }
 
-            if (_battleCoroutine is not null)
-            {
-                StopCoroutine(_battleCoroutine);
-                _battleCoroutine = null;
-            }
-            _isPlaying = false;
+            ClearBattle();
+
             ActionRenderHandler.Instance.Pending = false;
             BattleRenderer.Instance.IsOnBattle = false;
             Widget.Find<WorldBossBattle>().Close();
@@ -425,18 +426,18 @@ namespace Nekoyume.Game.Battle
 
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
             target.UpdateStatusUI();
-            if (target)
+            if (!target)
             {
-                if (target.HPBar.HpVFX != null)
-                {
-                    target.HPBar.HpVFX.Stop();
-                }
+                yield break;
             }
 
-            yield break;
+            if (target.HPBar.HpVFX != null)
+            {
+                target.HPBar.HpVFX.Stop();
+            }
         }
 
         public IEnumerator CoDropBox(List<ItemBase> items)
@@ -517,10 +518,42 @@ namespace Nekoyume.Game.Battle
         {
             if (eventBase is Tick tick)
             {
-                Character.RaidCharacter raidCharacter =
+                RaidCharacter raidCharacter =
                     character.Id == _player.Id ? _player : _boss;
+                if (tick.SkillId == AuraIceShield.FrostBiteId)
+                {
+                    if (!character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
+                    {
+                        yield break;
+                    }
+
+                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
+                    {
+                        _player.CustomEvent(AuraIceShield.FrostBiteId);
+                        yield return raidCharacter.CoBuff(skillInfos);
+                    }
+
+                    var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
+                                                            raidCharacter.IsDead,
+                                                            0,
+                                                            0,
+                                                            false,
+                                                            SkillCategory.Debuff,
+                                                            _waveTurn,
+                                                            target: character,
+                                                            buff: frostBite
+                    );
+                    _actionQueue.Enqueue(
+                        new RaidActionParams(
+                            raidCharacter,
+                            tick.SkillId,
+                            ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
+                            tick.BuffInfos,
+                            CoFrostBite)
+                    );
+                }
                 // This Tick from 'Stun'
-                if (tick.SkillId == 0)
+                else if (tick.SkillId == 0)
                 {
                     IEnumerator StunTick(IEnumerable<Skill.SkillInfo> _)
                     {
@@ -538,7 +571,7 @@ namespace Nekoyume.Game.Battle
                         target: character
                     );
                     _actionQueue.Enqueue(
-                        new Character.RaidActionParams(
+                        new RaidActionParams(
                             raidCharacter,
                             tick.SkillId,
                             tick.SkillInfos.Append(tickSkillInfo),
@@ -607,14 +640,16 @@ namespace Nekoyume.Game.Battle
 
         private void ClearBattle()
         {
-            if (_battleCoroutine is not null)
+            if (_battleCoroutine != null)
             {
                 StopCoroutine(_battleCoroutine);
                 _battleCoroutine = null;
                 objectPool.ReleaseAll();
             }
             _currentPlayData = null;
-        }
+            _isPlaying = false;
 
+            Time.timeScale = Game.DefaultTimeScale;
+        }
     }
 }

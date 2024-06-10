@@ -27,6 +27,8 @@ namespace Nekoyume.UI.Module
 
     public class HeaderMenuStatic : StaticWidget
     {
+        private const int MaxShowMaterialCount = 3;
+
         public enum ToggleType
         {
             Quest,
@@ -403,23 +405,29 @@ namespace Nekoyume.UI.Module
                 .SubscribeTo(_toggleNotifications[ToggleType.Notice])
                 .AddTo(gameObject);
 
-            var mergedMenuNoti = Observable.CombineLatest(_toggleNotifications[ToggleType.Notice], _toggleNotifications[ToggleType.PortalReward], _toggleNotifications[ToggleType.Rank]);
-            foreach (var item in menuToggleNotifications)
+            IObservable<IList<bool>> mergedMenuNoti;
+            if (!Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
             {
-                mergedMenuNoti.Subscribe(notices=> {
-                    foreach (var noti in notices)
-                    {
-                        if (noti)
-                        {
-                            item.enabled = true;
-                            return;
-                        }
-                    }
-                    item.enabled = false;
-                }).AddTo(gameObject);
+                mergedMenuNoti = Observable.CombineLatest(
+                    _toggleNotifications[ToggleType.Notice],
+                    _toggleNotifications[ToggleType.PortalReward],
+                    _toggleNotifications[ToggleType.Rank]);
+            }
+            else
+            {
+                mergedMenuNoti = Observable.CombineLatest(
+                    _toggleNotifications[ToggleType.Notice],
+                    _toggleNotifications[ToggleType.Rank]);
             }
 
-            _toggleNotifications[ToggleType.PortalReward].Value = PlayerPrefs.GetInt(PortalRewardNotificationKey, 0) == 0 ? false : true;
+            foreach (var item in menuToggleNotifications)
+            {
+                mergedMenuNoti.Subscribe(notices => item.enabled = notices.Any(noti => noti))
+                    .AddTo(gameObject);
+            }
+
+            _toggleNotifications[ToggleType.PortalReward].Value =
+                PlayerPrefs.GetInt(PortalRewardNotificationKey, 0) != 0;
         }
 
         protected override void OnEnable()
@@ -513,7 +521,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
                     break;
                 case AssetVisibleState.Summon:
-                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 2);
+                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 3);
                     break;
             }
         }
@@ -527,6 +535,7 @@ namespace Nekoyume.UI.Module
             MaterialAssets[index].SetMaterial(icon, count, costType);
         }
 
+        // TODO: 정확한 상황을 알지 못하지만, SetMaterial 메서드 호출 이후 자동으로 호출되야 할 것같이 생김.
         private void SetActiveAssets(
             bool isNcgActive = false,
             bool isCrystalActive = false,
@@ -539,7 +548,6 @@ namespace Nekoyume.UI.Module
             bool isMileageActive = false,
             int isMaterialActiveCount = 0)
         {
-            ncg.gameObject.SetActive(isNcgActive);
             crystal.gameObject.SetActive(isCrystalActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             hourglass.gameObject.SetActive(isHourglassActive);
@@ -552,6 +560,8 @@ namespace Nekoyume.UI.Module
             {
                 materialAssets[i].gameObject.SetActive(i < isMaterialActiveCount);
             }
+
+            ncg.gameObject.SetActive(isMaterialActiveCount < MaxShowMaterialCount && isNcgActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)

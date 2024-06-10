@@ -19266,8 +19266,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
-  m_SortingLayer: 8
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 100
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -24185,8 +24185,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
-  m_SortingLayer: 8
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 100
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -33884,6 +33884,7 @@ MonoBehaviour:
   _initializeSortingProbsOfChildren: 0
   <Target>k__BackingField: {fileID: 0}
   <IsPersisting>k__BackingField: 1
+  BackgroundParticleSystems: []
 --- !u!1 &8876977933784564099
 GameObject:
   m_ObjectHideFlags: 0

@@ -673,7 +673,7 @@ namespace Nekoyume.UI
             AirbridgeUnity.TrackEvent(evt);
 
             SubscribeAtShow();
-            Time.timeScale = Prologue.DefaultTimeScale;
+            Time.timeScale = Game.Game.DefaultTimeScale;
 
             if (!(_coLazyClose is null))
             {
