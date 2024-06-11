@@ -20,13 +20,13 @@ namespace Nekoyume.UI
 
         public void OnClickTower()
         {
+            Close();
             var worldMapLoading = Find<LoadingScreen>();
             worldMapLoading.Show();
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
-            Close();
 
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {

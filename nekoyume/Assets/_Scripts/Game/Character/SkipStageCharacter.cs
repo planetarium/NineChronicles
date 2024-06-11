@@ -80,7 +80,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             IsTriggerd = true;
-            NcDebug.Log($"[SkipStageCharacter] OnTriggered~!~!~! {other.name}");
+            NcDebug.Log($"[SkipStageCharacter] OnTriggered {other.name}");
             Prologue.PopupDmg(14352, gameObject, false, Game.instance.Stage.StageSkipCritical, ElementalType.Fire, false);
             StartCoroutine(Dying());
             transform.DOMove(transform.position + new Vector3(8f, 6f, 0), 1.8f).SetEase(Ease.OutExpo);

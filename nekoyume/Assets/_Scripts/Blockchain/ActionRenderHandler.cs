@@ -3899,8 +3899,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .Select(PrepareSweepAdventureBoss)
-                .ObserveOnMainThread()
                 .Subscribe(ResponseSweepAdventureBoss)
                 .AddTo(_disposables);
 
@@ -3913,40 +3911,94 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
-        private ActionEvaluation<SweepAdventureBoss> PrepareSweepAdventureBoss(ActionEvaluation<SweepAdventureBoss> eval)
-        {
-            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
-            {
-                return eval;
-            }
-
-            UpdateAgentStateAsync(eval).Forget();
-            /*UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
-            UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);*/
-
-            _disposableForBattleEnd?.Dispose();
-            _disposableForBattleEnd =
-                Game.Game.instance.Stage.OnEnterToStageEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        var task = UniTask.RunOnThreadPool(() =>
-                        {
-                            UpdateCurrentAvatarStateAsync(eval).Forget();
-                            _disposableForBattleEnd = null;
-                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                        }, configureAwait: false);
-                        task.ToObservable()
-                            .First()
-                            // ReSharper disable once ConvertClosureToMethodGroup
-                            .DoOnError(e => NcDebug.LogException(e));
-                    });
-            return eval;
-        }
-
         private void ResponseSweepAdventureBoss(ActionEvaluation<SweepAdventureBoss> eval)
         {
+            int firstFloor = 1;
+            int maxFloor = 5;
+            int lastFloor = firstFloor;
+            UniTask.RunOnThreadPool(() =>
+            {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return eval;
+                }
 
+                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
+                maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
+                lastFloor = firstFloor;
+
+                UpdateAgentStateAsync(eval).Forget();
+                /*UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);*/
+
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd =
+                    Game.Game.instance.Stage.OnEnterToStageEnd
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            var task = UniTask.RunOnThreadPool(() =>
+                            {
+                                UpdateCurrentAvatarStateAsync(eval).Forget();
+                                _disposableForBattleEnd = null;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            }, configureAwait: false);
+                            task.ToObservable()
+                                .First()
+                                // ReSharper disable once ConvertClosureToMethodGroup
+                                .DoOnError(e => NcDebug.LogException(e));
+                        });
+                return eval;
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    NcDebug.LogError("Not last battle action id.");
+                    return;
+                }
+                var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+                if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
+                {
+                    NcDebug.LogError("SeasonInfo is null or season is not matched.");
+                    return;
+                }
+
+                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                var random = new LocalRandom(eval.RandomSeed);
+                var tableSheets = TableSheets.Instance;
+
+                var simulator = new AdventureBossSimulator(seasonInfo.BossId, exploreInfo.Floor, random, States.Instance.CurrentAvatarState, tableSheets.GetSimulatorSheets(), logEvent: false);
+                simulator.AddBreakthrough(1, exploreInfo.Floor, tableSheets.FloorWaveSheet);
+
+                // Add point, reward
+                var point = 0;
+                var rewardList = new List<AdventureBossGameData.ExploreReward>();
+                var selector = new WeightedSelector<AdventureBossGameData.ExploreReward>(random);
+                for (var fl = 1; fl <= exploreInfo.Floor; fl++)
+                {
+                    var (min, max) = AdventureBossGameData.PointDict[fl];
+                    point += random.Next(min, max + 1);
+
+                    selector.Clear();
+                    var floorReward = AdventureBossGameData.AdventureBossRewards
+                        .First(rw => rw.BossId == seasonInfo.BossId).exploreReward[fl];
+                    foreach (var reward in floorReward.Reward)
+                    {
+                        selector.Add(reward, reward.Ratio);
+                    }
+
+                    rewardList.Add(selector.Select(1).First());
+                }
+
+                var log = simulator.Log;
+                var stage = Game.Game.instance.Stage;
+                stage.StageType = StageType.AdventureBoss;
+                log.worldId = 1;
+                log.stageId = 1;
+                log.waveCount = 3;
+                BattleRenderer.Instance.PrepareStage(log);
+            });
         }
 
         private void ExceptionSweepAdventureBoss(ActionEvaluation<SweepAdventureBoss> evaluation)
