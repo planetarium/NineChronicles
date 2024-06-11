@@ -36,7 +36,8 @@ namespace Nekoyume.UI.Module
         public void OnClickUnlockAction()
         {
             NcDebug.Log($"OnClickUnlockAction {_floorIndex}");
-            Widget.Find<AdventureBoss_UnlockLockedFloorPopup>().Show(_floorIndex, LoadingStart, LoadingEnd);
+            Widget.Find<AdventureBoss_UnlockLockedFloorPopup>()
+                .Show(_floorIndex, LoadingStart, LoadingEnd);
         }
 
         public void LoadingStart()
@@ -93,13 +94,15 @@ namespace Nekoyume.UI.Module
                     floorLock.SetActive(true);
                     openNameImage.SetActive(true);
                     lockEffect.SetActive(true);
-                    if (Game.Game.instance.AdventureBossData.UnlockDict.TryGetValue(_floorIndex, out var unlockData))
+                    if (Game.Game.instance.AdventureBossData.UnlockDict.TryGetValue(_floorIndex,
+                            out var unlockData))
                     {
-                        if(unlockData.TryGetValue("NCG", out var ncg))
+                        if (unlockData.TryGetValue("NCG", out var ncg))
                         {
                             goldUnlockCount.text = ncg.ToString();
                         }
-                        if(unlockData.TryGetValue("GoldenDust", out var gd))
+
+                        if (unlockData.TryGetValue("GoldenDust", out var gd))
                         {
                             goldenDustUnlockCount.text = gd.ToString();
                         }
@@ -108,6 +111,7 @@ namespace Nekoyume.UI.Module
                     {
                         NcDebug.LogError($"UnlockDict not found key {_floorIndex}");
                     }
+
                     openNameText.text = $"{_floorIndex + 1}F ~ {_floorIndex + 5}F";
                     break;
             }

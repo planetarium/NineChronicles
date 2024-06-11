@@ -13,6 +13,7 @@ namespace Nekoyume.UI
     using Nekoyume.Blockchain;
     using Nekoyume.L10n;
     using UniRx;
+
     public class AdventureBossBattlePopup : PopupWidget
     {
         [SerializeField] private GameObject[] challengeFloors;
@@ -38,12 +39,20 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            challengeButton.OnClickSubject.Subscribe(_ => {
-                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_CHALLENGE"), _challengeApPotionCost, AdventureBossPreparation.AdventureBossPreparationType.Challenge);
+            challengeButton.OnClickSubject.Subscribe(_ =>
+            {
+                Find<AdventureBossPreparation>()
+                    .Show(L10nManager.Localize("UI_ADVENTURE_BOSS_CHALLENGE"),
+                        _challengeApPotionCost,
+                        AdventureBossPreparation.AdventureBossPreparationType.Challenge);
                 Close();
             }).AddTo(gameObject);
-            breakThroughButton.OnClickSubject.Subscribe(_ => {
-                Find<AdventureBossPreparation>().Show(L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"), _breakThroughApPotionCost, AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
+            breakThroughButton.OnClickSubject.Subscribe(_ =>
+            {
+                Find<AdventureBossPreparation>().Show(
+                    L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"),
+                    _breakThroughApPotionCost,
+                    AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
                 Close();
             }).AddTo(gameObject);
             gotoUnlock.onClick.AddListener(() =>
@@ -63,13 +72,13 @@ namespace Nekoyume.UI
             var currentFloor = 0;
             var maxFloor = 5;
 
-            if(adventurebossData.ExploreInfo.Value != null)
+            if (adventurebossData.ExploreInfo.Value != null)
             {
                 currentFloor = adventurebossData.ExploreInfo.Value.Floor;
                 maxFloor = adventurebossData.ExploreInfo.Value.MaxFloor;
             }
 
-            if(currentFloor >= maxFloor)
+            if (currentFloor >= maxFloor)
             {
                 challengeLockObj.SetActive(true);
                 challengeContents.SetActive(false);
@@ -79,10 +88,10 @@ namespace Nekoyume.UI
             {
                 challengeLockObj.SetActive(false);
                 challengeContents.SetActive(true);
-                challengeFloorText.text = $"{currentFloor+1}F ~ {maxFloor}F";
+                challengeFloorText.text = $"{currentFloor + 1}F ~ {maxFloor}F";
             }
 
-            if(currentFloor == 0)
+            if (currentFloor == 0)
             {
                 breakThroughContent.SetActive(false);
                 breakThroughNoContent.SetActive(true);
@@ -103,13 +112,23 @@ namespace Nekoyume.UI
 
             _breakThroughApPotionCost = currentFloor * ExploreAdventureBoss.UnitApPotion;
             _challengeApPotionCost = (maxFloor - currentFloor) * SweepAdventureBoss.UnitApPotion;
-            var currentApPotionCount = Game.Game.instance.States.CurrentAvatarState.inventory.GetMaterialCount((int)CostType.ApPotion);
+            var currentApPotionCount =
+                Game.Game.instance.States.CurrentAvatarState.inventory.GetMaterialCount(
+                    (int)CostType.ApPotion);
 
-            var breakThroughColorString = currentApPotionCount >= _breakThroughApPotionCost ? "" : "<color=#ff5d5d>";
-            var challengeColorString = currentApPotionCount >= _challengeApPotionCost ? "" : "<color=#ff5d5d>";
+            var breakThroughColorString = currentApPotionCount >= _breakThroughApPotionCost
+                ? ""
+                : "<color=#ff5d5d>";
+            var challengeColorString =
+                currentApPotionCount >= _challengeApPotionCost ? "" : "<color=#ff5d5d>";
 
-            breakThroughApCostText.text = breakThroughColorString + L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", _breakThroughApPotionCost);
-            challengeApCostText.text = challengeColorString + L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC", _challengeApPotionCost);
+            breakThroughApCostText.text = breakThroughColorString +
+                                          L10nManager.Localize(
+                                              "UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC",
+                                              _breakThroughApPotionCost);
+            challengeApCostText.text = challengeColorString +
+                                       L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC",
+                                           _challengeApPotionCost);
 
             base.Show(ignoreShowAnimation);
         }
