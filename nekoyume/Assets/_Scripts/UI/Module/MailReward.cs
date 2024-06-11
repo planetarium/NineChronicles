@@ -28,34 +28,5 @@ namespace Nekoyume.UI.Module
             Count = count;
             IsPurchased = isPurchased;
         }
-
-        public MailReward(int itemId, int count, bool isPurchased = false)
-        {
-            var itemRow = TableSheets.Instance.ItemSheet[itemId];
-            if (itemRow is MaterialItemSheet.Row materialRow)
-            {
-                ItemBase = ItemFactory.CreateMaterial(materialRow);
-            }
-            else
-            {
-                for (var i = 0; i < count; i++)
-                {
-                    if (itemRow.ItemSubType != ItemSubType.Aura)
-                    {
-                        ItemBase = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                    }
-                }
-            }
-            Count = count;
-            IsPurchased = isPurchased;
-        }
-
-        public MailReward(string ticker, int count, bool isPurchased = false)
-        {
-            var currency = Currency.Legacy(ticker, 0, null);
-            FavFungibleAssetValue = new FungibleAssetValue(currency, count, 0);
-            Count = count;
-            IsPurchased = isPurchased;
-        }
     }
 }

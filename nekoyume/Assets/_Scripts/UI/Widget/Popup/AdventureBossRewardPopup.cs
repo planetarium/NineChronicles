@@ -14,7 +14,9 @@ using System;
 
 namespace Nekoyume.UI
 {
+    using Libplanet.Types.Assets;
     using Nekoyume.Helper;
+    using Nekoyume.Model.Item;
     using Nekoyume.TableData;
     using Nekoyume.UI.Model;
     using UniRx;
@@ -67,14 +69,30 @@ namespace Nekoyume.UI
                         var action = eval.Action;
                         var tableSheets = Game.Game.instance.TableSheets;
                         var mailRewards = new List<MailReward>();
-                        
-                        if(lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.RawValue > 0)
+
+                        if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.RawValue > 0)
                         {
                             mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
                         }
                         foreach (var itemReward in lastClaimableReward.ItemReward)
                         {
-                            mailRewards.Add(new MailReward(itemReward.Key, itemReward.Value));
+                            var itemRow = Game.TableSheets.Instance.ItemSheet[itemReward.Key];
+                            if (itemRow is MaterialItemSheet.Row materialRow)
+                            {
+                                var item = ItemFactory.CreateMaterial(materialRow);
+                                mailRewards.Add(new MailReward(item, itemReward.Value));
+                            }
+                            else
+                            {
+                                for (var i = 0; i < itemReward.Value; i++)
+                                {
+                                    if (itemRow.ItemSubType != ItemSubType.Aura)
+                                    {
+                                        var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                                        mailRewards.Add(new MailReward(item, 1));
+                                    }
+                                }
+                            }
                         }
                         foreach (var favReward in lastClaimableReward.FavReward)
                         {
@@ -82,7 +100,9 @@ namespace Nekoyume.UI
                             runeSheet.TryGetValue(favReward.Key, out var runeRow);
                             if (runeRow != null)
                             {
-                                mailRewards.Add(new MailReward(runeRow.Ticker, favReward.Value));
+                                var currency = Currency.Legacy(runeRow.Ticker, 0, null);
+                                var fav = new FungibleAssetValue(currency, favReward.Value, 0);
+                                mailRewards.Add(new MailReward(fav, favReward.Value));
                             }
                         }
 
@@ -144,7 +164,7 @@ namespace Nekoyume.UI
             foreach (var seasonInfo in _endedClaimableSeasonInfo)
             {
                 var bountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(seasonInfo.Season);
-                if(Game.Game.instance.AdventureBossData.EndedBountyBoards.ContainsKey(seasonInfo.Season))
+                if (Game.Game.instance.AdventureBossData.EndedBountyBoards.ContainsKey(seasonInfo.Season))
                 {
                     Game.Game.instance.AdventureBossData.EndedBountyBoards[seasonInfo.Season] = bountyBoard;
                 }
@@ -156,16 +176,16 @@ namespace Nekoyume.UI
 
                 try
                 {
-                    if(investor != null && !investor.Claimed)
+                    if (investor != null && !investor.Claimed)
                     {
                         wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward, bountyBoard, Game.Game.instance.States.CurrentAvatarState.address, false, out var wantedReward);
                         RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
-                        if(_lastSeasonId < seasonInfo.Season)
+                        if (_lastSeasonId < seasonInfo.Season)
                         {
                             _lastSeasonId = seasonInfo.Season;
                         }
                     }
-                    if(exploreInfo != null && !exploreInfo.Claimed)
+                    if (exploreInfo != null && !exploreInfo.Claimed)
                     {
                         exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward, bountyBoard, exploreBoard, exploreInfo, Game.Game.instance.States.CurrentAvatarState.address, false, out var explorerReward);
                     }
@@ -188,7 +208,7 @@ namespace Nekoyume.UI
                 }
                 foreach (var itemReward in wantedClaimableReward.ItemReward)
                 {
-                    if(i > rewardItems.Length)
+                    if (i > rewardItems.Length)
                     {
                         NcDebug.LogError("rewardItems is not enough");
                         break;
@@ -198,7 +218,7 @@ namespace Nekoyume.UI
                 }
                 foreach (var favReward in wantedClaimableReward.FavReward)
                 {
-                    if(i > rewardItems.Length)
+                    if (i > rewardItems.Length)
                     {
                         NcDebug.LogError("rewardItems is not enough");
                         break;
@@ -222,14 +242,14 @@ namespace Nekoyume.UI
                 rewardItemsExplore.SetActive(true);
                 noRewardItemsExplore.SetActive(false);
                 int i = 0;
-                if(exprolerClaimableReward.NcgReward != null)
+                if (exprolerClaimableReward.NcgReward != null)
                 {
                     rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)exprolerClaimableReward.NcgReward.Value.RawValue);
                     i++;
                 }
                 foreach (var itemReward in exprolerClaimableReward.ItemReward)
                 {
-                    if(i > rewardItemsExplores.Length)
+                    if (i > rewardItemsExplores.Length)
                     {
                         NcDebug.LogError("rewardItemsExplores is not enough");
                         break;
@@ -239,7 +259,7 @@ namespace Nekoyume.UI
                 }
                 foreach (var favReward in exprolerClaimableReward.FavReward)
                 {
-                    if(i > rewardItemsExplores.Length)
+                    if (i > rewardItemsExplores.Length)
                     {
                         NcDebug.LogError("rewardItemsExplores is not enough");
                         break;
@@ -274,7 +294,7 @@ namespace Nekoyume.UI
 
         private void RefreshWithSeasonInfo(ExploreBoard exploreBoard, Explorer exploreInfo, BountyBoard bountyBoard)
         {
-            if(_isRefreshed)
+            if (_isRefreshed)
             {
                 return;
             }
