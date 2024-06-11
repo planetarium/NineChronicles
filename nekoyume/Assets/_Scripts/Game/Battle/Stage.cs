@@ -431,11 +431,14 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoBreakThroughEnd()
         {
             NcDebug.Log($"CoBreakThroughEnd");
-            SetSpeed(AnimationTimeScaleWeight);
-            /*if(PlayerPrefs.GetInt(BattleAccelToggleValueKey, 0) != 0)
+            if(PlayerPrefs.GetInt(UI.Battle.BattleAccelToggleValueKey, 0) != 0)
             {
-
-            }*/
+                SetSpeed(AcceleratedAnimationTimeScaleWeight);
+            }
+            else
+            {
+                SetSpeed(DefaultAnimationTimeScaleWeight);
+            }
             yield return new WaitForSeconds(0.5f);
         }
 
