@@ -3638,9 +3638,10 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
-        private bool isFirstWanted;
         private void ResponseWanted(ActionEvaluation<Wanted> eval)
         {
+            //최초 입찰여부를 알기위한 변수
+            bool isFirstWanted;
             UniTask.RunOnThreadPool(async () =>
             {
                 isFirstWanted = Game.Game.instance.AdventureBossData.BountyBoard.Value == null;
