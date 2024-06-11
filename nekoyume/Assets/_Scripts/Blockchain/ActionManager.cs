@@ -1758,8 +1758,7 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<ExploreAdventureBoss>> ExploreAdventureBoss(List<Guid> costume, List<Guid> equipments, List<Guid> food, List<RuneSlotInfo> runeInfo)
         {
-            if (Game.Game.instance.AdventureBossData.SeasonInfo is null ||
-                Game.Game.instance.AdventureBossData.SeasonInfo.Value is null ||
+            if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null ||
                 States.Instance.CurrentAvatarState is null)
             {
                 NcDebug.LogError("[ExploreAdventureBoss] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
@@ -1788,8 +1787,7 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<SweepAdventureBoss>> SweepAdventureBoss()
         {
-            if (Game.Game.instance.AdventureBossData.SeasonInfo is null ||
-                Game.Game.instance.AdventureBossData.SeasonInfo.Value is null ||
+            if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null ||
                 States.Instance.CurrentAvatarState is null)
             {
                 NcDebug.LogError("[SweepAdventureBoss] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
@@ -1814,8 +1812,7 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<UnlockFloor>> UnlockFloor(bool useNCG)
         {
-            if (Game.Game.instance.AdventureBossData.SeasonInfo is null ||
-                Game.Game.instance.AdventureBossData.SeasonInfo.Value is null ||
+            if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null ||
                 States.Instance.CurrentAvatarState is null)
             {
                 NcDebug.LogError("[UnlockFloor] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
