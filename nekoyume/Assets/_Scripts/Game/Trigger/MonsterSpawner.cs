@@ -59,9 +59,9 @@ namespace Nekoyume.Game.Trigger
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
-        private IEnumerator CoSpawnSkipStageMonster(int enemyId, Vector2 pos,float offset, Character.Player player, Action<GameObject> createCallback)
+        private IEnumerator CoSpawnBreakthroughMonster(int enemyId, Vector2 pos,float offset, Character.Player player, Action<GameObject> createCallback)
         {
-            var createdObj = StageMonsterFactory.CreateSkipStageCharacter(enemyId, pos, offset, player);
+            var createdObj = StageMonsterFactory.CreateBreakthroughCharacter(enemyId, pos, offset, player);
             createCallback.Invoke(createdObj);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
@@ -92,7 +92,7 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        public IEnumerator CoSpawnSkipStage(List<FloorWaveSheet.MonsterData> monsterDatas, Action<GameObject> createCallback)
+        public IEnumerator CoSpawnBreakthrough(List<FloorWaveSheet.MonsterData> monsterDatas, Action<GameObject> createCallback)
         {
             var stage = Game.instance.Stage;
             for (var index = 0; index < monsterDatas.Count; index++)
@@ -113,7 +113,7 @@ namespace Nekoyume.Game.Trigger
                     var pos = new Vector2(
                         offsetX + point.x,
                         point.y);
-                    yield return StartCoroutine(CoSpawnSkipStageMonster(monsterDatas[index].CharacterId, pos, 0, player, createCallback));
+                    yield return StartCoroutine(CoSpawnBreakthroughMonster(monsterDatas[index].CharacterId, pos, 0, player, createCallback));
                 }
             }
         }

@@ -15,7 +15,7 @@ namespace Nekoyume.Game.Character
 {
     using UniRx;
 
-    public class SkipStageCharacter : MonoBehaviour
+    public class BreakthroughCharacter : MonoBehaviour
     {
         public bool AttackEndCalled { get; set; }
         public CharacterAnimator Animator { get; protected set; }
@@ -80,7 +80,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
             IsTriggerd = true;
-            NcDebug.Log($"[SkipStageCharacter] OnTriggered {other.name}");
+            NcDebug.Log($"[BreakthroughCharacter] OnTriggered {other.name}");
             Prologue.PopupDmg(14352, gameObject, false, Game.instance.Stage.StageSkipCritical, ElementalType.Fire, false);
             StartCoroutine(Dying());
             transform.DOMove(transform.position + new Vector3(8f, 6f, 0), 1.8f).SetEase(Ease.OutExpo);

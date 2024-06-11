@@ -3670,9 +3670,8 @@ MonoBehaviour:
   foodCount: 0
   zone: 
   showLoadingScreen: 0
-  StageSkipSpeed: 5
+  StageSkipSpeed: 4.5
   StageSkipCritical: 1
-  SkipedStageCont: 15
 --- !u!4 &1333831683
 Transform:
   m_ObjectHideFlags: 0

@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Character
         {
         }
 
-        protected CharacterAnimator(SkipStageCharacter root) : base(root.gameObject)
+        protected CharacterAnimator(BreakthroughCharacter root) : base(root.gameObject)
         {
         }
 

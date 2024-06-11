@@ -163,6 +163,7 @@ namespace Nekoyume.Game.Battle
 
         public void UpdateTimeScale()
         {
+            NcDebug.Log($"UpdateTimeScale: {AnimationTimeScaleWeight}");
             foreach (var character in GetComponentsInChildren<Actor>())
             {
                 var isEnemy = character is Character.StageMonster;
@@ -431,6 +432,10 @@ namespace Nekoyume.Game.Battle
         {
             NcDebug.Log($"CoBreakThroughEnd");
             SetSpeed(AnimationTimeScaleWeight);
+            /*if(PlayerPrefs.GetInt(BattleAccelToggleValueKey, 0) != 0)
+            {
+
+            }*/
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -1576,9 +1581,9 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
 #endif
             NcDebug.Log($"[CoCustomEvent] CoBreakthrough Start");
-            List<SkipStageCharacter> createdMonsters = new List<SkipStageCharacter>();
-            yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnSkipStage(monsters, (createdMonseter)=> {
-                if(createdMonseter.TryGetComponent<SkipStageCharacter>(out var monster))
+            List<BreakthroughCharacter> createdMonsters = new List<BreakthroughCharacter>();
+            yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnBreakthrough(monsters, (createdMonseter)=> {
+                if(createdMonseter.TryGetComponent<BreakthroughCharacter>(out var monster))
                 {
                     createdMonsters.Add(monster);
                 }
@@ -1586,9 +1591,9 @@ namespace Nekoyume.Game.Battle
 
             yield return new WaitWhile(() => createdMonsters.Any(i => !i.IsTriggerd));
             NcDebug.Log($"[CoCustomEvent] CoBreakthrough End");
-            foreach (var skipStageMonster in createdMonsters)
+            foreach (var breakthroughMonster in createdMonsters)
             {
-                skipStageMonster.IsTriggerd = false;
+                breakthroughMonster.IsTriggerd = false;
             }
             yield return null;
         }

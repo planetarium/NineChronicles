@@ -58,13 +58,13 @@ namespace Nekoyume.Game.Factory
             return enemy.gameObject;
         }
 
-        public static GameObject CreateSkipStageCharacter(int characterId, Vector2 position, float offset, Player target,
+        public static GameObject CreateBreakthroughCharacter(int characterId, Vector2 position, float offset, Player target,
             bool summonEffect = false)
         {
             var objectPool = Game.instance.Stage.objectPool;
-            var enemy = objectPool.Get<SkipStageCharacter>(new Vector2(position.x + offset, position.y));
+            var enemy = objectPool.Get<BreakthroughCharacter>(new Vector2(position.x + offset, position.y));
             if (!enemy)
-                throw new NotFoundComponentException<SkipStageCharacter>();
+                throw new NotFoundComponentException<BreakthroughCharacter>();
 
             enemy.Set(characterId, target);
 
