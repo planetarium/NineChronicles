@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+dotnet tool install --global JetBrains.ReSharper.GlobalTools
+
+scripts=$(git --no-pager diff --staged --name-only --diff-filter=ACM -- '*.cs')
+scripts_num=${#scripts[*]}
+least=100
+
+if [ "$scripts_num" -lt "$least" ] ; then
+    for script in ${scripts}
+    do
+        jb cleanupcode "${script}"
+        git add "${script}"
+    done
+fi
