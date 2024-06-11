@@ -49,6 +49,9 @@ namespace Nekoyume.UI
         private StageProgressBar stageProgressBar;
 
         [SerializeField]
+        private FloorProgressBar floorProgressBar;
+
+        [SerializeField]
         private ComboText comboText;
 
         private StageType _stageType;
@@ -56,6 +59,7 @@ namespace Nekoyume.UI
         public BossStatus BossStatus => bossStatus;
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
         public StageProgressBar StageProgressBar => stageProgressBar;
+        public FloorProgressBar FloorProgressBar => floorProgressBar;
         public ComboText ComboText => comboText;
         public const int RequiredStageForExitButton = 10;
         public const int RequiredStageForAccelButton = 3;
@@ -180,10 +184,26 @@ namespace Nekoyume.UI
                 }
             });
 
-            stageText.text =
-                $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
-            stageText.gameObject.SetActive(true);
-            stageProgressBar.Show();
+            switch (stageType)
+            {
+                case StageType.HackAndSlash:
+                case StageType.Mimisbrunnr:
+                case StageType.EventDungeon:
+                    stageText.text =
+                        $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
+                    stageText.gameObject.SetActive(true);
+                    floorProgressBar.gameObject.SetActive(false);
+                    stageProgressBar.gameObject.SetActive(true);
+                    stageProgressBar.Show();
+                    break;
+                case StageType.AdventureBoss:
+                    stageProgressBar.gameObject.SetActive(false);
+                    floorProgressBar.gameObject.SetActive(true);
+                    break;
+                default:
+                    break;
+            }
+
             bossStatus.Close();
             enemyPlayerStatus.Close();
             comboText.Close();

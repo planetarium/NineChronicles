@@ -3882,6 +3882,9 @@ namespace Nekoyume.Blockchain
                 var log = simulator.Log;
                 var stage = Game.Game.instance.Stage;
                 stage.StageType = StageType.AdventureBoss;
+                //AdventureBoss에서는 StageID를 시작층 WaveCount를 마지막층 정보로 사용한다.
+                log.stageId = firstFloor;
+                log.waveCount = lastFloor;
 
                 BattleRenderer.Instance.PrepareStage(log);
             });
@@ -3994,9 +3997,10 @@ namespace Nekoyume.Blockchain
                 var log = simulator.Log;
                 var stage = Game.Game.instance.Stage;
                 stage.StageType = StageType.AdventureBoss;
-                log.worldId = 1;
+
+                //AdventureBoss에서는 StageID를 시작층 WaveCount를 마지막층 정보로 사용한다.
                 log.stageId = 1;
-                log.waveCount = 3;
+                log.waveCount = exploreInfo.Floor;
                 BattleRenderer.Instance.PrepareStage(log);
             });
         }

@@ -548,7 +548,14 @@ namespace Nekoyume.Game.Battle
             ReleaseWhiteList.Clear();
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
-            Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
+            if(StageType == StageType.AdventureBoss)
+            {
+                Widget.Find<UI.Battle>().FloorProgressBar.SetData(log.stageId, log.waveCount);
+            }
+            else
+            {
+                Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
+            }
             var title = Widget.Find<StageTitle>();
             title.Show(StageType, stageId);
             IsShowHud = false;
@@ -1598,6 +1605,8 @@ namespace Nekoyume.Game.Battle
             {
                 breakthroughMonster.IsTriggerd = false;
             }
+
+            Widget.Find<UI.Battle>().FloorProgressBar.SetCompleted(floor);
             yield return null;
         }
     }
