@@ -260,7 +260,7 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             try
             {
-                switch(_type)
+                switch (_type)
                 {
                     case AdventureBossPreparationType.Challenge:
                         if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null)
