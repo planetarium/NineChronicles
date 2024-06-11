@@ -263,10 +263,24 @@ namespace Nekoyume.UI
                 switch(_type)
                 {
                     case AdventureBossPreparationType.Challenge:
-                        ActionManager.Instance.ExploreAdventureBoss(costumes, equipments, consumables, runeInfos);
+                        if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null)
+                        {
+                            NcDebug.LogError("[ExploreAdventureBoss] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
+                        }
+                        else
+                        {
+                            ActionManager.Instance.ExploreAdventureBoss(costumes, equipments, consumables, runeInfos, (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season);
+                        }
                         break;
                     case AdventureBossPreparationType.BreakThrough:
-                        ActionManager.Instance.SweepAdventureBoss();
+                        if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null)
+                        {
+                            NcDebug.LogError("[SweepAdventureBoss] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
+                        }
+                        else
+                        {
+                            ActionManager.Instance.SweepAdventureBoss((int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season);
+                        }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

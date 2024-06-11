@@ -1756,17 +1756,12 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        public IObservable<ActionEvaluation<ExploreAdventureBoss>> ExploreAdventureBoss(List<Guid> costume, List<Guid> equipments, List<Guid> food, List<RuneSlotInfo> runeInfo)
+        public IObservable<ActionEvaluation<ExploreAdventureBoss>> ExploreAdventureBoss(List<Guid> costume, List<Guid> equipments, List<Guid> food, List<RuneSlotInfo> runeInfo, int seasonId)
         {
-            if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null ||
-                States.Instance.CurrentAvatarState is null)
-            {
-                NcDebug.LogError("[ExploreAdventureBoss] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
-            }
             var action = new ExploreAdventureBoss
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season,
+                Season = (int)seasonId,
                 Costumes = costume,
                 Equipments = equipments,
                 Foods = food,
@@ -1785,17 +1780,12 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        public IObservable<ActionEvaluation<SweepAdventureBoss>> SweepAdventureBoss()
+        public IObservable<ActionEvaluation<SweepAdventureBoss>> SweepAdventureBoss(int seasonId)
         {
-            if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null ||
-                States.Instance.CurrentAvatarState is null)
-            {
-                NcDebug.LogError("[SweepAdventureBoss] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
-            }
             var action = new SweepAdventureBoss
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season
+                Season = seasonId
             };
             _lastBattleActionId = action.Id;
             ProcessAction(action);
@@ -1810,17 +1800,12 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        public IObservable<ActionEvaluation<UnlockFloor>> UnlockFloor(bool useNCG)
+        public IObservable<ActionEvaluation<UnlockFloor>> UnlockFloor(bool useNCG, int seasonId)
         {
-            if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null ||
-                States.Instance.CurrentAvatarState is null)
-            {
-                NcDebug.LogError("[UnlockFloor] : Game.Game.instance.AdventureBossData.SeasonInfo is null or States.Instance.CurrentAvatarState is null");
-            }
             var action = new UnlockFloor
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                Season = (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season,
+                Season = seasonId,
                 UseNcg = useNCG
             };
             ProcessAction(action);
