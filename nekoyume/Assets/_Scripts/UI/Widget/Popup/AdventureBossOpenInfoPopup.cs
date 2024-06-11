@@ -23,8 +23,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            goToAdventureBossButton.OnClickSubject.Subscribe(_ => { OnClickGoToAdventureBoss(); }).AddTo(gameObject);
-            goToAdventureBossButton.Text = L10nManager.Localize("UI_ADVENTUREBOSS_OPEN_INFO");
+            goToAdventureBossButton.OnClickSubject.Subscribe(_ => OnClickGoToAdventureBoss()).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -49,6 +48,6 @@ namespace Nekoyume.UI
             e.CloseWithOtherWidgets();
             e.Show();
             AudioController.PlayClick();
-        } 
+        }
     }
 }
