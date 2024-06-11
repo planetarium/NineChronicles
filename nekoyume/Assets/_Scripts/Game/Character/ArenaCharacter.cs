@@ -49,7 +49,8 @@ namespace Nekoyume.Game.Character
         private readonly List<Equipment> _equipments = new List<Equipment>();
         private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
-        private readonly List<ArenaActionParams> _actions = new();
+        private readonly Queue<ArenaActionParams> _actionQueue = new();
+        
         public Pet Pet => appearance.Pet;
 
         private bool IsDead => _currentHp <= 0;
@@ -81,6 +82,7 @@ namespace Nekoyume.Game.Character
                 vfx.gameObject.SetActive(false);
             }
             _persistingVFXMap.Clear();
+            _actionQueue.Clear();
         }
 
         public void Init(
@@ -229,7 +231,7 @@ namespace Nekoyume.Game.Character
             _root = new Root();
             _root.OpenBranch(
                 BT.Selector().OpenBranch(
-                    BT.If(() => _actions.Any()).OpenBranch(
+                    BT.If(() => _actionQueue.Any()).OpenBranch(
                         BT.Call(ExecuteAction)
                     )
                 )
@@ -247,9 +249,7 @@ namespace Nekoyume.Game.Character
             {
                 yield break;
             }
-            // TODO: Change Queue
-            _runningAction = _actions.First();
-            _actions.Remove(_runningAction);
+            _runningAction = _actionQueue.Dequeue();
 
             var cts = new CancellationTokenSource();
             ActionTimer(cts).Forget();
@@ -297,12 +297,12 @@ namespace Nekoyume.Game.Character
 
         public bool HasAction()
         {
-            return _actions.Any() || _runningAction is not null;
+            return _actionQueue.Any() || _runningAction is not null;
         }
 
         public void AddAction(ArenaActionParams actionParams)
         {
-            _actions.Add(actionParams);
+            _actionQueue.Enqueue(actionParams);
         }
 
         private void ProcessAttack(ArenaCharacter target, ArenaSkill.ArenaSkillInfo skill, bool isConsiderElementalType)
@@ -863,10 +863,11 @@ namespace Nekoyume.Game.Character
         private void OnDeadEnd()
         {
             Animator.Idle();
-            _actions.Clear();
+            _actionQueue.Clear();
             gameObject.SetActive(false);
             _root = null;
             _runningAction = null;
+            _actionQueue.Clear();
         }
     }
 }
