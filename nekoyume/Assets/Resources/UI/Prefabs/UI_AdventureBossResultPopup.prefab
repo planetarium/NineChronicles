@@ -22200,7 +22200,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1221487961364107253}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4708792750598276768}
+        m_TargetAssemblyTypeName: Nekoyume.UI.AdventureBossResultPopup, Nekoyume
+        m_MethodName: OnClickTower
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &733114476128215573
 Animator:
   serializedVersion: 5
@@ -24359,6 +24371,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4055458779524721477}
   - component: {fileID: 7318217772157826661}
+  - component: {fileID: 4708792750598276768}
   - component: {fileID: 3019957007888628053}
   - component: {fileID: 2241931086584725290}
   - component: {fileID: 7318217772157826660}
@@ -24399,6 +24412,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8554643596028190267}
   m_CullTransparentMesh: 0
+--- !u!114 &4708792750598276768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8554643596028190267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62d88c92e3074e4694dd7c87620eaba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
 --- !u!114 &3019957007888628053
 MonoBehaviour:
   m_ObjectHideFlags: 0
