@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 510b4ed31bf193f4595806794f747a2b, type: 3}
   m_Name: BuffVFXData
   m_EditorClassIdentifier: 
-  DataList:
+  <DataList>k__BackingField:
   - StatType: 1
     PlusIcon: {fileID: 21300000, guid: c4377040b973b41eb82d99b5e2022d75, type: 3}
     MinusIcon: {fileID: 21300000, guid: 0e3b4f674f3b24e9a82bca31a8e7a4ca, type: 3}
@@ -134,7 +134,7 @@ MonoBehaviour:
       type: 3}
     MinusVFX: {fileID: 7837708294353371776, guid: c0b45884b3a1a8447b760337c0618eaa,
       type: 3}
-  OverrideDataList:
+  <OverrideDataList>k__BackingField:
   - Id: 500001
     Icon: {fileID: 21300000, guid: a3c38c985c66a42b1b20aaaba99934b1, type: 3}
     CastingVFX: {fileID: 5166876917278104467, guid: 5b2f8b6efafe66b4b864000303377aab,
@@ -249,7 +249,7 @@ MonoBehaviour:
       type: 3}
     BuffVFX: {fileID: 1597932600176430146, guid: a812dcf0b3bedf84dbcd7d96f139d3c4,
       type: 3}
-  BuffPosOverrideDataList:
+  <BuffPosOverrideDataList>k__BackingField:
   - Id: 708000
     IsCasting: 0
     Position: {x: 0, y: 0, z: 0}
@@ -265,21 +265,15 @@ MonoBehaviour:
   - Id: 709000
     IsCasting: 1
     Position: {x: 0, y: 1.1, z: 0}
-  - Id: 709001
-    IsCasting: 0
-    Position: {x: 0, y: 1.1, z: 0}
-  - Id: 709001
-    IsCasting: 1
-    Position: {x: 0, y: 1.1, z: 0}
-  - Id: 709002
-    IsCasting: 0
-    Position: {x: 0, y: 1.1, z: 0}
-  - Id: 709002
-    IsCasting: 1
-    Position: {x: 0, y: 1.1, z: 0}
-  FallbackIcon: {fileID: 21300000, guid: 39d46914ec312d8469b6bb4740099db4, type: 3}
-  FallbackCastingVFX: {fileID: 2327172370517842916, guid: 8e07f2c1b187b68428f03f03327fa497,
+   <FallbackIcon>k__BackingField: {fileID: 21300000, guid: 39d46914ec312d8469b6bb4740099db4,
     type: 3}
-  FallbackBuffVFX: {fileID: 7756120939619406518, guid: 18a90bf73ccf9834db3f450f3e3b3278,
+  <FallbackCastingVFX>k__BackingField: {fileID: 2327172370517842916, guid: 8e07f2c1b187b68428f03f03327fa497,
     type: 3}
-  FallbackPosition: {x: 0, y: 0.55, z: 0}
+  <FallbackBuffVFX>k__BackingField: {fileID: 7756120939619406518, guid: 18a90bf73ccf9834db3f450f3e3b3278,
+    type: 3}
+  <FallbackPosition>k__BackingField: {x: 0, y: 0.55, z: 1}
+X>k__BackingField: {fileID: 2327172370517842916, guid: 8e07f2c1b187b68428f03f03327fa497,
+    type: 3}
+  <FallbackBuffVFX>k__BackingField: {fileID: 7756120939619406518, guid: 18a90bf73ccf9834db3f450f3e3b3278,
+    type: 3}
+  <FallbackPosition>k__BackingField: {x: 0, y: 0.55, z: 0}

@@ -5,18 +5,17 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    [CreateAssetMenu(fileName = "BuffVFXData",
-        menuName = "Scriptable Object/Buff VFX Data",
-        order = int.MaxValue)]
+    [CreateAssetMenu(fileName = "BuffVFXData", menuName = "Scriptable Object/Buff VFX Data", order = int.MaxValue)]
     public class BuffVFXScriptableObject : ScriptableObject
     {
-        public List<BuffVFXData> DataList;
-        public List<BuffVFXOverrideData> OverrideDataList;
-        public List<BuffPosOverrideData> BuffPosOverrideDataList;
-        public Sprite FallbackIcon;
-        public GameObject FallbackCastingVFX;
-        public GameObject FallbackBuffVFX;
-        public Vector3 FallbackPosition;
+        [field:SerializeField] public List<BuffVFXData> DataList { get; set; }
+        [field:SerializeField] public List<BuffVFXOverrideData> OverrideDataList { get; set; }
+        [field:SerializeField] public List<BuffPosOverrideData> BuffPosOverrideDataList { get;  set; }
+        
+        [field:SerializeField] public Sprite     FallbackIcon       { get; set; }
+        [field:SerializeField] public GameObject FallbackCastingVFX { get; set; }
+        [field:SerializeField] public GameObject FallbackBuffVFX    { get; set; }
+        [field:SerializeField] public Vector3    FallbackPosition   { get; set; }
 
         [Serializable]
         public class BuffVFXData
