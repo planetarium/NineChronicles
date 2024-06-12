@@ -6,6 +6,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Nekoyume.TableData;
+using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
@@ -262,6 +263,10 @@ namespace Nekoyume.Game
         
         public BuffLinkSheet BuffLinkSheet { get; private set; }
 
+        public FloorSheet FloorSheet { get; private set; }
+
+        public FloorWaveSheet FloorWaveSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
@@ -428,6 +433,24 @@ namespace Nekoyume.Game
                 QuestItemRewardSheet,
                 EquipmentItemRecipeSheet,
                 EquipmentItemSubRecipeSheet
+            );
+        }
+
+        public SimulatorSheets GetSimulatorSheets()
+        {
+            return new SimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                RuneOptionSheet,
+                RuneListSheet,
+                RuneLevelBonusSheet
             );
         }
     }

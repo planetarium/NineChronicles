@@ -28,10 +28,12 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.BattleStatus.AdventureBoss;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -109,6 +111,9 @@ namespace Nekoyume.Game.Battle
 
         public bool showLoadingScreen;
 
+        public float StageSkipSpeed = 3f;
+        public bool StageSkipCritical = false;
+
         #region Events
 
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
@@ -158,6 +163,7 @@ namespace Nekoyume.Game.Battle
 
         public void UpdateTimeScale()
         {
+            NcDebug.Log($"UpdateTimeScale: {AnimationTimeScaleWeight}");
             foreach (var character in GetComponentsInChildren<Actor>())
             {
                 var isEnemy = character is Character.StageMonster;
@@ -358,6 +364,12 @@ namespace Nekoyume.Game.Battle
             _battleCoroutine = StartCoroutine(CoPlayStage(log));
         }
 
+        private void SetSpeed(float speed)
+        {
+            AnimationTimeScaleWeight = speed;
+            UpdateTimeScale();
+        }
+
         private IEnumerator CoPlayStage(BattleLog log)
         {
 #if TEST_LOG
@@ -374,14 +386,60 @@ namespace Nekoyume.Game.Battle
             BattleRenderer.Instance.IsOnBattle = true;
 
             yield return StartCoroutine(CoStageEnter(log));
-            foreach (var e in log)
+
+
+            if(StageType == StageType.AdventureBoss)
             {
-                e.LogEvent();
-                yield return StartCoroutine(e.CoExecute(this));
+                var isBreakThroughStarted = false;
+                for (int i = 0; i < log.events.Count; i++)
+                {
+                    var e = log.events[i];
+                    if (!isBreakThroughStarted && e is Breakthrough)
+                    {
+                        isBreakThroughStarted = true;
+                        yield return StartCoroutine(CoBreakThroughStart());
+                    }
+                    if(isBreakThroughStarted && e is not Breakthrough)
+                    {
+                        isBreakThroughStarted = false;
+                        yield return StartCoroutine(CoBreakThroughEnd());
+                    }
+                    e.LogEvent();
+                    yield return StartCoroutine(e.CoExecute(this));
+                }
+            }
+            else
+            {
+                foreach (var e in log)
+                {
+                    e.LogEvent();
+                    yield return StartCoroutine(e.CoExecute(this));
+                }
             }
 
             yield return StartCoroutine(CoStageEnd(log));
             ClearBattle();
+        }
+
+        private IEnumerator CoBreakThroughStart()
+        {
+            NcDebug.Log($"CoBreakThroughStart");
+            SetSpeed(StageSkipSpeed);
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        private IEnumerator CoBreakThroughEnd()
+        {
+            NcDebug.Log($"CoBreakThroughEnd");
+            if(PlayerPrefs.GetInt(UI.Battle.BattleAccelToggleValueKey, 0) != 0)
+            {
+                SetSpeed(AcceleratedAnimationTimeScaleWeight);
+            }
+            else
+            {
+                SetSpeed(DefaultAnimationTimeScaleWeight);
+            }
+            yield return new WaitForSeconds(0.5f);
         }
 
         public void ClearBattle()
@@ -462,6 +520,18 @@ namespace Nekoyume.Game.Battle
                     bgmName = eventDungeonStageRow.BGM;
                     break;
                 }
+                case StageType.AdventureBoss:
+                {
+                    if (!TableSheets.Instance.StageSheet.TryGetValue(1, out var stageRow))
+                    {
+                        yield break;
+                    }
+
+                    zone = stageRow.Background;
+                    bgmName = stageRow.BGM;
+
+                    break;
+                }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -516,7 +586,11 @@ namespace Nekoyume.Game.Battle
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             var avatarState = States.Instance.CurrentAvatarState;
 
-            _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
+            if(StageType != StageType.AdventureBoss)
+            {
+                _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
+            }
+
             var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             yield return new WaitForSeconds(1f);
@@ -562,7 +636,14 @@ namespace Nekoyume.Game.Battle
             if (log.result == BattleLog.Result.Win)
             {
                 _stageRunningPlayer.DisableHUD();
-                _stageRunningPlayer.Animator.Win(log.clearedWaveNumber);
+                if(StageType == StageType.AdventureBoss)
+                {
+                    _stageRunningPlayer.Animator.Win();
+                }
+                else
+                {
+                    _stageRunningPlayer.Animator.Win(log.clearedWaveNumber);
+                }
                 _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
                 _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
                 yield return new WaitForSeconds(2.2f);
@@ -584,8 +665,11 @@ namespace Nekoyume.Game.Battle
             objectPool.ReleaseExcept(ReleaseWhiteList);
             _stageRunningPlayer.ClearVfx();
 
-            _battleResultModel.ActionPoint = ReactiveAvatarState.ActionPoint;
-            _battleResultModel.State = log.result;
+            if(StageType != StageType.AdventureBoss)
+            {
+                _battleResultModel.ActionPoint = ReactiveAvatarState.ActionPoint;
+                _battleResultModel.State = log.result;
+            }
             switch (StageType)
             {
                 case StageType.HackAndSlash:
@@ -639,6 +723,9 @@ namespace Nekoyume.Game.Battle
 
                     break;
                 }
+                case StageType.AdventureBoss:
+                    Widget.Find<AdventureBossResultPopup>().Show();
+                    yield break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -763,6 +850,7 @@ namespace Nekoyume.Game.Battle
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
+                case StageType.AdventureBoss:
                 {
                     var sheet = TableSheets.Instance.StageSheet;
                     apCost = sheet.OrderedList
@@ -1488,6 +1576,29 @@ namespace Nekoyume.Game.Battle
                 character.AddAction(actionParams);
                 yield return null;
             }
+        }
+
+        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<FloorWaveSheet.MonsterData> monsters)
+        {
+#if TEST_LOG
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
+#endif
+            NcDebug.Log($"[CoCustomEvent] CoBreakthrough Start");
+            List<BreakthroughCharacter> createdMonsters = new List<BreakthroughCharacter>();
+            yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnBreakthrough(monsters, (createdMonseter)=> {
+                if(createdMonseter.TryGetComponent<BreakthroughCharacter>(out var monster))
+                {
+                    createdMonsters.Add(monster);
+                }
+            }));
+
+            yield return new WaitWhile(() => createdMonsters.Any(i => !i.IsTriggerd));
+            NcDebug.Log($"[CoCustomEvent] CoBreakthrough End");
+            foreach (var breakthroughMonster in createdMonsters)
+            {
+                breakthroughMonster.IsTriggerd = false;
+            }
+            yield return null;
         }
     }
 }

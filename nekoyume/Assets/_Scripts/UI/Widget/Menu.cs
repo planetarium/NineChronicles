@@ -31,6 +31,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Cysharp.Threading.Tasks;
+    using Nekoyume.UI.Model;
     using Scroller;
     using UniRx;
 
@@ -101,6 +103,10 @@ namespace Nekoyume.UI
 
         [SerializeField] private Transform titleSocket;
 
+        [SerializeField] private GameObject adventureBossMark;
+
+        [SerializeField] private GameObject adventureBossUnMark;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
@@ -157,6 +163,20 @@ namespace Nekoyume.UI
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
             BattleRenderer.Instance.OnPrepareStage += GoToPrepareStage;
+
+            Game.Game.instance.AdventureBossData.SeasonInfo
+                .Subscribe(seasonInfo =>
+                {
+                    bool activeMark = seasonInfo != null
+                        && seasonInfo.StartBlockIndex <= Game.Game.instance.Agent.BlockIndex
+                        && seasonInfo.EndBlockIndex >= Game.Game.instance.Agent.BlockIndex;
+
+                    NcDebug.Log($"[AdventureBoss] AdventureBossMark Refresh {activeMark}");
+
+                    adventureBossMark.SetActive(activeMark);
+                    adventureBossUnMark.SetActive(!activeMark);
+                })
+                .AddTo(gameObject);
         }
 
         protected override void OnDestroy()
@@ -259,10 +279,63 @@ namespace Nekoyume.UI
             _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
+#if UNITY_EDITOR
+        private Vector2 scrollPosition = Vector2.zero;
+        public void OnGUI()
+        {
+            var style = new GUIStyle(GUI.skin.button);
+            style.fontSize = 40; 
+            style.normal.textColor = Color.white;
+
+            int buttonHeight = (int)(style.fontSize * 2.5f);
+            int totalButtons = 3; 
+            int verticalSpacing = 10;
+            int totalHeight = totalButtons * (buttonHeight + verticalSpacing);
+
+            GUILayout.BeginArea(new Rect(0, Screen.height - totalHeight, 500, totalHeight));
+            scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width(500), GUILayout.Height(totalHeight));
+
+            GUILayout.BeginVertical();
+
+
+            if (GUILayout.Button("WantedAction", style))
+            {
+                ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, 1000, 0));
+            }
+
+            if(GUILayout.Button("GetSeasonInfoAndBounty", style))
+            {
+                
+                Game.Game.instance.Agent.GetAdventureBossLatestSeasonInfoAsync().AsUniTask().ContinueWith((seasonInfo) =>
+                {
+                    if(seasonInfo == null)
+                    {
+                        return;
+                    }
+
+                    Game.Game.instance.Agent.GetBountyBoardAsync(seasonInfo.Season).AsUniTask().ContinueWith((bountyBoard) =>
+                    {
+                    }).Forget();
+                }).Forget();
+            }
+
+            if(GUILayout.Button("Show BountyPopup",style))
+            {
+                Find<AdventureBossStartNotificationPopup>().Show();
+            }
+
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
+            GUILayout.EndArea();
+        }
+#endif
+
         public void EnterRoom()
         {
             player.localPosition = playerPosition.localPosition + (Vector3.left * 300);
             player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);
+
+            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().Forget();
         }
 
         private void GoToPrepareStage(BattleLog battleLog)

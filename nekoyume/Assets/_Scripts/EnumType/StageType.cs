@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Nekoyume.EnumType
 {
@@ -8,5 +8,6 @@ namespace Nekoyume.EnumType
         [Obsolete]
         Mimisbrunnr,
         EventDungeon,
+        AdventureBoss,
     }
 }

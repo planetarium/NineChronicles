@@ -18,6 +18,7 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
+using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
@@ -650,6 +651,12 @@ namespace Nekoyume.Game.Battle
             _isPlaying = false;
 
             Time.timeScale = Game.DefaultTimeScale;
+        }
+
+        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<FloorWaveSheet.MonsterData> monsters)
+        {
+            NcDebug.LogError($"[RaidStage]Not implemented yet: {nameof(CoBreakthrough)}");
+            yield return null;
         }
     }
 }

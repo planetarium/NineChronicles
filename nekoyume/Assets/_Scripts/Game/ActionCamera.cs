@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
 using Unity.Mathematics;
@@ -194,6 +195,24 @@ namespace Nekoyume.Game
             }
         }
 
+        private float CalulateChaseXPos(Vector3 targetPos,ChaseData data)
+        {
+            var pos = Transform.position;
+            var desiredPosX = targetPos.x + data.offsetX;
+
+            float speedAdjust = 1;
+            if(Game.instance.Stage.AnimationTimeScaleWeight > Stage.AcceleratedAnimationTimeScaleWeight)
+            {
+                speedAdjust = Game.instance.Stage.AnimationTimeScaleWeight;
+            }
+
+            var smoothedPosX = Mathf.Lerp(
+                pos.x,
+                desiredPosX,
+                data.smoothSpeed * Time.deltaTime * speedAdjust);
+            return smoothedPosX;
+        }
+
         private IEnumerator CoChaseX()
         {
             var data = InPrologue ? prologueChaseData : chaseData;
@@ -201,12 +220,7 @@ namespace Nekoyume.Game
                    _target.gameObject.activeSelf)
             {
                 var pos = Transform.position;
-                var desiredPosX = _target.position.x + data.offsetX;
-                var smoothedPosX = Mathf.Lerp(
-                    pos.x,
-                    desiredPosX,
-                    data.smoothSpeed * Time.deltaTime);
-                pos.x = smoothedPosX;
+                pos.x = CalulateChaseXPos(_target.position, data);
                 Transform.position = pos;
                 OnTranslate?.Invoke(Transform);
 
@@ -223,17 +237,34 @@ namespace Nekoyume.Game
             var pos = Transform.position;
             var data = InPrologue ? prologueShakeData : shakeData;
 
+            var chase = InPrologue ? prologueChaseData : chaseData;
+
             while (_shakeDuration > 0f)
             {
                 var x = Random.Range(-1f, 1f) * data.magnitudeX;
                 var y = Random.Range(-1f, 1f) * data.magnitudeY;
 
-                Transform.position = new Vector3(pos.x + x, pos.y + y, pos.z);
+                if (_targetTemp)
+                {
+                    var xPos = CalulateChaseXPos(_targetTemp.position, chase);
+                    Transform.position = new Vector3(xPos + x, pos.y + y, pos.z);
+                }
+                else
+                {
+                    Transform.position = new Vector3(pos.x + x, pos.y + y, pos.z);
+                }
+
                 OnTranslate?.Invoke(Transform);
 
                 _shakeDuration -= Time.deltaTime;
 
                 yield return null;
+            }
+
+            if (_targetTemp)
+            {
+                pos = Transform.position;
+                pos.x = CalulateChaseXPos(_targetTemp.position, chase);
             }
 
             Transform.position = pos;

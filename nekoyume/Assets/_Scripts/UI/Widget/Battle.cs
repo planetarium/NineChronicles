@@ -60,7 +60,7 @@ namespace Nekoyume.UI
         public const int RequiredStageForExitButton = 10;
         public const int RequiredStageForAccelButton = 3;
         public const int RequiredStageForHeaderMenu = 3;
-        private const string BattleAccelToggleValueKey = "Battle_Animation_Is_On";
+        public const string BattleAccelToggleValueKey = "Battle_Animation_Is_On";
 
         protected override void Awake()
         {
@@ -169,6 +169,7 @@ namespace Nekoyume.UI
                 {
                     case StageType.HackAndSlash:
                     case StageType.Mimisbrunnr:
+                    case StageType.AdventureBoss:
                         guidedQuest.SetWorldQuestToInProgress(stageId);
                         break;
                     case StageType.EventDungeon:
@@ -197,6 +198,7 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
+                case StageType.AdventureBoss:
                     guidedQuest.ClearWorldQuest(stageId, cleared =>
                     {
                         if (!cleared)
