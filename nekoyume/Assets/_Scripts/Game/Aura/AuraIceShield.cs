@@ -136,13 +136,13 @@ namespace Nekoyume.Game
 
         private IEnumerator OnBuffEnd()
         {
+            _isPlaying = false;
             var disappearTrack = summonedSpine.AnimationState.SetAnimation(0, DisappearAnimation, false);
             while (!disappearTrack.IsComplete)
             {
                 yield return null;
             }
             summonedSpine.gameObject.SetActive(false);
-            _isPlaying = false;
         }
 
         private IEnumerator OnFrostBite()
