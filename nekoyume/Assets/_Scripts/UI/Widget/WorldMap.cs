@@ -46,17 +46,23 @@ namespace Nekoyume.UI
             public TextMeshProUGUI remainingTimeText;
         }
 
-        [SerializeField] private GameObject worldMapRoot;
+        [SerializeField]
+        private GameObject worldMapRoot;
 
-        [SerializeField] private Button closeButton;
+        [SerializeField]
+        private Button closeButton;
 
-        [SerializeField] private WorldButton[] _worldButtons;
+        [SerializeField]
+        private WorldButton[] _worldButtons;
 
-        [SerializeField] private EventDungeonObject[] eventDungeonObjects;
+        [SerializeField]
+        private EventDungeonObject[] eventDungeonObjects;
 
-        [SerializeField] private Button eventDungeonLockButton;
+        [SerializeField]
+        private Button eventDungeonLockButton;
 
-        [SerializeField] private WorldMapAdventureBoss worldMapAdventureBossButton;
+        [SerializeField]
+        private WorldMapAdventureBoss worldMapAdventureBossButton;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
