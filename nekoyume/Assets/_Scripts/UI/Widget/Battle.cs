@@ -198,6 +198,7 @@ namespace Nekoyume.UI
                 case StageType.AdventureBoss:
                     stageProgressBar.gameObject.SetActive(false);
                     floorProgressBar.gameObject.SetActive(true);
+                    Find<HeaderMenuStatic>().Close(true);
                     break;
                 default:
                     break;
