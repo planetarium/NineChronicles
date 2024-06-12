@@ -11,9 +11,6 @@ namespace Nekoyume.Game
             get => _owner;
             set
             {
-                if (_owner == value)
-                    return;
-
                 RemoveEventFromOwner();
                 _owner = value;
                 AddEventToOwner();
@@ -21,7 +18,7 @@ namespace Nekoyume.Game
         }
 
 #region MonoBehaviour
-        protected void OnDisable()
+        protected virtual void OnDisable()
         {
             RemoveEventFromOwner();
         }

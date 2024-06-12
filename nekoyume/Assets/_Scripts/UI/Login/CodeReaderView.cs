@@ -125,6 +125,7 @@ namespace Nekoyume.UI
 
             if (permission == NativeGallery.Permission.Denied)
             {
+                NcDebug.Log("[CodeReaderView] Camera permission already denied.");
                 OpenSystemSettingsAndQuit();
             }
         }
@@ -150,9 +151,24 @@ namespace Nekoyume.UI
                 Debug.Log("[CodeReaderView] Camera permission granted.");
             }
 #elif UNITY_IOS
-            if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
+            if (Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
+                NcDebug.Log("[CodeReaderView] Camera permission already granted.");
+            }
+            else
+            {
+                NcDebug.Log("[CodeReaderView] Request camera permission.");
                 yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
+
+                if (Application.HasUserAuthorization(UserAuthorization.WebCam))
+                {
+                    NcDebug.Log("[CodeReaderView] Camera permission granted.");
+                }
+                else
+                {
+                    NcDebug.Log("[CodeReaderView] Camera permission already denied.");
+                    OpenSystemSettingsAndQuit();
+                }
             }
 #endif
 
@@ -223,6 +239,11 @@ namespace Nekoyume.UI
                         _camTexture.Stop();
                     }
 
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("ERROR_IMPORTKEY_SCANIMAGE"),
+                        NotificationCell.NotificationType.Alert);
+
                     NcDebug.LogException(ex);
                     // Don't invoke onSuccess? with null. Just try again.
                 }
@@ -263,9 +284,13 @@ namespace Nekoyume.UI
                 confirmText: L10nManager.Localize("BTN_OPEN_SYSTEM_SETTINGS"),
                 confirmCallback: () =>
                 {
+#if UNITY_ANDROID
                     NcDebug.Log("[CodeReaderView] Open system settings.");
                     _shouldRequestPermissionWhenApplicationFocusedIn = true;
                     SystemSettingsOpener.OpenApplicationDetailSettings();
+#elif UNITY_IOS
+                    Application.Quit();
+#endif
                 });
         }
 

@@ -216,6 +216,15 @@ namespace Nekoyume.Game.Character
             ActorHud.transform.localScale = Vector3.one;
         }
 
+        public void ClearVfx()
+        {
+            foreach (var id in _persistingVFXMap.Keys)
+            {
+                OnBuffEnd?.Invoke(id);
+            }
+            _persistingVFXMap.Clear();
+        }
+
         public virtual void UpdateBuffVfx()
         {
             removedBuffVfxList.Clear();
@@ -1067,17 +1076,26 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        // Stage에서 같은 버프연출을 여러번 수행하지 않기 위한 임시처리
+        private readonly Dictionary<string, Model.BattleStatus.Skill.SkillInfo> _buffSkillInfoMap = new();
         public IEnumerator CoBuff(IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
         {
             if (skillInfos is null || skillInfos.Count == 0)
                 yield break;
 
             CastingOnceAsync().Forget();
+            _buffSkillInfoMap.Clear();
             foreach (var skillInfo in skillInfos)
             {
                 if (skillInfo.Buff == null)
                     continue;
+                
+                var buffPrefab = BuffHelper.GetCastingVFXPrefab(skillInfo.Buff.BuffInfo.Id);
+                _buffSkillInfoMap[buffPrefab.name] = skillInfo;
+            }
 
+            foreach (var (_, skillInfo) in _buffSkillInfoMap)
+            {
                 yield return StartCoroutine(CoAnimationBuffCast(skillInfo));
             }
 

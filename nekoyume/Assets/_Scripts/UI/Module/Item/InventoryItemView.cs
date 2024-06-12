@@ -94,8 +94,17 @@ namespace Nekoyume.UI.Module
             baseItemView.OptionTag.gameObject.SetActive(true);
             baseItemView.OptionTag.Set(model.ItemBase);
 
-            baseItemView.CountText.gameObject.SetActive(model.Count.Value > 1);
-            baseItemView.CountText.text = model.Count.Value.ToString();
+            if (model.ItemBase.ItemType == ItemType.Consumable)
+            {
+                baseItemView.CountText.gameObject.SetActive(true);
+                model.Count.Subscribe(value => baseItemView.CountText.text = value.ToString())
+                    .AddTo(Disposables);
+            }
+            else
+            {
+                baseItemView.CountText.gameObject.SetActive(model.Count.Value > 1);
+                baseItemView.CountText.text = model.Count.Value.ToString();
+            }
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b))
                 .AddTo(Disposables);

@@ -270,14 +270,21 @@ namespace Nekoyume.UI.Module
             switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
-                    inventoryItem = CreateInventoryItem(
-                        itemBase,
-                        count,
-                        levelLimited: !Util.IsUsableItem(itemBase));
-                    _consumables.Add(inventoryItem);
+                    if (TryGetConsumable(itemBase.Id, out inventoryItem))
+                    {
+                        inventoryItem.Count.Value += count;
+                    }
+                    else
+                    {
+                        inventoryItem = CreateInventoryItem(
+                            itemBase,
+                            count,
+                            levelLimited: !Util.IsUsableItem(itemBase));
+                        _consumables.Add(inventoryItem);
+                    }
+
                     break;
                 case ItemType.Costume:
-                    var costume = (Costume)itemBase;
                     inventoryItem = CreateInventoryItem(
                         itemBase,
                         count,
@@ -285,8 +292,9 @@ namespace Nekoyume.UI.Module
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
-                    var equipment = (Equipment)itemBase;
-                    inventoryItem = CreateInventoryItem(itemBase, count,
+                    inventoryItem = CreateInventoryItem(
+                        itemBase,
+                        count,
                         levelLimited: !Util.IsUsableItem(itemBase));
 
                     if (!_equipments.ContainsKey(itemBase.ItemSubType))
@@ -318,24 +326,18 @@ namespace Nekoyume.UI.Module
 
         private bool TryGetMaterial(Material material, bool isTradable, out InventoryItem model)
         {
-            foreach (var item in _materials)
-            {
-                if (!(item.ItemBase is Material m) || !m.ItemId.Equals(material.ItemId))
-                {
-                    continue;
-                }
+            model = _materials.FirstOrDefault(item =>
+                item.ItemBase is Material m && m.ItemId.Equals(material.ItemId) &&
+                isTradable == item.ItemBase is TradableMaterial);
 
-                if (isTradable != item.ItemBase is TradableMaterial)
-                {
-                    continue;
-                }
+            return model != null;
+        }
 
-                model = item;
-                return true;
-            }
+        public bool TryGetConsumable(int itemId, out InventoryItem model)
+        {
+            model = _consumables.FirstOrDefault(item => item.ItemBase.Id.Equals(itemId));
 
-            model = null;
-            return false;
+            return model != null;
         }
 
         private InventoryItem CreateInventoryItem(
@@ -885,11 +887,11 @@ namespace Nekoyume.UI.Module
             UpdateEquipmentNotification(bestItems);
         }
 
-        public void UpdateConsumables(List<Guid> consumables)
+        public void UpdateConsumables(List<int> consumables)
         {
             foreach (var consumable in _consumables)
             {
-                var equipped = consumables.Exists(x => x == ((Consumable)consumable.ItemBase).ItemId);
+                var equipped = consumables.Exists(x => x == consumable.ItemBase.Id);
                 consumable.Equipped.SetValueAndForceNotify(equipped);
             }
         }
@@ -1031,6 +1033,11 @@ namespace Nekoyume.UI.Module
             if (itemBase is null)
             {
                 return false;
+            }
+
+            if (itemBase.ItemType == ItemType.Consumable)
+            {
+                return TryGetConsumable(itemBase.Id, out result);
             }
 
             var item = itemBase as INonFungibleItem;

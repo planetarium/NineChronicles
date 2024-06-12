@@ -164,7 +164,7 @@ namespace Nekoyume.Helper
                 tableSheets.SkillBuffSheet.TryGetValue(skillRow.Id, out var skillBuffRow) &&
                 tableSheets.StatBuffSheet.TryGetValue(skillBuffRow.BuffIds.First(), out var buffRow))
             {
-                valueString = $"{buffRow.StatType.ValueToString((long)curPower)}%";
+                valueString = $"{buffRow.StatType.ValueToString(curPower)}%";
             }
             else if (isPercent)
             {

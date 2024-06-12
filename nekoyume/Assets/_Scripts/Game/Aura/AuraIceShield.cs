@@ -36,6 +36,12 @@ namespace Nekoyume.Game
             summonedSpine.gameObject.SetActive(false);
         }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            summonedSpine.gameObject.SetActive(false);
+        }
+
         protected override void AddEventToOwner()
         {
             if (Owner == null)
