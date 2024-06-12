@@ -1,6 +1,7 @@
 using Nekoyume.Model.Stat;
 using System;
 using System.Collections.Generic;
+using Nekoyume.Model.Skill;
 using UnityEngine;
 
 namespace Nekoyume
@@ -10,6 +11,7 @@ namespace Nekoyume
     {
         [field:SerializeField] public List<BuffVFXData> DataList { get; set; }
         [field:SerializeField] public List<BuffVFXOverrideData> OverrideDataList { get; set; }
+        [field:SerializeField] public List<ActionBuffVFXOverrideData> ActionBuffVFXOverrideDataList { get; set; }
         [field:SerializeField] public List<BuffPosOverrideData> BuffPosOverrideDataList { get;  set; }
         
         [field:SerializeField] public Sprite     FallbackIcon       { get; set; }
@@ -33,6 +35,15 @@ namespace Nekoyume
         public class BuffVFXOverrideData
         {
             public int Id;
+            public Sprite Icon;
+            public GameObject CastingVFX;
+            public GameObject BuffVFX;
+        }
+        
+        [Serializable]
+        public class ActionBuffVFXOverrideData
+        {
+            public ActionBuffType Type;
             public Sprite Icon;
             public GameObject CastingVFX;
             public GameObject BuffVFX;
