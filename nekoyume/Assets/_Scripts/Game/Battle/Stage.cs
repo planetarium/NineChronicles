@@ -40,6 +40,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI.Extensions;
 using CharacterBase = Nekoyume.Model.CharacterBase;
 using Enemy = Nekoyume.Model.Enemy;
 using EnemyPlayer = Nekoyume.Model.EnemyPlayer;
@@ -424,6 +425,7 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoBreakThroughStart()
         {
             NcDebug.Log($"CoBreakThroughStart");
+            Widget.Find<UI.Battle>().LineEffect.SetActive(true);
             SetSpeed(StageSkipSpeed);
             yield return new WaitForSeconds(0.5f);
         }
@@ -431,7 +433,8 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoBreakThroughEnd()
         {
             NcDebug.Log($"CoBreakThroughEnd");
-            if(PlayerPrefs.GetInt(UI.Battle.BattleAccelToggleValueKey, 0) != 0)
+            Widget.Find<UI.Battle>().LineEffect.SetActive(false);
+            if (PlayerPrefs.GetInt(UI.Battle.BattleAccelToggleValueKey, 0) != 0)
             {
                 SetSpeed(AcceleratedAnimationTimeScaleWeight);
             }
