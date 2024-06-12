@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model.Buff;
+using Nekoyume.Model.Skill;
 using Spine.Unity;
 using UnityEngine;
 
@@ -11,11 +12,6 @@ namespace Nekoyume.Game
     public class AuraIceShield : AuraPrefabBase
     {
         public static int FrostBiteId => 709000;
-        
-        // TODO: ID대신 GroupID사용 고려 혹은 ID와 GroupID사이의 정의 정리
-        private static readonly int[] IceShieldIds = {
-            708000, 708001, 708002
-        };
 
         protected const string AppearAnimation    = "Appear";
         protected const string CastingAnimation   = "Casting";
@@ -49,11 +45,11 @@ namespace Nekoyume.Game
                 return;
             }
             base.AddEventToOwner();
-
-            foreach (var iceShieldId in IceShieldIds)
+            
+            ForeachAllIceShieldBuff(iceShieldId =>
             {
                 Owner.BuffCastCoroutine.Add(iceShieldId, OnBuffCast);
-            }
+            });
         }
 
         protected override void RemoveEventFromOwner()
@@ -64,9 +60,28 @@ namespace Nekoyume.Game
             }
             base.RemoveEventFromOwner();
 
-            foreach (var iceShieldId in IceShieldIds)
+            ForeachAllIceShieldBuff(iceShieldId =>
             {
                 Owner.BuffCastCoroutine.Remove(iceShieldId);
+            });
+        }
+        
+        private void ForeachAllIceShieldBuff(Action<int> action, bool invokeOnce = false)
+        {
+            var actionBuffSheet = TableSheets.Instance.ActionBuffSheet;
+            foreach (var row in actionBuffSheet)
+            {
+                if (row.ActionBuffType != ActionBuffType.IceShield)
+                {
+                    continue;
+                }
+                
+                action(row.Id);
+                
+                if (invokeOnce)
+                {
+                    break;
+                }
             }
         }
 
@@ -83,13 +98,16 @@ namespace Nekoyume.Game
 
         protected override void ProcessBuffEnd(int buffId)
         {
-            if (!IceShieldIds.Contains(buffId))
+            ForeachAllIceShieldBuff(iceShieldId =>
             {
-                return;
-            }
-            base.ProcessBuffEnd(buffId);
-
-            StartCoroutine(DisappearSummoner());
+                if (iceShieldId != buffId)
+                {
+                    return;
+                }
+                
+                base.ProcessBuffEnd(buffId);
+                StartCoroutine(DisappearSummoner());
+            }, invokeOnce: true);
         }
 
         private IEnumerator AppearSummoner()
