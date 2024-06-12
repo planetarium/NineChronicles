@@ -89,6 +89,9 @@ namespace Nekoyume.Game.Battle
         private Coroutine _positionCheckCoroutine;
         private List<int> prevFood;
         private List<BattleTutorialController.BattleTutorialModel> _tutorialModels = new();
+        private int _adventureBossFloorCount = 0;
+
+        private const string adventureBossBackgroundKey = "AdventureBoss_0";
 
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
@@ -530,7 +533,7 @@ namespace Nekoyume.Game.Battle
                         yield break;
                     }
 
-                    zone = stageRow.Background;
+                    zone = GetCurrentAdventureBossBackgroundKey();
                     bgmName = stageRow.BGM;
 
                     break;
@@ -577,6 +580,11 @@ namespace Nekoyume.Game.Battle
             {
                 _tutorialModels = Widget.Find<Tutorial>().TutorialController.GetModelListByStage(stageId);
             }
+        }
+
+        private string GetCurrentAdventureBossBackgroundKey()
+        {
+            return $"{adventureBossBackgroundKey}{(_adventureBossFloorCount % 3) + 1}";
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -1594,6 +1602,8 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
 #endif
             NcDebug.Log($"[CoCustomEvent] CoBreakthrough Start");
+            _adventureBossFloorCount++;
+
             List<BreakthroughCharacter> createdMonsters = new List<BreakthroughCharacter>();
             yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnBreakthrough(monsters, (createdMonseter)=> {
                 if(createdMonseter.TryGetComponent<BreakthroughCharacter>(out var monster))
@@ -1610,6 +1620,7 @@ namespace Nekoyume.Game.Battle
             }
 
             Widget.Find<UI.Battle>().FloorProgressBar.SetCompleted(floor);
+            LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
             yield return null;
         }
     }

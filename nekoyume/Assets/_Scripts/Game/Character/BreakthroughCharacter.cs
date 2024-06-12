@@ -93,8 +93,8 @@ namespace Nekoyume.Game.Character
             VFXController.instance.Create<AdventureBossSweepAttackVFX>(pos);
 
             StartCoroutine(Dying());
-            transform.DOMove(transform.position + new Vector3(8f, 6f, 0), 1.8f).SetEase(Ease.OutExpo);
-            transform.DOBlendablePunchRotation(new Vector3(360, 360, 360), 1.2f).SetEase(Ease.OutExpo);
+            transform.DOMove(transform.position + new Vector3(16f, 6f, 0), 4.8f).SetEase(Ease.OutExpo);
+            SpineController.transform.DOBlendablePunchRotation(new Vector3(0, 0, 360), 2.2f).SetEase(Ease.OutExpo);
         }
 
         protected virtual IEnumerator Dying()
