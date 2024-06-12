@@ -217,7 +217,7 @@ namespace Nekoyume.UI.Model
 
         public Investor GetCurrentInvestorInfo()
         {
-            if (BountyBoard.Value == null)
+            if (BountyBoard.Value == null || BountyBoard.Value.Investors == null)
             {
                 return null;
             }
