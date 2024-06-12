@@ -167,28 +167,27 @@ namespace Nekoyume.UI
 
             guidedQuest.Hide(true);
             base.Show();
-            guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
-            {
-                switch (_stageType)
-                {
-                    case StageType.HackAndSlash:
-                    case StageType.Mimisbrunnr:
-                    case StageType.AdventureBoss:
-                        guidedQuest.SetWorldQuestToInProgress(stageId);
-                        break;
-                    case StageType.EventDungeon:
-                        guidedQuest.SetEventDungeonStageToInProgress(stageId);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
-                }
-            });
-
             switch (stageType)
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
                 case StageType.EventDungeon:
+                    guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
+                    {
+                        switch (_stageType)
+                        {
+                            case StageType.HackAndSlash:
+                            case StageType.Mimisbrunnr:
+                            case StageType.AdventureBoss:
+                                guidedQuest.SetWorldQuestToInProgress(stageId);
+                                break;
+                            case StageType.EventDungeon:
+                                guidedQuest.SetEventDungeonStageToInProgress(stageId);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
+                        }
+                    });
                     stageText.text =
                         $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
                     stageText.gameObject.SetActive(true);

@@ -16,19 +16,18 @@ namespace Nekoyume.UI
         public Image[] floorsCompleted;
         [SerializeField]
         public VFX[] vfxs;
-
         [SerializeField]
         public TextMeshProUGUI floorText;
         [SerializeField]
-        public TextMeshProUGUI playSelectionText;
+        public Animator textAnimator;
 
         private int _maxFloor;
 
         public void SetData(int currentFloor, int maxFloor)
         {
             _maxFloor = maxFloor;
-            floorText.text = $"{currentFloor}F";
-            playSelectionText.text = L10nManager.Localize("UI_ADVENTURE_BOSS_BATTEL_PLAY_SECTION", currentFloor, maxFloor);
+            floorText.text = $"{currentFloor}";
+            textAnimator.SetTrigger("Show");
             for (int i = 0; i < floors.Length; i++)
             {
                 if (i >= currentFloor - 1 && i < maxFloor)
@@ -50,7 +49,8 @@ namespace Nekoyume.UI
         {
             if (currentFloor - 1 <= floorsCompleted.Length)
             {
-                floorText.text = $"{Mathf.Min(currentFloor + 1, _maxFloor)}F";
+                floorText.text = $"{Mathf.Min(currentFloor + 1, _maxFloor)}";
+                textAnimator.SetTrigger("Show");
                 floorsCompleted[currentFloor - 1].enabled = true;
                 vfxs[currentFloor - 1].Play();
             }
