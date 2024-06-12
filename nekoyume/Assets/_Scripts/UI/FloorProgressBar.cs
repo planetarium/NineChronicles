@@ -11,15 +11,15 @@ namespace Nekoyume.UI
     public class FloorProgressBar : MonoBehaviour
     {
         [SerializeField]
-        public GameObject[] floors;
+        private GameObject[] floors;
         [SerializeField]
-        public Image[] floorsCompleted;
+        private Image[] floorsCompleted;
         [SerializeField]
-        public VFX[] vfxs;
+        private VFX[] vfxs;
         [SerializeField]
-        public TextMeshProUGUI floorText;
+        private TextMeshProUGUI floorText;
         [SerializeField]
-        public Animator textAnimator;
+        private Animator textAnimator;
 
         private int _maxFloor;
 
