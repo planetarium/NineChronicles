@@ -61,8 +61,9 @@ namespace Nekoyume.Game.Character
             Animator.TimeScale = AnimatorTimeScale;
         }
 
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
             _root?.Tick();
         }
 
@@ -72,8 +73,9 @@ namespace Nekoyume.Game.Character
             _speechBubble.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
             foreach (var vfx in _persistingVFXMap.Values)
             {
                 vfx.gameObject.SetActive(false);
