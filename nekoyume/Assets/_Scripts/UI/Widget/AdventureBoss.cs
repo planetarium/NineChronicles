@@ -1,4 +1,3 @@
-using Codice.Utils;
 using DG.Tweening;
 using Nekoyume.UI.Module;
 using Nekoyume.ValueControlComponents.Shader;
@@ -11,16 +10,13 @@ namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
     using Nekoyume.ActionExtensions;
-    using Nekoyume.Blockchain;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
     using Nekoyume.Model.Mail;
-    using Nekoyume.TableData;
     using Nekoyume.UI.Model;
     using System.Linq;
     using UniRx;
-    using UnityEngine.UI;
     using static Nekoyume.Data.AdventureBossGameData;
 
     public class AdventureBoss : Widget

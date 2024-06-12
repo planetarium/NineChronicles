@@ -1,18 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UniRx;
 using Nekoyume.Model.AdventureBoss;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Action.AdventureBoss;
-using System.Linq;
-using Codice.Client.BaseCommands.Merge;
 using Libplanet.Types.Assets;
 using Nekoyume.State;
-using Amazon.Runtime.Internal.Transform;
 using Nekoyume.Helper;
-using System.Text.RegularExpressions;
-using UnityEngine.Windows;
 using static Nekoyume.Data.AdventureBossGameData;
 
 namespace Nekoyume.UI.Model

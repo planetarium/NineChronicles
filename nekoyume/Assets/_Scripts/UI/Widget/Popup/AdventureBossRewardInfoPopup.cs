@@ -1,24 +1,16 @@
-using Cysharp.Threading.Tasks;
-using Nekoyume.UI;
-using Nekoyume.UI.Module;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Data;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
-    using Nekoyume.TableData;
     using System.Linq;
     using TMPro;
     using UniRx;
     using UnityEngine.UI;
-    using static Nekoyume.Model.State.RedeemCodeState;
 
     public class AdventureBossRewardInfoPopup : PopupWidget
     {

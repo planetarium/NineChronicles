@@ -1,17 +1,10 @@
-using Codice.Utils;
-using Cysharp.Threading.Tasks.Triggers;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static Nekoyume.Game.LiveAsset.GameConfig;
 
 namespace Nekoyume.UI
 {
