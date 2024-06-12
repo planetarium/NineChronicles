@@ -168,7 +168,7 @@ namespace Nekoyume.UI
                 ShowForTutorial(false, stageId);
                 return;
             }
-
+            lineEffect.SetActive(false);
             guidedQuest.Hide(true);
             base.Show();
             switch (stageType)

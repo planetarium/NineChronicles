@@ -425,11 +425,14 @@ namespace Nekoyume.Game.Battle
             ClearBattle();
         }
 
+        private AdventureBoss_line_character _adventurebossCharacterEffect;
         private IEnumerator CoBreakThroughStart()
         {
             NcDebug.Log($"CoBreakThroughStart");
             Widget.Find<UI.Battle>().LineEffect.SetActive(true);
             SetSpeed(StageSkipSpeed);
+            _adventurebossCharacterEffect = VFXController.instance.Create<AdventureBoss_line_character>(_stageRunningPlayer.transform.position);
+            FollowCharacterEffect().Forget();
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -445,7 +448,18 @@ namespace Nekoyume.Game.Battle
             {
                 SetSpeed(DefaultAnimationTimeScaleWeight);
             }
+            _adventurebossCharacterEffect.LazyStop();
             yield return new WaitForSeconds(0.5f);
+        }
+
+        private async UniTaskVoid FollowCharacterEffect()
+        {
+            while (_adventurebossCharacterEffect.isActiveAndEnabled)
+            {
+                _adventurebossCharacterEffect.transform.position = _stageRunningPlayer.transform.position;
+                _adventurebossCharacterEffect.transform.position += new Vector3(0.9581f, 0.7f, 0);
+                await UniTask.Yield();
+            }
         }
 
         public void ClearBattle()
