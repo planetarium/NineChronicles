@@ -2402,7 +2402,6 @@ namespace Nekoyume.Game
             {
                 NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
                 CurrentPlanetId = new PlanetId(_commandLineOptions.SelectedPlanetId);
-                return;
             }
 
             NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is null." +

@@ -109,6 +109,9 @@ namespace Nekoyume.Blockchain
         private readonly BlockHashCache _blockHashCache = new(100);
         private MessagePackSerializerOptions _lz4Options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
 
+        // Note : Dict - Cached RPC server hosts that have been tried to connect.
+        private readonly Dictionary<string, bool> cachedRpcServerHosts = new Dictionary<string, bool>();
+        private int cachedRpcServerPort;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void OnRuntimeInitialize()
@@ -162,6 +165,17 @@ namespace Nekoyume.Blockchain
             Action<bool> callback)
         {
             NcDebug.Log($"[RPCAgent] Start initialization: {options.RpcServerHost}:{options.RpcServerPort}");
+
+            cachedRpcServerHosts.Clear();
+            foreach (var rpcServerHost in options.RpcServerHosts)
+            {
+                cachedRpcServerHosts.Add(rpcServerHost, false);
+            }
+
+            cachedRpcServerHosts[options.RpcServerHost] = true;
+            cachedRpcServerPort = options.RpcServerPort;
+            NcDebug.Log($"[RPCAgent] Cached RPC server hosts: \n{string.Join(",\n", cachedRpcServerHosts.Keys)}");
+
             PrivateKey = privateKey;
             _channel ??= GrpcChannelx.ForTarget(
                 new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
@@ -762,11 +776,11 @@ namespace Nekoyume.Blockchain
             ActionRenderHandler.Instance.Stop();
 
             StopAllCoroutines();
-            if (!(_hub is null))
+            if (_hub is not null)
             {
                 await _hub.DisposeAsync();
             }
-            if (!(_channel is null))
+            if (_channel is not null)
             {
                 await _channel?.ShutdownAsync();
             }
@@ -995,9 +1009,24 @@ namespace Nekoyume.Blockchain
             {
                 OnRetryAttempt.OnNext((this, retryCount));
                 await Task.Delay(5000);
+
+                NcDebug.Log($"Trying to connect to new RPC server host: {newRpcServerHost}:{cachedRpcServerPort}");
                 try
                 {
-                    _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                    // Note : Find a new RPC server host to connect that has not been tried yet.
+                    var newRpcServerHost = cachedRpcServerHosts
+                        .Where(pair => !pair.Value).OrderBy(_ => Guid.NewGuid()).FirstOrDefault().Key;
+                    if (newRpcServerHost is null)
+                    {
+                        NcDebug.LogWarning("All RPC server hosts are tried. Retry failed.");
+                        break;
+                    }
+
+                    cachedRpcServerHosts[newRpcServerHost] = true;
+
+                    _channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(newRpcServerHost, cachedRpcServerPort, true));
+                    _hub = await StreamingHubClient.ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                    _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[] { new ClientFilter() });
                 }
                 catch (ObjectDisposedException)
                 {
