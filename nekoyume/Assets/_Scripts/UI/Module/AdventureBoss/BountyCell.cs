@@ -11,7 +11,7 @@ using UnityEngine.UI.Extensions;
 
 namespace Nekoyume
 {
-    public class BountyCell : RectCell<BountyItemData, BountyScrollView.ContextModel>
+    public class BountyCell : RectCell<BountyItemData, BountyViewScroll.ContextModel>
     {
         [SerializeField] private TextMeshProUGUI rankText;
         [SerializeField] private TextMeshProUGUI nameText;

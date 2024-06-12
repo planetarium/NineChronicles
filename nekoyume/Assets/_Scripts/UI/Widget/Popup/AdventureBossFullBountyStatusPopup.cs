@@ -10,7 +10,7 @@ namespace Nekoyume.UI
     using UniRx;
     public class AdventureBossFullBountyStatusPopup : PopupWidget
     {
-        [SerializeField] private BountyScrollView scrollView;
+        [SerializeField] private BountyViewScroll scrollView;
         [SerializeField] private BountyCell myBountyCell;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
