@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using System.Linq;
 using Nekoyume.Game.VFX.Skill;
-using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
 using Spine.Unity;
 using UnityEngine;
@@ -26,6 +24,8 @@ namespace Nekoyume.Game
 
         [SerializeField]
         private ParticleSystem frostBiteParticle;
+        
+        private bool _isPlaying;
 
         protected void Awake()
         {
@@ -36,6 +36,7 @@ namespace Nekoyume.Game
         {
             base.OnDisable();
             summonedSpine.gameObject.SetActive(false);
+            _isPlaying = false;
         }
 
         protected override void AddEventToOwner()
@@ -106,7 +107,7 @@ namespace Nekoyume.Game
                 }
                 
                 base.ProcessBuffEnd(buffId);
-                StartCoroutine(DisappearSummoner());
+                StartCoroutine(OnBuffEnd());
             }, invokeOnce: true);
         }
 
@@ -121,16 +122,6 @@ namespace Nekoyume.Game
             summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
         }
 
-        private IEnumerator DisappearSummoner()
-        {
-            var disappearTrack = summonedSpine.AnimationState.SetAnimation(0, DisappearAnimation, false);
-            while (!disappearTrack.IsComplete)
-            {
-                yield return null;
-            }
-            summonedSpine.gameObject.SetActive(false);
-        }
-
         private IEnumerator OnBuffCast(BuffCastingVFX buffCastingVFX)
         {
             // 버프 연출과 동시에 수행하기 위해 대기하지 않음
@@ -139,6 +130,19 @@ namespace Nekoyume.Game
             iceShieldParticle.Play();
             summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
+            
+            _isPlaying = true;
+        }
+
+        private IEnumerator OnBuffEnd()
+        {
+            var disappearTrack = summonedSpine.AnimationState.SetAnimation(0, DisappearAnimation, false);
+            while (!disappearTrack.IsComplete)
+            {
+                yield return null;
+            }
+            summonedSpine.gameObject.SetActive(false);
+            _isPlaying = false;
         }
 
         private IEnumerator OnFrostBite()
@@ -149,7 +153,11 @@ namespace Nekoyume.Game
             {
                 yield return null;
             }
-            summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
+
+            if (_isPlaying)
+            {
+                summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
+            }
         }
     }
 }
