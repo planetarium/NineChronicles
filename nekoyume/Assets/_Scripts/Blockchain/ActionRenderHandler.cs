@@ -50,10 +50,6 @@ namespace Nekoyume.Blockchain
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Battle.AdventureBoss;
     using Nekoyume.Data;
-    using Nekoyume.Model.AdventureBoss;
-    using Nekoyume.Model.Stat;
-    using Nekoyume.TableData;
-    using Nekoyume.TableData.AdventureBoss;
     using UI.Scroller;
     using UniRx;
 

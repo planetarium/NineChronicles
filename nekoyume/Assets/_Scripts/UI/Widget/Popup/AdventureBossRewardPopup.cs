@@ -4,12 +4,10 @@ using Nekoyume.Blockchain;
 using Nekoyume.Model.AdventureBoss;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using System.Threading;
 using System;
 
 namespace Nekoyume.UI

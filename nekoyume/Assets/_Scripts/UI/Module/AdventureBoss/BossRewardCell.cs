@@ -1,10 +1,4 @@
-using Codice.CM.WorkspaceServer;
-using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Helper;
-using Nekoyume.Model.AdventureBoss;
-using Nekoyume.TableData;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;

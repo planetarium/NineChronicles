@@ -1,13 +1,6 @@
-using Nekoyume.EnumType;
-using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI
 {
