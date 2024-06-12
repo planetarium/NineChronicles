@@ -222,7 +222,8 @@ namespace Nekoyume.UI.Model
                 return null;
             }
 
-            return BountyBoard.Value.Investors.Find(i => i.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address);
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            return BountyBoard.Value.Investors.Find(i => i.AvatarAddress == avatarAddress);
         }
 
         public FungibleAssetValue GetCurrentBountyPrice()
