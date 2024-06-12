@@ -269,12 +269,14 @@ namespace Nekoyume.UI.Model
                                         false,
                                         out var ncgReward);
                 }
-
-                myReward = AdventureBossHelper.CalculateWantedReward(myReward,
-                                    BountyBoard.Value,
-                                    Game.Game.instance.States.CurrentAvatarState.address,
-                                    false,
-                                    out var wantedReward);
+                else
+                {
+                    myReward = AdventureBossHelper.CalculateWantedReward(myReward,
+                                        BountyBoard.Value,
+                                        Game.Game.instance.States.CurrentAvatarState.address,
+                                        false,
+                                        out var wantedReward);
+                }
             }
             catch (System.Exception e)
             {
