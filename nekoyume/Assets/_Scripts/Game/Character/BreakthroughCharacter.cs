@@ -81,7 +81,17 @@ namespace Nekoyume.Game.Character
             }
             IsTriggerd = true;
             NcDebug.Log($"[BreakthroughCharacter] OnTriggered {other.name}");
-            Prologue.PopupDmg(14352, gameObject, false, Game.instance.Stage.StageSkipCritical, ElementalType.Fire, false);
+
+            var pos = transform.position;
+            pos.x -= 0.2f;
+            pos.y += 0.32f;
+            if (Game.instance.Stage.StageSkipCritical)
+            {
+                ActionCamera.instance.Shake();
+            }
+            AudioController.PlayDamagedCritical();
+            VFXController.instance.Create<AdventureBossSweepAttackVFX>(pos);
+
             StartCoroutine(Dying());
             transform.DOMove(transform.position + new Vector3(8f, 6f, 0), 1.8f).SetEase(Ease.OutExpo);
             transform.DOBlendablePunchRotation(new Vector3(360, 360, 360), 1.2f).SetEase(Ease.OutExpo);
