@@ -836,5 +836,14 @@ namespace Nekoyume.Game.Character
             _root = null;
             _runningAction = null;
         }
+
+        public override void SetSpineColor(Color color, int propertyID = -1)
+        {
+            base.SetSpineColor(color, propertyID);
+            if (appearance != null)
+            {
+                appearance.SetSpineColor(color, propertyID);
+            }
+        }
     }
 }
