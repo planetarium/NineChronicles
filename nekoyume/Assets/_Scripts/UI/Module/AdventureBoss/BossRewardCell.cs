@@ -14,15 +14,32 @@ namespace Nekoyume
 {
     public class BossRewardCell : MonoBehaviour
     {
-        [SerializeField] private Image bossImg;
+        [SerializeField] private Transform bossImgRoot;
         [SerializeField] private BaseItemView confirmRewardItemView;
         [SerializeField] private BaseItemView[] randomRewardItemViews;
 
+        private int _bossId;
+        private GameObject _bossImage;
+        private void SetBossData(int bossId)
+        {
+            if (_bossId != bossId)
+            {
+                if (_bossImage != null)
+                {
+                    DestroyImmediate(_bossImage);
+                }
+
+                _bossId = bossId;
+                _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId),
+                    bossImgRoot);
+                _bossImage.transform.localPosition = Vector3.zero;
+            }
+        }
+
         public void SetData(AdventureBossReward adventureBossReward)
         {
-            bossImg.sprite = SpriteHelper.GetBigCharacterIcon(adventureBossReward.BossId);
-            bossImg.SetNativeSize();
-            if(adventureBossReward.wantedReward.FixedRewardItemIdDict.Count > 0)
+            SetBossData(adventureBossReward.BossId);
+            if (adventureBossReward.wantedReward.FixedRewardItemIdDict.Count > 0)
             {
                 confirmRewardItemView.ItemViewSetItemData(adventureBossReward.wantedReward.FixedRewardItemIdDict.First().Key,0);
             }

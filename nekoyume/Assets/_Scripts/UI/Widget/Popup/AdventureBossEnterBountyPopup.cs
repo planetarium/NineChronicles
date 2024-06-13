@@ -53,7 +53,7 @@ namespace Nekoyume.UI
         private Color bountyRedColor;
 
         [SerializeField]
-        private Image bossImg;
+        private Transform bossImgRoot;
         [SerializeField]
         private TextMeshProUGUI bossName;
         [SerializeField]
@@ -69,6 +69,8 @@ namespace Nekoyume.UI
 
         private Color _bountyDefaultColor;
         private readonly List<System.IDisposable> _disposablesByEnable = new();
+        private GameObject _bossImage;
+        private int _bossId;
 
         protected override void Awake()
         {
@@ -142,7 +144,8 @@ namespace Nekoyume.UI
             totalBountyPrice.text = "-";
             bountyCount.text = "-";
             ClearBountyInputField();
-            switch (Game.Game.instance.AdventureBossData.CurrentState.Value)
+            var adventureBossData = Game.Game.instance.AdventureBossData;
+            switch (adventureBossData.CurrentState.Value)
             {
                 case Model.AdventureBossData.AdventureBossSeasonState.Ready:
                     bountyedPrice.text = "0";
@@ -179,7 +182,7 @@ namespace Nekoyume.UI
                     {
                         item.SetActive(true);
                     }
-                    var currentBountyInfo = Game.Game.instance.AdventureBossData.GetCurrentInvestorInfo();
+                    var currentBountyInfo = adventureBossData.GetCurrentInvestorInfo();
                     if (currentBountyInfo != null)
                     {
                         bountyedPrice.text = currentBountyInfo.Price.ToCurrencyNotation();
@@ -190,8 +193,8 @@ namespace Nekoyume.UI
                         bountyedPrice.text = "0";
                         bountyCount.text = $"({currentBountyInfo.Count}/3)";
                     }
-                    totalBountyPrice.text = Game.Game.instance.AdventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
-                    var bountyRewards = Game.Game.instance.AdventureBossData.GetCurrentBountyRewards();
+                    totalBountyPrice.text = adventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
+                    var bountyRewards = adventureBossData.GetCurrentBountyRewards();
                     int i = 0;
                     foreach (var item in bountyRewards.ItemReward)
                     {
@@ -205,8 +208,8 @@ namespace Nekoyume.UI
                             i++;
                         }
                     }
-                    bossName.text = L10nManager.LocalizeCharacterName(Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId);
-                    bossImg.sprite = SpriteHelper.GetBigCharacterIcon(Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId);
+                    bossName.text = L10nManager.LocalizeCharacterName(adventureBossData.SeasonInfo.Value.BossId);
+                    SetBossData(adventureBossData.SeasonInfo.Value.BossId);
                     break;
                 case Model.AdventureBossData.AdventureBossSeasonState.None:
                 case Model.AdventureBossData.AdventureBossSeasonState.End:
@@ -218,7 +221,7 @@ namespace Nekoyume.UI
 
             base.Show(ignoreShowAnimation);
 
-            Game.Game.instance.AdventureBossData.CurrentState.Subscribe(state =>
+            adventureBossData.CurrentState.Subscribe(state =>
             {
                 if(state == Model.AdventureBossData.AdventureBossSeasonState.None ||
                     state == Model.AdventureBossData.AdventureBossSeasonState.End)
@@ -226,6 +229,22 @@ namespace Nekoyume.UI
                     Close();
                 }
             }).AddTo(_disposablesByEnable);
+        }
+
+        private void SetBossData(int bossId)
+        {
+            if (_bossId != bossId)
+            {
+                if (_bossImage != null)
+                {
+                    DestroyImmediate(_bossImage);
+                }
+
+                _bossId = bossId;
+                _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconBody(_bossId),
+                    bossImgRoot);
+                _bossImage.transform.localPosition = Vector3.zero;
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
