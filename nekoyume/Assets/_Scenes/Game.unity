@@ -3974,6 +3974,13 @@ MonoBehaviour:
   - Prefab: {fileID: 1208442540372552, guid: 48309f277de97c14abb3ea117a7f63d3, type: 3}
     InitCount: 1
     AddCount: 1
+  - Prefab: {fileID: 1616911531835682, guid: 4d301f71b3ee3d64badb2caac35faade, type: 3}
+    InitCount: 3
+    AddCount: 1
+  - Prefab: {fileID: 1586996301493208614, guid: 6a9aa136e31c4de48a765b9ed36ee7ea,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
 --- !u!114 &1333831686
 MonoBehaviour:
   m_ObjectHideFlags: 0

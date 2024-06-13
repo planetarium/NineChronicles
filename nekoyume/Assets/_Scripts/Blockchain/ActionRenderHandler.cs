@@ -3798,6 +3798,7 @@ namespace Nekoyume.Blockchain
                 AdventureBossSimulator simulator = null;
                 var score = 0;
                 var rewardList = new List<AdventureBossGameData.ExploreReward>();
+                var firstRewardList = new List<AdventureBossGameData.ExploreReward>();
 
                 for (var fl = firstFloor; fl <= maxFloor; fl++)
                 {
@@ -3854,7 +3855,7 @@ namespace Nekoyume.Blockchain
                         }
 
                         // Explore clear is always first because we explore from last failed floor.
-                        rewardList.Add(selector.Select(1).First());
+                        firstRewardList.Add(selector.Select(1).First());
 
                         selector.Clear();
                         foreach (var reward in floorReward.Reward)
@@ -3881,6 +3882,11 @@ namespace Nekoyume.Blockchain
                 //AdventureBoss에서는 StageID를 시작층 WaveCount를 마지막층 정보로 사용한다.
                 log.stageId = firstFloor;
                 log.waveCount = lastFloor;
+                log.score = score;
+                var totalApPotionUsed = (maxFloor - firstFloor + 1) * Action.AdventureBoss.ExploreAdventureBoss.UnitApPotion;
+                var apPotionUsed = ((log.IsClear ? lastFloor : lastFloor - 1) - firstFloor + 1) * Action.AdventureBoss.ExploreAdventureBoss.UnitApPotion;
+
+                Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, rewardList, firstRewardList);
 
                 BattleRenderer.Instance.PrepareStage(log);
             });
@@ -3997,6 +4003,11 @@ namespace Nekoyume.Blockchain
                 //AdventureBoss에서는 StageID를 시작층 WaveCount를 마지막층 정보로 사용한다.
                 log.stageId = 1;
                 log.waveCount = exploreInfo.Floor;
+                log.score = point;
+                var totalApPotionUsed = maxFloor * Action.AdventureBoss.SweepAdventureBoss.UnitApPotion;
+
+                Widget.Find<AdventureBossResultPopup>().SetData(totalApPotionUsed, totalApPotionUsed, rewardList);
+
                 BattleRenderer.Instance.PrepareStage(log);
             });
         }

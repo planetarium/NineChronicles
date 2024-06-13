@@ -40,6 +40,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI.Extensions;
 using CharacterBase = Nekoyume.Model.CharacterBase;
 using Enemy = Nekoyume.Model.Enemy;
 using EnemyPlayer = Nekoyume.Model.EnemyPlayer;
@@ -88,6 +89,9 @@ namespace Nekoyume.Game.Battle
         private Coroutine _positionCheckCoroutine;
         private List<int> prevFood;
         private List<BattleTutorialController.BattleTutorialModel> _tutorialModels = new();
+        private int _adventureBossFloorCount = 0;
+
+        private const string adventureBossBackgroundKey = "AdventureBoss_0";
 
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
@@ -421,17 +425,22 @@ namespace Nekoyume.Game.Battle
             ClearBattle();
         }
 
+        private AdventureBoss_line_character _adventurebossCharacterEffect;
         private IEnumerator CoBreakThroughStart()
         {
             NcDebug.Log($"CoBreakThroughStart");
+            Widget.Find<UI.Battle>().LineEffect.SetActive(true);
             SetSpeed(StageSkipSpeed);
+            _adventurebossCharacterEffect = VFXController.instance.Create<AdventureBoss_line_character>(_stageRunningPlayer.transform.position);
+            FollowCharacterEffect().Forget();
             yield return new WaitForSeconds(0.5f);
         }
 
         private IEnumerator CoBreakThroughEnd()
         {
             NcDebug.Log($"CoBreakThroughEnd");
-            if(PlayerPrefs.GetInt(UI.Battle.BattleAccelToggleValueKey, 0) != 0)
+            Widget.Find<UI.Battle>().LineEffect.SetActive(false);
+            if (PlayerPrefs.GetInt(UI.Battle.BattleAccelToggleValueKey, 0) != 0)
             {
                 SetSpeed(AcceleratedAnimationTimeScaleWeight);
             }
@@ -439,7 +448,18 @@ namespace Nekoyume.Game.Battle
             {
                 SetSpeed(DefaultAnimationTimeScaleWeight);
             }
+            _adventurebossCharacterEffect.LazyStop();
             yield return new WaitForSeconds(0.5f);
+        }
+
+        private async UniTaskVoid FollowCharacterEffect()
+        {
+            while (_adventurebossCharacterEffect.isActiveAndEnabled)
+            {
+                _adventurebossCharacterEffect.transform.position = _stageRunningPlayer.transform.position;
+                _adventurebossCharacterEffect.transform.position += new Vector3(0.9581f, 0.7f, 0);
+                await UniTask.Yield();
+            }
         }
 
         public void ClearBattle()
@@ -526,8 +546,8 @@ namespace Nekoyume.Game.Battle
                     {
                         yield break;
                     }
-
-                    zone = stageRow.Background;
+                    _adventureBossFloorCount = 0;
+                    zone = GetCurrentAdventureBossBackgroundKey();
                     bgmName = stageRow.BGM;
 
                     break;
@@ -574,6 +594,11 @@ namespace Nekoyume.Game.Battle
             {
                 _tutorialModels = Widget.Find<Tutorial>().TutorialController.GetModelListByStage(stageId);
             }
+        }
+
+        private string GetCurrentAdventureBossBackgroundKey()
+        {
+            return $"{adventureBossBackgroundKey}{(_adventureBossFloorCount % 3) + 1}";
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -731,7 +756,8 @@ namespace Nekoyume.Game.Battle
                     break;
                 }
                 case StageType.AdventureBoss:
-                    Widget.Find<AdventureBossResultPopup>().Show();
+                    var lastClearFloor = log.IsClear ? log.waveCount : log.waveCount - 1;
+                    Widget.Find<AdventureBossResultPopup>().Show(lastClearFloor, log.score);
                     yield break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -1591,6 +1617,8 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
 #endif
             NcDebug.Log($"[CoCustomEvent] CoBreakthrough Start");
+            _adventureBossFloorCount++;
+
             List<BreakthroughCharacter> createdMonsters = new List<BreakthroughCharacter>();
             yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnBreakthrough(monsters, (createdMonseter)=> {
                 if(createdMonseter.TryGetComponent<BreakthroughCharacter>(out var monster))
@@ -1607,6 +1635,7 @@ namespace Nekoyume.Game.Battle
             }
 
             Widget.Find<UI.Battle>().FloorProgressBar.SetCompleted(floor);
+            LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
             yield return null;
         }
     }

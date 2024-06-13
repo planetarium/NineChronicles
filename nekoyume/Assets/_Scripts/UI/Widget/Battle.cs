@@ -54,12 +54,16 @@ namespace Nekoyume.UI
         [SerializeField]
         private ComboText comboText;
 
+        [SerializeField]
+        private GameObject lineEffect;
+
         private StageType _stageType;
 
         public BossStatus BossStatus => bossStatus;
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
         public StageProgressBar StageProgressBar => stageProgressBar;
         public FloorProgressBar FloorProgressBar => floorProgressBar;
+        public GameObject LineEffect => lineEffect;
         public ComboText ComboText => comboText;
         public const int RequiredStageForExitButton = 10;
         public const int RequiredStageForAccelButton = 3;
@@ -164,7 +168,7 @@ namespace Nekoyume.UI
                 ShowForTutorial(false, stageId);
                 return;
             }
-
+            lineEffect.SetActive(false);
             guidedQuest.Hide(true);
             base.Show();
             switch (stageType)
