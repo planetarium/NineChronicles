@@ -12,7 +12,9 @@ namespace Nekoyume
         [field:SerializeField] public List<BuffVFXData> DataList { get; set; }
         [field:SerializeField] public List<BuffVFXOverrideData> OverrideDataList { get; set; }
         [field:SerializeField] public List<ActionBuffVFXOverrideData> ActionBuffVFXOverrideDataList { get; set; }
-        [field:SerializeField] public List<BuffPosOverrideData> BuffPosOverrideDataList { get;  set; }
+        
+        [field:SerializeField] public List<BuffPosOverrideData>       BuffPosOverrideDataList       { get; set; }
+        [field:SerializeField] public List<ActionBuffPosOverrideData> ActionBuffPosOverrideDataList { get; set; }
         
         [field:SerializeField] public Sprite     FallbackIcon       { get; set; }
         [field:SerializeField] public GameObject FallbackCastingVFX { get; set; }
@@ -53,6 +55,14 @@ namespace Nekoyume
         public class BuffPosOverrideData
         {
             public int Id;
+            public bool IsCasting;
+            public Vector3 Position;
+        }
+        
+        [Serializable]
+        public class ActionBuffPosOverrideData
+        {
+            public ActionBuffType Type;
             public bool IsCasting;
             public Vector3 Position;
         }

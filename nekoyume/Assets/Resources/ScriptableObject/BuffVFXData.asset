@@ -209,21 +209,16 @@ MonoBehaviour:
     BuffVFX: {fileID: 8503561367185379965, guid: 756b29425ce20a848ba8a8686b086942,
       type: 3}
   <BuffPosOverrideDataList>k__BackingField:
-  - Id: 708000
-    IsCasting: 0
-    Position: {x: 0, y: 0, z: 0}
-  - Id: 708001
-    IsCasting: 0
-    Position: {x: 0, y: 0, z: 0}
-  - Id: 708002
-    IsCasting: 0
-    Position: {x: 0, y: 0, z: 0}
   - Id: 709000
     IsCasting: 0
     Position: {x: 0, y: 1.1, z: 0}
   - Id: 709000
     IsCasting: 1
     Position: {x: 0, y: 1.1, z: 0}
+  <ActionBuffPosOverrideDataList>k__BackingField:
+  - Type: 5
+    IsCasting: 0
+    Position: {x: 0, y: 0, z: 0}
   <FallbackIcon>k__BackingField: {fileID: 21300000, guid: 39d46914ec312d8469b6bb4740099db4,
     type: 3}
   <FallbackCastingVFX>k__BackingField: {fileID: 2327172370517842916, guid: 8e07f2c1b187b68428f03f03327fa497,
