@@ -54,9 +54,11 @@ var
 function GenerateUUID(): String;
 var
   UUIDLib: Variant;
+  Guid: string;
 begin
   UUIDLib := CreateOleObject('Scriptlet.TypeLib');
-  Result := Copy(UUIDLib.GUID(), 2, 36);
+  Guid := UUIDLib.GUID;
+  Result := Copy(Guid, 2, 36);;
 end;
 
 function UseUUID(): String;
