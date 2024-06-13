@@ -49,6 +49,9 @@ namespace Nekoyume.UI
         private StageProgressBar stageProgressBar;
 
         [SerializeField]
+        private FloorProgressBar floorProgressBar;
+
+        [SerializeField]
         private ComboText comboText;
 
         private StageType _stageType;
@@ -56,6 +59,7 @@ namespace Nekoyume.UI
         public BossStatus BossStatus => bossStatus;
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
         public StageProgressBar StageProgressBar => stageProgressBar;
+        public FloorProgressBar FloorProgressBar => floorProgressBar;
         public ComboText ComboText => comboText;
         public const int RequiredStageForExitButton = 10;
         public const int RequiredStageForAccelButton = 3;
@@ -163,27 +167,43 @@ namespace Nekoyume.UI
 
             guidedQuest.Hide(true);
             base.Show();
-            guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
+            switch (stageType)
             {
-                switch (_stageType)
-                {
-                    case StageType.HackAndSlash:
-                    case StageType.Mimisbrunnr:
-                    case StageType.AdventureBoss:
-                        guidedQuest.SetWorldQuestToInProgress(stageId);
-                        break;
-                    case StageType.EventDungeon:
-                        guidedQuest.SetEventDungeonStageToInProgress(stageId);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
-                }
-            });
+                case StageType.HackAndSlash:
+                case StageType.Mimisbrunnr:
+                case StageType.EventDungeon:
+                    guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
+                    {
+                        switch (_stageType)
+                        {
+                            case StageType.HackAndSlash:
+                            case StageType.Mimisbrunnr:
+                            case StageType.AdventureBoss:
+                                guidedQuest.SetWorldQuestToInProgress(stageId);
+                                break;
+                            case StageType.EventDungeon:
+                                guidedQuest.SetEventDungeonStageToInProgress(stageId);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
+                        }
+                    });
+                    stageText.text =
+                        $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
+                    stageText.gameObject.SetActive(true);
+                    floorProgressBar.gameObject.SetActive(false);
+                    stageProgressBar.gameObject.SetActive(true);
+                    stageProgressBar.Show();
+                    break;
+                case StageType.AdventureBoss:
+                    stageProgressBar.gameObject.SetActive(false);
+                    floorProgressBar.gameObject.SetActive(true);
+                    Find<HeaderMenuStatic>().Close(true);
+                    break;
+                default:
+                    break;
+            }
 
-            stageText.text =
-                $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
-            stageText.gameObject.SetActive(true);
-            stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
             comboText.Close();
