@@ -110,8 +110,8 @@ namespace Nekoyume.UI
                 challengeFloors[i].SetActive(i >= currentFloor && i < maxFloor);
             }
 
-            _breakThroughApPotionCost = currentFloor * ExploreAdventureBoss.UnitApPotion;
-            _challengeApPotionCost = (maxFloor - currentFloor) * SweepAdventureBoss.UnitApPotion;
+            _breakThroughApPotionCost = currentFloor * SweepAdventureBoss.UnitApPotion;
+            _challengeApPotionCost = (maxFloor - currentFloor) * ExploreAdventureBoss.UnitApPotion;
             var currentApPotionCount =
                 Game.Game.instance.States.CurrentAvatarState.inventory.GetMaterialCount(
                     (int)CostType.ApPotion);

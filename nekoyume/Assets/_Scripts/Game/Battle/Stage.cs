@@ -546,7 +546,7 @@ namespace Nekoyume.Game.Battle
                     {
                         yield break;
                     }
-
+                    _adventureBossFloorCount = 0;
                     zone = GetCurrentAdventureBossBackgroundKey();
                     bgmName = stageRow.BGM;
 
@@ -756,7 +756,8 @@ namespace Nekoyume.Game.Battle
                     break;
                 }
                 case StageType.AdventureBoss:
-                    Widget.Find<AdventureBossResultPopup>().Show();
+                    var lastClearFloor = log.IsClear ? log.waveCount : log.waveCount - 1;
+                    Widget.Find<AdventureBossResultPopup>().Show(lastClearFloor, log.score);
                     yield break;
                 default:
                     throw new ArgumentOutOfRangeException();
