@@ -29,7 +29,7 @@ namespace Nekoyume.UI
                     var data = new BountyItemData
                     {
                         Rank = i + 1,
-                        Name = x.GetParsedName(),
+                        Name = x.Name,
                         Count = x.Count,
                         Ncg = x.Price.MajorUnit,
                         Bonus = i == 0 ? 1.5f : 0

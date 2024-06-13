@@ -32,13 +32,30 @@ namespace Nekoyume.UI
         [SerializeField] private FloorRewardCell[] floorRewardCells;
 
         [Header("Operational Contents")]
-        [SerializeField] private Image currentSeasonBossImg;
+        [SerializeField] private Transform bossImgRoot;
         [SerializeField] private TextMeshProUGUI currentSeasonBossName;
         [SerializeField] private BaseItemView[] currentSeasonBossRewardViews;
         [SerializeField] private BossRewardCell[] bossRewardCells;
 
         private readonly List<System.IDisposable> _disposablesByEnable = new();
         private long _seasonEndBlock;
+        private int _bossId;
+        private GameObject _bossImage;
+        private void SetBossData(int bossId)
+        {
+            if (_bossId != bossId)
+            {
+                if (_bossImage != null)
+                {
+                    DestroyImmediate(_bossImage);
+                }
+
+                _bossId = bossId;
+                _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId),
+                    bossImgRoot);
+                _bossImage.transform.localPosition = Vector3.zero;
+            }
+        }
 
         override protected void Awake()
         {
@@ -65,8 +82,7 @@ namespace Nekoyume.UI
                 if(Game.Game.instance.AdventureBossData.SeasonInfo.Value != null)
                 {
                     var bossId = Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId;
-                    currentSeasonBossImg.sprite = SpriteHelper.GetBigCharacterIcon(bossId);
-                    currentSeasonBossImg.SetNativeSize();
+                    SetBossData(bossId);
                     currentSeasonBossName.text = L10nManager.LocalizeCharacterName(bossId);
                 }
                 if(Game.Game.instance.AdventureBossData.BountyBoard.Value != null)

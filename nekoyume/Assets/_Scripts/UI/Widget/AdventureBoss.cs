@@ -333,7 +333,7 @@ namespace Nekoyume.UI
                 if (topInvestorList.Count() > i)
                 {
                     investorUserNames[i].transform.parent.parent.gameObject.SetActive(true);
-                    investorUserNames[i].text = topInvestorList[i].GetParsedName();
+                    investorUserNames[i].text = topInvestorList[i].Name;
                     investorBountyCounts[i].text =
                         $"({topInvestorList[i].Count}/{Investor.MaxInvestmentCount})";
                     investorBountyPrice[i].text =
