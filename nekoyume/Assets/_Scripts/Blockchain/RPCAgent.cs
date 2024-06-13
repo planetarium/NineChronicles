@@ -109,8 +109,7 @@ namespace Nekoyume.Blockchain
         private readonly BlockHashCache _blockHashCache = new(100);
         private MessagePackSerializerOptions _lz4Options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
 
-        // Note : Dict - Cached RPC server hosts that have been tried to connect.
-        private readonly Dictionary<string, bool> cachedRpcServerHosts = new Dictionary<string, bool>();
+        private readonly List<string> cachedRpcServerHosts = new List<string>();
         private int cachedRpcServerPort;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -169,12 +168,11 @@ namespace Nekoyume.Blockchain
             cachedRpcServerHosts.Clear();
             foreach (var rpcServerHost in options.RpcServerHosts)
             {
-                cachedRpcServerHosts.Add(rpcServerHost, false);
+                cachedRpcServerHosts.Add(rpcServerHost);
             }
 
-            cachedRpcServerHosts[options.RpcServerHost] = true;
             cachedRpcServerPort = options.RpcServerPort;
-            NcDebug.Log($"[RPCAgent] Cached RPC server hosts: \n{string.Join(",\n", cachedRpcServerHosts.Keys)}");
+            NcDebug.Log($"[RPCAgent] Cached RPC server hosts: \n{string.Join(",\n", cachedRpcServerHosts)}");
 
             PrivateKey = privateKey;
             _channel ??= GrpcChannelx.ForTarget(
@@ -1004,26 +1002,26 @@ namespace Nekoyume.Blockchain
         private async void RetryRpc()
         {
             OnRetryStarted.OnNext(this);
+            // Dict to store tried RPC server hosts. (host, tried)
+            var triedRPCHost = cachedRpcServerHosts.ToDictionary(key => key, value => false);
             var retryCount = RpcConnectionRetryCount;
             while (retryCount > 0)
             {
+                // Find a new RPC server host to connect that has not been tried yet.
+                var newRpcServerHost = triedRPCHost
+                    .Where(pair => !pair.Value).OrderBy(_ => Guid.NewGuid()).FirstOrDefault().Key;
+                if (newRpcServerHost is null)
+                {
+                    NcDebug.LogWarning("All RPC server hosts are tried. Retry failed.");
+                    break;
+                }
+
                 OnRetryAttempt.OnNext((this, retryCount));
                 await Task.Delay(5000);
 
                 NcDebug.Log($"Trying to connect to new RPC server host: {newRpcServerHost}:{cachedRpcServerPort}");
                 try
                 {
-                    // Note : Find a new RPC server host to connect that has not been tried yet.
-                    var newRpcServerHost = cachedRpcServerHosts
-                        .Where(pair => !pair.Value).OrderBy(_ => Guid.NewGuid()).FirstOrDefault().Key;
-                    if (newRpcServerHost is null)
-                    {
-                        NcDebug.LogWarning("All RPC server hosts are tried. Retry failed.");
-                        break;
-                    }
-
-                    cachedRpcServerHosts[newRpcServerHost] = true;
-
                     _channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(newRpcServerHost, cachedRpcServerPort, true));
                     _hub = await StreamingHubClient.ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
                     _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[] { new ClientFilter() });
@@ -1032,6 +1030,7 @@ namespace Nekoyume.Blockchain
                 {
                     break;
                 }
+
                 try
                 {
                     NcDebug.Log($"Trying to join hub...");
@@ -1040,11 +1039,13 @@ namespace Nekoyume.Blockchain
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
                     OnRetryEnded.OnNext(this);
+
                     return;
                 }
                 catch (TimeoutException toe)
                 {
                     NcDebug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
+                    triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                 }
                 catch (AggregateException ae)
@@ -1052,6 +1053,7 @@ namespace Nekoyume.Blockchain
                     if (ae.InnerException is RpcException re)
                     {
                         NcDebug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                        triedRPCHost[newRpcServerHost] = true;
                         retryCount--;
                     }
                     else
@@ -1063,6 +1065,7 @@ namespace Nekoyume.Blockchain
                 catch (ObjectDisposedException ode)
                 {
                     NcDebug.LogWarning($"ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
+                    triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                 }
                 catch (Exception e)
