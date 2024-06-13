@@ -620,37 +620,75 @@ namespace Nekoyume.UI
 
             if (data.Item.Value.ItemBase.Value is not null)
             {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
                 var itemBase = data.Item.Value.ItemBase.Value;
-                if (itemBase is not ITradableItem tradableItem)
+                var type = itemBase.ItemSubType is ItemSubType.Hourglass or ItemSubType.ApStone
+                    ? ProductType.Fungible
+                    : ProductType.NonFungible;
+                var count = data.Count.Value;
+
+                List<ITradableItem> tradableItems;
+                FungibleAssetValue price;
+                int itemCount;
+                if (type == ProductType.NonFungible && count > 1)  // reference: RegisterInfo.Validate()
                 {
-                    return;
+                    var consumablesInventory =
+                        States.Instance.CurrentAvatarState.inventory.Consumables.ToArray();
+
+                    var id = itemBase.Id;
+                    // If the item is consumable, it need to sell the same item multiple times.
+                    var consumablesToSell = new List<Consumable>();
+                    for (int i = 0; i < count; i++)
+                    {
+                        var item = consumablesInventory.FirstOrDefault(consumable =>
+                            consumable.Id == id && !consumablesToSell.Contains(consumable));
+                        if (item != null)
+                        {
+                            consumablesToSell.Add(item);
+                        }
+                    }
+
+                    tradableItems = consumablesToSell.Cast<ITradableItem>().ToList();
+                    price = data.UnitPrice.Value;
+                    itemCount = 1;
+                }
+                else
+                {
+                    if (itemBase is not ITradableItem tradableItem)
+                    {
+                        return;
+                    }
+
+                    tradableItems = new List<ITradableItem> { tradableItem };
+                    price = data.Price.Value;
+                    itemCount = count;
                 }
 
-                var count = data.Count.Value;
-                var itemSubType = itemBase.ItemSubType;
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-
-                var info = new RegisterInfo
-                {
-                    AvatarAddress = avatarAddress,
-                    Price = data.Price.Value,
-                    TradableId = tradableItem.TradableId,
-                    ItemCount = count,
-                    Type = itemSubType is ItemSubType.Hourglass or ItemSubType.ApStone
-                        ? ProductType.Fungible
-                        : ProductType.NonFungible
-                };
+                var infos = tradableItems
+                    .Select(tradableItem => new RegisterInfo
+                    {
+                        AvatarAddress = avatarAddress,
+                        Price = price,
+                        TradableId = tradableItem.TradableId,
+                        ItemCount = itemCount,
+                        Type = type,
+                    }).Cast<IRegisterInfo>().ToList();
 
                 Game.Game.instance.ActionManager
-                    .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
-                if (tradableItem is not TradableMaterial)
+                    .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value).Subscribe();
+
+                foreach (var tradableItem in tradableItems)
                 {
-                    LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId,
-                        tradableItem.RequiredBlockIndex,
-                        count);
+                    if (tradableItem is not TradableMaterial)
+                    {
+                        LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId,
+                            tradableItem.RequiredBlockIndex,
+                            itemCount);
+                    }
+
+                    LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
                 }
 
-                LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
                 PostRegisterProduct(itemBase.GetLocalizedName());
             }
             else
@@ -666,9 +704,10 @@ namespace Nekoyume.UI
                     Asset = fungibleAsset,
                     Type = ProductType.FungibleAssetValue
                 };
+                var infos = new List<IRegisterInfo> { info };
 
                 Game.Game.instance.ActionManager
-                    .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
+                    .RegisterProduct(avatarAddress, infos, data.ChargeAp.Value).Subscribe();
                 var preBalance = States.Instance.CurrentAvatarBalances[currency.Ticker];
                 States.Instance.SetCurrentAvatarBalance(preBalance - fungibleAsset);
                 inventory.UpdateFungibleAssets();

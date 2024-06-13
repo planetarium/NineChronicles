@@ -1,13 +1,9 @@
 using Nekoyume.UI.Module;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using System;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Blockchain;
     using Nekoyume.L10n;
     using Nekoyume.Model.Mail;

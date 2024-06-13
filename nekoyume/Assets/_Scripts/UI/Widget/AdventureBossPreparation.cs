@@ -3,28 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using mixpanel;
 using Nekoyume.Blockchain;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
-using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using TMPro;
 using UnityEngine.UI;
-using Toggle = Nekoyume.UI.Module.Toggle;
 using System;
 
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
     using Nekoyume.UI.Module;
-    using Scroller;
     using System.Linq;
     using UniRx;
 
@@ -242,7 +234,7 @@ namespace Nekoyume.UI
         {
             Find<WorldMap>().Close(true);
             Find<AdventureBoss>().Close(true);
-            Widget.Find<LoadingScreen>().Show();
+            Widget.Find<LoadingScreen>().Show(loadingType: LoadingScreen.LoadingType.AdventureBoss);
             startButton.gameObject.SetActive(false);
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;

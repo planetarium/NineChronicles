@@ -1,7 +1,4 @@
 using Nekoyume.UI.Module;
-using System;
-using System.Collections;
-using System.Collections.Immutable;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -17,10 +14,8 @@ namespace Nekoyume.UI
     using Nekoyume.Data;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
-    using Nekoyume.Model.AdventureBoss;
     using Nekoyume.Model.Mail;
     using Nekoyume.State;
-    using System.Runtime.CompilerServices;
     using UniRx;
     public class AdventureBossEnterBountyPopup : PopupWidget
     {

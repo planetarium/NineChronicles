@@ -1,16 +1,12 @@
 using Nekoyume.UI.Module;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
     using Nekoyume.Action.AdventureBoss;
-    using Nekoyume.Blockchain;
     using Nekoyume.L10n;
     using UniRx;
 

@@ -1,18 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UniRx;
 using Nekoyume.Model.AdventureBoss;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Action.AdventureBoss;
-using System.Linq;
-using Codice.Client.BaseCommands.Merge;
 using Libplanet.Types.Assets;
 using Nekoyume.State;
-using Amazon.Runtime.Internal.Transform;
 using Nekoyume.Helper;
-using System.Text.RegularExpressions;
-using UnityEngine.Windows;
 using static Nekoyume.Data.AdventureBossGameData;
 
 namespace Nekoyume.UI.Model
@@ -95,27 +88,27 @@ namespace Nekoyume.UI.Model
             //최대 10개의 종료된 시즌정보를 가져온다.(만일을 대비 해서)
             for (int i = startIndex; i < _endedSeasonSearchTryCount; i++)
             {
-                var oldSeasonIndex = SeasonInfo.Value.Season - i;
+                var endedSeasonIndex = SeasonInfo.Value.Season - i;
 
                 //최초시즌이 0이하로 내려가면 더이상 찾지않음.
-                if (oldSeasonIndex <= 0)
+                if (endedSeasonIndex <= 0)
                     break;
 
-                var oldSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(oldSeasonIndex);
-                var oldBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(oldSeasonIndex);
+                var endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex);
+                var endedBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex);
 
-                if (!EndedSeasonInfos.ContainsKey(oldSeasonIndex))
+                if (!EndedSeasonInfos.ContainsKey(endedSeasonIndex))
                 {
-                    EndedSeasonInfos.Add(oldSeasonIndex, oldSeasonInfo);
-                    EndedBountyBoards.Add(oldSeasonIndex, oldBountyBoard);
+                    EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
+                    EndedBountyBoards.Add(endedSeasonIndex, endedBountyBoard);
                 }
                 else
                 {
-                    EndedSeasonInfos[oldSeasonIndex] = oldSeasonInfo;
-                    EndedBountyBoards[oldSeasonIndex] = oldBountyBoard;
+                    EndedSeasonInfos[endedSeasonIndex] = endedSeasonInfo;
+                    EndedBountyBoards[endedSeasonIndex] = endedBountyBoard;
                 }
                 //보상수령기간이 지날경우 더이상 가져오지않음.
-                if (oldSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
+                if (endedSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
                 {
                     break;
                 }
@@ -132,22 +125,22 @@ namespace Nekoyume.UI.Model
             //최대 10개의 종료된 시즌정보를 가져온다.(만일을 대비 해서)
             for (int i = startIndex; i < _endedSeasonSearchTryCount; i++)
             {
-                var oldSeasonIndex = SeasonInfo.Value.Season - i;
+                var endedSeasonIndex = SeasonInfo.Value.Season - i;
 
                 //최초시즌이 0이하로 내려가면 더이상 찾지않음.
-                if (oldSeasonIndex <= 0)
+                if (endedSeasonIndex <= 0)
                     break;
 
                 //이미 가져온 시즌정보는 다시 가져오지않음.
-                if (!EndedSeasonInfos.TryGetValue(oldSeasonIndex, out var oldSeasonInfo))
+                if (!EndedSeasonInfos.TryGetValue(endedSeasonIndex, out var endedSeasonInfo))
                 {
-                    oldSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(oldSeasonIndex);
-                    var oldBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(oldSeasonIndex);
-                    EndedSeasonInfos.Add(oldSeasonIndex, oldSeasonInfo);
-                    EndedBountyBoards.Add(oldSeasonIndex, oldBountyBoard);
+                    endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex);
+                    var oldBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex);
+                    EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
+                    EndedBountyBoards.Add(endedSeasonIndex, oldBountyBoard);
 
                     //보상수령기간이 지날경우 더이상 가져오지않음.
-                    if (oldSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
+                    if (endedSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
                     {
                         break;
                     }
@@ -195,7 +188,7 @@ namespace Nekoyume.UI.Model
 
             //시즌이 종료후 대기중인 경우.
             //종료된 상황인경우 시즌정보 받아서 저장.
-            if (SeasonInfo.Value.Season > 0 && !EndedSeasonInfos.TryGetValue(SeasonInfo.Value.Season, out var endedSeasonInfo))
+            if (SeasonInfo.Value.Season > 0 && !EndedSeasonInfos.ContainsKey(SeasonInfo.Value.Season))
             {
                 EndedSeasonInfos.TryAdd(SeasonInfo.Value.Season, SeasonInfo.Value);
                 EndedBountyBoards.TryAdd(SeasonInfo.Value.Season, BountyBoard.Value);
@@ -217,12 +210,13 @@ namespace Nekoyume.UI.Model
 
         public Investor GetCurrentInvestorInfo()
         {
-            if (BountyBoard.Value == null)
+            if (BountyBoard.Value == null || BountyBoard.Value.Investors == null)
             {
                 return null;
             }
 
-            return BountyBoard.Value.Investors.Find(i => i.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address);
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            return BountyBoard.Value.Investors.Find(i => i.AvatarAddress == avatarAddress);
         }
 
         public FungibleAssetValue GetCurrentBountyPrice()
@@ -268,12 +262,14 @@ namespace Nekoyume.UI.Model
                                         false,
                                         out var ncgReward);
                 }
-
-                myReward = AdventureBossHelper.CalculateWantedReward(myReward,
-                                    BountyBoard.Value,
-                                    Game.Game.instance.States.CurrentAvatarState.address,
-                                    false,
-                                    out var wantedReward);
+                else
+                {
+                    myReward = AdventureBossHelper.CalculateWantedReward(myReward,
+                                        BountyBoard.Value,
+                                        Game.Game.instance.States.CurrentAvatarState.address,
+                                        false,
+                                        out var wantedReward);
+                }
             }
             catch (System.Exception e)
             {

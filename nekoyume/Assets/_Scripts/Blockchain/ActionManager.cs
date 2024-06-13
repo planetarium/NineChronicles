@@ -585,19 +585,22 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<RegisterProduct>> RegisterProduct(
             Address avatarAddress,
-            IRegisterInfo registerInfo,
+            List<IRegisterInfo> registerInfos,
             bool chargeAp)
         {
+            var registerInfo = registerInfos.First();
             var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, Value>()
             {
                 ["ProductType"] = registerInfo.Type.ToString(),
                 ["Price"] = registerInfo.Price.ToString(),
+                ["Count"] = registerInfos.Count,
                 ["AvatarAddress"] = registerInfo.AvatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
             var evt = new AirbridgeEvent("RegisterProduct");
             evt.SetValue((double)registerInfo.Price.RawValue);
+            evt.AddCustomAttribute("count", registerInfos.Count);
             evt.AddCustomAttribute("product-type", registerInfo.Type.ToString());
             evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
             evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
@@ -620,7 +623,7 @@ namespace Nekoyume.Blockchain
             var action = new RegisterProduct
             {
                 AvatarAddress = avatarAddress,
-                RegisterInfos = new List<IRegisterInfo> { registerInfo },
+                RegisterInfos = registerInfos,
                 ChargeAp = chargeAp,
             };
 

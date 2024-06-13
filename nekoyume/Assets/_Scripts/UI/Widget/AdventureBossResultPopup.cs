@@ -11,6 +11,7 @@ using Nekoyume.UI.Module;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+
 namespace Nekoyume.UI
 {
     using DG.Tweening;

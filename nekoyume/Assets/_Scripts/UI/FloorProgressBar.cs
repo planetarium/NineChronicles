@@ -1,7 +1,4 @@
 using Nekoyume.Game.VFX;
-using Nekoyume.L10n;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,11 +20,13 @@ namespace Nekoyume.UI
 
         private int _maxFloor;
 
+        private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
+
         public void SetData(int currentFloor, int maxFloor)
         {
             _maxFloor = maxFloor;
             floorText.text = $"{currentFloor}";
-            textAnimator.SetTrigger("Show");
+            textAnimator.SetTrigger(AnimatorHashShow);
             for (int i = 0; i < floors.Length; i++)
             {
                 if (i >= currentFloor - 1 && i < maxFloor)
