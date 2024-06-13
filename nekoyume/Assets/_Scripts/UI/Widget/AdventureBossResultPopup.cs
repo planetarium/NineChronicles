@@ -122,8 +122,13 @@ namespace Nekoyume.UI
             subTitle.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_SUB_TITLE",lastClearFloor.ToOrdinal());
             scoreText.text = score.ToString("N0");
 
-            var totalScore = Game.Game.instance.AdventureBossData.ExploreInfo.Value.Score;
-            var start = totalScore - score;
+            var totalScore = 0;
+            var start = 0;
+            if (Game.Game.instance.AdventureBossData.ExploreInfo.Value != null)
+            {
+                start = Game.Game.instance.AdventureBossData.ExploreInfo.Value.Score;
+            }
+            totalScore = start + score;
 
             DOTween.To(() => start, x => start = x, totalScore, 0.3f)
                 .SetDelay(0.2f)

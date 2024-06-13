@@ -167,6 +167,10 @@ namespace Nekoyume.UI
                     Game.Game.instance.AdventureBossData.EndedBountyBoards[seasonInfo.Season] = bountyBoard;
                 }
                 var exploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonInfo.Season);
+                if(Game.Game.instance.AdventureBossData.EndedExploreBoards.ContainsKey(seasonInfo.Season))
+                {
+                    Game.Game.instance.AdventureBossData.EndedExploreBoards[seasonInfo.Season] = exploreBoard;
+                }
                 var exploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, seasonInfo.Season);
 
                 var investor = bountyBoard.Investors.FirstOrDefault(
