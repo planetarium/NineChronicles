@@ -1638,5 +1638,11 @@ namespace Nekoyume.Game.Battle
             LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
             yield return null;
         }
+
+        public IEnumerator CoStageBuff(CharacterBase affected, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoStageBuff)}() enter. affected: {affected.Id}, skillId: {skillId}");
+            yield return null;
+        }
     }
 }

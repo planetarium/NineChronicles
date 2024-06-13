@@ -658,5 +658,11 @@ namespace Nekoyume.Game.Battle
             NcDebug.LogError($"[RaidStage]Not implemented yet: {nameof(CoBreakthrough)}");
             yield return null;
         }
+
+        public IEnumerator CoStageBuff(CharacterBase affected, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            NcDebug.LogError($"[RaidStage]Not implemented yet: {nameof(CoStageBuff)}");
+            yield return null;
+        }
     }
 }
