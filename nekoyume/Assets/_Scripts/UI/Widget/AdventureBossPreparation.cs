@@ -234,7 +234,7 @@ namespace Nekoyume.UI
         {
             Find<WorldMap>().Close(true);
             Find<AdventureBoss>().Close(true);
-            Widget.Find<LoadingScreen>().Show();
+            Widget.Find<LoadingScreen>().Show(loadingType: LoadingScreen.LoadingType.AdventureBoss);
             startButton.gameObject.SetActive(false);
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
