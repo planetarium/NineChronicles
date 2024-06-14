@@ -653,7 +653,7 @@ namespace Nekoyume.Game.Battle
             Time.timeScale = Game.DefaultTimeScale;
         }
 
-        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<FloorWaveSheet.MonsterData> monsters)
+        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<AdventureBossFloorWaveSheet.MonsterData> monsters)
         {
             NcDebug.LogError($"[RaidStage]Not implemented yet: {nameof(CoBreakthrough)}");
             yield return null;

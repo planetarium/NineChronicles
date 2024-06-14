@@ -92,7 +92,7 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        public IEnumerator CoSpawnBreakthrough(List<FloorWaveSheet.MonsterData> monsterDatas, Action<GameObject> createCallback)
+        public IEnumerator CoSpawnBreakthrough(List<AdventureBossFloorWaveSheet.MonsterData> monsterDatas, Action<GameObject> createCallback)
         {
             var stage = Game.instance.Stage;
             for (var index = 0; index < monsterDatas.Count; index++)

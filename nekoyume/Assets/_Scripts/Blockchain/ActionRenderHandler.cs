@@ -50,6 +50,7 @@ namespace Nekoyume.Blockchain
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Battle.AdventureBoss;
     using Nekoyume.Data;
+    using Nekoyume.TableData.AdventureBoss;
     using UI.Scroller;
     using UniRx;
 
@@ -3753,8 +3754,8 @@ namespace Nekoyume.Blockchain
                 lastFloor = firstFloor;
 
                 UpdateAgentStateAsync(eval).Forget();
-                /*UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
-                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);*/
+                UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
@@ -3791,22 +3792,22 @@ namespace Nekoyume.Blockchain
 
                 var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
                 var random = new LocalRandom(eval.RandomSeed);
-                var selector = new WeightedSelector<AdventureBossGameData.ExploreReward>(random);
                 var tableSheets = TableSheets.Instance;
-
+                var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
                 AdventureBossSimulator simulator = null;
                 var score = 0;
-                var rewardList = new List<AdventureBossGameData.ExploreReward>();
-                var firstRewardList = new List<AdventureBossGameData.ExploreReward>();
+                var rewardList = new List<AdventureBossSheet.RewardAmountData>();
+                var firstRewardList = new List<AdventureBossSheet.RewardAmountData>();
+                var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == seasonInfo.BossId);
 
                 for (var fl = firstFloor; fl <= maxFloor; fl++)
                 {
-                    if (!tableSheets.FloorSheet.TryGetValue(fl, out var floorRow))
+                    if (!tableSheets.AdventureBossFloorSheet.TryGetValue(fl, out var floorRow))
                     {
                         NcDebug.LogError($"FloorSheet is not found. Floor: {fl}");
                         return;
                     }
-                    if (!tableSheets.FloorWaveSheet.TryGetValue(fl, out var waveRows))
+                    if (!tableSheets.AdventureBossFloorWaveSheet.TryGetValue(fl, out var waveRows))
                     {
                         NcDebug.LogError($"FloorWaveSheet is not found. Floor: {fl}");
                         return;
@@ -3840,29 +3841,39 @@ namespace Nekoyume.Blockchain
                     if (simulator.Log.IsClear)
                     {
                         // Add point, reward
-                        var (minPoint, maxPoint) = AdventureBossGameData.PointDict[fl];
-                        var point = random.Next(minPoint, maxPoint + 1);
+                        if(!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
+                        {
+                            NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
+                        }
+
+                        var point = random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
 
                         score += point;
 
+                        var stageId = floorRows.First(row => row.Floor == fl).Id;
+                        if(!tableSheets.AdventureBossFloorFirstRewardSheet.TryGetValue(stageId, out var firstReward))
+                        {
+                            NcDebug.LogError($"FloorFirstRewardSheet is not found. StageId: {stageId}");
+                        }
+                        foreach (var reward in firstReward.Rewards)
+                        {
+                            firstRewardList.Add(new AdventureBossSheet.RewardAmountData(
+                                reward.ItemType, reward.ItemId, reward.Amount));
+                        }
                         selector.Clear();
-                        var floorReward = AdventureBossGameData.AdventureBossRewards
-                            .First(rw => rw.BossId == seasonInfo.BossId).exploreReward[fl];
-                        foreach (var reward in floorReward.FirstReward)
+
+                         var floorReward = floorRows.First(row => row.Floor == fl);
+                        foreach (var reward in floorReward.Rewards)
                         {
                             selector.Add(reward, reward.Ratio);
                         }
 
-                        // Explore clear is always first because we explore from last failed floor.
-                        firstRewardList.Add(selector.Select(1).First());
-
-                        selector.Clear();
-                        foreach (var reward in floorReward.Reward)
-                        {
-                            selector.Add(reward, reward.Ratio);
-                        }
-
-                        rewardList.Add(selector.Select(1).First());
+                        var selected = selector.Select(1).First();
+                        rewardList.Add(new AdventureBossSheet.RewardAmountData(
+                            selected.ItemType,
+                            selected.ItemId,
+                            random.Next(selected.Min, selected.Max + 1))
+                        );
                     }
                     else
                     {
@@ -3872,7 +3883,7 @@ namespace Nekoyume.Blockchain
 
                 if (simulator is not null && lastFloor > firstFloor)
                 {
-                    simulator.AddBreakthrough(firstFloor, lastFloor - 1, tableSheets.FloorWaveSheet);
+                    simulator.AddBreakthrough(firstFloor, lastFloor - 1, tableSheets.AdventureBossFloorWaveSheet);
                 }
 
                 var log = simulator.Log;
@@ -3932,8 +3943,8 @@ namespace Nekoyume.Blockchain
                 lastFloor = firstFloor;
 
                 UpdateAgentStateAsync(eval).Forget();
-                /*UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
-                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);*/
+                UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
@@ -3972,26 +3983,34 @@ namespace Nekoyume.Blockchain
                 var tableSheets = TableSheets.Instance;
 
                 var simulator = new AdventureBossSimulator(seasonInfo.BossId, exploreInfo.Floor, random, States.Instance.CurrentAvatarState, tableSheets.GetSimulatorSheets(), logEvent: false);
-                simulator.AddBreakthrough(1, exploreInfo.Floor, tableSheets.FloorWaveSheet);
+                simulator.AddBreakthrough(1, exploreInfo.Floor, tableSheets.AdventureBossFloorWaveSheet);
 
                 // Add point, reward
                 var point = 0;
-                var rewardList = new List<AdventureBossGameData.ExploreReward>();
-                var selector = new WeightedSelector<AdventureBossGameData.ExploreReward>(random);
+                var rewardList = new List<AdventureBossSheet.RewardAmountData>();
+                var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
+
                 for (var fl = 1; fl <= exploreInfo.Floor; fl++)
                 {
-                    var (min, max) = AdventureBossGameData.PointDict[fl];
-                    point += random.Next(min, max + 1);
+                    if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
+                    {
+                        NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
+                    }
+                    point += random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
 
                     selector.Clear();
-                    var floorReward = AdventureBossGameData.AdventureBossRewards
-                        .First(rw => rw.BossId == seasonInfo.BossId).exploreReward[fl];
-                    foreach (var reward in floorReward.Reward)
+                    var floorReward = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == seasonInfo.BossId)
+                        .First(row => row.Floor == fl);
+                    foreach (var reward in floorReward.Rewards)
                     {
                         selector.Add(reward, reward.Ratio);
                     }
-
-                    rewardList.Add(selector.Select(1).First());
+                    var selected = selector.Select(1).First();
+                    rewardList.Add(new AdventureBossSheet.RewardAmountData(
+                        selected.ItemType,
+                        selected.ItemId,
+                        random.Next(selected.Min, selected.Max + 1)
+                    ));
                 }
 
                 var log = simulator.Log;
