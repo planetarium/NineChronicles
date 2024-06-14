@@ -1,4 +1,6 @@
+using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.TableData.AdventureBoss;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,44 +32,51 @@ namespace Nekoyume
             }
         }
 
-        public void SetData(AdventureBossReward adventureBossReward)
+        public void SetData(AdventureBossSheet.Row adventureBossRow)
         {
-            SetBossData(adventureBossReward.BossId);
-            if (adventureBossReward.wantedReward.FixedRewardItemIdDict.Count > 0)
+            SetBossData(adventureBossRow.BossId);
+            if(!TableSheets.Instance.AdventureBossWantedRewardSheet.TryGetValue(adventureBossRow.Id,out var wantedRewardRow))
             {
-                confirmRewardItemView.ItemViewSetItemData(adventureBossReward.wantedReward.FixedRewardItemIdDict.First().Key,0);
+                NcDebug.LogError($"AdventureBossWantedRewardSheet not found id:{adventureBossRow.Id}");
+                return;
             }
-            else if(adventureBossReward.wantedReward.FixedRewardFavIdDict.Count > 0)
-            {
-                confirmRewardItemView.ItemViewSetCurrencyData(adventureBossReward.wantedReward.FixedRewardFavIdDict.First().Key, 1);
-            }
-            else
+            var fixedReward = wantedRewardRow.FixedRewards.First();
+            if(fixedReward == null)
             {
                 confirmRewardItemView.gameObject.SetActive(false);
             }
-
-            int i = 0;
-            foreach (var randomReward in adventureBossReward.wantedReward.RandomRewardItemIdDict)
+            else
             {
-                if(i < randomRewardItemViews.Length)
+                switch (fixedReward.ItemType)
                 {
-                    randomRewardItemViews[i].ItemViewSetItemData(randomReward.Key, 0);
-                    i++;
+                    case "Material":
+                        confirmRewardItemView.ItemViewSetItemData(fixedReward.ItemId, 0);
+                        break;
+                    case "Rune":
+                        confirmRewardItemView.ItemViewSetCurrencyData(fixedReward.ItemId, 0);
+                        break;
                 }
             }
-            foreach (var randomReward in adventureBossReward.wantedReward.RandomRewardFavTickerDict)
+            var rendomRewards = wantedRewardRow.RandomRewards;
+            for (int i = 0; i < randomRewardItemViews.Length; i++)
             {
-                if (i < randomRewardItemViews.Length)
+                if (i < rendomRewards.Count)
                 {
-                    if (randomRewardItemViews[i].ItemViewSetCurrencyData(randomReward.Key, 1))
+                    var randomReward = rendomRewards[i];
+                    switch (randomReward.ItemType)
                     {
-                        i++;
+                        case "Material":
+                            randomRewardItemViews[i].ItemViewSetItemData(randomReward.ItemId, 0);
+                            break;
+                        case "Rune":
+                            randomRewardItemViews[i].ItemViewSetCurrencyData(randomReward.ItemId, 0);
+                            break;
                     }
                 }
-            }
-            for (; i < randomRewardItemViews.Length; i++)
-            {
-                randomRewardItemViews[i].gameObject.SetActive(false);
+                else
+                {
+                    randomRewardItemViews[i].gameObject.SetActive(false);
+                }                
             }
         }
     }

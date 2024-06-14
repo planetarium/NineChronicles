@@ -1,6 +1,8 @@
 using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Data;
+using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.TableData.AdventureBoss;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,28 +22,35 @@ namespace Nekoyume
         private int _bossId;
         private GameObject _bossImage;
 
-        public void SetData(AdventureBossReward data)
+        public void SetData(AdventureBossWantedRewardSheet.Row data)
         {
-            if (_bossId != data.BossId)
+            if(!TableSheets.Instance.AdventureBossSheet.TryGetValue(data.AdventureBossId, out var bossData))
+            {
+                NcDebug.LogError($"Not found boss data. bossId: {data.AdventureBossId}");
+                gameObject.SetActive(false);
+                return;
+            }
+            if (_bossId != bossData.BossId)
             {
                 if (_bossImage != null)
                 {
                     DestroyImmediate(_bossImage);
                 }
-                _bossId = data.BossId;
+                _bossId = bossData.BossId;
                 _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageRoot);
                 _bossImage.transform.localPosition = Vector3.zero;
             }
 
-            if(data.wantedReward.FixedRewardItemIdDict.Count > 0)
+            var itemReward = data.FixedRewards.FirstOrDefault();
+
+            switch(itemReward.ItemType)
             {
-                var item = data.wantedReward.FixedRewardItemIdDict.First();
-                baseItemView.ItemViewSetItemData(item.Key, 0);
-            }
-            if(data.wantedReward.FixedRewardFavIdDict.Count > 0)
-            {
-                var item = data.wantedReward.FixedRewardFavIdDict.First();
-                baseItemView.ItemViewSetCurrencyData(item.Key, 0);
+                case "Material":
+                    baseItemView.ItemViewSetItemData(itemReward.ItemId, 0);
+                    break;
+                case "Rune":
+                    baseItemView.ItemViewSetCurrencyData(itemReward.ItemId, 0);
+                    break;
             }
         }
     }

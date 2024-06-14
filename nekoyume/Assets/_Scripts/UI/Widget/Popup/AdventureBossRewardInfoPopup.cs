@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using Nekoyume.Data;
+    using Nekoyume.Game;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
@@ -141,12 +142,12 @@ namespace Nekoyume.UI
                             currentSeasonBossRewardViews[1].ItemViewSetCurrencyData(bountyBoard.RandomRewardFavId.Value, 0);
                         }
                     }
-
+                    var adventureBossSheet = TableSheets.Instance.AdventureBossSheet.Values.ToList();
                     for (int i = 0; i < bossRewardCells.Length; i++)
                     {
-                        if(i < AdventureBossGameData.AdventureBossRewards.Count())
+                        if(i < adventureBossSheet.Count)
                         {
-                            bossRewardCells[i].SetData(AdventureBossGameData.AdventureBossRewards[i]);
+                            bossRewardCells[i].SetData(adventureBossSheet[i]);
                         }
                         else
                         {
