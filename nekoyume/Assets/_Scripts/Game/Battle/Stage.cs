@@ -1245,38 +1245,41 @@ namespace Nekoyume.Game.Battle
             if (eventBase is Tick tick)
             {
                 var affectedCharacter = GetActor(character);
-                if (tick.SkillId == AuraIceShield.FrostBiteId)
+                if (AuraIceShield.IsFrostBiteBuff(tick.SkillId))
                 {
-                    if (!character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
+                    foreach (var kvp in character.Buffs)
                     {
-                        yield break;
-                    }
-
-                    var source = tick.SkillInfos.First().Target;
-                    var sourceCharacter = GetActor(source);
-                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
-                    {
-                        sourceCharacter.CustomEvent(AuraIceShield.FrostBiteId);
-                        yield return affectedCharacter.CoBuff(skillInfos);
-                    }
-
-                    var tickSkillInfo = new Skill.SkillInfo(
-                        affectedCharacter.Id,
-                        !affectedCharacter.IsAlive,
-                        0,
-                        0,
-                        false,
-                        SkillCategory.Debuff,
-                        waveTurn,
-                        target: character,
-                        buff: frostBite
-                    );
-                    affectedCharacter.AddAction(
-                        new ActionParams(affectedCharacter,
-                                        ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
-                                         tick.BuffInfos,
-                                        CoFrostBite
-                        ));
+                        if (!AuraIceShield.IsFrostBiteBuff(kvp.Key))
+                        {
+                            continue;
+                        }
+                        var frostBite = kvp.Value;
+                        var source          = tick.SkillInfos.First().Target;
+                        var sourceCharacter = GetActor(source);
+                        IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
+                        {
+                            sourceCharacter.CustomEvent(tick.SkillId);
+                            yield return affectedCharacter.CoBuff(skillInfos);
+                        }
+                        var tickSkillInfo = new Skill.SkillInfo(
+                            affectedCharacter.Id,
+                            !affectedCharacter.IsAlive,
+                            0,
+                            0,
+                            false,
+                            SkillCategory.Debuff,
+                            waveTurn,
+                            target: character,
+                            buff: frostBite
+                        );
+                        affectedCharacter.AddAction(
+                            new ActionParams(affectedCharacter,
+                                             ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
+                                             tick.BuffInfos,
+                                             CoFrostBite
+                            ));
+                        break;
+                    };
                 }
                 // This Tick from 'Stun'
                 else if (tick.SkillId == 0)

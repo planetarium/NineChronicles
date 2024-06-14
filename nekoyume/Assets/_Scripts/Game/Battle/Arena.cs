@@ -333,21 +333,23 @@ namespace Nekoyume.Game.Battle
             if (eventBase is ArenaTick tick)
             {
                 var affectedCharacter = caster.Id == me.Id ? me : enemy;
-                if (tick.SkillId == AuraIceShield.FrostBiteId)
+                if (AuraIceShield.IsFrostBiteBuff(tick.SkillId))
                 {
-                    if (!caster.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
+                    foreach (var kvp in caster.Buffs)
                     {
-                        yield break;
-                    }
+                        if (!AuraIceShield.IsFrostBiteBuff(kvp.Key))
+                        {
+                            continue;
+                        }
+                        var frostBite = kvp.Value;
+                        var sourceCharacter = caster.Id == me.Id ? enemy : me;
+                        IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+                        {
+                            sourceCharacter.CustomEvent(tick.SkillId);
+                            yield return affectedCharacter.CoBuff(skillInfos);
+                        }
 
-                    var sourceCharacter = caster.Id == me.Id ? enemy : me;
-                    IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
-                    {
-                        sourceCharacter.CustomEvent(AuraIceShield.FrostBiteId);
-                        yield return affectedCharacter.CoBuff(skillInfos);
-                    }
-
-                    var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
+                        var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
                             caster,
                             0,
                             false,
@@ -355,13 +357,15 @@ namespace Nekoyume.Game.Battle
                             _turnNumber,
                             buff: frostBite
                         );
-                    var actionParams = new ArenaActionParams(
-                        affectedCharacter,
-                        ArraySegment<ArenaSkill.ArenaSkillInfo>.Empty.Append(tickSkillInfo),
-                        tick.BuffInfos,
-                        CoFrostBite);
-                    affectedCharacter.Actions.Add(actionParams);
-                    yield return null;
+                        var actionParams = new ArenaActionParams(
+                            affectedCharacter,
+                            ArraySegment<ArenaSkill.ArenaSkillInfo>.Empty.Append(tickSkillInfo),
+                            tick.BuffInfos,
+                            CoFrostBite);
+                        affectedCharacter.Actions.Add(actionParams);
+                        yield return null;
+                        break;
+                    };
                 }
                 // This Tick from 'Stun'
                 if (!tick.SkillInfos.Any())
