@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lib9c.Renderers;
 using Libplanet.Action;
+using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
@@ -61,7 +62,7 @@ public class BattleSimulator : Widget
         SaveEquipField(nameof(ringR), ringR);
         SaveEquipField(nameof(ringL), ringL);
         SaveEquipField(nameof(food), food);
-        Debug.Log("[SaveField] SUCCESS");
+        NcDebug.Log("[SaveField] SUCCESS");
     }
 
     public void LoadField()
@@ -88,7 +89,7 @@ public class BattleSimulator : Widget
         LoadEquipField(nameof(ringR), ringR);
         LoadEquipField(nameof(ringL), ringL);
         LoadEquipField(nameof(food), food);
-        Debug.Log("[LoadField] SUCCESS");
+        NcDebug.Log("[LoadField] SUCCESS");
     }
 
     private static void SaveEquipField(string name, IReadOnlyList<InputField> list)
@@ -140,7 +141,7 @@ public class BattleSimulator : Widget
         clear.text = clearCount.ToString();
         var ratio = clearCount > 0 ? ((float) clearCount / (float) count) * 100.0f : 0;
         odds.text =  $"{ratio:f2}%";
-        Debug.Log($"[Simulate] SUCCESS / count : {count} /clear {clearCount} / odds : {ratio:f2}");
+        NcDebug.Log($"[Simulate] SUCCESS / count : {count} /clear {clearCount} / odds : {ratio:f2}");
     }
 
     private BattleLog Simulate()

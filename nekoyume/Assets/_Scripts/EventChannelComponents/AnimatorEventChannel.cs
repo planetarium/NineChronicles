@@ -19,7 +19,7 @@ namespace Nekoyume.EventChannelComponents
 
         public void RaiseFromAnimator(string value)
         {
-            // Debug.Log($"[AnimatorEventChannel] RaiseFromAnimator({value})");
+            // NcDebug.Log($"[AnimatorEventChannel] RaiseFromAnimator({value})");
             foreach (var eventSetting in _eventSettings)
             {
                 if (eventSetting.When != value)
