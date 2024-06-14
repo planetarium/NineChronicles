@@ -26,10 +26,12 @@ using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.BattleStatus.AdventureBoss;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -37,6 +39,7 @@ using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -1641,7 +1644,11 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoStageBuff(CharacterBase affected, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoStageBuff)}() enter. affected: {affected.Id}, skillId: {skillId}");
-            yield return null;
+            OneLineSystem.Push(MailType.System,
+                L10nManager.Localize("ADVENTURE_BOSS_STAGE_BUFF_NOTIFICATION",L10nManager.Localize($"SKILL_NAME_{skillId}")),
+                NotificationCell.NotificationType.Information);
+
+            yield return new WaitForSeconds(1f);
         }
     }
 }
