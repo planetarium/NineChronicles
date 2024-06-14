@@ -568,16 +568,16 @@ namespace Nekoyume.Game.Battle
             ReleaseWhiteList.Clear();
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
+            var title = Widget.Find<StageTitle>();
             if(StageType == StageType.AdventureBoss)
             {
-                Widget.Find<UI.Battle>().FloorProgressBar.SetData(log.stageId, log.waveCount);
+                title.Show($"{Widget.Find<UI.Battle>().FloorProgressBar.FloorText.text}F");
             }
             else
             {
                 Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
+                title.Show(StageType, stageId);
             }
-            var title = Widget.Find<StageTitle>();
-            title.Show(StageType, stageId);
             IsShowHud = false;
             yield return new WaitForSeconds(StageConfig.instance.stageEnterDelay);
 
@@ -756,8 +756,7 @@ namespace Nekoyume.Game.Battle
                     break;
                 }
                 case StageType.AdventureBoss:
-                    var lastClearFloor = log.IsClear ? log.waveCount : log.waveCount - 1;
-                    Widget.Find<AdventureBossResultPopup>().Show(lastClearFloor, log.score);
+                    Widget.Find<AdventureBossResultPopup>().Show(log.score);
                     yield break;
                 default:
                     throw new ArgumentOutOfRangeException();

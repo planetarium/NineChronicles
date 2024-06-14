@@ -20,6 +20,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button button;
 
+        public Image IconImage => iconImage;
 
         private void Awake()
         {

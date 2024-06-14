@@ -38,8 +38,9 @@ namespace Nekoyume.UI
 
         private int _usedApPotion;
 
-        public void SetData(int usedApPotion, int totalApPotion, List<AdventureBossGameData.ExploreReward> exploreRewards, List<AdventureBossGameData.ExploreReward> firstRewards = null)
+        public void SetData(int usedApPotion, int totalApPotion, int lastClearFloor, List<AdventureBossGameData.ExploreReward> exploreRewards, List<AdventureBossGameData.ExploreReward> firstRewards = null)
         {
+            subTitle.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_SUB_TITLE", lastClearFloor.ToOrdinal());
             _usedApPotion = usedApPotion;
             apPotionUsed.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_AP_POTION_USED", usedApPotion, totalApPotion);
             if(firstRewards == null || firstRewards.Count == 0)
@@ -113,13 +114,12 @@ namespace Nekoyume.UI
             tooltip.Show(model, string.Empty, false, null);
         }
 
-        public void Show(int lastClearFloor, int score, bool ignoreShowAnimation = false)
+        public void Show(int score, bool ignoreShowAnimation = false)
         {
             foreach (var item in clearEffect)
             {
                 item.SetActive(_usedApPotion > 0);
             }
-            subTitle.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_SUB_TITLE",lastClearFloor.ToOrdinal());
             scoreText.text = score.ToString("N0");
 
             var totalScore = 0;
