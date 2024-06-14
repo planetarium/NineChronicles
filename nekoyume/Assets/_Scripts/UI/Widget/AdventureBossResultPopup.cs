@@ -16,6 +16,7 @@ namespace Nekoyume.UI
 {
     using DG.Tweening;
     using Nekoyume.Action.AdventureBoss;
+    using System.Linq;
     using UniRx;
     public class AdventureBossResultPopup : Widget
     {
@@ -57,6 +58,15 @@ namespace Nekoyume.UI
 
         private void RefreshItemView(List<AdventureBossGameData.ExploreReward> rewards, SimpleCountableItemView[] itemViews)
         {
+            rewards = rewards.GroupBy(r => r.RewardId)
+                            .Select(g => new AdventureBossGameData.ExploreReward
+                            {
+                                RewardType = g.First().RewardType,
+                                RewardId = g.Key,
+                                Amount = g.Sum(r => r.Amount),
+                                Ratio = g.First().Ratio
+                            }).OrderBy(r => r.RewardId).ToList();
+
             for (int i = 0; i < itemViews.Length; i++)
             {
                 if (i < rewards.Count)
