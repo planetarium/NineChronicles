@@ -97,6 +97,8 @@ namespace Nekoyume.Blockchain
 
         public BlockHash BlockTipHash { get; private set; }
 
+        public HashDigest<SHA256> BlockTipStateRootHash { get; private set; }
+
         private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
             new Subject<(NCTx tx, List<ActionBase> actions)>();
 
@@ -950,17 +952,21 @@ namespace Nekoyume.Blockchain
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
-            UniTask.RunOnThreadPool<(long, BlockHash)>(() =>
+            UniTask.RunOnThreadPool<(long, BlockHash, HashDigest<SHA256>)>(() =>
             {
                 var dict = (Dictionary) _codec.Decode(newTip);
                 var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
-                return (newTipBlock.Index, new BlockHash(newTipBlock.Hash.ToByteArray()));
+                return (
+                    newTipBlock.Index,
+                    newTipBlock.Hash,
+                    newTipBlock.StateRootHash);
             }).ToObservable().ObserveOnMainThread().Subscribe(tuple =>
             {
                 _blockHashCache.Add(tuple.Item1, tuple.Item2);
                 BlockIndex = tuple.Item1;
                 BlockIndexSubject.OnNext(BlockIndex);
                 BlockTipHash = tuple.Item2;
+                BlockTipStateRootHash = tuple.Item3;
                 BlockTipHashSubject.OnNext(BlockTipHash);
                 _lastTipChangedAt = DateTimeOffset.UtcNow;
 

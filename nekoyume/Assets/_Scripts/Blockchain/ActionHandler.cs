@@ -98,7 +98,7 @@ namespace Nekoyume.Blockchain
             else
             {
                 nullableStakeState = stakeStateV2;
-                balance = await agent.GetBalanceAsync(stakeAddr, GoldCurrency);
+                balance = StateGetter.GetBalance(evaluation.OutputState, stakeAddr, GoldCurrency);
                 sheetAddrArr = new[]
                 {
                     Addresses.GetSheetAddress(
