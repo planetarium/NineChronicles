@@ -7,6 +7,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.State;
 using Nekoyume.Helper;
 using static Nekoyume.Data.AdventureBossGameData;
+using Nekoyume.Game;
 
 namespace Nekoyume.UI.Model
 {
@@ -266,6 +267,7 @@ namespace Nekoyume.UI.Model
                                         ExploreBoard.Value,
                                         ExploreInfo.Value,
                                         ExploreInfo.Value.AvatarAddress,
+                                        TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
                                         false,
                                         out var ncgReward);
                 }
@@ -274,6 +276,7 @@ namespace Nekoyume.UI.Model
                     myReward = AdventureBossHelper.CalculateWantedReward(myReward,
                                         BountyBoard.Value,
                                         Game.Game.instance.States.CurrentAvatarState.address,
+                                        TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
                                         false,
                                         out var wantedReward);
                 }
@@ -293,7 +296,12 @@ namespace Nekoyume.UI.Model
                 ItemReward = new Dictionary<int, int>(),
                 FavReward = new Dictionary<int, int>(),
             };
-            myReward = AdventureBossHelper.CalculateWantedReward(myReward, BountyBoard.Value, Game.Game.instance.States.CurrentAvatarState.address, false, out var wantedReward);
+            myReward = AdventureBossHelper.CalculateWantedReward(myReward,
+                                BountyBoard.Value,
+                                Game.Game.instance.States.CurrentAvatarState.address,
+                                TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                false,
+                                out var wantedReward);
             return myReward;
         }
 
@@ -312,6 +320,7 @@ namespace Nekoyume.UI.Model
                                     ExploreBoard.Value,
                                     ExploreInfo.Value,
                                     ExploreInfo.Value.AvatarAddress,
+                                    TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
                                     false,
                                     out var ncgReward);
             }
