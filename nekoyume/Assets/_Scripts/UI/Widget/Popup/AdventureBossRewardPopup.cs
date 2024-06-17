@@ -69,7 +69,7 @@ namespace Nekoyume.UI
                         var tableSheets = Game.instance.TableSheets;
                         var mailRewards = new List<MailReward>();
 
-                        if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.RawValue > 0)
+                        if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.MajorUnit > 0)
                         {
                             mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
                         }
@@ -216,9 +216,9 @@ namespace Nekoyume.UI
                 rewardItemsBounty.SetActive(true);
                 noRewardItemsBounty.SetActive(false);
                 int i = 0;
-                if (wantedClaimableReward.NcgReward != null)
+                if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue && wantedClaimableReward.NcgReward.Value.MajorUnit > 0)
                 {
-                    rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)wantedClaimableReward.NcgReward.Value.RawValue);
+                    rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)wantedClaimableReward.NcgReward.Value.MajorUnit);
                     i++;
                 }
                 foreach (var itemReward in wantedClaimableReward.ItemReward)
@@ -257,9 +257,9 @@ namespace Nekoyume.UI
                 rewardItemsExplore.SetActive(true);
                 noRewardItemsExplore.SetActive(false);
                 int i = 0;
-                if (exprolerClaimableReward.NcgReward != null)
+                if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue && exprolerClaimableReward.NcgReward.Value.MajorUnit > 0)
                 {
-                    rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)exprolerClaimableReward.NcgReward.Value.RawValue);
+                    rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)exprolerClaimableReward.NcgReward.Value.MajorUnit);
                     i++;
                 }
                 foreach (var itemReward in exprolerClaimableReward.ItemReward)
