@@ -27,6 +27,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI totalScore;
         [SerializeField] private TextMeshProUGUI myScore;
         [SerializeField] private BaseItemView[] baseItemViews;
+        [SerializeField] private TextMeshProUGUI scoreSubDesc;
 
         [Header("Floor Contents")]
         [SerializeField] private FloorRewardCell[] floorRewardCells;
@@ -214,6 +215,7 @@ namespace Nekoyume.UI
         private void RefreshToggleScore()
         {
             var adventureBossData = Game.instance.AdventureBossData;
+
             int myScoreValue = 0;
             if (adventureBossData.ExploreInfo.Value != null)
             {
@@ -229,7 +231,18 @@ namespace Nekoyume.UI
             {
                 totalScore.text = "0";
             }
+
+            string randomRewardText = "0";
+            if (adventureBossData.BountyBoard.Value != null)
+            {
+                var raffleReward = AdventureBossHelper.CalculateRaffleReward(adventureBossData.BountyBoard.Value);
+                randomRewardText = raffleReward.MajorUnit.ToString("#,0");
+            }
+
+            scoreSubDesc.text = L10nManager.Localize("UI_ADVENTURE_BOSS_REWARD_INFO_SCORE_SUB_DESC", randomRewardText);
+
             myScore.text = $"{myScoreValue.ToString("#,0")} ({contribution.ToString("F2")}%)";
+
             var myReward = adventureBossData.GetCurrentExploreRewards();
             int i = 0;
             if (myReward.NcgReward != null)
