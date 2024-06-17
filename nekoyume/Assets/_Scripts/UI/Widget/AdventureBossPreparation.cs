@@ -271,7 +271,7 @@ namespace Nekoyume.UI
                         }
                         else
                         {
-                            ActionManager.Instance.SweepAdventureBoss((int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season);
+                            ActionManager.Instance.SweepAdventureBoss(costumes, equipments, runeInfos, (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season);
                         }
                         break;
                     default:
