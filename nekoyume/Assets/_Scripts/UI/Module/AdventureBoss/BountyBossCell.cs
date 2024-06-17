@@ -1,3 +1,4 @@
+using Lib9c;
 using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Data;
 using Nekoyume.Game;
@@ -42,14 +43,21 @@ namespace Nekoyume
             }
 
             var itemReward = data.FixedRewards.FirstOrDefault();
-
-            switch(itemReward.ItemType)
+            baseItemView.gameObject.SetActive(true);
+            switch (itemReward.ItemType)
             {
                 case "Material":
                     baseItemView.ItemViewSetItemData(itemReward.ItemId, 0);
                     break;
                 case "Rune":
                     baseItemView.ItemViewSetCurrencyData(itemReward.ItemId, 0);
+                    break;
+                case "Crystal":
+                    baseItemView.ItemViewSetCurrencyData(Currencies.Crystal.Ticker, 0);
+                    break;
+                default:
+                    baseItemView.gameObject.SetActive(false);
+                    NcDebug.LogError($"ItemType not found:{itemReward.ItemType}");
                     break;
             }
         }

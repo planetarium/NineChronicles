@@ -1,3 +1,4 @@
+using Lib9c;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.TableData.AdventureBoss;
@@ -55,6 +56,13 @@ namespace Nekoyume
                     case "Rune":
                         confirmRewardItemView.ItemViewSetCurrencyData(fixedReward.ItemId, 0);
                         break;
+                    case "Crystal":
+                        confirmRewardItemView.ItemViewSetCurrencyData(Currencies.Crystal.Ticker, 0);
+                        break;
+                    default:
+                        NcDebug.LogError($"ItemType not found:{fixedReward.ItemType}");
+                        confirmRewardItemView.gameObject.SetActive(false);
+                        break;
                 }
             }
             var rendomRewards = wantedRewardRow.RandomRewards;
@@ -70,6 +78,13 @@ namespace Nekoyume
                             break;
                         case "Rune":
                             randomRewardItemViews[i].ItemViewSetCurrencyData(randomReward.ItemId, 0);
+                            break;
+                        case "Crystal":
+                            randomRewardItemViews[i].ItemViewSetCurrencyData(Currencies.Crystal.Ticker, 0);
+                            break;
+                        default:
+                            randomRewardItemViews[i].gameObject.SetActive(false);
+                            NcDebug.LogError($"ItemType not found:{randomReward.ItemType}");
                             break;
                     }
                 }
