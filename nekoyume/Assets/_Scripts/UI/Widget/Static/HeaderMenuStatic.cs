@@ -526,7 +526,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
                     break;
                 case AssetVisibleState.SummonAdvanced:
-                    SetActiveAssets(enabledMaterials: new[] { CostType.DiamondDust, CostType.RubyDust, CostType.GoldDust });
+                    SetActiveAssets(enabledMaterials: new[] { CostType.EmeraldDust, CostType.RubyDust, CostType.GoldDust });
                     break;
                 case AssetVisibleState.SummonNormal:
                     SetActiveAssets(enabledMaterials: new[] { CostType.SilverDust });

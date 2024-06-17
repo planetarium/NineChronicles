@@ -205,7 +205,7 @@ namespace Nekoyume.UI
                 CostType.SilverDust => normalDrawButton,
                 CostType.GoldDust => goldenDrawButton,
                 CostType.RubyDust => goldenDrawButton,
-                CostType.DiamondDust => goldenDrawButton,
+                CostType.EmeraldDust => goldenDrawButton,
                 _ => null
             };
         }

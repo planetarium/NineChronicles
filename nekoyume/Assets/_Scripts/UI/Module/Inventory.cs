@@ -81,7 +81,7 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ItemType, List<Predicate<InventoryItem>>> _dimConditionFuncsByItemType = new();
         private readonly int[] dustIds = new[]
         {
-            CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.DiamondDust
+            CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
         }.Select(cost => (int)cost).ToArray();
 
         private static readonly ItemType[] ItemTypes = Enum.GetValues(typeof(ItemType)) as ItemType[];

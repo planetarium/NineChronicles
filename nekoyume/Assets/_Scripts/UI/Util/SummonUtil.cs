@@ -12,7 +12,7 @@ namespace Nekoyume.UI
                     return 355;
                 case CostType.RubyDust:
                     return -355;
-                case CostType.DiamondDust:
+                case CostType.EmeraldDust:
                     return -1025;
                 default:
                     return 0;
