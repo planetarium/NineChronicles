@@ -139,6 +139,7 @@ namespace Nekoyume.UI
             }
             totalScore = start + score;
 
+            cumulativeScoreText.text = start.ToString("N0");
             DOTween.To(() => start, x => start = x, totalScore, 0.3f)
                 .SetDelay(1.1f)
                 .OnUpdate(() => cumulativeScoreText.text = start.ToString("N0"))
