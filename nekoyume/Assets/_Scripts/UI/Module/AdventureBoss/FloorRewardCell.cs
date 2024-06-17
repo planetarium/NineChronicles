@@ -1,4 +1,4 @@
-using Lib9c;
+using Nekoyume.ActionExtensions;
 using Nekoyume.L10n;
 using System.Collections.Generic;
 using TMPro;
@@ -28,25 +28,11 @@ namespace Nekoyume
 
             for (int i = 0; i < rewardItemViews.Length; i++)
             {
-                if(i < rewards.Count)
+                if (i < rewards.Count)
                 {
                     rewardItemViews[i].gameObject.SetActive(true);
                     var reward = rewards[i];
-                    switch (reward.ItemType)
-                    {
-                        case "Material":
-                            rewardItemViews[i].ItemViewSetItemData(reward.ItemId, reward.Amount);
-                            break;
-                        case "Rune":
-                            rewardItemViews[i].ItemViewSetCurrencyData(reward.ItemId, reward.Amount);
-                            break;
-                        case "Crystal":
-                            rewardItemViews[i].ItemViewSetCurrencyData(Currencies.Crystal.Ticker, rewards[i].Amount);
-                            break;
-                        default:
-                            NcDebug.LogError("Invalid ItemType: " + reward.ItemType);
-                            break;
-                    }
+                    rewardItemViews[i].ItemViewSetAdventureBossItemData(reward);
                 }
                 else
                 {

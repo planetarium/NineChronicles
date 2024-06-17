@@ -75,7 +75,7 @@ namespace Nekoyume.UI
                 {
                     return;
                 }
-                if(Game.instance.AdventureBossData.SeasonInfo.Value == null)
+                if (Game.instance.AdventureBossData.SeasonInfo.Value == null)
                 {
                     NcDebug.LogError("SeasonInfo is null");
                     foreach (var item in floorRewardCells)
@@ -86,7 +86,7 @@ namespace Nekoyume.UI
                 }
                 var seasonInfo = Game.instance.AdventureBossData.SeasonInfo.Value;
                 var tableSheets = TableSheets.Instance;
-                
+
                 var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
                 if (bossRow == null)
                 {
