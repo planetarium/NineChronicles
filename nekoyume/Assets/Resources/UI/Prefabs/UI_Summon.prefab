@@ -1769,6 +1769,15 @@ MonoBehaviour:
   tutorialActions: 52c30000
   closeButton: {fileID: 241345997775891456}
   summonInfos:
+  - summonSheetId: 40001
+    tabToggle: {fileID: 4918738185338415915}
+    enableObj:
+    - {fileID: 543786998197747225}
+    - {fileID: 6136981662903751531}
+    costType: 600203
+    nameEng: Grimoire
+    phrase1: UI_SUMMON_GRIMOIRE_PHRASE_1
+    phrase2: UI_SUMMON_GRIMOIRE_PHRASE_2
   - summonSheetId: 30001
     tabToggle: {fileID: 454514871044782777}
     enableObj:

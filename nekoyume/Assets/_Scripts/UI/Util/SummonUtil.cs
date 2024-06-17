@@ -7,11 +7,13 @@ namespace Nekoyume.UI
             switch (grade)
             {
                 case CostType.SilverDust:
-                    return 690;
+                    return 1025;
                 case CostType.GoldDust:
-                    return 0;
+                    return 355;
                 case CostType.RubyDust:
-                    return -690;
+                    return -355;
+                case CostType.DiamondDust:
+                    return -1025;
                 default:
                     return 0;
             }
