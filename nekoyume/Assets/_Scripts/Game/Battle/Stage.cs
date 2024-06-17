@@ -657,7 +657,7 @@ namespace Nekoyume.Game.Battle
 
             List<TableData.EquipmentItemRecipeSheet.Row> newRecipes = null;
 
-            if (newlyClearedStage)
+            if (newlyClearedStage && StageType != StageType.AdventureBoss)
             {
                 yield return StartCoroutine(CoUnlockMenu());
                 yield return new WaitForSeconds(0.75f);

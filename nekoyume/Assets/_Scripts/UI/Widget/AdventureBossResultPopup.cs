@@ -140,10 +140,9 @@ namespace Nekoyume.UI
             totalScore = start + score;
 
             DOTween.To(() => start, x => start = x, totalScore, 0.3f)
-                .SetDelay(0.2f)
+                .SetDelay(1.1f)
                 .OnUpdate(() => cumulativeScoreText.text = start.ToString("N0"))
                 .SetEase(Ease.InOutQuad);
-            //cumulativeScoreText.text = Game.Game.instance.AdventureBossData.ExploreInfo.Value.Score.ToString("N0");
 
             base.Show(ignoreShowAnimation);
         }
