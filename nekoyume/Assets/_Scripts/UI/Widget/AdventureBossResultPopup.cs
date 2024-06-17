@@ -127,7 +127,7 @@ namespace Nekoyume.UI
         {
             foreach (var item in clearEffect)
             {
-                item.SetActive(_usedApPotion > 0);
+                item.SetActive(score > 0);
             }
             scoreText.text = score.ToString("N0");
 
