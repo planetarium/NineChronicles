@@ -35,6 +35,14 @@ namespace Nekoyume.UI.Module
 
         private void UpdateApPotion()
         {
+            if(Game.Game.instance.States.CurrentAvatarState == null)
+            {
+                return;
+            }
+            if(Game.Game.instance.States.CurrentAvatarState.inventory == null)
+            {
+                return;
+            }
             count.text = Game.Game.instance.States.CurrentAvatarState.inventory.GetMaterialCount((int)CostType.ApPotion).ToString();
         }
 
@@ -46,6 +54,7 @@ namespace Nekoyume.UI.Module
 
         private void ShowMaterialNavigationPopup()
         {
+            //todo: implement this
             //Widget.Find<MaterialNavigationPopup>().ShowCurrency((int)CurrencyType.ApPotion);
         }
     }
