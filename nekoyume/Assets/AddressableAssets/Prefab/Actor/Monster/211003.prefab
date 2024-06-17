@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 56575d154026ba449b5702b4b66e0e49, type: 2}
+  - {fileID: 2100000, guid: 59a5a2810f82e2d438cf2e734b625140, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 112408c54cabbe74d8b506cf93824bbe, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 873e0567aa1451e40bc3f793c306a7e0, type: 2}
   initialSkinName: 
   fixPrefabOverrideViaMeshFilter: 2
   initialFlipX: 0
@@ -216,5 +216,5 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 5.6301312, y: 5.9685125, z: 0}
-  m_Center: {x: 0.33660084, y: 2.7164564, z: 0}
+  m_Size: {x: 4.36, y: 5.17, z: 0}
+  m_Center: {x: -0.04, y: 1.88, z: 0}
