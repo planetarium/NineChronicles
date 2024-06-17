@@ -14785,6 +14785,11 @@ PrefabInstance:
       propertyPath: m_text
       value: 6F
       objectReference: {fileID: 0}
+    - target: {fileID: 7620394484586657874, guid: dff23bd4ff58c1443a95531c54619e72,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9063393277744448575, guid: dff23bd4ff58c1443a95531c54619e72,
         type: 3}
       propertyPath: m_SortingLayer
