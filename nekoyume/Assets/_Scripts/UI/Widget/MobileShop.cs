@@ -181,26 +181,26 @@ namespace Nekoyume.UI
 
             foreach (var category in renderCategory)
             {
-                if(category == null)
+                if (category == null)
                 {
                     NcDebug.LogError("category is null");
                     continue;
                 }
 
-                if(_allCategoryTab.ContainsKey(category.Name))
+                if (_allCategoryTab.ContainsKey(category.Name))
                 {
                     NcDebug.LogError($"category {category.Name} is already exist");
                     continue;
                 }
 
-                if(_allProductObjByCategory.ContainsKey(category.Name))
+                if (_allProductObjByCategory.ContainsKey(category.Name))
                 {
                     NcDebug.LogError($"category {category.Name} is already exist");
                     continue;
                 }
 
                 var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
-                if(categoryTabObj == null)
+                if (categoryTabObj == null)
                 {
                     NcDebug.LogError("categoryTabObj is null");
                     continue;
