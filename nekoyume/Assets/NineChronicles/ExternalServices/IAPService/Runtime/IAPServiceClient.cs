@@ -51,6 +51,11 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             ProductAsync(Address agentAddr, string planetId)
         {
+            if (string.IsNullOrEmpty(planetId))
+            {
+                throw new ArgumentException("planetId is null or empty.");
+            }
+
             var uriBuilder = new UriBuilder(_endpoints.Product);
             uriBuilder.Query = string.IsNullOrEmpty(uriBuilder.Query)
                 ? $"agent_addr={agentAddr.ToString()}&planet_id={planetId}"
