@@ -405,6 +405,20 @@ namespace Nekoyume.Blockchain
             Currency currency) =>
             await Task.FromResult(blocks.GetWorldState(stateRootHash).GetBalance(address, currency));
 
+        // TODO: Below `GetInitState` codes have to be removed with Libplanet changes,
+        // since using BlockChain.GetNextWorldState() is not recommended.
+        // These have to be done by render from constructor of BlockChain in the future.
+        public async Task<IValue> GetInitStateAsync(Address accountAddress, Address address) =>
+            await Task.FromResult(blocks.GetNextWorldState().GetAccountState(accountAddress).GetState(address));
+
+        public async Task<AgentState> GetInitAgentStateAsync(Address address) =>
+            await Task.FromResult(blocks.GetNextWorldState().GetAgentState(address));
+
+        public async Task<FungibleAssetValue> GetInitBalanceAsync(
+            Address address,
+            Currency currency) =>
+            await Task.FromResult(blocks.GetNextWorldState().GetBalance(address, currency));
+
         #region Mono
 
         public void SendException(Exception exc)
@@ -473,6 +487,8 @@ namespace Nekoyume.Blockchain
 
         #endregion
 
+        // TODO: Below initialization would be better to done by render from constructor of BlockChain,
+        // after Libplanet support.
         private async void InitAgentAsync(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
         {
             var consoleSink = options.ConsoleSink;
@@ -496,19 +512,19 @@ namespace Nekoyume.Blockchain
             {
                 // 에이전트의 상태를 한 번 동기화 한다.
                 var goldCurrency = new GoldCurrencyState(
-                    (Dictionary)await GetStateAsync(ReservedAddresses.LegacyAccount, GoldCurrencyState.Address)
+                    (Dictionary)await GetInitStateAsync(ReservedAddresses.LegacyAccount, GoldCurrencyState.Address)
                 ).Currency;
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
                 await States.Instance.SetAgentStateAsync(
-                    await GetAgentStateAsync(Address) ?? new AgentState(Address));
+                    await GetInitAgentStateAsync(Address) ?? new AgentState(Address));
                 States.Instance.SetGoldBalanceState(
                     new GoldBalanceState(Address,
-                    await GetBalanceAsync(Address, goldCurrency)));
+                    await GetInitBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
-                    await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
+                    await GetInitBalanceAsync(Address, CrystalCalculator.CRYSTAL));
 
-                if (await GetStateAsync(ReservedAddresses.LegacyAccount, GameConfigState.Address) is Dictionary configDict)
+                if (await GetInitStateAsync(ReservedAddresses.LegacyAccount, GameConfigState.Address) is Dictionary configDict)
                 {
                     States.Instance.SetGameConfigState(new GameConfigState(configDict));
                 }
@@ -521,7 +537,7 @@ namespace Nekoyume.Blockchain
                 var pledgeAddress = agentAddress.GetPledgeAddress();
                 Address? patronAddress = null;
                 var approved = false;
-                if (await GetStateAsync(ReservedAddresses.LegacyAccount, pledgeAddress) is List list)
+                if (await GetInitStateAsync(ReservedAddresses.LegacyAccount, pledgeAddress) is List list)
                 {
                     patronAddress = list[0].ToAddress();
                     approved = list[1].ToBoolean();
