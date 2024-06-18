@@ -11,7 +11,6 @@ namespace Nekoyume.UI
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Blockchain;
-    using Nekoyume.Data;
     using Nekoyume.Game;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
@@ -96,7 +95,7 @@ namespace Nekoyume.UI
             }
             if (int.TryParse(input, out int bounty))
             {
-                if (bounty < 100)
+                if (bounty < Wanted.MinBounty)
                 {
                     bountyInputArea.textComponent.color = bountyRedColor;
                     inputWarning.SetActive(true);
