@@ -1,8 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Nekoyume.Game;
+using Nekoyume.TableData.AdventureBoss;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
@@ -60,7 +63,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetState(FloorState floorState, int floorIndex)
+        public void SetState(FloorState floorState, int floorIndex, AdventureBossUnlockFloorCostSheet.Row unlockFloorCostRow = null)
         {
             _floorIndex = floorIndex;
             unlockEffect.SetActive(false);
@@ -94,25 +97,15 @@ namespace Nekoyume.UI.Module
                     floorLock.SetActive(true);
                     openNameImage.SetActive(true);
                     lockEffect.SetActive(true);
-                    if (Game.Game.instance.AdventureBossData.UnlockDict.TryGetValue(_floorIndex,
-                            out var unlockData))
-                    {
-                        if (unlockData.TryGetValue("NCG", out var ncg))
-                        {
-                            goldUnlockCount.text = ncg.ToString();
-                        }
-
-                        if (unlockData.TryGetValue("GoldenDust", out var gd))
-                        {
-                            goldenDustUnlockCount.text = gd.ToString();
-                        }
-                    }
-                    else
-                    {
-                        NcDebug.LogError($"UnlockDict not found key {_floorIndex}");
-                    }
-
                     openNameText.text = $"{_floorIndex + 1}F ~ {_floorIndex + 5}F";
+
+                    if (unlockFloorCostRow == null)
+                    {
+                        NcDebug.LogError($"Not found unlock floor cost data. floor: {_floorIndex + 1}");
+                        return;
+                    }
+                    goldUnlockCount.text = unlockFloorCostRow.NcgPrice.ToString();
+                    goldenDustUnlockCount.text = unlockFloorCostRow.GoldenDustPrice.ToString();
                     break;
             }
         }

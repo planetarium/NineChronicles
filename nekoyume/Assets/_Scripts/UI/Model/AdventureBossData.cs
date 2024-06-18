@@ -8,6 +8,9 @@ using Nekoyume.State;
 using Nekoyume.Helper;
 using static Nekoyume.Data.AdventureBossGameData;
 using Nekoyume.Game;
+using Nekoyume;
+using Nekoyume.TableData.AdventureBoss;
+using System.Linq;
 
 namespace Nekoyume.UI.Model
 {
@@ -20,34 +23,6 @@ namespace Nekoyume.UI.Model
             Progress,
             End
         }
-
-        // NOTE: This may temporary
-        // Use MaxFloor as key. If not find key, this means already opened all floors.
-        public readonly Dictionary<int, Dictionary<string, int>> UnlockDict =
-            new()
-            {
-                {
-                    5, new Dictionary<string, int>
-                    {
-                        { "NCG", 5 },
-                        { "GoldenDust", 5 },
-                    }
-                },
-                {
-                    10, new Dictionary<string, int>
-                    {
-                        { "NCG", 10 },
-                        { "GoldenDust", 10 },
-                    }
-                },
-                {
-                    15, new Dictionary<string, int>
-                    {
-                        { "NCG", 15 },
-                        { "GoldenDust", 15 },
-                    }
-                },
-            };
 
         public ReactiveProperty<SeasonInfo> SeasonInfo = new ReactiveProperty<SeasonInfo>();
         public ReactiveProperty<BountyBoard> BountyBoard = new ReactiveProperty<BountyBoard>();
@@ -243,6 +218,37 @@ namespace Nekoyume.UI.Model
             return total;
         }
 
+        public bool GetCurrentUnlockFloorCost(int floor, out AdventureBossUnlockFloorCostSheet.Row unlockFloorCostRow)
+        {
+            unlockFloorCostRow = null;
+            var tableSheets = TableSheets.Instance;
+            var seasonInfo = SeasonInfo.Value;
+            if (seasonInfo == null)
+            {
+                NcDebug.LogError("SeasonInfo is null");
+                return false;
+            }
+            var bossData = tableSheets.AdventureBossSheet.Values.FirstOrDefault(boss => boss.BossId == seasonInfo.BossId);
+            if (bossData == null)
+            {
+                NcDebug.LogError($"Not found boss data. bossId: {seasonInfo.BossId}");
+                return false;
+            }
+            var floorRowData = tableSheets.AdventureBossFloorSheet.Values.FirstOrDefault(floorRow => floorRow.AdventureBossId == bossData.Id && floorRow.Floor == floor);
+            if (floorRowData == null)
+            {
+                NcDebug.LogError($"Not found floor data. bossId: {bossData.Id}, floor: {floor}");
+                return false;
+            }
+
+            if (!tableSheets.AdventureBossUnlockFloorCostSheet.TryGetValue(floorRowData.Id, out unlockFloorCostRow))
+            {
+                NcDebug.LogError($"Not found unlock cost data. unlockCostId: {floorRowData.Id}");
+                return false;
+            }
+            return true;
+        }
+
         public ClaimableReward GetCurrentTotalRewards()
         {
             var myReward = new ClaimableReward
@@ -268,6 +274,7 @@ namespace Nekoyume.UI.Model
                                         ExploreInfo.Value,
                                         ExploreInfo.Value.AvatarAddress,
                                         TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                        States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                         false,
                                         out var ncgReward);
                 }
@@ -277,6 +284,7 @@ namespace Nekoyume.UI.Model
                                         BountyBoard.Value,
                                         Game.Game.instance.States.CurrentAvatarState.address,
                                         TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                        States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                         false,
                                         out var wantedReward);
                 }
@@ -300,6 +308,7 @@ namespace Nekoyume.UI.Model
                                 BountyBoard.Value,
                                 Game.Game.instance.States.CurrentAvatarState.address,
                                 TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                 false,
                                 out var wantedReward);
             return myReward;
@@ -321,6 +330,7 @@ namespace Nekoyume.UI.Model
                                     ExploreInfo.Value,
                                     ExploreInfo.Value.AvatarAddress,
                                     TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                    States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                     false,
                                     out var ncgReward);
             }

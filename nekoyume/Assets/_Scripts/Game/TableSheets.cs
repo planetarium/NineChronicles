@@ -277,6 +277,8 @@ namespace Nekoyume.Game
 
         public AdventureBossSheet AdventureBossSheet { get; private set; }
 
+        public AdventureBossUnlockFloorCostSheet AdventureBossUnlockFloorCostSheet { get; private set; }
+
         public AdventureBossWantedRewardSheet AdventureBossWantedRewardSheet { get; private set; }
 
         public void ItemSheetInitialize()

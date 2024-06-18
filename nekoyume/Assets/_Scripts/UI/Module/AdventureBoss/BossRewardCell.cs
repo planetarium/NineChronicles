@@ -39,7 +39,7 @@ namespace Nekoyume
                 NcDebug.LogError($"AdventureBossWantedRewardSheet not found id:{adventureBossRow.Id}");
                 return;
             }
-            var fixedReward = wantedRewardRow.FixedRewards.First();
+            var fixedReward = wantedRewardRow.FixedReward;
             if (fixedReward == null)
             {
                 confirmRewardItemView.gameObject.SetActive(false);

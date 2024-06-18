@@ -123,7 +123,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if(States.Instance.StakingLevel < Wanted.RequiredStakingLevel)
+            if (States.Instance.StakingLevel < States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel)
             {
                 stakingWarningMassage.SetActive(true);
                 bountyInputArea.gameObject.SetActive(false);
@@ -261,7 +261,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if(States.Instance.StakingLevel < Wanted.RequiredStakingLevel)
+            if(States.Instance.StakingLevel < States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel)
             {
                 NcDebug.LogError("[AdventureBossEnterBountyPopup] OnClickConfirm: Staking level is not enough");
                 return;

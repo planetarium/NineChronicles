@@ -36,7 +36,7 @@ namespace Nekoyume
                 _bossImage.transform.localPosition = Vector3.zero;
             }
 
-            var itemReward = data.FixedRewards.FirstOrDefault();
+            var itemReward = data.FixedReward;
             baseItemView.gameObject.SetActive(true);
             baseItemView.ItemViewSetAdventureBossItemData(itemReward);
         }
