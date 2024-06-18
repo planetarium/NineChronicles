@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UniRx;
 using Nekoyume.Model.AdventureBoss;
 using Cysharp.Threading.Tasks;
-using Nekoyume.Action.AdventureBoss;
 using Libplanet.Types.Assets;
 using Nekoyume.State;
 using Nekoyume.Helper;
@@ -88,7 +87,7 @@ namespace Nekoyume.UI.Model
                     EndedExploreBoards[endedSeasonIndex] = endedExploreBoard;
                 }
                 //보상수령기간이 지날경우 더이상 가져오지않음.
-                if (endedSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
+                if (endedSeasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval < Game.Game.instance.Agent.BlockIndex)
                 {
                     break;
                 }
@@ -122,7 +121,7 @@ namespace Nekoyume.UI.Model
                     EndedExploreBoards.Add(endedSeasonIndex, endedExploreBoard);
 
                     //보상수령기간이 지날경우 더이상 가져오지않음.
-                    if (endedSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
+                    if (endedSeasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval < Game.Game.instance.Agent.BlockIndex)
                     {
                         break;
                     }
@@ -216,6 +215,24 @@ namespace Nekoyume.UI.Model
             }
 
             return total;
+        }
+
+        public bool GetCurrentBossData(out AdventureBossSheet.Row bossData)
+        {
+            bossData = null;
+            if (SeasonInfo.Value == null)
+            {
+                NcDebug.LogError("SeasonInfo is null");
+                return false;
+            }
+            var tableSheets = TableSheets.Instance;
+            bossData = tableSheets.AdventureBossSheet.Values.FirstOrDefault(boss => boss.BossId == SeasonInfo.Value.BossId);
+            if (bossData == null)
+            {
+                NcDebug.LogError($"Not found boss data. bossId: {SeasonInfo.Value.BossId}");
+                return false;
+            }
+            return true;
         }
 
         public bool GetCurrentUnlockFloorCost(int floor, out AdventureBossUnlockFloorCostSheet.Row unlockFloorCostRow)
@@ -339,7 +356,7 @@ namespace Nekoyume.UI.Model
 
         static public ClaimableReward AddClaimableReward(ClaimableReward origin, ClaimableReward addable)
         {
-            if(origin.NcgReward == null || origin.NcgReward.Value == null)
+            if (origin.NcgReward == null || origin.NcgReward.Value == null)
             {
                 origin.NcgReward = addable.NcgReward;
             }

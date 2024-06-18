@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Nekoyume.Action.AdventureBoss;
 using Nekoyume.Blockchain;
 using Nekoyume.Model.AdventureBoss;
 using Nekoyume.State;
@@ -119,7 +118,7 @@ namespace Nekoyume.UI
         {
             var adventureBossData = Game.instance.AdventureBossData;
             _endedClaimableSeasonInfo = adventureBossData.EndedSeasonInfos.Values.
-                Where(seasonInfo => seasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration > Game.instance.Agent.BlockIndex).
+                Where(seasonInfo => seasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval > Game.instance.Agent.BlockIndex).
                 OrderBy(seasonInfo => seasonInfo.EndBlockIndex).
                 ToList();
 

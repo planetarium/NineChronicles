@@ -6,7 +6,6 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.Action.AdventureBoss;
     using Nekoyume.ActionExtensions;
     using Nekoyume.L10n;
     using Nekoyume.TableData.AdventureBoss;
@@ -117,8 +116,14 @@ namespace Nekoyume.UI
                 challengeFloors[i].SetActive(i >= currentFloor && i < maxFloor);
             }
 
-            _breakThroughApPotionCost = currentFloor * SweepAdventureBoss.UnitApPotion;
-            _challengeApPotionCost = (maxFloor - currentFloor) * ExploreAdventureBoss.UnitApPotion;
+            if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
+            {
+                NcDebug.LogError("BossData is null");
+                return;
+            }
+
+            _breakThroughApPotionCost = currentFloor * bossData.SweepAp;
+            _challengeApPotionCost = (maxFloor - currentFloor) * bossData.ExploreAp;
             var currentApPotionCount =
                 Game.Game.instance.States.CurrentAvatarState.inventory.GetMaterialCount(
                     (int)CostType.ApPotion);
