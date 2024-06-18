@@ -68,7 +68,9 @@ namespace Nekoyume
                         ? value.ToString("+0.##;-0.##")
                         : (value).ToString();
                 case StatType.CRI:
-                    return value.ToString("+0.##\\%;-0.##\\%");
+                    return isSigned
+                        ? value.ToString("+0.##\\%;-0.##\\%")
+                        : $"{value:0.##\\%}";
                 case StatType.DRR:
                 case StatType.CDMG:
                     return isSigned
@@ -93,7 +95,7 @@ namespace Nekoyume
                 case StatType.SPD:
                     return value.ToCurrencyNotation();
                 case StatType.CRI:
-                    return $"{value:0.#\\%}";
+                    return $"{value:0.##\\%}";
                 case StatType.DRR:
                 case StatType.CDMG:
                     return ((long)(value / 100m)).ToCurrencyNotation();
