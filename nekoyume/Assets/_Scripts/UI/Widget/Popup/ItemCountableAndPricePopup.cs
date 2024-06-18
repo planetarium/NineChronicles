@@ -252,7 +252,7 @@ namespace Nekoyume.UI
         // Note: Consumable(Food) 아이템의 경우 개당 가격 (Unit Price) 값에 소수점을 허용하지 않는다.
         private bool IsUnitPriceValid()
         {
-            if (_data.Item.Value.ItemBase.Value.ItemType != ItemType.Consumable)
+            if (_data.Item.Value?.ItemBase.Value?.ItemType != ItemType.Consumable)
             {
                 return true;
             }
