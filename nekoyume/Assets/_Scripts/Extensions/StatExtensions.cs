@@ -68,9 +68,7 @@ namespace Nekoyume
                         ? value.ToString("+0.##;-0.##")
                         : (value).ToString();
                 case StatType.CRI:
-                    return isSigned
-                        ? value.ToString("+0.##\\%;-0.##\\%")
-                        : $"{value:0.#\\%}";
+                    return value.ToString("+0.##\\%;-0.##\\%");
                 case StatType.DRR:
                 case StatType.CDMG:
                     return isSigned
