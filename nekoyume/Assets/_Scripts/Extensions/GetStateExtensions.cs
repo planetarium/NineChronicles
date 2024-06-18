@@ -151,7 +151,7 @@ namespace Nekoyume
         public static async Task<SeasonInfo> GetAdventureBossSeasonInfoAsync(this IAgent agent, long seasonId)
         {
             var seasonInfo = await agent.GetStateAsync(Addresses.AdventureBoss, new Address(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
-            if(seasonInfo is List list)
+            if (seasonInfo is List list)
             {
                 var result = new SeasonInfo(list);
                 NcDebug.Log($"[AdventureBoss] Get SeasonInfo SeasonId: {result.Season}  S:{result.StartBlockIndex}  E:{result.EndBlockIndex}  N:{result.NextStartBlockIndex}");
@@ -164,7 +164,7 @@ namespace Nekoyume
         public static async Task<BountyBoard> GetBountyBoardAsync(this IAgent agent, long seasonId)
         {
             var bountyBoard = await agent.GetStateAsync(Addresses.BountyBoard, new Address(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
-            if(bountyBoard is List list)
+            if (bountyBoard is List list)
             {
                 var result = new BountyBoard(list);
                 NcDebug.Log($"[AdventureBoss] Get BountyBoard Investors: {result.Investors.Count}");
