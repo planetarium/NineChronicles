@@ -288,8 +288,9 @@ namespace Nekoyume.Game.Character
                 ProcessAttack(target, info, true);
             }
         }
+        
         public IEnumerator CoDoubleAttackWithCombo(
-            IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
+            IReadOnlyList<Skill.SkillInfo> skillInfos)
         {
             if (skillInfos is null ||
                 skillInfos.Count == 0)
