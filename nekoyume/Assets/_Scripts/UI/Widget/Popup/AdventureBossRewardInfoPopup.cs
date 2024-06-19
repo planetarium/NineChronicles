@@ -221,11 +221,11 @@ namespace Nekoyume.UI
             {
                 myScoreValue = adventureBossData.ExploreInfo.Value.Score;
             }
-            long contribution = 0;
+            double contribution = 0;
             if (adventureBossData.ExploreBoard.Value != null && adventureBossData.ExploreBoard.Value.TotalPoint != 0)
             {
                 totalScore.text = adventureBossData.ExploreBoard.Value.TotalPoint.ToString("#,0");
-                contribution = (long)myScoreValue / adventureBossData.ExploreBoard.Value.TotalPoint * 100;
+                contribution = ((double)myScoreValue / adventureBossData.ExploreBoard.Value.TotalPoint) * 100;
             }
             else
             {
