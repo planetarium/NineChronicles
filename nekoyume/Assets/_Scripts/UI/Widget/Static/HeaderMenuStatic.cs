@@ -529,7 +529,8 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 3);
                     break;
                 case AssetVisibleState.AdventureBoss:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isApPotionActive: true);
+                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 1, isApPotionActive: true);
+                    SetMaterial(0, CostType.GoldDust);
                     break;
             }
         }
