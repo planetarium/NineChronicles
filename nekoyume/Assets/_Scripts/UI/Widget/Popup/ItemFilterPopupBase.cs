@@ -77,7 +77,8 @@ namespace Nekoyume.UI
             Level2 = 1 << 2,
             Level3 = 1 << 3,
             Level4 = 1 << 4,
-            Level5More = 1 << 5,
+            Level5 = 1 << 5,
+            Level6More = 1 << 6,
         }
 
         [Flags]

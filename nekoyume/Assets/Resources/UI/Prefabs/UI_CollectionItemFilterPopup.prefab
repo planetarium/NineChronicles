@@ -985,6 +985,8 @@ MonoBehaviour:
     itemType: 16
   - toggle: {fileID: 2995387745288810677}
     itemType: 32
+  - toggle: {fileID: 3681827814800760388}
+    itemType: 64
   upgradeLevelToggles:
   - toggle: {fileID: 1474829809555299347}
     upgradeLevel: 0
@@ -1000,6 +1002,8 @@ MonoBehaviour:
     upgradeLevel: 16
   - toggle: {fileID: 380221254991968765}
     upgradeLevel: 32
+  - toggle: {fileID: 5267272607913591695}
+    upgradeLevel: 64
   optionCountToggles: []
   withSkillToggles: []
   _searchInputField: {fileID: 697725487413271905}
@@ -6108,6 +6112,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a2f639b857bff3b4c8c136b903c361ca, type: 3}
+--- !u!114 &3681827814800760388 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4502693004674264880, guid: a2f639b857bff3b4c8c136b903c361ca,
+    type: 3}
+  m_PrefabInstance: {fileID: 965104635690152308}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 090a3247e50b4ac2929c086464b5cfbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6426966266357068583 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6076928512697385555, guid: a2f639b857bff3b4c8c136b903c361ca,
@@ -15015,6 +15031,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8603524460926676159}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5267272607913591695 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4502693004674264880, guid: a2f639b857bff3b4c8c136b903c361ca,
+    type: 3}
+  m_PrefabInstance: {fileID: 8603524460926676159}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 090a3247e50b4ac2929c086464b5cfbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &9148800116399139206
 PrefabInstance:
   m_ObjectHideFlags: 0
