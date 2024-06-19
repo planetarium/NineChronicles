@@ -17,6 +17,7 @@ namespace Nekoyume.UI
     using System.Linq;
     using UniRx;
     using static Nekoyume.Data.AdventureBossGameData;
+    using static Nekoyume.UI.Scroller.NotificationCell;
 
     public class AdventureBoss : Widget
     {
@@ -68,9 +69,17 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            addBountyButton.OnClickSubject.Subscribe(_ =>
+            addBountyButton.OnClickSubject.ThrottleFirst(TimeSpan.FromSeconds(1)).Subscribe(_ =>
             {
                 Widget.Find<AdventureBossEnterBountyPopup>().Show();
+            }).AddTo(gameObject);
+
+            addBountyButton.OnClickDisabledSubject.ThrottleFirst(TimeSpan.FromSeconds(1)).Subscribe(_ =>
+            {
+                OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_ADVENTURE_BOSS_CAN_NOT_BOUNTY"),
+                        NotificationType.Information);
             }).AddTo(gameObject);
 
             viewAllButton.OnClickSubject.Subscribe(_ =>
@@ -82,6 +91,7 @@ namespace Nekoyume.UI
             enterButton.OnClickSubject.Subscribe(_ => { Find<AdventureBossBattlePopup>().Show(); })
                 .AddTo(gameObject);
             enterButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_ENTER"));
+            remainingBlockTime.text = "(-)";
         }
 
         private void SetBossData(int bossId)
@@ -357,7 +367,7 @@ namespace Nekoyume.UI
             {
                 NcDebug.LogError(e);
             }
-
+            
             RefreshMyReward();
         }
 

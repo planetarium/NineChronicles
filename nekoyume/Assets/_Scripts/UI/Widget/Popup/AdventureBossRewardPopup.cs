@@ -304,6 +304,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            receiveAllButton.OnClickSubject.OnNext(receiveAllButton.CurrentState.Value);
             _disposablesByEnable.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
         }
