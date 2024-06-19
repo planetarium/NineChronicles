@@ -1777,6 +1777,7 @@ MonoBehaviour:
     nameEng: Grimoire
     phrase1: UI_SUMMON_GRIMOIRE_PHRASE_1
     phrase2: UI_SUMMON_GRIMOIRE_PHRASE_2
+    bottomImageColor: {r: 0.7254902, g: 1, b: 0.72156864, a: 1}
   - summonSheetId: 30001
     tabToggle: {fileID: 454514871044782777}
     enableObj:
@@ -1785,6 +1786,7 @@ MonoBehaviour:
     nameEng: Ruby Aura
     phrase1: 
     phrase2: UI_SUMMON_GOLDEN_AURA_PHRASE_3
+    bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
   - summonSheetId: 30002
     tabToggle: {fileID: 8417508641502258821}
     enableObj:
@@ -1793,6 +1795,7 @@ MonoBehaviour:
     nameEng: Ruby Rune
     phrase1: UI_SUMMON_GOLDEN_RUNE_PHRASE_1
     phrase2: UI_SUMMON_GOLDEN_RUNE_PHRASE_3
+    bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
   - summonSheetId: 10002
     tabToggle: {fileID: 7694223387329242290}
     enableObj:
@@ -1801,6 +1804,7 @@ MonoBehaviour:
     nameEng: Golden Aura
     phrase1: UI_SUMMON_GOLDEN_AURA_PHRASE_1
     phrase2: UI_SUMMON_GOLDEN_AURA_PHRASE_2
+    bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
   - summonSheetId: 20001
     tabToggle: {fileID: 7694223387165152743}
     enableObj:
@@ -1809,6 +1813,7 @@ MonoBehaviour:
     nameEng: Golden Rune
     phrase1: UI_SUMMON_GOLDEN_RUNE_PHRASE_1
     phrase2: UI_SUMMON_GOLDEN_RUNE_PHRASE_2
+    bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
   - summonSheetId: 10001
     tabToggle: {fileID: 2845889457511383640}
     enableObj:
@@ -1817,6 +1822,7 @@ MonoBehaviour:
     nameEng: Normal Aura
     phrase1: 
     phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
+    bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
   summonItem:
     infoButton: {fileID: 8231604600151179750}
     nameText: {fileID: 5011644342503672705}
@@ -1833,6 +1839,7 @@ MonoBehaviour:
     phrase1Obj: {fileID: 8250399033876441476}
     phrase2Text: {fileID: 2172093485092627098}
     phrase2Obj: {fileID: 8941224004311707540}
+    bottomImage: {fileID: 1404002152874212377}
   skillInfoButton: {fileID: 7998362494925497879}
 --- !u!1 &1881116084576504194
 GameObject:

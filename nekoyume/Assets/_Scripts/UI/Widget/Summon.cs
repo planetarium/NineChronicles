@@ -39,6 +39,7 @@ namespace Nekoyume.UI
             public string nameEng;
             public string phrase1;
             public string phrase2;
+            public Color bottomImageColor;
 
             public SummonSheet.Row SummonSheetRow;
         }
@@ -55,6 +56,7 @@ namespace Nekoyume.UI
             public GameObject phrase1Obj;
             public TextMeshProUGUI phrase2Text;
             public GameObject phrase2Obj;
+            public Image bottomImage;
         }
 
         [Serializable]
@@ -173,6 +175,8 @@ namespace Nekoyume.UI
             summonItem.phrase2Text.text = enablePhrase2
                 ? L10nManager.Localize(currentInfo.phrase2)
                 : string.Empty;
+
+            summonItem.bottomImage.color = currentInfo.bottomImageColor;
 
             skillInfoButton.onClick.RemoveAllListeners();
             skillInfoButton.onClick.AddListener(() => Find<SummonSkillsPopup>().Show(summonRow));
