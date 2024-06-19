@@ -121,20 +121,24 @@ namespace Nekoyume
                     sb.AppendLine($"OnTick: {tick.Character.Id}");
                     sb.AppendLine($"- Id: {tick.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {tick.SkillId}");
-                    // TODO: 하드코딩 수정
-                    if (tick.SkillId == 209000)
+                    if (AuraIceShield.IsFrostBiteBuff(tick.SkillId))
                     {
-                        if (tick.Character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBuff))
+                        foreach (var kvp in tick.Character.Buffs)
                         {
-                            if (frostBuff is StatBuff frostBite)
+                            if (!AuraIceShield.IsFrostBiteBuff(kvp.Key))
                             {
-                                sb.AppendLine($"- has Frostbite: {frostBite}");
-                                sb.AppendLine($"  - Id: {frostBite.RowData.Id}");
-                                sb.AppendLine($"  - Stack: {frostBite.Stack}");
-                                sb.AppendLine($"  - CustomField(Power): {frostBite.CustomField}");
-                                sb.AppendLine($"  - GroupId: {frostBite.BuffInfo.GroupId}");
-                                sb.AppendLine($"  - Duration: {frostBite.BuffInfo.Duration}");
+                                continue;
                             }
+                            if (kvp.Value is not StatBuff frostBite)
+                            {
+                                continue;
+                            }
+                            sb.AppendLine($"- has Frostbite: {frostBite}");
+                            sb.AppendLine($"  - Id: {frostBite.RowData.Id}");
+                            sb.AppendLine($"  - Stack: {frostBite.Stack}");
+                            sb.AppendLine($"  - CustomField(Power): {frostBite.CustomField}");
+                            sb.AppendLine($"  - GroupId: {frostBite.BuffInfo.GroupId}");
+                            sb.AppendLine($"  - Duration: {frostBite.BuffInfo.Duration}");
                         }
                     }
                     break;
