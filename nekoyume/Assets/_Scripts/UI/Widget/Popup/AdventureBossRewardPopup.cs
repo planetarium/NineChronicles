@@ -185,7 +185,7 @@ namespace Nekoyume.UI
                                                     bountyBoard,
                                                     Game.instance.States.CurrentAvatarState.address,
                                                     TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
-                                                    false,
+                                                    States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                                     out var wantedReward);
                         RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
                         if (_lastSeasonId < seasonInfo.Season)
@@ -201,6 +201,8 @@ namespace Nekoyume.UI
                                                             exploreInfo,
                                                             Game.instance.States.CurrentAvatarState.address,
                                                             TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                                            States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
+                                                            States.Instance.GameConfigState.AdventureBossNcgApRatio,
                                                             false,
                                                             out var explorerReward);
                     }

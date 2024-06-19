@@ -182,9 +182,9 @@ namespace Nekoyume.UI
                     {
                         floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                     }
-                    else if (i == 5)
+                    else if (i == 5 && Game.Game.instance.AdventureBossData.GetCurrentUnlockFloorCost(i+1,out var unlockCostData))
                     {
-                        floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
+                        floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i, unlockCostData);
                         if (CurrentUnlockFloor == null)
                         {
                             CurrentUnlockFloor = floors[i];
@@ -211,10 +211,10 @@ namespace Nekoyume.UI
                 {
                     floors[i].SetState(AdventureBossFloor.FloorState.Lock, i);
                 }
-                else if (Game.Game.instance.AdventureBossData.UnlockDict.TryGetValue(i,
-                             out var unlockData) && i >= exploreInfo.MaxFloor)
+                else if (i >= exploreInfo.MaxFloor &&
+                    Game.Game.instance.AdventureBossData.GetCurrentUnlockFloorCost(i + 1, out var unlockData))
                 {
-                    floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
+                    floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i, unlockData);
                     if (CurrentUnlockFloor == null)
                     {
                         CurrentUnlockFloor = floors[i];
@@ -246,7 +246,7 @@ namespace Nekoyume.UI
         private void RefreshMyReward()
         {
             int itemViewIndex = 0;
-            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue && _myReward.NcgReward.Value.MajorUnit> 0)
+            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue && _myReward.NcgReward.Value.MajorUnit > 0)
             {
                 baseItemViews[itemViewIndex].ItemViewSetCurrencyData(
                     _myReward.NcgReward.Value.Currency.Ticker,
