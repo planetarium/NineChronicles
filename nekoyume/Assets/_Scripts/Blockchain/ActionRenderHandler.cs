@@ -3628,7 +3628,6 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<Wanted>()
                 .ObserveOn(Scheduler.ThreadPool)
-                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseWanted)
@@ -3643,7 +3642,10 @@ namespace Nekoyume.Blockchain
             UniTask.RunOnThreadPool(async () =>
             {
                 isFirstWanted = bountyBoard.Value == null;
-                await UpdateAgentStateAsync(eval);
+                if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                {
+                    await UpdateAgentStateAsync(eval);
+                }
             }).ToObservable().ObserveOnMainThread().Subscribe(async _ =>
             {
                 await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState();

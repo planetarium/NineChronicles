@@ -1756,6 +1756,7 @@ namespace Nekoyume.Blockchain
                 .DoOnError(_ =>
                 {
                     // NOTE: Handle exception outside of this method.
+                    NcDebug.LogError("Wanted Error" + _.Message);
                 });
         }
 

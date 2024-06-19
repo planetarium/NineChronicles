@@ -24,7 +24,7 @@ namespace Nekoyume.UI
                     scrollView.ClearData();
                     return;
                 }
-                scrollView.UpdateData(bountyBoard.Investors.Select((x, i) =>
+                scrollView.UpdateData(bountyBoard.Investors.OrderByDescending(investor => investor.Price).Select((x, i) =>
                 {
                     var data = new BountyItemData
                     {

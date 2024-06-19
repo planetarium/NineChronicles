@@ -35,13 +35,12 @@ namespace Nekoyume.UI
         private SimpleCountableItemView[] secondRewardsItemView;
         [SerializeField]
         private GameObject[] clearEffect;
-
-        private int _usedApPotion;
+        [SerializeField]
+        private GameObject retryButton;
 
         public void SetData(int usedApPotion, int totalApPotion, int lastClearFloor, List<AdventureBossSheet.RewardAmountData> exploreRewards, List<AdventureBossSheet.RewardAmountData> firstRewards = null)
         {
             subTitle.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_SUB_TITLE", lastClearFloor.ToOrdinal());
-            _usedApPotion = usedApPotion;
             apPotionUsed.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_AP_POTION_USED", usedApPotion, totalApPotion);
             if (firstRewards == null || firstRewards.Count == 0)
             {
@@ -136,6 +135,11 @@ namespace Nekoyume.UI
                 start = Game.Game.instance.AdventureBossData.ExploreInfo.Value.Score;
             }
             totalScore = start + score;
+
+            if(totalScore == 0)
+            {
+                retryButton.SetActive(false);
+            }
 
             cumulativeScoreText.text = start.ToString("N0");
             DOTween.To(() => start, x => start = x, totalScore, 0.3f)
