@@ -190,7 +190,7 @@ namespace Nekoyume.UI
                     else
                     {
                         bountyedPrice.text = "0";
-                        bountyCount.text = $"(0/3)";
+                        bountyCount.text = "(0/3)";
                     }
                     totalBountyPrice.text = adventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
                     var bountyRewards = adventureBossData.GetCurrentBountyRewards();
