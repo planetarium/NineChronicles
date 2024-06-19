@@ -41,7 +41,7 @@ namespace Nekoyume.UI
                     }
 
                     return data;
-                }));
+                }).OrderByDescending(investor => investor.Ncg));
             }).AddTo(_disposables);
         }
         public override void Close(bool ignoreCloseAnimation = false)
