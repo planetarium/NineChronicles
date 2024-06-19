@@ -183,8 +183,8 @@ namespace Nekoyume.UI.Module
                 case ItemSubType.Aura:
                     _requireLevel = gameConfig.RequireCharacterLevel_EquipmentSlotAura;
                     break;
-                case ItemSubType.Charm:
-                    _requireLevel = gameConfig.RequireCharacterLevel_EquipmentSlotCharm;
+                case ItemSubType.Grimoire:
+                    _requireLevel = gameConfig.RequireCharacterLevel_EquipmentSlotGrimoire;
                     break;
                 case ItemSubType.Food:
                     switch (ItemSubTypeIndex)

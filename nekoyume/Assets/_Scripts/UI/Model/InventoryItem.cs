@@ -107,8 +107,8 @@ namespace Nekoyume.UI.Model
                             return level >= gameConfig.RequireCharacterLevel_EquipmentSlotRing1;
                         case ItemSubType.Aura:
                             return level >= gameConfig.RequireCharacterLevel_EquipmentSlotAura;
-                        case ItemSubType.Charm:
-                            return level >= gameConfig.RequireCharacterLevel_EquipmentSlotCharm;
+                        case ItemSubType.Grimoire:
+                            return level >= gameConfig.RequireCharacterLevel_EquipmentSlotGrimoire;
                     }
                     break;
                 case ItemType.Consumable:

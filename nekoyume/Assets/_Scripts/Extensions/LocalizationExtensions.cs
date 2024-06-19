@@ -685,8 +685,8 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_RING");
                 case ItemSubType.Aura:
                     return L10nManager.Localize("UI_AURA");
-                case ItemSubType.Charm:
-                    return L10nManager.Localize("UI_CHARM");
+                case ItemSubType.Grimoire:
+                    return L10nManager.Localize("UI_GRIMOIRE");
                 case ItemSubType.EquipmentMaterial:
                 case ItemSubType.FoodMaterial:
                 case ItemSubType.MonsterPart:
