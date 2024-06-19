@@ -126,10 +126,8 @@ namespace Nekoyume.UI
                 Where(bountyBoard => _endedClaimableSeasonInfo.Any(seasondata => seasondata.Season == bountyBoard.Season) &&
                     bountyBoard.Investors.Any(inv => inv.AvatarAddress == Game.instance.States.CurrentAvatarState.address && !inv.Claimed)).
                 ToList();
-
             if (claimableInfo.Count == 0)
             {
-                Close();
                 return;
             }
 
