@@ -127,7 +127,7 @@ namespace Nekoyume.UI
         {
             foreach (var item in clearEffect)
             {
-                item.SetActive(_usedApPotion > 0);
+                item.SetActive(score > 0);
             }
             scoreText.text = score.ToString("N0");
 
@@ -139,11 +139,11 @@ namespace Nekoyume.UI
             }
             totalScore = start + score;
 
+            cumulativeScoreText.text = start.ToString("N0");
             DOTween.To(() => start, x => start = x, totalScore, 0.3f)
-                .SetDelay(0.2f)
+                .SetDelay(1.1f)
                 .OnUpdate(() => cumulativeScoreText.text = start.ToString("N0"))
                 .SetEase(Ease.InOutQuad);
-            //cumulativeScoreText.text = Game.Game.instance.AdventureBossData.ExploreInfo.Value.Score.ToString("N0");
 
             base.Show(ignoreShowAnimation);
         }

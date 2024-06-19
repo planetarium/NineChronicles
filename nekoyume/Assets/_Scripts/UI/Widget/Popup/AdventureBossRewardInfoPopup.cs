@@ -27,6 +27,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI totalScore;
         [SerializeField] private TextMeshProUGUI myScore;
         [SerializeField] private BaseItemView[] baseItemViews;
+        [SerializeField] private TextMeshProUGUI scoreSubDesc;
 
         [Header("Floor Contents")]
         [SerializeField] private FloorRewardCell[] floorRewardCells;
@@ -71,6 +72,60 @@ namespace Nekoyume.UI
             toggleFloor.onValueChanged.AddListener((isOn) =>
             {
                 contentsFloor.SetActive(isOn);
+                if (!isOn)
+                {
+                    return;
+                }
+                if (Game.instance.AdventureBossData.SeasonInfo.Value == null)
+                {
+                    NcDebug.LogError("SeasonInfo is null");
+                    foreach (var item in floorRewardCells)
+                    {
+                        item.gameObject.SetActive(false);
+                    }
+                    return;
+                }
+                var seasonInfo = Game.instance.AdventureBossData.SeasonInfo.Value;
+                var tableSheets = TableSheets.Instance;
+
+                var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
+                if (bossRow == null)
+                {
+                    NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                    foreach (var item in floorRewardCells)
+                    {
+                        item.gameObject.SetActive(false);
+                    }
+                    return;
+                }
+
+                var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row =>
+                                            row.AdventureBossId == bossRow.Id
+                                            && (row.Floor == 6
+                                                || row.Floor == 11
+                                                || row.Floor == 16
+                                                || row.Floor == 20
+                                                ));
+                var floorRewardDatas = TableSheets.Instance.AdventureBossFloorFirstRewardSheet.Values.Join(floorRows,
+                    rewardRow => rewardRow.FloorId,
+                    floorRow => floorRow.Id,
+                    (rewardRow, floorRow) => new
+                    {
+                        floorRow.Floor,
+                        rewardRow.Rewards
+                    }).OrderByDescending(row => row.Floor).ToList();
+
+                for (int i = 0; i < floorRewardCells.Length; i++)
+                {
+                    if (i >= floorRewardDatas.Count)
+                    {
+                        floorRewardCells[i].gameObject.SetActive(false);
+                        NcDebug.LogError($"FloorRewardData is not enough. Index: {i}");
+                        continue;
+                    }
+                    floorRewardCells[i].gameObject.SetActive(true);
+                    floorRewardCells[i].SetData(floorRewardDatas[i].Floor, floorRewardDatas[i].Rewards);
+                }
             });
             toggleOperational.onValueChanged.AddListener((isOn) =>
             {
@@ -160,13 +215,14 @@ namespace Nekoyume.UI
         private void RefreshToggleScore()
         {
             var adventureBossData = Game.instance.AdventureBossData;
+
             int myScoreValue = 0;
             if (adventureBossData.ExploreInfo.Value != null)
             {
                 myScoreValue = adventureBossData.ExploreInfo.Value.Score;
             }
             long contribution = 0;
-            if (adventureBossData.ExploreBoard.Value.TotalPoint != 0)
+            if (adventureBossData.ExploreBoard.Value != null && adventureBossData.ExploreBoard.Value.TotalPoint != 0)
             {
                 totalScore.text = adventureBossData.ExploreBoard.Value.TotalPoint.ToString("#,0");
                 contribution = (long)myScoreValue / adventureBossData.ExploreBoard.Value.TotalPoint * 100;
@@ -175,12 +231,23 @@ namespace Nekoyume.UI
             {
                 totalScore.text = "0";
             }
+
+            string randomRewardText = "0";
+            if (adventureBossData.BountyBoard.Value != null)
+            {
+                var raffleReward = AdventureBossHelper.CalculateRaffleReward(adventureBossData.BountyBoard.Value);
+                randomRewardText = raffleReward.MajorUnit.ToString("#,0");
+            }
+
+            scoreSubDesc.text = L10nManager.Localize("UI_ADVENTURE_BOSS_REWARD_INFO_SCORE_SUB_DESC", randomRewardText);
+
             myScore.text = $"{myScoreValue.ToString("#,0")} ({contribution.ToString("F2")}%)";
+
             var myReward = adventureBossData.GetCurrentExploreRewards();
             int i = 0;
-            if (myReward.NcgReward != null)
+            if (myReward.NcgReward != null && myReward.NcgReward.HasValue && myReward.NcgReward.Value.MajorUnit > 0)
             {
-                baseItemViews[i].ItemViewSetCurrencyData(myReward.NcgReward.Value.Currency.Ticker, (decimal)myReward.NcgReward.Value.RawValue);
+                baseItemViews[i].ItemViewSetCurrencyData(myReward.NcgReward.Value.Currency.Ticker, (decimal)myReward.NcgReward.Value.MajorUnit);
                 i++;
             }
             foreach (var item in myReward.ItemReward)

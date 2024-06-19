@@ -1,10 +1,9 @@
+using Nekoyume.ActionExtensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.TableData.AdventureBoss;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
-using static Nekoyume.Data.AdventureBossGameData;
 
 namespace Nekoyume
 {
@@ -35,27 +34,19 @@ namespace Nekoyume
         public void SetData(AdventureBossSheet.Row adventureBossRow)
         {
             SetBossData(adventureBossRow.BossId);
-            if(!TableSheets.Instance.AdventureBossWantedRewardSheet.TryGetValue(adventureBossRow.Id,out var wantedRewardRow))
+            if (!TableSheets.Instance.AdventureBossWantedRewardSheet.TryGetValue(adventureBossRow.Id, out var wantedRewardRow))
             {
                 NcDebug.LogError($"AdventureBossWantedRewardSheet not found id:{adventureBossRow.Id}");
                 return;
             }
             var fixedReward = wantedRewardRow.FixedRewards.First();
-            if(fixedReward == null)
+            if (fixedReward == null)
             {
                 confirmRewardItemView.gameObject.SetActive(false);
             }
             else
             {
-                switch (fixedReward.ItemType)
-                {
-                    case "Material":
-                        confirmRewardItemView.ItemViewSetItemData(fixedReward.ItemId, 0);
-                        break;
-                    case "Rune":
-                        confirmRewardItemView.ItemViewSetCurrencyData(fixedReward.ItemId, 0);
-                        break;
-                }
+                confirmRewardItemView.ItemViewSetAdventureBossItemData(fixedReward);
             }
             var rendomRewards = wantedRewardRow.RandomRewards;
             for (int i = 0; i < randomRewardItemViews.Length; i++)
@@ -63,20 +54,12 @@ namespace Nekoyume
                 if (i < rendomRewards.Count)
                 {
                     var randomReward = rendomRewards[i];
-                    switch (randomReward.ItemType)
-                    {
-                        case "Material":
-                            randomRewardItemViews[i].ItemViewSetItemData(randomReward.ItemId, 0);
-                            break;
-                        case "Rune":
-                            randomRewardItemViews[i].ItemViewSetCurrencyData(randomReward.ItemId, 0);
-                            break;
-                    }
+                    randomRewardItemViews[i].ItemViewSetAdventureBossItemData(randomReward);
                 }
                 else
                 {
                     randomRewardItemViews[i].gameObject.SetActive(false);
-                }                
+                }
             }
         }
     }
