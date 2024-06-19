@@ -95,7 +95,7 @@ namespace Nekoyume.UI
             }
             if (int.TryParse(input, out int bounty))
             {
-                if (bounty < Wanted.MinBounty)
+                if (bounty < States.Instance.GameConfigState.AdventureBossMinBounty)
                 {
                     bountyInputArea.textComponent.color = bountyRedColor;
                     inputWarning.SetActive(true);

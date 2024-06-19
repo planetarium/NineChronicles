@@ -3800,7 +3800,7 @@ namespace Nekoyume.Blockchain
                 var firstRewardList = new List<AdventureBossSheet.RewardAmountData>();
 
                 var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
-                if(bossRow == null)
+                if (bossRow == null)
                 {
                     NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
                 }
@@ -3847,7 +3847,7 @@ namespace Nekoyume.Blockchain
                     if (simulator.Log.IsClear)
                     {
                         // Add point, reward
-                        if(!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
+                        if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
                         {
                             NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
                         }
@@ -3857,7 +3857,7 @@ namespace Nekoyume.Blockchain
                         score += point;
 
                         var stageId = floorRows.First(row => row.Floor == fl).Id;
-                        if(!tableSheets.AdventureBossFloorFirstRewardSheet.TryGetValue(stageId, out var firstReward))
+                        if (!tableSheets.AdventureBossFloorFirstRewardSheet.TryGetValue(stageId, out var firstReward))
                         {
                             NcDebug.LogError($"FloorFirstRewardSheet is not found. StageId: {stageId}");
                         }
@@ -3868,7 +3868,7 @@ namespace Nekoyume.Blockchain
                         }
                         selector.Clear();
 
-                         var floorReward = floorRows.First(row => row.Floor == fl);
+                        var floorReward = floorRows.First(row => row.Floor == fl);
                         foreach (var reward in floorReward.Rewards)
                         {
                             selector.Add(reward, reward.Ratio);
@@ -3896,8 +3896,15 @@ namespace Nekoyume.Blockchain
                 var stage = Game.Game.instance.Stage;
                 stage.StageType = StageType.AdventureBoss;
                 log.score = score;
-                var totalApPotionUsed = (maxFloor - firstFloor + 1) * Action.AdventureBoss.ExploreAdventureBoss.UnitApPotion;
-                var apPotionUsed = (lastFloor - firstFloor + 1) * Action.AdventureBoss.ExploreAdventureBoss.UnitApPotion;
+
+                if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
+                {
+                    NcDebug.LogError("BossData is null");
+                    return;
+                }
+
+                var totalApPotionUsed = (maxFloor - firstFloor + 1) * bossData.ExploreAp;
+                var apPotionUsed = (lastFloor - firstFloor + 1) * bossData.ExploreAp;
                 var lastClearFloor = log.IsClear ? lastFloor : lastFloor - 1;
 
                 Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, lastClearFloor, rewardList, firstRewardList);
@@ -4030,8 +4037,14 @@ namespace Nekoyume.Blockchain
                 var stage = Game.Game.instance.Stage;
                 stage.StageType = StageType.AdventureBoss;
 
+                if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
+                {
+                    NcDebug.LogError("BossData is null");
+                    return;
+                }
+
                 log.score = point;
-                var totalApPotionUsed = exploreInfo.Floor * Action.AdventureBoss.SweepAdventureBoss.UnitApPotion;
+                var totalApPotionUsed = exploreInfo.Floor * bossData.SweepAp;
 
                 Widget.Find<AdventureBossResultPopup>().SetData(totalApPotionUsed, totalApPotionUsed, exploreInfo.Floor, rewardList);
                 Widget.Find<UI.Battle>().FloorProgressBar.SetData(1, exploreInfo.Floor);

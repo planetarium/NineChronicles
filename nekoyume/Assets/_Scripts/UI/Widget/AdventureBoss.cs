@@ -9,7 +9,6 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.ActionExtensions;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
@@ -159,7 +158,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                participantsCount.text = $"{board.ExplorerList.Count:#,0}";
+                participantsCount.text = $"{board.ExplorerCount:#,0}";
                 usedApPotion.text = $"{board.UsedApPotion:#,0}";
             }
             catch (Exception)
@@ -182,7 +181,7 @@ namespace Nekoyume.UI
                     {
                         floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                     }
-                    else if (i == 5 && Game.Game.instance.AdventureBossData.GetCurrentUnlockFloorCost(i+1,out var unlockCostData))
+                    else if (i == 5 && Game.Game.instance.AdventureBossData.GetCurrentUnlockFloorCost(i + 1, out var unlockCostData))
                     {
                         floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i, unlockCostData);
                         if (CurrentUnlockFloor == null)

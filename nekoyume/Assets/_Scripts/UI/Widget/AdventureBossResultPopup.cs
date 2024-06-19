@@ -1,5 +1,4 @@
 using Libplanet.Types.Assets;
-using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -15,7 +14,6 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using DG.Tweening;
-    using Nekoyume.Action.AdventureBoss;
     using Nekoyume.TableData.AdventureBoss;
     using System.Linq;
     using UniRx;
@@ -45,7 +43,7 @@ namespace Nekoyume.UI
             subTitle.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_SUB_TITLE", lastClearFloor.ToOrdinal());
             _usedApPotion = usedApPotion;
             apPotionUsed.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_AP_POTION_USED", usedApPotion, totalApPotion);
-            if(firstRewards == null || firstRewards.Count == 0)
+            if (firstRewards == null || firstRewards.Count == 0)
             {
                 firstRewardGroup.SetActive(false);
             }
@@ -108,7 +106,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private static CountableItem GetFavCountableItem(string ticker,int amount)
+        private static CountableItem GetFavCountableItem(string ticker, int amount)
         {
             var currency = Currency.Legacy(ticker, 0, null);
             var fav = new FungibleAssetValue(currency, amount, 0);
@@ -191,9 +189,14 @@ namespace Nekoyume.UI
                 {
                     currentFloor = Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor;
                 }
+                if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
+                {
+                    NcDebug.LogError("BossData is null");
+                    return;
+                }
                 Find<AdventureBossPreparation>().Show(
                         L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"),
-                        currentFloor * SweepAdventureBoss.UnitApPotion,
+                        currentFloor * bossData.SweepAp,
                         AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
                 worldMapLoading.Close(true);
             });

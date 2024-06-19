@@ -180,7 +180,7 @@ namespace Nekoyume
             if (exploreBoard is List list)
             {
                 var result = new ExploreBoard(list);
-                NcDebug.Log($"[AdventureBoss] Get ExploreBoard ExplorerList: {result.ExplorerList.Count}");
+                NcDebug.Log($"[AdventureBoss] Get ExploreBoard ExplorerList: {result.ExplorerCount}");
                 return result;
             }
             NcDebug.LogWarning($"[AdventureBoss] No explore board for {seasonId}");
