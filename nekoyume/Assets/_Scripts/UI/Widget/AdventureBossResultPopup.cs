@@ -16,6 +16,7 @@ namespace Nekoyume.UI
 {
     using DG.Tweening;
     using Nekoyume.Action.AdventureBoss;
+    using Nekoyume.TableData.AdventureBoss;
     using System.Linq;
     using UniRx;
     public class AdventureBossResultPopup : Widget
@@ -39,7 +40,7 @@ namespace Nekoyume.UI
 
         private int _usedApPotion;
 
-        public void SetData(int usedApPotion, int totalApPotion, int lastClearFloor, List<AdventureBossGameData.ExploreReward> exploreRewards, List<AdventureBossGameData.ExploreReward> firstRewards = null)
+        public void SetData(int usedApPotion, int totalApPotion, int lastClearFloor, List<AdventureBossSheet.RewardAmountData> exploreRewards, List<AdventureBossSheet.RewardAmountData> firstRewards = null)
         {
             subTitle.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_SUB_TITLE", lastClearFloor.ToOrdinal());
             _usedApPotion = usedApPotion;
@@ -56,33 +57,31 @@ namespace Nekoyume.UI
             RefreshItemView(exploreRewards, secondRewardsItemView);
         }
 
-        private void RefreshItemView(List<AdventureBossGameData.ExploreReward> rewards, SimpleCountableItemView[] itemViews)
+        private void RefreshItemView(List<AdventureBossSheet.RewardAmountData> rewards, SimpleCountableItemView[] itemViews)
         {
-            rewards = rewards.GroupBy(r => r.RewardId)
-                            .Select(g => new AdventureBossGameData.ExploreReward
-                            {
-                                RewardType = g.First().RewardType,
-                                RewardId = g.Key,
-                                Amount = g.Sum(r => r.Amount),
-                                Ratio = g.First().Ratio
-                            }).OrderBy(r => r.RewardId).ToList();
+            rewards = rewards.GroupBy(r => r.ItemId)
+                            .Select(g => new AdventureBossSheet.RewardAmountData(
+                                g.First().ItemType,
+                                g.Key,
+                                g.Sum(r => r.Amount)))
+                            .OrderBy(r => r.ItemId).ToList();
 
             for (int i = 0; i < itemViews.Length; i++)
             {
                 if (i < rewards.Count)
                 {
-                    switch (rewards[i].RewardType)
+                    switch (rewards[i].ItemType)
                     {
                         case "Material":
                             var countableItemMat = new CountableItem(
-                            ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[rewards[i].RewardId]),
+                            ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[rewards[i].ItemId]),
                             rewards[i].Amount);
                             itemViews[i].SetData(countableItemMat, () => ShowTooltip(countableItemMat.ItemBase.Value));
                             itemViews[i].gameObject.SetActive(true);
                             break;
                         case "Rune":
                             RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-                            runeSheet.TryGetValue(rewards[i].RewardId, out var runeRow);
+                            runeSheet.TryGetValue(rewards[i].ItemId, out var runeRow);
                             if (runeRow != null)
                             {
                                 itemViews[i].SetData(GetFavCountableItem(runeRow.Ticker, rewards[i].Amount));

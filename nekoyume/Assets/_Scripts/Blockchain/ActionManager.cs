@@ -1783,12 +1783,15 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        public IObservable<ActionEvaluation<SweepAdventureBoss>> SweepAdventureBoss(int seasonId)
+        public IObservable<ActionEvaluation<SweepAdventureBoss>> SweepAdventureBoss(List<Guid> costume, List<Guid> equipments, List<RuneSlotInfo> runeInfo, int seasonId)
         {
             var action = new SweepAdventureBoss
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                Season = seasonId
+                Season = seasonId,
+                Costumes = costume,
+                Equipments = equipments,
+                RuneInfos = runeInfo
             };
             _lastBattleActionId = action.Id;
             ProcessAction(action);

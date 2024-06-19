@@ -13,6 +13,7 @@ using System;
 namespace Nekoyume.UI
 {
     using Libplanet.Types.Assets;
+    using Nekoyume.Game;
     using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.TableData;
@@ -65,7 +66,7 @@ namespace Nekoyume.UI
                     if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                     {
                         var action = eval.Action;
-                        var tableSheets = Game.Game.instance.TableSheets;
+                        var tableSheets = Game.instance.TableSheets;
                         var mailRewards = new List<MailReward>();
 
                         if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.RawValue > 0)
@@ -74,7 +75,7 @@ namespace Nekoyume.UI
                         }
                         foreach (var itemReward in lastClaimableReward.ItemReward)
                         {
-                            var itemRow = Game.TableSheets.Instance.ItemSheet[itemReward.Key];
+                            var itemRow = TableSheets.Instance.ItemSheet[itemReward.Key];
                             if (itemRow is MaterialItemSheet.Row materialRow)
                             {
                                 var item = ItemFactory.CreateMaterial(materialRow);
@@ -94,7 +95,7 @@ namespace Nekoyume.UI
                         }
                         foreach (var favReward in lastClaimableReward.FavReward)
                         {
-                            RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                            RuneSheet runeSheet = Game.instance.TableSheets.RuneSheet;
                             runeSheet.TryGetValue(favReward.Key, out var runeRow);
                             if (runeRow != null)
                             {
@@ -105,10 +106,10 @@ namespace Nekoyume.UI
                         }
 
                         Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
-                        Game.Game.instance.AdventureBossData.IsRewardLoading.Value = false;
+                        Game.instance.AdventureBossData.IsRewardLoading.Value = false;
                     }
                 });
-                Game.Game.instance.AdventureBossData.IsRewardLoading.Value = true;
+                Game.instance.AdventureBossData.IsRewardLoading.Value = true;
                 Close();
             }).AddTo(gameObject);
             base.Awake();
@@ -116,15 +117,15 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            var adventureBossData = Game.Game.instance.AdventureBossData;
+            var adventureBossData = Game.instance.AdventureBossData;
             _endedClaimableSeasonInfo = adventureBossData.EndedSeasonInfos.Values.
-                Where(seasonInfo => seasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration > Game.Game.instance.Agent.BlockIndex).
+                Where(seasonInfo => seasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration > Game.instance.Agent.BlockIndex).
                 OrderBy(seasonInfo => seasonInfo.EndBlockIndex).
                 ToList();
 
             var claimableInfo = adventureBossData.EndedBountyBoards.Values.
                 Where(bountyBoard => _endedClaimableSeasonInfo.Any(seasondata => seasondata.Season == bountyBoard.Season) &&
-                    bountyBoard.Investors.Any(inv => inv.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address && !inv.Claimed)).
+                    bountyBoard.Investors.Any(inv => inv.AvatarAddress == Game.instance.States.CurrentAvatarState.address && !inv.Claimed)).
                 ToList();
 
             if (claimableInfo.Count == 0)
@@ -161,26 +162,31 @@ namespace Nekoyume.UI
             _isRefreshed = false;
             foreach (var seasonInfo in _endedClaimableSeasonInfo)
             {
-                var bountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(seasonInfo.Season);
-                if (Game.Game.instance.AdventureBossData.EndedBountyBoards.ContainsKey(seasonInfo.Season))
+                var bountyBoard = await Game.instance.Agent.GetBountyBoardAsync(seasonInfo.Season);
+                if (Game.instance.AdventureBossData.EndedBountyBoards.ContainsKey(seasonInfo.Season))
                 {
-                    Game.Game.instance.AdventureBossData.EndedBountyBoards[seasonInfo.Season] = bountyBoard;
+                    Game.instance.AdventureBossData.EndedBountyBoards[seasonInfo.Season] = bountyBoard;
                 }
-                var exploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonInfo.Season);
-                if(Game.Game.instance.AdventureBossData.EndedExploreBoards.ContainsKey(seasonInfo.Season))
+                var exploreBoard = await Game.instance.Agent.GetExploreBoardAsync(seasonInfo.Season);
+                if (Game.instance.AdventureBossData.EndedExploreBoards.ContainsKey(seasonInfo.Season))
                 {
-                    Game.Game.instance.AdventureBossData.EndedExploreBoards[seasonInfo.Season] = exploreBoard;
+                    Game.instance.AdventureBossData.EndedExploreBoards[seasonInfo.Season] = exploreBoard;
                 }
-                var exploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, seasonInfo.Season);
+                var exploreInfo = await Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, seasonInfo.Season);
 
                 var investor = bountyBoard.Investors.FirstOrDefault(
-                    inv => inv.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address);
+                    inv => inv.AvatarAddress == Game.instance.States.CurrentAvatarState.address);
 
                 try
                 {
                     if (investor != null && !investor.Claimed)
                     {
-                        wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward, bountyBoard, Game.Game.instance.States.CurrentAvatarState.address, false, out var wantedReward);
+                        wantedClaimableReward = AdventureBossHelper.CalculateWantedReward(wantedClaimableReward,
+                                                    bountyBoard,
+                                                    Game.instance.States.CurrentAvatarState.address,
+                                                    TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                                    false,
+                                                    out var wantedReward);
                         RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
                         if (_lastSeasonId < seasonInfo.Season)
                         {
@@ -189,7 +195,14 @@ namespace Nekoyume.UI
                     }
                     if (exploreInfo != null && !exploreInfo.Claimed)
                     {
-                        exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward, bountyBoard, exploreBoard, exploreInfo, Game.Game.instance.States.CurrentAvatarState.address, false, out var explorerReward);
+                        exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward,
+                                                            bountyBoard,
+                                                            exploreBoard,
+                                                            exploreInfo,
+                                                            Game.instance.States.CurrentAvatarState.address,
+                                                            TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                                            false,
+                                                            out var explorerReward);
                     }
                 }
                 catch (Exception e)

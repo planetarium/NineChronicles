@@ -1613,7 +1613,7 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<FloorWaveSheet.MonsterData> monsters)
+        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<AdventureBossFloorWaveSheet.MonsterData> monsters)
         {
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
