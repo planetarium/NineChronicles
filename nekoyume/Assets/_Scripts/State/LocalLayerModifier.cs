@@ -546,5 +546,14 @@ namespace Nekoyume.State
                 outKey,
                 isCurrentAvatarState);
         }
+
+        public static void RemoveModifier(
+            Address avatarAddress,
+            HashDigest<SHA256> fungibleId,
+            int count = 1)
+        {
+            var modifier = new AvatarInventoryFungibleItemRemover(fungibleId, count);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
+        }
     }
 }
