@@ -8,9 +8,9 @@ namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
     using Libplanet.Types.Assets;
-    using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Blockchain;
+    using Nekoyume.Data;
     using Nekoyume.Game;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
@@ -18,6 +18,7 @@ namespace Nekoyume.UI
     using Nekoyume.State;
     using System.Linq;
     using UniRx;
+
     public class AdventureBossEnterBountyPopup : PopupWidget
     {
         [SerializeField]
@@ -62,6 +63,8 @@ namespace Nekoyume.UI
         private BountyBossCell[] bountyBossCells;
         [SerializeField]
         private ConditionalButton bountyViewAllButton;
+        [SerializeField]
+        private Button stakingWarningButton;
 
         private Color _bountyDefaultColor;
         private readonly List<System.IDisposable> _disposablesByEnable = new();
@@ -70,6 +73,10 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
+            stakingWarningButton.onClick.AddListener(() =>
+            {
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_STAKING_LEVEL_WARNING"), Scroller.NotificationCell.NotificationType.Alert);
+            });
             bountyInputArea.onValueChanged.AddListener(OnBountyInputAreaValueChanged);
             bountyInputArea.onEndEdit.AddListener(OnBountyInputAreaValueChanged);
             _bountyDefaultColor = bountyInputArea.textComponent.color;
@@ -82,11 +89,12 @@ namespace Nekoyume.UI
 
         private void OnBountyInputAreaValueChanged(string input)
         {
-            
+            var adventureBossData = Game.instance.AdventureBossData;
             if (string.IsNullOrEmpty(input))
             {
                 inputCountObj.SetActive(false);
-                //additionalBountyObj.SetActive(false);
+                var bountyRewards = adventureBossData.GetCurrentBountyRewards();
+                RefreshRewards(bountyRewards);
             }
             else
             {
@@ -107,11 +115,18 @@ namespace Nekoyume.UI
                     inputWarning.SetActive(false);
                     confirmButton.Interactable = true;
                 }
+                if (adventureBossData != null && adventureBossData.CurrentState.Value == Model.AdventureBossData.AdventureBossSeasonState.Progress)
+                {
+                    var bountyRewards = adventureBossData.GetCurrentBountyRewards(bounty);
+                    RefreshRewards(bountyRewards);
+                }
                 additionalBountyPrice.text = $"+ {bounty.ToString("#,0")}";
             }
             else
             {
                 confirmButton.Interactable = false;
+                var bountyRewards = adventureBossData.GetCurrentBountyRewards();
+                RefreshRewards(bountyRewards);
             }
         }
 
@@ -161,7 +176,7 @@ namespace Nekoyume.UI
                     var rewards = tableSheets.AdventureBossWantedRewardSheet.Values.ToList();
                     for (int bossIndex = 0; bossIndex < bountyBossCells.Length; bossIndex++)
                     {
-                        if(bossIndex >= rewards.Count)
+                        if (bossIndex >= rewards.Count)
                         {
                             bountyBossCells[bossIndex].gameObject.SetActive(false);
                             break;
@@ -194,26 +209,14 @@ namespace Nekoyume.UI
                     }
                     totalBountyPrice.text = adventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
                     var bountyRewards = adventureBossData.GetCurrentBountyRewards();
-                    int i = 0;
-                    foreach (var item in bountyRewards.ItemReward)
-                    {
-                        expectedRewardItems[i].ItemViewSetItemData(item.Key, item.Value);
-                        i++;
-                    }
-                    foreach (var item in bountyRewards.FavReward)
-                    {
-                        if(expectedRewardItems[i].ItemViewSetCurrencyData(item.Key, item.Value))
-                        {
-                            i++;
-                        }
-                    }
+                    RefreshRewards(bountyRewards);
                     bossName.text = L10nManager.LocalizeCharacterName(adventureBossData.SeasonInfo.Value.BossId);
                     SetBossData(adventureBossData.SeasonInfo.Value.BossId);
                     break;
                 case Model.AdventureBossData.AdventureBossSeasonState.None:
                 case Model.AdventureBossData.AdventureBossSeasonState.End:
                 default:
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_INVALID"), Scroller.NotificationCell.NotificationType.Alert);  
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_INVALID"), Scroller.NotificationCell.NotificationType.Alert);
                     NcDebug.LogError("[AdventureBossEnterBountyPopup] Show: Invalid state");
                     return;
             }
@@ -222,12 +225,29 @@ namespace Nekoyume.UI
 
             adventureBossData.CurrentState.Subscribe(state =>
             {
-                if(state == Model.AdventureBossData.AdventureBossSeasonState.None ||
+                if (state == Model.AdventureBossData.AdventureBossSeasonState.None ||
                     state == Model.AdventureBossData.AdventureBossSeasonState.End)
                 {
                     Close();
                 }
             }).AddTo(_disposablesByEnable);
+        }
+
+        private void RefreshRewards(AdventureBossGameData.ClaimableReward bountyRewards)
+        {
+            int i = 0;
+            foreach (var item in bountyRewards.ItemReward)
+            {
+                expectedRewardItems[i].ItemViewSetItemData(item.Key, item.Value);
+                i++;
+            }
+            foreach (var item in bountyRewards.FavReward)
+            {
+                if (expectedRewardItems[i].ItemViewSetCurrencyData(item.Key, item.Value))
+                {
+                    i++;
+                }
+            }
         }
 
         private void SetBossData(int bossId)
@@ -260,7 +280,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if(States.Instance.StakingLevel < States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel)
+            if (States.Instance.StakingLevel < States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel)
             {
                 NcDebug.LogError("[AdventureBossEnterBountyPopup] OnClickConfirm: Staking level is not enough");
                 return;
@@ -275,11 +295,11 @@ namespace Nekoyume.UI
                         ActionManager.Instance.Wanted(Game.instance.AdventureBossData.SeasonInfo.Value.Season + 1, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
                             .Subscribe(eval =>
                             {
-                                if(eval.Exception != null)
+                                if (eval.Exception != null)
                                 {
                                     NcDebug.LogError(eval.Exception);
                                     Find<WorldMap>().SetAdventureBossButtonLoading(false);
-                                    if(eval.Exception.InnerException is PreviousBountyException)
+                                    if (eval.Exception.InnerException is PreviousBountyException)
                                     {
                                         OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_PREVIUS_BOUNTY_EXCEPTION"), Scroller.NotificationCell.NotificationType.Alert);
                                     }

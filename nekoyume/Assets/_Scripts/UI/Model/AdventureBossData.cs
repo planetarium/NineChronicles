@@ -10,6 +10,7 @@ using Nekoyume.Game;
 using Nekoyume;
 using Nekoyume.TableData.AdventureBoss;
 using System.Linq;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI.Model
 {
@@ -329,6 +330,42 @@ namespace Nekoyume.UI.Model
 
             myReward = AdventureBossHelper.CalculateWantedReward(myReward,
                                 BountyBoard.Value,
+                                Game.Game.instance.States.CurrentAvatarState.address,
+                                TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
+                                out var wantedReward);
+            return myReward;
+        }
+
+        public ClaimableReward GetCurrentBountyRewards(int additionalAmount)
+        {
+            var myReward = new ClaimableReward
+            {
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+
+            if (SeasonInfo.Value == null || BountyBoard.Value == null || GetCurrentInvestorInfo() == null)
+            {
+                return myReward;
+            }
+            var fav = new FungibleAssetValue(
+                States.Instance.GoldBalanceState.Gold.Currency,
+                additionalAmount,
+                0);
+            var copyedBoad = new BountyBoard((Bencodex.Types.List)BountyBoard.Value.Bencoded);
+            var investor = copyedBoad.Investors.Find(i => i.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address);
+            if (investor != null)
+            {
+                investor.Price += fav;
+            }
+            else
+            {
+                copyedBoad.Investors.Add(new Investor(Game.Game.instance.States.CurrentAvatarState.address, Game.Game.instance.States.CurrentAvatarState.name, fav));
+            }
+            myReward = AdventureBossHelper.CalculateWantedReward(myReward,
+                                copyedBoad,
                                 Game.Game.instance.States.CurrentAvatarState.address,
                                 TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
                                 States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
