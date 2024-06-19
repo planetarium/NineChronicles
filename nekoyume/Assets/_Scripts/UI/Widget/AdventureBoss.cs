@@ -47,6 +47,7 @@ namespace Nekoyume.UI
         [SerializeField] private BaseItemView[] baseItemViews;
         [SerializeField] private TextMeshProUGUI bossName;
         [SerializeField] private Transform bossImageParent;
+        [SerializeField] private TextMeshProUGUI randomRewardText;
 
         public AdventureBossFloor CurrentUnlockFloor;
 
@@ -344,6 +345,9 @@ namespace Nekoyume.UI
                     investorUserNames[i].transform.parent.parent.gameObject.SetActive(false);
                 }
             }
+
+            var raffleReward = AdventureBossHelper.CalculateRaffleReward(board);
+            randomRewardText.text = raffleReward.MajorUnit.ToString("#,0");
 
             try
             {

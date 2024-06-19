@@ -3878,14 +3878,13 @@ namespace Nekoyume.Blockchain
                 var log = simulator.Log;
                 var stage = Game.Game.instance.Stage;
                 stage.StageType = StageType.AdventureBoss;
-                //AdventureBoss에서는 StageID를 시작층 WaveCount를 마지막층 정보로 사용한다.
-                log.stageId = firstFloor;
-                log.waveCount = lastFloor;
                 log.score = score;
                 var totalApPotionUsed = (maxFloor - firstFloor + 1) * Action.AdventureBoss.ExploreAdventureBoss.UnitApPotion;
                 var apPotionUsed = ((log.IsClear ? lastFloor : lastFloor - 1) - firstFloor + 1) * Action.AdventureBoss.ExploreAdventureBoss.UnitApPotion;
+                var lastClearFloor = log.IsClear ? lastFloor : lastFloor - 1;
 
-                Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, rewardList, firstRewardList);
+                Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, lastClearFloor, rewardList, firstRewardList);
+                Widget.Find<UI.Battle>().FloorProgressBar.SetData(firstFloor, lastFloor);
 
                 BattleRenderer.Instance.PrepareStage(log);
             });
@@ -3999,13 +3998,11 @@ namespace Nekoyume.Blockchain
                 var stage = Game.Game.instance.Stage;
                 stage.StageType = StageType.AdventureBoss;
 
-                //AdventureBoss에서는 StageID를 시작층 WaveCount를 마지막층 정보로 사용한다.
-                log.stageId = 1;
-                log.waveCount = exploreInfo.Floor;
                 log.score = point;
-                var totalApPotionUsed = maxFloor * Action.AdventureBoss.SweepAdventureBoss.UnitApPotion;
+                var totalApPotionUsed = exploreInfo.Floor * Action.AdventureBoss.SweepAdventureBoss.UnitApPotion;
 
-                Widget.Find<AdventureBossResultPopup>().SetData(totalApPotionUsed, totalApPotionUsed, rewardList);
+                Widget.Find<AdventureBossResultPopup>().SetData(totalApPotionUsed, totalApPotionUsed, exploreInfo.Floor, rewardList);
+                Widget.Find<UI.Battle>().FloorProgressBar.SetData(1, exploreInfo.Floor);
 
                 BattleRenderer.Instance.PrepareStage(log);
             });

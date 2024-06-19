@@ -19,5 +19,11 @@ namespace Nekoyume.UI
             textStage.text = $"STAGE {stageText}";
             base.Show();
         }
+
+        public void Show(string stageText)
+        {
+            textStage.text = stageText;
+            base.Show();
+        }
     }
 }

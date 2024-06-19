@@ -20,6 +20,8 @@ namespace Nekoyume.UI
 
         private int _maxFloor;
 
+        public TextMeshProUGUI FloorText => floorText;
+
         private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
 
         public void SetData(int currentFloor, int maxFloor)
