@@ -321,6 +321,12 @@ namespace Nekoyume.UI.Model
                 ItemReward = new Dictionary<int, int>(),
                 FavReward = new Dictionary<int, int>(),
             };
+
+            if (SeasonInfo.Value == null || BountyBoard.Value == null || GetCurrentInvestorInfo() == null)
+            {
+                return myReward;
+            }
+
             myReward = AdventureBossHelper.CalculateWantedReward(myReward,
                                 BountyBoard.Value,
                                 Game.Game.instance.States.CurrentAvatarState.address,
