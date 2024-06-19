@@ -1774,7 +1774,6 @@ MonoBehaviour:
     enableObj:
     - {fileID: 543786998197747225}
     - {fileID: 6136981662903751531}
-    costType: 600203
     nameEng: Grimoire
     phrase1: UI_SUMMON_GRIMOIRE_PHRASE_1
     phrase2: UI_SUMMON_GRIMOIRE_PHRASE_2
@@ -1783,7 +1782,6 @@ MonoBehaviour:
     enableObj:
     - {fileID: 8901089498572354511}
     - {fileID: 5125302614372593824}
-    costType: 600202
     nameEng: Ruby Aura
     phrase1: 
     phrase2: UI_SUMMON_GOLDEN_AURA_PHRASE_3
@@ -1792,7 +1790,6 @@ MonoBehaviour:
     enableObj:
     - {fileID: 3095810823935262297}
     - {fileID: 7449814916306265781}
-    costType: 600202
     nameEng: Ruby Rune
     phrase1: UI_SUMMON_GOLDEN_RUNE_PHRASE_1
     phrase2: UI_SUMMON_GOLDEN_RUNE_PHRASE_3
@@ -1801,7 +1798,6 @@ MonoBehaviour:
     enableObj:
     - {fileID: 5923611380794271153}
     - {fileID: 3917762921654706892}
-    costType: 600201
     nameEng: Golden Aura
     phrase1: UI_SUMMON_GOLDEN_AURA_PHRASE_1
     phrase2: UI_SUMMON_GOLDEN_AURA_PHRASE_2
@@ -1810,7 +1806,6 @@ MonoBehaviour:
     enableObj:
     - {fileID: 5597247345816316038}
     - {fileID: 4420197024892280354}
-    costType: 600201
     nameEng: Golden Rune
     phrase1: UI_SUMMON_GOLDEN_RUNE_PHRASE_1
     phrase2: UI_SUMMON_GOLDEN_RUNE_PHRASE_2
@@ -1819,15 +1814,20 @@ MonoBehaviour:
     enableObj:
     - {fileID: 3435501159365475478}
     - {fileID: 3797436776349989978}
-    costType: 800201
     nameEng: Normal Aura
     phrase1: 
     phrase2: UI_SUMMON_NORMAL_AURA_PHRASE_2
   summonItem:
     infoButton: {fileID: 8231604600151179750}
     nameText: {fileID: 5011644342503672705}
-    draw1Button: {fileID: 3752462645003134316}
-    draw10Button: {fileID: 5744589343056017227}
+    normalButtonGroup:
+      container: {fileID: 4168841108232049453}
+      draw1Button: {fileID: 8184638190169501556}
+      draw10Button: {fileID: 6056993572236503113}
+    goldButtonGroup:
+      container: {fileID: 8470673295051864989}
+      draw1Button: {fileID: 3752462645003134316}
+      draw10Button: {fileID: 5744589343056017227}
     backgroundRect: {fileID: 1513654427148664911}
     phrase1Text: {fileID: 2629237838614072490}
     phrase1Obj: {fileID: 8250399033876441476}
@@ -15713,6 +15713,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1861880591225020183}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8184638190169501556 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7512874551732039779, guid: c87f25173d5ad5848984d2772972e6fa,
+    type: 3}
+  m_PrefabInstance: {fileID: 1861880591225020183}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51fb0778038643c68201a534d35634d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2881166917351393064
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16878,6 +16890,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4345362353118009386}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6056993572236503113 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7512874551732039779, guid: c87f25173d5ad5848984d2772972e6fa,
+    type: 3}
+  m_PrefabInstance: {fileID: 4345362353118009386}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51fb0778038643c68201a534d35634d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5113998880175012425
 PrefabInstance:
   m_ObjectHideFlags: 0
