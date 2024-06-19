@@ -11,11 +11,12 @@ namespace Nekoyume.UI
     using Nekoyume.Action.AdventureBoss;
     using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Blockchain;
-    using Nekoyume.Data;
+    using Nekoyume.Game;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.Mail;
     using Nekoyume.State;
+    using System.Linq;
     using UniRx;
     public class AdventureBossEnterBountyPopup : PopupWidget
     {
@@ -94,7 +95,7 @@ namespace Nekoyume.UI
             }
             if (int.TryParse(input, out int bounty))
             {
-                if (bounty < 100)
+                if (bounty < States.Instance.GameConfigState.AdventureBossMinBounty)
                 {
                     bountyInputArea.textComponent.color = bountyRedColor;
                     inputWarning.SetActive(true);
@@ -121,7 +122,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if(States.Instance.StakingLevel < Wanted.RequiredStakingLevel)
+            if (States.Instance.StakingLevel < States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel)
             {
                 stakingWarningMassage.SetActive(true);
                 bountyInputArea.gameObject.SetActive(false);
@@ -139,7 +140,8 @@ namespace Nekoyume.UI
             totalBountyPrice.text = "-";
             bountyCount.text = "-";
             ClearBountyInputField();
-            var adventureBossData = Game.Game.instance.AdventureBossData;
+            var adventureBossData = Game.instance.AdventureBossData;
+            var tableSheets = TableSheets.Instance;
             switch (adventureBossData.CurrentState.Value)
             {
                 case Model.AdventureBossData.AdventureBossSeasonState.Ready:
@@ -155,15 +157,17 @@ namespace Nekoyume.UI
                     {
                         item.SetActive(false);
                     }
-                    var rewards = AdventureBossGameData.AdventureBossRewards;
-                    for(int bossIndex = 0; bossIndex < bountyBossCells.Length; bossIndex++)
+
+                    var rewards = tableSheets.AdventureBossWantedRewardSheet.Values.ToList();
+                    for (int bossIndex = 0; bossIndex < bountyBossCells.Length; bossIndex++)
                     {
-                        if(bossIndex >= rewards.Length)
+                        if(bossIndex >= rewards.Count)
                         {
                             bountyBossCells[bossIndex].gameObject.SetActive(false);
                             break;
                         }
-                        bountyBossCells[bossIndex].SetData(AdventureBossGameData.AdventureBossRewards[bossIndex]);
+                        bountyBossCells[bossIndex].gameObject.SetActive(true);
+                        bountyBossCells[bossIndex].SetData(rewards[bossIndex]);
                     }
                     bossName.text = string.Empty;
                     break;
@@ -186,7 +190,7 @@ namespace Nekoyume.UI
                     else
                     {
                         bountyedPrice.text = "0";
-                        bountyCount.text = $"({currentBountyInfo.Count}/3)";
+                        bountyCount.text = "(0/3)";
                     }
                     totalBountyPrice.text = adventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0");
                     var bountyRewards = adventureBossData.GetCurrentBountyRewards();
@@ -256,19 +260,19 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if(States.Instance.StakingLevel < Wanted.RequiredStakingLevel)
+            if(States.Instance.StakingLevel < States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel)
             {
                 NcDebug.LogError("[AdventureBossEnterBountyPopup] OnClickConfirm: Staking level is not enough");
                 return;
             }
 
-            switch (Game.Game.instance.AdventureBossData.CurrentState.Value)
+            switch (Game.instance.AdventureBossData.CurrentState.Value)
             {
                 case Model.AdventureBossData.AdventureBossSeasonState.Ready:
                     Find<WorldMap>().SetAdventureBossButtonLoading(true);
                     try
                     {
-                        ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season + 1, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
+                        ActionManager.Instance.Wanted(Game.instance.AdventureBossData.SeasonInfo.Value.Season + 1, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
                             .Subscribe(eval =>
                             {
                                 if(eval.Exception != null)
@@ -286,7 +290,7 @@ namespace Nekoyume.UI
                                     return;
                                 }
 
-                                Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
+                                Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
                                 {
                                     Find<WorldMap>().SetAdventureBossButtonLoading(false);
                                 });
@@ -302,7 +306,7 @@ namespace Nekoyume.UI
                     Find<AdventureBoss>().SetBountyLoadingIndicator(true);
                     try
                     {
-                        ActionManager.Instance.Wanted(Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
+                        ActionManager.Instance.Wanted(Game.instance.AdventureBossData.SeasonInfo.Value.Season, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
                             .Subscribe(eval =>
                             {
                                 if (eval.Exception != null)
@@ -319,7 +323,7 @@ namespace Nekoyume.UI
                                     }
                                     return;
                                 }
-                                Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
+                                Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
                                 {
                                     Find<AdventureBoss>().SetBountyLoadingIndicator(false);
                                 });

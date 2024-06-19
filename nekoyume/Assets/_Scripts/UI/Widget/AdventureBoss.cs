@@ -9,7 +9,6 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.ActionExtensions;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
@@ -47,6 +46,7 @@ namespace Nekoyume.UI
         [SerializeField] private BaseItemView[] baseItemViews;
         [SerializeField] private TextMeshProUGUI bossName;
         [SerializeField] private Transform bossImageParent;
+        [SerializeField] private TextMeshProUGUI randomRewardText;
 
         public AdventureBossFloor CurrentUnlockFloor;
 
@@ -158,7 +158,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                participantsCount.text = $"{board.ExplorerList.Count:#,0}";
+                participantsCount.text = $"{board.ExplorerCount:#,0}";
                 usedApPotion.text = $"{board.UsedApPotion:#,0}";
             }
             catch (Exception)
@@ -181,9 +181,9 @@ namespace Nekoyume.UI
                     {
                         floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                     }
-                    else if (i == 5)
+                    else if (i == 5 && Game.Game.instance.AdventureBossData.GetCurrentUnlockFloorCost(i + 1, out var unlockCostData))
                     {
-                        floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
+                        floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i, unlockCostData);
                         if (CurrentUnlockFloor == null)
                         {
                             CurrentUnlockFloor = floors[i];
@@ -210,10 +210,10 @@ namespace Nekoyume.UI
                 {
                     floors[i].SetState(AdventureBossFloor.FloorState.Lock, i);
                 }
-                else if (Game.Game.instance.AdventureBossData.UnlockDict.TryGetValue(i,
-                             out var unlockData) && i >= exploreInfo.MaxFloor)
+                else if (i >= exploreInfo.MaxFloor &&
+                    Game.Game.instance.AdventureBossData.GetCurrentUnlockFloorCost(i + 1, out var unlockData))
                 {
-                    floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i);
+                    floors[i].SetState(AdventureBossFloor.FloorState.UnLock, i, unlockData);
                     if (CurrentUnlockFloor == null)
                     {
                         CurrentUnlockFloor = floors[i];
@@ -245,11 +245,11 @@ namespace Nekoyume.UI
         private void RefreshMyReward()
         {
             int itemViewIndex = 0;
-            if (_myReward.NcgReward != null)
+            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue && _myReward.NcgReward.Value.MajorUnit > 0)
             {
                 baseItemViews[itemViewIndex].ItemViewSetCurrencyData(
                     _myReward.NcgReward.Value.Currency.Ticker,
-                    (decimal)_myReward.NcgReward.Value.RawValue);
+                    (decimal)_myReward.NcgReward.Value.MajorUnit);
                 itemViewIndex++;
             }
 
@@ -344,6 +344,9 @@ namespace Nekoyume.UI
                     investorUserNames[i].transform.parent.parent.gameObject.SetActive(false);
                 }
             }
+
+            var raffleReward = AdventureBossHelper.CalculateRaffleReward(board);
+            randomRewardText.text = raffleReward.MajorUnit.ToString("#,0");
 
             try
             {

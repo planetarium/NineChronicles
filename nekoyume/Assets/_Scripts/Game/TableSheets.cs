@@ -263,9 +263,23 @@ namespace Nekoyume.Game
         
         public BuffLinkSheet BuffLinkSheet { get; private set; }
 
-        public FloorSheet FloorSheet { get; private set; }
+        public AdventureBossFloorSheet AdventureBossFloorSheet { get; private set; }
 
-        public FloorWaveSheet FloorWaveSheet { get; private set; }
+        public AdventureBossFloorWaveSheet AdventureBossFloorWaveSheet { get; private set; }
+
+        public AdventureBossContributionRewardSheet AdventureBossContributionRewardSheet { get; private set; }
+
+        public AdventureBossFloorFirstRewardSheet AdventureBossFloorFirstRewardSheet { get; private set; }
+
+        public AdventureBossFloorPointSheet AdventureBossFloorPointSheet { get; private set; }
+
+        public AdventureBossNcgRewardRatioSheet AdventureBossNcgRewardRatioSheet { get; private set; }
+
+        public AdventureBossSheet AdventureBossSheet { get; private set; }
+
+        public AdventureBossUnlockFloorCostSheet AdventureBossUnlockFloorCostSheet { get; private set; }
+
+        public AdventureBossWantedRewardSheet AdventureBossWantedRewardSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

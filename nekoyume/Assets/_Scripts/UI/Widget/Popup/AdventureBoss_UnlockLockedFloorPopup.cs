@@ -80,20 +80,14 @@ namespace Nekoyume.UI
             _floorIndex = floor;
             _loadingStart = loadingStart;
             _loadingEnd = loadingEnd;
-            if (Game.Game.instance.AdventureBossData.UnlockDict.TryGetValue(_floorIndex, out var unlockData))
+            if (Game.Game.instance.AdventureBossData.GetCurrentUnlockFloorCost(_floorIndex + 1, out var unlockData))
             {
-                if (unlockData.TryGetValue("NCG", out var ncgCost))
-                {
-                    goldUnlockButton.SetCost(CostType.NCG, ncgCost);
-                    goldUnlockButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_UNLOCK_FLOOR_NCG_OPEN_BTN"));
-                    _goldCost = ncgCost;
-                }
-                if (unlockData.TryGetValue("GoldenDust", out var goldenDustCost))
-                {
-                    goldenDustUnlockButton.SetCost(CostType.GoldDust, goldenDustCost);
-                    goldUnlockButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_UNLOCK_FLOOR_GOLDENDUST_OPEN_BTN"));
-                    _goldenDustCost = goldenDustCost;
-                }
+                goldUnlockButton.SetCost(CostType.NCG, (long)unlockData.NcgPrice);
+                goldUnlockButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_UNLOCK_FLOOR_NCG_OPEN_BTN"));
+                _goldCost = (int)unlockData.NcgPrice;
+                goldenDustUnlockButton.SetCost(CostType.GoldDust, unlockData.GoldenDustPrice);
+                goldUnlockButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_UNLOCK_FLOOR_GOLDENDUST_OPEN_BTN"));
+                _goldenDustCost = unlockData.GoldenDustPrice;
                 floorName.text = $"{_floorIndex + 1}F ~ {_floorIndex + 5}F";
                 floorDescription.text = L10nManager.Localize("UI_ADVENTURE_BOSS_UNLOCK_FLOOR_DESC", _floorIndex + 1, _floorIndex + 5);
 

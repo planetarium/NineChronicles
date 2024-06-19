@@ -66,6 +66,11 @@ namespace Nekoyume.UI.Module
         private void UpdateViewAsync(long blockIndex)
         {
             var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+            if(seasonInfo == null)
+            {
+                NcDebug.LogWarning("SeasonInfo is null");
+                return;
+            }
 
             if (Game.Game.instance.AdventureBossData.CurrentState.Value == AdventureBossData.AdventureBossSeasonState.Ready)
             {

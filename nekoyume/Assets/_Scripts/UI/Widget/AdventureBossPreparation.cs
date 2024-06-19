@@ -215,7 +215,7 @@ namespace Nekoyume.UI
             var headerMenuStatic = Find<HeaderMenuStatic>();
 
             //todo change AP Potion
-            var currencyImage = headerMenuStatic.ActionPoint.IconImage;
+            var currencyImage = headerMenuStatic.ApPotion.IconImage;
             var itemMoveAnimation = ItemMoveAnimation.Show(
                 currencyImage.sprite,
                 currencyImage.transform.position,
@@ -271,7 +271,7 @@ namespace Nekoyume.UI
                         }
                         else
                         {
-                            ActionManager.Instance.SweepAdventureBoss((int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season);
+                            ActionManager.Instance.SweepAdventureBoss(costumes, equipments, runeInfos, (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season);
                         }
                         break;
                     default:

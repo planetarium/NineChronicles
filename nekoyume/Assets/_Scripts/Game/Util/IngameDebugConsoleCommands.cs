@@ -73,7 +73,8 @@ namespace Nekoyume.Game.Util
                     raidCam.ChangeRatioState();
             });
 
-            DebugLogConsole.AddCommand("clo","show current commandline option", ()=>{
+            DebugLogConsole.AddCommand("clo", "show current commandline option", () =>
+            {
                 Game.instance.ShowCLO();
             });
 
@@ -89,7 +90,7 @@ namespace Nekoyume.Game.Util
             {
                 NcDebug.Log("------------------------------------------");
                 NcDebug.Log("[AdventureBoss] Info");
-                if(Game.instance.AdventureBossData.SeasonInfo.Value is null)
+                if (Game.instance.AdventureBossData.SeasonInfo.Value is null)
                 {
                     NcDebug.Log("[AdventureBoss] No Season Info");
                 }
@@ -108,10 +109,10 @@ namespace Nekoyume.Game.Util
                 else
                 {
                     NcDebug.Log($"[AdventureBoss] Season TotalPoint : {Game.instance.AdventureBossData.ExploreBoard.Value.TotalPoint}");
-                    if(Game.instance.AdventureBossData.ExploreBoard.Value.ExplorerList is null)
+                    if (Game.instance.AdventureBossData.ExploreBoard.Value is null)
                         NcDebug.Log($"[AdventureBoss] Season ExplorerListCount : 0");
                     else
-                        NcDebug.Log($"[AdventureBoss] Season ExplorerListCount : {Game.instance.AdventureBossData.ExploreBoard.Value.ExplorerList.Count()}");
+                        NcDebug.Log($"[AdventureBoss] Season ExplorerListCount : {Game.instance.AdventureBossData.ExploreBoard.Value.ExplorerCount}");
                     NcDebug.Log($"[AdventureBoss] Season UsedApPotion : {Game.instance.AdventureBossData.ExploreBoard.Value.UsedApPotion}");
                     NcDebug.Log($"[AdventureBoss] Season UsedGoldenDust : {Game.instance.AdventureBossData.ExploreBoard.Value.UsedGoldenDust}");
                     NcDebug.Log($"[AdventureBoss] Season TotalPoint : {Game.instance.AdventureBossData.ExploreBoard.Value.TotalPoint}");

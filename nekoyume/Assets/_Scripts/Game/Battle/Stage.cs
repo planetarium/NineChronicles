@@ -26,10 +26,12 @@ using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.BattleStatus.AdventureBoss;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -37,6 +39,7 @@ using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -568,16 +571,16 @@ namespace Nekoyume.Game.Battle
             ReleaseWhiteList.Clear();
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
+            var title = Widget.Find<StageTitle>();
             if(StageType == StageType.AdventureBoss)
             {
-                Widget.Find<UI.Battle>().FloorProgressBar.SetData(log.stageId, log.waveCount);
+                title.Show($"{Widget.Find<UI.Battle>().FloorProgressBar.FloorText.text}F");
             }
             else
             {
                 Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
+                title.Show(StageType, stageId);
             }
-            var title = Widget.Find<StageTitle>();
-            title.Show(StageType, stageId);
             IsShowHud = false;
             yield return new WaitForSeconds(StageConfig.instance.stageEnterDelay);
 
@@ -654,7 +657,7 @@ namespace Nekoyume.Game.Battle
 
             List<TableData.EquipmentItemRecipeSheet.Row> newRecipes = null;
 
-            if (newlyClearedStage)
+            if (newlyClearedStage && StageType != StageType.AdventureBoss)
             {
                 yield return StartCoroutine(CoUnlockMenu());
                 yield return new WaitForSeconds(0.75f);
@@ -756,8 +759,7 @@ namespace Nekoyume.Game.Battle
                     break;
                 }
                 case StageType.AdventureBoss:
-                    var lastClearFloor = log.IsClear ? log.waveCount : log.waveCount - 1;
-                    Widget.Find<AdventureBossResultPopup>().Show(lastClearFloor, log.score);
+                    Widget.Find<AdventureBossResultPopup>().Show(log.score);
                     yield break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -1611,7 +1613,7 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<FloorWaveSheet.MonsterData> monsters)
+        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<AdventureBossFloorWaveSheet.MonsterData> monsters)
         {
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
@@ -1637,6 +1639,16 @@ namespace Nekoyume.Game.Battle
             Widget.Find<UI.Battle>().FloorProgressBar.SetCompleted(floor);
             LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
             yield return null;
+        }
+
+        public IEnumerator CoStageBuff(CharacterBase affected, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoStageBuff)}() enter. affected: {affected.Id}, skillId: {skillId}");
+            OneLineSystem.Push(MailType.System,
+                L10nManager.Localize("ADVENTURE_BOSS_STAGE_BUFF_NOTIFICATION",L10nManager.Localize($"SKILL_NAME_{skillId}")),
+                NotificationCell.NotificationType.Information);
+
+            yield return new WaitForSeconds(1f);
         }
     }
 }

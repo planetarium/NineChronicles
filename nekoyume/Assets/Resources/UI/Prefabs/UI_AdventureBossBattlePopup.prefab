@@ -1081,7 +1081,7 @@ Animator:
   m_GameObject: {fileID: 950588313498110989}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 231d662d3101245e084ffb4355a821be, type: 2}
+  m_Controller: {fileID: 9100000, guid: b25943b3f48e6cb48be3443454307a32, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -16320,7 +16320,7 @@ PrefabInstance:
     - target: {fileID: 6693541781396535093, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6734565281713029821, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
@@ -16507,7 +16507,7 @@ PrefabInstance:
     - target: {fileID: 6693541781396535093, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6734565281713029821, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
@@ -16689,7 +16689,7 @@ PrefabInstance:
     - target: {fileID: 6693541781396535093, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6734565281713029821, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
@@ -17235,7 +17235,7 @@ PrefabInstance:
     - target: {fileID: 6693541781396535093, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6734565281713029821, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}

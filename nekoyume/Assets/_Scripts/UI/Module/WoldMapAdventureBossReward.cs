@@ -1,18 +1,10 @@
-using CommandLine;
-using Cysharp.Threading.Tasks;
-using Nekoyume.L10n;
-using Nekoyume.Model.AdventureBoss;
-using Nekoyume.Model.Mail;
-using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using System;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.Action.AdventureBoss;
     using Nekoyume.UI.Model;
     using UniRx;
     public class WoldMapAdventureBossReward : MonoBehaviour
@@ -44,7 +36,8 @@ namespace Nekoyume.UI.Module
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposablesByEnable);
             Game.Game.instance.AdventureBossData.IsRewardLoading
-                .Subscribe(isLoading => {
+                .Subscribe(isLoading =>
+                {
                     LoadingObj.SetActive(isLoading);
                     foreach (var text in RemainingBlockIndexs)
                     {
@@ -61,7 +54,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateViewAsync(long blockIndex)
         {
-            if(LoadingObj.activeSelf)
+            if (LoadingObj.activeSelf)
             {
                 foreach (var text in RemainingBlockIndexs)
                 {
@@ -99,18 +92,18 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
-
+            var claimableDuration = State.States.Instance.GameConfigState.AdventureBossClaimInterval;
             var lastClaimableSeasonInfo = adventureBossData.EndedSeasonInfos
-                .Where(info => info.Value.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration > Game.Game.instance.Agent.BlockIndex)
+                .Where(info => info.Value.EndBlockIndex + claimableDuration > Game.Game.instance.Agent.BlockIndex)
                 .OrderByDescending(info => info.Value.EndBlockIndex) // EndBlockIndex가 큰 순서대로 정렬
                 .FirstOrDefault(); // 첫 번째 요소를 선택
 
-            if(lastClaimableSeasonInfo.Value == null)
+            if (lastClaimableSeasonInfo.Value == null)
             {
                 return;
             }
 
-            _lastClaimedBlockIndex = lastClaimableSeasonInfo.Value.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration;
+            _lastClaimedBlockIndex = lastClaimableSeasonInfo.Value.EndBlockIndex + claimableDuration;
         }
 
         public void OnClickRewardPopup()

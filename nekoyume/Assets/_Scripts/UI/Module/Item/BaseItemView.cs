@@ -19,6 +19,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume
 {
+    using Lib9c;
     using Libplanet.Types.Assets;
     using UniRx;
     public class BaseItemView : MonoBehaviour
@@ -238,6 +239,20 @@ namespace Nekoyume
                     Widget.Find<FungibleAssetTooltip>().Show(runeRow.Ticker, ((BigInteger)amount).ToCurrencyNotation(), null);
                 }).AddTo(_disposables);
                 return true;
+            }
+
+            NcDebug.LogWarning($"[ItemViewSetCurrencyData] Can't Find Fav ID {favId} in RuneSheet");
+            switch (favId)
+            {
+                case 9999999:
+                    ItemViewSetCurrencyData("NCG", amount);
+                    return true;
+                case 9999998:
+                    ItemViewSetCurrencyData(Currencies.Crystal.Ticker, amount);
+                    return true;
+                case 9999997:
+                    ItemViewSetCurrencyData("HOURGLASS", amount);
+                    return true;
             }
             NcDebug.LogError($"[ItemViewSetCurrencyData] Can't Find Fav ID {favId} in RuneSheet");
             gameObject.SetActive(false);
