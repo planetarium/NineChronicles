@@ -29,8 +29,8 @@ namespace Nekoyume.UI
         {
             var bountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(seasonId);
             var explorerBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonId);
-            bountyWinnerName.text = bountyBoard.RaffleWinner.ToString().Substring(0,4);
-            bountyReward.text = bountyBoard.RaffleReward.Value.MajorUnit.ToString("#,0");
+            /*bountyWinnerName.text = bountyBoard.RaffleWinner.ToString().Substring(0,4);
+            bountyReward.text = bountyBoard.RaffleReward.Value.MajorUnit.ToString("#,0");*/
             exploreWinnerName.text = explorerBoard.RaffleWinner.ToString().Substring(0, 4);
             exploreReward.text = explorerBoard.RaffleReward.Value.MajorUnit.ToString("#,0");
             base.Show();

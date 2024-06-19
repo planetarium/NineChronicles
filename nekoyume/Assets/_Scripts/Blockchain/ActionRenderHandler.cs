@@ -3685,9 +3685,9 @@ namespace Nekoyume.Blockchain
                 }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                if (Game.Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(eval.Action.Season, out var bountyBoard))
+                if (Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(eval.Action.Season, out var exploreBoard))
                 {
-                    if (bountyBoard.RaffleWinner == null)
+                    if (exploreBoard.RaffleWinner == null)
                     {
                         //최초
                         Widget.Find<AdventureBossNcgRandomRewardPopup>().Show(eval.Action.Season);
@@ -3696,7 +3696,6 @@ namespace Nekoyume.Blockchain
                     //기존정보 업데이트 보상수령 정보를 갱신하기위함.
                     Game.Game.instance.AdventureBossData.RefreshEndedSeasons().Forget();
                 }
-
             });
         }
 

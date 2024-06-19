@@ -57,6 +57,7 @@ namespace Nekoyume.UI.Model
 
         public Dictionary<long, SeasonInfo> EndedSeasonInfos = new Dictionary<long, SeasonInfo>();
         public Dictionary<long, BountyBoard> EndedBountyBoards = new Dictionary<long, BountyBoard>();
+        public Dictionary<long, ExploreBoard> EndedExploreBoards = new Dictionary<long, ExploreBoard>();
 
         private const int _endedSeasonSearchTryCount = 10;
 
@@ -96,16 +97,19 @@ namespace Nekoyume.UI.Model
 
                 var endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex);
                 var endedBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex);
+                var endedExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(endedSeasonIndex);
 
                 if (!EndedSeasonInfos.ContainsKey(endedSeasonIndex))
                 {
                     EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
                     EndedBountyBoards.Add(endedSeasonIndex, endedBountyBoard);
+                    EndedExploreBoards.Add(endedSeasonIndex, endedExploreBoard);
                 }
                 else
                 {
                     EndedSeasonInfos[endedSeasonIndex] = endedSeasonInfo;
                     EndedBountyBoards[endedSeasonIndex] = endedBountyBoard;
+                    EndedExploreBoards[endedSeasonIndex] = endedExploreBoard;
                 }
                 //보상수령기간이 지날경우 더이상 가져오지않음.
                 if (endedSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
@@ -135,9 +139,11 @@ namespace Nekoyume.UI.Model
                 if (!EndedSeasonInfos.TryGetValue(endedSeasonIndex, out var endedSeasonInfo))
                 {
                     endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex);
-                    var oldBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex);
+                    var endedBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex);
+                    var endedExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(endedSeasonIndex);
                     EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
-                    EndedBountyBoards.Add(endedSeasonIndex, oldBountyBoard);
+                    EndedBountyBoards.Add(endedSeasonIndex, endedBountyBoard);
+                    EndedExploreBoards.Add(endedSeasonIndex, endedExploreBoard);
 
                     //보상수령기간이 지날경우 더이상 가져오지않음.
                     if (endedSeasonInfo.EndBlockIndex + ClaimAdventureBossReward.ClaimableDuration < Game.Game.instance.Agent.BlockIndex)
@@ -192,6 +198,7 @@ namespace Nekoyume.UI.Model
             {
                 EndedSeasonInfos.TryAdd(SeasonInfo.Value.Season, SeasonInfo.Value);
                 EndedBountyBoards.TryAdd(SeasonInfo.Value.Season, BountyBoard.Value);
+                EndedExploreBoards.TryAdd(SeasonInfo.Value.Season, ExploreBoard.Value);
             }
             try
             {
