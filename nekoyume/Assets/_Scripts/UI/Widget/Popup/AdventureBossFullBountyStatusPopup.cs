@@ -24,7 +24,7 @@ namespace Nekoyume.UI
                     scrollView.ClearData();
                     return;
                 }
-                scrollView.UpdateData(bountyBoard.Investors.Select((x, i) =>
+                scrollView.UpdateData(bountyBoard.Investors.OrderByDescending(investor => investor.Price).Select((x, i) =>
                 {
                     var data = new BountyItemData
                     {
@@ -41,7 +41,7 @@ namespace Nekoyume.UI
                     }
 
                     return data;
-                }).OrderByDescending(investor => investor.Ncg));
+                }));
             }).AddTo(_disposables);
         }
         public override void Close(bool ignoreCloseAnimation = false)
