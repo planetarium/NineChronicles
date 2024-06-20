@@ -3455,7 +3455,6 @@ namespace Nekoyume.Blockchain
                 }
             }
             
-            var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
             UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(states, avatarAddr)).Forget();
             return eval;
         }
