@@ -2104,6 +2104,13 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = StateGetter.GetAvatarState(eval.OutputState, avatarAddress);
+            if (eval.Action.apStoneCount > 0)
+            {
+                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
+                    r.ItemSubType == ItemSubType.ApStone);
+                // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
+                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount, false);
+            }
             UpdateCurrentAvatarStateAsync(avatarState).Forget();
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
@@ -2116,14 +2123,6 @@ namespace Nekoyume.Blockchain
             ActionEvaluation<HackAndSlashSweep> eval)
         {
             Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
-            if (eval.Action.apStoneCount > 0)
-            {
-                var avatarAddress = eval.Action.avatarAddress;
-                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
-                    r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
-            }
-
             Widget.Find<BattlePreparation>().UpdateInventoryView();
         }
 
