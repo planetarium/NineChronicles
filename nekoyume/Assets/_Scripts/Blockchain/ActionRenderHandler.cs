@@ -3913,7 +3913,7 @@ namespace Nekoyume.Blockchain
                 var lastClearFloor = log.IsClear ? lastFloor : lastFloor - 1;
 
                 Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, lastClearFloor, rewardList, firstRewardList);
-                Widget.Find<UI.Battle>().FloorProgressBar.SetData(firstFloor, maxFloor);
+                Widget.Find<UI.Battle>().FloorProgressBar.SetData(firstFloor, maxFloor, lastFloor);
 
                 BattleRenderer.Instance.PrepareStage(log);
             });
@@ -4054,7 +4054,7 @@ namespace Nekoyume.Blockchain
                 var totalApPotionUsed = exploreInfo.Floor * bossData.SweepAp;
 
                 Widget.Find<AdventureBossResultPopup>().SetData(totalApPotionUsed, totalApPotionUsed, exploreInfo.Floor, rewardList);
-                Widget.Find<UI.Battle>().FloorProgressBar.SetData(1, exploreInfo.Floor);
+                Widget.Find<UI.Battle>().FloorProgressBar.SetData(1, exploreInfo.Floor, exploreInfo.Floor);
 
                 BattleRenderer.Instance.PrepareStage(log);
             });

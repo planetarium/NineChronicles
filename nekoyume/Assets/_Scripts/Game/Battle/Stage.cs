@@ -609,6 +609,13 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoStageEnd)}() enter");
 #endif
+            if (log.IsClear)
+            {
+                if (StageType == StageType.AdventureBoss)
+                {
+                    Widget.Find<UI.Battle>().FloorProgressBar.SetLastFloorCompleted();
+                }
+            }
             IsAvatarStateUpdatedAfterBattle = false;
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
