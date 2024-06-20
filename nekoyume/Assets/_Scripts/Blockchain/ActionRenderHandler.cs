@@ -3385,7 +3385,11 @@ namespace Nekoyume.Blockchain
 
                 if (mail is not null)
                 {
-                    LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    UniTask.RunOnThreadPool(() =>
+                    {
+                        var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
+                        LocalLayerModifier.AddNewMail(avatarState, mail.id);
+                    }).Forget();
                     if (mail.Memo != null && mail.Memo.Contains("season_pass"))
                     {
                         OneLineSystem.Push(MailType.System,
@@ -3457,7 +3461,7 @@ namespace Nekoyume.Blockchain
                     }
                 }
             }
-
+            
             UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(states, avatarAddr)).Forget();
             return eval;
         }
@@ -3522,7 +3526,11 @@ namespace Nekoyume.Blockchain
                 }
                 if (mail is not null)
                 {
-                    LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    UniTask.RunOnThreadPool(() =>
+                    {
+                        var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
+                        LocalLayerModifier.AddNewMail(avatarState, mail.id);
+                    }).Forget();
                     if (mail.Memo != null && mail.Memo.Contains("season_pass"))
                     {
                         OneLineSystem.Push(MailType.System,
@@ -3626,7 +3634,13 @@ namespace Nekoyume.Blockchain
 
             if (mail is not null)
             {
-                LocalLayerModifier.AddNewMail(avatar.address, mail.id);
+                UniTask.RunOnThreadPool(() =>
+                {
+                    var avatarAddr  = gameStates.CurrentAvatarState.address;
+                    var states      = eval.OutputState;
+                    var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
+                    LocalLayerModifier.AddNewMail(avatarState, mail.id);
+                }).Forget();
             }
             if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
             {
