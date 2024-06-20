@@ -999,7 +999,11 @@ namespace Nekoyume.Blockchain
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             var avatarState = renderArgs.AvatarState;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            UniTask.RunOnThreadPool(() =>
+            {
+                LocalLayerModifier.ModifyAgentGold(renderArgs.Evaluation, agentAddress,
+                    result.gold);
+            });
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -1167,7 +1171,11 @@ namespace Nekoyume.Blockchain
             var slot = renderArgs.CombinationSlotState;
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            UniTask.RunOnThreadPool(() =>
+            {
+                LocalLayerModifier.ModifyAgentGold(renderArgs.Evaluation, agentAddress,
+                    result.gold);
+            });
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -1218,7 +1226,11 @@ namespace Nekoyume.Blockchain
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            UniTask.RunOnThreadPool(() =>
+            {
+                LocalLayerModifier.ModifyAgentGold(renderArgs.Evaluation, agentAddress,
+                    result.gold);
+            });
             foreach (var pair in result.materials)
             {
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -1319,9 +1331,13 @@ namespace Nekoyume.Blockchain
             var result = (ItemEnhancement13.ResultModel)renderArgs.CombinationSlotState.Result;
             var itemUsable = result.itemUsable;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
-                .Forget();
+            UniTask.RunOnThreadPool(() =>
+            {
+                LocalLayerModifier.ModifyAgentGold(renderArgs.Evaluation, agentAddress,
+                    result.gold);
+                LocalLayerModifier.ModifyAgentCrystal(renderArgs.Evaluation, agentAddress,
+                    -result.CRYSTAL.MajorUnit);
+            });
 
             if (itemUsable.ItemSubType == ItemSubType.Aura)
             {
@@ -1775,7 +1791,11 @@ namespace Nekoyume.Blockchain
                     }
 
                     var price = info.Price;
-                    LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, price).Forget();
+
+                    UniTask.RunOnThreadPool(() =>
+                    {
+                        LocalLayerModifier.ModifyAgentGold(eval, agentAddress, price);
+                    });
                     LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
 
                     string message;
@@ -1822,7 +1842,10 @@ namespace Nekoyume.Blockchain
                     }
 
                     var taxedPrice = info.Price.DivRem(100, out _) * Buy.TaxRate;
-                    LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, -taxedPrice).Forget();
+                    UniTask.RunOnThreadPool(() =>
+                    {
+                        LocalLayerModifier.ModifyAgentGold(eval, agentAddress, -taxedPrice);
+                    });
                     LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
 
                     string message;
@@ -2435,10 +2458,11 @@ namespace Nekoyume.Blockchain
             var cost = CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, sheet);
             UniTask.RunOnThreadPool(() =>
             {
+                LocalLayerModifier.ModifyAgentCrystal(
+                    eval,
+                    States.Instance.AgentState.address,
+                    cost.MajorUnit);
                 UniTask.WhenAll(
-                    LocalLayerModifier.ModifyAgentCrystalAsync(
-                        States.Instance.AgentState.address,
-                        cost.MajorUnit),
                     UpdateCurrentAvatarStateAsync(eval),
                     UpdateAgentStateAsync(eval));
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
