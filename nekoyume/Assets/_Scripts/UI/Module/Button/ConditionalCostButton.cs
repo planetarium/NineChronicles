@@ -176,6 +176,8 @@ namespace Nekoyume.UI.Module
                     return RxProps.EventDungeonTicketProgress.Value.currentTickets >= cost;
                 case CostType.SilverDust:
                 case CostType.GoldDust:
+                case CostType.RubyDust:
+                case CostType.EmeraldDust:
                     inventory = States.Instance.CurrentAvatarState.inventory;
                     var materialCount = inventory.GetMaterialCount((int)type);
                     return materialCount >= cost;

@@ -28,7 +28,6 @@ namespace Nekoyume.UI
         [SerializeField] private Animator animator;
         [SerializeField] private SummonCostButton normalDrawButton;
         [SerializeField] private SummonCostButton goldenDrawButton;
-        [SerializeField] private SummonCostButton redDrawButton;
 
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button skipButton;
@@ -59,15 +58,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            closeButton.onClick.AddListener(() =>
-            {
-                Close(true);
-                SetMaterialAssets();
-            });
-            CloseWidget = () =>
-            {
-                Close(true);
-            };
+            closeButton.onClick.AddListener(() => Close(true));
+            CloseWidget = closeButton.onClick.Invoke;
             skipButton.onClick.AddListener(() =>
             {
                 if (_coroutine != null)
@@ -84,7 +76,6 @@ namespace Nekoyume.UI
 
             normalDrawButton.Subscribe(gameObject);
             goldenDrawButton.Subscribe(gameObject);
-            redDrawButton.Subscribe(gameObject);
         }
 
         public void Show(
@@ -195,7 +186,6 @@ namespace Nekoyume.UI
 
             normalDrawButton.gameObject.SetActive(false);
             goldenDrawButton.gameObject.SetActive(false);
-            redDrawButton.gameObject.SetActive(false);
 
             var drawButton = GetDrawButton(costType);
             if (drawButton == null)
@@ -214,7 +204,8 @@ namespace Nekoyume.UI
             {
                 CostType.SilverDust => normalDrawButton,
                 CostType.GoldDust => goldenDrawButton,
-                CostType.RubyDust => redDrawButton,
+                CostType.RubyDust => goldenDrawButton,
+                CostType.EmeraldDust => goldenDrawButton,
                 _ => null
             };
         }
@@ -265,9 +256,9 @@ namespace Nekoyume.UI
             return costType switch
             {
                 CostType.SilverDust => normalVideoClip,
-                CostType.GoldDust   => goldenVideoClip,
-                CostType.RubyDust   => rubyVideoClip,
-                _                   => null
+                CostType.GoldDust => goldenVideoClip,
+                CostType.RubyDust => rubyVideoClip,
+                _ => null
             };
         }
 
@@ -314,11 +305,6 @@ namespace Nekoyume.UI
             {
                 mobileShop.Show();
             }
-        }
-
-        private static void SetMaterialAssets()
-        {
-            Find<Summon>().SetMaterialAssets();
         }
     }
 }

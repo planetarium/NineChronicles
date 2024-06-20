@@ -275,6 +275,7 @@ namespace Nekoyume.UI
                 case CostType.SilverDust:
                 case CostType.GoldDust:
                 case CostType.RubyDust:
+                case CostType.EmeraldDust:
                 case CostType.ApPotion:
                     itemId = (int)costType;
                     var materialCount =
@@ -297,7 +298,7 @@ namespace Nekoyume.UI
                             Find<PatrolRewardPopup>().Show();
                         };
                     }
-                    else  // CostType.GoldDust
+                    else  // All other dusts
                     {
                         buttonText = L10nManager.Localize("UI_SHOP");
                         callback = () =>
