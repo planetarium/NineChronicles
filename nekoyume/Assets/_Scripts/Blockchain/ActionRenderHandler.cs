@@ -2272,7 +2272,7 @@ namespace Nekoyume.Blockchain
                 var avatarAddress = eval.Action.avatarAddress;
                 var row = TableSheets.Instance.MaterialItemSheet.Values
                                      .First(r => r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.RemoveModifier(avatarAddress, row.ItemId, 1);
+                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1, false);
 
                 await UniTask.SwitchToThreadPool();
                 await UpdateCurrentAvatarStateAsync(eval);
