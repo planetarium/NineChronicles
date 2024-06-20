@@ -2091,7 +2091,7 @@ namespace Nekoyume.Blockchain
                 var avatarAddress = eval.Action.avatarAddress;
                 var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
+                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount, false);
             }
 
             Widget.Find<BattlePreparation>().UpdateInventoryView();
