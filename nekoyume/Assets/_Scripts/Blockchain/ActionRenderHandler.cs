@@ -48,6 +48,7 @@ namespace Nekoyume.Blockchain
 {
     using Model;
     using Nekoyume.Action.AdventureBoss;
+    using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Battle.AdventureBoss;
     using Nekoyume.Data;
     using Nekoyume.TableData.AdventureBoss;
@@ -3632,6 +3633,31 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseWanted)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<Wanted>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionWanted)
+                .AddTo(_disposables);
+        }
+
+        private void ExceptionWanted(ActionEvaluation<Wanted> eval)
+        {
+            if (eval.Exception != null)
+            {
+                NcDebug.LogError(eval.Exception);
+                Widget.Find<WorldMap>().SetAdventureBossButtonLoading(false);
+                if (eval.Exception.InnerException is PreviousBountyException)
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_PREVIUS_BOUNTY_EXCEPTION"), NotificationCell.NotificationType.Alert);
+                }
+                else
+                {
+                    OneLineSystem.Push(MailType.System, eval.Exception.InnerException.Message, NotificationCell.NotificationType.Alert);
+                }
+            }
         }
 
         private void ResponseWanted(ActionEvaluation<Wanted> eval)
@@ -3649,7 +3675,13 @@ namespace Nekoyume.Blockchain
             }).ToObservable().ObserveOnMainThread().Subscribe(async _ =>
             {
                 await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState();
+
                 var action = eval.Action;
+
+                if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                {
+                    Widget.Find<WorldMap>().SetAdventureBossButtonLoading(false);
+                }
 
                 if (Widget.Find<LoadingScreen>().isActiveAndEnabled)
                     return;
