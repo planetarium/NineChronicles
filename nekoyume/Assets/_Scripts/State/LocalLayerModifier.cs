@@ -228,9 +228,15 @@ namespace Nekoyume.State
             ReactiveAvatarState.UpdateMailBox(outAvatarState.mailBox);
         }
 
+        public static void AddNewMail(AvatarState avatarState, Guid mailId)
+        {
+            UnityEngine.Debug.Log($"[AddNewMail] AddNewMail mailid : {mailId}");
+            ReactiveAvatarState.UpdateMailBox(avatarState.mailBox);
+        }
+
         public static void AddNewMail(Address avatarAddress, Guid mailId)
         {
-            UnityEngine.Debug.Log($"[MailRead] AddNewMail mailid : {mailId}");
+            UnityEngine.Debug.Log($"[AddNewMail] AddNewMail mailid : {mailId}");
             var modifier = new AvatarMailNewSetter(mailId);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
@@ -241,7 +247,7 @@ namespace Nekoyume.State
                 out var isCurrentAvatarState)
             )
             {
-                UnityEngine.Debug.LogError($"[MailRead] AddNewMail TryGetLoadedAvatarState fail mailid : {mailId}");
+                UnityEngine.Debug.LogError($"[AddNewMail] AddNewMail TryGetLoadedAvatarState fail mailid : {mailId}");
                 return;
             }
 
@@ -249,7 +255,7 @@ namespace Nekoyume.State
 
             if (!isCurrentAvatarState)
             {
-                UnityEngine.Debug.LogError($"[MailRead] AddNewMail isCurrentAvatarState fail mailid : {mailId}");
+                UnityEngine.Debug.LogError($"[AddNewMail] AddNewMail isCurrentAvatarState fail mailid : {mailId}");
                 return;
             }
 
