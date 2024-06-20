@@ -3805,6 +3805,7 @@ namespace Nekoyume.Blockchain
                 if (bossRow == null)
                 {
                     NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                    return;
                 }
                 var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id);
 
@@ -3852,6 +3853,7 @@ namespace Nekoyume.Blockchain
                         if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
                         {
                             NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
+                            return;
                         }
 
                         var point = random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
@@ -3862,6 +3864,7 @@ namespace Nekoyume.Blockchain
                         if (!tableSheets.AdventureBossFloorFirstRewardSheet.TryGetValue(stageId, out var firstReward))
                         {
                             NcDebug.LogError($"FloorFirstRewardSheet is not found. StageId: {stageId}");
+                            return;
                         }
                         foreach (var reward in firstReward.Rewards)
                         {
@@ -4009,6 +4012,7 @@ namespace Nekoyume.Blockchain
                 if (bossRow == null)
                 {
                     NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                    return;
                 }
                 var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id);
 
@@ -4017,6 +4021,7 @@ namespace Nekoyume.Blockchain
                     if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
                     {
                         NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
+                        return;
                     }
                     point += random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
 

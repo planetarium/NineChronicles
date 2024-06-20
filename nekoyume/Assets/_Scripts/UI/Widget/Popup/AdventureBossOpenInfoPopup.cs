@@ -39,6 +39,7 @@ namespace Nekoyume.UI
 
             var e = Widget.Find<AdventureBoss>();
             e.CloseWithOtherWidgets();
+            Find<WorldMap>().Show(true);
             e.Show();
             AudioController.PlayClick();
         }

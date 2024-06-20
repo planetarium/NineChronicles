@@ -1590,7 +1590,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Signer.Equals(States.Instance.AgentState.address))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(_ =>
+                .DoOnError(e =>
                 {
                     // NOTE: Handle exception outside of this method.
                 });
@@ -1753,10 +1753,10 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(_ =>
+                .DoOnError(e =>
                 {
                     // NOTE: Handle exception outside of this method.
-                    NcDebug.LogError("Wanted Error" + _.Message);
+                    NcDebug.LogError("Wanted Error" + e.Message);
                 });
         }
 
@@ -1778,7 +1778,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(_ =>
+                .DoOnError(e =>
                 {
                     // NOTE: Handle exception outside of this method.
                 });
@@ -1801,7 +1801,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(_ =>
+                .DoOnError(e =>
                 {
                     // NOTE: Handle exception outside of this method.
                 });
@@ -1821,7 +1821,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(_ =>
+                .DoOnError(e =>
                 {
                     // NOTE: Handle exception outside of this method.
                 });
@@ -1840,7 +1840,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(_ =>
+                .DoOnError(e =>
                 {
                     // NOTE: Handle exception outside of this method.
                 });
