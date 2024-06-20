@@ -2,9 +2,13 @@ using System;
 using System.Numerics;
 using System.Security.Cryptography;
 using Cysharp.Threading.Tasks;
+using Lib9c;
+using Lib9c.Renderers;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Action;
+using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -60,6 +64,38 @@ namespace Nekoyume.State
             ModifyAgentGoldAsync(agentAddress, fav).Forget();
         }
 
+        public static void ModifyAgentGold<T>(ActionEvaluation<T> eval, Address agentAddress, BigInteger gold) where T : ActionBase
+        {
+            if (gold == 0)
+            {
+                return;
+            }
+
+            var fav = new FungibleAssetValue(
+                States.Instance.GoldBalanceState.Gold.Currency,
+                gold,
+                0);
+
+            ModifyAgentGold(eval, agentAddress, fav);
+        }
+
+        public static void ModifyAgentGold<T>(ActionEvaluation<T> eval, Address agentAddress, FungibleAssetValue fav) where T : ActionBase
+        {
+            var modifier = new AgentGoldModifier(fav);
+            LocalLayer.Instance.Add(agentAddress, modifier);
+
+            //FIXME Avoid LocalLayer duplicate modify gold.
+            var state = new GoldBalanceState(
+                agentAddress,
+                StateGetter.GetBalance(eval.OutputState, agentAddress, fav.Currency));
+            if (!state.address.Equals(agentAddress))
+            {
+                return;
+            }
+
+            States.Instance.SetGoldBalanceState(state);
+        }
+
         public static async UniTask ModifyAgentCrystalAsync(Address agentAddress, BigInteger crystal)
         {
             if (crystal == 0)
@@ -79,6 +115,23 @@ namespace Nekoyume.State
             States.Instance.SetCrystalBalance(crystalBalance);
         }
 
+        public static void ModifyAgentCrystal<T>(ActionEvaluation<T> eval, Address agentAddress, BigInteger crystal) where T : ActionBase
+        {
+            if (crystal == 0)
+            {
+                return;
+            }
+
+            var fav = new FungibleAssetValue(
+                CrystalCalculator.CRYSTAL,
+                crystal,
+                0);
+            var modifier = new AgentCrystalModifier(fav);
+            LocalLayer.Instance.Add(agentAddress, modifier);
+            var crystalBalance =
+                StateGetter.GetBalance(eval.OutputState, agentAddress, Currencies.Crystal);
+            States.Instance.SetCrystalBalance(crystalBalance);
+        }
         #endregion
 
         #region Avatar / AddItem
