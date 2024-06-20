@@ -1113,6 +1113,7 @@ namespace Nekoyume.Blockchain
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
             var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             if(StateGetter.TryGetAvatarState(
                    eval.OutputState,
@@ -1120,6 +1121,12 @@ namespace Nekoyume.Blockchain
                    avatarAddress,
                    out var avatarState))
             {
+                // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
+                foreach (var pair in result.materials)
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
+                }
+
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -1178,10 +1185,6 @@ namespace Nekoyume.Blockchain
                 LocalLayerModifier.ModifyAgentGold(renderArgs.Evaluation, agentAddress,
                     result.gold);
             });
-            foreach (var pair in result.materials)
-            {
-                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
-            }
 
             LocalLayerModifier.RemoveItem(
                 avatarAddress,
