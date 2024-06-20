@@ -33448,6 +33448,7 @@ MonoBehaviour:
   inputWarning: {fileID: 1859774649473920078}
   confirmButton: {fileID: 5353135563993164674}
   stakingWarningMassage: {fileID: 8531168766435778192}
+  stakingWarningMassageText: {fileID: 5943553973304036164}
   showDetailButton: {fileID: 2242606332429206340}
   bountyedPrice: {fileID: 1859774650005321210}
   bountyCount: {fileID: 8967638085735207506}
@@ -41707,7 +41708,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8760404363286525021, guid: b2ed3c0ed67b64dc9bc309cbb7156632, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b2ed3c0ed67b64dc9bc309cbb7156632, type: 3}
 --- !u!224 &5832849132681110044 stripped
 RectTransform:
@@ -41715,6 +41717,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2945251791918653640}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5943553973304036164 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8837219427280939916, guid: b2ed3c0ed67b64dc9bc309cbb7156632,
+    type: 3}
+  m_PrefabInstance: {fileID: 2945251791918653640}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2999465173940943248
 PrefabInstance:
   m_ObjectHideFlags: 0

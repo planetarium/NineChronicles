@@ -33,6 +33,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject stakingWarningMassage;
         [SerializeField]
+        private TextMeshProUGUI stakingWarningMassageText;
+        [SerializeField]
         private GameObject showDetailButton;
 
         [SerializeField]
@@ -141,6 +143,7 @@ namespace Nekoyume.UI
             {
                 stakingWarningMassage.SetActive(true);
                 bountyInputArea.gameObject.SetActive(false);
+                stakingWarningMassageText.text = L10nManager.Localize("ADVENTURE_BOSS_BOUNTY_INPUT_STAKING_LEVEL_WARNING", States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel);
             }
             else
             {
@@ -162,7 +165,7 @@ namespace Nekoyume.UI
                 case Model.AdventureBossData.AdventureBossSeasonState.Ready:
                     bountyedPrice.text = "0";
                     totalBountyPrice.text = "0";
-                    bountyCount.text = $"({0}/3)";
+                    bountyCount.text = "(0/3)";
                     showDetailButton.SetActive(false);
                     foreach (var item in firstBountyObjs)
                     {
@@ -292,29 +295,7 @@ namespace Nekoyume.UI
                     Find<WorldMap>().SetAdventureBossButtonLoading(true);
                     try
                     {
-                        ActionManager.Instance.Wanted(Game.instance.AdventureBossData.SeasonInfo.Value.Season + 1, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
-                            .Subscribe(eval =>
-                            {
-                                if (eval.Exception != null)
-                                {
-                                    NcDebug.LogError(eval.Exception);
-                                    Find<WorldMap>().SetAdventureBossButtonLoading(false);
-                                    if (eval.Exception.InnerException is PreviousBountyException)
-                                    {
-                                        OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_PREVIUS_BOUNTY_EXCEPTION"), Scroller.NotificationCell.NotificationType.Alert);
-                                    }
-                                    else
-                                    {
-                                        OneLineSystem.Push(MailType.System, eval.Exception.InnerException.Message, Scroller.NotificationCell.NotificationType.Alert);
-                                    }
-                                    return;
-                                }
-
-                                Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
-                                {
-                                    Find<WorldMap>().SetAdventureBossButtonLoading(false);
-                                });
-                            });
+                        ActionManager.Instance.Wanted(Game.instance.AdventureBossData.SeasonInfo.Value.Season + 1, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0));
                     }
                     catch
                     {
@@ -326,28 +307,8 @@ namespace Nekoyume.UI
                     Find<AdventureBoss>().SetBountyLoadingIndicator(true);
                     try
                     {
-                        ActionManager.Instance.Wanted(Game.instance.AdventureBossData.SeasonInfo.Value.Season, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0))
-                            .Subscribe(eval =>
-                            {
-                                if (eval.Exception != null)
-                                {
-                                    NcDebug.LogError(eval.Exception);
-                                    Find<AdventureBoss>().SetBountyLoadingIndicator(false);
-                                    if (eval.Exception is PreviousBountyException)
-                                    {
-                                        OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_PREVIUS_BOUNTY_EXCEPTION"), Scroller.NotificationCell.NotificationType.Alert);
-                                    }
-                                    else
-                                    {
-                                        OneLineSystem.Push(MailType.System, eval.Exception.ToString(), Scroller.NotificationCell.NotificationType.Alert);
-                                    }
-                                    return;
-                                }
-                                Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
-                                {
-                                    Find<AdventureBoss>().SetBountyLoadingIndicator(false);
-                                });
-                            });
+                        ActionManager.Instance.Wanted(Game.instance.AdventureBossData.SeasonInfo.Value.Season, new FungibleAssetValue(ActionRenderHandler.Instance.GoldCurrency, bounty, 0));
+
                     }
                     catch
                     {

@@ -2,6 +2,7 @@ using Nekoyume.Game.VFX;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 namespace Nekoyume.UI
 {
@@ -19,13 +20,15 @@ namespace Nekoyume.UI
         private Animator textAnimator;
 
         private int _maxFloor;
+        private int _lastFloor;
 
         public TextMeshProUGUI FloorText => floorText;
 
         private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
 
-        public void SetData(int currentFloor, int maxFloor)
+        public void SetData(int currentFloor, int maxFloor, int lastFloor)
         {
+            _lastFloor = lastFloor;
             _maxFloor = maxFloor;
             floorText.text = $"{currentFloor}";
             textAnimator.SetTrigger(AnimatorHashShow);
@@ -44,16 +47,37 @@ namespace Nekoyume.UI
                     floorsCompleted[i].gameObject.SetActive(false);
                 }
             }
+
+            floorsCompleted[currentFloor - 1].enabled = true;
+            floorsCompleted[currentFloor - 1].DOFade(0,0.5f).SetLoops(-1, LoopType.Yoyo);
+        }
+
+        public void SetLastFloorCompleted()
+        {
+            floorsCompleted[_lastFloor - 1].DOKill();
+            floorsCompleted[_lastFloor - 1].DOFade(1, 0.2f);
+            floorsCompleted[_lastFloor - 1].enabled = true;
+            vfxs[_lastFloor - 1].Play();
         }
 
         public void SetCompleted(int currentFloor)
         {
             if (currentFloor - 1 <= floorsCompleted.Length)
             {
-                floorText.text = $"{Mathf.Min(currentFloor + 1, _maxFloor)}";
-                textAnimator.SetTrigger("Show");
+                //현재 층 완료 처리
+                floorsCompleted[currentFloor - 1].DOKill();
+                floorsCompleted[currentFloor - 1].DOFade(1, 0.2f);
                 floorsCompleted[currentFloor - 1].enabled = true;
                 vfxs[currentFloor - 1].Play();
+
+                //다음 층정보 표기
+                floorText.text = $"{Mathf.Min(currentFloor + 1, _maxFloor)}";
+                textAnimator.SetTrigger("Show");
+                if(currentFloor < _maxFloor)
+                {
+                    floorsCompleted[currentFloor].enabled = true;
+                    floorsCompleted[currentFloor].DOFade(0, 0.5f).SetLoops(-1, LoopType.Yoyo);
+                }
             }
             else
             {

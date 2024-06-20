@@ -93,4 +93,16 @@ MonoBehaviour:
     ticker: RUNESTONE_ODIN_WISDOM
     icon: {fileID: 21300000, guid: 32844bd146ed4e44eae79d72987d62be, type: 3}
     sortingOrder: 1
+  - id: 10033
+    ticker: RUNESTONE_HIT
+    icon: {fileID: 21300000, guid: f31c57366c62ead4a92b6cbc15b43c1c, type: 3}
+    sortingOrder: 1
+  - id: 10034
+    ticker: RUNESTONE_SPD
+    icon: {fileID: 21300000, guid: 3c1e742d22b257b41b8afe2294597a44, type: 3}
+    sortingOrder: 1
+  - id: 10035
+    ticker: RUNESTONE_CRI
+    icon: {fileID: 21300000, guid: ade57abf922b60f4da737b83caf9c587, type: 3}
+    sortingOrder: 1
   DefaultRuneIcon: {fileID: 21300000, guid: 474642c630309ed45a9942c6fa07ebb5, type: 3}
