@@ -825,7 +825,7 @@ namespace Nekoyume.Blockchain
             var result = (RapidCombination5.ResultModel)renderArgs.CombinationSlotState.Result;
             foreach (var pair in result.cost)
             {
-                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
 
             string formatKey;
@@ -1006,7 +1006,7 @@ namespace Nekoyume.Blockchain
             });
             foreach (var pair in result.materials)
             {
-                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
 
             LocalLayerModifier.RemoveItem(
@@ -1178,7 +1178,7 @@ namespace Nekoyume.Blockchain
             });
             foreach (var pair in result.materials)
             {
-                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
 
             LocalLayerModifier.RemoveItem(
@@ -1342,7 +1342,7 @@ namespace Nekoyume.Blockchain
             if (itemUsable.ItemSubType == ItemSubType.Aura)
             {
                 //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId, false);
             }
             else
             {
@@ -1350,7 +1350,8 @@ namespace Nekoyume.Blockchain
                     avatarAddress,
                     itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
-                    1);
+                    1,
+                    false);
             }
 
             foreach (var tradableId in result.materialItemIdList)
@@ -1362,7 +1363,7 @@ namespace Nekoyume.Blockchain
                     if(itemUsable.ItemSubType == ItemSubType.Aura)
                     {
                         //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                        LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId);
+                        LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId, false);
                     }
                     else
                     {
@@ -1370,7 +1371,8 @@ namespace Nekoyume.Blockchain
                             avatarAddress,
                             tradableId,
                             materialItem.RequiredBlockIndex,
-                            1);
+                            1,
+                            false);
                     }
                 }
             }
@@ -2422,7 +2424,7 @@ namespace Nekoyume.Blockchain
             {
                 var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(avatarAddress, row.ItemId);
+                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1, false);
 
                 if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))
                 {
@@ -3485,7 +3487,7 @@ namespace Nekoyume.Blockchain
                     }
                 }
             }
-            
+
             UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(states, avatarAddr)).Forget();
             return eval;
         }
