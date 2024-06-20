@@ -33,6 +33,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject stakingWarningMassage;
         [SerializeField]
+        private TextMeshProUGUI stakingWarningMassageText;
+        [SerializeField]
         private GameObject showDetailButton;
 
         [SerializeField]
@@ -141,6 +143,7 @@ namespace Nekoyume.UI
             {
                 stakingWarningMassage.SetActive(true);
                 bountyInputArea.gameObject.SetActive(false);
+                stakingWarningMassageText.text = L10nManager.Localize("ADVENTURE_BOSS_BOUNTY_INPUT_STAKING_LEVEL_WARNING", States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel);
             }
             else
             {
@@ -162,7 +165,7 @@ namespace Nekoyume.UI
                 case Model.AdventureBossData.AdventureBossSeasonState.Ready:
                     bountyedPrice.text = "0";
                     totalBountyPrice.text = "0";
-                    bountyCount.text = $"({0}/3)";
+                    bountyCount.text = "(0/3)";
                     showDetailButton.SetActive(false);
                     foreach (var item in firstBountyObjs)
                     {
