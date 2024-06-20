@@ -337,7 +337,7 @@ namespace Nekoyume.UI.Model
             return myReward;
         }
 
-        public ClaimableReward GetCurrentBountyRewards(int additionalAmount)
+        public ClaimableReward GetCurrentBountyRewards(long additionalAmount)
         {
             var myReward = new ClaimableReward
             {
