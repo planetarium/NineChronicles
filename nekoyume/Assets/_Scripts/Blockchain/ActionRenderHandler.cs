@@ -1491,7 +1491,7 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
+                States.Instance.SetCurrentAvatarBalance(eval, assetInfo.Asset.Currency);
                 var shopSell = Widget.Find<ShopSell>();
                 if (shopSell.isActiveAndEnabled)
                 {
@@ -1552,7 +1552,7 @@ namespace Nekoyume.Blockchain
 
                         break;
                     case AssetInfo assetInfo:
-                        await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
+                        States.Instance.SetCurrentAvatarBalance(eval, assetInfo.Asset.Currency);
                         itemName = assetInfo.Asset.GetLocalizedName();
                         count = MathematicsExtensions.ConvertToInt32(assetInfo.Asset.GetQuantityString());
                         break;
@@ -1637,7 +1637,11 @@ namespace Nekoyume.Blockchain
                 if (favProduct is not null)
                 {
                     count = (int)favProduct.Quantity;
-                    await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                    var currency = Currencies.GetMinterlessCurrency(favProduct.Ticker);
+                    UniTask.RunOnThreadPool(() =>
+                    {
+                        States.Instance.SetCurrentAvatarBalance(eval, currency);
+                    }).Forget();
                 }
 
                 LocalLayerModifier.AddNewMail(eval.Action.AvatarAddress, productInfo.ProductId);
@@ -1762,7 +1766,11 @@ namespace Nekoyume.Blockchain
                     if (favProduct is not null)
                     {
                         count = (int)favProduct.Quantity;
-                        await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                        var currency = Currencies.GetMinterlessCurrency(favProduct.Ticker);
+                        UniTask.RunOnThreadPool(() =>
+                        {
+                            States.Instance.SetCurrentAvatarBalance(eval, currency);
+                        }).Forget();
                     }
 
                     var price = info.Price;
@@ -1805,7 +1813,11 @@ namespace Nekoyume.Blockchain
                     if (favProduct is not null)
                     {
                         count = (int)favProduct.Quantity;
-                        await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                        var currency = Currencies.GetMinterlessCurrency(favProduct.Ticker);
+                        UniTask.RunOnThreadPool(() =>
+                        {
+                            States.Instance.SetCurrentAvatarBalance(eval, currency);
+                        }).Forget();
                     }
 
                     var taxedPrice = info.Price.DivRem(100, out _) * Buy.TaxRate;

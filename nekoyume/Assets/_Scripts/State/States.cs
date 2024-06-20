@@ -9,6 +9,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Lib9c;
+using Lib9c.Renderers;
 using Libplanet.Action.State;
 using Libplanet.Common;
 using Nekoyume.Action;
@@ -389,17 +390,15 @@ namespace Nekoyume.State
             return itemSlotState;
         }
 
-        public async Task SetBalanceAsync(string ticker)
-        {
-            var currency = Currencies.GetMinterlessCurrency(ticker);
-            var agent = Game.Game.instance.Agent;
-            var fungibleAsset = await agent.GetBalanceAsync(CurrentAvatarState.address, currency);
-            CurrentAvatarBalances[ticker] = fungibleAsset;
-        }
-
         public void SetCurrentAvatarBalance(FungibleAssetValue fav)
         {
             CurrentAvatarBalances[fav.Currency.Ticker] = fav;
+        }
+
+        public void SetCurrentAvatarBalance<T>(ActionEvaluation<T> eval, Currency currency) where T : ActionBase
+        {
+            var fav = StateGetter.GetBalance(eval.OutputState, CurrentAvatarState.address, currency);
+            SetCurrentAvatarBalance(fav);
         }
 
         public void SetStakeState(
