@@ -216,6 +216,7 @@ namespace Nekoyume.Blockchain
             ExploreAdventureBoss();
             SweepAdventureBoss();
             Wanted();
+            UnlockFloor();
         }
 
         public void Stop()
@@ -3694,6 +3695,27 @@ namespace Nekoyume.Blockchain
                 {
                     Widget.Find<AdventureBossOpenInfoPopup>().Show();
                 }
+            });
+        }
+
+        private void UnlockFloor()
+        {
+            _actionRenderer.EveryRender<UnlockFloor>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockFloor)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseUnlockFloor(ActionEvaluation<UnlockFloor> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
             });
         }
 
