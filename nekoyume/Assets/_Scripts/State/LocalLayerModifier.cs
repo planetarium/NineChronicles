@@ -119,6 +119,8 @@ namespace Nekoyume.State
             await TryResetLoadedAvatarState(avatarAddress);
         }
 
+        // TODO: 메서드의 기능 자체가 관련된 컨텍스트를 모두 파악하고 있는게 아니라면 내부 구현을 파악할 수가 없다.
+        // 전체적인 로컬레이어 기능 수정하면서 좀 더 명확하게 변경해야할듯
         public static async void AddItem(
             Address avatarAddress,
             HashDigest<SHA256> fungibleId,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -2259,21 +2260,27 @@ namespace Nekoyume.Blockchain
                 GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
             }
 
-            if (eval.Exception is null)
+            if (eval.Exception is not null)
             {
-                UniTask.RunOnThreadPool(async () =>
-                {
-                    await UpdateCurrentAvatarStateAsync(eval);
-                }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
-                {
-                    // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
-                    ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
-                    var avatarAddress = eval.Action.avatarAddress;
-                    var row = TableSheets.Instance.MaterialItemSheet.Values
-                        .First(r => r.ItemSubType == ItemSubType.ApStone);
-                    LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
-                });
+                NcDebug.LogError($"Failed to charge action point. {eval.Exception}");
+                return;
             }
+
+            // Observe on main thread
+            UniTask.Run(async () =>
+            {
+                var avatarAddress = eval.Action.avatarAddress;
+                var row = TableSheets.Instance.MaterialItemSheet.Values
+                                     .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1, false);
+
+                await UniTask.SwitchToThreadPool();
+                await UpdateCurrentAvatarStateAsync(eval);
+
+                await UniTask.SwitchToMainThread();
+                // 액션이 정상적으로 실행되면 최대치로 채워지리라 예상, 최적화를 위해 GetState를 하지 않고 Set합니다.
+                ReactiveAvatarState.UpdateActionPoint(Action.DailyReward.ActionPointMax);
+            });
         }
 
         private ActionEvaluation<TransferAsset> PrepareTransferAsset(

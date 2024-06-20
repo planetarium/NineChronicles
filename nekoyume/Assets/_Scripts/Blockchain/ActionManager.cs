@@ -1116,7 +1116,7 @@ namespace Nekoyume.Blockchain
             int slotIndex)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+            var hourglassDataRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             int cost;
@@ -1133,7 +1133,7 @@ namespace Nekoyume.Blockchain
             {
                 cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             }
-            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
+            LocalLayerModifier.RemoveItem(avatarAddress, hourglassDataRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
                 new Dictionary<string, Value>()
