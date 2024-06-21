@@ -45,6 +45,7 @@ namespace Nekoyume.UI
                         AdventureBossPreparation.AdventureBossPreparationType.Challenge);
                 Close();
             }).AddTo(gameObject);
+            breakThroughButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"));
             breakThroughButton.OnClickSubject.Subscribe(_ =>
             {
                 Find<AdventureBossPreparation>().Show(

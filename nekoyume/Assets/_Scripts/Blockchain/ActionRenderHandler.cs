@@ -3764,10 +3764,10 @@ namespace Nekoyume.Blockchain
                 Widget.Find<StageLoadingEffect>().Close();
             }
 
-            if (Widget.Find<BattleResultPopup>().IsActive())
+            if (Widget.Find<AdventureBossResultPopup>().IsActive())
             {
                 showLoadingScreen = true;
-                Widget.Find<BattleResultPopup>().Close();
+                Widget.Find<AdventureBossResultPopup>().Close();
             }
 
             Game.Game.BackToMainAsync(innerException, showLoadingScreen)
