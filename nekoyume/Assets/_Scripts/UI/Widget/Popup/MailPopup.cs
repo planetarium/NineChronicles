@@ -121,6 +121,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
+                var resetState = currentBlockIndex > mail.blockIndex;
                 switch (mail)
                 {
                     case OrderBuyerMail:
@@ -132,11 +133,11 @@ namespace Nekoyume.UI
                     case ProductCancelMail:
                     case UnloadFromMyGaragesRecipientMail:
                     case ClaimItemsMail:
-                        LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
+                        LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, resetState);
                         break;
                     case ItemEnhanceMail:
                     case CombinationMail:
-                        LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, true);
+                        LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, resetState);
                         break;
                 }
             }
@@ -150,6 +151,7 @@ namespace Nekoyume.UI
         private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            bool resetState = Game.Game.instance.Agent.BlockIndex > mail.blockIndex;
             switch (mail)
             {
                 case ProductBuyerMail productBuyerMail:
@@ -238,7 +240,7 @@ namespace Nekoyume.UI
                             cItem.ItemId,
                             cItem.RequiredBlockIndex,
                             1,
-                            false);
+                            resetState);
                     }
                     break;
 
@@ -253,7 +255,7 @@ namespace Nekoyume.UI
                             LocalLayerModifier.AddNonFungibleItem(
                                 avatarAddress,
                                 eItem.ItemId,
-                                false);
+                                resetState);
                         }
                         else
                         {
@@ -262,7 +264,7 @@ namespace Nekoyume.UI
                                 eItem.ItemId,
                                 eItem.RequiredBlockIndex,
                                 1,
-                                false);
+                                resetState);
                         }
                     }
                     break;
@@ -540,6 +542,8 @@ namespace Nekoyume.UI
                 await Util.GetItemBaseByTradableId(order.TradableId, order.ExpiredBlockIndex);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             var popup = Find<BuyItemInformationPopup>();
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > orderBuyerMail.blockIndex;
             var model = new UI.Model.BuyItemInformationPopup(new CountableItem(itemBase, count))
             {
                 isSuccess = true,
@@ -548,8 +552,8 @@ namespace Nekoyume.UI
             model.OnClickSubmit.Subscribe(_ =>
             {
                 LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex,
-                    count);
-                LocalLayerModifier.RemoveNewMail(avatarAddress, orderBuyerMail.id, true);
+                    count, false);
+                LocalLayerModifier.RemoveNewMail(avatarAddress, orderBuyerMail.id, resetState);
             }).AddTo(gameObject);
             popup.Pop(model);
         }
@@ -560,8 +564,9 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var order = await Util.GetOrder(orderSellerMail.OrderId);
             var taxedPrice = order.Price - order.GetTax();
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
-            LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id);
+            LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id, currentBlockIndex > orderSellerMail.blockIndex);
         }
 
         public void Read(GrindingMail grindingMail)
@@ -579,6 +584,8 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var productId = productBuyerMail.ProductId;
             var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productId);
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > productBuyerMail.blockIndex;
             if (itemProduct is not null)
             {
                 var count = (int)itemProduct.Quantity;
@@ -598,7 +605,7 @@ namespace Nekoyume.UI
 
                 model.OnClickSubmit.Subscribe(_ =>
                 {
-                    LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id, true);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id, resetState);
                 }).AddTo(gameObject);
                 Find<BuyItemInformationPopup>().Pop(model);
             }
@@ -609,7 +616,7 @@ namespace Nekoyume.UI
                 var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
                 Find<BuyFungibleAssetInformationPopup>().Show(
                     fav,
-                    () => LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id, true));
+                    () => LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id, resetState));
             }
         }
 
@@ -622,18 +629,22 @@ namespace Nekoyume.UI
             var price = itemProduct?.Price ?? favProduct.Price;
             var fav = new FungibleAssetValue(currency, (int)price, 0);
             var taxedPrice = fav.DivRem(100, out _) * Action.Buy.TaxRate;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > productSellerMail.blockIndex;
             LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
-            LocalLayerModifier.RemoveNewMail(avatarAddress, productSellerMail.id);
+            LocalLayerModifier.RemoveNewMail(avatarAddress, productSellerMail.id, resetState);
         }
 
         public void Read(ProductCancelMail productCancelMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > productCancelMail.blockIndex;
             Find<OneButtonSystem>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
-                    LocalLayerModifier.RemoveNewMail(avatarAddress, productCancelMail.id);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, productCancelMail.id, resetState);
                     ReactiveShopState.SetSellProducts();
                 });
         }
@@ -642,14 +653,16 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var order = await Util.GetOrder(orderExpirationMail.OrderId);
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > orderExpirationMail.blockIndex;
 
             Find<OneButtonSystem>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
                     LocalLayerModifier.AddItem(avatarAddress, order.TradableId,
-                        order.ExpiredBlockIndex, 1);
-                    LocalLayerModifier.RemoveNewMail(avatarAddress, orderExpirationMail.id);
+                        order.ExpiredBlockIndex, 1, false);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, orderExpirationMail.id, resetState);
                 });
         }
 
@@ -657,14 +670,16 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var order = await Util.GetOrder(cancelOrderMail.OrderId);
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > cancelOrderMail.blockIndex;
 
             Find<OneButtonSystem>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
                     LocalLayerModifier.AddItem(avatarAddress, order.TradableId,
-                        order.ExpiredBlockIndex, 1);
-                    LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
+                        order.ExpiredBlockIndex, 1, false);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id, resetState);
                     ReactiveShopState.SetSellProducts();
                 });
         }
@@ -672,6 +687,8 @@ namespace Nekoyume.UI
         public void Read(ItemEnhanceMail itemEnhanceMail)
         {
             var itemUsable = itemEnhanceMail?.attachment?.itemUsable;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > itemEnhanceMail.blockIndex;
             if (itemUsable is null)
             {
                 NcDebug.LogError("ItemEnhanceMail.itemUsable is null");
@@ -696,7 +713,7 @@ namespace Nekoyume.UI
                     LocalLayerModifier.AddNonFungibleItem(
                         avatarAddress,
                         itemUsable.ItemId,
-                        false);
+                        resetState);
                 }
                 else
                 {
@@ -705,7 +722,7 @@ namespace Nekoyume.UI
                         itemUsable.ItemId,
                         itemUsable.RequiredBlockIndex,
                         1,
-                        false);
+                        resetState);
                 }
 
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id,
@@ -766,12 +783,12 @@ namespace Nekoyume.UI
                         LocalLayerModifier.AddItem(monsterCollectionResult.avatarAddress,
                             tradableId,
                             tradableItem.RequiredBlockIndex,
-                            rewardInfo.Quantity);
+                            rewardInfo.Quantity, false);
                     }
                 }
 
                 LocalLayerModifier.RemoveNewAttachmentMail(monsterCollectionResult.avatarAddress,
-                    monsterCollectionMail.id, true);
+                    monsterCollectionMail.id, false);
                 // ~LocalLayer
 
                 widget.Close();
@@ -795,9 +812,12 @@ namespace Nekoyume.UI
 
             var game = Game.Game.instance;
             unloadFromMyGaragesRecipientMail.New = false;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > unloadFromMyGaragesRecipientMail.blockIndex;
             LocalLayerModifier.RemoveNewMail(
                 game.States.CurrentAvatarState.address,
-                unloadFromMyGaragesRecipientMail.id);
+                unloadFromMyGaragesRecipientMail.id,
+                resetState);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
             NcDebug.Log($"[MailRead] MailPopupReadUnloadFromMyGaragesRecipientMail mailid : {unloadFromMyGaragesRecipientMail.id} Memo : {unloadFromMyGaragesRecipientMail.Memo}");
 
@@ -925,9 +945,11 @@ namespace Nekoyume.UI
 
             var game = Game.Game.instance;
             claimItemsMail.New = false;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            bool resetState = currentBlockIndex > claimItemsMail.blockIndex;
             LocalLayerModifier.RemoveNewMail(
                 game.States.CurrentAvatarState.address,
-                claimItemsMail.id);
+                claimItemsMail.id, resetState);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
             NcDebug.Log($"[MailRead] MailPopupReadClaimItemsMail mailid : {claimItemsMail.id} Memo : {claimItemsMail.Memo}");
 
