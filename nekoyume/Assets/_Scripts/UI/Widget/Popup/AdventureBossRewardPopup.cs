@@ -18,6 +18,7 @@ namespace Nekoyume.UI
     using Nekoyume.Model.Mail;
     using Nekoyume.TableData;
     using Nekoyume.UI.Model;
+    using System.Reactive.Linq;
     using UniRx;
     using static Nekoyume.Data.AdventureBossGameData;
 
@@ -134,17 +135,28 @@ namespace Nekoyume.UI
                 Where(bountyBoard => _endedClaimableSeasonInfo.Any(seasondata => seasondata.Season == bountyBoard.Season) &&
                     bountyBoard.Investors.Any(inv => inv.AvatarAddress == Game.instance.States.CurrentAvatarState.address && !inv.Claimed)).
                 ToList();
-            if (claimableInfo.Count == 0)
+
+            var claimableExploreInfo = adventureBossData.EndedExploreInfos.Join(
+                               _endedClaimableSeasonInfo,
+                                exploreInfo => exploreInfo.Key,
+                                seasonInfo => seasonInfo.Season,
+                (exploreInfo, seasonInfo) => exploreInfo).
+                Where(exploreInfo => exploreInfo.Value != null && !exploreInfo.Value.Claimed).
+                ToList();
+
+
+            if (claimableInfo.Count == 0 && claimableExploreInfo.Count == 0)
             {
                 return;
             }
 
-            LoadTotalRewards().Forget();
-
-            base.Show(ignoreShowAnimation);
+            LoadTotalRewards().ContinueWith(() =>
+            {
+                base.Show(ignoreShowAnimation);
+            });
         }
 
-        public async UniTaskVoid LoadTotalRewards()
+        public async UniTask LoadTotalRewards()
         {
             ClaimableReward wantedClaimableReward = new ClaimableReward
             {
@@ -167,6 +179,11 @@ namespace Nekoyume.UI
             _isRefreshed = false;
             foreach (var seasonInfo in _endedClaimableSeasonInfo)
             {
+                if(seasonInfo.EndBlockIndex + States.Instance.GameConfigState.AdventureBossClaimInterval <= Game.instance.Agent.BlockIndex)
+                {
+                    continue;
+                }
+
                 var bountyBoard = await Game.instance.Agent.GetBountyBoardAsync(seasonInfo.Season);
                 if (Game.instance.AdventureBossData.EndedBountyBoards.ContainsKey(seasonInfo.Season))
                 {
@@ -210,6 +227,10 @@ namespace Nekoyume.UI
                                                             States.Instance.GameConfigState.AdventureBossNcgApRatio,
                                                             false,
                                                             out var explorerReward);
+                        if (_lastSeasonId < seasonInfo.Season)
+                        {
+                            _lastSeasonId = seasonInfo.Season;
+                        }
                     }
                 }
                 catch (Exception e)
