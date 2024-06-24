@@ -754,7 +754,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(tuple =>
                 {
-                    NcDebug.Log($"Retry rpc connection. (remain count: {tuple.retryCount})");
+                    NcDebug.Log($"[RPCAgent] Retry rpc connection. (remain count: {tuple.retryCount})");
                     var tryCount = RpcConnectionRetryCount - tuple.retryCount;
                     if (tryCount > 0)
                     {
@@ -1012,19 +1012,26 @@ namespace Nekoyume.Blockchain
                     .Where(pair => !pair.Value).OrderBy(_ => Guid.NewGuid()).FirstOrDefault().Key;
                 if (newRpcServerHost is null)
                 {
-                    NcDebug.LogWarning("All RPC server hosts are tried. Retry failed.");
+                    NcDebug.LogWarning("[RPCAgent] All RPC server hosts are tried. Retry failed.");
                     break;
                 }
 
                 OnRetryAttempt.OnNext((this, retryCount));
                 await Task.Delay(5000);
 
-                NcDebug.Log($"Trying to connect to new RPC server host: {newRpcServerHost}:{cachedRpcServerPort}");
+                NcDebug.Log($"[RPCAgent] Trying to connect to new RPC server host: {newRpcServerHost}:{cachedRpcServerPort}");
                 try
                 {
                     _channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(newRpcServerHost, cachedRpcServerPort, true));
                     _hub = await StreamingHubClient.ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
                     _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[] { new ClientFilter() });
+                }
+                catch (RpcException re)
+                {
+                    NcDebug.LogWarning($"[RPCAgent] RpcException occurred. Retrying... {retryCount}\n{re}");
+                    triedRPCHost[newRpcServerHost] = true;
+                    retryCount--;
+                    continue;
                 }
                 catch (ObjectDisposedException)
                 {
@@ -1033,9 +1040,9 @@ namespace Nekoyume.Blockchain
 
                 try
                 {
-                    NcDebug.Log($"Trying to join hub...");
+                    NcDebug.Log("[RPCAgent] Trying to join hub...");
                     await Join(true);
-                    NcDebug.Log($"Join complete! Registering disconnect event...");
+                    NcDebug.Log("[RPCAgent] Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
                     OnRetryEnded.OnNext(this);
@@ -1044,7 +1051,7 @@ namespace Nekoyume.Blockchain
                 }
                 catch (TimeoutException toe)
                 {
-                    NcDebug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
+                    NcDebug.LogWarning($"[RPCAgent] TimeoutException occurred. Retrying... {retryCount}\n{toe}");
                     triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                 }
@@ -1052,25 +1059,25 @@ namespace Nekoyume.Blockchain
                 {
                     if (ae.InnerException is RpcException re)
                     {
-                        NcDebug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                        NcDebug.LogWarning($"[RPCAgent] RpcException occurred. Retrying... {retryCount}\n{re}");
                         triedRPCHost[newRpcServerHost] = true;
                         retryCount--;
                     }
                     else
                     {
-                        NcDebug.LogWarning($"Unexpected error occurred during rpc connection. {ae}");
+                        NcDebug.LogWarning($"[RPCAgent] Unexpected error occurred during rpc connection. {ae}");
                         break;
                     }
                 }
                 catch (ObjectDisposedException ode)
                 {
-                    NcDebug.LogWarning($"ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
+                    NcDebug.LogWarning($"[RPCAgent] ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
                     triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                 }
                 catch (Exception e)
                 {
-                    NcDebug.LogWarning($"Unexpected error occurred during rpc connection. {e}");
+                    NcDebug.LogWarning($"[RPCAgent] Unexpected error occurred during rpc connection. {e}");
                     break;
                 }
             }
