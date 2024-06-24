@@ -111,6 +111,7 @@ namespace Nekoyume.UI
                 if (mail.New && mail.requiredBlockIndex <= currentBlockIndex)
                 {
                     await AddRewards(mail, mailRewards);
+                    mail.New = false;
                 }
             }
 
@@ -149,7 +150,6 @@ namespace Nekoyume.UI
 
         private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             switch (mail)
             {
                 case ProductBuyerMail productBuyerMail:
@@ -473,6 +473,7 @@ namespace Nekoyume.UI
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
+            mail.New = false;
             NcDebug.Log("CombinationMail LocalLayer task completed");
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
 
@@ -507,6 +508,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
+                orderBuyerMail.New = false;
                 LocalLayerModifier.RemoveNewMail(avatarAddress, orderBuyerMail.id);
                 ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
             }).AddTo(gameObject);
@@ -520,6 +522,7 @@ namespace Nekoyume.UI
             var order = await Util.GetOrder(orderSellerMail.OrderId);
             var taxedPrice = order.Price - order.GetTax();
             LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
+            orderSellerMail.New = false;
             LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id);
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
@@ -527,12 +530,14 @@ namespace Nekoyume.UI
         public void Read(GrindingMail grindingMail)
         {
             NcDebug.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
+            grindingMail.New = false;
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
         public void Read(MaterialCraftMail materialCraftMail)
         {
             NcDebug.Log($"[{nameof(MaterialCraftMail)}] ItemCount: {materialCraftMail.ItemCount}, ItemId: {materialCraftMail.ItemId}");
+            materialCraftMail.New = false;
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
@@ -560,6 +565,7 @@ namespace Nekoyume.UI
 
                 model.OnClickSubmit.Subscribe(_ =>
                 {
+                    productBuyerMail.New = false;
                     LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id);
                     ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                 }).AddTo(gameObject);
@@ -574,6 +580,7 @@ namespace Nekoyume.UI
                     fav,
                     () =>
                     {
+                        productBuyerMail.New = false;
                         LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id);
                         ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                     });
@@ -590,6 +597,7 @@ namespace Nekoyume.UI
             var fav = new FungibleAssetValue(currency, (int)price, 0);
             var taxedPrice = fav.DivRem(100, out _) * Action.Buy.TaxRate;
             LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
+            productSellerMail.New = false;
             LocalLayerModifier.RemoveNewMail(avatarAddress, productSellerMail.id);
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
@@ -601,6 +609,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
+                    productCancelMail.New = false;
                     LocalLayerModifier.RemoveNewMail(avatarAddress, productCancelMail.id);
                     ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                     ReactiveShopState.SetSellProducts();
@@ -614,6 +623,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
+                    orderExpirationMail.New = false;
                     LocalLayerModifier.RemoveNewMail(avatarAddress, orderExpirationMail.id);
                     ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                 });
@@ -626,6 +636,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
+                    cancelOrderMail.New = false;
                     LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
                     ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                     ReactiveShopState.SetSellProducts();
@@ -653,6 +664,7 @@ namespace Nekoyume.UI
                         result.CRYSTAL.MajorUnit);
                 }
 
+                itemEnhanceMail.New = false;
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id);
                 ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
             }).ToObservable().SubscribeOnMainThread().Subscribe(_ =>
