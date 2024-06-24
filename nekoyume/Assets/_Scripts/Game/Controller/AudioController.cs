@@ -50,6 +50,9 @@ namespace Nekoyume.Game.Controller
             public const string WorldBossTitle = "bgm_worldboss_title";
             public const string Dcc = "bgm_dcc";
             public const string BattleLoading = "bgm_battle_loading";
+            public const string AdventureBoss01 = "bgm_adventure_boss_01";
+            public const string AdventureBossLobby = "bgm_adventure_boss_lobby";
+
         }
 
         public class SfxCode
@@ -113,6 +116,10 @@ namespace Nekoyume.Game.Controller
             public const string Rewards = "sfx_rewards";
             public const string Star = "sfx_star";
             public const string ArenaBattleLoading = "sfx_arenabattleloading";
+            public const string AdventureBossCoin = "sfx_adventure_boss_coin";
+            public const string AdventureBossMonCollision = "sfx_adventure_boss_mon_collision";
+            public const string AdventureBossPenetration = "sfx_adventure_boss_penetration";
+            public const string AdventureBossPopUp = "sfx_adventure_boss_pop_up";
         }
 
         private enum State

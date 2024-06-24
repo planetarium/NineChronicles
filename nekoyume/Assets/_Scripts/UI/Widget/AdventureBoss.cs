@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
+    using Nekoyume.Game.Controller;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.AdventureBoss;
@@ -145,6 +146,7 @@ namespace Nekoyume.UI
                 Widget.Find<HeaderMenuStatic>()
                     .Show(HeaderMenuStatic.AssetVisibleState.AdventureBoss);
 
+                AudioController.instance.PlayMusic(AudioController.MusicCode.AdventureBossLobby);
                 base.Show(ignoreShowAnimation);
             }
             catch (Exception e)

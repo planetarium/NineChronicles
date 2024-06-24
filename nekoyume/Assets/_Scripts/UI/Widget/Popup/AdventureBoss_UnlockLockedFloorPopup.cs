@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using Nekoyume.Blockchain;
+    using Nekoyume.Game.Controller;
     using Nekoyume.L10n;
     using Nekoyume.Model.Mail;
     using UniRx;
@@ -44,6 +45,7 @@ namespace Nekoyume.UI
                             _loadingEnd?.Invoke(false);
                             return;
                         }
+                        AudioController.instance.PlaySfx(AudioController.SfxCode.SuccessEffectSlot);
                         _loadingEnd?.Invoke(true);
                     });
                 }
@@ -69,6 +71,7 @@ namespace Nekoyume.UI
                             _loadingEnd?.Invoke(false);
                             return;
                         }
+                        AudioController.instance.PlaySfx(AudioController.SfxCode.SuccessEffectSlot);
                         _loadingEnd?.Invoke(true);
                     });
                 }
