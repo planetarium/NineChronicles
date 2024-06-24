@@ -1014,11 +1014,6 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.RemoveItem(
-                avatarAddress,
-                result.itemUsable.ItemId,
-                result.itemUsable.RequiredBlockIndex,
-                1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             var tableSheets = Game.Game.instance.TableSheets;
@@ -1189,11 +1184,6 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.RemoveItem(
-                avatarAddress,
-                result.itemUsable.ItemId,
-                result.itemUsable.RequiredBlockIndex,
-                1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             RenderQuest(avatarAddress, renderArgs.AvatarState.questList.completedQuestIds);
@@ -1246,11 +1236,6 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.RemoveItem(
-                avatarAddress,
-                itemUsable.ItemId,
-                itemUsable.RequiredBlockIndex,
-                1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             // Notify
@@ -1387,20 +1372,6 @@ namespace Nekoyume.Blockchain
                             false);
                     }
                 }
-            }
-
-            if (itemUsable.ItemSubType == ItemSubType.Aura)
-            {
-                //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, itemUsable.ItemId);
-            }
-            else
-            {
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1);
             }
 
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
