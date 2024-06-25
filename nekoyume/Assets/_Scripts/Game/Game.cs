@@ -1003,7 +1003,7 @@ namespace Nekoyume.Game
 
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
+            Widget widget = Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();

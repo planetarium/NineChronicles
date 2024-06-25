@@ -752,15 +752,7 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
             OnRetryAttempt
                 .ObserveOnMainThread()
-                .Subscribe(tuple =>
-                {
-                    NcDebug.Log($"[RPCAgent] Retry rpc connection. (remain count: {tuple.retryCount})");
-                    var tryCount = RpcConnectionRetryCount - tuple.retryCount;
-                    if (tryCount > 0)
-                    {
-                        Widget.Find<DimmedLoadingScreen>()?.Show();
-                    }
-                })
+                .Subscribe()
                 .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
         }
@@ -1004,6 +996,7 @@ namespace Nekoyume.Blockchain
             OnRetryStarted.OnNext(this);
             // Dict to store tried RPC server hosts. (host, tried)
             var triedRPCHost = cachedRpcServerHosts.ToDictionary(key => key, value => false);
+            NcDebug.Log($"[RPCAgent] RetryRpc()... Trying to reconnect to RPC server {RpcConnectionRetryCount} times.");
             var retryCount = RpcConnectionRetryCount;
             while (retryCount > 0)
             {
@@ -1012,7 +1005,7 @@ namespace Nekoyume.Blockchain
                     .Where(pair => !pair.Value).OrderBy(_ => Guid.NewGuid()).FirstOrDefault().Key;
                 if (newRpcServerHost is null)
                 {
-                    NcDebug.LogWarning("[RPCAgent] All RPC server hosts are tried. Retry failed.");
+                    NcDebug.Log("[RPCAgent] All RPC server hosts are tried. <b>Retry failed.</b>");
                     break;
                 }
 
@@ -1028,7 +1021,7 @@ namespace Nekoyume.Blockchain
                 }
                 catch (RpcException re)
                 {
-                    NcDebug.LogWarning($"[RPCAgent] RpcException occurred. Retrying... {retryCount}\n{re}");
+                    NcDebug.Log($"[RPCAgent] RpcException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{re}");
                     triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                     continue;
@@ -1051,7 +1044,7 @@ namespace Nekoyume.Blockchain
                 }
                 catch (TimeoutException toe)
                 {
-                    NcDebug.LogWarning($"[RPCAgent] TimeoutException occurred. Retrying... {retryCount}\n{toe}");
+                    NcDebug.Log($"[RPCAgent] TimeoutException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{toe}");
                     triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                 }
@@ -1059,25 +1052,25 @@ namespace Nekoyume.Blockchain
                 {
                     if (ae.InnerException is RpcException re)
                     {
-                        NcDebug.LogWarning($"[RPCAgent] RpcException occurred. Retrying... {retryCount}\n{re}");
+                        NcDebug.Log($"[RPCAgent] RpcException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{re}");
                         triedRPCHost[newRpcServerHost] = true;
                         retryCount--;
                     }
                     else
                     {
-                        NcDebug.LogWarning($"[RPCAgent] Unexpected error occurred during rpc connection. {ae}");
+                        NcDebug.Log($"[RPCAgent] Unexpected error occurred during rpc connection. {ae}");
                         break;
                     }
                 }
                 catch (ObjectDisposedException ode)
                 {
-                    NcDebug.LogWarning($"[RPCAgent] ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
+                    NcDebug.Log($"[RPCAgent] ObjectDisposedException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{ode}");
                     triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                 }
                 catch (Exception e)
                 {
-                    NcDebug.LogWarning($"[RPCAgent] Unexpected error occurred during rpc connection. {e}");
+                    NcDebug.Log($"[RPCAgent] Unexpected error occurred during rpc connection. {e}");
                     break;
                 }
             }
