@@ -341,10 +341,11 @@ namespace Nekoyume.UI
                 LocalLayerModifier.AddItem(
                     avatarAddress,
                     materialRow.Value.ItemId,
-                    reward.Item2);
+                    reward.Item2,
+                    false);
             }
 
-            LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId, true);
+            LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId, false);
         }
 
         private void PlayEffects()

@@ -351,56 +351,24 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="mailId"></param>
-        /// <param name="resetState"></param>
-        public static async void RemoveNewAttachmentMail(
+        public static void RemoveNewAttachmentMail(
             Address avatarAddress,
-            Guid mailId,
-            bool resetState = true)
+            Guid mailId)
         {
             UnityEngine.Debug.Log($"[MailRead] RemoveNewAttachmentMail mailid : {mailId}");
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            await TryResetLoadedAvatarState(avatarAddress);
         }
 
-        public static async void RemoveNewMail(
+        public static void RemoveNewMail(
             Address avatarAddress,
-            Guid mailId,
-            bool resetState = true)
+            Guid mailId)
         {
             UnityEngine.Debug.Log($"[MailRead] RemoveNewMail mailid : {mailId}");
             var modifier = new AvatarMailNewSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            await TryResetLoadedAvatarState(avatarAddress);
         }
 
-        public static async void RemoveAttachmentResult(
-            Address avatarAddress,
-            Guid mailId,
-            bool resetState = true)
-        {
-            var resultModifier = new AvatarAttachmentMailResultSetter(mailId);
-            LocalLayer.Instance.Remove(avatarAddress, resultModifier);
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            await TryResetLoadedAvatarState(avatarAddress);
-        }
         #endregion
 
         #region Avatar / Quest
