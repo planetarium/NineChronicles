@@ -107,9 +107,10 @@ namespace Nekoyume.UI
             sw.Start();
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Arena);
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
             await UniTask.WhenAll(
-                RxProps.ArenaInfoTuple.UpdateAsync(Game.Game.instance.Agent.BlockTipStateRootHash),
-                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(Game.Game.instance.Agent.BlockTipStateRootHash));
+                RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash),
+                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash));
             loading.Close();
             sw.Stop();
             NcDebug.Log($"[Arena] Loading Complete. {sw.Elapsed}");

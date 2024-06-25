@@ -51,9 +51,9 @@ namespace Nekoyume
         private static void InitializeAndroid()
         {
             var androidInfo = SystemInfo.operatingSystem;
-            Debug.Log("Android info : " + androidInfo);
+            NcDebug.Log("Android info : " + androidInfo);
             androidApiLevel = int.Parse(androidInfo.Substring(androidInfo.IndexOf("-") + 1, 2));
-            Debug.Log("Android API Level : " + androidApiLevel);
+            NcDebug.Log("Android API Level : " + androidApiLevel);
 
             if (androidApiLevel >= 33 &&
                 !Permission.HasUserAuthorizedPermission("android.permission.POST_NOTIFICATIONS"))

@@ -138,17 +138,17 @@ namespace Nekoyume.UI
 #if UNITY_ANDROID
             if (Permission.HasUserAuthorizedPermission(Permission.Camera))
             {
-                Debug.Log("[CodeReaderView] Camera permission already granted.");
+                NcDebug.Log("[CodeReaderView] Camera permission already granted.");
                 _cameraPermissionState = PermissionState.Granted;
             }
             else
             {
-                Debug.Log("[CodeReaderView] Request camera permission.");
+                NcDebug.Log("[CodeReaderView] Request camera permission.");
                 Permission.RequestUserPermission(Permission.Camera, _permissionCallbacks);
 
-                Debug.Log("[CodeReaderView] Wait for camera permission.");
+                NcDebug.Log("[CodeReaderView] Wait for camera permission.");
                 yield return new WaitUntil(() => _cameraPermissionState is PermissionState.Granted);
-                Debug.Log("[CodeReaderView] Camera permission granted.");
+                NcDebug.Log("[CodeReaderView] Camera permission granted.");
             }
 #elif UNITY_IOS
             if (Application.HasUserAuthorization(UserAuthorization.WebCam))
