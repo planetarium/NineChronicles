@@ -169,6 +169,8 @@ namespace Nekoyume.UI
                 {
                     if (Game.LiveAsset.GameConfig.IsKoreanBuild)
                     {
+                        adventureBossMark.SetActive(false);
+                        adventureBossUnMark.SetActive(true);
                         return;
                     }
 

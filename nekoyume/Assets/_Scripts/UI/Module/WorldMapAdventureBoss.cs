@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Module
     using Nekoyume.Helper;
     using Nekoyume.UI.Model;
     using UniRx;
+    using UnityEngine.UI;
 
     public class WorldMapAdventureBoss : MonoBehaviour
     {
@@ -163,14 +164,16 @@ namespace Nekoyume.UI.Module
         {
             if (Game.LiveAsset.GameConfig.IsKoreanBuild)
             {
+                worldButton.IsLockNameShow = false;
                 worldButton.HasNotification.Value = false;
-                worldButton.Unlock();
                 open.SetActive(false);
                 SetDefualtRemainingBlockIndexs();
                 if (_bossImage != null)
                 {
                     DestroyImmediate(_bossImage);
                 }
+
+                worldButton.Lock(true);
 
                 foreach (var obj in unActivateObjs)
                 {
