@@ -3795,6 +3795,7 @@ namespace Nekoyume.Blockchain
             int firstFloor = 1;
             int maxFloor = 5;
             int lastFloor = firstFloor;
+            int prevTotalScore = 0;
             UniTask.RunOnThreadPool(() =>
             {
                 if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
@@ -3805,6 +3806,7 @@ namespace Nekoyume.Blockchain
                 firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
                 maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
                 lastFloor = firstFloor;
+                prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
@@ -3964,7 +3966,7 @@ namespace Nekoyume.Blockchain
                 var apPotionUsed = (lastFloor - firstFloor + 1) * bossData.ExploreAp;
                 var lastClearFloor = log.IsClear ? lastFloor : lastFloor - 1;
 
-                Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, lastClearFloor, rewardList, firstRewardList);
+                Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, lastClearFloor, prevTotalScore, rewardList, firstRewardList);
                 Widget.Find<UI.Battle>().FloorProgressBar.SetData(firstFloor, maxFloor, lastFloor);
 
                 BattleRenderer.Instance.PrepareStage(log);
@@ -4000,6 +4002,7 @@ namespace Nekoyume.Blockchain
             int firstFloor = 1;
             int maxFloor = 5;
             int lastFloor = firstFloor;
+            int prevTotalScore = 0;
             UniTask.RunOnThreadPool(() =>
             {
                 if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
@@ -4011,6 +4014,7 @@ namespace Nekoyume.Blockchain
                 firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
                 maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
                 lastFloor = firstFloor;
+                prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
@@ -4113,7 +4117,7 @@ namespace Nekoyume.Blockchain
                 log.score = point;
                 var totalApPotionUsed = exploreInfo.Floor * bossData.SweepAp;
 
-                Widget.Find<AdventureBossResultPopup>().SetData(totalApPotionUsed, totalApPotionUsed, exploreInfo.Floor, rewardList);
+                Widget.Find<AdventureBossResultPopup>().SetData(totalApPotionUsed, totalApPotionUsed, exploreInfo.Floor, prevTotalScore, rewardList);
                 Widget.Find<UI.Battle>().FloorProgressBar.SetData(1, exploreInfo.Floor, exploreInfo.Floor);
 
                 BattleRenderer.Instance.PrepareStage(log);
