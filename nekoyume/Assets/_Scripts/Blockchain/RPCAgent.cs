@@ -42,6 +42,7 @@ using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using NCTx = Libplanet.Types.Tx.Transaction;
+using Random = System.Random;
 
 namespace Nekoyume.Blockchain
 {
@@ -997,12 +998,13 @@ namespace Nekoyume.Blockchain
             // Dict to store tried RPC server hosts. (host, tried)
             var triedRPCHost = cachedRpcServerHosts.ToDictionary(key => key, value => false);
             NcDebug.Log($"[RPCAgent] RetryRpc()... Trying to reconnect to RPC server {RpcConnectionRetryCount} times.");
+            var random = new Random();
             var retryCount = RpcConnectionRetryCount;
             while (retryCount > 0)
             {
                 // Find a new RPC server host to connect that has not been tried yet.
                 var newRpcServerHost = triedRPCHost
-                    .Where(pair => !pair.Value).OrderBy(_ => Guid.NewGuid()).FirstOrDefault().Key;
+                    .Where(pair => !pair.Value).OrderBy(_ => random.Next()).FirstOrDefault().Key;
                 if (newRpcServerHost is null)
                 {
                     NcDebug.Log("[RPCAgent] All RPC server hosts are tried. <b>Retry failed.</b>");
