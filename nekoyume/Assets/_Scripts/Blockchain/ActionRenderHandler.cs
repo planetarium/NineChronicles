@@ -3684,9 +3684,6 @@ namespace Nekoyume.Blockchain
                     Widget.Find<WorldMap>().SetAdventureBossButtonLoading(false);
                 }
 
-                if (Widget.Find<LoadingScreen>().isActiveAndEnabled)
-                    return;
-
                 if (bountyBoard.Value == null)
                     return;
 

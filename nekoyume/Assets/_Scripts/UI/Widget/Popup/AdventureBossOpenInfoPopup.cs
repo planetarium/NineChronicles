@@ -24,7 +24,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.AdventureBossPopUp);
-            goToAdventureBossButton.gameObject.SetActive(!BattleRenderer.Instance.IsOnBattle);
+            goToAdventureBossButton.gameObject.SetActive(!BattleRenderer.Instance.IsOnBattle && !Widget.Find<LoadingScreen>().isActiveAndEnabled);
         }
 
         public void OnClickGoToAdventureBoss()
