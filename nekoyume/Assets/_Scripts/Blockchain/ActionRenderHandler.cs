@@ -1014,11 +1014,6 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.RemoveItem(
-                avatarAddress,
-                result.itemUsable.ItemId,
-                result.itemUsable.RequiredBlockIndex,
-                1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             var tableSheets = Game.Game.instance.TableSheets;
@@ -1189,11 +1184,6 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.RemoveItem(
-                avatarAddress,
-                result.itemUsable.ItemId,
-                result.itemUsable.RequiredBlockIndex,
-                1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             RenderQuest(avatarAddress, renderArgs.AvatarState.questList.completedQuestIds);
@@ -1246,11 +1236,6 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.RemoveItem(
-                avatarAddress,
-                itemUsable.ItemId,
-                itemUsable.RequiredBlockIndex,
-                1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             // Notify
@@ -1387,20 +1372,6 @@ namespace Nekoyume.Blockchain
                             false);
                     }
                 }
-            }
-
-            if (itemUsable.ItemSubType == ItemSubType.Aura)
-            {
-                //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, itemUsable.ItemId);
-            }
-            else
-            {
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1);
             }
 
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -1640,7 +1611,8 @@ namespace Nekoyume.Blockchain
             {
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                     .First(r => r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, row.ItemId);
+                // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
+                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, row.ItemId, 1, false);
             }
 
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))
@@ -1716,7 +1688,8 @@ namespace Nekoyume.Blockchain
             {
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                     .First(r => r.ItemSubType == ItemSubType.ApStone);
-                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, row.ItemId);
+                // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
+                LocalLayerModifier.AddItem(eval.Action.AvatarAddress, row.ItemId, 1, false);
             }
 
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))

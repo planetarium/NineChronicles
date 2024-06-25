@@ -152,7 +152,7 @@ namespace Nekoyume.UI
                 .Where(q => q.isReceivable && q.Complete)
                 .SelectMany(q =>
                 {
-                    LocalLayerModifier.RemoveReceivableQuest(avatarAddress, q.Id);
+                    LocalLayerModifier.RemoveReceivableQuest(avatarAddress, q.Id, false);
                     return q.Reward.ItemMap;
                 }).Select(itemMap =>
                 {
@@ -161,7 +161,7 @@ namespace Nekoyume.UI
                         itemMap.Item1);
                     var itemId = item.ItemId;
                     var count = itemMap.Item2;
-                    LocalLayerModifier.AddItem(avatarAddress, itemId, count);
+                    LocalLayerModifier.AddItem(avatarAddress, itemId, count, false);
                     return new MailReward(item, count);
                 }).ToList();
             Find<MailRewardScreen>().Show(mailRewards);
