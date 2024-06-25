@@ -230,7 +230,7 @@ namespace Nekoyume.State
 
         public static void AddNewMail(Address avatarAddress, Guid mailId)
         {
-            UnityEngine.Debug.Log($"[MailRead] AddNewMail mailid : {mailId}");
+            NcDebug.Log($"[MailRead] AddNewMail mailid : {mailId}");
             var modifier = new AvatarMailNewSetter(mailId);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
@@ -296,7 +296,7 @@ namespace Nekoyume.State
             Guid mailId,
             bool resetState = true)
         {
-            UnityEngine.Debug.Log($"[MailRead] RemoveNewAttachmentMail mailid : {mailId}");
+            NcDebug.Log($"[MailRead] RemoveNewAttachmentMail mailid : {mailId}");
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 
@@ -313,7 +313,7 @@ namespace Nekoyume.State
             Guid mailId,
             bool resetState = true)
         {
-            UnityEngine.Debug.Log($"[MailRead] RemoveNewMail mailid : {mailId}");
+            NcDebug.Log($"[MailRead] RemoveNewMail mailid : {mailId}");
             var modifier = new AvatarMailNewSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 

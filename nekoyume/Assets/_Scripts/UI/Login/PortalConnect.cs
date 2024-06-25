@@ -705,7 +705,7 @@ namespace Nekoyume.UI
             {
                 if (!string.IsNullOrEmpty(data.referralCode))
                 {
-                    Debug.Log($"{logTitle} Success: {json}");
+                    NcDebug.Log($"{logTitle} Success: {json}");
                     return data;
                 }
 
@@ -714,7 +714,7 @@ namespace Nekoyume.UI
             }
             else if (data.resultCode is 3001 or 3002)
             {
-                Debug.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
+                NcDebug.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
                 if (await UpdateTokens())
                 {
                     return await GetReferralInformation();
