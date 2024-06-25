@@ -111,7 +111,6 @@ namespace Nekoyume.UI
                 if (mail.New && mail.requiredBlockIndex <= currentBlockIndex)
                 {
                     await AddRewards(mail, mailRewards);
-                    mail.New = false;
                 }
             }
 
@@ -140,6 +139,8 @@ namespace Nekoyume.UI
                         LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
                         break;
                 }
+                // 레이어 제거전에 New값을 바꾸면 루프안에서 레이어가 제거되지 않음
+                mail.New = false;
             }
 
             loading.SetActive(false);
