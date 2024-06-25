@@ -153,6 +153,8 @@ namespace Nekoyume.UI
                 .SelectMany(q =>
                 {
                     LocalLayerModifier.RemoveReceivableQuest(avatarAddress, q.Id, false);
+                    // 퀘스트 받음 처리
+                    q.isReceivable = false;
                     return q.Reward.ItemMap;
                 }).Select(itemMap =>
                 {
@@ -164,6 +166,8 @@ namespace Nekoyume.UI
                     LocalLayerModifier.AddItem(avatarAddress, itemId, count, false);
                     return new MailReward(item, count);
                 }).ToList();
+            // 퀘스트 완료처리된 목록으로 갱신해서 레드닷 비활성화처리
+            ReactiveAvatarState.UpdateQuestList(States.Instance.CurrentAvatarState.questList);
             Find<MailRewardScreen>().Show(mailRewards);
         }
     }
