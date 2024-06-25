@@ -216,6 +216,9 @@ namespace Nekoyume.UI
             PlayEffects();
             MakeNotification(quest.GetContent());
             UpdateLocalState(quest.Id, quest.Reward?.ItemMap);
+            // 퀘스트 받음 처리와 함께 퀘스트 리스트의 상태를 갱신해서 레드닷 제거
+            quest.isReceivable = false;
+            ReactiveAvatarState.UpdateQuestList(States.Instance.CurrentAvatarState.questList);
         }
 
         #endregion
