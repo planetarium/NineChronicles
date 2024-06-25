@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
     using Libplanet.Types.Assets;
-    using Nekoyume.Action.Exceptions.AdventureBoss;
     using Nekoyume.Blockchain;
     using Nekoyume.Data;
     using Nekoyume.Game;
@@ -103,7 +103,7 @@ namespace Nekoyume.UI
                 inputCountObj.SetActive(true);
                 //additionalBountyObj.SetActive(true);
             }
-            if (int.TryParse(input, out int bounty))
+            if (long.TryParse(input, out long bounty))
             {
                 if (bounty < States.Instance.GameConfigState.AdventureBossMinBounty)
                 {
@@ -241,6 +241,8 @@ namespace Nekoyume.UI
             int i = 0;
             foreach (var item in bountyRewards.ItemReward)
             {
+                expectedRewardItems[i].gameObject.transform.DORewind();
+                expectedRewardItems[i].gameObject.transform.DOPunchScale(Vector3.one * 0.2f, 0.5f);
                 expectedRewardItems[i].ItemViewSetItemData(item.Key, item.Value);
                 i++;
             }
@@ -248,6 +250,8 @@ namespace Nekoyume.UI
             {
                 if (expectedRewardItems[i].ItemViewSetCurrencyData(item.Key, item.Value))
                 {
+                    expectedRewardItems[i].gameObject.transform.DORewind();
+                    expectedRewardItems[i].gameObject.transform.DOPunchScale(Vector3.one * 0.2f, 0.5f);
                     i++;
                 }
             }

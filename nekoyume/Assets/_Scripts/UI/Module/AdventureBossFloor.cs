@@ -1,7 +1,10 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Nekoyume.Game;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.TableData.AdventureBoss;
+using Nekoyume.UI.Scroller;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,6 +41,27 @@ namespace Nekoyume.UI.Module
 
         public void OnClickUnlockAction()
         {
+            if (indicatorObj.activeSelf)
+            {
+                OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize(
+                                "NOTIFICATION_NOT_UNLOCK_WHILE_FLOOR_LOADING"),
+                        NotificationCell.NotificationType.Information);
+                return;
+            }
+
+            var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+            if(exploreInfo == null || exploreInfo.Floor != exploreInfo.MaxFloor)
+            {
+                OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize(
+                                "NOTIFICATION_CAN_NOT_UNLOCK_FLOOR"),
+                        NotificationCell.NotificationType.Information);
+                return;
+            }
+
             NcDebug.Log($"OnClickUnlockAction {_floorIndex}");
             Widget.Find<AdventureBoss_UnlockLockedFloorPopup>()
                 .Show(_floorIndex, LoadingStart, LoadingEnd);

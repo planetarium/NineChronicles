@@ -15,6 +15,7 @@ namespace Nekoyume.UI
     using Nekoyume.Game;
     using Nekoyume.Helper;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Nekoyume.TableData;
     using Nekoyume.UI.Model;
     using UniRx;
@@ -46,7 +47,6 @@ namespace Nekoyume.UI
         private BaseItemView[] rewardItemsExplores;
 
         private List<SeasonInfo> _endedClaimableSeasonInfo = new List<SeasonInfo>();
-        private readonly List<System.IDisposable> _disposablesByEnable = new();
         private bool _isRefreshed = false;
         private long _lastSeasonId = 0;
         ClaimableReward lastClaimableReward = new ClaimableReward
@@ -58,58 +58,62 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            receiveAllButton.OnClickSubject.Subscribe(_ =>
+            receiveAllButton.OnClickSubject.ThrottleFirst(TimeSpan.FromSeconds(1f)).Subscribe(_ =>
             {
                 ActionManager.Instance.ClaimAdventureBossReward(_lastSeasonId).Subscribe(eval =>
                 {
-                    if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                    if (eval.Exception != null)
                     {
-                        var action = eval.Action;
-                        var tableSheets = Game.instance.TableSheets;
-                        var mailRewards = new List<MailReward>();
+                        NcDebug.LogError(eval.Exception);
+                        OneLineSystem.Push(MailType.System, eval.Exception.InnerException.Message, Scroller.NotificationCell.NotificationType.Alert);
+                        Game.instance.AdventureBossData.IsRewardLoading.Value = false;
+                        return;
+                    }
+                    var action = eval.Action;    
+                    var tableSheets = Game.instance.TableSheets;
+                    var mailRewards = new List<MailReward>();
 
-                        if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.MajorUnit > 0)
+                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.MajorUnit > 0)
+                    {
+                        mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
+                    }
+                    foreach (var itemReward in lastClaimableReward.ItemReward)
+                    {
+                        var itemRow = TableSheets.Instance.ItemSheet[itemReward.Key];
+                        if (itemRow is MaterialItemSheet.Row materialRow)
                         {
-                            mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
+                            var item = ItemFactory.CreateMaterial(materialRow);
+                            mailRewards.Add(new MailReward(item, itemReward.Value));
                         }
-                        foreach (var itemReward in lastClaimableReward.ItemReward)
+                        else
                         {
-                            var itemRow = TableSheets.Instance.ItemSheet[itemReward.Key];
-                            if (itemRow is MaterialItemSheet.Row materialRow)
+                            for (var i = 0; i < itemReward.Value; i++)
                             {
-                                var item = ItemFactory.CreateMaterial(materialRow);
-                                mailRewards.Add(new MailReward(item, itemReward.Value));
-                            }
-                            else
-                            {
-                                for (var i = 0; i < itemReward.Value; i++)
+                                if (itemRow.ItemSubType != ItemSubType.Aura)
                                 {
-                                    if (itemRow.ItemSubType != ItemSubType.Aura)
-                                    {
-                                        var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                                        mailRewards.Add(new MailReward(item, 1));
-                                    }
+                                    var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                                    mailRewards.Add(new MailReward(item, 1));
                                 }
                             }
                         }
-                        foreach (var favReward in lastClaimableReward.FavReward)
-                        {
-                            RuneSheet runeSheet = Game.instance.TableSheets.RuneSheet;
-                            runeSheet.TryGetValue(favReward.Key, out var runeRow);
-                            if (runeRow != null)
-                            {
-                                var currency = Currency.Legacy(runeRow.Ticker, 0, null);
-                                var fav = new FungibleAssetValue(currency, favReward.Value, 0);
-                                mailRewards.Add(new MailReward(fav, favReward.Value));
-                            }
-                        }
-
-                        Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
-                        Game.instance.AdventureBossData.IsRewardLoading.Value = false;
                     }
+                    foreach (var favReward in lastClaimableReward.FavReward)
+                    {
+                        RuneSheet runeSheet = Game.instance.TableSheets.RuneSheet;
+                        runeSheet.TryGetValue(favReward.Key, out var runeRow);
+                        if (runeRow != null)
+                        {
+                            var currency = Currency.Legacy(runeRow.Ticker, 0, null);
+                            var fav = new FungibleAssetValue(currency, favReward.Value, 0);
+                            mailRewards.Add(new MailReward(fav, favReward.Value));
+                        }
+                    }
+
+                    Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_ADVENTURE_BOSS_REWARD_COMPLETE");
+                    Game.instance.AdventureBossData.IsRewardLoading.Value = false;
                 });
                 Game.instance.AdventureBossData.IsRewardLoading.Value = true;
-                Close();
+                base.Close();
             }).AddTo(gameObject);
             base.Awake();
         }
@@ -117,6 +121,10 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             var adventureBossData = Game.instance.AdventureBossData;
+            if(adventureBossData.EndedSeasonInfos.Count == 0 || adventureBossData.EndedBountyBoards.Count == 0)
+            {
+                return;
+            }
             _endedClaimableSeasonInfo = adventureBossData.EndedSeasonInfos.Values.
                 Where(seasonInfo => seasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval > Game.instance.Agent.BlockIndex).
                 OrderBy(seasonInfo => seasonInfo.EndBlockIndex).
@@ -303,7 +311,6 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             receiveAllButton.OnClickSubject.OnNext(receiveAllButton.CurrentState.Value);
-            _disposablesByEnable.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
         }
 
@@ -327,7 +334,7 @@ namespace Nekoyume.UI
             {
                 myScore.text = $"{exploreInfo.Score:#,0}";
                 SetExploreInfoVIew(true);
-                var myScoreRatio = (long)exploreInfo.Score / exploreBoard.TotalPoint;
+                double myScoreRatio = (double)exploreInfo.Score / (double)exploreBoard.TotalPoint;
                 myScoreRatioText.text = $"{myScoreRatio * 100:F2}%";
             }
             SetExploreInfoVIew(false);
