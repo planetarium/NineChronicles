@@ -3858,16 +3858,17 @@ namespace Nekoyume.Blockchain
                     NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
                     return;
                 }
-                var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id);
+                var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id).ToList();
 
                 for (var fl = firstFloor; fl <= maxFloor; fl++)
                 {
-                    if (!tableSheets.AdventureBossFloorSheet.TryGetValue(fl, out var floorRow))
+                    var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);
+                    if (floorRow is null)
                     {
                         NcDebug.LogError($"FloorSheet is not found. Floor: {fl}");
                         return;
                     }
-                    if (!tableSheets.AdventureBossFloorWaveSheet.TryGetValue(fl, out var waveRows))
+                    if (!tableSheets.AdventureBossFloorWaveSheet.TryGetValue(floorRow.Id, out var waveRows))
                     {
                         NcDebug.LogError($"FloorWaveSheet is not found. Floor: {fl}");
                         return;
@@ -3877,7 +3878,7 @@ namespace Nekoyume.Blockchain
 
                     simulator = new AdventureBossSimulator(
                         bossId: seasonInfo.BossId,
-                        floorId: fl,
+                        floorId: floorRow.Id,
                         random,
                         States.Instance.CurrentAvatarState,
                         fl == firstFloor ? eval.Action.Foods : new List<Guid>(),
@@ -4050,8 +4051,16 @@ namespace Nekoyume.Blockchain
                 var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
                 var random = new LocalRandom(eval.RandomSeed);
                 var tableSheets = TableSheets.Instance;
+                var floorRow = tableSheets.AdventureBossFloorSheet.Values.FirstOrDefault(
+                    row => row.AdventureBossId == seasonInfo.BossId && row.Floor == exploreInfo.Floor
+                );
+                if (floorRow is null)
+                {
+                    NcDebug.LogError($"FloorSheet is not found. BossId: {seasonInfo.BossId}, Floor: {exploreInfo.Floor}");
+                    return;
+                }
 
-                var simulator = new AdventureBossSimulator(seasonInfo.BossId, exploreInfo.Floor, random, States.Instance.CurrentAvatarState, tableSheets.GetSimulatorSheets(), logEvent: false);
+                var simulator = new AdventureBossSimulator(seasonInfo.BossId, floorRow.Id, random, States.Instance.CurrentAvatarState, tableSheets.GetSimulatorSheets(), logEvent: false);
                 simulator.AddBreakthrough(1, exploreInfo.Floor, tableSheets.AdventureBossFloorWaveSheet);
 
                 // Add point, reward
