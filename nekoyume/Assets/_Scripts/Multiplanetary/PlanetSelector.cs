@@ -55,13 +55,6 @@ namespace Nekoyume.Multiplanetary
                 context.IsSkipped = true;
                 return context;
             }
-
-#elif !UNITY_ANDROID && !UNITY_IOS
-            NcDebug.Log("[PlanetSelector] Skip initializing PlanetRegistry because" +
-                      " the platform not supported in non-editor." +
-                      "(Only Android and iOS are supported)");
-            context.IsSkipped = true;
-            return context;
 #endif
 
             var clo = context.CommandLineOptions;
