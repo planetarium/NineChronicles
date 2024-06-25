@@ -21,6 +21,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                return;
+            }
+
             base.Show(ignoreShowAnimation);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.AdventureBossPopUp);

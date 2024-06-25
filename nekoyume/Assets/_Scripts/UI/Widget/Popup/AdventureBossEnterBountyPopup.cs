@@ -140,6 +140,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                return;
+            }
+
             if (States.Instance.StakingLevel < States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel)
             {
                 stakingWarningMassage.SetActive(true);

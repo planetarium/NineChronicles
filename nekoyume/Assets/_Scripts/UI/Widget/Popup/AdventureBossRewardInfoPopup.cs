@@ -270,6 +270,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                return;
+            }
+
             Game.instance.AdventureBossData.SeasonInfo.
                 Subscribe(RefreshSeasonInfo).
                 AddTo(_disposablesByEnable);
@@ -283,6 +288,12 @@ namespace Nekoyume.UI
             contentsOperational.SetActive(false);
             toggleScore.isOn = true;
             RefreshToggleScore();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            _disposablesByEnable.DisposeAllAndClear();
         }
 
         private void RefreshSeasonInfo(SeasonInfo seasonInfo)

@@ -20,6 +20,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject loadingIndicator;
         [SerializeField] private WorldButton worldButton;
         [SerializeField] private Transform bossImageParent;
+        [SerializeField] private GameObject[] unActivateObjs;
 
         private readonly List<System.IDisposable> _disposables = new();
         private long _remainingBlockIndex = 0;
@@ -31,15 +32,35 @@ namespace Nekoyume.UI.Module
         {
             worldButton.OnClickSubject.Subscribe(button =>
             {
+                if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_ADVENTUREBOSS_ENTER_KOREAN_BUILD"), NotificationCell.NotificationType.Alert);
+                    return;
+                }
+
                 var curState = Game.Game.instance.AdventureBossData.CurrentState.Value;
                 if(curState == AdventureBossData.AdventureBossSeasonState.Ready)
                 {
                     OnClickOpenEnterBountyPopup();
+                    return;
                 }
 
                 if(curState == AdventureBossData.AdventureBossSeasonState.Progress)
                 {
                     OnClickOpenAdventureBoss();
+                    return;
+                }
+
+                if(curState == AdventureBossData.AdventureBossSeasonState.End)
+                {
+                    var adventureBossData = Game.Game.instance.AdventureBossData;
+                    long remainBlock = 0;
+                    if (adventureBossData.EndedSeasonInfos.TryGetValue(adventureBossData.SeasonInfo.Value.Season, out var endedSeasonInfo))
+                    {
+                        remainBlock = endedSeasonInfo.NextStartBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                    }
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_ADVENTUREBOSS_SEASON_ENDED", remainBlock), NotificationCell.NotificationType.Alert);
+                    return;
                 }
             }).AddTo(gameObject);
         }
@@ -140,6 +161,24 @@ namespace Nekoyume.UI.Module
 
         private void OnAdventureBossStateChanged(AdventureBossData.AdventureBossSeasonState state)
         {
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                worldButton.HasNotification.Value = false;
+                worldButton.Unlock();
+                open.SetActive(false);
+                SetDefualtRemainingBlockIndexs();
+                if (_bossImage != null)
+                {
+                    DestroyImmediate(_bossImage);
+                }
+
+                foreach (var obj in unActivateObjs)
+                {
+                    obj.SetActive(false);
+                }
+                return;
+            }
+
             switch (state)
             {
                 case AdventureBossData.AdventureBossSeasonState.Ready:
@@ -172,7 +211,7 @@ namespace Nekoyume.UI.Module
                 case AdventureBossData.AdventureBossSeasonState.End:
                 default:
                     worldButton.HasNotification.Value = false;
-                    worldButton.Lock();
+                    worldButton.Unlock();
                     open.SetActive(false);
                     SetDefualtRemainingBlockIndexs();
                     if (_bossImage != null)

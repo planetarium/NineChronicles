@@ -122,6 +122,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                return;
+            }
+
             var adventureBossData = Game.instance.AdventureBossData;
             if(adventureBossData.EndedSeasonInfos.Count == 0 || adventureBossData.EndedBountyBoards.Count == 0)
             {

@@ -167,6 +167,11 @@ namespace Nekoyume.UI
             Game.Game.instance.AdventureBossData.SeasonInfo
                 .Subscribe(seasonInfo =>
                 {
+                    if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+                    {
+                        return;
+                    }
+
                     bool activeMark = seasonInfo != null
                         && seasonInfo.StartBlockIndex <= Game.Game.instance.Agent.BlockIndex
                         && seasonInfo.EndBlockIndex >= Game.Game.instance.Agent.BlockIndex;
