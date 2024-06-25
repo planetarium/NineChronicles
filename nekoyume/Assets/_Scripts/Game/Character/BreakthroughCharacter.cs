@@ -89,7 +89,7 @@ namespace Nekoyume.Game.Character
             {
                 ActionCamera.instance.Shake();
             }
-            AudioController.PlayDamagedCritical();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.AdventureBossMonCollision);
             VFXController.instance.Create<AdventureBossSweepAttackVFX>(pos);
 
             StartCoroutine(Dying());

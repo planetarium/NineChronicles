@@ -587,7 +587,14 @@ namespace Nekoyume.Game.Battle
             yield return StartCoroutine(title.CoClose());
 
             _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleStart);
-            AudioController.instance.PlayMusic(bgmName);
+            if(StageType == StageType.AdventureBoss)
+            {
+                AudioController.instance.PlayMusic(AudioController.MusicCode.AdventureBoss01);
+            }
+            else
+            {
+                AudioController.instance.PlayMusic(bgmName);
+            }
             IsShowHud = true;
 
             SelectedPlayer.Model.worldInformation.TryGetLastClearedStageId(out var lastClearedStageIdBeforeResponse);
@@ -1645,6 +1652,8 @@ namespace Nekoyume.Game.Battle
 
             Widget.Find<UI.Battle>().FloorProgressBar.SetCompleted(floor);
             LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
+
+            AudioController.instance.PlaySfx(AudioController.SfxCode.AdventureBossPenetration);
             yield return null;
         }
 

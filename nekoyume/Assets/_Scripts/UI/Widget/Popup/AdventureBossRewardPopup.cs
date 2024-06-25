@@ -13,6 +13,7 @@ namespace Nekoyume.UI
 {
     using Libplanet.Types.Assets;
     using Nekoyume.Game;
+    using Nekoyume.Game.Controller;
     using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -152,6 +153,7 @@ namespace Nekoyume.UI
 
             LoadTotalRewards().ContinueWith(() =>
             {
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
                 base.Show(ignoreShowAnimation);
             });
         }

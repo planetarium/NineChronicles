@@ -12,6 +12,7 @@ namespace Nekoyume.UI
     using Nekoyume.Blockchain;
     using Nekoyume.Data;
     using Nekoyume.Game;
+    using Nekoyume.Game.Controller;
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.Mail;
@@ -293,6 +294,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Cash);
             switch (Game.instance.AdventureBossData.CurrentState.Value)
             {
                 case Model.AdventureBossData.AdventureBossSeasonState.Ready:
