@@ -2683,22 +2683,24 @@ namespace Nekoyume.Blockchain
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(eval.OutputState),
                 RxProps.ArenaInformationOrderedWithScore.UpdateAsync(eval.OutputState));
 
+            void OnBattleEnd()
+            {
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
+                // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
+                // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
+                _disposableForBattleEnd                                  = null;
+                Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
+            }
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
                 .First()
                 .Subscribe(_ =>
                 {
-                    UniTask.Run(() =>
-                        {
-                            UpdateAgentStateAsync(eval).Forget();
-                            UpdateCurrentAvatarStateAsync().Forget();
-                            // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
-                            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
-                            _disposableForBattleEnd = null;
-                            Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
-                        }).ToObservable()
+                    UniTask.RunOnThreadPool(OnBattleEnd)
+                        .ToObservable()
                         .First()
-                        // ReSharper disable once ConvertClosureToMethodGroup
                         .DoOnError(e => NcDebug.LogException(e));
                 });
 
@@ -2726,17 +2728,9 @@ namespace Nekoyume.Blockchain
                     .First()
                     .Subscribe(_ =>
                     {
-                        UniTask.RunOnThreadPool(() =>
-                            {
-                                UpdateAgentStateAsync(eval).Forget();
-                                UpdateCurrentAvatarStateAsync().Forget();
-                                // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
-                                // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
-                                _disposableForBattleEnd = null;
-                                Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
-                            }, configureAwait: false).ToObservable()
+                        UniTask.RunOnThreadPool(OnBattleEnd, configureAwait: false)
+                            .ToObservable()
                             .First()
-                            // ReSharper disable once ConvertClosureToMethodGroup
                             .DoOnError(e => NcDebug.LogException(e));
                     });
                 previousMyScore = StateGetter.TryGetArenaScore(
@@ -2760,7 +2754,6 @@ namespace Nekoyume.Blockchain
                 myCollectionState = StateGetter.GetCollectionState(eval.OutputState, eval.Action.myAvatarAddress);
                 enemyCollectionState = StateGetter.GetCollectionState(eval.OutputState, eval.Action.enemyAvatarAddress);
             }).ToObservable().ObserveOnMainThread();
-
 
             prepareObserve.Subscribe(_ =>
             {
@@ -2819,18 +2812,20 @@ namespace Nekoyume.Blockchain
                     rewards.AddRange(reward);
                 }
 
-                if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
+                if (!arenaBattlePreparation || !arenaBattlePreparation.IsActive())
                 {
-                    arenaBattlePreparation.OnRenderBattleArena(eval);
-                    Game.Game.instance.Arena.Enter(
-                        logs.First(),
-                        rewards,
-                        myDigest.Value,
-                        enemyDigest.Value,
-                        eval.Action.myAvatarAddress,
-                        eval.Action.enemyAvatarAddress,
-                        winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
+                    return;
                 }
+                
+                arenaBattlePreparation.OnRenderBattleArena(eval);
+                Game.Game.instance.Arena.Enter(
+                    logs.First(),
+                    rewards,
+                    myDigest.Value,
+                    enemyDigest.Value,
+                    eval.Action.myAvatarAddress,
+                    eval.Action.enemyAvatarAddress,
+                    winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
             });
         }
 

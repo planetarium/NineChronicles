@@ -46,6 +46,7 @@ namespace Nekoyume.Game.Battle
 
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
+        // Only Changed on Thread Pool
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int TurnNumber => _turnNumber;
 
