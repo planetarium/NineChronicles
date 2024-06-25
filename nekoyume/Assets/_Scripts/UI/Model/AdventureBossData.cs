@@ -10,7 +10,6 @@ using Nekoyume.Game;
 using Nekoyume;
 using Nekoyume.TableData.AdventureBoss;
 using System.Linq;
-using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI.Model
 {
@@ -28,12 +27,14 @@ namespace Nekoyume.UI.Model
         public ReactiveProperty<BountyBoard> BountyBoard = new ReactiveProperty<BountyBoard>();
         public ReactiveProperty<ExploreBoard> ExploreBoard = new ReactiveProperty<ExploreBoard>();
         public ReactiveProperty<Explorer> ExploreInfo = new ReactiveProperty<Explorer>();
+
         public ReactiveProperty<AdventureBossSeasonState> CurrentState = new ReactiveProperty<AdventureBossSeasonState>();
         public ReactiveProperty<bool> IsRewardLoading = new ReactiveProperty<bool>();
 
         public Dictionary<long, SeasonInfo> EndedSeasonInfos = new Dictionary<long, SeasonInfo>();
         public Dictionary<long, BountyBoard> EndedBountyBoards = new Dictionary<long, BountyBoard>();
         public Dictionary<long, ExploreBoard> EndedExploreBoards = new Dictionary<long, ExploreBoard>();
+        public Dictionary<long, Explorer> EndedExploreInfos = new Dictionary<long, Explorer>();
 
         private const int _endedSeasonSearchTryCount = 10;
 
@@ -87,6 +88,20 @@ namespace Nekoyume.UI.Model
                     EndedBountyBoards[endedSeasonIndex] = endedBountyBoard;
                     EndedExploreBoards[endedSeasonIndex] = endedExploreBoard;
                 }
+
+                if (States.Instance.CurrentAvatarState.address != null)
+                {
+                    var endedExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, endedSeasonIndex);
+                    if (!EndedExploreInfos.ContainsKey(endedSeasonIndex))
+                    {
+                        EndedExploreInfos.Add(endedSeasonIndex, endedExploreInfo);
+                    }
+                    else
+                    {
+                        EndedExploreInfos[endedSeasonIndex] = endedExploreInfo;
+                    }
+                }
+
                 //보상수령기간이 지날경우 더이상 가져오지않음.
                 if (endedSeasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval < Game.Game.instance.Agent.BlockIndex)
                 {
@@ -111,15 +126,23 @@ namespace Nekoyume.UI.Model
                 if (endedSeasonIndex <= 0)
                     break;
 
+                if (!EndedExploreInfos.TryGetValue(endedSeasonIndex, out var endedExploreInfo))
+                {
+                    endedExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, endedSeasonIndex);
+                    EndedExploreInfos.Add(endedSeasonIndex, endedExploreInfo);
+                }
+
                 //이미 가져온 시즌정보는 다시 가져오지않음.
                 if (!EndedSeasonInfos.TryGetValue(endedSeasonIndex, out var endedSeasonInfo))
                 {
                     endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex);
                     var endedBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex);
                     var endedExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(endedSeasonIndex);
+
                     EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
                     EndedBountyBoards.Add(endedSeasonIndex, endedBountyBoard);
                     EndedExploreBoards.Add(endedSeasonIndex, endedExploreBoard);
+
 
                     //보상수령기간이 지날경우 더이상 가져오지않음.
                     if (endedSeasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval < Game.Game.instance.Agent.BlockIndex)
@@ -127,6 +150,7 @@ namespace Nekoyume.UI.Model
                         break;
                     }
                 }
+
             }
 
             //시즌이 진행중인 경우.
