@@ -278,14 +278,9 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void Close(bool ignoreOnRoomEnter, bool ignoreCloseAnimation)
+        public void CloseWithItemCountAndPricePopup(bool ignoreCloseAnimation)
         {
             Find<ItemCountAndPricePopup>().Close(ignoreCloseAnimation);
-            if (!ignoreOnRoomEnter)
-            {
-                Game.Event.OnRoomEnter.Invoke(true);
-            }
-
             base.Close(ignoreCloseAnimation);
         }
 
