@@ -92,6 +92,7 @@ namespace Nekoyume.UI
             {
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
+                AudioController.PlayClick();
             });
 
             CloseWidget = () =>

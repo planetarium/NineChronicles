@@ -51,7 +51,13 @@ namespace Nekoyume.UI
                 gameObject.SetActive(false);
             });
 
-            closeButton.onClick.AddListener(() => Close());
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+                AudioController.PlayClick();
+            });
+            
             CloseWidget = () =>
             {
                 if (view.IsFocused)
