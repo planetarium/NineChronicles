@@ -602,7 +602,6 @@ namespace Nekoyume.UI.Module
             var hasNotification =
                 questList.Any(quest => quest.IsPaidInAction && quest.isReceivable);
             _toggleNotifications[ToggleType.Quest].Value = hasNotification;
-            Find<QuestPopup>().SetList(questList);
         }
 
         private void SubscribeInventory(Nekoyume.Model.Item.Inventory inventory)
