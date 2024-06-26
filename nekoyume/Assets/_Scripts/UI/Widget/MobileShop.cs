@@ -10,6 +10,8 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
+using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -33,6 +35,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject emptyCategoryPannel;
 
+        [SerializeField]
+        private Button closeButton = null;
+
         private bool _isInitializedObj;
 
         private readonly Dictionary<string, IAPShopProductCellView> _allProductObjs =
@@ -55,6 +60,14 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+                AudioController.PlayClick();
+            });
+            
             CloseWidget = () =>
             {
                 Close();
