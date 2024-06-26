@@ -286,6 +286,9 @@ namespace Nekoyume.State
         public static void AddNewMail(AvatarState avatarState, Guid mailId)
         {
             UnityEngine.Debug.Log($"[AddNewMail] AddNewMail mailid : {mailId}");
+            var modifier = new AvatarMailNewSetter(mailId);
+            LocalLayer.Instance.Add(avatarState.address, modifier);
+            avatarState = modifier.Modify(avatarState);
             ReactiveAvatarState.UpdateMailBox(avatarState.mailBox);
         }
 
