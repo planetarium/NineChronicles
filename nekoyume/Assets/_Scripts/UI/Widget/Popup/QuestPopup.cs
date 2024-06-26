@@ -69,7 +69,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            _questList.Value = States.Instance.CurrentAvatarState.questList;
+            _questList.SetValueAndForceNotify(States.Instance.CurrentAvatarState.questList);
             _toggleGroup.SetToggledOffAll();
             adventureButton.SetToggledOn();
             ChangeState(0);
@@ -104,7 +104,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _questList.Value = list;
+            _questList.SetValueAndForceNotify(list);
             ChangeState((int)filterType);
         }
 
@@ -167,7 +167,8 @@ namespace Nekoyume.UI
                     return new MailReward(item, count);
                 }).ToList();
             // 퀘스트 완료처리된 목록으로 갱신해서 레드닷 비활성화처리
-            ReactiveAvatarState.UpdateQuestList(States.Instance.CurrentAvatarState.questList);
+            ReactiveAvatarState.UpdateQuestList(questList);
+            _questList.SetValueAndForceNotify(questList);
             Find<MailRewardScreen>().Show(mailRewards);
         }
     }
