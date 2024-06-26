@@ -148,7 +148,7 @@ namespace Nekoyume.UI.Model
                 if (endedSeasonIndex <= 0)
                     break;
 
-                if (!EndedExploreInfos.TryGetValue(endedSeasonIndex, out var endedExploreInfo))
+                if (!EndedExploreInfos.TryGetValue(endedSeasonIndex, out var endedExploreInfo) && Game.Game.instance.States.CurrentAvatarState != null)
                 {
                     endedExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, endedSeasonIndex);
                     EndedExploreInfos.Add(endedSeasonIndex, endedExploreInfo);
