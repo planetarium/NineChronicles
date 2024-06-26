@@ -3865,6 +3865,7 @@ namespace Nekoyume.Blockchain
                 }
                 var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id).ToList();
 
+                var floorIdList = new List<int>();
                 for (var fl = firstFloor; fl <= maxFloor; fl++)
                 {
                     var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);
@@ -3904,6 +3905,7 @@ namespace Nekoyume.Blockchain
 
                     simulator.Simulate();
                     lastFloor = fl;
+                    floorIdList.Add(floorRow.Id);
 
                     // Get Reward if cleared
                     if (simulator.Log.IsClear)
@@ -3953,9 +3955,10 @@ namespace Nekoyume.Blockchain
                     }
                 }
 
+                floorIdList.Remove(floorIdList.Last());
                 if (simulator is not null && lastFloor > firstFloor)
                 {
-                    simulator.AddBreakthrough(firstFloor, lastFloor - 1, tableSheets.AdventureBossFloorWaveSheet);
+                    simulator.AddBreakthrough(floorIdList, tableSheets.AdventureBossFloorWaveSheet);
                 }
 
                 var log = simulator.Log;
@@ -4084,8 +4087,12 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
+                var breakThroughFloorRows = tableSheets.AdventureBossFloorSheet.Values.Where(
+                    row => row.AdventureBossId == bossRow.Id && row.Floor <= exploreInfo.Floor).
+                    Select(floorRow => floorRow.Id).ToList();
+
                 var simulator = new AdventureBossSimulator(seasonInfo.BossId, floorRow.Id, random, States.Instance.CurrentAvatarState, tableSheets.GetSimulatorSheets(), logEvent: false);
-                simulator.AddBreakthrough(1, exploreInfo.Floor, tableSheets.AdventureBossFloorWaveSheet);
+                simulator.AddBreakthrough(breakThroughFloorRows, tableSheets.AdventureBossFloorWaveSheet);
 
                 // Add point, reward
                 var point = 0;
