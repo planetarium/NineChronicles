@@ -227,7 +227,7 @@ namespace Nekoyume.UI
                         counts[equipmentResult] += 1;
                     }
 
-                    Debug.Log($"[ES] [id] : {row.Id} / " +
+                    NcDebug.Log($"[ES] [id] : {row.Id} / " +
                               $"<color=#00FF65>[GreatSuccess] {(row.GreatSuccessRatio.NormalizeFromTenThousandths()):P2}</color> --> <color=#8CFF00>{(counts[ItemEnhancement.EnhancementResult.GreatSuccess] / (float)count):P2}</color> / " +
                               $"<color=#0078FF>[Success] {(row.SuccessRatio.NormalizeFromTenThousandths()):P2}</color> --> <color=#00A4FF>{(counts[ItemEnhancement.EnhancementResult.Success] / (float)count):P2}</color> / " +
                               $"<color=#FF1800>[Fail] {(row.FailRatio.NormalizeFromTenThousandths()):P2}</color> --> <color=#F16558>{(counts[ItemEnhancement.EnhancementResult.Fail] / (float)count):P2}</color>");

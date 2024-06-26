@@ -167,8 +167,8 @@ namespace Nekoyume.Game.Battle
             _onArenaEnd.OnNext(this);
 
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
-            yield return new WaitWhile(() => me.Actions.Any());
-            yield return new WaitWhile(() => enemy.Actions.Any());
+            yield return new WaitWhile(() => me.HasAction());
+            yield return new WaitWhile(() => enemy.HasAction());
             yield return new WaitForSeconds(0.75f);
 
             var arenaCharacter = log.Result == ArenaLog.ArenaResult.Win ? me : enemy;
@@ -214,7 +214,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoNormalAttack);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
 
@@ -225,7 +225,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoBlowAttack);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
 
@@ -236,7 +236,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoBlowAttack);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
 
@@ -245,7 +245,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
 
@@ -256,7 +256,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoDoubleAttack);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
 
@@ -267,7 +267,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoAreaAttack);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
 
@@ -278,7 +278,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoHeal);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
 
@@ -289,7 +289,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoBuff);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
 
@@ -299,7 +299,7 @@ namespace Nekoyume.Game.Battle
             Character.ArenaCharacter target = affectedCharacter.Id == me.Id ? me : enemy;
             foreach (var info in skillInfos)
             {
-                yield return new WaitWhile(() => target.Actions.Any());
+                yield return new WaitWhile(() => target.HasAction());
                 yield return StartCoroutine(target.CoProcessDamage(info, true));
                 yield return new WaitForSeconds(SkillDelay);
             }
@@ -314,16 +314,16 @@ namespace Nekoyume.Game.Battle
 
         public IEnumerator CoDead(ArenaCharacter caster)
         {
-            yield return new WaitWhile(() => me.Actions.Any());
-            yield return new WaitWhile(() => enemy.Actions.Any());
+            yield return new WaitWhile(() => me.HasAction());
+            yield return new WaitWhile(() => enemy.HasAction());
             var target = caster.Id == me.Id ? me : enemy;
             target.Dead();
         }
 
         public IEnumerator CoTurnEnd(int turnNumber)
         {
-            yield return new WaitWhile(() => me.Actions.Any());
-            yield return new WaitWhile(() => enemy.Actions.Any());
+            yield return new WaitWhile(() => me.HasAction());
+            yield return new WaitWhile(() => enemy.HasAction());
             _turnNumber = turnNumber + 1;
             yield return null;
         }
@@ -333,21 +333,23 @@ namespace Nekoyume.Game.Battle
             if (eventBase is ArenaTick tick)
             {
                 var affectedCharacter = caster.Id == me.Id ? me : enemy;
-                if (tick.SkillId == AuraIceShield.FrostBiteId)
+                if (AuraIceShield.IsFrostBiteBuff(tick.SkillId))
                 {
-                    if (!caster.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
+                    foreach (var kvp in caster.Buffs)
                     {
-                        yield break;
-                    }
+                        if (!AuraIceShield.IsFrostBiteBuff(kvp.Key))
+                        {
+                            continue;
+                        }
+                        var frostBite = kvp.Value;
+                        var sourceCharacter = caster.Id == me.Id ? enemy : me;
+                        IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
+                        {
+                            sourceCharacter.CustomEvent(tick.SkillId);
+                            yield return affectedCharacter.CoBuff(skillInfos);
+                        }
 
-                    var sourceCharacter = caster.Id == me.Id ? enemy : me;
-                    IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
-                    {
-                        sourceCharacter.CustomEvent(AuraIceShield.FrostBiteId);
-                        yield return affectedCharacter.CoBuff(skillInfos);
-                    }
-
-                    var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
+                        var tickSkillInfo = new ArenaSkill.ArenaSkillInfo(
                             caster,
                             0,
                             false,
@@ -355,13 +357,15 @@ namespace Nekoyume.Game.Battle
                             _turnNumber,
                             buff: frostBite
                         );
-                    var actionParams = new ArenaActionParams(
-                        affectedCharacter,
-                        ArraySegment<ArenaSkill.ArenaSkillInfo>.Empty.Append(tickSkillInfo),
-                        tick.BuffInfos,
-                        CoFrostBite);
-                    affectedCharacter.Actions.Add(actionParams);
-                    yield return null;
+                        var actionParams = new ArenaActionParams(
+                            affectedCharacter,
+                            ArraySegment<ArenaSkill.ArenaSkillInfo>.Empty.Append(tickSkillInfo),
+                            tick.BuffInfos,
+                            CoFrostBite);
+                        affectedCharacter.AddAction(actionParams);
+                        yield return null;
+                        break;
+                    };
                 }
                 // This Tick from 'Stun'
                 if (!tick.SkillInfos.Any())
@@ -384,7 +388,7 @@ namespace Nekoyume.Game.Battle
                         tick.SkillInfos.Append(tickSkillInfo),
                         tick.BuffInfos,
                         StunTick);
-                    affectedCharacter.Actions.Add(actionParams);
+                    affectedCharacter.AddAction(actionParams);
                     yield return null;
                 }
                 // This Tick from 'Vampiric'
@@ -395,7 +399,7 @@ namespace Nekoyume.Game.Battle
                         tick.SkillInfos,
                         tick.BuffInfos,
                         affectedCharacter.CoHealWithoutAnimation);
-                    affectedCharacter.Actions.Add(actionParams);
+                    affectedCharacter.AddAction(actionParams);
                     yield return null;
                 }
             }
@@ -405,7 +409,7 @@ namespace Nekoyume.Game.Battle
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoShatterStrike);
-            target.Actions.Add(actionParams);
+            target.AddAction(actionParams);
             yield return null;
         }
     }

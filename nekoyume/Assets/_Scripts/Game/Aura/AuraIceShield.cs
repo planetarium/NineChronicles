@@ -9,7 +9,8 @@ namespace Nekoyume.Game
 {
     public class AuraIceShield : AuraPrefabBase
     {
-        public static int FrostBiteId => 709000;
+        // TODO: action buff로 변경 후 action buff type으로 구분?
+        private static int FrostBiteGroupId => 709000;
 
         protected const string AppearAnimation    = "Appear";
         protected const string CastingAnimation   = "Casting";
@@ -88,7 +89,7 @@ namespace Nekoyume.Game
 
         protected override void ProcessCustomEvent(int customEventId)
         {
-            if (FrostBiteId != customEventId)
+            if (!IsFrostBiteBuff(customEventId))
             {
                 return;
             }
@@ -158,6 +159,17 @@ namespace Nekoyume.Game
             {
                 summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
             }
+        }
+        
+        public static bool IsFrostBiteBuff(int buffId)
+        {
+            var statBuffSheet = TableSheets.Instance.StatBuffSheet;
+            if (!statBuffSheet.TryGetValue(buffId, out var statBuff))
+            {
+                return false;
+            }
+
+            return statBuff.GroupId == FrostBiteGroupId;
         }
     }
 }

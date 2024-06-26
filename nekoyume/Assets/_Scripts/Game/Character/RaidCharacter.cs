@@ -57,8 +57,9 @@ namespace Nekoyume.Game.Character
             _speechBubble?.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
             foreach (var vfx in _persistingVFXMap.Values)
             {
                 vfx.gameObject.SetActive(false);
@@ -287,8 +288,9 @@ namespace Nekoyume.Game.Character
                 ProcessAttack(target, info, true);
             }
         }
+        
         public IEnumerator CoDoubleAttackWithCombo(
-            IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> skillInfos)
+            IReadOnlyList<Skill.SkillInfo> skillInfos)
         {
             if (skillInfos is null ||
                 skillInfos.Count == 0)

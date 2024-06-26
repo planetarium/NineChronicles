@@ -13,6 +13,8 @@ using UnityEngine;
 
 namespace Nekoyume.State
 {
+    using Libplanet.Common;
+    using System.Security.Cryptography;
     using UniRx;
 
     public static partial class RxProps
@@ -69,14 +71,15 @@ namespace Nekoyume.State
 
         public static async UniTask SelectAvatarAsync(
             int avatarIndexToSelect,
+            HashDigest<SHA256> stateRootHash,
             bool forceNewSelection = false)
         {
             await States.Instance.SelectAvatarAsync(
                 avatarIndexToSelect,
                 forceNewSelection: forceNewSelection);
             await UniTask.WhenAll(
-                ArenaInfoTuple.UpdateAsync(),
-                EventDungeonInfo.UpdateAsync(),
+                ArenaInfoTuple.UpdateAsync(stateRootHash),
+                EventDungeonInfo.UpdateAsync(stateRootHash),
                 WorldBossStates.Set(States.Instance.CurrentAvatarState.address),
                 UniTask.RunOnThreadPool(States.Instance.InitAvatarBalancesAsync).ToObservable().ObserveOnMainThread().ToUniTask(),
                 States.Instance.InitItemSlotStates());
