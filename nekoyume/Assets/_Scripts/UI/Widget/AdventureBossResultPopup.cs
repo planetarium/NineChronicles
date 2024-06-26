@@ -148,6 +148,7 @@ namespace Nekoyume.UI
                 .OnUpdate(() => cumulativeScoreText.text = start.ToString("N0"))
                 .SetEase(Ease.InOutQuad);
 
+            AudioController.instance.PlayMusic(AudioController.MusicCode.PVPWin);
             base.Show(ignoreShowAnimation);
         }
 
