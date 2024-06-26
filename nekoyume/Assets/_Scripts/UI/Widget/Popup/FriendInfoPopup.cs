@@ -300,7 +300,7 @@ namespace Nekoyume.UI
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            (long)(x.stat.BaseValue * (100000 + runeLevelBonus) / 100000m))));
+                            (long)(x.stat.TotalValue * (100000 + runeLevelBonus) / 100000m))));
             }
 
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
