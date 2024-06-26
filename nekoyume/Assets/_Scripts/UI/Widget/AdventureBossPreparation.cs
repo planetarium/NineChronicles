@@ -335,11 +335,9 @@ namespace Nekoyume.UI
                 }
             }
 
-            const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.Sweep;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
             var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
             var canBattle = Util.CanBattle(equipments, costumes, consumables);
-            var canSweep = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage);
 
             startButton.gameObject.SetActive(canBattle);
             blockStartingTextObject.SetActive(!canBattle);

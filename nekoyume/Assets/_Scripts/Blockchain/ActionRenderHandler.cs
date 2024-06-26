@@ -4055,8 +4055,16 @@ namespace Nekoyume.Blockchain
                 var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
                 var random = new LocalRandom(eval.RandomSeed);
                 var tableSheets = TableSheets.Instance;
+
+                var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
+                if (bossRow == null)
+                {
+                    NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                    return;
+                }
+
                 var floorRow = tableSheets.AdventureBossFloorSheet.Values.FirstOrDefault(
-                    row => row.AdventureBossId == seasonInfo.BossId && row.Floor == exploreInfo.Floor
+                    row => row.AdventureBossId == bossRow.Id && row.Floor == exploreInfo.Floor
                 );
                 if (floorRow is null)
                 {
@@ -4071,13 +4079,6 @@ namespace Nekoyume.Blockchain
                 var point = 0;
                 var rewardList = new List<AdventureBossSheet.RewardAmountData>();
                 var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
-
-                var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
-                if (bossRow == null)
-                {
-                    NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
-                    return;
-                }
                 var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id);
 
                 for (var fl = 1; fl <= exploreInfo.Floor; fl++)
