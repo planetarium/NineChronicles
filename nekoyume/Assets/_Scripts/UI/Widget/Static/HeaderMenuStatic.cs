@@ -434,7 +434,7 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
             _disposablesAtOnEnable.DisposeAllAndClear();
-            ReactiveAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList)
+            ReactiveAvatarState.ObservableQuestList?.Subscribe(SubscribeAvatarQuestList)
                 .AddTo(_disposablesAtOnEnable);
             LocalMailHelper.Instance.ObservableMailBox.Subscribe(SubscribeAvatarMailBox)
                 .AddTo(_disposablesAtOnEnable);
