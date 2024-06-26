@@ -756,7 +756,7 @@ namespace Nekoyume.Blockchain
                 // sloth업데이트 이후 액션에서 지정한 블록보다 클라이언트의 블록이 높아지는 순간 아래 액션을 수행합니다.
                 // 타임아웃은 10초로, 일반적인 블록딜레이인 8초보다 조금 크게 설정하였습니다.
                 await UniTask.WaitUntil(() => Game.Game.instance.Agent.BlockIndex > eval.BlockIndex).TimeoutWithoutException(TimeSpan.FromSeconds(10));
-                
+
                 await UniTask.SwitchToThreadPool();
                 await UpdateAgentStateAsync(eval);
                 await UpdateAvatarState(eval, eval.Action.index);
@@ -2816,7 +2816,7 @@ namespace Nekoyume.Blockchain
                 {
                     return;
                 }
-                
+
                 arenaBattlePreparation.OnRenderBattleArena(eval);
                 Game.Game.instance.Arena.Enter(
                     logs.First(),
@@ -3330,26 +3330,15 @@ namespace Nekoyume.Blockchain
             var gameStates = Game.Game.instance.States;
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
-            MailBox mailBox;
             UnloadFromMyGaragesRecipientMail mail = null;
-
-            IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
             {
-                avatarValue = StateGetter.GetState(states, Addresses.Avatar, avatarAddr);
-                if (avatarValue is not List avatarList)
-                {
-                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                    return;
-                }
-                if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
-                {
-                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
-                    return;
-                }
-                mailBox = new MailBox(mailBoxList);
-                var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                    .Where(m => m.blockIndex == eval.BlockIndex);
+                // Note : AvatarState를 업데이트하지 않고도 MailBox만 사용하기 위함
+                var mailBox = StateGetter.GetMailBox(states, avatarAddr);
+                var sameBlockIndexMailList = mailBox
+                    .OfType<UnloadFromMyGaragesRecipientMail>()
+                    .Where(m => m.blockIndex == eval.BlockIndex)
+                    .ToList();
                 if (sameBlockIndexMailList.Any())
                 {
                     var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
@@ -3371,26 +3360,6 @@ namespace Nekoyume.Blockchain
                 if (Widget.TryFind<MobileShop>(out var mobileShop) && mobileShop.IsActive())
                 {
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                }
-
-                if (avatarValue is not List avatarList)
-                {
-                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                    return;
-                }
-
-                if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
-                {
-                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
-                    return;
-                }
-
-                mailBox = new MailBox(mailBoxList);
-                var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>().Where(m => m.blockIndex == eval.BlockIndex);
-                if (sameBlockIndexMailList.Any())
-                {
-                    var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
-                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
                 }
 
                 if (mail is not null)
@@ -3487,22 +3456,10 @@ namespace Nekoyume.Blockchain
             var gameStates = Game.Game.instance.States;
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
-            MailBox mailBox;
-            ClaimItemsMail mail = null;
-            IValue avatarValue = null;
+            MailBox mailBox = null;
             UniTask.RunOnThreadPool(() =>
             {
-                avatarValue = StateGetter.GetState(states, Addresses.Avatar, avatarAddr);
-                if (avatarValue is not List avatarList)
-                {
-                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                    return;
-                }
-                if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
-                {
-                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
-                    return;
-                }
+                mailBox = StateGetter.GetMailBox(states, avatarAddr);
 
                 UpdateCurrentAvatarInventory(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
@@ -3512,19 +3469,7 @@ namespace Nekoyume.Blockchain
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                 }
 
-                if (avatarValue is not List avatarList)
-                {
-                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                    return;
-                }
-
-                if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
-                {
-                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
-                    return;
-                }
-
-                mailBox = new MailBox(mailBoxList);
+                ClaimItemsMail mail = null;
                 var sameBlockIndexMailList = mailBox
                     .OfType<ClaimItemsMail>()
                     .Where(m => m.blockIndex == eval.BlockIndex)
@@ -3534,6 +3479,7 @@ namespace Nekoyume.Blockchain
                     var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
                     mail = memoCheckedMail ?? sameBlockIndexMailList.First();
                 }
+
                 if (mail is not null)
                 {
                     UniTask.RunOnThreadPool(() =>
@@ -3647,7 +3593,7 @@ namespace Nekoyume.Blockchain
                 UniTask.RunOnThreadPool(() =>
                 {
                     var avatarAddr  = gameStates.CurrentAvatarState.address;
-                    var states      = eval.OutputState;
+                    var states = eval.OutputState;
                     var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
                     LocalLayerModifier.AddNewMail(avatarState, mail.id);
                 }).Forget();
