@@ -135,6 +135,16 @@ namespace Nekoyume.Blockchain
                     ReactiveAvatarState.UpdateActionPoint(ap);
                     var dri = states[1] is Integer driValue ? (long)driValue : avatarState.dailyRewardReceivedIndex;
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(dri);
+
+                    var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                    var balances = await Task.WhenAll(runeSheet.Values.Select(row =>
+                        agent.GetBalanceAsync(avatarState.address, RuneHelper.ToCurrency(row)))
+                    );
+                    foreach (var fav in balances)
+                    {
+                        States.Instance.SetCurrentAvatarBalance(fav);
+                    }
+
                     _avatarUpdateRequired = false;
                     return null;
                 });
