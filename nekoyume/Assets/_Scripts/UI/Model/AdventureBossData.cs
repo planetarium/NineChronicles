@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UniRx;
 using Nekoyume.Model.AdventureBoss;
 using Cysharp.Threading.Tasks;
 using Libplanet.Types.Assets;
@@ -10,9 +9,14 @@ using Nekoyume.Game;
 using Nekoyume;
 using Nekoyume.TableData.AdventureBoss;
 using System.Linq;
+using Nekoyume.L10n;
+using UnityEngine;
+using Nekoyume.Game.LiveAsset;
+using System;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
     public class AdventureBossData
     {
         public enum AdventureBossSeasonState
@@ -37,7 +41,6 @@ namespace Nekoyume.UI.Model
         public Dictionary<long, Explorer> EndedExploreInfos = new Dictionary<long, Explorer>();
 
         private const int _endedSeasonSearchTryCount = 10;
-
 
         public void Initialize()
         {
@@ -113,6 +116,25 @@ namespace Nekoyume.UI.Model
         public async UniTask RefreshAllByCurrentState()
         {
             SeasonInfo.Value = await Game.Game.instance.Agent.GetAdventureBossLatestSeasonAsync();
+
+            //알림 등록
+            if (SeasonInfo.Value != null && SeasonInfo.Value.EndBlockIndex != 0)
+            {
+                try
+                {
+                    int secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+                    double blocksPerHour = 3600.0 / secondsPerBlock;
+                    int roundedBlocksPerHour = (int)Math.Round(blocksPerHour);
+                    ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_END_HOUR_AGO_CONTENT", SeasonInfo.Value.Season, SeasonInfo.Value.EndBlockIndex - roundedBlocksPerHour);
+                }
+                catch (System.Exception e)
+                {
+                    NcDebug.LogError($"[AdventureBossData]{e}");
+                }
+
+                ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_END_CONTENT", SeasonInfo.Value.Season, SeasonInfo.Value.EndBlockIndex);
+                ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_START_CONTENT", SeasonInfo.Value.Season+1, SeasonInfo.Value.NextStartBlockIndex);
+            }
 
             //최근시즌이 종료된경우 끝난시즌정보에 추가.
             int startIndex = SeasonInfo.Value.EndBlockIndex < Game.Game.instance.Agent.BlockIndex ? 0 : 1;
@@ -289,6 +311,24 @@ namespace Nekoyume.UI.Model
                 return false;
             }
             return true;
+        }
+
+        private void ReserveAdventureBossSeasonPush(string l10nKey, long seasonId, long targetBlockIndex)
+        {
+            var pushidentifierKey = $"{l10nKey}{seasonId}";
+            var prevPushIdentifier =
+                PlayerPrefs.GetString(pushidentifierKey, string.Empty);
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(pushidentifierKey);
+            }
+
+            var timeSpan = (targetBlockIndex - Game.Game.instance.Agent.BlockIndex).BlockToTimeSpan();
+
+            var content = L10nManager.Localize(l10nKey, seasonId);
+            var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.AdventureBoss);
+            PlayerPrefs.SetString(pushidentifierKey, identifier);
         }
 
         public ClaimableReward GetCurrentTotalRewards()
