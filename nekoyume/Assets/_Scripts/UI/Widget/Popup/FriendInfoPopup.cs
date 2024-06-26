@@ -275,6 +275,11 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
+            var runeLevelBonusSheet = Game.Game.instance.TableSheets.RuneLevelBonusSheet;
+            var runeLevelBonus = RuneHelper.CalculateRuneLevelBonus(_allRuneState,
+                runeListSheet, runeLevelBonusSheet);
+
             var runeStatModifiers = new List<StatModifier>();
             foreach (var runeSlot in runes.GetRuneSlot())
             {
@@ -295,7 +300,7 @@ namespace Nekoyume.UI
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.TotalValueAsLong)));
+                            (long)(x.stat.BaseValue * (100000 + runeLevelBonus) / 100000m))));
             }
 
             var collectionSheet = Game.Game.instance.TableSheets.CollectionSheet;
