@@ -362,7 +362,7 @@ namespace Nekoyume.UI
             {
                 myScore.text = $"{exploreInfo.Score:#,0}";
                 SetExploreInfoVIew(true);
-                double myScoreRatio = (double)exploreInfo.Score / (double)exploreBoard.TotalPoint;
+                double myScoreRatio = exploreInfo.Score == 0 ? 0 : (double)exploreInfo.Score / (double)exploreBoard.TotalPoint;
                 myScoreRatioText.text = $"{myScoreRatio * 100:F2}%";
             }
             else
