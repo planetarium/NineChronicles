@@ -59,6 +59,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
+                Game.Event.OnRoomEnter.Invoke(true);
                 Close();
             };
 
@@ -133,7 +134,6 @@ namespace Nekoyume.UI
         private void OnClose()
         {
             Find<ItemCountAndPricePopup>().Close();
-            Game.Event.OnRoomEnter.Invoke(true);
             _cancellationTokenSource.Cancel();
             base.Close(true);
         }

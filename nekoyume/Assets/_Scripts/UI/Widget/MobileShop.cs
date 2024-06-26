@@ -52,6 +52,16 @@ namespace Nekoyume.UI
 
         public static L10NSchema MOBILE_L10N_SCHEMA;
 
+        protected override void Awake()
+        {
+            base.Awake();
+            CloseWidget = () =>
+            {
+                Close();
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             ShowAsync(ignoreShowAnimation);
@@ -81,12 +91,6 @@ namespace Nekoyume.UI
                 // set to true to trigger OnValueChanged
                 toggle.isOn = !toggle.isOn;
             }
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            Game.Event.OnRoomEnter.Invoke(true);
-            base.Close(ignoreCloseAnimation);
         }
 
         private async Task ShowAsync(bool ignoreShowAnimation = false)
