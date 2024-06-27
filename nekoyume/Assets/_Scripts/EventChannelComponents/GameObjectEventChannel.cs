@@ -41,7 +41,7 @@ namespace Nekoyume.EventChannelComponents
 
         private void On(EventType eventType)
         {
-            // Debug.Log($"[MonoBehaviourEventChannel] On({value})");
+            // NcDebug.Log($"[MonoBehaviourEventChannel] On({value})");
             foreach (var eventSetting in _eventSettings)
             {
                 if (eventSetting.When != eventType)
