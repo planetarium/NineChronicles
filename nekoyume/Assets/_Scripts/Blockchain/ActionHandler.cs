@@ -250,21 +250,6 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        protected async UniTask UpdateCurrentAvatarStateAsync()
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatars =
-                await Game.Game.instance.Agent.GetAvatarStatesAsync(new[] { avatarAddress });
-            if (avatars.TryGetValue(avatarAddress, out var avatarState))
-            {
-                await UpdateCurrentAvatarStateAsync(avatarState);
-            }
-            else
-            {
-                NcDebug.LogError($"Failed to get AvatarState: {avatarAddress}");
-            }
-        }
-
         protected static void UpdateCurrentAvatarInventory<T>(ActionEvaluation<T> eval)
             where T : ActionBase
         {
