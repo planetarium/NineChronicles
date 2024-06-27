@@ -128,6 +128,8 @@ namespace Nekoyume.Blockchain
                             $"Given address {currentAvatarState.address} is empty.");
                     }
 
+                    await ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(avatarState);
+
                     var states = await Task.WhenAll(
                         agent.GetStateAsync(Addresses.ActionPoint, avatarState.address),
                         agent.GetStateAsync(Addresses.DailyReward, avatarState.address));
