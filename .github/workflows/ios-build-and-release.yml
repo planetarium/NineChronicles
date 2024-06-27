@@ -39,7 +39,7 @@ jobs:
   build:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on: 
-      labels: ["linux", "8cores"]
+      group: linux-8cores
     defaults:
         run:
           shell: bash

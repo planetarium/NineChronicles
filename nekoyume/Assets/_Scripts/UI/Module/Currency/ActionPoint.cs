@@ -259,7 +259,7 @@ namespace Nekoyume.UI.Module
                 true);
         }
 
-        private static void ChargeAP()
+        public static void ChargeAP()
         {
             Game.Game.instance.ActionManager.ChargeActionPoint().Subscribe();
         }

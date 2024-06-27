@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using BTAI;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -41,13 +42,15 @@ namespace Nekoyume.Game.Character
         private HudContainer _hudContainer;
         private SpeechBubble _speechBubble;
         private Root _root;
+        // TODO: 어디에 쓰는것인지 모르겠음
         private bool _forceStop;
         private long _currentHp;
         private readonly List<Costume> _costumes = new List<Costume>();
         private readonly List<Equipment> _equipments = new List<Equipment>();
         private readonly Dictionary<int, VFX.VFX> _persistingVFXMap = new();
 
-        public List<ArenaActionParams> Actions { get; } = new List<ArenaActionParams>();
+        private readonly Queue<ArenaActionParams> _actionQueue = new();
+        
         public Pet Pet => appearance.Pet;
 
         private bool IsDead => _currentHp <= 0;
@@ -79,6 +82,7 @@ namespace Nekoyume.Game.Character
                 vfx.gameObject.SetActive(false);
             }
             _persistingVFXMap.Clear();
+            _actionQueue.Clear();
         }
 
         public void Init(
@@ -227,7 +231,7 @@ namespace Nekoyume.Game.Character
             _root = new Root();
             _root.OpenBranch(
                 BT.Selector().OpenBranch(
-                    BT.If(() => Actions.Any()).OpenBranch(
+                    BT.If(() => _actionQueue.Any()).OpenBranch(
                         BT.Call(ExecuteAction)
                     )
                 )
@@ -241,36 +245,64 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoExecuteAction()
         {
-            if (_runningAction is null)
+            if (_runningAction is not null)
             {
-                _runningAction = Actions.First();
+                yield break;
+            }
+            _runningAction = _actionQueue.Dequeue();
 
-                var arena = Game.instance.Arena;
-                var waitSeconds = StageConfig.instance.actionDelay;
+            var cts = new CancellationTokenSource();
+            ActionTimer(cts).Forget();
 
-                foreach (var info in _runningAction.skillInfos)
+            foreach (var info in _runningAction.skillInfos)
+            {
+                var target = info.Target;
+                if (!target.IsDead)
                 {
-                    if (info.Target is Model.ArenaCharacter arenaCharacter)
-                    {
-                        if (arenaCharacter.IsDead)
-                        {
-                            var target = info.Target.Id == Id ? this : _target;
-                            if (target.Actions.Any())
-                            {
-                                var time = Time.time;
-                                yield return new WaitWhile(() =>
-                                    Time.time - time > 10f || target.Actions.Any());
-                            }
-                        }
-                    }
+                    continue;
+                }
+                
+                var targetActor = info.Target.Id == Id ? this : _target;
+                if (!targetActor || targetActor == this || !targetActor.HasAction())
+                {
+                    continue;
                 }
 
-                yield return new WaitForSeconds(waitSeconds);
-                var coroutine = StartCoroutine(arena.CoSkill(_runningAction));
-                yield return coroutine;
-                Actions.Remove(_runningAction);
-                _runningAction = null;
+                var time = Time.time;
+                yield return new WaitUntil(() => Time.time - time > 10f || !targetActor.HasAction());
+                if (Time.time - time > 10f)
+                {
+                    NcDebug.LogError($"[{nameof(ArenaCharacter)}] CoExecuteAction Timeout. {gameObject.name}");
+                    break;
+                }
             }
+
+            yield return new WaitForSeconds(StageConfig.instance.actionDelay);
+            if (_runningAction != null)
+            {
+                yield return StartCoroutine(Game.instance.Arena.CoSkill(_runningAction));
+            }
+            _runningAction = null;
+            // TODO: ForceStop??
+            cts.Cancel();
+            cts.Dispose();
+        }
+
+        private async UniTask ActionTimer(CancellationTokenSource cts)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(15), cancellationToken: cts.Token);
+            NcDebug.LogWarning($"[{nameof(ArenaCharacter)}] ActionTimer Timeout. {gameObject.name}");
+            _runningAction = null;
+        }
+
+        public bool HasAction()
+        {
+            return _actionQueue.Any() || _runningAction is not null;
+        }
+
+        public void AddAction(ArenaActionParams actionParams)
+        {
+            _actionQueue.Enqueue(actionParams);
         }
 
         private void ProcessAttack(ArenaCharacter target, ArenaSkill.ArenaSkillInfo skill, bool isConsiderElementalType)
@@ -810,7 +842,7 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator Dying()
         {
-            yield return new WaitWhile(() => Actions.Any());
+            yield return new WaitWhile(HasAction);
             OnDeadStart();
             yield return new WaitForSeconds(0.2f);
             _speechBubble.gameObject.SetActive(false);
@@ -831,10 +863,11 @@ namespace Nekoyume.Game.Character
         private void OnDeadEnd()
         {
             Animator.Idle();
-            Actions.Clear();
+            _actionQueue.Clear();
             gameObject.SetActive(false);
             _root = null;
             _runningAction = null;
+            _actionQueue.Clear();
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            _questList.Value = States.Instance.CurrentAvatarState.questList;
+            _questList.SetValueAndForceNotify(States.Instance.CurrentAvatarState.questList);
             _toggleGroup.SetToggledOffAll();
             adventureButton.SetToggledOn();
             ChangeState(0);
@@ -104,7 +104,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _questList.Value = list;
+            _questList.SetValueAndForceNotify(list);
             ChangeState((int)filterType);
         }
 
@@ -152,7 +152,9 @@ namespace Nekoyume.UI
                 .Where(q => q.isReceivable && q.Complete)
                 .SelectMany(q =>
                 {
-                    LocalLayerModifier.RemoveReceivableQuest(avatarAddress, q.Id);
+                    LocalLayerModifier.RemoveReceivableQuest(avatarAddress, q.Id, false);
+                    // 퀘스트 받음 처리
+                    q.isReceivable = false;
                     return q.Reward.ItemMap;
                 }).Select(itemMap =>
                 {
@@ -161,9 +163,12 @@ namespace Nekoyume.UI
                         itemMap.Item1);
                     var itemId = item.ItemId;
                     var count = itemMap.Item2;
-                    LocalLayerModifier.AddItem(avatarAddress, itemId, count);
+                    LocalLayerModifier.AddItem(avatarAddress, itemId, count, false);
                     return new MailReward(item, count);
                 }).ToList();
+            // 퀘스트 완료처리된 목록으로 갱신해서 레드닷 비활성화처리
+            ReactiveAvatarState.UpdateQuestList(questList);
+            _questList.SetValueAndForceNotify(questList);
             Find<MailRewardScreen>().Show(mailRewards);
         }
     }

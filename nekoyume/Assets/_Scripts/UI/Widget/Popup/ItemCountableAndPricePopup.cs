@@ -34,6 +34,7 @@ namespace Nekoyume.UI
         [SerializeField] private List<Button> addPriceButton = null;
 
         [SerializeField] private TextMeshProUGUI unitPrice;
+        [SerializeField] private GameObject unitPriceInvalidText;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
@@ -212,16 +213,18 @@ namespace Nekoyume.UI
                     {
                         priceInputField.text = value.GetQuantityString();
                     }
-
-                    var isValid = IsValid();
-                    submitButton.Interactable = isValid;
-                    reregisterButton.Interactable = isValid;
                 })
                 .AddTo(_disposablesForSetData);
 
             _data.UnitPrice.Subscribe(value =>
                 {
                     unitPrice.text = $"/{value.GetQuantityString()}";
+
+                    var isPriceValid = IsPriceValid();
+                    var isUnitPriceValid = IsUnitPriceValid();
+                    submitButton.Interactable = isPriceValid && isUnitPriceValid;
+                    reregisterButton.Interactable = isPriceValid && isUnitPriceValid;
+                    unitPriceInvalidText.SetActive(!isUnitPriceValid);
                 })
                 .AddTo(_disposablesForSetData);
 
@@ -229,21 +232,38 @@ namespace Nekoyume.UI
             countInputField.Select();
         }
 
-        private bool IsValid()
+        private bool IsPriceValid()
         {
-            if (decimal.TryParse(_data.Price.Value.GetQuantityString(),
-                NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var price))
+            if (!decimal.TryParse(_data.Price.Value.GetQuantityString(),
+                    NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var price))
             {
-                if (price - (int) price > 0)
-                {
-                    return false;
-                }
-
-                var count = _data.Count.Value;
-                return !(price < Model.Shop.MinimumPrice || count < 0);
+                return false;
             }
 
-            return false;
+            if (price - (int)price > 0)
+            {
+                return false;
+            }
+
+            var count = _data.Count.Value;
+            return !(price < Model.Shop.MinimumPrice || count < 0);
+        }
+
+        // Note: Consumable(Food) 아이템의 경우 개당 가격 (Unit Price) 값에 소수점을 허용하지 않는다.
+        private bool IsUnitPriceValid()
+        {
+            if (_data.Item.Value?.ItemBase.Value?.ItemType != ItemType.Consumable)
+            {
+                return true;
+            }
+
+            if (!decimal.TryParse(_data.UnitPrice.Value.GetQuantityString(),
+                    NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var outUnitPrice))
+            {
+                return false;
+            }
+
+            return outUnitPrice - (int)outUnitPrice <= 0;
         }
 
         protected override void Clear()

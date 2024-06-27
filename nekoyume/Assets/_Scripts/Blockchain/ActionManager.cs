@@ -584,19 +584,22 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<RegisterProduct>> RegisterProduct(
             Address avatarAddress,
-            IRegisterInfo registerInfo,
+            List<IRegisterInfo> registerInfos,
             bool chargeAp)
         {
+            var registerInfo = registerInfos.First();
             var sentryTrace = Analyzer.Instance.Track("Unity/RegisterProduct", new Dictionary<string, Value>()
             {
                 ["ProductType"] = registerInfo.Type.ToString(),
                 ["Price"] = registerInfo.Price.ToString(),
+                ["Count"] = registerInfos.Count,
                 ["AvatarAddress"] = registerInfo.AvatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
             var evt = new AirbridgeEvent("RegisterProduct");
             evt.SetValue((double)registerInfo.Price.RawValue);
+            evt.AddCustomAttribute("count", registerInfos.Count);
             evt.AddCustomAttribute("product-type", registerInfo.Type.ToString());
             evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
             evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
@@ -619,7 +622,7 @@ namespace Nekoyume.Blockchain
             var action = new RegisterProduct
             {
                 AvatarAddress = avatarAddress,
-                RegisterInfos = new List<IRegisterInfo> { registerInfo },
+                RegisterInfos = registerInfos,
                 ChargeAp = chargeAp,
             };
 
@@ -1113,7 +1116,7 @@ namespace Nekoyume.Blockchain
             int slotIndex)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+            var hourglassDataRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             int cost;
@@ -1130,7 +1133,7 @@ namespace Nekoyume.Blockchain
             {
                 cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             }
-            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
+            LocalLayerModifier.RemoveItem(avatarAddress, hourglassDataRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
                 new Dictionary<string, Value>()

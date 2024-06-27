@@ -137,7 +137,7 @@ namespace Nekoyume.UI
             var loadingScreen = Find<LoadingScreen>();
             loadingScreen.Show(
                 LoadingScreen.LoadingType.Entering, L10nManager.Localize("UI_IN_MINING_A_BLOCK"));
-            await RxProps.SelectAvatarAsync(_selectedIndex);
+            await RxProps.SelectAvatarAsync(_selectedIndex, Game.Game.instance.Agent.BlockTipStateRootHash);
             loadingScreen.Close();
             OnDidAvatarStateLoaded(States.Instance.CurrentAvatarState);
         }
