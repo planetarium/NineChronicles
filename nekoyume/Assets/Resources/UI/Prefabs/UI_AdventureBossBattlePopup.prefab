@@ -2783,7 +2783,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_ADVENTURE_BOSS_BATTLE_CHALLENGE_EXPECTED_SCORE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -11934,7 +11934,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_ADVENTURE_BOSS_BATTLE_BREAKTHROUGH_EXPECTED_SCORE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -14658,6 +14658,8 @@ MonoBehaviour:
   gotoUnlock: {fileID: 6903385493467122948}
   breakThroughContent: {fileID: 6350319322648528193}
   breakThroughNoContent: {fileID: 8750049741740144932}
+  challengeMaxScore: {fileID: 8654873109810087013}
+  breakThroughMaxScore: {fileID: 284013164386225776}
 --- !u!95 &6265416770449728098
 Animator:
   serializedVersion: 5
