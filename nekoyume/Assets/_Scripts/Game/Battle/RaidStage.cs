@@ -9,13 +9,11 @@ using Nekoyume.Director;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
-using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.UI;
@@ -112,8 +110,8 @@ namespace Nekoyume.Game.Battle
         {
             if (!_isPlaying)
             {
-                _isPlaying = true;
                 ClearBattle();
+                _isPlaying       = true;
                 _currentPlayData = data;
 
                 if (data.Log?.Count > 0)
@@ -123,7 +121,7 @@ namespace Nekoyume.Game.Battle
             }
             else
             {
-                NcDebug.Log("Skip incoming battle. Battle is already simulating.");
+                NcDebug.LogWarning("Skip incoming battle. Battle is already simulating.");
             }
         }
 
