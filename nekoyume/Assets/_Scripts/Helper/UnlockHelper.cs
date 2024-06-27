@@ -49,6 +49,11 @@ namespace Nekoyume.Helper
                 availableSlots.Add((ItemSubType.Aura, 1));
             }
 
+            if (level >= gameConfigState.RequireCharacterLevel_EquipmentSlotGrimoire)
+            {
+                availableSlots.Add((ItemSubType.Grimoire, 1));
+            }
+
             return availableSlots;
         }
     }
