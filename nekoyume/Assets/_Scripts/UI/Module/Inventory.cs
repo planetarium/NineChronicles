@@ -555,7 +555,8 @@ namespace Nekoyume.UI.Module
             }
 
             var level = currentAvatarState.level;
-            var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
+            var availableSlots =
+                UnlockHelper.GetAvailableEquipmentSlots(level, States.Instance.GameConfigState);
 
             var bestItems = new List<InventoryItem>();
             var selectedEquipments = new Dictionary<ItemSubType, List<InventoryItem>>();
