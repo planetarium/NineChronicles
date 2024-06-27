@@ -30,7 +30,7 @@ namespace Nekoyume.UI
         public async UniTaskVoid ShowWinner(long seasonId)
         {
             var explorerBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonId);
-            if(explorerBoard.RaffleWinnerName == string.Empty)
+            if(string.IsNullOrEmpty(explorerBoard?.RaffleWinnerName))
             {
                 //실제로 아무도 참여하지않은 시즌의경우 당첨자가 없을 수 있음.
                 NcDebug.LogWarning("RaffleWinnerName is empty");
