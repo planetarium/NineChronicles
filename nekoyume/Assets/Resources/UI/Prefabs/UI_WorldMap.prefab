@@ -29393,6 +29393,11 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 2372594783889641193, guid: b210407361458b84ab001b1b5070311e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2671310524202582276, guid: b210407361458b84ab001b1b5070311e,
         type: 3}
       propertyPath: m_SortingLayer
@@ -29513,6 +29518,16 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 4472048786613919723, guid: b210407361458b84ab001b1b5070311e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4663449219274950416, guid: b210407361458b84ab001b1b5070311e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5590918476380122084, guid: b210407361458b84ab001b1b5070311e,
         type: 3}
       propertyPath: m_SortingLayer
@@ -29553,6 +29568,16 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 7721615409929665203, guid: b210407361458b84ab001b1b5070311e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7841187626432004689, guid: b210407361458b84ab001b1b5070311e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7940561245115681669, guid: b210407361458b84ab001b1b5070311e,
         type: 3}
       propertyPath: m_SortingLayer
@@ -29567,6 +29592,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AdventureBoss
+      objectReference: {fileID: 0}
+    - target: {fileID: 9169897329018325357, guid: b210407361458b84ab001b1b5070311e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 179.92
       objectReference: {fileID: 0}
     - target: {fileID: 9170175312384638486, guid: b210407361458b84ab001b1b5070311e,
         type: 3}
