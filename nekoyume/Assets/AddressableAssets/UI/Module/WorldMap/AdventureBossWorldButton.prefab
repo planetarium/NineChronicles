@@ -8159,6 +8159,7 @@ MonoBehaviour:
   - {fileID: 2372594783889641193}
   - {fileID: 2665114963295938358}
   - {fileID: 6510738614090859098}
+  loadingRewardIndicator: {fileID: 4472048786613919723}
 --- !u!114 &5475652107008707915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8183,6 +8184,7 @@ MonoBehaviour:
   unlockableImage: {fileID: 2665114963295938358}
   openCostText: {fileID: 4812809990847099351}
   animator: {fileID: 6173253111314101956}
+  IsLockNameShow: 1
 --- !u!114 &1630028814968372996
 MonoBehaviour:
   m_ObjectHideFlags: 0

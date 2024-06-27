@@ -22,6 +22,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private WorldButton worldButton;
         [SerializeField] private Transform bossImageParent;
         [SerializeField] private GameObject[] unActivateObjs;
+        [SerializeField] private GameObject loadingRewardIndicator;
 
         private readonly List<System.IDisposable> _disposables = new();
         private long _remainingBlockIndex = 0;
@@ -73,6 +74,11 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
 
             Game.Game.instance.AdventureBossData.CurrentState.Subscribe(OnAdventureBossStateChanged).AddTo(_disposables);
+
+            Game.Game.instance.AdventureBossData.IsRewardLoading.Subscribe(isLoading =>
+            {
+                loadingRewardIndicator.SetActive(isLoading);
+            }).AddTo(_disposables);
         }
 
         private void OnDisable()
