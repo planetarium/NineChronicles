@@ -199,6 +199,7 @@ namespace Nekoyume.UI.Module
                     {
                         DestroyImmediate(_bossImage);
                     }
+                    _bossId = 0;
                     break;
                 case AdventureBossData.AdventureBossSeasonState.Progress:
                     worldButton.Unlock();
@@ -227,6 +228,7 @@ namespace Nekoyume.UI.Module
                     {
                         DestroyImmediate(_bossImage);
                     }
+                    _bossId = 0;
                     break;
             }
         }
