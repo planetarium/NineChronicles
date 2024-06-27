@@ -144,7 +144,7 @@ namespace Nekoyume.UI.Module
 
         public void OnClickOpenAdventureBoss()
         {
-            Widget.Find<LoadingScreen>().Show();
+            Widget.Find<LoadingScreen>().Show(LoadingScreen.LoadingType.AdventureBoss);
             try
             {
                 Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
