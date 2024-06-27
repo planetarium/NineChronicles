@@ -492,6 +492,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<AdventureBossNcgRandomRewardPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossPreparation>());
             _secondWidgets.Add(Widget.Create<AdventureBossResultPopup>());
+            _secondWidgets.Add(Widget.Create<AdventureBossStageBuff>());
 #endif
         }
 

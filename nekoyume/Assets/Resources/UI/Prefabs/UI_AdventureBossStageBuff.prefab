@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7297400980730211281}
   - component: {fileID: 726027424705132480}
   - component: {fileID: 6029711575248462716}
+  - component: {fileID: 7350104881709393342}
   m_Layer: 5
   m_Name: StageBuffApplyText
   m_TagString: Untagged
@@ -136,6 +137,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7350104881709393342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47953228080133708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_ADVENTURE_BOSS_BATTLE_STAGE_BUFF_DESC
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &417238871707617988
 GameObject:
   m_ObjectHideFlags: 0
@@ -5196,6 +5228,7 @@ GameObject:
   - component: {fileID: 8126317763924873075}
   - component: {fileID: 1612396143680553725}
   - component: {fileID: 4488078020767583660}
+  - component: {fileID: 4778576249500693728}
   m_Layer: 5
   m_Name: UI_AdventureBossStageBuff
   m_TagString: Untagged
@@ -5255,6 +5288,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4778576249500693728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1660816265040424047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbd2dd1fa3fe72d4f8e35308e6db5c5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  textStageBuff: {fileID: 8776709289089277536}
 --- !u!1 &2428908607626592386
 GameObject:
   m_ObjectHideFlags: 0
