@@ -7853,6 +7853,14 @@ MonoBehaviour:
   loadingIndicator: {fileID: 3341339586592691873}
   worldButton: {fileID: 5475652107008707915}
   bossImageParent: {fileID: 1980003279122799462}
+  unActivateObjs:
+  - {fileID: 4663449219274950416}
+  - {fileID: 7841187626432004689}
+  - {fileID: 2803082829454016934}
+  - {fileID: 7721615409929665203}
+  - {fileID: 2372594783889641193}
+  - {fileID: 2665114963295938358}
+  - {fileID: 6510738614090859098}
 --- !u!114 &5475652107008707915
 MonoBehaviour:
   m_ObjectHideFlags: 0

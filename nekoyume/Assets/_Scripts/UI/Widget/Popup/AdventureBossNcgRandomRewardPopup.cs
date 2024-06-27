@@ -20,6 +20,10 @@ namespace Nekoyume.UI
 
         public void Show(long seasonId, bool ignoreShowAnimation = false)
         {
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                return;
+            }
             ShowWinner(seasonId).Forget();
         }
 

@@ -38,8 +38,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject retryButton;
 
-        public void SetData(int usedApPotion, int totalApPotion, int lastClearFloor, List<AdventureBossSheet.RewardAmountData> exploreRewards, List<AdventureBossSheet.RewardAmountData> firstRewards = null)
+        private int _prevScore;
+
+        public void SetData(int usedApPotion, int totalApPotion, int lastClearFloor, int prevScore, List<AdventureBossSheet.RewardAmountData> exploreRewards, List<AdventureBossSheet.RewardAmountData> firstRewards = null)
         {
+            _prevScore = prevScore;
             subTitle.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_SUB_TITLE", lastClearFloor.ToOrdinal());
             apPotionUsed.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_AP_POTION_USED", usedApPotion, totalApPotion);
             if (firstRewards == null || firstRewards.Count == 0)
@@ -129,11 +132,7 @@ namespace Nekoyume.UI
             scoreText.text = score.ToString("N0");
 
             var totalScore = 0;
-            var start = 0;
-            if (Game.Game.instance.AdventureBossData.ExploreInfo.Value != null)
-            {
-                start = Game.Game.instance.AdventureBossData.ExploreInfo.Value.Score;
-            }
+            var start = _prevScore;
             totalScore = start + score;
 
             if(totalScore == 0)

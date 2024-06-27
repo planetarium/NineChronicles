@@ -122,6 +122,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                return;
+            }
+
             var adventureBossData = Game.instance.AdventureBossData;
             if(adventureBossData.EndedSeasonInfos.Count == 0 || adventureBossData.EndedBountyBoards.Count == 0)
             {
@@ -211,7 +216,6 @@ namespace Nekoyume.UI
                                                     TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
                                                     States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                                     out var wantedReward);
-                        RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
                         if (_lastSeasonId < seasonInfo.Season)
                         {
                             _lastSeasonId = seasonInfo.Season;
@@ -234,6 +238,7 @@ namespace Nekoyume.UI
                             _lastSeasonId = seasonInfo.Season;
                         }
                     }
+                    RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
                 }
                 catch (Exception e)
                 {
@@ -360,7 +365,10 @@ namespace Nekoyume.UI
                 double myScoreRatio = (double)exploreInfo.Score / (double)exploreBoard.TotalPoint;
                 myScoreRatioText.text = $"{myScoreRatio * 100:F2}%";
             }
-            SetExploreInfoVIew(false);
+            else
+            {
+                SetExploreInfoVIew(false);
+            }
             if (bountyBoard != null)
             {
                 var bountyInfo = bountyBoard.Investors.
@@ -372,8 +380,11 @@ namespace Nekoyume.UI
                     SetBountyInfoView(true);
                     return;
                 }
+                else
+                {
+                    SetBountyInfoView(false);
+                }
             }
-            SetBountyInfoView(false);
         }
 
         private void SetBountyInfoView(bool visible)

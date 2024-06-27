@@ -113,6 +113,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                return;
+            }
+
             if (Game.Game.instance.AdventureBossData.CurrentState.Value !=
                 Model.AdventureBossData.AdventureBossSeasonState.Progress)
             {
