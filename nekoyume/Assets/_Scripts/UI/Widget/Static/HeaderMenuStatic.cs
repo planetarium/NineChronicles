@@ -629,7 +629,8 @@ namespace Nekoyume.UI.Module
                 sheets.ItemRequirementSheet,
                 sheets.EquipmentItemRecipeSheet,
                 sheets.EquipmentItemSubRecipeSheetV2,
-                sheets.EquipmentItemOptionSheet) ?? false;
+                sheets.EquipmentItemOptionSheet,
+                States.Instance.GameConfigState) ?? false;
             UpdateInventoryNotification(hasNotification);
         }
 
