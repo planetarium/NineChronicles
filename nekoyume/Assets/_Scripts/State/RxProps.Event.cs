@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
@@ -9,6 +9,8 @@ using Nekoyume.TableData.Event;
 
 namespace Nekoyume.State
 {
+    using Libplanet.Common;
+    using System.Security.Cryptography;
     using UniRx;
 
     public static partial class RxProps
@@ -111,7 +113,7 @@ namespace Nekoyume.State
 
         private static void OnAvatarChangedEvent()
         {
-            _eventDungeonInfo.UpdateAsync().Forget();
+            _eventDungeonInfo.UpdateAsync(_agent.BlockTipStateRootHash).Forget();
         }
 
         private static void UpdateEventDungeonSheetData(long blockIndex)
@@ -204,7 +206,7 @@ namespace Nekoyume.State
         }
 
         private static async Task<EventDungeonInfo>
-            UpdateEventDungeonInfoAsync(EventDungeonInfo previous)
+            UpdateEventDungeonInfoAsync(EventDungeonInfo previous, HashDigest<SHA256> stateRootHash)
         {
             if (_eventDungeonInfoUpdatedBlockIndex == _agent.BlockIndex)
             {
@@ -220,7 +222,7 @@ namespace Nekoyume.State
             var addr = Nekoyume.Model.Event.EventDungeonInfo.DeriveAddress(
                 _currentAvatarAddr.Value,
                 EventDungeonRow.Id);
-            return await _agent.GetStateAsync(ReservedAddresses.LegacyAccount, addr)
+            return await _agent.GetStateAsync(stateRootHash, ReservedAddresses.LegacyAccount, addr)
                 is Bencodex.Types.List serialized
                 ? new EventDungeonInfo(serialized)
                 : null;

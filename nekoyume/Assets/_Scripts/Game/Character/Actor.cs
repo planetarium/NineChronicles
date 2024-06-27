@@ -597,7 +597,7 @@ namespace Nekoyume.Game.Character
             }
 
 #if TEST_LOG
-            Debug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
+            NcDebug.Log($"[TEST_LOG][ProcessBuff] [Buff] {effect.name} {buff.BuffInfo.Id} {info.Affected} {info?.DispelList?.Count()}");
 #endif
 
             effect.Play();
@@ -752,7 +752,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
 
 #if TEST_LOG
-                Debug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
+                NcDebug.Log($"[TEST_LOG][CoAnimationBuffCast] [Buff] {effect.name} {info.Buff.BuffInfo.Id}");
 #endif
             if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
             {
@@ -1191,8 +1191,8 @@ namespace Nekoyume.Game.Character
 
         private async UniTask ActionTimer(CancellationTokenSource cts)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(20), cancellationToken: cts.Token);
-            NcDebug.LogError($"[{nameof(Actor)}] ActionTimer Timeout. {gameObject.name}");
+            await UniTask.Delay(TimeSpan.FromSeconds(15), cancellationToken: cts.Token);
+            NcDebug.LogWarning($"[{nameof(Actor)}] ActionTimer Timeout. {gameObject.name}");
             _action = null;
         }
 

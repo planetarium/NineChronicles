@@ -45,8 +45,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject receiveAllContainer;
 
-        private ReactiveProperty<QuestList> _questList = new ReactiveProperty<QuestList>();
-
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
         #region override
@@ -58,7 +56,7 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(obtainButton);
             _toggleGroup.RegisterToggleable(craftingButton);
             _toggleGroup.RegisterToggleable(exchangeButton);
-            _questList.Subscribe(OnQuestListChanged);
+            ReactiveAvatarState.ObservableQuestList.Subscribe(OnQuestListChanged);
             closeButton.onClick.AddListener(() =>
             {
                 Close();
@@ -69,7 +67,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            _questList.Value = States.Instance.CurrentAvatarState.questList;
             _toggleGroup.SetToggledOffAll();
             adventureButton.SetToggledOn();
             ChangeState(0);
@@ -83,7 +80,7 @@ namespace Nekoyume.UI
         {
             filterType = (QuestType)state;
 
-            var list = _questList.Value
+            var list = ReactiveAvatarState.QuestList
                 .ToList()
                 .FindAll(e => e.QuestType == (QuestType)state)
                 .Where(quest => TableSheets.Instance.QuestSheet.ContainsKey(quest.Id))
@@ -95,17 +92,6 @@ namespace Nekoyume.UI
         public void DoneScrollAnimation()
         {
             scroll.DoneAnimation();
-        }
-
-        public void SetList(QuestList list)
-        {
-            if (list is null)
-            {
-                return;
-            }
-
-            _questList.Value = list;
-            ChangeState((int)filterType);
         }
 
         public void EnqueueCompletedQuest(QuestModel quest)
@@ -132,7 +118,7 @@ namespace Nekoyume.UI
                     QuestType.Adventure => adventureButton,
                     QuestType.Obtain => obtainButton,
                     QuestType.Craft => craftingButton,
-                    QuestType.Exchange => exchangeButton
+                    QuestType.Exchange => exchangeButton,
                 };
                 button.HasNotification.Value = list.Any(quest =>
                     quest.QuestType == questType &&
@@ -142,17 +128,20 @@ namespace Nekoyume.UI
 
             receiveAllContainer.SetActive(list.Any(quest =>
                 quest.IsPaidInAction && quest.isReceivable));
+            ChangeState((int)filterType);
         }
 
         private void ReceiveAll()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var questList = _questList.Value;
+            var questList = ReactiveAvatarState.QuestList;
             var mailRewards = questList
                 .Where(q => q.isReceivable && q.Complete)
                 .SelectMany(q =>
                 {
-                    LocalLayerModifier.RemoveReceivableQuest(avatarAddress, q.Id);
+                    LocalLayerModifier.RemoveReceivableQuest(avatarAddress, q.Id, false);
+                    // 퀘스트 받음 처리
+                    q.isReceivable = false;
                     return q.Reward.ItemMap;
                 }).Select(itemMap =>
                 {
@@ -161,9 +150,11 @@ namespace Nekoyume.UI
                         itemMap.Item1);
                     var itemId = item.ItemId;
                     var count = itemMap.Item2;
-                    LocalLayerModifier.AddItem(avatarAddress, itemId, count);
+                    LocalLayerModifier.AddItem(avatarAddress, itemId, count, false);
                     return new MailReward(item, count);
                 }).ToList();
+            // 퀘스트 완료처리된 목록으로 갱신해서 레드닷 비활성화처리
+            ReactiveAvatarState.UpdateQuestList(questList);
             Find<MailRewardScreen>().Show(mailRewards);
         }
     }

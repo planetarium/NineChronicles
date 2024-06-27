@@ -131,6 +131,12 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async Task<IReadOnlyList<CategorySchema>?> GetProductsAsync(Address agentAddr, string planetId)
         {
+            if (string.IsNullOrEmpty(planetId))
+            {
+                Debug.LogWarning("planetId is null or empty.");
+                return null;
+            }
+
             if (!IsInitialized)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");

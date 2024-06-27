@@ -50,7 +50,8 @@ namespace Nekoyume.State
         private static readonly ReactiveProperty<QuestList> _questList
             = new ReactiveProperty<QuestList>();
 
-        public static IObservable<QuestList> QuestList => _questList.ObserveOnMainThread();
+        public static QuestList QuestList => _questList.Value;
+        public static IObservable<QuestList> ObservableQuestList => _questList.ObserveOnMainThread();
 
         public static void Initialize(AvatarState state)
         {
