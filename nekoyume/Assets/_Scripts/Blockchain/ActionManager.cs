@@ -1831,8 +1831,7 @@ namespace Nekoyume.Blockchain
         {
             var action = new ClaimAdventureBossReward
             {
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
-                Season = SeasonId
+                AvatarAddress = States.Instance.CurrentAvatarState.address
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ClaimAdventureBossReward>()

@@ -49,7 +49,6 @@ namespace Nekoyume.UI
         private BaseItemView[] rewardItemsExplores;
 
         private List<SeasonInfo> _endedClaimableSeasonInfo = new List<SeasonInfo>();
-        private bool _isRefreshed = false;
         private long _lastSeasonId = 0;
         ClaimableReward lastClaimableReward = new ClaimableReward
         {
@@ -183,7 +182,7 @@ namespace Nekoyume.UI
                 ItemReward = new Dictionary<int, int>(),
                 FavReward = new Dictionary<int, int>(),
             };
-            _isRefreshed = false;
+
             foreach (var seasonInfo in _endedClaimableSeasonInfo)
             {
                 if(seasonInfo.EndBlockIndex + States.Instance.GameConfigState.AdventureBossClaimInterval <= Game.instance.Agent.BlockIndex)
@@ -219,6 +218,7 @@ namespace Nekoyume.UI
                         if (_lastSeasonId < seasonInfo.Season)
                         {
                             _lastSeasonId = seasonInfo.Season;
+                            RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
                         }
                     }
                     if (exploreInfo != null && !exploreInfo.Claimed)
@@ -236,9 +236,9 @@ namespace Nekoyume.UI
                         if (_lastSeasonId < seasonInfo.Season)
                         {
                             _lastSeasonId = seasonInfo.Season;
+                            RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
                         }
                     }
-                    RefreshWithSeasonInfo(exploreBoard, exploreInfo, bountyBoard);
                 }
                 catch (Exception e)
                 {
@@ -344,11 +344,6 @@ namespace Nekoyume.UI
 
         private void RefreshWithSeasonInfo(ExploreBoard exploreBoard, Explorer exploreInfo, BountyBoard bountyBoard)
         {
-            if (_isRefreshed)
-            {
-                return;
-            }
-            _isRefreshed = true;
             bountyCost.text = "-";
             myScore.text = "-";
             myScoreRatioText.text = "-";
@@ -358,7 +353,7 @@ namespace Nekoyume.UI
             noRewardItemsBounty.SetActive(false);
             noRewardItemsExplore.SetActive(false);
 
-            if (exploreInfo != null)
+            if (exploreInfo != null && exploreBoard != null)
             {
                 myScore.text = $"{exploreInfo.Score:#,0}";
                 SetExploreInfoVIew(true);

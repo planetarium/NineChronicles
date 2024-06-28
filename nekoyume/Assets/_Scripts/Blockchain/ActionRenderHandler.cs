@@ -3728,6 +3728,8 @@ namespace Nekoyume.Blockchain
 
         private void ResponseClaimAdventureBossReward(ActionEvaluation<ClaimAdventureBossReward> eval)
         {
+            var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+            var lastSeason = seasonInfo.Season;
             UniTask.RunOnThreadPool(async () =>
             {
                 if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
@@ -3739,12 +3741,12 @@ namespace Nekoyume.Blockchain
                 }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                if (Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(eval.Action.Season, out var exploreBoard))
+                if (Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(lastSeason, out var exploreBoard))
                 {
                     if (exploreBoard.RaffleWinner == null)
                     {
                         //최초
-                        Widget.Find<AdventureBossNcgRandomRewardPopup>().Show(eval.Action.Season);
+                        Widget.Find<AdventureBossNcgRandomRewardPopup>().Show(lastSeason);
                     }
 
                     //기존정보 업데이트 보상수령 정보를 갱신하기위함.

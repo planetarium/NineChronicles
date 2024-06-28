@@ -1667,9 +1667,11 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoStageBuff(CharacterBase affected, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoStageBuff)}() enter. affected: {affected.Id}, skillId: {skillId}");
-            OneLineSystem.Push(MailType.System,
+            /*OneLineSystem.Push(MailType.System,
                 L10nManager.Localize("ADVENTURE_BOSS_STAGE_BUFF_NOTIFICATION",L10nManager.Localize($"SKILL_NAME_{skillId}")),
-                NotificationCell.NotificationType.Information);
+                NotificationCell.NotificationType.Information);*/
+            yield return new WaitForSeconds(0.5f);
+            Widget.Find<AdventureBossStageBuff>().Show(L10nManager.Localize($"SKILL_NAME_{skillId}"));
 
             yield return new WaitForSeconds(1f);
         }

@@ -30,6 +30,8 @@ namespace Nekoyume.UI
         [SerializeField] private Button gotoUnlock;
         [SerializeField] private GameObject breakThroughContent;
         [SerializeField] private GameObject breakThroughNoContent;
+        [SerializeField] private TextMeshProUGUI challengeMaxScore;
+        [SerializeField] private TextMeshProUGUI breakThroughMaxScore;
 
         private long _challengeApPotionCost;
         private long _breakThroughApPotionCost;
@@ -76,6 +78,15 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var tableSheets = Game.Game.instance.TableSheets;
+
+            var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
+            if (bossRow == null)
+            {
+                NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                return;
+            }
+
             var currentFloor = 0;
             var maxFloor = 5;
 
@@ -96,6 +107,24 @@ namespace Nekoyume.UI
                 challengeLockObj.SetActive(false);
                 challengeContents.SetActive(true);
                 challengeFloorText.text = $"{currentFloor + 1}F ~ {maxFloor}F";
+
+                try
+                {
+                    var totalMaxPoint = tableSheets.AdventureBossFloorSheet.Values.Where(floorRow =>
+                            floorRow.AdventureBossId == bossRow.Id &&
+                            floorRow.Floor > currentFloor &&
+                            floorRow.Floor <= maxFloor)
+                    .Join(tableSheets.AdventureBossFloorPointSheet,
+                                        floorRow => floorRow.Id,
+                                        pointRow => pointRow.Key,
+                        (floorRow, pointRow) => pointRow.Value.MaxPoint)
+                    .Sum();
+                    challengeMaxScore.text = $"{totalMaxPoint}";
+                }
+                catch (System.Exception e)
+                {
+                    NcDebug.LogError(e);
+                }
             }
 
             if (currentFloor == 0)
@@ -109,6 +138,23 @@ namespace Nekoyume.UI
                 breakThroughContent.SetActive(true);
                 breakThroughNoContent.SetActive(false);
                 breakThroughFloorText.text = $"{1}F ~ {currentFloor}F";
+                try
+                {
+                    var totalMaxPoint = tableSheets.AdventureBossFloorSheet.Values.Where(floorRow =>
+                            floorRow.AdventureBossId == bossRow.Id &&
+                            floorRow.Floor > 0 &&
+                            floorRow.Floor <= currentFloor)
+                    .Join(tableSheets.AdventureBossFloorPointSheet,
+                                        floorRow => floorRow.Id,
+                                        pointRow => pointRow.Key,
+                        (floorRow, pointRow) => pointRow.Value.MaxPoint)
+                    .Sum();
+                    breakThroughMaxScore.text = $"{totalMaxPoint}";
+                }
+                catch (System.Exception e)
+                {
+                    NcDebug.LogError(e);
+                }
             }
 
             for (int i = 0; i < challengeFloors.Length; i++)
@@ -143,14 +189,6 @@ namespace Nekoyume.UI
                                        L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC",
                                            _challengeApPotionCost);
 
-            var tableSheets = Game.Game.instance.TableSheets;
-
-            var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
-            if (bossRow == null)
-            {
-                NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
-                return;
-            }
             var challengeFloorRows = tableSheets.AdventureBossFloorSheet.Values
                 .Where(row => row.AdventureBossId == bossRow.Id
                                 && row.Floor > currentFloor
