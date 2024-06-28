@@ -1,10 +1,12 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.State;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UniRx;
+using Libplanet.Common;
+using System.Security.Cryptography;
 
 namespace Tests.EditMode.State
 {
@@ -31,7 +33,7 @@ namespace Tests.EditMode.State
         public IEnumerator UpdateAsyncTest() => UniTask.ToCoroutine(async () =>
         {
             var rp = new AsyncUpdatableRxProp<int>(UpdateValueAsync);
-            var value = await rp.UpdateAsync();
+            var value = await rp.UpdateAsync(new HashDigest<SHA256>());
             Assert.AreEqual(1, value);
             Assert.AreEqual(value, rp.Value);
         });
@@ -40,9 +42,9 @@ namespace Tests.EditMode.State
         public IEnumerator UpdateAsObservableTest() => UniTask.ToCoroutine(async () =>
         {
             var rp = new AsyncUpdatableRxProp<int>(UpdateValueAsync);
-            var value = await rp.UpdateAsObservable().ToUniTask();
+            var value = await rp.UpdateAsObservable(new HashDigest<SHA256>()).ToUniTask();
             Assert.AreEqual(1, value);
-            value = await rp.UpdateAsObservable().ToUniTask();
+            value = await rp.UpdateAsObservable(new HashDigest<SHA256>()).ToUniTask();
             Assert.AreEqual(2, value);
         });
         
@@ -62,7 +64,8 @@ namespace Tests.EditMode.State
                 }
 
                 expected++;
-            });
+            },
+            new HashDigest<SHA256>());
             await UniTask.WaitUntil(() => done);
             disposable.Dispose();
         });
@@ -82,14 +85,14 @@ namespace Tests.EditMode.State
                     return;
                 }
 
-                rp.UpdateAsync().Forget();
+                rp.UpdateAsync(new HashDigest<SHA256>()).Forget();
                 expected++;
             });
             await UniTask.WaitUntil(() => done);
             disposable.Dispose();
         });
 
-        private static async Task<int> UpdateValueAsync(int previous)
+        private static async Task<int> UpdateValueAsync(int previous, HashDigest<SHA256> stateRootHash)
         {
             await UniTask.Delay(10);
             return previous + 1;

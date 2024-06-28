@@ -194,7 +194,7 @@ namespace Nekoyume.UI
                 SharedModel.UpdateUnlockedRecipesAsync(address);
             }).AddTo(gameObject);
 
-            ReactiveAvatarState.QuestList
+            ReactiveAvatarState.ObservableQuestList
                 .Subscribe(SubscribeQuestList)
                 .AddTo(gameObject);
 

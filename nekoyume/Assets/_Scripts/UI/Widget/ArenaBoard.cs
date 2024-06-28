@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -64,8 +64,10 @@ namespace Nekoyume.UI
             loading.Show(LoadingScreen.LoadingType.Arena);
             var sw = new Stopwatch();
             sw.Start();
-            await UniTask.WhenAll(RxProps.ArenaInformationOrderedWithScore.UpdateAsync(),
-                RxProps.ArenaInfoTuple.UpdateAsync());
+            var blockTipStateRootHash = Game.Game.instance.Agent.BlockTipStateRootHash;
+            await UniTask.WhenAll(
+                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(blockTipStateRootHash),
+                RxProps.ArenaInfoTuple.UpdateAsync(blockTipStateRootHash));
             loading.Close();
             Show(RxProps.ArenaInformationOrderedWithScore.Value,
                 ignoreShowAnimation);

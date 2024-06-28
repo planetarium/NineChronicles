@@ -181,27 +181,76 @@ namespace Nekoyume.UI
 
             foreach (var category in renderCategory)
             {
-                var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
+                if (category == null)
+                {
+                    NcDebug.LogError("category is null");
+                    continue;
+                }
 
-                var iconSprite = await Util.DownloadTexture($"{MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+                if (_allCategoryTab.ContainsKey(category.Name))
+                {
+                    NcDebug.LogError($"category {category.Name} is already exist");
+                    continue;
+                }
+
+                if (_allProductObjByCategory.ContainsKey(category.Name))
+                {
+                    NcDebug.LogError($"category {category.Name} is already exist");
+                    continue;
+                }
+
+                var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
+                if (categoryTabObj == null)
+                {
+                    NcDebug.LogError("categoryTabObj is null");
+                    continue;
+                }
+
+                Sprite iconSprite = null;
+                try
+                {
+                    iconSprite = await Util.DownloadTexture($"{MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError(e.Message);
+                    NcDebug.LogError($"Failed to download icon: {category.Path}");
+                }
+
                 var categoryTab = categoryTabObj.GetComponent<IAPCategoryTab>();
+
+                if (categoryTab == null)
+                {
+                    NcDebug.LogError("categoryTab is null");
+                    continue;
+                }
+
                 categoryTab.SetData(category.L10n_Key, iconSprite);
 
-                categoryTabObj.onObject.SetActive(false);
-                categoryTabObj.offObject.SetActive(true);
-                categoryTabObj.group = tabToggleGroup;
-                tabToggleGroup.RegisterToggle(categoryTabObj);
-                categoryTabObj.onValueChanged.AddListener((isOn) =>
+                try
                 {
-                    if (!isOn)
+                    categoryTabObj.onObject.SetActive(false);
+                    categoryTabObj.offObject.SetActive(true);
+                    categoryTabObj.group = tabToggleGroup;
+                    tabToggleGroup.RegisterToggle(categoryTabObj);
+                    categoryTabObj.onValueChanged.AddListener((isOn) =>
                     {
-                        return;
-                    }
+                        if (!isOn)
+                        {
+                            return;
+                        }
 
-                    AudioController.PlayClick();
-                    RefreshGridByCategory(category.Name);
-                    _lastSelectedCategory = category.Name;
-                });
+                        AudioController.PlayClick();
+                        RefreshGridByCategory(category.Name);
+                        _lastSelectedCategory = category.Name;
+                    });
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError(e.Message);
+                    NcDebug.LogError("Failed to set category tab");
+                    continue;
+                }
 
                 _allCategoryTab.Add(category.Name, categoryTab);
 
@@ -216,7 +265,15 @@ namespace Nekoyume.UI
                     {
                         productObj = Instantiate(originProductCellView, iAPShopDynamicGridLayout.transform);
                         productObj.SetData(product, category.Name == RecommendedString);
-                        await productObj.RefreshLocalized();
+                        try
+                        {
+                            await productObj.RefreshLocalized();
+                        }
+                        catch (Exception e)
+                        {
+                            NcDebug.LogError(e.Message);
+                            NcDebug.LogError($"Failed to refresh localized: {product.Sku}");
+                        }
                         _allProductObjs.Add(product.Sku, productObj);
                     }
 

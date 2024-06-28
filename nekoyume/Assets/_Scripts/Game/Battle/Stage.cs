@@ -189,7 +189,7 @@ namespace Nekoyume.Game.Battle
         private void OnStartStage(BattleLog log)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(OnStageStart)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnStageStart)}() enter");
 #endif
             if (_battleLog is null)
             {
@@ -212,7 +212,7 @@ namespace Nekoyume.Game.Battle
         private void OnNestEnter()
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(OnNestEnter)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnNestEnter)}() enter");
 #endif
             gameObject.AddComponent<NestEntering>();
         }
@@ -220,7 +220,7 @@ namespace Nekoyume.Game.Battle
         private void OnLoginDetail(int index)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(OnLoginDetail)}({index}) enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnLoginDetail)}({index}) enter");
 #endif
             DOTween.KillAll();
             var players = Widget.Find<Login>().players;
@@ -271,7 +271,7 @@ namespace Nekoyume.Game.Battle
         private void OnRoomEnter(bool showScreen)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(OnRoomEnter)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnRoomEnter)}() enter");
 #endif
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
@@ -361,7 +361,7 @@ namespace Nekoyume.Game.Battle
         public void PlayStage(BattleLog log)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(PlayStage)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(PlayStage)}() enter");
 #endif
             if (log?.Count <= 0)
             {
@@ -380,7 +380,7 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoPlayStage(BattleLog log)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoPlayStage)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoPlayStage)}() enter");
 #endif
             var avatarState = States.Instance.CurrentAvatarState;
             prevFood = avatarState.inventory.Items
@@ -480,7 +480,7 @@ namespace Nekoyume.Game.Battle
         private static IEnumerator CoGuidedQuest(int stageIdToClear)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoGuidedQuest)}() enter. stageIdToClear: {stageIdToClear}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoGuidedQuest)}() enter. stageIdToClear: {stageIdToClear}");
 #endif
             var done = false;
             var battle = Widget.Find<UI.Battle>();
@@ -491,7 +491,7 @@ namespace Nekoyume.Game.Battle
         private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoUnlockRecipe)}() enter. stageIdToFirstClear: {stageIdToFirstClear}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoUnlockRecipe)}() enter. stageIdToFirstClear: {stageIdToFirstClear}");
 #endif
             var questResult = Widget.Find<CelebratesPopup>();
             var rows = TableSheets.Instance.EquipmentItemRecipeSheet.OrderedList
@@ -508,7 +508,7 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoStageEnter(BattleLog log)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoStageEnter)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoStageEnter)}() enter");
 #endif
             worldId = log.worldId;
             stageId = log.stageId;
@@ -614,7 +614,7 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoStageEnd(BattleLog log)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoStageEnd)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoStageEnd)}() enter");
 #endif
             if (log.IsClear)
             {
@@ -857,7 +857,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoSpawnPlayer)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoSpawnPlayer)}() enter");
 #endif
             var avatarState = States.Instance.CurrentAvatarState;
             var playerCharacter = RunPlayer(false);
@@ -951,7 +951,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoSpawnEnemyPlayer)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoSpawnEnemyPlayer)}() enter");
 #endif
             var battle = Widget.Find<UI.Battle>();
             battle.BossStatus.Close();
@@ -973,7 +973,7 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoNormalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoNormalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)
@@ -991,7 +991,7 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoBlowAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBlowAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)
@@ -1009,7 +1009,7 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoBuffRemovalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBuffRemovalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)
@@ -1023,7 +1023,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoDoubleAttackWithCombo(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoDoubleAttackWithCombo)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoDoubleAttackWithCombo)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)
@@ -1041,7 +1041,7 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoDoubleAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoDoubleAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)
@@ -1059,7 +1059,7 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoAreaAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoAreaAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)
@@ -1078,7 +1078,7 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoHeal)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoHeal)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)
@@ -1094,7 +1094,7 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> skillInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoTickDamage)}() enter. affectedCharacter: {affectedCharacter.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoTickDamage)}() enter. affectedCharacter: {affectedCharacter.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(affectedCharacter);
             foreach (var info in skillInfos)
@@ -1113,7 +1113,7 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoBuff)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBuff)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)
@@ -1136,7 +1136,7 @@ namespace Nekoyume.Game.Battle
             Func<IReadOnlyList<Skill.SkillInfo>, IEnumerator> func)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoSkill)}() enter. character: {character.Id}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoSkill)}() enter. character: {character.Id}");
 #endif
             if (!character)
                 throw new ArgumentNullException(nameof(character));
@@ -1167,7 +1167,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoDropBox)}() enter.");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoDropBox)}() enter.");
 #endif
             var prevEnemies = GetComponentsInChildren<Character.StageMonster>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
@@ -1187,7 +1187,7 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoBeforeSkill(Actor character)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoBeforeSkill)}() enter. character: {character.Id}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBeforeSkill)}() enter. character: {character.Id}");
 #endif
             if (!character)
                 throw new ArgumentNullException(nameof(character));
@@ -1212,7 +1212,7 @@ namespace Nekoyume.Game.Battle
         private IEnumerator CoAfterSkill(Actor character, IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoAfterSkill)}() enter. character: {character.Id}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoAfterSkill)}() enter. character: {character.Id}");
 #endif
             if (!character)
                 throw new ArgumentNullException(nameof(character));
@@ -1241,7 +1241,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
 #if TEST_LOG
-            Debug.Log($"[CoRemoveBuffs][{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
+            NcDebug.Log($"[CoRemoveBuffs][{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
 #endif
             var character = GetActor(caster);
             if (!character)
@@ -1260,7 +1260,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoGetReward(List<ItemBase> rewards)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoGetReward)}() enter.");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoGetReward)}() enter.");
 #endif
             var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
@@ -1282,7 +1282,7 @@ namespace Nekoyume.Game.Battle
             bool hasBoss)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoSpawnWave)}() enter. {nameof(waveTurn)}({waveTurn})");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoSpawnWave)}() enter. {nameof(waveTurn)}({waveTurn})");
 #endif
             this.waveNumber = waveNumber;
             this.waveTurn = waveTurn;
@@ -1336,18 +1336,18 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoWaveTurnEnd(int turnNumber, int waveTurn)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} enter. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} enter. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
             yield return new WaitWhile(() => SelectedPlayer.HasAction());
             Event.OnPlayerTurnEnd.Invoke(turnNumber);
             var characters = GetComponentsInChildren<Actor>();
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} ing. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} ing. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
             this.waveTurn = waveTurn;
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} exit. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} exit. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
         }
 
@@ -1356,7 +1356,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoGetExp(long exp)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoGetExp)}() enter. exp: {exp}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoGetExp)}() enter. exp: {exp}");
 #endif
             var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
@@ -1368,7 +1368,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoDead(CharacterBase model)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoDead)}() enter. model: {model.Id}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoDead)}() enter. model: {model.Id}");
 #endif
             var characters = GetComponentsInChildren<Actor>();
             yield return new WaitWhile(() => characters.Any(i => i.HasAction()));
@@ -1382,38 +1382,41 @@ namespace Nekoyume.Game.Battle
             if (eventBase is Tick tick)
             {
                 var affectedCharacter = GetActor(character);
-                if (tick.SkillId == AuraIceShield.FrostBiteId)
+                if (AuraIceShield.IsFrostBiteBuff(tick.SkillId))
                 {
-                    if (!character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
+                    foreach (var kvp in character.Buffs)
                     {
-                        yield break;
-                    }
-
-                    var source = tick.SkillInfos.First().Target;
-                    var sourceCharacter = GetActor(source);
-                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
-                    {
-                        sourceCharacter.CustomEvent(AuraIceShield.FrostBiteId);
-                        yield return affectedCharacter.CoBuff(skillInfos);
-                    }
-
-                    var tickSkillInfo = new Skill.SkillInfo(
-                        affectedCharacter.Id,
-                        !affectedCharacter.IsAlive,
-                        0,
-                        0,
-                        false,
-                        SkillCategory.Debuff,
-                        waveTurn,
-                        target: character,
-                        buff: frostBite
-                    );
-                    affectedCharacter.AddAction(
-                        new ActionParams(affectedCharacter,
-                                        ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
-                                         tick.BuffInfos,
-                                        CoFrostBite
-                        ));
+                        if (!AuraIceShield.IsFrostBiteBuff(kvp.Key))
+                        {
+                            continue;
+                        }
+                        var frostBite = kvp.Value;
+                        var source          = tick.SkillInfos.First().Target;
+                        var sourceCharacter = GetActor(source);
+                        IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
+                        {
+                            sourceCharacter.CustomEvent(tick.SkillId);
+                            yield return affectedCharacter.CoBuff(skillInfos);
+                        }
+                        var tickSkillInfo = new Skill.SkillInfo(
+                            affectedCharacter.Id,
+                            !affectedCharacter.IsAlive,
+                            0,
+                            0,
+                            false,
+                            SkillCategory.Debuff,
+                            waveTurn,
+                            target: character,
+                            buff: frostBite
+                        );
+                        affectedCharacter.AddAction(
+                            new ActionParams(affectedCharacter,
+                                             ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
+                                             tick.BuffInfos,
+                                             CoFrostBite
+                            ));
+                        break;
+                    };
                 }
                 // This Tick from 'Stun'
                 else if (tick.SkillId == 0)
@@ -1616,7 +1619,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoShatterStrike(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoShatterStrike)}() enter. caster: {caster.Id}, skillId: {skillId}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoShatterStrike)}() enter. caster: {caster.Id}, skillId: {skillId}");
 #endif
             var character = GetActor(caster);
             if (character)

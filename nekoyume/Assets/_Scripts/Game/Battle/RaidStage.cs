@@ -76,13 +76,13 @@ namespace Nekoyume.Game.Battle
         [SerializeField]
         private int alertTurn = 10;
 
-        private Character.RaidPlayer _player;
+        private RaidPlayer _player;
         private Character.RaidBoss _boss;
 
         public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
         public IObservable<RaidStage> OnBattleEnded => _onBattleEnded;
         private readonly ISubject<RaidStage> _onBattleEnded = new Subject<RaidStage>();
-        private readonly Queue<Character.RaidActionParams> _actionQueue = new();
+        private readonly Queue<RaidActionParams> _actionQueue = new();
 
         private RaidTimelineContainer container;
         private Coroutine _battleCoroutine;
@@ -160,15 +160,14 @@ namespace Nekoyume.Game.Battle
                                 continue;
                             }
 
-                            var playAll = skillRow.SkillType != Model.Skill.SkillType.Attack;
+                            var playAll = skillRow.SkillType != SkillType.Attack;
                             container.OnAttackPoint = () =>
                             {
                                 boss.ProceedSkill(playAll);
                             };
 
                             var infos = param.SkillInfos;
-                            if (param.BuffInfos is not null &&
-                                param.BuffInfos.Any())
+                            if (param.BuffInfos is not null && param.BuffInfos.Any())
                             {
                                 infos = infos.Concat(param.BuffInfos);
                             }
@@ -245,7 +244,7 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        public IEnumerator CoAct(Character.RaidActionParams param)
+        public IEnumerator CoAct(RaidActionParams param)
         {
             var infos = param.SkillInfos.ToList();
             yield return StartCoroutine(param.ActionCoroutine(infos));
@@ -317,9 +316,9 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoNormalAttack);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoNormalAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
@@ -330,9 +329,9 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBlowAttack);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBlowAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
@@ -343,18 +342,18 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBlowAttack);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBlowAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
 
         public IEnumerator CoDoubleAttackWithCombo(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttackWithCombo);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
@@ -365,9 +364,9 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoDoubleAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
@@ -378,9 +377,9 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoAreaAttack);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoAreaAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
@@ -391,9 +390,9 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoHeal);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoHeal);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
@@ -402,7 +401,7 @@ namespace Nekoyume.Game.Battle
             int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos)
         {
-            Character.RaidCharacter target = affectedCharacter.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = affectedCharacter.Id == _player.Id ? _player : _boss;
             target.Set(affectedCharacter);
 
             yield return new WaitWhile(() => target.IsActing);
@@ -418,9 +417,9 @@ namespace Nekoyume.Game.Battle
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBuff);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoBuff);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }
@@ -489,7 +488,7 @@ namespace Nekoyume.Game.Battle
 
         public IEnumerator CoDead(CharacterBase character)
         {
-            Character.RaidCharacter raidCharacter =
+            RaidCharacter raidCharacter =
                 character.Id == _player.Id ? _player : _boss;
             raidCharacter.Set(character);
 
@@ -519,39 +518,42 @@ namespace Nekoyume.Game.Battle
         {
             if (eventBase is Tick tick)
             {
-                RaidCharacter raidCharacter =
-                    character.Id == _player.Id ? _player : _boss;
-                if (tick.SkillId == AuraIceShield.FrostBiteId)
+                RaidCharacter raidCharacter = character.Id == _player.Id ? _player : _boss;
+                if (AuraIceShield.IsFrostBiteBuff(tick.SkillId))
                 {
-                    if (!character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
+                    foreach (var kvp in character.Buffs)
                     {
-                        yield break;
-                    }
+                        if (!AuraIceShield.IsFrostBiteBuff(kvp.Key))
+                        {
+                            continue;
+                        }
+                        var frostBite = kvp.Value;
+                        IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
+                        {
+                            _player.CustomEvent(tick.SkillId);
+                            yield return raidCharacter.CoBuff(skillInfos);
+                        }
+                        var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
+                                                                raidCharacter.IsDead,
+                                                                0,
+                                                                0,
+                                                                false,
+                                                                SkillCategory.Debuff,
+                                                                _waveTurn,
+                                                                target: character,
+                                                                buff: frostBite
+                        );
+                        _actionQueue.Enqueue(
+                            new RaidActionParams(
+                                raidCharacter,
+                                tick.SkillId,
+                                ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
+                                tick.BuffInfos,
+                                CoFrostBite)
+                        );
+                        break;
+                    };
 
-                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
-                    {
-                        _player.CustomEvent(AuraIceShield.FrostBiteId);
-                        yield return raidCharacter.CoBuff(skillInfos);
-                    }
-
-                    var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
-                                                            raidCharacter.IsDead,
-                                                            0,
-                                                            0,
-                                                            false,
-                                                            SkillCategory.Debuff,
-                                                            _waveTurn,
-                                                            target: character,
-                                                            buff: frostBite
-                    );
-                    _actionQueue.Enqueue(
-                        new RaidActionParams(
-                            raidCharacter,
-                            tick.SkillId,
-                            ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
-                            tick.BuffInfos,
-                            CoFrostBite)
-                    );
                 }
                 // This Tick from 'Stun'
                 else if (tick.SkillId == 0)
@@ -587,7 +589,7 @@ namespace Nekoyume.Game.Battle
                          && row.ActionBuffType == ActionBuffType.Vampiric)
                 {
                     _actionQueue.Enqueue(
-                        new Character.RaidActionParams(
+                        new RaidActionParams(
                             raidCharacter,
                             tick.SkillId,
                             tick.SkillInfos,
@@ -618,9 +620,9 @@ namespace Nekoyume.Game.Battle
 
         public IEnumerator CoShatterStrike(CharacterBase caster, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
-            var actionParams = new Character.RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoShatterStrike);
+            var actionParams = new RaidActionParams(target, skillId, skillInfos, buffInfos, target.CoShatterStrike);
             _actionQueue.Enqueue(actionParams);
             yield break;
         }

@@ -18,4 +18,6 @@ MonoBehaviour:
   <NoticeJsonJapaneseUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/TextNotice_JP.json
   <ImageRootUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Images
   <GameConfigJsonUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/GameConfig.json
-  <CommandLineOptionsJsonUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/clo-internal.json
+  <CommandLineOptionsJsonUrlPrefix>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/CloForAppVersion/clo-app-ver-
+  <CommandLineOptionsJsonDefaultUrl>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/clo-default.json
+  <CommandLineOptionsJsonDefaultUrlKr>k__BackingField: https://assets.nine-chronicles.com/live-assets/Json/clo-default-kr.json

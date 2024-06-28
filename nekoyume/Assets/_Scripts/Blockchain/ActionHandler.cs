@@ -98,7 +98,7 @@ namespace Nekoyume.Blockchain
             else
             {
                 nullableStakeState = stakeStateV2;
-                balance = await agent.GetBalanceAsync(stakeAddr, GoldCurrency);
+                balance = StateGetter.GetBalance(evaluation.OutputState, stakeAddr, GoldCurrency);
                 sheetAddrArr = new[]
                 {
                     Addresses.GetSheetAddress(
@@ -247,21 +247,6 @@ namespace Nekoyume.Blockchain
             {
                 NcDebug.LogError(
                     $"Failed to Update AvatarState: {agentAddress}, {avatarAddress}\n{e.Message}");
-            }
-        }
-
-        protected async UniTask UpdateCurrentAvatarStateAsync()
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatars =
-                await Game.Game.instance.Agent.GetAvatarStatesAsync(new[] { avatarAddress });
-            if (avatars.TryGetValue(avatarAddress, out var avatarState))
-            {
-                await UpdateCurrentAvatarStateAsync(avatarState);
-            }
-            else
-            {
-                NcDebug.LogError($"Failed to get AvatarState: {avatarAddress}");
             }
         }
 
