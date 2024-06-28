@@ -229,8 +229,8 @@ namespace Nekoyume.UI
                                                             exploreInfo,
                                                             Game.instance.States.CurrentAvatarState.address,
                                                             TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
-                                                            States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                                             States.Instance.GameConfigState.AdventureBossNcgApRatio,
+                                                            States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                                             false,
                                                             out var explorerReward);
                         if (_lastSeasonId < seasonInfo.Season)
