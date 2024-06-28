@@ -90,14 +90,13 @@ namespace Nekoyume.UI
 
             closeButton.onClick.AddListener(() =>
             {
-                Close(true);
-                Game.Event.OnRoomEnter.Invoke(false);
                 AudioController.PlayClick();
+                CloseWidget?.Invoke();
             });
 
             CloseWidget = () =>
             {
-                Close(true);
+                Close();
                 Game.Event.OnRoomEnter.Invoke(false);
             };
         }
@@ -276,12 +275,6 @@ namespace Nekoyume.UI
             Find<ItemCountableAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
             Find<ShopBuy>().Close();
-            base.Close(ignoreCloseAnimation);
-        }
-
-        public void CloseWithItemCountAndPricePopup(bool ignoreCloseAnimation)
-        {
-            Find<ItemCountAndPricePopup>().Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }
 

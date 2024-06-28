@@ -53,11 +53,10 @@ namespace Nekoyume.UI
 
             closeButton.onClick.AddListener(() =>
             {
-                Close(true);
-                Game.Event.OnRoomEnter.Invoke(false);
                 AudioController.PlayClick();
+                CloseWidget?.Invoke();
             });
-            
+
             CloseWidget = () =>
             {
                 if (view.IsFocused)
@@ -65,8 +64,19 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                Game.Event.OnRoomEnter.Invoke(false);
-                Close();
+                if (view.IsCartEmpty)
+                {
+                    Close();
+                    Game.Event.OnRoomEnter.Invoke(false);
+                }
+                else
+                {
+                    Find<TwoButtonSystem>().Show(
+                        L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
+                        L10nManager.Localize("UI_YES"),
+                        L10nManager.Localize("UI_NO"),
+                        () => Close());
+                }
             };
 
             view.SetAction(ShowBuyPopup);
@@ -123,29 +133,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             ReactiveShopState.ClearCache();
-            if (view.IsCartEmpty)
-            {
-                OnClose();
-            }
-            else
-            {
-                Find<TwoButtonSystem>().Show(
-                    L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
-                    L10nManager.Localize("UI_YES"),
-                    L10nManager.Localize("UI_NO"),
-                    OnClose);
-            }
-        }
 
-        private void OnClose()
-        {
-            Find<ItemCountAndPricePopup>().Close();
-            _cancellationTokenSource.Cancel();
-            base.Close(true);
-        }
-
-        public void CloseWithItemCountAndPricePopup(bool ignoreCloseAnimation)
-        {
             Find<ItemCountAndPricePopup>().Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }

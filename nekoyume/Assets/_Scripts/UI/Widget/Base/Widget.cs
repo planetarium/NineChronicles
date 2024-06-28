@@ -431,8 +431,8 @@ namespace Nekoyume.UI
             }
 
             Find<Menu>().Close(true);
-            Find<ShopBuy>().CloseWithItemCountAndPricePopup(true);
-            Find<ShopSell>().CloseWithItemCountAndPricePopup(true);
+            Find<ShopBuy>().Close(true);
+            Find<ShopSell>().Close(true);
             Find<EventBanner>().Close(true);
             Find<Status>().Close(true);
             Close(true);
