@@ -51,7 +51,12 @@ namespace Nekoyume.UI
                 gameObject.SetActive(false);
             });
 
-            closeButton.onClick.AddListener(() => Close());
+            closeButton.onClick.AddListener(() =>
+            {
+                AudioController.PlayClick();
+                CloseWidget?.Invoke();
+            });
+
             CloseWidget = () =>
             {
                 if (view.IsFocused)
@@ -59,7 +64,19 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                Close();
+                if (view.IsCartEmpty)
+                {
+                    Close();
+                    Game.Event.OnRoomEnter.Invoke(false);
+                }
+                else
+                {
+                    Find<TwoButtonSystem>().Show(
+                        L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
+                        L10nManager.Localize("UI_YES"),
+                        L10nManager.Localize("UI_NO"),
+                        () => Close());
+                }
             };
 
             view.SetAction(ShowBuyPopup);
@@ -116,35 +133,8 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             ReactiveShopState.ClearCache();
-            if (view.IsCartEmpty)
-            {
-                OnClose();
-            }
-            else
-            {
-                Find<TwoButtonSystem>().Show(
-                    L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
-                    L10nManager.Localize("UI_YES"),
-                    L10nManager.Localize("UI_NO"),
-                    OnClose);
-            }
-        }
 
-        private void OnClose()
-        {
-            Find<ItemCountAndPricePopup>().Close();
-            Game.Event.OnRoomEnter.Invoke(true);
-            _cancellationTokenSource.Cancel();
-            base.Close(true);
-        }
-
-        public void Close(bool ignoreOnRoomEnter, bool ignoreCloseAnimation)
-        {
             Find<ItemCountAndPricePopup>().Close(ignoreCloseAnimation);
-            if (!ignoreOnRoomEnter)
-            {
-                Game.Event.OnRoomEnter.Invoke(true);
-            }
             base.Close(ignoreCloseAnimation);
         }
 

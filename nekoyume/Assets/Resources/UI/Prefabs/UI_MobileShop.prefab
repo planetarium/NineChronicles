@@ -195,6 +195,7 @@ MonoBehaviour:
   iAPShopDynamicGridLayout: {fileID: 6428342440512112935}
   loadDataScreen: {fileID: 7519953081399492157}
   emptyCategoryPannel: {fileID: 1403861813068081876}
+  closeButton: {fileID: 2208682962449487627}
 --- !u!1 &598574704044018674
 GameObject:
   m_ObjectHideFlags: 0
@@ -761,8 +762,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6113021123441700787}
   m_HandleRect: {fileID: 7440800650224879723}
   m_Direction: 2
-  m_Value: 0.9999999
-  m_Size: 0.45161632
+  m_Value: 0.99999994
+  m_Size: 0.542776
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2033,17 +2034,17 @@ PrefabInstance:
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 330
       objectReference: {fileID: 0}
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -2053,7 +2054,7 @@ PrefabInstance:
     - target: {fileID: 805025155408536425, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -45
       objectReference: {fileID: 0}
     - target: {fileID: 1434793155216603422, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -2178,7 +2179,7 @@ PrefabInstance:
     - target: {fileID: 7657312722897278047, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7657312722897278047, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -2363,3 +2364,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8422553918942036820}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2208682962449487627 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7657312722897278047, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+    type: 3}
+  m_PrefabInstance: {fileID: 8422553918942036820}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
