@@ -4,6 +4,7 @@ using Nekoyume.Game.Util;
 using Nekoyume.Helper;
 using Nekoyume.Model.Buff;
 using System.Collections;
+using Nekoyume.Model.Skill;
 using UnityEngine;
 
 namespace Nekoyume.Game.VFX.Skill
@@ -80,7 +81,15 @@ namespace Nekoyume.Game.VFX.Skill
             while (g.activeSelf && target)
             {
                 t.position = target.transform.position + BuffHelper.GetBuffPosition(buffModel.BuffInfo.Id);
-                vfx.transform.FlipX(target.IsFlipped);
+
+                if (buffModel is ActionBuff actionBuff)
+                {
+                    if (actionBuff.RowData.ActionBuffType == ActionBuffType.IceShield)
+                    {
+                        vfx.transform.FlipX(target.IsFlipped);
+                    }
+                }
+
                 yield return null;
             }
         }
