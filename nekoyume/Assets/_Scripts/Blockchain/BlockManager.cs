@@ -115,7 +115,7 @@ namespace Nekoyume.Blockchain
             await loadingRequest.SendWebRequest();
             if (loadingRequest.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log($"[BlockManager] Load genesis block from local path via UnityWebRequest. {localPath}");
+                NcDebug.Log($"[BlockManager] Load genesis block from local path via UnityWebRequest. {localPath}");
                 var buffer = loadingRequest.downloadHandler.data;
                 var dict = (Dictionary)_codec.Decode(buffer);
                 return BlockMarshaler.UnmarshalBlock(dict);

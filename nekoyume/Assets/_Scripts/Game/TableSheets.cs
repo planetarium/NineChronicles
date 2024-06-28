@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using JetBrains.Annotations;
 using Nekoyume.TableData;
+using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
@@ -13,8 +13,6 @@ using Nekoyume.TableData.Pet;
 using Nekoyume.TableData.Rune;
 using Nekoyume.TableData.Stake;
 using Nekoyume.TableData.Summon;
-using UniRx.Diagnostics;
-using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.Game
 {
@@ -262,6 +260,24 @@ namespace Nekoyume.Game
         
         public BuffLinkSheet BuffLinkSheet { get; private set; }
 
+        public AdventureBossFloorSheet AdventureBossFloorSheet { get; private set; }
+
+        public AdventureBossFloorWaveSheet AdventureBossFloorWaveSheet { get; private set; }
+
+        public AdventureBossContributionRewardSheet AdventureBossContributionRewardSheet { get; private set; }
+
+        public AdventureBossFloorFirstRewardSheet AdventureBossFloorFirstRewardSheet { get; private set; }
+
+        public AdventureBossFloorPointSheet AdventureBossFloorPointSheet { get; private set; }
+
+        public AdventureBossNcgRewardRatioSheet AdventureBossNcgRewardRatioSheet { get; private set; }
+
+        public AdventureBossSheet AdventureBossSheet { get; private set; }
+
+        public AdventureBossUnlockFloorCostSheet AdventureBossUnlockFloorCostSheet { get; private set; }
+
+        public AdventureBossWantedRewardSheet AdventureBossWantedRewardSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
@@ -428,6 +444,24 @@ namespace Nekoyume.Game
                 QuestItemRewardSheet,
                 EquipmentItemRecipeSheet,
                 EquipmentItemSubRecipeSheet
+            );
+        }
+
+        public SimulatorSheets GetSimulatorSheets()
+        {
+            return new SimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                StatBuffSheet,
+                SkillActionBuffSheet,
+                ActionBuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                RuneOptionSheet,
+                RuneListSheet,
+                RuneLevelBonusSheet
             );
         }
     }

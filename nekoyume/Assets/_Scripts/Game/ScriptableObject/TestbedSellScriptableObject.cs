@@ -10,7 +10,7 @@ namespace Nekoyume
     public class TestbedSellScriptableObject : BaseTestbedScriptableObject<TestbedSell>
     {
         // public void OnValidate() {
-        //     Debug.Log(Time.time);
+        //     NcDebug.Log(Time.time);
         // }
     }
 }

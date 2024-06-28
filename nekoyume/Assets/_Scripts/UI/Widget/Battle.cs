@@ -49,18 +49,26 @@ namespace Nekoyume.UI
         private StageProgressBar stageProgressBar;
 
         [SerializeField]
+        private FloorProgressBar floorProgressBar;
+
+        [SerializeField]
         private ComboText comboText;
+
+        [SerializeField]
+        private GameObject lineEffect;
 
         private StageType _stageType;
 
         public BossStatus BossStatus => bossStatus;
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
         public StageProgressBar StageProgressBar => stageProgressBar;
+        public FloorProgressBar FloorProgressBar => floorProgressBar;
+        public GameObject LineEffect => lineEffect;
         public ComboText ComboText => comboText;
         public const int RequiredStageForExitButton = 10;
         public const int RequiredStageForAccelButton = 3;
         public const int RequiredStageForHeaderMenu = 3;
-        private const string BattleAccelToggleValueKey = "Battle_Animation_Is_On";
+        public const string BattleAccelToggleValueKey = "Battle_Animation_Is_On";
 
         protected override void Awake()
         {
@@ -160,29 +168,46 @@ namespace Nekoyume.UI
                 ShowForTutorial(false, stageId);
                 return;
             }
-
+            lineEffect.SetActive(false);
             guidedQuest.Hide(true);
             base.Show();
-            guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
+            switch (stageType)
             {
-                switch (_stageType)
-                {
-                    case StageType.HackAndSlash:
-                    case StageType.Mimisbrunnr:
-                        guidedQuest.SetWorldQuestToInProgress(stageId);
-                        break;
-                    case StageType.EventDungeon:
-                        guidedQuest.SetEventDungeonStageToInProgress(stageId);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
-                }
-            });
+                case StageType.HackAndSlash:
+                case StageType.Mimisbrunnr:
+                case StageType.EventDungeon:
+                    guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
+                    {
+                        switch (_stageType)
+                        {
+                            case StageType.HackAndSlash:
+                            case StageType.Mimisbrunnr:
+                            case StageType.AdventureBoss:
+                                guidedQuest.SetWorldQuestToInProgress(stageId);
+                                break;
+                            case StageType.EventDungeon:
+                                guidedQuest.SetEventDungeonStageToInProgress(stageId);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
+                        }
+                    });
+                    stageText.text =
+                        $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
+                    stageText.gameObject.SetActive(true);
+                    floorProgressBar.gameObject.SetActive(false);
+                    stageProgressBar.gameObject.SetActive(true);
+                    stageProgressBar.Show();
+                    break;
+                case StageType.AdventureBoss:
+                    stageProgressBar.gameObject.SetActive(false);
+                    floorProgressBar.gameObject.SetActive(true);
+                    Find<HeaderMenuStatic>().Close(true);
+                    break;
+                default:
+                    break;
+            }
 
-            stageText.text =
-                $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
-            stageText.gameObject.SetActive(true);
-            stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
             comboText.Close();
@@ -197,6 +222,7 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
+                case StageType.AdventureBoss:
                     guidedQuest.ClearWorldQuest(stageId, cleared =>
                     {
                         if (!cleared)

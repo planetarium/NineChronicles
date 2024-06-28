@@ -1,6 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Nekoyume.Battle;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
+using Nekoyume.TableData;
 
 namespace Nekoyume
 {
@@ -72,6 +78,60 @@ namespace Nekoyume
 
                 return true;
             }).Sum(item => item.count);
+        }
+
+        public static bool HasNotification(
+            this Inventory inventory,
+            int level,
+            long blockIndex,
+            ItemRequirementSheet requirementSheet,
+            EquipmentItemRecipeSheet recipeSheet,
+            EquipmentItemSubRecipeSheetV2 subRecipeSheet,
+            EquipmentItemOptionSheet itemOptionSheet,
+            GameConfigState gameConfigState)
+        {
+            var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level, gameConfigState);
+
+            foreach (var (type, slotCount) in availableSlots)
+            {
+                var equipments = inventory.Equipments
+                    .Where(e =>
+                        e.ItemSubType == type &&
+                        e.RequiredBlockIndex <= blockIndex)
+                    .ToList();
+                var current = equipments.Where(e => e.equipped).ToList();
+                // When an equipment slot is empty.
+                if (current.Count < Math.Min(equipments.Count, slotCount))
+                {
+                    return true;
+                }
+
+                // When any other equipments are stronger than current one.
+                foreach (var equipment in equipments)
+                {
+                    if (equipment.equipped)
+                    {
+                        continue;
+                    }
+
+                    var cp = CPHelper.GetCP(equipment);
+                    foreach (var i in current)
+                    {
+                        var requirementLevel = i.GetRequirementLevel(
+                            requirementSheet,
+                            recipeSheet,
+                            subRecipeSheet,
+                            itemOptionSheet);
+
+                        if (level >= requirementLevel && CPHelper.GetCP(i) < cp)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

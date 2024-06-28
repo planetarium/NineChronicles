@@ -13,6 +13,7 @@ using Nekoyume.Exceptions;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Serilog;
@@ -247,6 +248,26 @@ namespace Nekoyume.Blockchain
             }
 
             return new CollectionState();
+        }
+
+        public static MailBox GetMailBox(
+            HashDigest<SHA256> hash,
+            Address avatarAddress)
+        {
+            var avatarValue = GetState(hash, Addresses.Avatar, avatarAddress);
+            if (avatarValue is not List avatarList)
+            {
+                NcDebug.LogError($"Failed to get avatar state: {avatarAddress}, {avatarValue}");
+                return null;
+            }
+
+            if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
+            {
+                NcDebug.LogError($"Failed to get mail box: {avatarAddress}");
+                return null;
+            }
+
+            return new MailBox(mailBoxList);
         }
     }
 }

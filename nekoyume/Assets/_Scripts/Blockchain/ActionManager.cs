@@ -26,6 +26,7 @@ using Nekoyume.UI.Scroller;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
+using Nekoyume.Action.AdventureBoss;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -1589,7 +1590,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Signer.Equals(States.Instance.AgentState.address))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(_ =>
+                .DoOnError(e =>
                 {
                     // NOTE: Handle exception outside of this method.
                 });
@@ -1736,6 +1737,112 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 // .DoOnError(e => HandleException(action.Id, e));
                 .DoOnError(e => { });
+        }
+
+        public IObservable<ActionEvaluation<Wanted>> Wanted(long season, FungibleAssetValue amount)
+        {
+            var action = new Wanted
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Bounty = amount,
+                Season = (int)season
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<Wanted>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                    NcDebug.LogError("Wanted Error" + e.Message);
+                });
+        }
+
+        public IObservable<ActionEvaluation<ExploreAdventureBoss>> ExploreAdventureBoss(List<Guid> costume, List<Guid> equipments, List<Guid> food, List<RuneSlotInfo> runeInfo, int seasonId)
+        {
+            var action = new ExploreAdventureBoss
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Season = (int)seasonId,
+                Costumes = costume,
+                Equipments = equipments,
+                Foods = food,
+                RuneInfos = runeInfo
+            };
+            _lastBattleActionId = action.Id;
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ExploreAdventureBoss>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
+        public IObservable<ActionEvaluation<SweepAdventureBoss>> SweepAdventureBoss(List<Guid> costume, List<Guid> equipments, List<RuneSlotInfo> runeInfo, int seasonId)
+        {
+            var action = new SweepAdventureBoss
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Season = seasonId,
+                Costumes = costume,
+                Equipments = equipments,
+                RuneInfos = runeInfo
+            };
+            _lastBattleActionId = action.Id;
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<SweepAdventureBoss>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
+        public IObservable<ActionEvaluation<UnlockFloor>> UnlockFloor(bool useNCG, int seasonId)
+        {
+            var action = new UnlockFloor
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                Season = seasonId,
+                UseNcg = useNCG
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<UnlockFloor>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
+        }
+
+        public IObservable<ActionEvaluation<ClaimAdventureBossReward>> ClaimAdventureBossReward(long SeasonId)
+        {
+            var action = new ClaimAdventureBossReward
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimAdventureBossReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    // NOTE: Handle exception outside of this method.
+                });
         }
 
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS

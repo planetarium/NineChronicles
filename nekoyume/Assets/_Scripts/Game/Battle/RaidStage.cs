@@ -9,15 +9,14 @@ using Nekoyume.Director;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
-using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
+using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
@@ -112,8 +111,8 @@ namespace Nekoyume.Game.Battle
         {
             if (!_isPlaying)
             {
-                _isPlaying = true;
                 ClearBattle();
+                _isPlaying       = true;
                 _currentPlayData = data;
 
                 if (data.Log?.Count > 0)
@@ -123,7 +122,7 @@ namespace Nekoyume.Game.Battle
             }
             else
             {
-                NcDebug.Log("Skip incoming battle. Battle is already simulating.");
+                NcDebug.LogWarning("Skip incoming battle. Battle is already simulating.");
             }
         }
 
@@ -517,39 +516,42 @@ namespace Nekoyume.Game.Battle
         {
             if (eventBase is Tick tick)
             {
-                RaidCharacter raidCharacter =
-                    character.Id == _player.Id ? _player : _boss;
-                if (tick.SkillId == AuraIceShield.FrostBiteId)
+                RaidCharacter raidCharacter = character.Id == _player.Id ? _player : _boss;
+                if (AuraIceShield.IsFrostBiteBuff(tick.SkillId))
                 {
-                    if (!character.Buffs.TryGetValue(AuraIceShield.FrostBiteId, out var frostBite))
+                    foreach (var kvp in character.Buffs)
                     {
-                        yield break;
-                    }
+                        if (!AuraIceShield.IsFrostBiteBuff(kvp.Key))
+                        {
+                            continue;
+                        }
+                        var frostBite = kvp.Value;
+                        IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
+                        {
+                            _player.CustomEvent(tick.SkillId);
+                            yield return raidCharacter.CoBuff(skillInfos);
+                        }
+                        var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
+                                                                raidCharacter.IsDead,
+                                                                0,
+                                                                0,
+                                                                false,
+                                                                SkillCategory.Debuff,
+                                                                _waveTurn,
+                                                                target: character,
+                                                                buff: frostBite
+                        );
+                        _actionQueue.Enqueue(
+                            new RaidActionParams(
+                                raidCharacter,
+                                tick.SkillId,
+                                ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
+                                tick.BuffInfos,
+                                CoFrostBite)
+                        );
+                        break;
+                    };
 
-                    IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
-                    {
-                        _player.CustomEvent(AuraIceShield.FrostBiteId);
-                        yield return raidCharacter.CoBuff(skillInfos);
-                    }
-
-                    var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
-                                                            raidCharacter.IsDead,
-                                                            0,
-                                                            0,
-                                                            false,
-                                                            SkillCategory.Debuff,
-                                                            _waveTurn,
-                                                            target: character,
-                                                            buff: frostBite
-                    );
-                    _actionQueue.Enqueue(
-                        new RaidActionParams(
-                            raidCharacter,
-                            tick.SkillId,
-                            ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
-                            tick.BuffInfos,
-                            CoFrostBite)
-                    );
                 }
                 // This Tick from 'Stun'
                 else if (tick.SkillId == 0)
@@ -649,6 +651,18 @@ namespace Nekoyume.Game.Battle
             _isPlaying = false;
 
             Time.timeScale = Game.DefaultTimeScale;
+        }
+
+        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<AdventureBossFloorWaveSheet.MonsterData> monsters)
+        {
+            NcDebug.LogError($"[RaidStage]Not implemented yet: {nameof(CoBreakthrough)}");
+            yield return null;
+        }
+
+        public IEnumerator CoStageBuff(CharacterBase affected, int skillId, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            NcDebug.LogError($"[RaidStage]Not implemented yet: {nameof(CoStageBuff)}");
+            yield return null;
         }
     }
 }

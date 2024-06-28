@@ -304,6 +304,16 @@ namespace Editor
                     break;
                 case BuildResult.Failed:
                     Debug.LogError("Build failed");
+                    foreach (var step in report.steps)
+                    {
+                        foreach (var message in step.messages)
+                        {
+                            if (message.type == LogType.Error || message.type == LogType.Exception)
+                            {
+                                Debug.LogError(message.content);
+                            }
+                        }
+                    }
                     UpdateDefines(false);
                     break;
             }

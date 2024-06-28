@@ -7,9 +7,13 @@ using Bencodex.Types;
 using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
+using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Helper;
+using Nekoyume.Model.AdventureBoss;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
+using Nekoyume.Module;
 
 namespace Nekoyume
 {
@@ -123,6 +127,77 @@ namespace Nekoyume
             }
 
             return new CollectionState();
+        }
+
+        public static async Task<SeasonInfo> GetAdventureBossLatestSeasonAsync(this IAgent agent)
+        {
+            var latestSeason = await agent.GetStateAsync(Addresses.AdventureBoss, AdventureBossModule.LatestSeasonAddress);
+            if (latestSeason is List list)
+            {
+                var result = new SeasonInfo(list);
+                NcDebug.Log($"[AdventureBoss] Get LatestSeason SeasonId: {result.Season}  S:{result.StartBlockIndex}  E:{result.EndBlockIndex}  N:{result.NextStartBlockIndex}");
+                return result;
+            }
+            NcDebug.LogWarning("[AdventureBoss] No latest season");
+            return new SeasonInfo(0, 0, 0, 0);
+        }
+
+        public static async Task<SeasonInfo> GetAdventureBossLatestSeasonInfoAsync(this IAgent agent)
+        {
+            var latestSeason = await agent.GetAdventureBossLatestSeasonAsync();
+            return latestSeason;
+        }
+
+        public static async Task<SeasonInfo> GetAdventureBossSeasonInfoAsync(this IAgent agent, long seasonId)
+        {
+            var seasonInfo = await agent.GetStateAsync(Addresses.AdventureBoss, new Address(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
+            if (seasonInfo is List list)
+            {
+                var result = new SeasonInfo(list);
+                NcDebug.Log($"[AdventureBoss] Get SeasonInfo SeasonId: {result.Season}  S:{result.StartBlockIndex}  E:{result.EndBlockIndex}  N:{result.NextStartBlockIndex}");
+                return result;
+            }
+            NcDebug.LogWarning($"[AdventureBoss] No season info for {seasonId}");
+            return null;
+        }
+
+        public static async Task<BountyBoard> GetBountyBoardAsync(this IAgent agent, long seasonId)
+        {
+            var bountyBoard = await agent.GetStateAsync(Addresses.BountyBoard, new Address(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
+            if (bountyBoard is List list)
+            {
+                var result = new BountyBoard(list);
+                NcDebug.Log($"[AdventureBoss] Get BountyBoard Investors: {result.Investors.Count}");
+                return result;
+            }
+            NcDebug.LogWarning($"[AdventureBoss] No bounty board for {seasonId}");
+            return null;
+        }
+
+        public static async Task<ExploreBoard> GetExploreBoardAsync(this IAgent agent, long seasonId)
+        {
+            var exploreBoard = await agent.GetStateAsync(Addresses.ExploreBoard, new Address(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
+            if (exploreBoard is List list)
+            {
+                var result = new ExploreBoard(list);
+                NcDebug.Log($"[AdventureBoss] Get ExploreBoard ExplorerList: {result.ExplorerCount}");
+                return result;
+            }
+            NcDebug.LogWarning($"[AdventureBoss] No explore board for {seasonId}");
+            return null;
+        }
+
+        public static async Task<Explorer> GetExploreInfoAsync(this IAgent agent, Address avatarAddress, long seasonId)
+        {
+            var exploreInfo = await agent.GetStateAsync(Addresses.ExploreBoard, avatarAddress.Derive(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
+            if (exploreInfo == null || exploreInfo is Bencodex.Types.Null)
+            {
+                NcDebug.LogWarning($"[AdventureBoss] No explore info for {avatarAddress}");
+                return null;
+            }
+            var result = new Explorer(exploreInfo);
+            NcDebug.Log($"[AdventureBoss] Get ExploreInfo Avatar: {avatarAddress}  Score: {result.Score}  Floor:{result.Floor}");
+            return result;
         }
     }
 }

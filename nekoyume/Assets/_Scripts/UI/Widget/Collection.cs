@@ -709,15 +709,16 @@ namespace Nekoyume.UI
             foreach (var material in model.Materials)
             {
                 var upgradeFlag = material.Row.Level switch
-                                  {
-                                      0    => ItemFilterPopupBase.UpgradeLevel.Level0,
-                                      1    => ItemFilterPopupBase.UpgradeLevel.Level1,
-                                      2    => ItemFilterPopupBase.UpgradeLevel.Level2,
-                                      3    => ItemFilterPopupBase.UpgradeLevel.Level3,
-                                      4    => ItemFilterPopupBase.UpgradeLevel.Level4,
-                                      >= 5 => ItemFilterPopupBase.UpgradeLevel.Level5More,
-                                      _    => ItemFilterPopupBase.UpgradeLevel.All
-                                  };
+                {
+                    0 => ItemFilterPopupBase.UpgradeLevel.Level0,
+                    1 => ItemFilterPopupBase.UpgradeLevel.Level1,
+                    2 => ItemFilterPopupBase.UpgradeLevel.Level2,
+                    3 => ItemFilterPopupBase.UpgradeLevel.Level3,
+                    4 => ItemFilterPopupBase.UpgradeLevel.Level4,
+                    5 => ItemFilterPopupBase.UpgradeLevel.Level5,
+                    >= 6 => ItemFilterPopupBase.UpgradeLevel.Level6More,
+                    _ => ItemFilterPopupBase.UpgradeLevel.All
+                };
 
                 hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
                 hasFlag &= upgradeFlag != ItemFilterPopupBase.UpgradeLevel.All;

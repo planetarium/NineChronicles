@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
-using System.Linq;
 using Nekoyume.Game.VFX.Skill;
-using Nekoyume.Model.Buff;
+using Nekoyume.Model.Skill;
 using Spine.Unity;
 using UnityEngine;
 
@@ -10,12 +9,8 @@ namespace Nekoyume.Game
 {
     public class AuraIceShield : AuraPrefabBase
     {
-        public static int FrostBiteId => 709000;
-        
-        // TODO: ID대신 GroupID사용 고려 혹은 ID와 GroupID사이의 정의 정리
-        private static readonly int[] IceShieldIds = {
-            708000, 708001, 708002
-        };
+        // TODO: action buff로 변경 후 action buff type으로 구분?
+        private static int FrostBiteGroupId => 709000;
 
         protected const string AppearAnimation    = "Appear";
         protected const string CastingAnimation   = "Casting";
@@ -30,6 +25,8 @@ namespace Nekoyume.Game
 
         [SerializeField]
         private ParticleSystem frostBiteParticle;
+        
+        private bool _isPlaying;
 
         protected void Awake()
         {
@@ -40,6 +37,7 @@ namespace Nekoyume.Game
         {
             base.OnDisable();
             summonedSpine.gameObject.SetActive(false);
+            _isPlaying = false;
         }
 
         protected override void AddEventToOwner()
@@ -49,11 +47,11 @@ namespace Nekoyume.Game
                 return;
             }
             base.AddEventToOwner();
-
-            foreach (var iceShieldId in IceShieldIds)
+            
+            ForeachAllIceShieldBuff(iceShieldId =>
             {
                 Owner.BuffCastCoroutine.Add(iceShieldId, OnBuffCast);
-            }
+            });
         }
 
         protected override void RemoveEventFromOwner()
@@ -64,15 +62,34 @@ namespace Nekoyume.Game
             }
             base.RemoveEventFromOwner();
 
-            foreach (var iceShieldId in IceShieldIds)
+            ForeachAllIceShieldBuff(iceShieldId =>
             {
                 Owner.BuffCastCoroutine.Remove(iceShieldId);
+            });
+        }
+        
+        private void ForeachAllIceShieldBuff(Action<int> action, bool invokeOnce = false)
+        {
+            var actionBuffSheet = TableSheets.Instance.ActionBuffSheet;
+            foreach (var row in actionBuffSheet)
+            {
+                if (row.ActionBuffType != ActionBuffType.IceShield)
+                {
+                    continue;
+                }
+                
+                action(row.Id);
+                
+                if (invokeOnce)
+                {
+                    break;
+                }
             }
         }
 
         protected override void ProcessCustomEvent(int customEventId)
         {
-            if (FrostBiteId != customEventId)
+            if (!IsFrostBiteBuff(customEventId))
             {
                 return;
             }
@@ -83,13 +100,16 @@ namespace Nekoyume.Game
 
         protected override void ProcessBuffEnd(int buffId)
         {
-            if (!IceShieldIds.Contains(buffId))
+            ForeachAllIceShieldBuff(iceShieldId =>
             {
-                return;
-            }
-            base.ProcessBuffEnd(buffId);
-
-            StartCoroutine(DisappearSummoner());
+                if (iceShieldId != buffId)
+                {
+                    return;
+                }
+                
+                base.ProcessBuffEnd(buffId);
+                StartCoroutine(OnBuffEnd());
+            }, invokeOnce: true);
         }
 
         private IEnumerator AppearSummoner()
@@ -103,16 +123,6 @@ namespace Nekoyume.Game
             summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
         }
 
-        private IEnumerator DisappearSummoner()
-        {
-            var disappearTrack = summonedSpine.AnimationState.SetAnimation(0, DisappearAnimation, false);
-            while (!disappearTrack.IsComplete)
-            {
-                yield return null;
-            }
-            summonedSpine.gameObject.SetActive(false);
-        }
-
         private IEnumerator OnBuffCast(BuffCastingVFX buffCastingVFX)
         {
             // 버프 연출과 동시에 수행하기 위해 대기하지 않음
@@ -121,6 +131,19 @@ namespace Nekoyume.Game
             iceShieldParticle.Play();
             summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
+            
+            _isPlaying = true;
+        }
+
+        private IEnumerator OnBuffEnd()
+        {
+            _isPlaying = false;
+            var disappearTrack = summonedSpine.AnimationState.SetAnimation(0, DisappearAnimation, false);
+            while (!disappearTrack.IsComplete)
+            {
+                yield return null;
+            }
+            summonedSpine.gameObject.SetActive(false);
         }
 
         private IEnumerator OnFrostBite()
@@ -131,7 +154,22 @@ namespace Nekoyume.Game
             {
                 yield return null;
             }
-            summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
+
+            if (_isPlaying)
+            {
+                summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
+            }
+        }
+        
+        public static bool IsFrostBiteBuff(int buffId)
+        {
+            var statBuffSheet = TableSheets.Instance.StatBuffSheet;
+            if (!statBuffSheet.TryGetValue(buffId, out var statBuff))
+            {
+                return false;
+            }
+
+            return statBuff.GroupId == FrostBiteGroupId;
         }
     }
 }

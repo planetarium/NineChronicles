@@ -125,7 +125,7 @@ namespace Nekoyume.L10n
         public static IObservable<LanguageType> Initialize(LanguageType languageType)
         {
 #if TEST_LOG
-            Debug.Log($"{nameof(L10nManager)}.{nameof(Initialize)}() called.");
+            NcDebug.Log($"{nameof(L10nManager)}.{nameof(Initialize)}() called.");
 #endif
             switch (CurrentState)
             {
@@ -172,7 +172,7 @@ namespace Nekoyume.L10n
         public static IObservable<LanguageType> SetLanguage(LanguageType languageType)
         {
 #if TEST_LOG
-            Debug.Log($"{nameof(L10nManager)}.{nameof(SetLanguage)}({languageType}) called.");
+            NcDebug.Log($"{nameof(L10nManager)}.{nameof(SetLanguage)}({languageType}) called.");
 #endif
             if (languageType == CurrentLanguage)
             {
@@ -272,7 +272,7 @@ namespace Nekoyume.L10n
                 foreach (var fileName in fileNames)
                 {
 #if TEST_LOG
-                    Debug.Log($"[L10nManager] GetDictionary()... fileName: {fileName}");
+                    NcDebug.Log($"[L10nManager] GetDictionary()... fileName: {fileName}");
 #endif
                     var fullName = CsvFilesRootDirectoryPath + "/" + fileName;
                     WWW csvFile = new WWW(fullName);
@@ -300,7 +300,7 @@ namespace Nekoyume.L10n
                         foreach (var record in records)
                         {
 #if TEST_LOG
-                            Debug.Log($"[L10nManager] GetDictionary()... record.Key: {record.Key}");
+                            NcDebug.Log($"[L10nManager] GetDictionary()... record.Key: {record.Key}");
 #endif
                             var key = record.Key;
                             if (string.IsNullOrEmpty(key))
@@ -368,7 +368,7 @@ namespace Nekoyume.L10n
                             foreach (var record in records)
                             {
 #if TEST_LOG
-                                Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
+                                NcDebug.Log($"{csvFileInfo.Name}: {recordsIndex}");
 #endif
                                 var key = record.Key;
                                 if (string.IsNullOrEmpty(key))
@@ -425,9 +425,25 @@ namespace Nekoyume.L10n
 
         public static string Localize(string key, params object[] args)
         {
-            return TryLocalize(key, out var text)
-                ? string.Format(text, args)
-                : text;
+            if(TryLocalize(key, out var text))
+            {
+                try
+                {
+                    return string.Format(text, args);
+                }
+                catch (FormatException e)
+                {
+                    //FormatException: Input string was not in a correct format.
+                    //텍스트 오류가 있을경우 로그를 남기고 키를 반환
+                    //예시 번역어테이블에 {} 이런식으로 포맷이 비어있는경우
+                    NcDebug.LogError($"[L10nManager] {e.Message} key: {key}");
+                    return $"!{key}!";
+                }
+            }
+            else
+            {
+                return text;
+            }
         }
 
         public static bool ContainsKey(string key) => _dictionary.ContainsKey(key);

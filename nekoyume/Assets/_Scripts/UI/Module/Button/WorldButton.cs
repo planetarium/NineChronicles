@@ -86,6 +86,8 @@ namespace Nekoyume.UI.Module
         public int StageBegin { get; private set; }
         public int StageEnd { get; private set; }
 
+        public bool IsLockNameShow = true;
+
         private void Awake()
         {
             var go = gameObject;
@@ -186,7 +188,7 @@ namespace Nekoyume.UI.Module
                 case WorldState.Locked:
                     grayImage.enabled = true;
                     colorImage.enabled = false;
-                    lockImage.SetActive(true);
+                    lockImage.SetActive(true && IsLockNameShow);
                     unlockImage.SetActive(false);
                     unlockableImage.SetActive(false);
                     break;

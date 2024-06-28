@@ -27,6 +27,10 @@ namespace Nekoyume.Game.Character
         {
         }
 
+        protected CharacterAnimator(BreakthroughCharacter root) : base(root.gameObject)
+        {
+        }
+
         public override void InitTarget(
             GameObject target,
             MeshRenderer meshRenderer,

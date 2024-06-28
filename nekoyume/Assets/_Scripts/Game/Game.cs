@@ -136,6 +136,8 @@ namespace Nekoyume.Game
 
         public GuildServiceClient GuildServiceClient { get; private set; }
 
+        public AdventureBossData AdventureBossData { get; private set; }
+
         public Stage Stage => stage;
         public Battle.Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -347,12 +349,12 @@ namespace Nekoyume.Game
 
             NcDebug.Log("[Game] Start()... L10nManager initialized");
 
-#if RUN_ON_MOBILE
             // NOTE: Initialize planet registry.
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
             var planetContext = new PlanetContext(_commandLineOptions);
             yield return PlanetSelector.InitializePlanetRegistryAsync(planetContext).ToCoroutine();
+#if RUN_ON_MOBILE
             if (planetContext.HasError)
             {
                 QuitWithMessage(
@@ -361,14 +363,39 @@ namespace Nekoyume.Game
                 yield break;
             }
 #else
-            // NOTE: We expect that the _commandLineOptions is contains
-            //       the endpoints(hosts, urls) of a specific planet
-            //       when run on standalone.
-            PlanetContext planetContext = null;
-            NcDebug.Log("PlanetContext is null on non-mobile platform.");
-#endif
+            NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
+            if (planetContext.IsSkipped)
+            {
+                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.IsSkipped is true." +
+                                   "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
+            }
+            else if (planetContext.HasError)
+            {
+                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.HasError is true." +
+                                   "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
+            }
+            else if (planetContext.PlanetRegistry!.TryGetPlanetInfoByHeadlessGrpc(
+                         _commandLineOptions.RpcServerHost, out var planetInfo))
+            {
+                NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... planet id is found in planet registry.");
+                CurrentPlanetId = planetInfo.ID;
+            }
+            else if (!string.IsNullOrEmpty(_commandLineOptions.SelectedPlanetId))
+            {
+                NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
+                CurrentPlanetId = new PlanetId(_commandLineOptions.SelectedPlanetId);
+            }
+            else
+            {
+                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planet id is not found in planet registry." +
+                                   "\nCheck CommandLineOptions.PlaneRegistryUrl and CommandLineOptions.RpcServerHost.");
+            }
 
-            OnLoadCommandlineOptions();
+            if (CurrentPlanetId is not null)
+            {
+                planetContext = PlanetSelector.SelectPlanetById(planetContext, CurrentPlanetId.Value);
+            }
+#endif
             // ~Initialize planet registry
 
             // NOTE: Portal url does not change for each planet.
@@ -487,9 +514,10 @@ namespace Nekoyume.Game
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
                 yield break;
             }
+
+            CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
 #endif
 
-            yield return UpdateCurrentPlanetIdAsync(planetContext).ToCoroutine();
             Analyzer.SetPlanetId(CurrentPlanetId?.ToString());
             NcDebug.Log($"[Game] Start()... CurrentPlanetId updated. {CurrentPlanetId?.ToString()}");
 
@@ -797,6 +825,9 @@ namespace Nekoyume.Game
 
                 RxProps.Start(Agent, States, TableSheets);
 
+                AdventureBossData = new AdventureBossData();
+                AdventureBossData.Initialize();
+
                 Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
                 {
                     var petList = States.Instance.PetStates.GetPetStatesAll()
@@ -888,6 +919,8 @@ namespace Nekoyume.Game
             NcDebug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
         }
 
+        #region RPCAgent
+
         private void SubscribeRPCAgent()
         {
             if (!(Agent is RPCAgent rpcAgent))
@@ -950,7 +983,7 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentRetryEnded(RPCAgent rpcAgent)
         {
-            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
+            var widget = Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -975,7 +1008,7 @@ namespace Nekoyume.Game
 
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
+            Widget widget = Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -1024,6 +1057,8 @@ namespace Nekoyume.Game
             BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen)
                 .Forget();
         }
+
+        #endregion
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
         {
@@ -1282,13 +1317,26 @@ namespace Nekoyume.Game
             {
                 stakeState = stakeStateV2;
                 balance = await Agent.GetBalanceAsync(stakeAddr, goldCurrency);
-                sheetAddr = new[]
+                if(Agent is RPCAgent)
                 {
-                    Addresses.GetSheetAddress(
-                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
-                    Addresses.GetSheetAddress(
-                        stakeStateV2.Contract.StakeRegularRewardSheetTableName),
-                };
+                    sheetAddr = new[]
+                    {
+                        Addresses.GetSheetAddress(
+                            stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                        Addresses.GetSheetAddress(
+                            stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                    };
+                }
+                // It is local play. local genesis block not has Stake***Sheet_V*.
+                // 로컬에서 제네시스 블록을 직접 생성하는 경우엔 스테이킹 보상-V* 시트가 없기 때문에, 오리지널 시트로 대체합니다.
+                else
+                {
+                    sheetAddr = new[]
+                    {
+                        Addresses.GetSheetAddress(nameof(StakeRegularFixedRewardSheet)),
+                        Addresses.GetSheetAddress(nameof(StakeRegularRewardSheet))
+                    };
+                }
             }
 
             var sheets = await Agent.GetSheetsAsync(sheetAddr);
@@ -1598,44 +1646,43 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            // NOTE: planetContext is null when the game is launched from the non-mobile platform.
-            if (planetContext is null)
+#if !RUN_ON_MOBILE
+            // NOTE: planetContext and planet info are already initialized when the game is launched from the non-mobile platform.
+            NcDebug.Log("[Game] CoLogin()... PlanetContext and planet info are already initialized.");
+            if (!KeyManager.Instance.IsSignedIn)
             {
-                NcDebug.Log("[Game] CoLogin()... PlanetContext is null.");
-                if (!KeyManager.Instance.IsSignedIn)
+                NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
+                if (!KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
                 {
-                    NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
-                    if (!KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
-                    {
-                        NcDebug.Log("[Game] CoLogin()... LoginSystem.TryLoginWithLocalPpk() is false.");
-                        introScreen.Show(
-                            _commandLineOptions.KeyStorePath,
-                            _commandLineOptions.PrivateKey,
-                            planetContext: null);
-                    }
-
-                    NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
-                    yield return new WaitUntil(() => KeyManager.Instance.IsSignedIn);
-                    NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
-
-                    // NOTE: Update CommandlineOptions.PrivateKey finally.
-                    _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
-                    NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                              $" to ({KeyManager.Instance.SignedInAddress}).");
+                    NcDebug.Log("[Game] CoLogin()... LoginSystem.TryLoginWithLocalPpk() is false.");
+                    introScreen.Show(
+                        _commandLineOptions.KeyStorePath,
+                        _commandLineOptions.PrivateKey,
+                        planetContext: null);
                 }
 
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
-                sw.Reset();
-                sw.Start();
-                yield return Agent.Initialize(
-                    _commandLineOptions,
-                    KeyManager.Instance.SignedInPrivateKey,
-                    callback);
-                sw.Stop();
-                NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-                dimmedLoadingScreen.Close();
-                yield break;
+                NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
+                yield return new WaitUntil(() => KeyManager.Instance.IsSignedIn);
+                NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
+
+                // NOTE: Update CommandlineOptions.PrivateKey finally.
+                _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
+                NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
+                          $" to ({KeyManager.Instance.SignedInAddress}).");
             }
+
+            dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
+            sw.Reset();
+            sw.Start();
+            yield return Agent.Initialize(
+                _commandLineOptions,
+                KeyManager.Instance.SignedInPrivateKey,
+                callback);
+            sw.Stop();
+            NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            dimmedLoadingScreen.Close();
+            yield break;
+#endif
 
             // NOTE: Initialize current planet info.
             sw.Reset();
@@ -2389,67 +2436,6 @@ namespace Nekoyume.Game
         private void OnLowMemory()
         {
             GC.Collect();
-        }
-
-        private async UniTask UpdateCurrentPlanetIdAsync(PlanetContext planetContext)
-        {
-#if RUN_ON_MOBILE
-            CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
-            return;
-#endif
-            NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
-            if (!string.IsNullOrEmpty(_commandLineOptions.SelectedPlanetId))
-            {
-                NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
-                CurrentPlanetId = new PlanetId(_commandLineOptions.SelectedPlanetId);
-                return;
-            }
-
-            NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is null." +
-                             " Try to get planet id from planet registry.");
-            if (planetContext is null)
-            {
-                if (string.IsNullOrEmpty(_commandLineOptions.PlanetRegistryUrl))
-                {
-                    NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
-                                     " CommandLineOptions.PlanetRegistryUrl is null.");
-                    return;
-                }
-
-                planetContext = new PlanetContext(_commandLineOptions);
-                await PlanetSelector.InitializePlanetRegistryAsync(planetContext);
-                if (planetContext.IsSkipped)
-                {
-                    NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
-                                     " planetContext.IsSkipped is true." +
-                                     " You can consider to use CommandLineOptions.SelectedPlanetId instead.");
-                    return;
-                }
-
-                if (planetContext.HasError)
-                {
-                    NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
-                                     " planetContext.HasError is true." +
-                                     " You can consider to use CommandLineOptions.SelectedPlanetId instead.");
-                    return;
-                }
-            }
-
-            if (planetContext.PlanetRegistry!.TryGetPlanetInfoByHeadlessGrpc(
-                    _commandLineOptions.RpcServerHost,
-                    out var planetInfo))
-            {
-                NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()..." +
-                          " planet id is found in planet registry.");
-                CurrentPlanetId = planetInfo.ID;
-            }
-            else
-            {
-                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
-                                 " planet id is not found in planet registry." +
-                                 " Check CommandLineOptions.PlaneRegistryUrl and" +
-                                 " CommandLineOptions.RpcServerHost.");
-            }
         }
     }
 }
