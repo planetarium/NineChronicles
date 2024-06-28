@@ -356,8 +356,8 @@ namespace Nekoyume.UI.Model
                                         ExploreInfo.Value,
                                         ExploreInfo.Value.AvatarAddress,
                                         TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
-                                        States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                         States.Instance.GameConfigState.AdventureBossNcgApRatio,
+                                        States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                         false,
                                         out var ncgReward);
                 }
@@ -453,8 +453,8 @@ namespace Nekoyume.UI.Model
                                     ExploreInfo.Value,
                                     ExploreInfo.Value.AvatarAddress,
                                     TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
-                                    States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                     States.Instance.GameConfigState.AdventureBossNcgApRatio,
+                                    States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                                     false,
                                     out var ncgReward);
             }
