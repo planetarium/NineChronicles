@@ -45,7 +45,7 @@ namespace Nekoyume
                 ncgText.color = nomalStateColor;
             }
 
-            bonusText.text = itemData.Bonus.ToString("F1");
+            bonusText.text = $"x{itemData.Bonus.ToString("F1")}";
         }
     }
 }

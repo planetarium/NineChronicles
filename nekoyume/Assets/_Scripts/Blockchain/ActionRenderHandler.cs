@@ -3836,12 +3836,14 @@ namespace Nekoyume.Blockchain
                 if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
                     NcDebug.LogError("Not last battle action id.");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                     return;
                 }
                 var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
                 if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
                 {
                     NcDebug.LogError("SeasonInfo is null or season is not matched.");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                     return;
                 }
 
@@ -3858,21 +3860,25 @@ namespace Nekoyume.Blockchain
                 if (bossRow == null)
                 {
                     NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                     return;
                 }
                 var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id).ToList();
 
+                var floorIdList = new List<int>();
                 for (var fl = firstFloor; fl <= maxFloor; fl++)
                 {
                     var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);
                     if (floorRow is null)
                     {
                         NcDebug.LogError($"FloorSheet is not found. Floor: {fl}");
+                        StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                         return;
                     }
                     if (!tableSheets.AdventureBossFloorWaveSheet.TryGetValue(floorRow.Id, out var waveRows))
                     {
                         NcDebug.LogError($"FloorWaveSheet is not found. Floor: {fl}");
+                        StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                         return;
                     }
 
@@ -3899,6 +3905,7 @@ namespace Nekoyume.Blockchain
 
                     simulator.Simulate();
                     lastFloor = fl;
+                    floorIdList.Add(floorRow.Id);
 
                     // Get Reward if cleared
                     if (simulator.Log.IsClear)
@@ -3907,6 +3914,7 @@ namespace Nekoyume.Blockchain
                         if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
                         {
                             NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
+                            StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                             return;
                         }
 
@@ -3918,6 +3926,7 @@ namespace Nekoyume.Blockchain
                         if (!tableSheets.AdventureBossFloorFirstRewardSheet.TryGetValue(stageId, out var firstReward))
                         {
                             NcDebug.LogError($"FloorFirstRewardSheet is not found. StageId: {stageId}");
+                            StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                             return;
                         }
                         foreach (var reward in firstReward.Rewards)
@@ -3946,9 +3955,10 @@ namespace Nekoyume.Blockchain
                     }
                 }
 
+                floorIdList.Remove(floorIdList.Last());
                 if (simulator is not null && lastFloor > firstFloor)
                 {
-                    simulator.AddBreakthrough(firstFloor, lastFloor - 1, tableSheets.AdventureBossFloorWaveSheet);
+                    simulator.AddBreakthrough(floorIdList, tableSheets.AdventureBossFloorWaveSheet);
                 }
 
                 var log = simulator.Log;
@@ -3959,6 +3969,7 @@ namespace Nekoyume.Blockchain
                 if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
                 {
                     NcDebug.LogError("BossData is null");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                     return;
                 }
 
@@ -4043,41 +4054,50 @@ namespace Nekoyume.Blockchain
                 if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
                     NcDebug.LogError("Not last battle action id.");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                     return;
                 }
                 var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
                 if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
                 {
                     NcDebug.LogError("SeasonInfo is null or season is not matched.");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                     return;
                 }
 
                 var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
                 var random = new LocalRandom(eval.RandomSeed);
                 var tableSheets = TableSheets.Instance;
-                var floorRow = tableSheets.AdventureBossFloorSheet.Values.FirstOrDefault(
-                    row => row.AdventureBossId == seasonInfo.BossId && row.Floor == exploreInfo.Floor
-                );
-                if (floorRow is null)
-                {
-                    NcDebug.LogError($"FloorSheet is not found. BossId: {seasonInfo.BossId}, Floor: {exploreInfo.Floor}");
-                    return;
-                }
-
-                var simulator = new AdventureBossSimulator(seasonInfo.BossId, floorRow.Id, random, States.Instance.CurrentAvatarState, tableSheets.GetSimulatorSheets(), logEvent: false);
-                simulator.AddBreakthrough(1, exploreInfo.Floor, tableSheets.AdventureBossFloorWaveSheet);
-
-                // Add point, reward
-                var point = 0;
-                var rewardList = new List<AdventureBossSheet.RewardAmountData>();
-                var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
 
                 var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
                 if (bossRow == null)
                 {
                     NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                     return;
                 }
+
+                var floorRow = tableSheets.AdventureBossFloorSheet.Values.FirstOrDefault(
+                    row => row.AdventureBossId == bossRow.Id && row.Floor == exploreInfo.Floor
+                );
+                if (floorRow is null)
+                {
+                    NcDebug.LogError($"FloorSheet is not found. BossId: {seasonInfo.BossId}, Floor: {exploreInfo.Floor}");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                var breakThroughFloorRows = tableSheets.AdventureBossFloorSheet.Values.Where(
+                    row => row.AdventureBossId == bossRow.Id && row.Floor <= exploreInfo.Floor).
+                    Select(floorRow => floorRow.Id).ToList();
+
+                var simulator = new AdventureBossSimulator(seasonInfo.BossId, floorRow.Id, random, States.Instance.CurrentAvatarState, tableSheets.GetSimulatorSheets(), logEvent: false);
+                simulator.AddBreakthrough(breakThroughFloorRows, tableSheets.AdventureBossFloorWaveSheet);
+
+                // Add point, reward
+                var point = 0;
+                var rewardList = new List<AdventureBossSheet.RewardAmountData>();
+                var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
                 var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id);
 
                 for (var fl = 1; fl <= exploreInfo.Floor; fl++)
@@ -4085,6 +4105,7 @@ namespace Nekoyume.Blockchain
                     if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
                     {
                         NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
+                        StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                         return;
                     }
                     point += random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
@@ -4111,6 +4132,7 @@ namespace Nekoyume.Blockchain
                 if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
                 {
                     NcDebug.LogError("BossData is null");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
                     return;
                 }
 

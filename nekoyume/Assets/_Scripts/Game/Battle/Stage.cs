@@ -1627,10 +1627,10 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        public IEnumerator CoBreakthrough(CharacterBase character, int floor, List<AdventureBossFloorWaveSheet.MonsterData> monsters)
+        public IEnumerator CoBreakthrough(CharacterBase character, int floorId, List<AdventureBossFloorWaveSheet.MonsterData> monsters)
         {
 #if TEST_LOG
-            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floor}");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBreakthrough)}() enter. character: {character.Id}, floor: {floorId}");
 #endif
             NcDebug.Log($"[CoCustomEvent] CoBreakthrough Start");
             _adventureBossFloorCount++;
@@ -1650,7 +1650,14 @@ namespace Nekoyume.Game.Battle
                 breakthroughMonster.IsTriggerd = false;
             }
 
-            Widget.Find<UI.Battle>().FloorProgressBar.SetCompleted(floor);
+            if(!TableSheets.Instance.AdventureBossFloorSheet.TryGetValue(floorId, out var floorRow))
+            {
+                NcDebug.LogError($"[CoCustomEvent] CoBreakthrough() floorRow is null. floorId: {floorId}");
+                LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
+                yield return null;
+            }
+                
+            Widget.Find<UI.Battle>().FloorProgressBar.SetCompleted(floorRow.Floor);
             LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.AdventureBossPenetration);

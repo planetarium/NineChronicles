@@ -225,7 +225,7 @@ namespace Nekoyume.UI
             if (adventureBossData.ExploreBoard.Value != null && adventureBossData.ExploreBoard.Value.TotalPoint != 0)
             {
                 totalScore.text = adventureBossData.ExploreBoard.Value.TotalPoint.ToString("#,0");
-                contribution = ((double)myScoreValue / adventureBossData.ExploreBoard.Value.TotalPoint) * 100;
+                contribution = myScoreValue == 0 ? 0 : ((double)myScoreValue / adventureBossData.ExploreBoard.Value.TotalPoint) * 100;
             }
             else
             {

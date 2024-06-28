@@ -244,23 +244,39 @@ namespace Nekoyume.UI
 
             score.text = $"{exploreInfo.Score:#,0}";
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor + 1, false);
+            RefreshMyReward();
+        }
 
+        private void RefreshMyReward()
+        {
             var adventureBossData = Game.Game.instance.AdventureBossData;
+            _myReward = new ClaimableReward
+            {
+                NcgReward = null,
+                ItemReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>(),
+            };
+
             try
             {
                 _myReward = AdventureBossData.AddClaimableReward(_myReward,
-                    adventureBossData.GetCurrentExploreRewards());
+                        adventureBossData.GetCurrentExploreRewards());
             }
             catch (Exception e)
             {
                 NcDebug.LogError(e);
             }
 
-            RefreshMyReward();
-        }
+            try
+            {
+                _myReward = AdventureBossData.AddClaimableReward(_myReward,
+                        adventureBossData.GetCurrentBountyRewards());
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError(e);
+            }
 
-        private void RefreshMyReward()
-        {
             int itemViewIndex = 0;
             if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue && _myReward.NcgReward.Value.MajorUnit > 0)
             {
@@ -364,16 +380,6 @@ namespace Nekoyume.UI
 
             var raffleReward = AdventureBossHelper.CalculateRaffleReward(board);
             randomRewardText.text = raffleReward.MajorUnit.ToString("#,0");
-
-            try
-            {
-                _myReward = AdventureBossData.AddClaimableReward(_myReward,
-                    Game.Game.instance.AdventureBossData.GetCurrentBountyRewards());
-            }
-            catch (Exception e)
-            {
-                NcDebug.LogError(e);
-            }
             
             RefreshMyReward();
         }

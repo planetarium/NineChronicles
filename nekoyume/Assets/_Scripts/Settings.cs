@@ -24,6 +24,7 @@ namespace Nekoyume
         private const string PushArenaEnabledKey = "SETTINGS_PUSH_ARENA_ENABLED";
         private const string PushWorldbossEnabledKey = "SETTINGS_PUSH_WORLDBOSS_ENABLED";
         private const string PushPatrolRewardEnabledKey = "SETTINGS_PUSH_PATROLREWARD_ENABLED";
+        private const string PushAdventureBossEnabledKey = "SETTINGS_PUSH_ADVENTUREBOSS_ENABLED";
 
         public float volumeMaster;
         public float volumeMusic;
@@ -42,6 +43,7 @@ namespace Nekoyume
         public bool isArenaPushEnabled = true;
         public bool isWorldbossPushEnabled = true;
         public bool isPatrolRewardPushEnabled = true;
+        public bool isAdventureBossPushEnabled = true;
 
         public float MasterVolume => isVolumeMasterMuted ? 0 : volumeMaster;
 
@@ -94,6 +96,7 @@ namespace Nekoyume
             isArenaPushEnabled = PlayerPrefs.GetInt(PushArenaEnabledKey, 1) != 0;
             isWorldbossPushEnabled = PlayerPrefs.GetInt(PushWorldbossEnabledKey, 1) != 0;
             isPatrolRewardPushEnabled = PlayerPrefs.GetInt(PushPatrolRewardEnabledKey, 1) != 0;
+            isAdventureBossPushEnabled = PlayerPrefs.GetInt(PushAdventureBossEnabledKey, 1) != 0;
 
             SetResolution();
         }
@@ -115,6 +118,7 @@ namespace Nekoyume
             PlayerPrefs.SetInt(PushArenaEnabledKey, isArenaPushEnabled ? 1 : 0);
             PlayerPrefs.SetInt(PushWorldbossEnabledKey, isWorldbossPushEnabled ? 1 : 0);
             PlayerPrefs.SetInt(PushPatrolRewardEnabledKey, isPatrolRewardPushEnabled ? 1 : 0);
+            PlayerPrefs.SetInt(PushAdventureBossEnabledKey, isAdventureBossPushEnabled ? 1 : 0);
         }
 
         public void ApplyCurrentResolution()

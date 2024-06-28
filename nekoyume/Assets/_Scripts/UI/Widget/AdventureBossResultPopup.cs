@@ -39,10 +39,12 @@ namespace Nekoyume.UI
         private GameObject retryButton;
 
         private int _prevScore;
+        private int _lastClearFloor;
 
         public void SetData(int usedApPotion, int totalApPotion, int lastClearFloor, int prevScore, List<AdventureBossSheet.RewardAmountData> exploreRewards, List<AdventureBossSheet.RewardAmountData> firstRewards = null)
         {
             _prevScore = prevScore;
+            _lastClearFloor = lastClearFloor;
             subTitle.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_SUB_TITLE", lastClearFloor.ToOrdinal());
             apPotionUsed.text = L10nManager.Localize("ADVENTURE_BOSS_RESULT_AP_POTION_USED", usedApPotion, totalApPotion);
             if (firstRewards == null || firstRewards.Count == 0)
@@ -146,6 +148,7 @@ namespace Nekoyume.UI
                 .OnUpdate(() => cumulativeScoreText.text = start.ToString("N0"))
                 .SetEase(Ease.InOutQuad);
 
+            AudioController.instance.PlayMusic(AudioController.MusicCode.PVPWin);
             base.Show(ignoreShowAnimation);
         }
 
@@ -187,11 +190,6 @@ namespace Nekoyume.UI
                 var worldMap = Find<WorldMap>();
                 worldMap.Show(States.Instance.CurrentAvatarState.worldInformation, true);
                 Find<AdventureBoss>().Show();
-                var currentFloor = 0;
-                if (Game.Game.instance.AdventureBossData.ExploreInfo.Value != null)
-                {
-                    currentFloor = Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor;
-                }
                 if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
                 {
                     NcDebug.LogError("BossData is null");
@@ -199,7 +197,7 @@ namespace Nekoyume.UI
                 }
                 Find<AdventureBossPreparation>().Show(
                         L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"),
-                        currentFloor * bossData.SweepAp,
+                        _lastClearFloor * bossData.SweepAp,
                         AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
                 worldMapLoading.Close(true);
             });

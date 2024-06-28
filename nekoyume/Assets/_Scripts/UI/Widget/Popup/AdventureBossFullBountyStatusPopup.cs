@@ -6,6 +6,7 @@ using System;
 namespace Nekoyume.UI
 {
     using Nekoyume.ActionExtensions;
+    using Nekoyume.Helper;
     using UniRx;
     public class AdventureBossFullBountyStatusPopup : PopupWidget
     {
@@ -32,7 +33,7 @@ namespace Nekoyume.UI
                         Name = x.Name,
                         Count = x.Count,
                         Ncg = x.Price.MajorUnit,
-                        Bonus = i == 0 ? 1.5f : 0
+                        Bonus = i == 0 ? (float)AdventureBossHelper.TotalRewardMultiplier : 0
                     };
 
                     if (x.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address)
