@@ -91,14 +91,14 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnRoomEnter.Invoke(false);
                 AudioController.PlayClick();
             });
 
             CloseWidget = () =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnRoomEnter.Invoke(false);
             };
         }
 
