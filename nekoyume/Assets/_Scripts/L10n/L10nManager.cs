@@ -425,9 +425,25 @@ namespace Nekoyume.L10n
 
         public static string Localize(string key, params object[] args)
         {
-            return TryLocalize(key, out var text)
-                ? string.Format(text, args)
-                : text;
+            if(TryLocalize(key, out var text))
+            {
+                try
+                {
+                    return string.Format(text, args);
+                }
+                catch (FormatException e)
+                {
+                    //FormatException: Input string was not in a correct format.
+                    //텍스트 오류가 있을경우 로그를 남기고 키를 반환
+                    //예시 번역어테이블에 {} 이런식으로 포맷이 비어있는경우
+                    NcDebug.LogError($"[L10nManager] {e.Message} key: {key}");
+                    return $"!{key}!";
+                }
+            }
+            else
+            {
+                return text;
+            }
         }
 
         public static bool ContainsKey(string key) => _dictionary.ContainsKey(key);

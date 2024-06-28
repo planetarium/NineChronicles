@@ -121,11 +121,12 @@ namespace Nekoyume.UI
                 int index = 0;
                 for (int i = 0; i < premiumProduct.FavList.Length && index < premiumRewards.Length; i++,index++)
                 {
-                    ItemViewSetCurrencyData(premiumRewards[index], premiumProduct.FavList[i].Ticker, premiumProduct.FavList[i].Amount);
+                    premiumRewards[index].ItemViewSetCurrencyData(premiumProduct.FavList[i].Ticker, premiumProduct.FavList[i].Amount);
                 }
                 for (int i = 0; i < premiumProduct.FungibleItemList.Length && index < premiumRewards.Length; i++, index++)
                 {
-                    ItemViewSetItemData(premiumRewards[index], premiumProduct.FungibleItemList[i].SheetItemId, premiumProduct.FungibleItemList[i].Amount);
+                    premiumRewards[index].ItemViewSetItemData(premiumProduct.FungibleItemList[i].SheetItemId, premiumProduct.FungibleItemList[i].Amount);
+                    AddToolTip(premiumRewards[index], premiumProduct.FungibleItemList[i].SheetItemId);
                 }
                 var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.Sku);
                 if(_puchasingData != null)
@@ -148,11 +149,12 @@ namespace Nekoyume.UI
                 int index = 0;
                 for (int i = 0; i < premiumPlusProduct.FavList.Length && index < premiumPlusRewards.Length; i++, index++)
                 {
-                    ItemViewSetCurrencyData(premiumPlusRewards[index], premiumPlusProduct.FavList[i].Ticker, premiumPlusProduct.FavList[i].Amount);
+                    premiumPlusRewards[index].ItemViewSetCurrencyData(premiumPlusProduct.FavList[i].Ticker, premiumPlusProduct.FavList[i].Amount);
                 }
                 for (int i = 0; i < premiumPlusProduct.FungibleItemList.Length && index < premiumPlusRewards.Length; i++, index++)
                 {
-                    ItemViewSetItemData(premiumPlusRewards[index], premiumPlusProduct.FungibleItemList[i].SheetItemId, premiumPlusProduct.FungibleItemList[i].Amount);
+                    premiumPlusRewards[index].ItemViewSetItemData(premiumPlusProduct.FungibleItemList[i].SheetItemId, premiumPlusProduct.FungibleItemList[i].Amount);
+                    AddToolTip(premiumPlusRewards[index], premiumPlusProduct.FungibleItemList[i].SheetItemId);
                 }
                 var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.Sku);
                 if (_puchasingData != null)
@@ -165,74 +167,25 @@ namespace Nekoyume.UI
             }
         }
 
-        public void ItemViewSetCurrencyData(BaseItemView baseItem, string ticker, decimal amount)
+        private void AddToolTip(BaseItemView itemView, int itemId)
         {
-            baseItem.gameObject.SetActive(true);
-            ClearItem(baseItem);
-            baseItem.ItemImage.overrideSprite = SpriteHelper.GetFavIcon(ticker);
-            baseItem.CountText.text = ((BigInteger)amount).ToCurrencyNotation();
-            baseItem.GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(ticker));
-        }
-
-        public void ItemViewSetItemData(BaseItemView baseItem, int itemId, int amount)
-        {
-            baseItem.gameObject.SetActive(true);
-            ClearItem(baseItem);
-            baseItem.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemId);
-            baseItem.CountText.text = $"x{amount}";
-            try
+            if (itemView.TryGetComponent<SeasonPassPremiumItemView>(out var seasonPassPremiumItemView))
             {
                 var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemId];
-                baseItem.GradeImage.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
-
-
-                if(baseItem.TryGetComponent<SeasonPassPremiumItemView>(out var seasonPassPremiumItemView))
+                if (seasonPassPremiumItemView.TooltipButton.onClick.GetPersistentEventCount() < 1)
                 {
-                    if (seasonPassPremiumItemView.TooltipButton.onClick.GetPersistentEventCount() < 1)
+                    var dummyItem = ItemFactory.CreateItem(itemSheetData, new Cheat.DebugRandom());
+                    seasonPassPremiumItemView.TooltipButton.onClick.AddListener(() =>
                     {
-                        var dummyItem = ItemFactory.CreateItem(itemSheetData, new Cheat.DebugRandom());
-                        seasonPassPremiumItemView.TooltipButton.onClick.AddListener(() =>
-                        {
-                            if (dummyItem == null)
-                                return;
+                        if (dummyItem == null)
+                            return;
 
-                            AudioController.PlayClick();
-                            var tooltip = ItemTooltip.Find(dummyItem.ItemType);
-                            tooltip.Show(dummyItem, string.Empty, false, null);
-                        });
-                    }
+                        AudioController.PlayClick();
+                        var tooltip = ItemTooltip.Find(dummyItem.ItemType);
+                        tooltip.Show(dummyItem, string.Empty, false, null);
+                    });
                 }
             }
-            catch
-            {
-                NcDebug.LogError($"Can't Find Item ID {itemId} in ItemSheet");
-            }
-        }
-
-        private static void ClearItem(BaseItemView baseItem)
-        {
-            baseItem.Container.SetActive(true);
-            baseItem.EmptyObject.SetActive(false);
-            baseItem.EnoughObject.SetActive(false);
-            baseItem.MinusObject.SetActive(false);
-            baseItem.ExpiredObject.SetActive(false);
-            baseItem.SelectBaseItemObject.SetActive(false);
-            baseItem.SelectMaterialItemObject.SetActive(false);
-            baseItem.LockObject.SetActive(false);
-            baseItem.ShadowObject.SetActive(false);
-            baseItem.PriceText.gameObject.SetActive(false);
-            baseItem.LoadingObject.SetActive(false);
-            baseItem.EquippedObject.SetActive(false);
-            baseItem.DimObject.SetActive(false);
-            baseItem.TradableObject.SetActive(false);
-            baseItem.SelectObject.SetActive(false);
-            baseItem.FocusObject.SetActive(false);
-            baseItem.NotificationObject.SetActive(false);
-            baseItem.GrindingCountObject.SetActive((false));
-            baseItem.LevelLimitObject.SetActive(false);
-            baseItem.RewardReceived.SetActive(false);
-            baseItem.LevelLimitObject.SetActive(false);
-            baseItem.RuneNotificationObj.SetActiveSafe(false);
         }
 
         private void RefreshIcons(SeasonPassServiceClient.UserSeasonPassSchema seasonPassInfo)

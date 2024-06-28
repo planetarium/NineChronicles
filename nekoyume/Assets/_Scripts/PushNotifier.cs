@@ -26,7 +26,8 @@ namespace Nekoyume
             Workshop,
             Arena,
             Worldboss,
-            PatrolReward
+            PatrolReward,
+            AdventureBoss,
         }
 
         public const string ChannelId = "NineChroniclesLocal";
@@ -129,6 +130,12 @@ namespace Nekoyume
                     break;
                 case PushType.PatrolReward:
                     if (!Settings.Instance.isPatrolRewardPushEnabled)
+                    {
+                        return string.Empty;
+                    }
+                    break;
+                case PushType.AdventureBoss:
+                    if (!Settings.Instance.isAdventureBossPushEnabled)
                     {
                         return string.Empty;
                     }

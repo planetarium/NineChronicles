@@ -56,7 +56,9 @@ namespace Nekoyume.UI.Module
             CurrencyOnly,
             RuneStone,
             Mileage,
-            Summon,
+            SummonAdvanced,
+            SummonNormal,
+            AdventureBoss,
         }
 
         [Serializable]
@@ -95,6 +97,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private WorldBossTickets worldBossTickets;
+
+        [SerializeField]
+        private ApPotion apPotion;
 
         [SerializeField]
         private MaterialAsset[] materialAssets;
@@ -158,6 +163,7 @@ namespace Nekoyume.UI.Module
         public ArenaTickets ArenaTickets => arenaTickets;
         public EventDungeonTickets EventDungeonTickets => eventDungeonTickets;
         public WorldBossTickets WorldBossTickets => worldBossTickets;
+        public ApPotion ApPotion => apPotion;
         public MaterialAsset[] MaterialAssets => materialAssets;
 
         public override bool CanHandleInputEvent => false;
@@ -496,8 +502,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isCrystalActive: true, isHourglassActive: true);
                     break;
                 case AssetVisibleState.Shop:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isMaterialActiveCount: 1); // isMaterialActiveCount : Golden dust
-                    SetMaterial(0, CostType.GoldDust);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, enabledMaterials: new[] { CostType.GoldDust });
                     break;
                 case AssetVisibleState.Battle:
                     SetActiveAssets(isNcgActive: true, isCrystalActive: true, isActionPointActive: true);
@@ -520,22 +525,18 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.Mileage:
                     SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
                     break;
-                case AssetVisibleState.Summon:
-                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: 3);
+                case AssetVisibleState.SummonAdvanced:
+                    SetActiveAssets(enabledMaterials: new[] { CostType.EmeraldDust, CostType.RubyDust, CostType.GoldDust });
+                    break;
+                case AssetVisibleState.SummonNormal:
+                    SetActiveAssets(enabledMaterials: new[] { CostType.SilverDust });
+                    break;
+                case AssetVisibleState.AdventureBoss:
+                    SetActiveAssets(isNcgActive: true, enabledMaterials: new[] { CostType.GoldDust }, isApPotionActive: true);
                     break;
             }
         }
 
-        public void SetMaterial(int index, CostType costType)
-        {
-            var icon = costIconData.GetIcon(costType);
-            var count = States.Instance.CurrentAvatarState.inventory
-                .GetMaterialCount((int)costType);
-
-            MaterialAssets[index].SetMaterial(icon, count, costType);
-        }
-
-        // TODO: 정확한 상황을 알지 못하지만, SetMaterial 메서드 호출 이후 자동으로 호출되야 할 것같이 생김.
         private void SetActiveAssets(
             bool isNcgActive = false,
             bool isCrystalActive = false,
@@ -546,8 +547,10 @@ namespace Nekoyume.UI.Module
             bool isEventWorldBossTicketsActive = false,
             bool isRuneStoneActive = false,
             bool isMileageActive = false,
-            int isMaterialActiveCount = 0)
+            bool isApPotionActive = false,
+            CostType[] enabledMaterials = null)
         {
+            ncg.gameObject.SetActive(isNcgActive);
             crystal.gameObject.SetActive(isCrystalActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             hourglass.gameObject.SetActive(isHourglassActive);
@@ -556,12 +559,24 @@ namespace Nekoyume.UI.Module
             worldBossTickets.gameObject.SetActive(isEventWorldBossTicketsActive);
             runeStone.gameObject.SetActive(isRuneStoneActive);
             mileage.gameObject.SetActive(isMileageActive);
-            for (var i = 0; i < materialAssets.Length; i++)
-            {
-                materialAssets[i].gameObject.SetActive(i < isMaterialActiveCount);
-            }
+            apPotion.gameObject.SetActive(isApPotionActive);
 
-            ncg.gameObject.SetActive(isMaterialActiveCount < MaxShowMaterialCount && isNcgActive);
+            var length = enabledMaterials?.Length ?? 0;
+            for (var i = 0; i < MaterialAssets.Length; i++)
+            {
+                var enable = i < length;
+                if (enable)
+                {
+                    var costType = enabledMaterials[i];
+                    var icon = costIconData.GetIcon(costType);
+                    var count = States.Instance.CurrentAvatarState.inventory
+                        .GetMaterialCount((int)costType);
+
+                    MaterialAssets[i].SetMaterial(icon, count, costType);
+                }
+
+                MaterialAssets[i].gameObject.SetActive(enable);
+            }
         }
 
         private void SubscribeBlockIndex(long blockIndex)
@@ -613,7 +628,8 @@ namespace Nekoyume.UI.Module
                 sheets.ItemRequirementSheet,
                 sheets.EquipmentItemRecipeSheet,
                 sheets.EquipmentItemSubRecipeSheetV2,
-                sheets.EquipmentItemOptionSheet) ?? false;
+                sheets.EquipmentItemOptionSheet,
+                States.Instance.GameConfigState) ?? false;
             UpdateInventoryNotification(hasNotification);
         }
 

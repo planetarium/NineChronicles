@@ -31,6 +31,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Cysharp.Threading.Tasks;
+    using Nekoyume.UI.Model;
     using Scroller;
     using UniRx;
 
@@ -101,6 +103,10 @@ namespace Nekoyume.UI
 
         [SerializeField] private Transform titleSocket;
 
+        [SerializeField] private GameObject adventureBossMark;
+
+        [SerializeField] private GameObject adventureBossUnMark;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
@@ -157,6 +163,27 @@ namespace Nekoyume.UI
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
             BattleRenderer.Instance.OnPrepareStage += GoToPrepareStage;
+
+            Game.Game.instance.AdventureBossData.SeasonInfo
+                .Subscribe(seasonInfo =>
+                {
+                    if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+                    {
+                        adventureBossMark.SetActive(false);
+                        adventureBossUnMark.SetActive(true);
+                        return;
+                    }
+
+                    bool activeMark = seasonInfo != null
+                        && seasonInfo.StartBlockIndex <= Game.Game.instance.Agent.BlockIndex
+                        && seasonInfo.EndBlockIndex >= Game.Game.instance.Agent.BlockIndex;
+
+                    NcDebug.Log($"[AdventureBoss] AdventureBossMark Refresh {activeMark}");
+
+                    adventureBossMark.SetActive(activeMark);
+                    adventureBossUnMark.SetActive(!activeMark);
+                })
+                .AddTo(gameObject);
         }
 
         protected override void OnDestroy()
@@ -263,6 +290,8 @@ namespace Nekoyume.UI
         {
             player.localPosition = playerPosition.localPosition + (Vector3.left * 300);
             player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);
+
+            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().Forget();
         }
 
         private void GoToPrepareStage(BattleLog battleLog)

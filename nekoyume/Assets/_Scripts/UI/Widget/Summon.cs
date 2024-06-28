@@ -36,10 +36,10 @@ namespace Nekoyume.UI
             public int summonSheetId;
             public Toggle tabToggle;
             public GameObject[] enableObj;
-            public CostType costType;
             public string nameEng;
             public string phrase1;
             public string phrase2;
+            public Color bottomImageColor;
 
             public SummonSheet.Row SummonSheetRow;
         }
@@ -49,13 +49,22 @@ namespace Nekoyume.UI
         {
             public Button infoButton;
             public TextMeshProUGUI nameText;
-            public SummonCostButton draw1Button;
-            public SummonCostButton draw10Button;
+            public SummonButtonGroup normalButtonGroup;
+            public SummonButtonGroup goldButtonGroup;
             public RectTransform backgroundRect;
             public TextMeshProUGUI phrase1Text;
             public GameObject phrase1Obj;
             public TextMeshProUGUI phrase2Text;
             public GameObject phrase2Obj;
+            public Image bottomImage;
+        }
+
+        [Serializable]
+        private class SummonButtonGroup
+        {
+            public GameObject container;
+            public SummonCostButton draw1Button;
+            public SummonCostButton draw10Button;
         }
 
         [SerializeField] private Button closeButton;
@@ -107,10 +116,10 @@ namespace Nekoyume.UI
                 });
             }
 
-            LoadingHelper.Summon.Subscribe(_ => SetMaterialAssets()).AddTo(gameObject);
-
-            summonItem.draw1Button.Subscribe(gameObject);
-            summonItem.draw10Button.Subscribe(gameObject);
+            summonItem.normalButtonGroup.draw1Button.Subscribe(gameObject);
+            summonItem.normalButtonGroup.draw10Button.Subscribe(gameObject);
+            summonItem.goldButtonGroup.draw1Button.Subscribe(gameObject);
+            summonItem.goldButtonGroup.draw10Button.Subscribe(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -132,9 +141,6 @@ namespace Nekoyume.UI
 
             summonInfos[0].tabToggle.isOn = true;
             SetSummonInfo(summonInfos[0]);
-
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
-            SetMaterialAssets();
         }
 
         private void SetSummonInfo(SummonInfo currentInfo)
@@ -152,8 +158,10 @@ namespace Nekoyume.UI
                 obj.SetActive(true);
             }
 
+            var summonRow = currentInfo.SummonSheetRow;
+            var costType = (CostType)summonRow.CostMaterial;
             summonItem.backgroundRect
-                .DOAnchorPosY(SummonUtil.GetBackGroundPosition(currentInfo.costType), .5f)
+                .DOAnchorPosY(SummonUtil.GetBackGroundPosition(costType), .5f)
                 .SetEase(Ease.InOutCubic);
 
             var enablePhrase1 = !string.IsNullOrEmpty(currentInfo.phrase1);
@@ -168,7 +176,8 @@ namespace Nekoyume.UI
                 ? L10nManager.Localize(currentInfo.phrase2)
                 : string.Empty;
 
-            var summonRow = currentInfo.SummonSheetRow;
+            summonItem.bottomImage.color = currentInfo.bottomImageColor;
+
             skillInfoButton.onClick.RemoveAllListeners();
             skillInfoButton.onClick.AddListener(() => Find<SummonSkillsPopup>().Show(summonRow));
 
@@ -179,8 +188,32 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
             summonItem.nameText.text = currentInfo.nameEng;
 
-            summonItem.draw1Button.Subscribe(summonRow, 1, GoToMarket, _disposables);
-            summonItem.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
+            summonItem.normalButtonGroup.container.SetActive(false);
+            summonItem.goldButtonGroup.container.SetActive(false);
+
+            var buttonGroup = costType switch
+            {
+                CostType.SilverDust => summonItem.normalButtonGroup,
+                CostType.GoldDust => summonItem.goldButtonGroup,
+                CostType.RubyDust => summonItem.goldButtonGroup,
+                CostType.EmeraldDust => summonItem.goldButtonGroup,
+                _ => null
+            };
+            if (buttonGroup != null)
+            {
+                buttonGroup.container.SetActive(true);
+                buttonGroup.draw1Button.Subscribe(summonRow, 1, GoToMarket, _disposables);
+                buttonGroup.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
+            }
+
+            var state = costType switch
+            {
+                CostType.SilverDust => HeaderMenuStatic.AssetVisibleState.SummonNormal,
+                _ => HeaderMenuStatic.AssetVisibleState.SummonAdvanced
+            };
+            LoadingHelper.Summon
+                .Subscribe(_ => Find<HeaderMenuStatic>().UpdateAssets(state))
+                .AddTo(_disposables);
         }
 
         #region Action
@@ -303,30 +336,6 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void SetMaterialAssets()
-        {
-            if (!gameObject.activeSelf)
-            {
-                return;
-            }
-
-            if (!TryFind<HeaderMenuStatic>(out var headerMenu))
-            {
-                return;
-            }
-
-            var materials = summonInfos
-                .Where(info => info.SummonSheetRow != null)
-                .Select(info => (CostType)info.SummonSheetRow.CostMaterial)
-                .Distinct().ToArray();
-
-            for (int i = 0; i < materials.Length; i++)
-            {
-                var material = materials[i];
-                headerMenu.SetMaterial(i, material);
-            }
-        }
-
         private IEnumerator CoShowAuraSummonLoadingScreen(List<int> recipes)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
@@ -410,7 +419,7 @@ namespace Nekoyume.UI
             summonInfos[2].tabToggle.isOn = true;
             SetSummonInfo(summonInfos[2]);
 
-            var costButton = summonItem.draw1Button;
+            var costButton = summonItem.normalButtonGroup.draw1Button;
             if (costButton != null)
             {
                 costButton.SetFakeUI(CostType.SilverDust, 0);
@@ -424,7 +433,7 @@ namespace Nekoyume.UI
             var resultEquipment =
                 States.Instance.CurrentAvatarState.inventory.Equipments.FirstOrDefault(e =>
                     e is Aura);
-            var button = summonItem.draw1Button;
+            var button = summonItem.normalButtonGroup.draw1Button;
             if (resultEquipment is null)
             {
                 button.OnClickSubject.OnNext(button.CurrentState.Value);
