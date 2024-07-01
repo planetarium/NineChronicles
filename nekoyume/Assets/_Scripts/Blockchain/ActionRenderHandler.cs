@@ -3665,7 +3665,7 @@ namespace Nekoyume.Blockchain
                 }
             }).ToObservable().ObserveOnMainThread().Subscribe(async _ =>
             {
-                await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState();
+                await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState(eval.OutputState, eval.BlockIndex);
 
                 var action = eval.Action;
 
@@ -3740,7 +3740,7 @@ namespace Nekoyume.Blockchain
                     }
 
                     //기존정보 업데이트 보상수령 정보를 갱신하기위함.
-                    Game.Game.instance.AdventureBossData.RefreshEndedSeasons().Forget();
+                    Game.Game.instance.AdventureBossData.RefreshEndedSeasons(eval.OutputState, eval.BlockIndex).Forget();
                 }
             });
         }
