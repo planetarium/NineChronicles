@@ -281,6 +281,7 @@ namespace Nekoyume.UI
             helpButton.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);
+            floorProgressBar.gameObject.SetActive(false);
             enemyPlayerStatus.gameObject.SetActive(false);
             comboText.comboMax = 5;
             gameObject.SetActive(true);
