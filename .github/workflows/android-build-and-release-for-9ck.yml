@@ -64,7 +64,7 @@ jobs:
     environment:
       name: k
     env:
-      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON_K }}
 
     steps:
       - name: Set CRLF
