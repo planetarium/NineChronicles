@@ -134,6 +134,8 @@ namespace Nekoyume
         private static HashDigest<SHA256> adventureBossLatestSeasonLastStateRootHash;
         public static async Task<SeasonInfo> GetAdventureBossLatestSeasonAsync(this IAgent agent, HashDigest<SHA256>? stateRootHash = null, long blockIndex = 0)
         {
+            string stateroot = stateRootHash == null ? "null" : stateRootHash.Value.ToString();
+            NcDebug.Log($"[AdventureBoss] Get LatestSeason blockIndex: {blockIndex} stateRootHash: {stateroot} agentBlockIndex: {agent.BlockIndex}");
             IValue latestSeason;
             if (stateRootHash == null)
             {
@@ -143,7 +145,7 @@ namespace Nekoyume
                 }
                 else
                 {
-                    adventureBossLatestSeasonLastBlockIndex = agent.BlockIndex;
+                    adventureBossLatestSeasonLastBlockIndex = agent.BlockIndex - 1;
                     latestSeason = await agent.GetStateAsync(Addresses.AdventureBoss, AdventureBossModule.LatestSeasonAddress);
                 }
             }
@@ -167,6 +169,8 @@ namespace Nekoyume
         private static HashDigest<SHA256> adventureBossSeasonInfoLastStateRootHash;
         public static async Task<SeasonInfo> GetAdventureBossSeasonInfoAsync(this IAgent agent, long seasonId, HashDigest<SHA256>? stateRootHash = null, long blockIndex = 0)
         {
+            string stateroot = stateRootHash == null ? "null" : stateRootHash.Value.ToString();
+            NcDebug.Log($"[AdventureBoss] Get SeasonInfo Season: {seasonId} blockIndex: {blockIndex} stateRootHash: {stateroot} agentBlockIndex: {agent.BlockIndex}");
             IValue seasonInfo;
             if (stateRootHash == null)
             {
@@ -176,7 +180,7 @@ namespace Nekoyume
                 }
                 else
                 {
-                    adventureBossSeasonInfoLastBlockIndex = agent.BlockIndex;
+                    adventureBossSeasonInfoLastBlockIndex = agent.BlockIndex - 1;
                     seasonInfo = await agent.GetStateAsync(Addresses.AdventureBoss, new Address(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
                 }
             }
@@ -200,6 +204,8 @@ namespace Nekoyume
         private static HashDigest<SHA256> bountyBoardLastStateRootHash;
         public static async Task<BountyBoard> GetBountyBoardAsync(this IAgent agent, long seasonId, HashDigest<SHA256>? stateRootHash = null, long blockIndex = 0)
         {
+            string stateroot = stateRootHash == null ? "null" : stateRootHash.Value.ToString();
+            NcDebug.Log($"[AdventureBoss] Get BountyBoard Season: {seasonId} blockIndex: {blockIndex} stateRootHash: {stateroot} agentBlockIndex: {agent.BlockIndex}");
             IValue bountyBoard;
             if (stateRootHash == null)
             {
@@ -209,7 +215,7 @@ namespace Nekoyume
                 }
                 else
                 {
-                    bountyBoardLastBlockIndex = agent.BlockIndex;
+                    bountyBoardLastBlockIndex = agent.BlockIndex - 1;
                     bountyBoard = await agent.GetStateAsync(Addresses.BountyBoard, new Address(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
                 }
             }
@@ -233,6 +239,8 @@ namespace Nekoyume
         private static HashDigest<SHA256> exploreBoardLastStateRootHash;
         public static async Task<ExploreBoard> GetExploreBoardAsync(this IAgent agent, long seasonId, HashDigest<SHA256>? stateRootHash = null, long blockIndex = 0)
         {
+            string stateroot = stateRootHash == null ? "null" : stateRootHash.Value.ToString();
+            NcDebug.Log($"[AdventureBoss] Get ExploreBoard Season: {seasonId} blockIndex: {blockIndex} stateRootHash: {stateroot} agentBlockIndex: {agent.BlockIndex}");
             IValue exploreBoard;
             if (stateRootHash == null)
             {
@@ -242,7 +250,7 @@ namespace Nekoyume
                 }
                 else
                 {
-                    exploreBoardLastBlockIndex = agent.BlockIndex;
+                    exploreBoardLastBlockIndex = agent.BlockIndex - 1;
                     exploreBoard = await agent.GetStateAsync(Addresses.ExploreBoard, new Address(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
                 }
             }
@@ -266,6 +274,8 @@ namespace Nekoyume
         private static HashDigest<SHA256> exploreInfoLastStateRootHash;
         public static async Task<Explorer> GetExploreInfoAsync(this IAgent agent, Address avatarAddress, long seasonId, HashDigest<SHA256>? stateRootHash = null, long blockIndex = 0)
         {
+            string stateroot = stateRootHash == null ? "null" : stateRootHash.Value.ToString();
+            NcDebug.Log($"[AdventureBoss] Get ExploreInfo Avatar: {avatarAddress}  Season: {seasonId} blockIndex: {blockIndex} stateRootHash: {stateroot} agentBlockIndex: {agent.BlockIndex}");
             IValue exploreInfo;
             if (stateRootHash == null)
             {
@@ -275,7 +285,7 @@ namespace Nekoyume
                 }
                 else
                 {
-                    exploreInfoLastBlockIndex = agent.BlockIndex;
+                    exploreInfoLastBlockIndex = agent.BlockIndex - 1;
                     exploreInfo = await agent.GetStateAsync(Addresses.ExploreBoard, avatarAddress.Derive(AdventureBossHelper.GetSeasonAsAddressForm(seasonId)));
                 }
             }
