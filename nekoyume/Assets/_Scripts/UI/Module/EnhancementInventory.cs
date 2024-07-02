@@ -329,10 +329,9 @@ namespace Nekoyume.UI.Module
 
             if (usableItems.Any())
             {
-                var bestItem = usableItems
-                    .OrderByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment)).First();
-                usableItems = usableItems.OrderByDescending(x => x.Equals(bestItem))
-                    .ToList();
+                usableItems = usableItems
+                    .OrderByDescending(x => x.ItemBase.Grade)
+                    .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment)).ToList();
             }
 
             usableItems.AddRange(unusableItems);

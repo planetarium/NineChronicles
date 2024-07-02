@@ -84,6 +84,9 @@ namespace Nekoyume.UI.Module
             CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
         }.Select(cost => (int)cost).ToArray();
 
+        // TODO: hammer의 id를 추가해둬야 합니다. 몰라서 인터페이스만 추가해뒀습니다
+        private readonly int[] hammerIds = { };
+
         private static readonly ItemType[] ItemTypes = Enum.GetValues(typeof(ItemType)) as ItemType[];
 
         private InventoryItem _selectedModel;
@@ -456,8 +459,8 @@ namespace Nekoyume.UI.Module
             return _materials
                 .OrderByDescending(x => dustIds.Contains(x.ItemBase.Id))
                 .ThenByDescending(x =>
-                    x.ItemBase.ItemSubType == ItemSubType.ApStone ||
-                    x.ItemBase.ItemSubType == ItemSubType.Hourglass)
+                    x.ItemBase.ItemSubType is ItemSubType.ApStone or ItemSubType.Hourglass)
+                .ThenByDescending(x => hammerIds.Contains(x.ItemBase.Id))
                 .ThenBy(x => x.ItemBase is ITradableItem).ToList();
         }
 
