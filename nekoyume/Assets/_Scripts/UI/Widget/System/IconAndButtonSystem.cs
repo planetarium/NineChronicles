@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
+using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -8,7 +10,6 @@ using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -155,9 +156,10 @@ namespace Nekoyume.UI
         {
             CancelCallback = () =>
             {
-                var agent = Game.Game.instance.Agent;
+                var address = KeyManager.Instance.GetList().FirstOrDefault()?.Item2.Address ??
+                              new Address();
                 var cachedPassphrase = KeyManager.GetCachedPassphrase(
-                    agent.Address,
+                    address,
                     Util.AesDecrypt,
                     defaultValue: string.Empty);
                 if (cachedPassphrase.Equals(string.Empty))
