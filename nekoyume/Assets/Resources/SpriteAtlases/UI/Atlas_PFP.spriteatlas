@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 1024
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 0
+      m_TextureCompression: 1
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -58,7 +58,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 92b1d562e03127b4b8ae1473bf7c0bcf, type: 3}
   - {fileID: 21300000, guid: 1b3f70b266c320e409043ea6db7019ff, type: 3}
   - {fileID: 21300000, guid: 25dd65d27bc687748967353c8b30022b, type: 3}
-  - {fileID: 21300000, guid: bbf2b4f275cd44f4fbd030b54a987e13, type: 3}
   - {fileID: 21300000, guid: ffbe6a3312190fc4cb7782f7401ed8ea, type: 3}
   - {fileID: 21300000, guid: 357c6404885b8aa44b7196d55f398f2a, type: 3}
   - {fileID: 21300000, guid: 4def6b04c11f63849b677e0c0b0bcca2, type: 3}
@@ -111,7 +110,6 @@ SpriteAtlas:
   - Bg_NotConnected
   - EquipPet_bg_Empty
   - DccCollection_Character_floor
-  - UI_main_icon_Mileage
   - Img_DccCollection
   - Img_DCC_04
   - DccCollection_Character_floor_3
