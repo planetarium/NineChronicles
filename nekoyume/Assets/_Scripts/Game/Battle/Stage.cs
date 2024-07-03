@@ -276,6 +276,10 @@ namespace Nekoyume.Game.Battle
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
             BattleRenderer.Instance.IsOnBattle = false;
+            
+            // Clear Memory
+            Resources.UnloadUnusedAssets();
+            GC.Collect();
         }
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
