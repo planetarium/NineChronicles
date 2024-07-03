@@ -70,6 +70,7 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject
+                .StartWith(Game.Game.instance.Agent.BlockIndex)
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposables);
 
