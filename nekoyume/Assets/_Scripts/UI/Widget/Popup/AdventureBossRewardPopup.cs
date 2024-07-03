@@ -155,14 +155,17 @@ namespace Nekoyume.UI
                 return;
             }
 
-            LoadTotalRewards().ContinueWith(() =>
+            LoadTotalRewards().ContinueWith((result) =>
             {
-                AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
-                base.Show(ignoreShowAnimation);
+                if (result)
+                {
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
+                    base.Show(ignoreShowAnimation);
+                }
             });
         }
 
-        public async UniTask LoadTotalRewards()
+        public async UniTask<bool> LoadTotalRewards()
         {
             ClaimableReward wantedClaimableReward = new ClaimableReward
             {
@@ -329,11 +332,17 @@ namespace Nekoyume.UI
             }
             lastClaimableReward = AdventureBossData.AddClaimableReward(lastClaimableReward, wantedClaimableReward);
             lastClaimableReward = AdventureBossData.AddClaimableReward(lastClaimableReward, exprolerClaimableReward);
-            if (noRewardItemsBounty.activeSelf && noRewardItemsExplore.activeSelf)
+
+            if(lastClaimableReward.ItemReward.Count == 0 && lastClaimableReward.FavReward.Count == 0 &&
+                (lastClaimableReward.NcgReward == null || !lastClaimableReward.NcgReward.HasValue || lastClaimableReward.NcgReward.Value.MajorUnit == 0))
             {
-                Close();
+                Game.instance.AdventureBossData.EndedExploreInfos.TryGetValue(_lastSeasonId, out var exploreInfo);
+                Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(_lastSeasonId, out var bountyBoard);
+                NcDebug.LogError($"lastClaimableReward is empty {_lastSeasonId} {exploreInfo?.Claimed} {bountyBoard?.Investors.Count} {bountyBoard?.Investors.FirstOrDefault(inv => inv.AvatarAddress == Game.instance.States.CurrentAvatarState.address)?.Claimed}");
+                return false;
             }
-            return;
+
+            return true;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
