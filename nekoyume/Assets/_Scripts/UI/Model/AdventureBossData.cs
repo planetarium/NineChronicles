@@ -17,6 +17,7 @@ using System;
 namespace Nekoyume.UI.Model
 {
     using Libplanet.Common;
+    using Nekoyume.Action;
     using System.Security.Cryptography;
     using UniRx;
     public class AdventureBossData
@@ -138,43 +139,48 @@ namespace Nekoyume.UI.Model
                 ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_START_CONTENT", SeasonInfo.Value.Season+1, SeasonInfo.Value.NextStartBlockIndex);
             }
 
-            //최근시즌이 종료된경우 끝난시즌정보에 추가.
-            int startIndex = SeasonInfo.Value.EndBlockIndex < Game.Game.instance.Agent.BlockIndex ? 0 : 1;
-
-            //최대 10개의 종료된 시즌정보를 가져온다.(만일을 대비 해서)
-            for (int i = startIndex; i < _endedSeasonSearchTryCount; i++)
+            try
             {
-                var endedSeasonIndex = SeasonInfo.Value.Season - i;
-
-                //최초시즌이 0이하로 내려가면 더이상 찾지않음.
-                if (endedSeasonIndex <= 0)
-                    break;
-
-                if (!EndedExploreInfos.TryGetValue(endedSeasonIndex, out var endedExploreInfo) && Game.Game.instance.States.CurrentAvatarState != null)
+                //최근시즌이 종료된경우 끝난시즌정보에 추가.
+                int startIndex = SeasonInfo.Value.EndBlockIndex < Game.Game.instance.Agent.BlockIndex ? 0 : 1;
+                //최대 10개의 종료된 시즌정보를 가져온다.(만일을 대비 해서)
+                for (int i = startIndex; i < _endedSeasonSearchTryCount; i++)
                 {
-                    endedExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, endedSeasonIndex, stateRootHash, blockIndex);
-                    EndedExploreInfos.Add(endedSeasonIndex, endedExploreInfo);
-                }
+                    var endedSeasonIndex = SeasonInfo.Value.Season - i;
 
-                //이미 가져온 시즌정보는 다시 가져오지않음.
-                if (!EndedSeasonInfos.TryGetValue(endedSeasonIndex, out var endedSeasonInfo))
-                {
-                    endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex, stateRootHash, blockIndex);
-                    var endedBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex, stateRootHash, blockIndex);
-                    var endedExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(endedSeasonIndex, stateRootHash, blockIndex);
-
-                    EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
-                    EndedBountyBoards.Add(endedSeasonIndex, endedBountyBoard);
-                    EndedExploreBoards.Add(endedSeasonIndex, endedExploreBoard);
-
-
-                    //보상수령기간이 지날경우 더이상 가져오지않음.
-                    if (endedSeasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval < Game.Game.instance.Agent.BlockIndex)
-                    {
+                    //최초시즌이 0이하로 내려가면 더이상 찾지않음.
+                    if (endedSeasonIndex <= 0)
                         break;
+
+                    if (!EndedExploreInfos.TryGetValue(endedSeasonIndex, out var endedExploreInfo) && Game.Game.instance.States.CurrentAvatarState != null)
+                    {
+                        endedExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, endedSeasonIndex, stateRootHash, blockIndex);
+                        EndedExploreInfos.Add(endedSeasonIndex, endedExploreInfo);
+                    }
+
+                    //이미 가져온 시즌정보는 다시 가져오지않음.
+                    if (!EndedSeasonInfos.TryGetValue(endedSeasonIndex, out var endedSeasonInfo))
+                    {
+                        endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex, stateRootHash, blockIndex);
+                        var endedBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex, stateRootHash, blockIndex);
+                        var endedExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(endedSeasonIndex, stateRootHash, blockIndex);
+
+                        EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
+                        EndedBountyBoards.Add(endedSeasonIndex, endedBountyBoard);
+                        EndedExploreBoards.Add(endedSeasonIndex, endedExploreBoard);
+
+
+                        //보상수령기간이 지날경우 더이상 가져오지않음.
+                        if (endedSeasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval < Game.Game.instance.Agent.BlockIndex)
+                        {
+                            break;
+                        }
                     }
                 }
-
+            }
+            catch (System.Exception e)
+            {
+                NcDebug.LogError($"[AdventureBossData]{e}");
             }
 
             //시즌이 진행중인 경우.
