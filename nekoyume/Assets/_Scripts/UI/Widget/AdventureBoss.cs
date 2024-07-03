@@ -282,7 +282,8 @@ namespace Nekoyume.UI
             {
                 baseItemViews[itemViewIndex].ItemViewSetCurrencyData(
                     _myReward.NcgReward.Value.Currency.Ticker,
-                    (decimal)_myReward.NcgReward.Value.MajorUnit);
+                    (decimal)_myReward.NcgReward.Value.MajorUnit,
+                    _myReward.NcgReward);
                 itemViewIndex++;
             }
 

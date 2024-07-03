@@ -217,12 +217,19 @@ namespace Nekoyume
             RuneNotificationObj.SetActiveSafe(false);
         }
 
-        public void ItemViewSetCurrencyData(string ticker, decimal amount)
+        public void ItemViewSetCurrencyData(string ticker, decimal amount, FungibleAssetValue? fungibleAsset = null)
         {
             gameObject.SetActive(true);
             ClearItem();
             ItemImage.overrideSprite = SpriteHelper.GetFavIcon(ticker);
-            CountText.text = ((BigInteger)amount).ToCurrencyNotation();
+            if(fungibleAsset == null)
+            {
+                CountText.text = ((BigInteger)amount).ToCurrencyNotation();
+            }
+            else
+            {
+                CountText.text = fungibleAsset.Value.GetQuantityString();
+            }
             GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(ticker));
         }
 
