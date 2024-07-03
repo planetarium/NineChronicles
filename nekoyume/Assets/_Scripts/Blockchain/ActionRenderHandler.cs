@@ -3892,6 +3892,7 @@ namespace Nekoyume.Blockchain
                         rewards,
                         States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
                         tableSheets.DeBuffLimitSheet,
+                        tableSheets.BuffLinkSheet,
                         true,
                         States.Instance.GameConfigState.ShatterStrikeMaxDamage);
 
