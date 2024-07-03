@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -112,6 +113,7 @@ namespace Nekoyume.Blockchain
 
         private readonly List<string> cachedRpcServerHosts = new List<string>();
         private int cachedRpcServerPort;
+        private CancellationTokenSource cancellationTokenSource;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void OnRuntimeInitialize()
@@ -756,6 +758,8 @@ namespace Nekoyume.Blockchain
                 .Subscribe()
                 .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
+
+            cancellationTokenSource = new CancellationTokenSource();
         }
 
         private async void OnDestroy()
@@ -775,6 +779,9 @@ namespace Nekoyume.Blockchain
             {
                 await _channel?.ShutdownAsync();
             }
+
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
         }
 
         #endregion
@@ -1012,7 +1019,15 @@ namespace Nekoyume.Blockchain
                 }
 
                 OnRetryAttempt.OnNext((this, retryCount));
-                await Task.Delay(5000);
+                try
+                {
+                    await Task.Delay(5000, cancellationTokenSource.Token);
+                }
+                catch (Exception e)
+                {
+                    NcDebug.Log($"[RPCAgent] RPCAgent GameObject is disposed. <b>Retry Canceled.</b>\n{e}");
+                    break;
+                }
 
                 NcDebug.Log($"[RPCAgent] Trying to connect to new RPC server host: {newRpcServerHost}:{cachedRpcServerPort}");
                 try
