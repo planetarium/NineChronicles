@@ -125,7 +125,7 @@ namespace Nekoyume.UI.Module
             var timeText = "(-)";
             if (_remainingBlockIndex >= 0)
             {
-                timeText = _remainingBlockIndex.BlockRangeToTimeSpanString();
+                timeText = $"{_remainingBlockIndex:#,0}({_remainingBlockIndex.BlockRangeToTimeSpanString()})";
             }
             else
             {
