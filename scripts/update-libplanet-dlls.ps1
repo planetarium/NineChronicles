@@ -1,4 +1,8 @@
 #!/usr/bin/env pwsh
+param (
+  [Parameter(Mandatory=$true)][string]$version
+)
+
 $InformationPreference = "Continue"
 
 function New-TemporaryDirectory {
@@ -9,14 +13,8 @@ function New-TemporaryDirectory {
 
 $9cRoot = git rev-parse --show-toplevel
 $PackagePath = Join-Path $9cRoot "nekoyume" "Assets" "Packages"
-$LibplanetProject = Join-Path $9cRoot `
-  "nekoyume" "Assets" "_Scripts" "Lib9c" "lib9c" `
-  ".Libplanet" "Libplanet" "Libplanet.csproj"
-$LibplanetVersion = (Select-Xml `
-  "/Project/PropertyGroup/VersionPrefix/text()" `
-  -LiteralPath $LibplanetProject).Node.Value
-$LibplanetDownloadUrlBase = `
-  "https://github.com/planetarium/libplanet/releases/download"
+$LibplanetVersion = $version
+$LibplanetDownloadUrlBase = "https://github.com/planetarium/libplanet/releases/download"
 
 Write-Information "Libplanet version: $LibplanetVersion"
 foreach ($file in Get-ChildItem $PackagePath -Filter Libplanet*.dll) {
