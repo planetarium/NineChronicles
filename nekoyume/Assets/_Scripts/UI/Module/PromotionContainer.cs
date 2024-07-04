@@ -51,14 +51,17 @@ namespace Nekoyume.UI.Module
 
         private EventNoticeData _bannerData;
 
-        private void OnEnable()
+        private void Awake()
         {
             if (!string.IsNullOrEmpty(enableKey))
             {
                 _bannerData = LiveAssetManager.instance.BannerData
                     .FirstOrDefault(data => data.EnableKeys.Contains(enableKey));
             }
+        }
 
+        private void OnEnable()
+        {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var inSeason = false;
             switch (season)
@@ -78,47 +81,85 @@ namespace Nekoyume.UI.Module
                     break;
             }
 
+            if (inSeason)
+            {
+                gameObject.SetActive(true);
+                return;
+            }
+
             var isInTime = false;
             foreach (var time in times)
             {
                 isInTime |= DateTime.UtcNow.IsInTime(time.beginDateTime, time.endDateTime);
             }
 
-            if (_bannerData is not null)
+            if (isInTime)
             {
-                isInTime |= _bannerData.UseDateTime &&
-                            DateTime.UtcNow.IsInTime(_bannerData.BeginDateTime, _bannerData.EndDateTime);
-
-                if (timeText)
-                {
-                    var begin = DateTime
-                        .ParseExact(_bannerData.BeginDateTime, "yyyy-MM-ddTHH:mm:ss", null)
-                        .ToString("M/d", CultureInfo.InvariantCulture);
-                    var end = DateTime
-                        .ParseExact(_bannerData.EndDateTime, "yyyy-MM-ddTHH:mm:ss", null)
-                        .ToString("M/d", CultureInfo.InvariantCulture);
-                    timeText.text = $"{begin} - {end}";
-                }
-
-                if (bannerImage)
-                {
-                    bannerImage.sprite = _bannerData.BannerImage;
-                }
-
-                if (linkButton)
-                {
-                    linkButton.onClick.RemoveAllListeners();
-                    linkButton.onClick.AddListener(() =>
-                    {
-                        if (!string.IsNullOrEmpty(_bannerData.Url))
-                        {
-                            Widget.Find<EventReleaseNotePopup>().Show(_bannerData);
-                        }
-                    });
-                }
+                gameObject.SetActive(true);
+                return;
             }
 
-            gameObject.SetActive(inSeason || isInTime);
+            var hasBanner = _bannerData is not null && _bannerData.UseDateTime &&
+                            DateTime.UtcNow.IsInTime(_bannerData.BeginDateTime, _bannerData.EndDateTime);
+            if (!hasBanner)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            if (timeText)
+            {
+                var begin = DateTime
+                    .ParseExact(_bannerData.BeginDateTime, "yyyy-MM-ddTHH:mm:ss", null)
+                    .ToString("M/d", CultureInfo.InvariantCulture);
+                var end = DateTime
+                    .ParseExact(_bannerData.EndDateTime, "yyyy-MM-ddTHH:mm:ss", null)
+                    .ToString("M/d", CultureInfo.InvariantCulture);
+                timeText.text = $"{begin} - {end}";
+            }
+
+            if (bannerImage)
+            {
+                bannerImage.sprite = _bannerData.BannerImage;
+            }
+
+            if (linkButton)
+            {
+                linkButton.onClick.RemoveAllListeners();
+                linkButton.onClick.AddListener(() =>
+                {
+                    if (!string.IsNullOrEmpty(_bannerData.Url))
+                    {
+                        Widget.Find<EventReleaseNotePopup>().Show(_bannerData);
+                    }
+                });
+
+                TryOpenBanner();
+            }
+
+            return;
+
+            // Open the event banner once a day.
+            // Only call when linkButton is not null
+            void TryOpenBanner()
+            {
+                var lastReadingDayKey = $"LAST_READING_DAY_{enableKey}";
+                const string dateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
+                var notReadAtToday = true;
+                if (PlayerPrefs.HasKey(lastReadingDayKey) &&
+                    DateTime.TryParseExact(PlayerPrefs.GetString(lastReadingDayKey),
+                        dateTimeFormat, null, DateTimeStyles.None, out var result))
+                {
+                    notReadAtToday = DateTime.Today != result.Date;
+                }
+
+                if (notReadAtToday)
+                {
+                    Widget.Find<EventReleaseNotePopup>().Show(_bannerData);
+                    PlayerPrefs.SetString(lastReadingDayKey, DateTime.Today.ToString(dateTimeFormat));
+                }
+            }
         }
     }
 }
