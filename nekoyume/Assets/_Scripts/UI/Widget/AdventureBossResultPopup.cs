@@ -115,6 +115,7 @@ namespace Nekoyume.UI
             var currency = Currency.Legacy(ticker, 0, null);
             var fav = new FungibleAssetValue(currency, amount, 0);
             var countableItemRune = new CountableItem(fav, amount);
+            countableItemRune.CountEnabled.Value = true;
             return countableItemRune;
         }
 
