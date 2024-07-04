@@ -1,9 +1,11 @@
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using System;
 
 namespace Nekoyume.UI
 {
+    using Cysharp.Threading.Tasks;
     using Nekoyume.Blockchain;
     using Nekoyume.Game.Controller;
     using Nekoyume.L10n;
@@ -47,6 +49,10 @@ namespace Nekoyume.UI
                         }
                         AudioController.instance.PlaySfx(AudioController.SfxCode.SuccessEffectSlot);
                         _loadingEnd?.Invoke(true);
+                        UniTask.Delay(TimeSpan.FromSeconds(0.5f)).ContinueWith(() =>
+                        {
+                            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState(eval.OutputState, eval.BlockIndex).Forget();
+                        }).Forget();
                     });
                 }
             }).AddTo(gameObject);
@@ -73,6 +79,10 @@ namespace Nekoyume.UI
                         }
                         AudioController.instance.PlaySfx(AudioController.SfxCode.SuccessEffectSlot);
                         _loadingEnd?.Invoke(true);
+                        UniTask.Delay(TimeSpan.FromSeconds(0.5f)).ContinueWith(() =>
+                        {
+                            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState(eval.OutputState, eval.BlockIndex).Forget();
+                        }).Forget();
                     });
                 }
             }).AddTo(gameObject);
