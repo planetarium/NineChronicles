@@ -101,8 +101,7 @@ namespace Nekoyume.UI
                     foreach (var favReward in lastClaimableReward.FavReward)
                     {
                         RuneSheet runeSheet = Game.instance.TableSheets.RuneSheet;
-                        runeSheet.TryGetValue(favReward.Key, out var runeRow);
-                        if (runeRow != null)
+                        if (runeSheet.TryGetValue(favReward.Key, out var runeRow))
                         {
                             var currency = Currency.Legacy(runeRow.Ticker, 0, null);
                             var fav = new FungibleAssetValue(currency, favReward.Value, 0);

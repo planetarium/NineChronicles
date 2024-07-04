@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
 
         public void OnClickUnlockAction()
         {
-            if (indicatorObj.activeSelf)
+            if (indicatorObj.activeInHierarchy)
             {
                 OneLineSystem.Push(
                         MailType.System,

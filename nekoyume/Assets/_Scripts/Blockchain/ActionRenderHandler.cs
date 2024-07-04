@@ -3692,7 +3692,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
                 .Where(ValidateEvaluationIsSuccess)
-                .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockFloor)
                 .AddTo(_disposables);
         }
