@@ -191,11 +191,20 @@ namespace Nekoyume.UI
                 var worldMap = Find<WorldMap>();
                 worldMap.Show(States.Instance.CurrentAvatarState.worldInformation, true);
                 Find<AdventureBoss>().Show();
+
+                //시즌이 종료된상황에서는 어드벤처보스ui가 안뜰가능성이 있음.
+                if (!Find<AdventureBoss>().isActiveAndEnabled)
+                {
+                    NcDebug.LogError("AdventureBoss is not active");
+                    return;
+                }
+
                 if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
                 {
                     NcDebug.LogError("BossData is null");
                     return;
                 }
+
                 Find<AdventureBossPreparation>().Show(
                         L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"),
                         _lastClearFloor * bossData.SweepAp,
