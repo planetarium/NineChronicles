@@ -35256,6 +35256,41 @@ PrefabInstance:
       propertyPath: l10nKey
       value: UI_WORLD_MAP
       objectReference: {fileID: 0}
+    - target: {fileID: 3836353999784113033, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: enableKey
+      value: UI_WorldMap_BackButton_Banner
+      objectReference: {fileID: 0}
+    - target: {fileID: 4709182046330643181, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5486180864095684049, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5486180864095684049, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5486180864095684049, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5486180864095684049, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5486180864095684049, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6679572050248287148, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: helpId
@@ -35265,6 +35300,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: UI_WORLD_MAP
+      objectReference: {fileID: 0}
+    - target: {fileID: 6950815306001856415, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 14.95
       objectReference: {fileID: 0}
     - target: {fileID: 7126975939112497894, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
