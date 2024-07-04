@@ -279,6 +279,7 @@ namespace Nekoyume.UI
                 Subscribe(RefreshSeasonInfo).
                 AddTo(_disposablesByEnable);
             Game.instance.Agent.BlockIndexSubject
+                .StartWith(Game.instance.Agent.BlockIndex)
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposablesByEnable);
 

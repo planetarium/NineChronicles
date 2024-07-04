@@ -145,6 +145,7 @@ namespace Nekoyume.UI
                     .AddTo(_disposablesByEnable);
 
                 Game.Game.instance.Agent.BlockIndexSubject
+                    .StartWith(Game.Game.instance.Agent.BlockIndex)
                     .Subscribe(UpdateViewAsync)
                     .AddTo(_disposablesByEnable);
 
