@@ -311,10 +311,10 @@ namespace Nekoyume.UI
             }
 
             if (!AudioController.instance.CurrentPlayingMusicName
-                    .Equals(AudioController.MusicCode.Combination))
+                    .Equals(AudioController.MusicCode.Workshop))
             {
                 AudioController.instance
-                    .PlayMusic(AudioController.MusicCode.Combination);
+                    .PlayMusic(AudioController.MusicCode.Workshop);
             }
 
             RxProps.EventScheduleRowForRecipe

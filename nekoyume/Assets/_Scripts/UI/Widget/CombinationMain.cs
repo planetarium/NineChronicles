@@ -123,7 +123,7 @@ namespace Nekoyume.UI
             }
 
             var audioController = AudioController.instance;
-            var musicName = AudioController.MusicCode.Combination;
+            var musicName = AudioController.MusicCode.Workshop;
             if (!audioController.CurrentPlayingMusicName.Equals(musicName))
             {
                 AudioController.instance.PlayMusic(musicName);
