@@ -83,7 +83,6 @@ namespace Nekoyume.UI.Module
 
             if (inSeason)
             {
-                gameObject.SetActive(true);
                 return;
             }
 
@@ -95,7 +94,6 @@ namespace Nekoyume.UI.Module
 
             if (isInTime)
             {
-                gameObject.SetActive(true);
                 return;
             }
 
