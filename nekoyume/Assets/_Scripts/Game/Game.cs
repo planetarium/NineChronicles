@@ -2420,15 +2420,9 @@ namespace Nekoyume.Game
                 widget = Widget.Create<OneButtonSystem>();
             }
 
-            widget.Show(
-                message,
-                L10nManager.Localize("UI_QUIT"),
-                ApplicationQuit);
-        }
-
-        private void OnLowMemory()
-        {
-            GC.Collect();
+            widget.Show(message, 
+                        L10nManager.Localize("UI_QUIT"),
+                        ApplicationQuit);
         }
 
         public static void ApplicationQuit()
