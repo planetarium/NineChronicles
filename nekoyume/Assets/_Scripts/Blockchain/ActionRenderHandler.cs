@@ -1513,6 +1513,13 @@ namespace Nekoyume.Blockchain
             var count = 1;
             var itemName = string.Empty;
 
+            foreach (var registerInfo in eval.Action.RegisterInfos)
+            {
+                if (registerInfo is RegisterInfo r)
+                {
+                    LocalLayerModifier.AddItem(r.AvatarAddress, r.TradableId, eval.BlockIndex, r.ItemCount, false);
+                }
+            }
             UniTask.RunOnThreadPool(async () =>
             {
                 switch (info)
