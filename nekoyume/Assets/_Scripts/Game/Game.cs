@@ -292,40 +292,14 @@ namespace Nekoyume.Game
                     KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             }
 
-            if (LiveAsset.GameConfig.IsKoreanBuild)
-            {
-                yield return L10nManager.Initialize(LanguageType.Korean).ToYieldInstruction();
-            }
-#if UNITY_EDITOR
-            else if (useSystemLanguage)
-            {
-                yield return L10nManager.Initialize().ToYieldInstruction();
-            }
-            else
-            {
-                yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
-                languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
-            }
-#else
-            else
-            {
-                yield return L10nManager
-                    .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
-                        ? L10nManager.CurrentLanguage
-                        : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
-                    .ToYieldInstruction();
-            }
-#endif
-
-            yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
-
-            NcDebug.Log("[Game] Start()... L10nManager initialized");
+            yield return InitializeL10N();
 
             // NOTE: Initialize planet registry.
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
             var planetContext = new PlanetContext(_commandLineOptions);
             yield return PlanetSelector.InitializePlanetRegistryAsync(planetContext).ToCoroutine();
+            
 #if RUN_ON_MOBILE
             if (planetContext.HasError)
             {
@@ -391,73 +365,17 @@ namespace Nekoyume.Game
                 rpcServerHost: _commandLineOptions.RpcServerHost);
             Analyzer.Track("Unity/Started");
 
-#if ENABLE_IL2CPP
-            // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
-            StaticCompositeResolver.Instance.Register(
-                    MagicOnion.Resolvers.MagicOnionResolver.Instance,
-                    Lib9c.Formatters.NineChroniclesResolver.Instance,
-                    MessagePack.Resolvers.GeneratedResolver.Instance,
-                    MessagePack.Resolvers.StandardResolver.Instance
-                );
-            var resolver = StaticCompositeResolver.Instance;
-#else
-            var resolver = CompositeResolver.Create(
-                NineChroniclesResolver.Instance,
-                StandardResolver.Instance
-            );
-#endif
-            var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
-            MessagePackSerializer.DefaultOptions = options;
+            InitializeMessagePackResolver();
 
-            if (_commandLineOptions.RequiredUpdate)
+            if (CheckRequiredUpdate())
             {
-                var popup = Widget.Find<IconAndButtonSystem>();
-                if (Nekoyume.Helper.Util.GetKeystoreJson() != string.Empty)
-                {
-                    popup.ShowWithTwoButton(
-                        "UI_REQUIRED_UPDATE_TITLE",
-                        "UI_REQUIRED_UPDATE_CONTENT",
-                        "UI_OK",
-                        "UI_KEY_BACKUP",
-                        true,
-                        IconAndButtonSystem.SystemType.Information);
-                    popup.SetCancelCallbackToBackup();
-                }
-                else
-                {
-                    popup.Show(
-                        "UI_REQUIRED_UPDATE_TITLE",
-                        "UI_REQUIRED_UPDATE_CONTENT",
-                        "UI_OK",
-                        true,
-                        IconAndButtonSystem.SystemType.Information);
-                }
-
-                popup.ConfirmCallback = popup.CancelCallback = () =>
-                {
-#if UNITY_ANDROID
-                    Application.OpenURL(_commandLineOptions.GoogleMarketUrl);
-#elif UNITY_IOS
-                    Application.OpenURL(_commandLineOptions.AppleMarketUrl);
-#endif
-                };
+                // NOTE: Required update is detected.
                 yield break;
             }
-
+            
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
 
-            // Initialize MainCanvas first
-            MainCanvas.instance.InitializeFirst();
-
-            var settingPopup = Widget.Find<SettingPopup>();
-            settingPopup.UpdateSoundSettings();
-
-            // Initialize TableSheets. This should be done before initialize the Agent.
-            ResourcesHelper.Initialize();
-            NcDebug.Log("[Game] Start()... ResourcesHelper initialized");
-            AudioController.instance.Initialize();
-            NcDebug.Log("[Game] Start()... AudioController initialized");
-
+            InitializeFirstResources();
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
 
             // NOTE: Initialize IAgent.
@@ -471,6 +389,7 @@ namespace Nekoyume.Game
                     }
                 )
             );
+            
             var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
             grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
             yield return new WaitUntil(() => agentInitialized);
@@ -495,26 +414,14 @@ namespace Nekoyume.Game
             Analyzer.SetPlanetId(CurrentPlanetId?.ToString());
             NcDebug.Log($"[Game] Start()... CurrentPlanetId updated. {CurrentPlanetId?.ToString()}");
 
+            // TODO: 위 Login코드에서 처리하면되는거아닌가? 생각이 들지만 기존 코드 유지.. 이부분 추후 확인
             if (agentInitializeSucceed)
             {
-                Analyzer.SetAgentAddress(Agent.Address.ToString());
-                Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
-
-                var evt = new AirbridgeEvent("Intro_Start_AgentInitialized");
-                evt.AddCustomAttribute("agent-address", Agent.Address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
-
-                settingPopup.UpdatePrivateKey(_commandLineOptions.PrivateKey);
+                OnAgentInitializeSucceed();
             }
             else
             {
-                Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
-
-                var evt = new AirbridgeEvent("Intro_Start_AgentInitializeFailed");
-                evt.AddCustomAttribute("agent-address", Agent.Address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
-
-                QuitWithAgentConnectionError(null);
+                OnAgentInitializeFailed();
                 yield break;
             }
 
@@ -592,8 +499,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                PatrolRewardServiceClient = new NineChroniclesAPIClient(
-                    _commandLineOptions.PatrolRewardServiceHost);
+                PatrolRewardServiceClient = new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
                 NcDebug.Log("[Game] Start()... PatrolRewardServiceClient initialized." +
                           $" host: {_commandLineOptions.PatrolRewardServiceHost}");
             }
@@ -675,23 +581,9 @@ namespace Nekoyume.Game
 
             var secondWidgetCompletedEvt = new AirbridgeEvent("Intro_Start_SecondWidgetCompleted");
             AirbridgeUnity.TrackEvent(secondWidgetCompletedEvt);
-
-            // Initialize Stage
-            sw.Reset();
-            sw.Start();
-            Stage.Initialize();
-            sw.Stop();
-            NcDebug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            sw.Reset();
-            sw.Start();
-            Arena.Initialize();
-            sw.Stop();
-            NcDebug.Log($"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            sw.Reset();
-            sw.Start();
-            RaidStage.Initialize();
-            sw.Stop();
-            NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            
+            InitializeStage();
+            
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             Helper.Util.TryGetAppProtocolVersionFromToken(
@@ -2442,6 +2334,173 @@ namespace Nekoyume.Game
             MainCanvas.instance.InitializeIntro();
         }
 #endregion Initialize On Awake
+        
+#region Initialize On Start
+        private IEnumerator InitializeL10N()
+        {
+            if (LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                yield return L10nManager.Initialize(LanguageType.Korean).ToYieldInstruction();
+            }
+#if UNITY_EDITOR
+            else if (useSystemLanguage)
+            {
+                yield return L10nManager.Initialize().ToYieldInstruction();
+            }
+            else
+            {
+                yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
+                languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
+            }
+#else
+            else
+            {
+                yield return L10nManager
+                    .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
+                        ? L10nManager.CurrentLanguage
+                        : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                    .ToYieldInstruction();
+            }
+#endif
+            yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
+
+            NcDebug.Log("[Game] Start()... L10nManager initialized");
+        }
+
+        private void InitializeMessagePackResolver()
+        {
+#if ENABLE_IL2CPP
+            // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
+            StaticCompositeResolver.Instance.Register(
+                MagicOnion.Resolvers.MagicOnionResolver.Instance,
+                NineChroniclesResolver.Instance,
+                GeneratedResolver.Instance,
+                StandardResolver.Instance
+            );
+            var resolver = StaticCompositeResolver.Instance;
+#else
+            var resolver = CompositeResolver.Create(
+                NineChroniclesResolver.Instance,
+                StandardResolver.Instance
+            );
+#endif
+            var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
+            MessagePackSerializer.DefaultOptions = options;
+        }
+
+        private bool CheckRequiredUpdate()
+        {
+            if (!_commandLineOptions.RequiredUpdate)
+            {
+                return false;
+            }
+            var popup = Widget.Find<IconAndButtonSystem>();
+            if (Nekoyume.Helper.Util.GetKeystoreJson() != string.Empty)
+            {
+                popup.ShowWithTwoButton(
+                    "UI_REQUIRED_UPDATE_TITLE",
+                    "UI_REQUIRED_UPDATE_CONTENT",
+                    "UI_OK",
+                    "UI_KEY_BACKUP",
+                    true,
+                    IconAndButtonSystem.SystemType.Information);
+                popup.SetCancelCallbackToBackup();
+            }
+            else
+            {
+                popup.Show(
+                    "UI_REQUIRED_UPDATE_TITLE",
+                    "UI_REQUIRED_UPDATE_CONTENT",
+                    "UI_OK",
+                    true,
+                    IconAndButtonSystem.SystemType.Information);
+            }
+
+            popup.ConfirmCallback = popup.CancelCallback = OpenUpdateURL;
+            return true;
+        }
+
+        private void InitializeFirstResources()
+        { 
+            // Initialize MainCanvas first
+            MainCanvas.instance.InitializeFirst();
+
+            var settingPopup = Widget.Find<SettingPopup>();
+            settingPopup.UpdateSoundSettings();
+
+            // Initialize TableSheets. This should be done before initialize the Agent.
+            ResourcesHelper.Initialize();
+            NcDebug.Log("[Game] Start()... ResourcesHelper initialized");
+            AudioController.instance.Initialize();
+            NcDebug.Log("[Game] Start()... AudioController initialized");
+        }
+        
+        private void OnAgentInitializeSucceed()
+        {
+            Analyzer.SetAgentAddress(Agent.Address.ToString());
+            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
+
+            var evt = new AirbridgeEvent("Intro_Start_AgentInitialized");
+            evt.AddCustomAttribute("agent-address", Agent.Address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
+            var settingPopup = Widget.Find<SettingPopup>();
+            settingPopup.UpdatePrivateKey(_commandLineOptions.PrivateKey);
+        }
+
+        private void OnAgentInitializeFailed()
+        {
+            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
+
+            var evt = new AirbridgeEvent("Intro_Start_AgentInitializeFailed");
+            evt.AddCustomAttribute("agent-address", Agent.Address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
+            QuitWithAgentConnectionError(null);
+        }
+
+        private void InitializeStage()
+        {
+            var sw = new Stopwatch();
+            sw.Reset();
+            sw.Start();
+            Stage.Initialize();
+            sw.Stop();
+            NcDebug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            sw.Reset();
+            sw.Start();
+            Arena.Initialize();
+            sw.Stop();
+            NcDebug.Log($"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            sw.Reset();
+            sw.Start();
+            RaidStage.Initialize();
+            sw.Stop();
+            NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+        }
+
+        private void InitializeRankPopup()
+        {
+            
+        }
+#endregion Initialize On Start
+
+        private void OpenUpdateURL()
+        {
+            // ReSharper disable once JoinDeclarationAndInitializer
+            string updateUrl;
+#if UNITY_ANDROID
+            updateUrl = _commandLineOptions?.GoogleMarketUrl;
+#elif UNITY_IOS
+            updateUrl = _commandLineOptions?.AppleMarketUrl;
+#endif
+            if (string.IsNullOrEmpty(updateUrl))
+            {
+                return;
+            }
+            
+            Application.OpenURL(updateUrl);
+        }
 
         public static void ApplicationQuit()
         {
