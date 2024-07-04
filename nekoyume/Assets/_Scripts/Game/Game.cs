@@ -222,12 +222,8 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
-            CurrentSocialEmail = string.Empty;
-
-            NcDebug.Log("[Game] Awake() invoked");
-            GL.Clear(true, true, Color.black);
-            Application.runInBackground = true;
-
+            PreAwake();
+            
 #if !UNITY_EDITOR && UNITY_IOS
             AppTrackingTransparency.OnAuthorizationStatusReceived += OnAuthorizationStatusReceived;
             AppTrackingTransparency.AuthorizationStatus status = AppTrackingTransparency.TrackingAuthorizationStatus();
@@ -248,32 +244,8 @@ namespace Nekoyume.Game
 #endif
             URL = Url.Load(UrlJsonPath);
 
-#if UNITY_EDITOR && !(UNITY_ANDROID || UNITY_IOS)
-            // Local Headless
-            if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
-            {
-                _headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless());
-                _headlessThread.Start();
-            }
-
-            if (useLocalHeadless || _commandLineOptions.RpcClient)
-            {
-                Agent = GetComponent<RPCAgent>();
-                SubscribeRPCAgent();
-            }
-            else
-            {
-                Agent = GetComponent<Agent>();
-            }
-#else
-            Agent = GetComponent<RPCAgent>();
-            SubscribeRPCAgent();
-#endif
-
-            States = new States();
-            LocalLayer = new LocalLayer();
-            LocalLayerActions = new LocalLayerActions();
-            MainCanvas.instance.InitializeIntro();
+            InitializeAgent();
+            PostAwake();
         }
 
         private IEnumerator Start()
@@ -2426,6 +2398,50 @@ namespace Nekoyume.Game
                         L10nManager.Localize("UI_QUIT"),
                         ApplicationQuit);
         }
+
+#region Initialize On Awake
+        private void PreAwake()
+        {
+            CurrentSocialEmail = string.Empty;
+
+            NcDebug.Log("[Game] Awake() invoked");
+            GL.Clear(true, true, Color.black);
+            Application.runInBackground = true;
+        }
+
+        private void InitializeAgent()
+        {
+#if UNITY_EDITOR && !(UNITY_ANDROID || UNITY_IOS)
+            // Local Headless
+            if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
+            {
+                _headlessThread = new Thread(HeadlessHelper.RunLocalHeadless);
+                _headlessThread.Start();
+            }
+
+            if (useLocalHeadless || _commandLineOptions.RpcClient)
+            {
+                Agent = GetComponent<RPCAgent>();
+                SubscribeRPCAgent();
+            }
+            else
+            {
+                Agent = GetComponent<Agent>();
+            }
+#else
+            Agent = GetComponent<RPCAgent>();
+            SubscribeRPCAgent();
+#endif
+        }
+
+        private void PostAwake()
+        {
+            States            = new States();
+            LocalLayer        = new LocalLayer();
+            LocalLayerActions = new LocalLayerActions();
+            MainCanvas.instance.InitializeIntro();
+        }
+#endregion Initialize On Awake
 
         public static void ApplicationQuit()
         {
