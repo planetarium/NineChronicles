@@ -418,10 +418,11 @@ namespace Nekoyume.UI.Model
                 FavReward = new Dictionary<int, int>(),
             };
 
-            if (SeasonInfo.Value == null || BountyBoard.Value == null || GetCurrentInvestorInfo() == null)
+            if (SeasonInfo.Value == null || BountyBoard.Value == null)
             {
                 return myReward;
             }
+
             var fav = new FungibleAssetValue(
                 States.Instance.GoldBalanceState.Gold.Currency,
                 additionalAmount,

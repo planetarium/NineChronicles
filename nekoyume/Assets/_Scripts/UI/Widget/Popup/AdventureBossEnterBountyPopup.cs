@@ -16,6 +16,7 @@ namespace Nekoyume.UI
     using Nekoyume.Helper;
     using Nekoyume.L10n;
     using Nekoyume.Model.Mail;
+    using Nekoyume.Model.State;
     using Nekoyume.State;
     using System.Linq;
     using UniRx;
@@ -117,6 +118,11 @@ namespace Nekoyume.UI
                     bountyInputArea.textComponent.color = _bountyDefaultColor;
                     inputWarning.SetActive(false);
                     confirmButton.Interactable = true;
+                }
+                if(bounty > Game.instance.States?.GoldBalanceState?.Gold.MajorUnit)
+                {
+                    bountyInputArea.text = Game.instance.States?.GoldBalanceState?.Gold.MajorUnit.ToString();
+                    return;
                 }
                 if (adventureBossData != null && adventureBossData.CurrentState.Value == Model.AdventureBossData.AdventureBossSeasonState.Progress)
                 {
@@ -244,9 +250,14 @@ namespace Nekoyume.UI
 
         private void RefreshRewards(AdventureBossGameData.ClaimableReward bountyRewards)
         {
+            foreach (var item in expectedRewardItems)
+            {
+                item.gameObject.SetActive(false);
+            }
             int i = 0;
             foreach (var item in bountyRewards.ItemReward)
             {
+                expectedRewardItems[i].gameObject.SetActive(true);
                 expectedRewardItems[i].gameObject.transform.DORewind();
                 expectedRewardItems[i].gameObject.transform.DOPunchScale(Vector3.one * 0.2f, 0.5f);
                 expectedRewardItems[i].ItemViewSetItemData(item.Key, item.Value);
@@ -254,6 +265,7 @@ namespace Nekoyume.UI
             }
             foreach (var item in bountyRewards.FavReward)
             {
+                expectedRewardItems[i].gameObject.SetActive(true);
                 if (expectedRewardItems[i].ItemViewSetCurrencyData(item.Key, item.Value))
                 {
                     expectedRewardItems[i].gameObject.transform.DORewind();
