@@ -253,7 +253,7 @@ namespace Nekoyume.UI
                 int i = 0;
                 if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue && wantedClaimableReward.NcgReward.Value.MajorUnit > 0)
                 {
-                    rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)wantedClaimableReward.NcgReward.Value.MajorUnit, wantedClaimableReward.NcgReward);
+                    rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value);
                     i++;
                 }
                 foreach (var itemReward in wantedClaimableReward.ItemReward)
@@ -294,7 +294,7 @@ namespace Nekoyume.UI
                 int i = 0;
                 if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue && exprolerClaimableReward.NcgReward.Value.MajorUnit > 0)
                 {
-                    rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)exprolerClaimableReward.NcgReward.Value.MajorUnit, exprolerClaimableReward.NcgReward);
+                    rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value);
                     i++;
                 }
                 foreach (var itemReward in exprolerClaimableReward.ItemReward)
