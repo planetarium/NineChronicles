@@ -148,8 +148,8 @@ namespace Nekoyume.UI.Model
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
                     info.stat.StatType.ToString(),
-                    info.stat.StatType.ValueToString(info.stat.TotalValueAsLong),
-                    nextInfo.stat.StatType.ValueToString(nextInfo.stat.TotalValueAsLong));
+                    info.stat.StatType.ValueToString(info.stat.TotalValue),
+                    nextInfo.stat.StatType.ValueToString(nextInfo.stat.TotalValue));
             }
 
             if (option.SkillId != 0)
