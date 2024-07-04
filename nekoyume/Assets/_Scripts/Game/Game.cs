@@ -1377,12 +1377,7 @@ namespace Nekoyume.Game
                     {
                         Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
                     }
-
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                    Application.Quit();
-#endif
+                    ApplicationQuit();
                 };
                 w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
 
@@ -1789,12 +1784,7 @@ namespace Nekoyume.Game
                 }
 
                 StoreUtils.ResetStore(storagePath);
-
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
+                ApplicationQuit();
             };
             confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
         }
@@ -1814,12 +1804,8 @@ namespace Nekoyume.Game
                 {
                     Directory.Delete(keyPath, true);
                 }
-
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
+                
+                ApplicationQuit();
             };
 
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
@@ -2496,7 +2482,7 @@ namespace Nekoyume.Game
         public static void ApplicationQuit()
         {
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.ExitPlaymode();
 #else
             Application.Quit();
 #endif
