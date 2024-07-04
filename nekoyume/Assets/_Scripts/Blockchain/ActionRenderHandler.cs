@@ -1315,6 +1315,8 @@ namespace Nekoyume.Blockchain
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
             var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var result = (ItemEnhancement13.ResultModel)slot.Result;
+            var itemUsable = result.itemUsable;
 
             if (StateGetter.TryGetAvatarState(
                    eval.OutputState,
@@ -1322,6 +1324,29 @@ namespace Nekoyume.Blockchain
                    avatarAddress,
                    out var avatarState))
             {
+                // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
+                foreach (var tradableId in result.materialItemIdList)
+                {
+                    if (avatarState.inventory.TryGetNonFungibleItem(
+                            tradableId,
+                            out ItemUsable materialItem))
+                    {
+                        if (itemUsable.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId, false);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                tradableId,
+                                materialItem.RequiredBlockIndex,
+                                1,
+                                false);
+                        }
+                    }
+                }
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -1341,7 +1366,6 @@ namespace Nekoyume.Blockchain
             var agentAddress = renderArgs.Evaluation.Signer;
             var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
             var result = (ItemEnhancement13.ResultModel)renderArgs.CombinationSlotState.Result;
-            var itemUsable = result.itemUsable;
 
             UniTask.RunOnThreadPool(() =>
             {
@@ -1350,44 +1374,6 @@ namespace Nekoyume.Blockchain
                 LocalLayerModifier.ModifyAgentCrystal(renderArgs.Evaluation, agentAddress,
                     -result.CRYSTAL.MajorUnit);
             });
-
-            if (itemUsable.ItemSubType == ItemSubType.Aura)
-            {
-                //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId, false);
-            }
-            else
-            {
-                LocalLayerModifier.AddItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1,
-                    false);
-            }
-
-            foreach (var tradableId in result.materialItemIdList)
-            {
-                if (renderArgs.AvatarState.inventory.TryGetNonFungibleItem(
-                        tradableId,
-                        out ItemUsable materialItem))
-                {
-                    if (itemUsable.ItemSubType == ItemSubType.Aura)
-                    {
-                        //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                        LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId, false);
-                    }
-                    else
-                    {
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            tradableId,
-                            materialItem.RequiredBlockIndex,
-                            1,
-                            false);
-                    }
-                }
-            }
 
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
