@@ -3803,6 +3803,8 @@ namespace Nekoyume.Blockchain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+                UpdateCurrentAvatarInventory(eval);
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
@@ -4023,6 +4025,8 @@ namespace Nekoyume.Blockchain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+                UpdateCurrentAvatarInventory(eval);
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
