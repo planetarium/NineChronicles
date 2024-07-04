@@ -405,6 +405,8 @@ namespace Nekoyume.Game
             // NOTE: Initialize Firebase.
             yield return FirebaseManager.InitializeAsync().ToCoroutine();
 #endif
+            
+            // TODO: 내부 분기 제거, 인스턴스 관리 주체 Analyzer내부에서 하도록 변경
             // NOTE: Initialize Analyzer after load CommandLineOptions, initialize States,
             //       initialize Firebase Manager.
             //       The planetId is null because it is not initialized yet. It will be
