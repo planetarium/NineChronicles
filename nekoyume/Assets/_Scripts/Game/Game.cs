@@ -2423,19 +2423,21 @@ namespace Nekoyume.Game
             widget.Show(
                 message,
                 L10nManager.Localize("UI_QUIT"),
-                () =>
-                {
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-#else
-                    Application.Quit();
-#endif
-                });
+                ApplicationQuit);
         }
 
         private void OnLowMemory()
         {
             GC.Collect();
+        }
+
+        public static void ApplicationQuit()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 }

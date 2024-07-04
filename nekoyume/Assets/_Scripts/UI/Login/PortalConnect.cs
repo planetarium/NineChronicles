@@ -827,14 +827,7 @@ namespace Nekoyume.UI
 
             var popup = Widget.Find<TitleOneButtonSystem>();
             popup.Show(data.title, message, "OK", false);
-            popup.SubmitCallback = () =>
-            {
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
-            };
+            popup.SubmitCallback = Game.Game.ApplicationQuit;
             Analyzer.Instance.Track("Unity/Portal/0");
 
             var evt = new AirbridgeEvent("Portal_0");
