@@ -428,9 +428,6 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-            var sw = new Stopwatch();
-            sw.Reset();
-            sw.Start();
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
             // NOTE: Initialize api client.
@@ -456,8 +453,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                RpcGraphQLClient = new NineChroniclesAPIClient(
-                    $"http://{_commandLineOptions.RpcServerHost}/graphql");
+                RpcGraphQLClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
             }
 
             // NOTE: Initialize world boss query.
@@ -529,10 +525,6 @@ namespace Nekoyume.Game
                           $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
-
-            sw.Stop();
-            NcDebug.Log("[Game] Start()... Services(w/o IAPService) initialized in" +
-                      $" {sw.ElapsedMilliseconds}ms.(elapsed)");
 
             StartCoroutine(InitializeIAP());
 
