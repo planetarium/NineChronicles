@@ -1316,46 +1316,13 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] CoLogin() invoked");
             if (_commandLineOptions.Maintenance)
             {
-                var w = Widget.Create<IconAndButtonSystem>();
-                w.ConfirmCallback = () => Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
-                if (Nekoyume.Helper.Util.GetKeystoreJson() != string.Empty)
-                {
-                    w.SetCancelCallbackToBackup();
-                    w.ShowWithTwoButton(
-                        "UI_MAINTENANCE",
-                        "UI_MAINTENANCE_CONTENT",
-                        "UI_OK",
-                        "UI_KEY_BACKUP",
-                        true,
-                        IconAndButtonSystem.SystemType.Information
-                    );
-                }
-                else
-                {
-                    w.Show(
-                        "UI_MAINTENANCE",
-                        "UI_MAINTENANCE_CONTENT",
-                        "UI_OK",
-                        true,
-                        IconAndButtonSystem.SystemType.Information);
-                }
-
+                ShowMaintenancePopup();
                 yield break;
             }
 
             if (_commandLineOptions.TestEnd)
             {
-                var w = Widget.Find<ConfirmPopup>();
-                w.CloseCallback = result =>
-                {
-                    if (result == ConfirmResult.Yes)
-                    {
-                        Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
-                    }
-                    ApplicationQuit();
-                };
-                w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
-
+                ShowTestEnd();
                 yield break;
             }
 
@@ -1366,14 +1333,7 @@ namespace Nekoyume.Game
             if (Application.isBatchMode)
             {
                 loginSystem.Show(privateKeyString: _commandLineOptions.PrivateKey);
-                sw.Reset();
-                sw.Start();
-                yield return Agent.Initialize(
-                    _commandLineOptions,
-                    KeyManager.Instance.SignedInPrivateKey,
-                    callback);
-                sw.Stop();
-                NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                yield return AgentInitialize(false, callback);
                 yield break;
             }
 
@@ -1402,17 +1362,8 @@ namespace Nekoyume.Game
                           $" to ({KeyManager.Instance.SignedInAddress}).");
             }
 
-            dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
-            sw.Reset();
-            sw.Start();
-            yield return Agent.Initialize(
-                _commandLineOptions,
-                KeyManager.Instance.SignedInPrivateKey,
-                callback);
-            sw.Stop();
-            NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            dimmedLoadingScreen.Close();
-            yield break;
+            yield return AgentInitialize(true, callback);
+            // yield break;
 #endif
 
             // NOTE: Initialize current planet info.
@@ -1423,13 +1374,12 @@ namespace Nekoyume.Game
             NcDebug.Log($"[Game] CoLogin()... PlanetInfo selected in {sw.ElapsedMilliseconds}ms.(elapsed)");
             if (planetContext.HasError)
             {
-                callback?.Invoke(false);
+                callback.Invoke(false);
                 yield break;
             }
 
             // NOTE: Check already logged in or local passphrase.
-            if (KeyManager.Instance.IsSignedIn ||
-                KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
+            if (KeyManager.Instance.IsSignedIn || KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
             {
                 NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is true or" +
                           " LoginSystem.TryLoginWithLocalPpk() is true.");
@@ -1453,15 +1403,14 @@ namespace Nekoyume.Game
                     dimmedLoadingScreen.Close();
                     if (planetContext.HasError)
                     {
-                        callback?.Invoke(false);
+                        callback.Invoke(false);
                         yield break;
                     }
                 }
 
-                introScreen.SetData(
-                    _commandLineOptions.KeyStorePath,
-                    pk.ToHexWithZeroPaddings(),
-                    planetContext);
+                introScreen.SetData(_commandLineOptions.KeyStorePath,
+                                    pk.ToHexWithZeroPaddings(),
+                                    planetContext);
             }
             else
             {
@@ -1479,10 +1428,9 @@ namespace Nekoyume.Game
             {
                 NcDebug.Log("[Game] CoLogin()... Has pledged account.");
                 var pk = KeyManager.Instance.SignedInPrivateKey;
-                introScreen.Show(
-                    _commandLineOptions.KeyStorePath,
-                    pk.ToHexWithZeroPaddings(),
-                    planetContext);
+                introScreen.Show(_commandLineOptions.KeyStorePath,
+                                 pk.ToHexWithZeroPaddings(),
+                                 planetContext);
 
                 NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
                 yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
@@ -1493,16 +1441,7 @@ namespace Nekoyume.Game
                 NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                           $" to ({pk.Address}).");
 
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
-                sw.Reset();
-                sw.Start();
-                yield return Agent.Initialize(
-                    _commandLineOptions,
-                    pk,
-                    callback);
-                sw.Stop();
-                dimmedLoadingScreen.Close();
-                NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                yield return AgentInitialize(true, callback);
                 yield break;
             }
 
@@ -1555,15 +1494,7 @@ namespace Nekoyume.Game
                 // Guest private key login flow
                 if (KeyManager.Instance.IsSignedIn)
                 {
-                    sw.Reset();
-                    sw.Start();
-                    yield return Agent.Initialize(
-                        _commandLineOptions,
-                        KeyManager.Instance.SignedInPrivateKey,
-                        callback);
-                    sw.Stop();
-                    NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-
+                    yield return AgentInitialize(false, callback);
                     yield break;
                 }
                 else
@@ -1734,16 +1665,7 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                       $" to ({KeyManager.Instance.SignedInAddress}).");
 
-            dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
-            sw.Reset();
-            sw.Start();
-            yield return Agent.Initialize(
-                _commandLineOptions,
-                KeyManager.Instance.SignedInPrivateKey,
-                callback);
-            sw.Stop();
-            dimmedLoadingScreen.Close();
-            NcDebug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            yield return AgentInitialize(true, callback);
         }
 
         public void ResetStore()
@@ -2466,6 +2388,74 @@ namespace Nekoyume.Game
             }).AsUniTask().ToCoroutine();
         }
 #endregion Initialize On Start
+        
+#region Initialize On Login
+        private void ShowMaintenancePopup()
+        {
+            var w = Widget.Create<IconAndButtonSystem>();
+            w.ConfirmCallback = () => Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
+            if (Nekoyume.Helper.Util.GetKeystoreJson() != string.Empty)
+            {
+                w.SetCancelCallbackToBackup();
+                w.ShowWithTwoButton("UI_MAINTENANCE",
+                                    "UI_MAINTENANCE_CONTENT",
+                                    "UI_OK",
+                                    "UI_KEY_BACKUP",
+                                    true,
+                                    IconAndButtonSystem.SystemType.Information
+                );
+            }
+            else
+            {
+                w.Show("UI_MAINTENANCE",
+                       "UI_MAINTENANCE_CONTENT",
+                       "UI_OK",
+                       true,
+                       IconAndButtonSystem.SystemType.Information);
+            }
+        }
+
+        private void ShowTestEnd()
+        {
+            var w = Widget.Find<ConfirmPopup>();
+            w.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
+                }
+                ApplicationQuit();
+            };
+            w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
+        }
+
+        private IEnumerator AgentInitialize(bool needDimmed, Action<bool> callback)
+        {
+            var sw = new Stopwatch();
+            sw.Reset();
+            sw.Start();
+            
+            if (needDimmed)
+            {
+                var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
+            }
+
+            yield return Agent.Initialize(
+                _commandLineOptions,
+                KeyManager.Instance.SignedInPrivateKey,
+                callback);
+            sw.Stop(); 
+            NcDebug.Log($"[Game] CoLogin()... AgentInitialized Complete in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            
+            if (needDimmed)
+            {            
+                var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
+                dimmedLoadingScreen.Close();
+            }
+        }
+        
+#endregion Initialize On Login
 
         private void OpenUpdateURL()
         {
