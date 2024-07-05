@@ -54,7 +54,7 @@ namespace Nekoyume.State
 
         public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
-        private readonly Dictionary<int, AvatarState> _avatarStates = new();
+        private readonly ConcurrentDictionary<int, AvatarState> _avatarStates = new();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
 
@@ -506,7 +506,7 @@ namespace Nekoyume.State
             if (!_avatarStates.ContainsKey(index))
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
 
-            _avatarStates.Remove(index);
+            _avatarStates.TryRemove(index, out _);
 
             if (index == CurrentAvatarKey)
             {
