@@ -22,6 +22,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using JetBrains.Annotations;
 using Lib9c.Formatters;
 using Libplanet.Action.State;
 using Libplanet.Common;
@@ -659,7 +660,7 @@ namespace Nekoyume.Game
 
         private void SubscribeRPCAgent()
         {
-            if (!(Agent is RPCAgent rpcAgent))
+            if (Agent is not RPCAgent rpcAgent)
             {
                 return;
             }
@@ -1363,7 +1364,7 @@ namespace Nekoyume.Game
             }
 
             yield return AgentInitialize(true, callback);
-            // yield break;
+            yield break;
 #endif
 
             // NOTE: Initialize current planet info.
