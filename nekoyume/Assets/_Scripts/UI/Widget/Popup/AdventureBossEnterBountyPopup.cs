@@ -30,6 +30,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject inputWarning;
         [SerializeField]
+        private TextMeshProUGUI inputWarningText;
+        [SerializeField]
         private ConditionalButton confirmButton;
 
         [SerializeField]
@@ -111,6 +113,7 @@ namespace Nekoyume.UI
                 {
                     bountyInputArea.textComponent.color = bountyRedColor;
                     inputWarning.SetActive(true);
+                    inputWarningText.text = L10nManager.Localize("ADVENTURE_BOSS_BOUNTY_INPUT_WARNING", States.Instance.GameConfigState.AdventureBossMinBounty);
                     confirmButton.Interactable = false;
                 }
                 else
