@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -24,13 +23,13 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            ShowWinner(seasonId).Forget();
+            ShowWinner(seasonId);
         }
 
-        public async UniTaskVoid ShowWinner(long seasonId)
+        public void ShowWinner(long seasonId)
         {
-            var explorerBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonId);
-            if(string.IsNullOrEmpty(explorerBoard?.RaffleWinnerName))
+            Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(seasonId, out var explorerBoard);
+            if (explorerBoard == null || string.IsNullOrEmpty(explorerBoard?.RaffleWinnerName))
             {
                 //실제로 아무도 참여하지않은 시즌의경우 당첨자가 없을 수 있음.
                 NcDebug.LogWarning("RaffleWinnerName is empty");

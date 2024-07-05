@@ -3721,18 +3721,22 @@ namespace Nekoyume.Blockchain
                     UpdateCurrentAvatarRuneStoneBalance(eval);
                     UpdateCurrentAvatarInventory(eval);
                 }
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            }).ToObservable().ObserveOnMainThread().Subscribe(async _ =>
             {
                 if (Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(lastSeason, out var exploreBoard))
                 {
                     if (exploreBoard.RaffleWinner == null)
                     {
+                        //이름을 가져오기 위해 바로 갱신함.
+                        await Game.Game.instance.AdventureBossData.RefreshEndedSeasons(eval.OutputState, eval.BlockIndex);
                         //최초
                         Widget.Find<AdventureBossNcgRandomRewardPopup>().Show(lastSeason);
                     }
-
-                    //기존정보 업데이트 보상수령 정보를 갱신하기위함.
-                    Game.Game.instance.AdventureBossData.RefreshEndedSeasons(eval.OutputState, eval.BlockIndex).Forget();
+                    else
+                    {
+                        //기존정보 업데이트 보상수령 정보를 갱신하기위함.
+                        Game.Game.instance.AdventureBossData.RefreshEndedSeasons(eval.OutputState, eval.BlockIndex).Forget();
+                    }
                 }
             });
         }
