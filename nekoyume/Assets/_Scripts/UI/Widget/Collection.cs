@@ -18,6 +18,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Inventory = Nekoyume.Model.Item.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -238,7 +239,7 @@ namespace Nekoyume.UI
             UpdateEffectView();
             UpdateToggleDictionary();
 
-            ReactiveAvatarState.Inventory.Subscribe(_ => OnUpdateInventory()).AddTo(gameObject);
+            ReactiveAvatarState.Inventory.Subscribe(OnUpdateInventory).AddTo(gameObject);
         }
 
         #region ScrollView
@@ -347,18 +348,21 @@ namespace Nekoyume.UI
             UpdateEffectView(); // on update model.Active
         }
 
-        private void OnUpdateInventory()
+        private void OnUpdateInventory(Inventory inventory)
         {
-            _models.UpdateMaterials(); // on update inventory
+            _models.UpdateMaterials(inventory); // on update inventory
 
             UpdateToggleDictionary(); // on update model.CanActivate
-            if (gameObject.activeSelf)
+            
+            if (!gameObject.activeSelf)
             {
-                UpdateToggleView(); // on update toggleDictionary
-                UpdateStatToggleView(); // on update toggleDictionary
-
-                UpdateItems(); // on update model.CanActivate
+                return;
             }
+            
+            UpdateToggleView();     // on update toggleDictionary
+            UpdateStatToggleView(); // on update toggleDictionary
+
+            UpdateItems(); // on update model.CanActivate
         }
 
         // on update model.Active
