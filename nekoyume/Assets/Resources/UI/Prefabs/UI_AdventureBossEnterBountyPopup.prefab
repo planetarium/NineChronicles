@@ -33524,6 +33524,7 @@ MonoBehaviour:
   bountyInputArea: {fileID: 515133399401895031}
   inputCountObj: {fileID: 1859774649801652641}
   inputWarning: {fileID: 1859774649473920078}
+  inputWarningText: {fileID: 7163858183367391958}
   confirmButton: {fileID: 5353135563993164674}
   stakingWarningMassage: {fileID: 8531168766435778192}
   stakingWarningMassageText: {fileID: 5943553973304036164}
@@ -41047,6 +41048,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1859774649699766618}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7163858183367391958 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8837219427280939916, guid: b2ed3c0ed67b64dc9bc309cbb7156632,
+    type: 3}
+  m_PrefabInstance: {fileID: 1859774649699766618}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1859774650209448524
 PrefabInstance:
   m_ObjectHideFlags: 0
