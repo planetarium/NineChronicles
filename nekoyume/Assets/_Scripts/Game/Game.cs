@@ -244,7 +244,7 @@ namespace Nekoyume.Game
 #endif
             URL = Url.Load(UrlJsonPath);
 
-            InitializeAgent();
+            CreateAgent();
             PostAwake();
         }
 
@@ -320,8 +320,7 @@ namespace Nekoyume.Game
                 NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.HasError is true." +
                                    "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
             }
-            else if (planetContext.PlanetRegistry!.TryGetPlanetInfoByHeadlessGrpc(
-                         _commandLineOptions.RpcServerHost, out var planetInfo))
+            else if (planetContext.PlanetRegistry!.TryGetPlanetInfoByHeadlessGrpc(_commandLineOptions.RpcServerHost, out var planetInfo))
             {
                 NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... planet id is found in planet registry.");
                 CurrentPlanetId = planetInfo.ID;
@@ -490,31 +489,7 @@ namespace Nekoyume.Game
             var showNextEvt = new AirbridgeEvent("Intro_Start_ShowNext");
             AirbridgeUnity.TrackEvent(showNextEvt);
 
-            if (!string.IsNullOrEmpty(_commandLineOptions.GuildServiceUrl))
-            {
-                GuildServiceClient = new GuildServiceClient(_commandLineOptions.GuildServiceUrl);
-                if (!string.IsNullOrEmpty(_commandLineOptions.GuildIconBucket))
-                {
-                    _guildBucketUrl = _commandLineOptions.GuildIconBucket;
-                }
-
-                yield return GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
-                {
-                    GuildModels = guildModels;
-                    NcDebug.Log($"[Guild] GetGuildAsync success");
-                    {
-                        foreach (var guildModel in guildModels)
-                        {
-                            var url = $"{_guildBucketUrl}/{guildModel.Name}.png";
-                            Helper.Util.DownloadTexture(url).Forget();
-                        }
-                    }
-                }, onError: message =>
-                {
-                    // cannot convert into method group because the method might not exist in some builds.
-                    NcDebug.LogError(message);
-                }).AsUniTask().ToCoroutine();
-            }
+            yield return InitializeGuildService();
 
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
@@ -2182,7 +2157,7 @@ namespace Nekoyume.Game
             Application.runInBackground = true;
         }
 
-        private void InitializeAgent()
+        private void CreateAgent()
         {
 #if UNITY_EDITOR && !(UNITY_ANDROID || UNITY_IOS)
             // Local Headless
@@ -2459,6 +2434,36 @@ namespace Nekoyume.Game
                           $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
+        }
+
+        private IEnumerator InitializeGuildService()
+        {
+            if (string.IsNullOrEmpty(_commandLineOptions.GuildServiceUrl))
+            {
+                yield break;
+            }
+            GuildServiceClient = new GuildServiceClient(_commandLineOptions.GuildServiceUrl);
+            if (!string.IsNullOrEmpty(_commandLineOptions.GuildIconBucket))
+            {
+                _guildBucketUrl = _commandLineOptions.GuildIconBucket;
+            }
+
+            yield return GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
+            {
+                GuildModels = guildModels;
+                NcDebug.Log($"[Guild] GetGuildAsync success");
+                {
+                    foreach (var guildModel in guildModels)
+                    {
+                        var url = $"{_guildBucketUrl}/{guildModel.Name}.png";
+                        Helper.Util.DownloadTexture(url).Forget();
+                    }
+                }
+            }, onError: message =>
+            {
+                // cannot convert into method group because the method might not exist in some builds.
+                NcDebug.LogError(message);
+            }).AsUniTask().ToCoroutine();
         }
 #endregion Initialize On Start
 
