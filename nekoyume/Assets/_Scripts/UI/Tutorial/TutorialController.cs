@@ -325,7 +325,7 @@ namespace Nekoyume.UI
                 TableSheets.Instance.CreateAvatarFavSheet.Values
                     .Select(row =>
                         new MailReward(row.Currency * row.Quantity, row.Quantity)));
-            Widget.Find<RewardScreen>().Show(mailRewards, "First Tutorial Rewards!");
+            Widget.Find<RewardScreen>().Show(mailRewards, "UI_TUTORIAL_5_CLAIM_REWARD");
         }
 
         public void RegisterWidget(Widget widget)
