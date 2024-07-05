@@ -2271,6 +2271,7 @@ namespace Nekoyume.Game
             }
             else
             {
+                ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
                 NcDebug.Log("[Game] Start()... ApiClient initialized." +
                           $" host: {_commandLineOptions.ApiServerHost}");
             }
