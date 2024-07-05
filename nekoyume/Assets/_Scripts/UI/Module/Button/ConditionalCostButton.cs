@@ -142,6 +142,7 @@ namespace Nekoyume.UI.Module
                     case CostType.Crystal:
                     case CostType.ActionPoint:
                     case CostType.Hourglass:
+                    case CostType.ApPotion:
                         break;
                     default:
                         return CostType.None;
