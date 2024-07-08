@@ -2490,39 +2490,39 @@ namespace Nekoyume.Game
 
         private void HasNotPledgedAccountAndNotSignedProcess(PlanetContext planetContext, string email, Address? agentAddrInPortal)
         {
-                    NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
+            NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
 
-                    // FIXME: 이 분기의 상황
-                    //        - 포탈에는 에이전트 A의 주소가 있다.
-                    //        - 플래닛 레지스트리를 기준으로 에이전트 A는 아직 플렛지한 플래닛이 없다.
-                    //        - 로컬에 에이전트 키가 없어서 로그인되지 않았다.
-                    //
-                    //        그래서 할 일.
-                    //        - 로컬 키스토어를 순회하면서 에이전트 A의 주소와 같은 키를 찾는다.
-                    //        - 포탈에 등록된 에이전트 A의 주소를 보여주면서, 이에 대응하는 키를 QR로 가져오라고 안내한다.
-                    //        - 등...
-                    //
-                    // FIXME: States of here.
-                    //        - Portal has agent address A which connected with social account.
-                    //        - No planet which pledged by agent address A in the planet registry.
-                    //        - LoginSystem.Login is false because of no agent key in the local.
-                    //
-                    //        So, we have to do.
-                    //        - Find the agent key which has same address with agent address A in the local.
-                    //        - While showing the agent address A, request to import the agent key which is
-                    //          corresponding to the agent address A.
-                    //        - etc...
+            // FIXME: 이 분기의 상황
+            //        - 포탈에는 에이전트 A의 주소가 있다.
+            //        - 플래닛 레지스트리를 기준으로 에이전트 A는 아직 플렛지한 플래닛이 없다.
+            //        - 로컬에 에이전트 키가 없어서 로그인되지 않았다.
+            //
+            //        그래서 할 일.
+            //        - 로컬 키스토어를 순회하면서 에이전트 A의 주소와 같은 키를 찾는다.
+            //        - 포탈에 등록된 에이전트 A의 주소를 보여주면서, 이에 대응하는 키를 QR로 가져오라고 안내한다.
+            //        - 등...
+            //
+            // FIXME: States of here.
+            //        - Portal has agent address A which connected with social account.
+            //        - No planet which pledged by agent address A in the planet registry.
+            //        - LoginSystem.Login is false because of no agent key in the local.
+            //
+            //        So, we have to do.
+            //        - Find the agent key which has same address with agent address A in the local.
+            //        - While showing the agent address A, request to import the agent key which is
+            //          corresponding to the agent address A.
+            //        - etc...
 
-                    NcDebug.LogError("Portal has agent address which connected with social account." +
-                                   " But no agent states in the all planets." +
-                                   $"\n Portal: {PortalConnect.PortalUrl}" +
-                                   $"\n Social Account: {email}" +
-                                   $"\n Agent Address in portal: {agentAddrInPortal}");
-                    planetContext.SetError(
-                        PlanetContext.ErrorType.UnsupportedCase01,
-                        PortalConnect.PortalUrl,
-                        email,
-                        agentAddrInPortal?.ToString() ?? "null");
+            NcDebug.LogError("Portal has agent address which connected with social account." +
+                           " But no agent states in the all planets." +
+                           $"\n Portal: {PortalConnect.PortalUrl}" +
+                           $"\n Social Account: {email}" +
+                           $"\n Agent Address in portal: {agentAddrInPortal}");
+            planetContext.SetError(
+                PlanetContext.ErrorType.UnsupportedCase01,
+                PortalConnect.PortalUrl,
+                email,
+                agentAddrInPortal?.ToString() ?? "null");
         }
 #endregion Initialize On Login
 
