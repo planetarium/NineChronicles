@@ -119,9 +119,9 @@ namespace Nekoyume.Game.Controller
             [UsedImplicitly] // Used in Event Data SO
             public const string Event22SummerTitle = "bgm_event_22summer_title";
 #endregion Event
-            
+
             [Obsolete("Use `bgm_workshop` instead.")]
-            public const string Combination = "bgm_combination";
+            public const string Combination = "bgm_workshop";
         }
 
         public class SfxCode
@@ -207,10 +207,10 @@ namespace Nekoyume.Game.Controller
 
         private readonly Dictionary<string, AudioSource> _musicPrefabs = new();
         private readonly Dictionary<string, AudioSource> _sfxPrefabs = new();
-        
+
         private readonly Dictionary<string, Stack<AudioInfo>> _musicPool = new();
         private readonly Dictionary<string, Stack<AudioInfo>> _sfxPool = new();
-        
+
         private readonly Dictionary<string, List<AudioInfo>> _musicPlaylist = new();
         private readonly Dictionary<string, List<AudioInfo>> _sfxPlaylist = new();
         private readonly Dictionary<string, List<AudioInfo>> _shouldRemoveMusic = new();
