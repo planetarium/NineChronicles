@@ -2481,10 +2481,10 @@ namespace Nekoyume.Game
         private void OpenUpdateURL()
         {
             // ReSharper disable once JoinDeclarationAndInitializer
-            string updateUrl;
-#if UNITY_ANDROID
+            string updateUrl = string.Empty;
+#if RUN_ON_MOBILE && UNITY_ANDROID
             updateUrl = _commandLineOptions?.GoogleMarketUrl;
-#elif UNITY_IOS
+#elif RUN_ON_MOBILE && UNITY_IOS
             updateUrl = _commandLineOptions?.AppleMarketUrl;
 #endif
             if (string.IsNullOrEmpty(updateUrl))
