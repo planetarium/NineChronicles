@@ -1364,7 +1364,7 @@ namespace Nekoyume.Game
             }
 
             yield return AgentInitialize(true, loginCallback);
-            //yield break;
+            yield break;
 #endif
 
             // NOTE: Initialize current planet info.
@@ -1404,22 +1404,14 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickTabToStart. Done.");
 
             string email = null;
-            Address? agentAddrInPortal;
+            Address? agentAddrInPortal = null;
             if (SigninContext.HasLatestSignedInSocialType)
             {
-                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-                sw.Reset();
-                sw.Start();
-                var getTokensTask = PortalConnect.GetTokensSilentlyAsync();
-                yield return new WaitUntil(() => getTokensTask.IsCompleted);
-                sw.Stop();
-                NcDebug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-                dimmedLoadingScreen.Close();
-                (email, _, agentAddrInPortal) = getTokensTask.Result;
-
-                NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
-                yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
-                NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
+                yield return HasLatestSignedInSocialTypeProcess((outEmail, outAddress) =>
+                {
+                    email = outEmail;
+                    agentAddrInPortal = outAddress;
+                });
             }
             else
             {
@@ -1446,24 +1438,11 @@ namespace Nekoyume.Game
                     yield return AgentInitialize(false, loginCallback);
                     yield break;
                 }
-                else
+                
+                yield return PortalLoginProcess(socialType, idToken, outAddr =>
                 {
-                    // NOTE: Portal login flow.
-                    dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-                    NcDebug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
-                    sw.Reset();
-                    sw.Start();
-                    var portalSigninTask = socialType == SigninContext.SocialType.Apple
-                        ? PortalConnect.SendAppleIdTokenAsync(idToken)
-                        : PortalConnect.SendGoogleIdTokenAsync(idToken);
-                    yield return new WaitUntil(() => portalSigninTask.IsCompleted);
-                    sw.Stop();
-                    NcDebug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-                    NcDebug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
-                    dimmedLoadingScreen.Close();
-
-                    agentAddrInPortal = portalSigninTask.Result;
-                }
+                    agentAddrInPortal = outAddr;
+                });
             }
 
             // NOTE: Update PlanetContext.PlanetAccountInfos.
@@ -1510,88 +1489,27 @@ namespace Nekoyume.Game
             // NOTE: Check if the planets have at least one agent.
             if (planetContext.HasPledgedAccount)
             {
-                NcDebug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
-                introScreen.ShowPlanetAccountInfosPopup(planetContext, !KeyManager.Instance.IsSignedIn);
-
-                NcDebug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
-                          " is not null.");
-                yield return new WaitUntil(() => planetContext.SelectedPlanetAccountInfo is not null);
-                NcDebug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
-                          $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
+                yield return ShowPlanetAccountInfosPopup(planetContext);
 
                 if (planetContext.IsSelectedPlanetAccountPledged)
                 {
-                    // NOTE: Player selected the planet that has agent.
-                    NcDebug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
-                              " Player don't have to make a pledge.");
-
-                    // NOTE: Complex logic here...
-                    //       - LoginSystem.Login is false.
-                    //       - Portal has player's account.
-                    //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
-                    //         - Import the agent key.
-                    if (!KeyManager.Instance.IsSignedIn)
-                    {
-                        // NOTE: QR code import sets KeyManager.Instance.IsSignedIn to true.
-                        introScreen.ShowForQrCodeGuide();
-                    }
+                    IsSelectedPlanetAccountPledgedProcess();
                 }
                 else
                 {
-                    // NOTE: Player selected the planet that has no agent.
-                    NcDebug.Log("[Game] CoLogin()... Try to create a new agent." +
-                              " Player may have to make a pledge.");
-
-                    // NOTE: Complex logic here...
-                    //       - LoginSystem.Login is false.
-                    //       - Portal has player's account.
-                    //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
-                    //         - Create a new agent in a new planet.
-                    if (!KeyManager.Instance.IsSignedIn)
-                    {
-                        // NOTE: QR code import sets KeyManager.Instance.IsSignedIn to true.
-                        introScreen.ShowForQrCodeGuide();
-                    }
+                    IsNotSelectedPlanetAccountPledgedProcess();
                 }
+
+                NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
+                yield return new WaitUntil(() => KeyManager.Instance.IsSignedIn);
+                NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
             }
             else
             {
                 NcDebug.Log("[Game] CoLogin()... pledged account not exist.");
                 if (!KeyManager.Instance.IsSignedIn)
                 {
-                    NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
-
-                    // FIXME: 이 분기의 상황
-                    //        - 포탈에는 에이전트 A의 주소가 있다.
-                    //        - 플래닛 레지스트리를 기준으로 에이전트 A는 아직 플렛지한 플래닛이 없다.
-                    //        - 로컬에 에이전트 키가 없어서 로그인되지 않았다.
-                    //
-                    //        그래서 할 일.
-                    //        - 로컬 키스토어를 순회하면서 에이전트 A의 주소와 같은 키를 찾는다.
-                    //        - 포탈에 등록된 에이전트 A의 주소를 보여주면서, 이에 대응하는 키를 QR로 가져오라고 안내한다.
-                    //        - 등...
-                    //
-                    // FIXME: States of here.
-                    //        - Portal has agent address A which connected with social account.
-                    //        - No planet which pledged by agent address A in the planet registry.
-                    //        - LoginSystem.Login is false because of no agent key in the local.
-                    //
-                    //        So, we have to do.
-                    //        - Find the agent key which has same address with agent address A in the local.
-                    //        - While showing the agent address A, request to import the agent key which is
-                    //          corresponding to the agent address A.
-                    //        - etc...
-
-                    NcDebug.LogError("Portal has agent address which connected with social account." +
-                                   " But no agent states in the all planets." +
-                                   $"\n Portal: {PortalConnect.PortalUrl}" +
-                                   $"\n Social Account: {email}" +
-                                   $"\n Agent Address in portal: {agentAddrInPortal}");
-                    planetContext.SetError(
-                        PlanetContext.ErrorType.UnsupportedCase01,
-                        PortalConnect.PortalUrl,
-                        email,
-                        agentAddrInPortal?.ToString() ?? "null");
+                    HasNotPledgedAccountAndNotSignedProcess(planetContext, email, agentAddrInPortal);
                     loginCallback?.Invoke(false);
                     yield break;
                 }
@@ -1603,11 +1521,7 @@ namespace Nekoyume.Game
                     e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
             }
 
-            CurrentSocialEmail = email == null ? string.Empty : email;
-
-            NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
-            yield return new WaitUntil(() => KeyManager.Instance.IsSignedIn);
-            NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn. Done.");
+            CurrentSocialEmail = email ?? string.Empty;
 
             // NOTE: Update CommandlineOptions.PrivateKey finally.
             _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
@@ -2475,6 +2389,140 @@ namespace Nekoyume.Game
                         $" to ({pk.Address}).");
 
             yield return AgentInitialize(true, loginCallback);
+        }
+
+        /// <summary>
+        /// If has latest signed in social type, then return email and agent address in portal.
+        /// </summary>
+        /// <param name="outValueCallback">callback of (email, agentAddrInPortal)</param>
+        private IEnumerator HasLatestSignedInSocialTypeProcess(Action<string, Address?> outValueCallback)
+        {
+            var introScreen = Widget.Find<IntroScreen>();
+            var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
+            dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+            
+            var sw = new Stopwatch();
+            sw.Reset();
+            sw.Start();
+            var getTokensTask = PortalConnect.GetTokensSilentlyAsync();
+            yield return new WaitUntil(() => getTokensTask.IsCompleted);
+            sw.Stop();
+            NcDebug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            dimmedLoadingScreen.Close();
+            outValueCallback?.Invoke(getTokensTask.Result.email, getTokensTask.Result.address);
+
+            NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
+            yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
+            NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
+        }
+
+        private IEnumerator PortalLoginProcess(SigninContext.SocialType socialType, string idToken, Action<Address?> callback)
+        {
+            var sw = new Stopwatch();
+            var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
+            
+            // NOTE: Portal login flow.
+            dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+            NcDebug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
+            sw.Reset();
+            sw.Start();
+            var portalSigninTask = socialType == SigninContext.SocialType.Apple
+                ? PortalConnect.SendAppleIdTokenAsync(idToken)
+                : PortalConnect.SendGoogleIdTokenAsync(idToken);
+            yield return new WaitUntil(() => portalSigninTask.IsCompleted);
+            sw.Stop();
+            NcDebug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            NcDebug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
+            dimmedLoadingScreen.Close();
+
+            callback?.Invoke(portalSigninTask.Result);
+        }
+
+        private IEnumerator ShowPlanetAccountInfosPopup(PlanetContext planetContext)
+        {
+            var introScreen = Widget.Find<IntroScreen>();
+            NcDebug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
+            introScreen.ShowPlanetAccountInfosPopup(planetContext, !KeyManager.Instance.IsSignedIn);
+
+            NcDebug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo is not null.");
+            yield return new WaitUntil(() => planetContext.SelectedPlanetAccountInfo is not null);
+            NcDebug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
+                        $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
+        }
+
+        private void IsSelectedPlanetAccountPledgedProcess()
+        {
+            var introScreen = Widget.Find<IntroScreen>();
+            // NOTE: Player selected the planet that has agent.
+            NcDebug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
+                        " Player don't have to make a pledge.");
+
+            // NOTE: Complex logic here...
+            //       - LoginSystem.Login is false.
+            //       - Portal has player's account.
+            //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
+            //         - Import the agent key.
+            if (!KeyManager.Instance.IsSignedIn)
+            {
+                // NOTE: QR code import sets KeyManager.Instance.IsSignedIn to true.
+                introScreen.ShowForQrCodeGuide();
+            }
+        }
+
+        private void IsNotSelectedPlanetAccountPledgedProcess()
+        {
+            var introScreen = Widget.Find<IntroScreen>();
+            // NOTE: Player selected the planet that has no agent.
+            NcDebug.Log("[Game] CoLogin()... Try to create a new agent." +
+                        " Player may have to make a pledge.");
+
+            // NOTE: Complex logic here...
+            //       - LoginSystem.Login is false.
+            //       - Portal has player's account.
+            //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
+            //         - Create a new agent in a new planet.
+            if (!KeyManager.Instance.IsSignedIn)
+            {
+                // NOTE: QR code import sets KeyManager.Instance.IsSignedIn to true.
+                introScreen.ShowForQrCodeGuide();
+            }
+        }
+
+        private void HasNotPledgedAccountAndNotSignedProcess(PlanetContext planetContext, string email, Address? agentAddrInPortal)
+        {
+                    NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
+
+                    // FIXME: 이 분기의 상황
+                    //        - 포탈에는 에이전트 A의 주소가 있다.
+                    //        - 플래닛 레지스트리를 기준으로 에이전트 A는 아직 플렛지한 플래닛이 없다.
+                    //        - 로컬에 에이전트 키가 없어서 로그인되지 않았다.
+                    //
+                    //        그래서 할 일.
+                    //        - 로컬 키스토어를 순회하면서 에이전트 A의 주소와 같은 키를 찾는다.
+                    //        - 포탈에 등록된 에이전트 A의 주소를 보여주면서, 이에 대응하는 키를 QR로 가져오라고 안내한다.
+                    //        - 등...
+                    //
+                    // FIXME: States of here.
+                    //        - Portal has agent address A which connected with social account.
+                    //        - No planet which pledged by agent address A in the planet registry.
+                    //        - LoginSystem.Login is false because of no agent key in the local.
+                    //
+                    //        So, we have to do.
+                    //        - Find the agent key which has same address with agent address A in the local.
+                    //        - While showing the agent address A, request to import the agent key which is
+                    //          corresponding to the agent address A.
+                    //        - etc...
+
+                    NcDebug.LogError("Portal has agent address which connected with social account." +
+                                   " But no agent states in the all planets." +
+                                   $"\n Portal: {PortalConnect.PortalUrl}" +
+                                   $"\n Social Account: {email}" +
+                                   $"\n Agent Address in portal: {agentAddrInPortal}");
+                    planetContext.SetError(
+                        PlanetContext.ErrorType.UnsupportedCase01,
+                        PortalConnect.PortalUrl,
+                        email,
+                        agentAddrInPortal?.ToString() ?? "null");
         }
 #endregion Initialize On Login
 
