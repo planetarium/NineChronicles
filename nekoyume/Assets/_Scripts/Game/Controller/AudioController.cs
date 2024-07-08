@@ -120,8 +120,8 @@ namespace Nekoyume.Game.Controller
             public const string Event22SummerTitle = "bgm_event_22summer_title";
 #endregion Event
 
-            [Obsolete("Use `bgm_workshop` instead.")]
-            public const string Combination = "bgm_workshop";
+            // [Obsolete("Use `bgm_workshop` instead. bgm_combination has not prefab.")]
+            // public const string Combination = "bgm_combination";
         }
 
         public class SfxCode
