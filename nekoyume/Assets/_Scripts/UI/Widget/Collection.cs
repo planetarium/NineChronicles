@@ -170,7 +170,11 @@ namespace Nekoyume.UI
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
                     {
-                        _models?.UpdateMaterials(Game.Game.instance.States.CurrentAvatarState.inventory);
+                        if (Game.Game.instance.States?.CurrentAvatarState?.inventory is not null)
+                        {
+                            _models?.UpdateMaterials(Game.Game.instance.States.CurrentAvatarState.inventory);
+                        }
+
                         CurrentItemType = itemTypeToggle.type;
 
                         var toggle = statToggles.First().toggle;
@@ -189,7 +193,11 @@ namespace Nekoyume.UI
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
                     {
-                        _models?.UpdateMaterials(Game.Game.instance.States.CurrentAvatarState.inventory);
+                        if (Game.Game.instance.States?.CurrentAvatarState?.inventory is not null)
+                        {
+                            _models?.UpdateMaterials(Game.Game.instance.States.CurrentAvatarState.inventory);
+                        }
+
                         _currentStatType = statToggle.stat;
 
                         UpdateItems();
@@ -355,12 +363,12 @@ namespace Nekoyume.UI
             _models.UpdateMaterials(inventory); // on update inventory
 
             UpdateToggleDictionary(); // on update model.CanActivate
-            
+
             if (!gameObject.activeSelf)
             {
                 return;
             }
-            
+
             UpdateToggleView();     // on update toggleDictionary
             UpdateStatToggleView(); // on update toggleDictionary
 
