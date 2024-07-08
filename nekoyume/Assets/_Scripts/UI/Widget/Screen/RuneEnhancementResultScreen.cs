@@ -192,7 +192,7 @@ namespace Nekoyume.UI
             {
                 var info = nextOption.Stats[i];
                 stats[i].gameObject.SetActive(true);
-                statTextList[i].text = $"{info.stat.StatType.ToString()} {info.stat.StatType.ValueToString(info.stat.TotalValueAsLong)}";
+                statTextList[i].text = $"{info.stat.StatType.ToString()} {info.stat.StatType.ValueToString(info.stat.TotalValue)}";
             }
 
             if (item.Level > 0)
@@ -206,7 +206,7 @@ namespace Nekoyume.UI
                 {
                     var next = nextOption.Stats[i];
                     var cur = curOption.Stats[i];
-                    var result = next.stat.TotalValueAsLong - cur.stat.TotalValueAsLong;
+                    var result = next.stat.TotalValue - cur.stat.TotalValue;
                     addStatTextList[i].text = $"(+{cur.stat.StatType.ValueToString(result)})";
                 }
             }
