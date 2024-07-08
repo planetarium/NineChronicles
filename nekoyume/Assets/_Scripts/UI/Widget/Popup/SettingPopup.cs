@@ -276,7 +276,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            adventurebossPushToggle.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
+            adventurebossPushToggle.transform.parent.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
 
             var muteString = L10nManager.Localize("UI_MUTE_AUDIO");
             foreach (var text in muteTexts)
