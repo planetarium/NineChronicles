@@ -21347,6 +21347,7 @@ GameObject:
   - component: {fileID: 3941392060363636669}
   - component: {fileID: 3943741661605272137}
   - component: {fileID: 5585674360547870765}
+  - component: {fileID: 4037114744851494977}
   m_Layer: 5
   m_Name: UI_AddHammerPopup
   m_TagString: Untagged
@@ -21405,6 +21406,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4037114744851494977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3866893419839672607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 032878c4e7bf4c459a51ca70de33c09a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  closeButton: {fileID: 0}
 --- !u!1 &4467897787375660505
 GameObject:
   m_ObjectHideFlags: 0
