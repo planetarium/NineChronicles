@@ -28,6 +28,11 @@ namespace Nekoyume
             DateTime now) =>
             BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, secondsPerBlock, now, "yyyy/MM/dd");
 
+        public static string BlockIndexToDateTimeStringHour(
+            this long targetBlockIndex,
+            long currentBlockIndex) =>
+            BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, LiveAssetManager.instance.GameConfig.SecondsPerBlock, DateTime.Now, "yyyy/MM/dd HH:mm");
+
         public static string BlockRangeToTimeSpanString(this long blockRange, bool limitUnit = false)
         {
             var timeSpan = BlockToTimeSpan(blockRange);
