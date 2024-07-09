@@ -921,6 +921,13 @@ namespace Nekoyume.UI
             Read(mail);
         }
 
+        public void Read(AdventureBossRaffleWinnerMail adventureBossRaffleWinnerMail)
+        {
+            NcDebug.Log($"[{nameof(AdventureBossRaffleWinnerMail)}] ItemCount: {adventureBossRaffleWinnerMail.id}, Season: {adventureBossRaffleWinnerMail.Season}, ");
+            adventureBossRaffleWinnerMail.New = false;
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
+        }
+
         [Obsolete]
         public void Read(SellCancelMail mail)
         {

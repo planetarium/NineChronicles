@@ -101,8 +101,7 @@ namespace Nekoyume.UI
                     foreach (var favReward in lastClaimableReward.FavReward)
                     {
                         RuneSheet runeSheet = Game.instance.TableSheets.RuneSheet;
-                        runeSheet.TryGetValue(favReward.Key, out var runeRow);
-                        if (runeRow != null)
+                        if (runeSheet.TryGetValue(favReward.Key, out var runeRow))
                         {
                             var currency = Currency.Legacy(runeRow.Ticker, 0, null);
                             var fav = new FungibleAssetValue(currency, favReward.Value, 0);
@@ -155,14 +154,17 @@ namespace Nekoyume.UI
                 return;
             }
 
-            LoadTotalRewards().ContinueWith(() =>
+            LoadTotalRewards().ContinueWith((result) =>
             {
-                AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
-                base.Show(ignoreShowAnimation);
+                if (result)
+                {
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
+                    base.Show(ignoreShowAnimation);
+                }
             });
         }
 
-        public async UniTask LoadTotalRewards()
+        public async UniTask<bool> LoadTotalRewards()
         {
             ClaimableReward wantedClaimableReward = new ClaimableReward
             {
@@ -253,7 +255,7 @@ namespace Nekoyume.UI
                 int i = 0;
                 if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue && wantedClaimableReward.NcgReward.Value.MajorUnit > 0)
                 {
-                    rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)wantedClaimableReward.NcgReward.Value.MajorUnit);
+                    rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value);
                     i++;
                 }
                 foreach (var itemReward in wantedClaimableReward.ItemReward)
@@ -294,7 +296,7 @@ namespace Nekoyume.UI
                 int i = 0;
                 if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue && exprolerClaimableReward.NcgReward.Value.MajorUnit > 0)
                 {
-                    rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value.Currency.Ticker, (decimal)exprolerClaimableReward.NcgReward.Value.MajorUnit);
+                    rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value);
                     i++;
                 }
                 foreach (var itemReward in exprolerClaimableReward.ItemReward)
@@ -329,11 +331,17 @@ namespace Nekoyume.UI
             }
             lastClaimableReward = AdventureBossData.AddClaimableReward(lastClaimableReward, wantedClaimableReward);
             lastClaimableReward = AdventureBossData.AddClaimableReward(lastClaimableReward, exprolerClaimableReward);
-            if (noRewardItemsBounty.activeSelf && noRewardItemsExplore.activeSelf)
+
+            if(lastClaimableReward.ItemReward.Count == 0 && lastClaimableReward.FavReward.Count == 0 &&
+                (lastClaimableReward.NcgReward == null || !lastClaimableReward.NcgReward.HasValue || lastClaimableReward.NcgReward.Value.MajorUnit == 0))
             {
-                Close();
+                Game.instance.AdventureBossData.EndedExploreInfos.TryGetValue(_lastSeasonId, out var exploreInfo);
+                Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(_lastSeasonId, out var bountyBoard);
+                NcDebug.LogError($"lastClaimableReward is empty {_lastSeasonId} {exploreInfo?.Claimed} {bountyBoard?.Investors.Count} {bountyBoard?.Investors.FirstOrDefault(inv => inv.AvatarAddress == Game.instance.States.CurrentAvatarState.address)?.Claimed}");
+                return false;
             }
-            return;
+
+            return true;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

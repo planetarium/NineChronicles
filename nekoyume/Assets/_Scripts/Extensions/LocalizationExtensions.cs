@@ -225,6 +225,10 @@ namespace Nekoyume
                     return await unloadFromMyGaragesRecipientMail.GetCellContentAsync();
                 case ClaimItemsMail claimItemsMail:
                     return await claimItemsMail.GetCellContentAsync();
+                case AdventureBossRaffleWinnerMail adventureBossRaffleWinnerMail:
+                    return L10nManager.Localize("UI_ADVENTURE_BOSS_WINNER_MAIL_FORMAT",
+                                               adventureBossRaffleWinnerMail.Season,
+                                                adventureBossRaffleWinnerMail.Reward);
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");

@@ -69,11 +69,12 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
+            Game.Game.instance.AdventureBossData.CurrentState.Subscribe(OnAdventureBossStateChanged).AddTo(_disposables);
+
             Game.Game.instance.Agent.BlockIndexSubject
+                .StartWith(Game.Game.instance.Agent.BlockIndex)
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposables);
-
-            Game.Game.instance.AdventureBossData.CurrentState.Subscribe(OnAdventureBossStateChanged).AddTo(_disposables);
 
             Game.Game.instance.AdventureBossData.IsRewardLoading.Subscribe(isLoading =>
             {
@@ -122,7 +123,15 @@ namespace Nekoyume.UI.Module
         private void RefreshBlockIndexText(long blockIndex, long targetBlock)
         {
             _remainingBlockIndex = targetBlock - blockIndex;
-            var timeText = $"{_remainingBlockIndex:#,0}({_remainingBlockIndex.BlockRangeToTimeSpanString()})";
+            var timeText = "(-)";
+            if (_remainingBlockIndex >= 0)
+            {
+                timeText = $"{_remainingBlockIndex:#,0}({_remainingBlockIndex.BlockRangeToTimeSpanString()})";
+            }
+            else
+            {
+                NcDebug.LogError($"RemainingBlockIndex is negative blockIndex: {blockIndex}, targetBlock: {targetBlock}");
+            }
             foreach (var text in remainingBlockIndexs)
             {
                 text.text = timeText;

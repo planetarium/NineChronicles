@@ -17,6 +17,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using System.Linq;
+using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
@@ -101,6 +102,8 @@ namespace Nekoyume.UI
 
         private List<IDisposable> _disposables = new List<IDisposable>();
 
+        private Address _currentAvatarAddress;
+
         protected override void Awake()
         {
             base.Awake();
@@ -184,13 +187,15 @@ namespace Nekoyume.UI
                 : JsonSerializer.Deserialize<CombinationSubRecipeTabs>(jsonAsset.text);
             SubRecipeTabs = subRecipeTabs?.SubRecipeTabs.ToList();
 
+            // TODO SelectAvatar를 실제 아바타가 변경됐을때 최초 한번만 호출하면 불필요한 초기화를 안하도록 고칠 수 있음
             ReactiveAvatarState.Address.Subscribe(address =>
             {
-                if (address.Equals(default))
+                if (address.Equals(default) || _currentAvatarAddress == address)
                 {
                     return;
                 }
 
+                _currentAvatarAddress = address;
                 SharedModel.UpdateUnlockedRecipesAsync(address);
             }).AddTo(gameObject);
 
@@ -306,10 +311,10 @@ namespace Nekoyume.UI
             }
 
             if (!AudioController.instance.CurrentPlayingMusicName
-                    .Equals(AudioController.MusicCode.Combination))
+                    .Equals(AudioController.MusicCode.Workshop))
             {
                 AudioController.instance
-                    .PlayMusic(AudioController.MusicCode.Combination);
+                    .PlayMusic(AudioController.MusicCode.Workshop);
             }
 
             RxProps.EventScheduleRowForRecipe

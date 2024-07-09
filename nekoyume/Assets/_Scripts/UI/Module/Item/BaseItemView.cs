@@ -217,6 +217,15 @@ namespace Nekoyume
             RuneNotificationObj.SetActiveSafe(false);
         }
 
+        public void ItemViewSetCurrencyData(FungibleAssetValue fav)
+        {
+            gameObject.SetActive(true);
+            ClearItem();
+            ItemImage.overrideSprite = SpriteHelper.GetFavIcon(fav.Currency.Ticker);
+            CountText.text = fav.GetQuantityString();
+            GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(fav.Currency.Ticker));
+        }
+
         public void ItemViewSetCurrencyData(string ticker, decimal amount)
         {
             gameObject.SetActive(true);

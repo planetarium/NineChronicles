@@ -202,6 +202,9 @@ namespace Nekoyume.UI
                 case StageType.AdventureBoss:
                     stageProgressBar.gameObject.SetActive(false);
                     floorProgressBar.gameObject.SetActive(true);
+                    accelerationToggleLockButton.gameObject.SetActive(false);
+                    accelerationToggle.gameObject.SetActive(false);
+                    exitToggle.gameObject.SetActive(false);
                     Find<HeaderMenuStatic>().Close(true);
                     break;
                 default:
@@ -281,6 +284,7 @@ namespace Nekoyume.UI
             helpButton.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);
+            floorProgressBar.gameObject.SetActive(false);
             enemyPlayerStatus.gameObject.SetActive(false);
             comboText.comboMax = 5;
             gameObject.SetActive(true);

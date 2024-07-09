@@ -416,11 +416,19 @@ namespace Nekoyume.UI
         // Do not use with Aura summon tutorial. this logic is fake.
         public void SetCostUIForTutorial()
         {
-            summonInfos[2].tabToggle.isOn = true;
-            SetSummonInfo(summonInfos[2]);
+            const int normalAuraId = 10001;
+            var summonInfo = summonInfos.FirstOrDefault(info => info.summonSheetId == normalAuraId);
+            if (summonInfo is null)
+            {
+                NcDebug.LogError($"SummonInfo for tutorial not found. id : {normalAuraId}");
+                return;
+            }
+
+            summonInfo.tabToggle.isOn = true;
+            SetSummonInfo(summonInfo);
 
             var costButton = summonItem.normalButtonGroup.draw1Button;
-            if (costButton != null)
+            if (costButton)
             {
                 costButton.SetFakeUI(CostType.SilverDust, 0);
             }

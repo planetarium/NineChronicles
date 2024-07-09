@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
 
         public void OnClickUnlockAction()
         {
-            if (indicatorObj.activeSelf)
+            if (indicatorObj.activeInHierarchy)
             {
                 OneLineSystem.Push(
                         MailType.System,
@@ -80,10 +80,6 @@ namespace Nekoyume.UI.Module
                 openNameImage.SetActive(false);
                 lockEffect.SetActive(false);
                 unlockEffect.SetActive(true);
-                UniTask.Delay(TimeSpan.FromSeconds(1.5f)).ContinueWith(() =>
-                {
-                    Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().Forget();
-                }).Forget();
             }
         }
 

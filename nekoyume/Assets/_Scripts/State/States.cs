@@ -54,7 +54,7 @@ namespace Nekoyume.State
 
         public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
-        private readonly Dictionary<int, AvatarState> _avatarStates = new();
+        private readonly ConcurrentDictionary<int, AvatarState> _avatarStates = new();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
 
@@ -70,14 +70,14 @@ namespace Nekoyume.State
 
         public AllRuneState AllRuneState { get; private set; }
 
-        public readonly Dictionary<int, Dictionary<BattleType, RuneSlotState>>
+        public readonly ConcurrentDictionary<int, Dictionary<BattleType, RuneSlotState>>
             RuneSlotStates = new();
 
-        public readonly Dictionary<int, Dictionary<BattleType, ItemSlotState>>
+        public readonly ConcurrentDictionary<int, Dictionary<BattleType, ItemSlotState>>
             ItemSlotStates = new();
 
-        public Dictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
-        public Dictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
+        public ConcurrentDictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
+        public ConcurrentDictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
 
         private class Workshop
         {
@@ -204,20 +204,20 @@ namespace Nekoyume.State
         public async UniTask InitRuneSlotStates()
         {
             CurrentRuneSlotStates.Clear();
-            CurrentRuneSlotStates.Add(
+            CurrentRuneSlotStates.TryAdd(
                 BattleType.Adventure,
                 new RuneSlotState(BattleType.Adventure));
-            CurrentRuneSlotStates.Add(BattleType.Arena, new RuneSlotState(BattleType.Arena));
-            CurrentRuneSlotStates.Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+            CurrentRuneSlotStates.TryAdd(BattleType.Arena, new RuneSlotState(BattleType.Arena));
+            CurrentRuneSlotStates.TryAdd(BattleType.Raid, new RuneSlotState(BattleType.Raid));
 
             RuneSlotStates.Clear();
             foreach (var (index, avatarState) in _avatarStates)
             {
-                RuneSlotStates.Add(index, new Dictionary<BattleType, RuneSlotState>());
-                RuneSlotStates[index].Add(BattleType.Adventure,
+                RuneSlotStates.TryAdd(index, new Dictionary<BattleType, RuneSlotState>());
+                RuneSlotStates[index].TryAdd(BattleType.Adventure,
                     new RuneSlotState(BattleType.Adventure));
-                RuneSlotStates[index].Add(BattleType.Arena, new RuneSlotState(BattleType.Arena));
-                RuneSlotStates[index].Add(BattleType.Raid, new RuneSlotState(BattleType.Raid));
+                RuneSlotStates[index].TryAdd(BattleType.Arena, new RuneSlotState(BattleType.Arena));
+                RuneSlotStates[index].TryAdd(BattleType.Raid, new RuneSlotState(BattleType.Raid));
 
                 var addresses = new List<Address>
                 {
@@ -272,22 +272,22 @@ namespace Nekoyume.State
         public async UniTask InitItemSlotStates()
         {
             CurrentItemSlotStates.Clear();
-            CurrentItemSlotStates.Add(
+            CurrentItemSlotStates.TryAdd(
                 BattleType.Adventure,
                 new ItemSlotState(BattleType.Adventure));
-            CurrentItemSlotStates.Add(BattleType.Arena, new ItemSlotState(BattleType.Arena));
-            CurrentItemSlotStates.Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+            CurrentItemSlotStates.TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
+            CurrentItemSlotStates.TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
 
             ItemSlotStates.Clear();
             var agent = Game.Game.instance.Agent;
             foreach (var (index, avatarState) in _avatarStates)
             {
-                ItemSlotStates.Add(index, new Dictionary<BattleType, ItemSlotState>());
-                ItemSlotStates[index].Add(
+                ItemSlotStates.TryAdd(index, new Dictionary<BattleType, ItemSlotState>());
+                ItemSlotStates[index].TryAdd(
                     BattleType.Adventure,
                     new ItemSlotState(BattleType.Adventure));
-                ItemSlotStates[index].Add(BattleType.Arena, new ItemSlotState(BattleType.Arena));
-                ItemSlotStates[index].Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+                ItemSlotStates[index].TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
+                ItemSlotStates[index].TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
 
                 var addresses = new List<Address>
                 {
@@ -319,12 +319,12 @@ namespace Nekoyume.State
                 return;
             }
 
-            ItemSlotStates.Add(slotIndex, new Dictionary<BattleType, ItemSlotState>());
-            ItemSlotStates[slotIndex].Add(
+            ItemSlotStates.TryAdd(slotIndex, new Dictionary<BattleType, ItemSlotState>());
+            ItemSlotStates[slotIndex].TryAdd(
                 BattleType.Adventure,
                 new ItemSlotState(BattleType.Adventure));
-            ItemSlotStates[slotIndex].Add(BattleType.Arena, new ItemSlotState(BattleType.Arena));
-            ItemSlotStates[slotIndex].Add(BattleType.Raid, new ItemSlotState(BattleType.Raid));
+            ItemSlotStates[slotIndex].TryAdd(BattleType.Arena, new ItemSlotState(BattleType.Arena));
+            ItemSlotStates[slotIndex].TryAdd(BattleType.Raid, new ItemSlotState(BattleType.Raid));
 
             var addresses = new List<Address>
             {
@@ -506,7 +506,7 @@ namespace Nekoyume.State
             if (!_avatarStates.ContainsKey(index))
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
 
-            _avatarStates.Remove(index);
+            _avatarStates.TryRemove(index, out _);
 
             if (index == CurrentAvatarKey)
             {
