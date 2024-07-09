@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Arena;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.GraphQL;
@@ -253,7 +254,7 @@ namespace Nekoyume.State
             long lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
-                var response = await Game.Game.instance.RpcGraphQLClient.QueryArenaInfoAsync(currentAvatarAddr);
+                var response = await ApiClients.Instance.RpcGraphQlClient.QueryArenaInfoAsync(currentAvatarAddr);
                 // Arrange my information so that it comes first when it's the same score.
                 arenaInfo = response.StateQuery.ArenaParticipants
                     .ToList();

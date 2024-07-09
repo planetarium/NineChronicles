@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
@@ -1096,7 +1097,7 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount()
         {
-            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
@@ -1114,11 +1115,11 @@ namespace Nekoyume.UI
 
                 if (SharedModel.StageType == StageType.EventDungeon)
                 {
-                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.EventDungeonCourageAmount * playCount}";
+                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.EventDungeonCourageAmount * playCount}";
                 }
                 else
                 {
-                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
                 }
             }
             else

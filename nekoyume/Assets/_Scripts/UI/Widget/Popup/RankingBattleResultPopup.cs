@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nekoyume.ApiClient;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -105,13 +106,13 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount(int count)
         {
-            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.ArenaCourageAmount * count}";
+                seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.ArenaCourageAmount * count}";
             }
             else
             {

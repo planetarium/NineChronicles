@@ -29,6 +29,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action.Garages;
+using Nekoyume.ApiClient;
 using Nekoyume.Arena;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
@@ -1631,7 +1632,7 @@ namespace Nekoyume.Blockchain
             {
                 var productInfo = productInfos.FirstOrDefault();
                 var (itemName, itemProduct, favProduct) =
-                    await Game.Game.instance.MarketServiceClient.GetProductInfo(
+                    await ApiClients.Instance.MarketServiceClient.GetProductInfo(
                         productInfo.ProductId);
                 var count = 0;
                 if (itemProduct is not null)
@@ -1707,7 +1708,7 @@ namespace Nekoyume.Blockchain
             {
                 var (productInfo, _) = eval.Action.ReRegisterInfos.FirstOrDefault();
                 var (itemName, itemProduct, favProduct) =
-                    await Game.Game.instance.MarketServiceClient.GetProductInfo(
+                    await ApiClients.Instance.MarketServiceClient.GetProductInfo(
                         productInfo.ProductId);
                 var count = 0;
                 if (itemProduct is not null)
@@ -1762,7 +1763,7 @@ namespace Nekoyume.Blockchain
                 foreach (var info in productInfos)
                 {
                     var (itemName, itemProduct, favProduct) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(info.ProductId);
+                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(info.ProductId);
                     var count = 0;
                     if (itemProduct is not null)
                     {
@@ -1813,7 +1814,7 @@ namespace Nekoyume.Blockchain
                 {
                     var buyerNameWithHash = $"#{eval.Action.AvatarAddress.ToHex()[..4]}";
                     var (itemName, itemProduct, favProduct) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(info.ProductId);
+                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(info.ProductId);
                     var count = 0;
                     if (itemProduct is not null)
                     {

@@ -56,7 +56,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             seasonPassManager.AvatarInfo.Subscribe((seasonPassInfo) => {
                 if (seasonPassInfo == null)
                     return;
@@ -142,7 +142,7 @@ namespace Nekoyume.UI
             var confirm = Widget.Find<ConfirmPopup>();
             confirm.CloseCallback = result =>
             {
-                var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+                var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
                 switch (result)
                 {
                     case ConfirmResult.Yes:
@@ -162,7 +162,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             seasonPassManager.AvatarStateRefreshAsync().AsUniTask().Forget();
 
             RefreshRewardCells(seasonPassManager);
@@ -205,7 +205,7 @@ namespace Nekoyume.UI
             async UniTaskVoid ShowCellEffect()
             {
 
-                var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+                var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
                 var cellIndex = Mathf.Max(0, seasonPassManager.AvatarInfo.Value.Level - 1);
 
                 var tween = DOTween.To(() => rewardCellScrollbar.value,
@@ -235,7 +235,7 @@ namespace Nekoyume.UI
 
         public float CalculateScrollerStartPosition()
         {
-            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             float totalScrollbarLength = 3500f;
             float paddingLeft = 20f;
             float viewSize = rewardCellScrollbar.GetComponent<RectTransform>().rect.width;
@@ -253,11 +253,11 @@ namespace Nekoyume.UI
         public void ReceiveAllBtn()
         {
             receiveBtn.Interactable = false;
-            Game.Game.instance.SeasonPassServiceManager.ReceiveAll(
+            ApiClients.Instance.SeasonPassServiceManager.ReceiveAll(
                 (result) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"),NotificationCell.NotificationType.Notification);
-                    Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
                 },
                 (error) =>
                 {
@@ -269,14 +269,14 @@ namespace Nekoyume.UI
         {
             prevSeasonClaimButton.SetConditionalState(false);
             
-            Game.Game.instance.SeasonPassServiceManager.PrevClaim(
+            ApiClients.Instance.SeasonPassServiceManager.PrevClaim(
                 result =>
                 {
                     OneLineSystem.Push(
                         MailType.System, 
                         L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), 
                         NotificationCell.NotificationType.Notification);
-                    Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
                     prevSeasonClaimButton.SetConditionalState(true);
                     prevSeasonClaimButton.gameObject.SetActive(false);
                 },

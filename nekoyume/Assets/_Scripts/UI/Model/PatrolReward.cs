@@ -2,6 +2,7 @@ using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Nekoyume.ApiClient;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model.Patrol
@@ -23,7 +24,7 @@ namespace Nekoyume.UI.Model.Patrol
 
         public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;
@@ -105,7 +106,7 @@ $@"query {{
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;
@@ -142,7 +143,7 @@ $@"query {{
 
         public async Task LoadPolicyInfo(int level, bool free = true)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;
@@ -191,7 +192,7 @@ $@"query {{
 
         public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return null;
@@ -214,7 +215,7 @@ $@"mutation {{
 
         private async Task PutAvatar(string avatarAddress, string agentAddress)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;

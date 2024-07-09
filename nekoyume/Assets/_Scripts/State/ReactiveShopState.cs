@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Lib9c.Model.Order;
 using MarketService.Response;
+using Nekoyume.ApiClient;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
@@ -69,7 +70,7 @@ namespace Nekoyume.State
             var statType = filter.ToItemStatType();
             var offset = reset ? 0 : CachedBuyItemProducts.Count;
             var (products, totalCount) =
-                await Game.Game.instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType, itemIds);
+                await ApiClients.Instance.MarketServiceClient.GetBuyProducts(itemSubType, offset, limit, orderType, statType, itemIds);
 
             if (reset)
             {
@@ -102,7 +103,7 @@ namespace Nekoyume.State
 
             var offset = reset ? 0 : CachedBuyFungibleAssetProducts.Count;
             var (fungibleAssets, totalCount) =
-                await Game.Game.instance.MarketServiceClient.GetBuyFungibleAssetProducts(tickers, offset, limit, orderType);
+                await ApiClients.Instance.MarketServiceClient.GetBuyFungibleAssetProducts(tickers, offset, limit, orderType);
 
             if (reset)
             {
@@ -126,7 +127,7 @@ namespace Nekoyume.State
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var (fungibleAssets, items) =
-                await Game.Game.instance.MarketServiceClient.GetProducts(avatarAddress);
+                await ApiClients.Instance.MarketServiceClient.GetProducts(avatarAddress);
 
             CachedSellItemProducts.Clear();
             CachedSellItemProducts.AddRange(items);

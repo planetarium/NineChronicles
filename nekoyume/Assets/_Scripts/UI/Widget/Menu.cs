@@ -14,6 +14,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
@@ -664,7 +665,7 @@ namespace Nekoyume.UI
 
         public void SeasonPassClick()
         {
-            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             if (!btnSeasonPass.IsUnlocked || seasonPassManager.CurrentSeasonPassData == null)
             {
                 NcDebug.LogWarning("SeasonPassClick() : CurrentSeasonPassData is null.");

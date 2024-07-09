@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
@@ -146,8 +147,8 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             myRankContainer.SetActive(false);
             emptyRecordContainer.SetActive(false);
-            apiMissingContainer.SetActive(!Game.Game.instance.ApiClient.IsInitialized);
-            if (!Game.Game.instance.ApiClient.IsInitialized)
+            apiMissingContainer.SetActive(!ApiClients.Instance.WorldBossClient.IsInitialized);
+            if (!ApiClients.Instance.WorldBossClient.IsInitialized)
             {
                 return;
             }

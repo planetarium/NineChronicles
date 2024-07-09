@@ -20,7 +20,7 @@ namespace Nekoyume.ApiClient
             int raidId,
             Address address)
         {
-            var apiClient = Game.Game.instance.ApiClient;
+            var apiClient = ApiClients.Instance.WorldBossClient;
             if (!apiClient.IsInitialized)
             {
                 return null;

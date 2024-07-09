@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using Nekoyume.ApiClient;
 
 namespace Nekoyume.UI.Module.Lobby
 {
@@ -29,7 +30,7 @@ namespace Nekoyume.UI.Module.Lobby
 
             dim.SetActive(false);
             iconRoot.SetActive(true);
-            var seasonPassService = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassService = ApiClients.Instance.SeasonPassServiceManager;
             seasonPassService.AvatarInfo.Subscribe((info)=> {
                 dim.SetActive(info == null);
                 iconRoot.SetActive(info != null);
@@ -53,7 +54,7 @@ namespace Nekoyume.UI.Module.Lobby
 
             }).AddTo(gameObject);
 
-            Game.Game.instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) =>
+            ApiClients.Instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) =>
             {
                 timeText.text = $"<Style=Clock> {endDate}";
             });

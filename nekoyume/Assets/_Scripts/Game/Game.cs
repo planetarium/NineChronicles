@@ -134,8 +134,6 @@ namespace Nekoyume.Game
 
         public IAPServiceManager IAPServiceManager { get; private set; }
 
-        public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
-
         public GuildServiceClient GuildServiceClient { get; private set; }
 
         public AdventureBossData AdventureBossData { get; private set; }
@@ -158,14 +156,6 @@ namespace Nekoyume.Game
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
-
-        public NineChroniclesAPIClient ApiClient { get; private set; }
-
-        public NineChroniclesAPIClient RpcGraphQLClient { get; private set; }
-
-        public MarketServiceClient MarketServiceClient { get; private set; }
-
-        public NineChroniclesAPIClient PatrolRewardServiceClient { get; private set; }
 
         public PortalConnect PortalConnect { get; private set; }
 
@@ -428,7 +418,7 @@ namespace Nekoyume.Game
 
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
-            UpdateServices();
+            ApiClients.Instance.Initialize(_commandLineOptions);
 
             StartCoroutine(InitializeIAP());
 
@@ -2119,71 +2109,6 @@ namespace Nekoyume.Game
             RaidStage.Initialize();
             sw.Stop();
             NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-        }
-
-        // TODO: 중복코드 정리, 초기화 안 된 경우 로직 정리
-        private void UpdateServices()
-        {           
-            // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
-            // NOTE: Initialize several services after Agent initialized.
-            // NOTE: Initialize api client.
-            ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
-            
-            // NOTE: Initialize graphql client which is targeting to RPC server.
-            RpcGraphQLClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
-
-            // NOTE: Initialize world boss query.
-            if (string.IsNullOrEmpty(_commandLineOptions.OnBoardingHost))
-            {
-                WorldBossQuery.SetUrl(string.Empty);
-                NcDebug.Log($"[Game] Start()... WorldBossQuery initialized with empty host url" +
-                          " because of no OnBoardingHost." +
-                          $" url: {WorldBossQuery.Url}");
-            }
-            else
-            {
-                WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
-                NcDebug.Log("[Game] Start()... WorldBossQuery initialized." +
-                          $" host: {_commandLineOptions.OnBoardingHost}" +
-                          $" url: {WorldBossQuery.Url}");
-            }
-
-            // NOTE: Initialize market service.
-            if (string.IsNullOrEmpty(_commandLineOptions.MarketServiceHost))
-            {
-                MarketServiceClient = new MarketServiceClient(string.Empty);
-                NcDebug.Log("[Game] Start()... MarketServiceClient initialized with empty host url" +
-                          " because of no MarketServiceHost");
-            }
-            else
-            {
-                MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-                NcDebug.Log("[Game] Start()... MarketServiceClient initialized." +
-                          $" host: {_commandLineOptions.MarketServiceHost}");
-            }
-
-            // NOTE: Initialize patrol reward service.
-            PatrolRewardServiceClient = new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
-
-            // NOTE: Initialize season pass service.
-            SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
-            if (SeasonPassServiceManager.IsInitialized)
-            {
-                if (!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
-                {
-                    SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
-                }
-
-                if (!string.IsNullOrEmpty(_commandLineOptions.AppleMarketUrl))
-                {
-                    SeasonPassServiceManager.AppleMarketURL = _commandLineOptions.AppleMarketUrl;
-                }
-
-                NcDebug.Log("[Game] Start()... SeasonPassServiceManager initialized." +
-                            $" host: {_commandLineOptions.SeasonPassServiceHost}" +
-                            $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
-                            $", apple: {SeasonPassServiceManager.AppleMarketURL}");
-            }
         }
 
         private IEnumerator InitializeGuildService()

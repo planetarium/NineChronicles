@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            if (!Game.Game.instance.ApiClient.IsInitialized)
+            if (!ApiClients.Instance.WorldBossClient.IsInitialized)
             {
                 apiMissing.SetActive(true);
                 updateContainer.SetActive(false);
