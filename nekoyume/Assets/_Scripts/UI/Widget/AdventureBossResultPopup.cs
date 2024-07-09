@@ -13,6 +13,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using Cysharp.Threading.Tasks;
     using DG.Tweening;
     using Nekoyume.TableData.AdventureBoss;
     using System.Linq;
@@ -153,63 +154,93 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
+        private bool LoadingScreenIsShowing = false;
+        private async UniTaskVoid ShowLoadingConstantly()
+        {
+            LoadingScreenIsShowing = true;
+            var worldMapLoading = Find<LoadingScreen>();
+            worldMapLoading.Show(LoadingScreen.LoadingType.AdventureBoss);
+            while (LoadingScreenIsShowing)
+            {
+                if(!worldMapLoading.isActiveAndEnabled)
+                {
+                    worldMapLoading.Show(LoadingScreen.LoadingType.AdventureBoss);
+                }
+                await UniTask.WaitForEndOfFrame();
+            }
+        }
+
         public void OnClickTower()
         {
-            Close();
-            var worldMapLoading = Find<LoadingScreen>();
-            worldMapLoading.Show();
+            if(LoadingScreenIsShowing)
+            {
+                NcDebug.LogError("LoadingScreen is already showing");
+                return;
+            }
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
-
+            Close();
+            ShowLoadingConstantly().Forget();
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
                 var worldMap = Find<WorldMap>();
                 worldMap.Show(States.Instance.CurrentAvatarState.worldInformation, true);
-                Find<AdventureBoss>().Show();
-                worldMapLoading.Close(true);
+                Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
+                {
+                    Find<AdventureBoss>().Show();
+                    LoadingScreenIsShowing = false;
+                });
             });
         }
 
         public void OnClickBreakthrough()
         {
-            Close();
-            var worldMapLoading = Find<LoadingScreen>();
-            worldMapLoading.Show();
+            if (LoadingScreenIsShowing)
+            {
+                NcDebug.LogError("LoadingScreen is already showing");
+                return;
+            }
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
             Game.Event.OnRoomEnter.Invoke(true);
-
+            Close();
+            ShowLoadingConstantly().Forget();
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
                 var worldMap = Find<WorldMap>();
                 worldMap.Show(States.Instance.CurrentAvatarState.worldInformation, true);
-                Find<AdventureBoss>().Show();
-
-                //시즌이 종료된상황에서는 어드벤처보스ui가 안뜰가능성이 있음.
-                if (!Find<AdventureBoss>().isActiveAndEnabled)
+                Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().ContinueWith(() =>
                 {
-                    NcDebug.LogError("AdventureBoss is not active");
-                    return;
-                }
+                    Find<AdventureBoss>().Show();
 
-                if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
-                {
-                    NcDebug.LogError("BossData is null");
-                    return;
-                }
+                    //시즌이 종료된상황에서는 어드벤처보스ui가 안뜰가능성이 있음.
+                    if (!Find<AdventureBoss>().isActiveAndEnabled)
+                    {
+                        NcDebug.LogError("AdventureBoss is not active");
+                        LoadingScreenIsShowing = false;
+                        return;
+                    }
 
-                Find<AdventureBossPreparation>().Show(
-                        L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"),
-                        _lastClearFloor * bossData.SweepAp,
-                        AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
-                worldMapLoading.Close(true);
+                    if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
+                    {
+                        NcDebug.LogError("BossData is null");
+                        LoadingScreenIsShowing = false;
+                        return;
+                    }
+
+                    Find<AdventureBossPreparation>().Show(
+                            L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"),
+                            _lastClearFloor * bossData.SweepAp,
+                            AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
+                    LoadingScreenIsShowing = false;
+                });
             });
         }
     }
