@@ -2126,30 +2126,10 @@ namespace Nekoyume.Game
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
             // NOTE: Initialize api client.
-            if (string.IsNullOrEmpty(_commandLineOptions.ApiServerHost))
-            {
-                ApiClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... ApiClient initialized with empty host url" +
-                          " because of no ApiServerHost");
-            }
-            else
-            {
-                ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
-                NcDebug.Log("[Game] Start()... ApiClient initialized." +
-                          $" host: {_commandLineOptions.ApiServerHost}");
-            }
-
+            ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
+            
             // NOTE: Initialize graphql client which is targeting to RPC server.
-            if (string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
-            {
-                RpcGraphQLClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... RpcGraphQLClient initialized with empty host url" +
-                          " because of no RpcServerHost");
-            }
-            else
-            {
-                RpcGraphQLClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
-            }
+            RpcGraphQLClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
 
             // NOTE: Initialize world boss query.
             if (string.IsNullOrEmpty(_commandLineOptions.OnBoardingHost))
@@ -2182,18 +2162,7 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Initialize patrol reward service.
-            if (string.IsNullOrEmpty(_commandLineOptions.PatrolRewardServiceHost))
-            {
-                PatrolRewardServiceClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... PatrolRewardServiceClient initialized with empty host url" +
-                          " because of no PatrolRewardServiceHost");
-            }
-            else
-            {
-                PatrolRewardServiceClient = new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
-                NcDebug.Log("[Game] Start()... PatrolRewardServiceClient initialized." +
-                          $" host: {_commandLineOptions.PatrolRewardServiceHost}");
-            }
+            PatrolRewardServiceClient = new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
 
             // NOTE: Initialize season pass service.
             if (string.IsNullOrEmpty(_commandLineOptions.SeasonPassServiceHost))

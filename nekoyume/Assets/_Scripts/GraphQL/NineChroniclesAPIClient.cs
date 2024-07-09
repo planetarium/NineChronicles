@@ -18,10 +18,12 @@ namespace Nekoyume.GraphQL
         {
             if (string.IsNullOrEmpty(host))
             {
+                NcDebug.LogError($"[{nameof(NineChroniclesAPIClient)}] ApiClient initialized with empty host url.");
                 return;
             }
 
             _client = new GraphQLHttpClient(host, new NewtonsoftJsonSerializer());
+            NcDebug.Log($"[{nameof(NineChroniclesAPIClient)}] ApiClient initialized with host url: {host}.");
         }
 
         public async Task<T?> GetObjectAsync<T>(string query) where T : class
