@@ -3,7 +3,6 @@ using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Nekoyume.GraphQL
 {
@@ -11,7 +10,7 @@ namespace Nekoyume.GraphQL
     {
         public bool IsInitialized => _client != null;
 
-        private GraphQLHttpClient _client = null;
+        private readonly GraphQLHttpClient _client = null;
 
         public NineChroniclesAPIClient(string host)
         {
@@ -25,26 +24,32 @@ namespace Nekoyume.GraphQL
 
         public async Task<T> GetObjectAsync<T>(string query) where T : class
         {
-            var graphQLRequest = new GraphQLHttpRequest(query);
-            return await GetObjectAsync<T>(graphQLRequest);
+            var graphQlRequest = new GraphQLHttpRequest(query);
+            return await GetObjectAsync<T>(graphQlRequest);
         }
 
         public async Task<T> GetObjectAsync<T>(GraphQLRequest request) where T : class
         {
+            if (_client == null)
+            {
+                NcDebug.LogError("This API client is not initialized.");
+                return null;
+            }
+            
             try
             {
-                var graphQLResponse = await _client.SendQueryAsync<T>(request);
-                if (graphQLResponse.Errors != null && graphQLResponse.Errors.Length > 0)
+                var graphQlRequest = await _client.SendQueryAsync<T>(request);
+                if (graphQlRequest.Errors is not { Length: > 0 })
                 {
-                    foreach (var error in graphQLResponse.Errors)
-                    {
-                        NcDebug.LogError(error.Message);
-                    }
-
-                    return null;
+                    return graphQlRequest.Data;
+                }
+                
+                foreach (var error in graphQlRequest.Errors)
+                {
+                    NcDebug.LogError(error.Message);
                 }
 
-                return graphQLResponse.Data;
+                return null;
             }
             catch (Exception e)
             {
