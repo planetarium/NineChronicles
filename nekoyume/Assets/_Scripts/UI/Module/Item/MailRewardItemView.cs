@@ -101,7 +101,14 @@ namespace Nekoyume
                 baseItemView.EnhancementText.gameObject.SetActive(false);
                 baseItemView.EnhancementImage.gameObject.SetActive(false);
                 baseItemView.OptionTag.gameObject.SetActive(false);
-                baseItemView.CountText.text = mailReward.FavFungibleAssetValue.ToCurrencyNotation();
+                if(fav.Currency.Ticker == "NCG")
+                {
+                    baseItemView.CountText.text = mailReward.FavFungibleAssetValue.GetQuantityString();
+                }
+                else
+                {
+                    baseItemView.CountText.text = mailReward.FavFungibleAssetValue.ToCurrencyNotation();
+                }
             }
 
             effect.SetActive(false);

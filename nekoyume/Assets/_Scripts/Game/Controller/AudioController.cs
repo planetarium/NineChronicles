@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Pattern;
 using Nekoyume.State;
@@ -32,24 +33,95 @@ namespace Nekoyume.Game.Controller
         {
             public const string Title = "bgm_title";
             public const string Prologue = "bgm_prologue";
+            public const string PrologueBattle = "bgm_prologue_battle";
             public const string SelectCharacter = "bgm_selectcharacter";
             public const string Main = "bgm_main";
             public const string Shop = "bgm_shop";
             public const string Ranking = "bgm_ranking";
-            public const string Combination = "bgm_workshop";
+            public const string Workshop = "bgm_workshop";
             public const string Boss1 = "bgm_boss1";
             public const string Win = "bgm_win";
             public const string Lose = "bgm_lose";
-            public const string PrologueBattle = "bgm_prologue_battle";
             public const string PVPBattle = "bgm_pvp_battle";
             public const string PVPWin = "bgm_pvp_win";
             public const string PVPLose = "bgm_pvp_lose";
-            public const string WorldBossBattle01 = "bgm_worldboss_battle_01";
-            public const string WorldBossBattle02 = "bgm_worldboss_battle_02";
-            public const string WorldBossBattleResult = "bgm_worldboss_battle_result";
-            public const string WorldBossTitle = "bgm_worldboss_title";
             public const string Dcc = "bgm_dcc";
             public const string BattleLoading = "bgm_battle_loading";
+            public const string AdventureBoss01 = "bgm_adventure_boss_01";
+            public const string AdventureBossLobby = "bgm_adventure_boss_lobby";
+
+#region WorldBoss
+            [UsedImplicitly] // Used in WorldBoss SO
+            public const string WorldBossBattle01 = "bgm_worldboss_battle_01";
+            [UsedImplicitly] // Used in WorldBoss SO
+            public const string WorldBossBattle02 = "bgm_worldboss_battle_02";
+            public const string WorldBossBattleResult = "bgm_worldboss_battle_result";
+            [UsedImplicitly] // Used in WorldBoss SO
+            public const string WorldBossTitle = "bgm_worldboss_title";
+#endregion WorldBoss
+
+#region Stage
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Alfheim01 = "bgm_alfheim_01";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Alfheim02 = "bgm_alfheim_02";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Alfheim03 = "bgm_alfheim_03";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Asgard01 = "bgm_asgard_01";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Asgard02 = "bgm_asgard_02";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Asgard03 = "bgm_asgard_03";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Hard01 = "bgm_hard1";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Hel01 = "bgm_hel_01";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Hel02 = "bgm_hel_02";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Hel03 = "bgm_hel_03";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Jotunheim01 = "bgm_jotunheim_01";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Jotunheim02 = "bgm_jotunheim_02";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Jotunheim03 = "bgm_jotunheim_03";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Muspelheim01 = "bgm_muspelheim_01";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Muspelheim02 = "bgm_muspelheim_02";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Muspelheim03 = "bgm_muspelheim_03";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Niflheim01 = "bgm_niflheim_01";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Niflheim02 = "bgm_niflheim_02";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Niflheim03 = "bgm_niflheim_03";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Svartalfheim01 = "bgm_svartalfheim_01";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Svartalfheim02 = "bgm_svartalfheim_02";
+            [UsedImplicitly] // Used in Stage Sheet
+            public const string Svartalfheim03 = "bgm_svartalfheim_03";
+#endregion Stage
+
+#region Event
+            [UsedImplicitly] // Used in Event Data SO
+            public const string Christmas = "bgm_christmas";
+            [UsedImplicitly] // Used in Event Data SO
+            public const string Event22Summer01 = "bgm_event_22summer_01";
+            [UsedImplicitly] // Used in Event Data SO
+            public const string Event22Summer02 = "bgm_event_22summer_02";
+            [UsedImplicitly] // Used in Event Data SO
+            public const string Event22Summer03 = "bgm_event_22summer_03";
+            [UsedImplicitly] // Used in Event Data SO
+            public const string Event22SummerTitle = "bgm_event_22summer_title";
+#endregion Event
+
+            // [Obsolete("Use `bgm_workshop` instead. bgm_combination has not prefab.")]
+            // public const string Combination = "bgm_combination";
         }
 
         public class SfxCode
@@ -113,6 +185,10 @@ namespace Nekoyume.Game.Controller
             public const string Rewards = "sfx_rewards";
             public const string Star = "sfx_star";
             public const string ArenaBattleLoading = "sfx_arenabattleloading";
+            public const string AdventureBossCoin = "sfx_adventure_boss_coin";
+            public const string AdventureBossMonCollision = "sfx_adventure_boss_mon_collision";
+            public const string AdventureBossPenetration = "sfx_adventure_boss_penetration";
+            public const string AdventureBossPopUp = "sfx_adventure_boss_pop_up";
         }
 
         private enum State
@@ -129,32 +205,19 @@ namespace Nekoyume.Game.Controller
 
         protected override bool ShouldRename => true;
 
-        private readonly Dictionary<string, AudioSource> _musicPrefabs =
-            new Dictionary<string, AudioSource>();
+        private readonly Dictionary<string, AudioSource> _musicPrefabs = new();
+        private readonly Dictionary<string, AudioSource> _sfxPrefabs = new();
 
-        private readonly Dictionary<string, AudioSource> _sfxPrefabs =
-            new Dictionary<string, AudioSource>();
+        private readonly Dictionary<string, Stack<AudioInfo>> _musicPool = new();
+        private readonly Dictionary<string, Stack<AudioInfo>> _sfxPool = new();
 
-        private readonly Dictionary<string, Stack<AudioInfo>> _musicPool =
-            new Dictionary<string, Stack<AudioInfo>>();
-
-        private readonly Dictionary<string, Stack<AudioInfo>> _sfxPool =
-            new Dictionary<string, Stack<AudioInfo>>();
-
-        private readonly Dictionary<string, List<AudioInfo>> _musicPlaylist =
-            new Dictionary<string, List<AudioInfo>>();
-
-        private readonly Dictionary<string, List<AudioInfo>> _sfxPlaylist =
-            new Dictionary<string, List<AudioInfo>>();
-
-        private readonly Dictionary<string, List<AudioInfo>> _shouldRemoveMusic =
-            new Dictionary<string, List<AudioInfo>>();
-
-        private readonly Dictionary<string, List<AudioInfo>> _shouldRemoveSfx =
-            new Dictionary<string, List<AudioInfo>>();
+        private readonly Dictionary<string, List<AudioInfo>> _musicPlaylist = new();
+        private readonly Dictionary<string, List<AudioInfo>> _sfxPlaylist = new();
+        private readonly Dictionary<string, List<AudioInfo>> _shouldRemoveMusic = new();
+        private readonly Dictionary<string, List<AudioInfo>> _shouldRemoveSfx = new();
 
         private Coroutine _fadeInMusic;
-        private readonly List<Coroutine> _fadeOutMusics = new List<Coroutine>();
+        private readonly List<Coroutine> _fadeOutMusics = new();
 
         public string CurrentPlayingMusicName { get; private set; }
 

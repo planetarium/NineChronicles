@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Coffee.UIEffects;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Battle;
@@ -135,7 +135,8 @@ namespace Nekoyume.UI
             string itemName,
             string itemCount,
             string content,
-            string buttonText)
+            string buttonText,
+            bool enableActionButton = true)
         {
             _callback = callback;
             itemImage.sprite = itemIcon;
@@ -148,7 +149,7 @@ namespace Nekoyume.UI
             infoText.container.SetActive(false);  // set default
             subItem.container.SetActive(false);
             blockGauge.container.SetActive(false);
-            actionButton.gameObject.SetActive(true);
+            actionButton.gameObject.SetActive(enableActionButton);
             conditionalButtonBrown.gameObject.SetActive(false);
             conditionalButtonYellow.gameObject.SetActive(false);
             base.Show();
@@ -235,17 +236,7 @@ namespace Nekoyume.UI
                     itemId = 9999999;
                     count = States.Instance.GoldBalanceState.Gold.GetQuantityString();
                     buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
-                    callback = () =>
-                    {
-                        if (BattleRenderer.Instance.IsOnBattle)
-                        {
-                            return;
-                        }
-
-                        CloseWithOtherWidgets();
-                        Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
-                        Find<Grind>().Show();
-                    };
+                    callback = null;
                     break;
                 case CostType.Crystal:
                     itemId = 9999998;
@@ -275,6 +266,8 @@ namespace Nekoyume.UI
                 case CostType.SilverDust:
                 case CostType.GoldDust:
                 case CostType.RubyDust:
+                case CostType.EmeraldDust:
+                case CostType.ApPotion:
                     itemId = (int)costType;
                     var materialCount =
                         States.Instance.CurrentAvatarState.inventory.GetMaterialCount(itemId);
@@ -296,7 +289,7 @@ namespace Nekoyume.UI
                             Find<PatrolRewardPopup>().Show();
                         };
                     }
-                    else  // CostType.GoldDust
+                    else  // All other dusts
                     {
                         buttonText = L10nManager.Localize("UI_SHOP");
                         callback = () =>
@@ -321,7 +314,7 @@ namespace Nekoyume.UI
             var content = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
 
             SetInfo(false);
-            Show(callback, icon, itemName, count, content, buttonText);
+            Show(callback, icon, itemName, count, content, buttonText, callback != null);
         }
 
         public void ShowRuneStone(int runeStoneId)

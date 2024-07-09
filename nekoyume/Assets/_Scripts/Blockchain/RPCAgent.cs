@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -42,6 +43,7 @@ using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using NCTx = Libplanet.Types.Tx.Transaction;
+using Random = System.Random;
 
 namespace Nekoyume.Blockchain
 {
@@ -109,6 +111,9 @@ namespace Nekoyume.Blockchain
         private readonly BlockHashCache _blockHashCache = new(100);
         private MessagePackSerializerOptions _lz4Options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
 
+        private readonly List<string> cachedRpcServerHosts = new List<string>();
+        private int cachedRpcServerPort;
+        private CancellationTokenSource cancellationTokenSource;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void OnRuntimeInitialize()
@@ -162,6 +167,16 @@ namespace Nekoyume.Blockchain
             Action<bool> callback)
         {
             NcDebug.Log($"[RPCAgent] Start initialization: {options.RpcServerHost}:{options.RpcServerPort}");
+
+            cachedRpcServerHosts.Clear();
+            foreach (var rpcServerHost in options.RpcServerHosts)
+            {
+                cachedRpcServerHosts.Add(rpcServerHost);
+            }
+
+            cachedRpcServerPort = options.RpcServerPort;
+            NcDebug.Log($"[RPCAgent] Cached RPC server hosts: \n{string.Join(",\n", cachedRpcServerHosts)}");
+
             PrivateKey = privateKey;
             _channel ??= GrpcChannelx.ForTarget(
                 new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
@@ -740,17 +755,11 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
             OnRetryAttempt
                 .ObserveOnMainThread()
-                .Subscribe(tuple =>
-                {
-                    NcDebug.Log($"Retry rpc connection. (remain count: {tuple.retryCount})");
-                    var tryCount = RpcConnectionRetryCount - tuple.retryCount;
-                    if (tryCount > 0)
-                    {
-                        Widget.Find<DimmedLoadingScreen>()?.Show();
-                    }
-                })
+                .Subscribe()
                 .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
+
+            cancellationTokenSource = new CancellationTokenSource();
         }
 
         private async void OnDestroy()
@@ -762,14 +771,17 @@ namespace Nekoyume.Blockchain
             ActionRenderHandler.Instance.Stop();
 
             StopAllCoroutines();
-            if (!(_hub is null))
+            if (_hub is not null)
             {
                 await _hub.DisposeAsync();
             }
-            if (!(_channel is null))
+            if (_channel is not null)
             {
                 await _channel?.ShutdownAsync();
             }
+
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
         }
 
         #endregion
@@ -990,55 +1002,92 @@ namespace Nekoyume.Blockchain
         private async void RetryRpc()
         {
             OnRetryStarted.OnNext(this);
+            // Dict to store tried RPC server hosts. (host, tried)
+            var triedRPCHost = cachedRpcServerHosts.ToDictionary(key => key, value => false);
+            NcDebug.Log($"[RPCAgent] RetryRpc()... Trying to reconnect to RPC server {RpcConnectionRetryCount} times.");
+            var random = new Random();
             var retryCount = RpcConnectionRetryCount;
             while (retryCount > 0)
             {
+                // Find a new RPC server host to connect that has not been tried yet.
+                var newRpcServerHost = triedRPCHost
+                    .Where(pair => !pair.Value).OrderBy(_ => random.Next()).FirstOrDefault().Key;
+                if (newRpcServerHost is null)
+                {
+                    NcDebug.Log("[RPCAgent] All RPC server hosts are tried. <b>Retry failed.</b>");
+                    break;
+                }
+
                 OnRetryAttempt.OnNext((this, retryCount));
-                await Task.Delay(5000);
                 try
                 {
-                    _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                    await Task.Delay(5000, cancellationTokenSource.Token);
+                }
+                catch (Exception e)
+                {
+                    NcDebug.Log($"[RPCAgent] RPCAgent GameObject is disposed. <b>Retry Canceled.</b>\n{e}");
+                    break;
+                }
+
+                NcDebug.Log($"[RPCAgent] Trying to connect to new RPC server host: {newRpcServerHost}:{cachedRpcServerPort}");
+                try
+                {
+                    _channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(newRpcServerHost, cachedRpcServerPort, true));
+                    _hub = await StreamingHubClient.ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                    _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[] { new ClientFilter() });
+                }
+                catch (RpcException re)
+                {
+                    NcDebug.Log($"[RPCAgent] RpcException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{re}");
+                    triedRPCHost[newRpcServerHost] = true;
+                    retryCount--;
+                    continue;
                 }
                 catch (ObjectDisposedException)
                 {
                     break;
                 }
+
                 try
                 {
-                    NcDebug.Log($"Trying to join hub...");
+                    NcDebug.Log("[RPCAgent] Trying to join hub...");
                     await Join(true);
-                    NcDebug.Log($"Join complete! Registering disconnect event...");
+                    NcDebug.Log("[RPCAgent] Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
                     OnRetryEnded.OnNext(this);
+
                     return;
                 }
                 catch (TimeoutException toe)
                 {
-                    NcDebug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
+                    NcDebug.Log($"[RPCAgent] TimeoutException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{toe}");
+                    triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                 }
                 catch (AggregateException ae)
                 {
                     if (ae.InnerException is RpcException re)
                     {
-                        NcDebug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                        NcDebug.Log($"[RPCAgent] RpcException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{re}");
+                        triedRPCHost[newRpcServerHost] = true;
                         retryCount--;
                     }
                     else
                     {
-                        NcDebug.LogWarning($"Unexpected error occurred during rpc connection. {ae}");
+                        NcDebug.Log($"[RPCAgent] Unexpected error occurred during rpc connection. {ae}");
                         break;
                     }
                 }
                 catch (ObjectDisposedException ode)
                 {
-                    NcDebug.LogWarning($"ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
+                    NcDebug.Log($"[RPCAgent] ObjectDisposedException occurred. <b>Retrying... {retryCount}/{RpcConnectionRetryCount}</b>\n{ode}");
+                    triedRPCHost[newRpcServerHost] = true;
                     retryCount--;
                 }
                 catch (Exception e)
                 {
-                    NcDebug.LogWarning($"Unexpected error occurred during rpc connection. {e}");
+                    NcDebug.Log($"[RPCAgent] Unexpected error occurred during rpc connection. {e}");
                     break;
                 }
             }

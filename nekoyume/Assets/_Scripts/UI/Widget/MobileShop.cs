@@ -10,6 +10,8 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
+using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -33,6 +35,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject emptyCategoryPannel;
 
+        [SerializeField]
+        private Button closeButton = null;
+
         private bool _isInitializedObj;
 
         private readonly Dictionary<string, IAPShopProductCellView> _allProductObjs =
@@ -51,6 +56,24 @@ namespace Nekoyume.UI
         private string _lastSelectedCategory;
 
         public static L10NSchema MOBILE_L10N_SCHEMA;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(false);
+                AudioController.PlayClick();
+            });
+            
+            CloseWidget = () =>
+            {
+                Close();
+                Game.Event.OnRoomEnter.Invoke(false);
+            };
+        }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
@@ -81,12 +104,6 @@ namespace Nekoyume.UI
                 // set to true to trigger OnValueChanged
                 toggle.isOn = !toggle.isOn;
             }
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            Game.Event.OnRoomEnter.Invoke(true);
-            base.Close(ignoreCloseAnimation);
         }
 
         private async Task ShowAsync(bool ignoreShowAnimation = false)

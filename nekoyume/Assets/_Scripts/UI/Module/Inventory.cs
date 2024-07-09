@@ -79,6 +79,11 @@ namespace Nekoyume.UI.Module
         private readonly List<ElementalType> _elementalTypes = new();
 
         private readonly Dictionary<ItemType, List<Predicate<InventoryItem>>> _dimConditionFuncsByItemType = new();
+        private readonly int[] dustIds = new[]
+        {
+            CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
+        }.Select(cost => (int)cost).ToArray();
+
         private static readonly ItemType[] ItemTypes = Enum.GetValues(typeof(ItemType)) as ItemType[];
 
         private InventoryItem _selectedModel;
@@ -448,7 +453,9 @@ namespace Nekoyume.UI.Module
 
         private List<InventoryItem> GetOrganizedMaterials()
         {
-            return _materials.OrderByDescending(x =>
+            return _materials
+                .OrderByDescending(x => dustIds.Contains(x.ItemBase.Id))
+                .ThenByDescending(x =>
                     x.ItemBase.ItemSubType == ItemSubType.ApStone ||
                     x.ItemBase.ItemSubType == ItemSubType.Hourglass)
                 .ThenBy(x => x.ItemBase is ITradableItem).ToList();
@@ -548,7 +555,8 @@ namespace Nekoyume.UI.Module
             }
 
             var level = currentAvatarState.level;
-            var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
+            var availableSlots =
+                UnlockHelper.GetAvailableEquipmentSlots(level, States.Instance.GameConfigState);
 
             var bestItems = new List<InventoryItem>();
             var selectedEquipments = new Dictionary<ItemSubType, List<InventoryItem>>();

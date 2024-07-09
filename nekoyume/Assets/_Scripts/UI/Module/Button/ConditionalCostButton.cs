@@ -142,6 +142,7 @@ namespace Nekoyume.UI.Module
                     case CostType.Crystal:
                     case CostType.ActionPoint:
                     case CostType.Hourglass:
+                    case CostType.ApPotion:
                         break;
                     default:
                         return CostType.None;
@@ -176,9 +177,15 @@ namespace Nekoyume.UI.Module
                     return RxProps.EventDungeonTicketProgress.Value.currentTickets >= cost;
                 case CostType.SilverDust:
                 case CostType.GoldDust:
+                case CostType.RubyDust:
+                case CostType.EmeraldDust:
                     inventory = States.Instance.CurrentAvatarState.inventory;
                     var materialCount = inventory.GetMaterialCount((int)type);
                     return materialCount >= cost;
+                case CostType.ApPotion:
+                    inventory = States.Instance.CurrentAvatarState.inventory;
+                    var apPotionCount = inventory.GetMaterialCount((int)type);
+                    return apPotionCount >= cost;
                 default:
                     return true;
             }
@@ -220,6 +227,12 @@ namespace Nekoyume.UI.Module
                         OneLineSystem.Push(
                             MailType.System,
                             L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                    case CostType.ApPotion:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_AP_POTION"),
                             NotificationCell.NotificationType.Alert);
                         break;
                 }

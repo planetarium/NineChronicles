@@ -48,6 +48,11 @@ using Lib9c.DevExtensions.Action;
 namespace Nekoyume.Blockchain
 {
     using Model;
+    using Nekoyume.Action.AdventureBoss;
+    using Nekoyume.Action.Exceptions.AdventureBoss;
+    using Nekoyume.Battle.AdventureBoss;
+    using Nekoyume.Data;
+    using Nekoyume.TableData.AdventureBoss;
     using UI.Scroller;
     using UniRx;
 
@@ -206,6 +211,13 @@ namespace Nekoyume.Blockchain
             Testbed();
             ManipulateState();
 #endif
+
+            //AdventureBoss
+            ClaimAdventureBossReward();
+            ExploreAdventureBoss();
+            SweepAdventureBoss();
+            Wanted();
+            UnlockFloor();
         }
 
         public void Stop()
@@ -756,7 +768,7 @@ namespace Nekoyume.Blockchain
                 // sloth업데이트 이후 액션에서 지정한 블록보다 클라이언트의 블록이 높아지는 순간 아래 액션을 수행합니다.
                 // 타임아웃은 10초로, 일반적인 블록딜레이인 8초보다 조금 크게 설정하였습니다.
                 await UniTask.WaitUntil(() => Game.Game.instance.Agent.BlockIndex > eval.BlockIndex).TimeoutWithoutException(TimeSpan.FromSeconds(10));
-                
+
                 await UniTask.SwitchToThreadPool();
                 await UpdateAgentStateAsync(eval);
                 await UpdateAvatarState(eval, eval.Action.index);
@@ -846,74 +858,74 @@ namespace Nekoyume.Blockchain
             switch (stateResult)
             {
                 case CombinationConsumable5.ResultModel combineResultModel:
-                {
-                    LocalLayerModifier.AddNewResultAttachmentMail(
-                        avatarAddress,
-                        combineResultModel.id,
-                        currentBlockIndex);
-                    if (combineResultModel.itemUsable is Equipment equipment)
                     {
-                        var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
-                        if (combineResultModel.subRecipeId.HasValue &&
-                            sheet.TryGetValue(
-                                combineResultModel.subRecipeId.Value,
-                                out var subRecipeRow))
+                        LocalLayerModifier.AddNewResultAttachmentMail(
+                            avatarAddress,
+                            combineResultModel.id,
+                            currentBlockIndex);
+                        if (combineResultModel.itemUsable is Equipment equipment)
                         {
-                            formatKey = equipment.optionCountFromCombination ==
-                                subRecipeRow.Options.Count
-                                    ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                                    : "NOTIFICATION_COMBINATION_COMPLETE";
+                            var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
+                            if (combineResultModel.subRecipeId.HasValue &&
+                                sheet.TryGetValue(
+                                    combineResultModel.subRecipeId.Value,
+                                    out var subRecipeRow))
+                            {
+                                formatKey = equipment.optionCountFromCombination ==
+                                    subRecipeRow.Options.Count
+                                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                                        : "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
+                            else
+                            {
+                                formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
                         }
                         else
                         {
                             formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                         }
-                    }
-                    else
-                    {
-                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                    }
 
-                    break;
-                }
+                        break;
+                    }
                 case ItemEnhancement13.ResultModel enhancementResultModel:
-                {
-                    LocalLayerModifier.AddNewResultAttachmentMail(
-                        avatarAddress,
-                        enhancementResultModel.id,
-                        currentBlockIndex);
-
-                    switch (enhancementResultModel.enhancementResult)
                     {
-                        /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                            break;*/
-                        case Action.ItemEnhancement13.EnhancementResult.Success:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                            break;
-                        /*case Action.ItemEnhancement.EnhancementResult.Fail:
-                            Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
-                                new Dictionary<string, Value>
-                                {
-                                    ["GainedCrystal"] =
-                                        (long)enhancementResultModel.CRYSTAL.MajorUnit,
-                                    ["BurntNCG"] = (long)enhancementResultModel.gold,
-                                    ["AvatarAddress"] =
-                                        States.Instance.CurrentAvatarState.address.ToString(),
-                                    ["AgentAddress"] =
-                                        States.Instance.AgentState.address.ToString(),
-                                });
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                            break;*/
-                        default:
-                            NcDebug.LogError(
-                                $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                            break;
-                    }
+                        LocalLayerModifier.AddNewResultAttachmentMail(
+                            avatarAddress,
+                            enhancementResultModel.id,
+                            currentBlockIndex);
 
-                    break;
-                }
+                        switch (enhancementResultModel.enhancementResult)
+                        {
+                            /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                                break;*/
+                            case Action.ItemEnhancement13.EnhancementResult.Success:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                            /*case Action.ItemEnhancement.EnhancementResult.Fail:
+                                Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
+                                    new Dictionary<string, Value>
+                                    {
+                                        ["GainedCrystal"] =
+                                            (long)enhancementResultModel.CRYSTAL.MajorUnit,
+                                        ["BurntNCG"] = (long)enhancementResultModel.gold,
+                                        ["AvatarAddress"] =
+                                            States.Instance.CurrentAvatarState.address.ToString(),
+                                        ["AgentAddress"] =
+                                            States.Instance.AgentState.address.ToString(),
+                                    });
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                                break;*/
+                            default:
+                                NcDebug.LogError(
+                                    $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                        }
+
+                        break;
+                    }
                 default:
                     NcDebug.LogError(
                         $"Unexpected state.Result: {stateResult}");
@@ -962,7 +974,7 @@ namespace Nekoyume.Blockchain
             var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
-            if(StateGetter.TryGetAvatarState(
+            if (StateGetter.TryGetAvatarState(
                    eval.OutputState,
                    agentAddress,
                    avatarAddress,
@@ -1116,7 +1128,7 @@ namespace Nekoyume.Blockchain
             var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
-            if(StateGetter.TryGetAvatarState(
+            if (StateGetter.TryGetAvatarState(
                    eval.OutputState,
                    agentAddress,
                    avatarAddress,
@@ -1303,13 +1315,38 @@ namespace Nekoyume.Blockchain
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
             var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var result = (ItemEnhancement13.ResultModel)slot.Result;
+            var itemUsable = result.itemUsable;
 
-            if(StateGetter.TryGetAvatarState(
+            if (StateGetter.TryGetAvatarState(
                    eval.OutputState,
                    agentAddress,
                    avatarAddress,
                    out var avatarState))
             {
+                // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
+                foreach (var tradableId in result.materialItemIdList)
+                {
+                    if (avatarState.inventory.TryGetNonFungibleItem(
+                            tradableId,
+                            out ItemUsable materialItem))
+                    {
+                        if (itemUsable.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId, false);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                tradableId,
+                                materialItem.RequiredBlockIndex,
+                                1,
+                                false);
+                        }
+                    }
+                }
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -1329,7 +1366,6 @@ namespace Nekoyume.Blockchain
             var agentAddress = renderArgs.Evaluation.Signer;
             var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
             var result = (ItemEnhancement13.ResultModel)renderArgs.CombinationSlotState.Result;
-            var itemUsable = result.itemUsable;
 
             UniTask.RunOnThreadPool(() =>
             {
@@ -1338,44 +1374,6 @@ namespace Nekoyume.Blockchain
                 LocalLayerModifier.ModifyAgentCrystal(renderArgs.Evaluation, agentAddress,
                     -result.CRYSTAL.MajorUnit);
             });
-
-            if (itemUsable.ItemSubType == ItemSubType.Aura)
-            {
-                //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId, false);
-            }
-            else
-            {
-                LocalLayerModifier.AddItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1,
-                    false);
-            }
-
-            foreach (var tradableId in result.materialItemIdList)
-            {
-                if (renderArgs.AvatarState.inventory.TryGetNonFungibleItem(
-                        tradableId,
-                        out ItemUsable materialItem))
-                {
-                    if(itemUsable.ItemSubType == ItemSubType.Aura)
-                    {
-                        //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                        LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId, false);
-                    }
-                    else
-                    {
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            tradableId,
-                            materialItem.RequiredBlockIndex,
-                            1,
-                            false);
-                    }
-                }
-            }
 
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
@@ -1515,6 +1513,13 @@ namespace Nekoyume.Blockchain
             var count = 1;
             var itemName = string.Empty;
 
+            foreach (var registerInfo in eval.Action.RegisterInfos)
+            {
+                if (registerInfo is RegisterInfo r)
+                {
+                    LocalLayerModifier.AddItem(r.AvatarAddress, r.TradableId, eval.BlockIndex, r.ItemCount, false);
+                }
+            }
             UniTask.RunOnThreadPool(async () =>
             {
                 switch (info)
@@ -2575,7 +2580,7 @@ namespace Nekoyume.Blockchain
                 var mailRewards = new List<MailReward>();
                 foreach (var rewardPair in itemRewards)
                 {
-                    if (rewardItems.Keys.FirstOrDefault(key => key.Id == rewardPair.Key.Id) is {} itemBase)
+                    if (rewardItems.Keys.FirstOrDefault(key => key.Id == rewardPair.Key.Id) is { } itemBase)
                     {
                         rewardItems[itemBase] += rewardPair.Value;
                     }
@@ -2816,7 +2821,7 @@ namespace Nekoyume.Blockchain
                 {
                     return;
                 }
-                
+
                 arenaBattlePreparation.OnRenderBattleArena(eval);
                 Game.Game.instance.Arena.Enter(
                     logs.First(),
@@ -3330,26 +3335,15 @@ namespace Nekoyume.Blockchain
             var gameStates = Game.Game.instance.States;
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
-            MailBox mailBox;
             UnloadFromMyGaragesRecipientMail mail = null;
-
-            IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
             {
-                avatarValue = StateGetter.GetState(states, Addresses.Avatar, avatarAddr);
-                if (avatarValue is not List avatarList)
-                {
-                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                    return;
-                }
-                if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
-                {
-                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
-                    return;
-                }
-                mailBox = new MailBox(mailBoxList);
-                var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                    .Where(m => m.blockIndex == eval.BlockIndex);
+                // Note : AvatarState를 업데이트하지 않고도 MailBox만 사용하기 위함
+                var mailBox = StateGetter.GetMailBox(states, avatarAddr);
+                var sameBlockIndexMailList = mailBox
+                    .OfType<UnloadFromMyGaragesRecipientMail>()
+                    .Where(m => m.blockIndex == eval.BlockIndex)
+                    .ToList();
                 if (sameBlockIndexMailList.Any())
                 {
                     var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
@@ -3373,26 +3367,6 @@ namespace Nekoyume.Blockchain
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                 }
 
-                if (avatarValue is not List avatarList)
-                {
-                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                    return;
-                }
-
-                if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
-                {
-                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
-                    return;
-                }
-
-                mailBox = new MailBox(mailBoxList);
-                var sameBlockIndexMailList = mailBox.OfType<UnloadFromMyGaragesRecipientMail>().Where(m => m.blockIndex == eval.BlockIndex);
-                if (sameBlockIndexMailList.Any())
-                {
-                    var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
-                    mail = memoCheckedMail ?? sameBlockIndexMailList.First();
-                }
-
                 if (mail is not null)
                 {
                     UniTask.RunOnThreadPool(() =>
@@ -3412,7 +3386,7 @@ namespace Nekoyume.Blockchain
                     if (mail.Memo != null && mail.Memo.Contains("iap"))
                     {
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
-                        if(product != null)
+                        if (product != null)
                         {
                             var productName = L10nManager.Localize(product.L10n_Key);
                             var format = L10nManager.Localize(
@@ -3487,22 +3461,10 @@ namespace Nekoyume.Blockchain
             var gameStates = Game.Game.instance.States;
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
-            MailBox mailBox;
-            ClaimItemsMail mail = null;
-            IValue avatarValue = null;
+            MailBox mailBox = null;
             UniTask.RunOnThreadPool(() =>
             {
-                avatarValue = StateGetter.GetState(states, Addresses.Avatar, avatarAddr);
-                if (avatarValue is not List avatarList)
-                {
-                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                    return;
-                }
-                if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
-                {
-                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
-                    return;
-                }
+                mailBox = StateGetter.GetMailBox(states, avatarAddr);
 
                 UpdateCurrentAvatarInventory(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
@@ -3512,19 +3474,7 @@ namespace Nekoyume.Blockchain
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                 }
 
-                if (avatarValue is not List avatarList)
-                {
-                    NcDebug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                    return;
-                }
-
-                if (avatarList.Count < 9 || avatarList[8] is not List mailBoxList)
-                {
-                    NcDebug.LogError($"Failed to get mail box: {avatarAddr}");
-                    return;
-                }
-
-                mailBox = new MailBox(mailBoxList);
+                ClaimItemsMail mail = null;
                 var sameBlockIndexMailList = mailBox
                     .OfType<ClaimItemsMail>()
                     .Where(m => m.blockIndex == eval.BlockIndex)
@@ -3534,6 +3484,7 @@ namespace Nekoyume.Blockchain
                     var memoCheckedMail = sameBlockIndexMailList.FirstOrDefault(m => m.Memo == eval.Action.Memo);
                     mail = memoCheckedMail ?? sameBlockIndexMailList.First();
                 }
+
                 if (mail is not null)
                 {
                     UniTask.RunOnThreadPool(() =>
@@ -3580,7 +3531,7 @@ namespace Nekoyume.Blockchain
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
             var action = eval.Action;
-            if (action.MintSpecs is {} specs)
+            if (action.MintSpecs is { } specs)
             {
                 var requiredUpdateAvatarState = false;
                 foreach (var spec in specs.Where(spec => spec.Recipient.Equals(avatarAddr) || spec.Recipient.Equals(agentAddr)))
@@ -3647,7 +3598,7 @@ namespace Nekoyume.Blockchain
                 UniTask.RunOnThreadPool(() =>
                 {
                     var avatarAddr  = gameStates.CurrentAvatarState.address;
-                    var states      = eval.OutputState;
+                    var states = eval.OutputState;
                     var avatarState = StateGetter.GetAvatarState(states, avatarAddr);
                     LocalLayerModifier.AddNewMail(avatarState, mail.id);
                 }).Forget();
@@ -3656,6 +3607,543 @@ namespace Nekoyume.Blockchain
             {
                 Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             }
+        }
+
+        private void Wanted()
+        {
+            _actionRenderer.EveryRender<Wanted>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseWanted)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<Wanted>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionWanted)
+                .AddTo(_disposables);
+        }
+
+        private void ExceptionWanted(ActionEvaluation<Wanted> eval)
+        {
+            if (eval.Exception != null)
+            {
+                NcDebug.LogError(eval.Exception);
+                Widget.Find<WorldMap>().SetAdventureBossButtonLoading(false);
+                if (eval.Exception.InnerException is PreviousBountyException)
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_PREVIUS_BOUNTY_EXCEPTION"), NotificationCell.NotificationType.Alert);
+                }
+                else
+                {
+                    OneLineSystem.Push(MailType.System, eval.Exception.InnerException.Message, NotificationCell.NotificationType.Alert);
+                }
+            }
+        }
+
+        private void ResponseWanted(ActionEvaluation<Wanted> eval)
+        {
+            //최초 입찰여부를 알기위한 변수
+            bool isFirstWanted = false;
+            var bountyBoard = Game.Game.instance.AdventureBossData.BountyBoard;
+            UniTask.RunOnThreadPool(async () =>
+            {
+                isFirstWanted = bountyBoard.Value == null;
+                if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                {
+                    await UpdateAgentStateAsync(eval);
+                }
+            }).ToObservable().ObserveOnMainThread().Subscribe(async _ =>
+            {
+                await Game.Game.instance.AdventureBossData.RefreshAllByCurrentState(eval.OutputState, eval.BlockIndex);
+
+                var action = eval.Action;
+
+                if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                {
+                    Widget.Find<WorldMap>().SetAdventureBossButtonLoading(false);
+                }
+
+                if (bountyBoard.Value == null)
+                    return;
+
+                //최초입찰여부
+                if (isFirstWanted && bountyBoard.Value.Investors.Count >= 1 && bountyBoard.Value.Investors[0].Count >= 1)
+                {
+                    Widget.Find<AdventureBossOpenInfoPopup>().Show();
+                }
+            });
+        }
+
+        private void UnlockFloor()
+        {
+            _actionRenderer.EveryRender<UnlockFloor>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .Subscribe(ResponseUnlockFloor)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseUnlockFloor(ActionEvaluation<UnlockFloor> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>{
+                Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.AdventureBoss);
+            });
+        }
+
+        private void ClaimAdventureBossReward()
+        {
+            _actionRenderer.EveryRender<ClaimAdventureBossReward>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimAdventureBossReward)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseClaimAdventureBossReward(ActionEvaluation<ClaimAdventureBossReward> eval)
+        {
+            var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+            var lastSeason = seasonInfo.Season;
+            UniTask.RunOnThreadPool(async () =>
+            {
+                if (eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                {
+                    await UpdateAgentStateAsync(eval);
+                    await UpdateCurrentAvatarStateAsync(eval);
+                    UpdateCurrentAvatarRuneStoneBalance(eval);
+                    UpdateCurrentAvatarInventory(eval);
+                }
+            }).ToObservable().ObserveOnMainThread().Subscribe(async _ =>
+            {
+                if (Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(lastSeason, out var exploreBoard))
+                {
+                    if (exploreBoard.RaffleWinner == null)
+                    {
+                        //이름을 가져오기 위해 바로 갱신함.
+                        await Game.Game.instance.AdventureBossData.RefreshEndedSeasons(eval.OutputState, eval.BlockIndex);
+                        //최초
+                        Widget.Find<AdventureBossNcgRandomRewardPopup>().Show(lastSeason);
+                    }
+                    else
+                    {
+                        //기존정보 업데이트 보상수령 정보를 갱신하기위함.
+                        Game.Game.instance.AdventureBossData.RefreshEndedSeasons(eval.OutputState, eval.BlockIndex).Forget();
+                    }
+                }
+            });
+        }
+
+        private void StageExceptionHandle(Exception innerException)
+        {
+            var showLoadingScreen = false;
+            if (Widget.Find<StageLoadingEffect>().IsActive())
+            {
+                Widget.Find<StageLoadingEffect>().Close();
+            }
+
+            if (Widget.Find<AdventureBossResultPopup>().IsActive())
+            {
+                showLoadingScreen = true;
+                Widget.Find<AdventureBossResultPopup>().Close();
+            }
+
+            Game.Game.BackToMainAsync(innerException, showLoadingScreen)
+                .Forget();
+        }
+
+        private void ExploreAdventureBoss()
+        {
+            _actionRenderer.EveryRender<ExploreAdventureBoss>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .Subscribe(ResponseExploreAdventureBoss)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<ExploreAdventureBoss>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionExploreAdventureBoss)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
+        {
+            int firstFloor = 1;
+            int maxFloor = 5;
+            int lastFloor = firstFloor;
+            int prevTotalScore = 0;
+            UniTask.RunOnThreadPool(() =>
+            {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return eval;
+                }
+                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
+                maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
+                lastFloor = firstFloor;
+                prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
+
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+                UpdateCurrentAvatarInventory(eval);
+
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd =
+                    Game.Game.instance.Stage.OnEnterToStageEnd
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            var task = UniTask.RunOnThreadPool(() =>
+                            {
+                                UpdateCurrentAvatarStateAsync(eval).Forget();
+                                _disposableForBattleEnd = null;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            }, configureAwait: false);
+                            task.ToObservable()
+                                .First()
+                                // ReSharper disable once ConvertClosureToMethodGroup
+                                .DoOnError(e => NcDebug.LogException(e));
+                        });
+                return eval;
+
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    NcDebug.LogError("Not last battle action id.");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+                var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+                if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
+                {
+                    NcDebug.LogError("SeasonInfo is null or season is not matched.");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                var random = new LocalRandom(eval.RandomSeed);
+                var tableSheets = TableSheets.Instance;
+                var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
+                AdventureBossSimulator simulator = null;
+                var score = 0;
+                var rewardList = new List<AdventureBossSheet.RewardAmountData>();
+                var firstRewardList = new List<AdventureBossSheet.RewardAmountData>();
+
+                var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
+                if (bossRow == null)
+                {
+                    NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+                var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id).ToList();
+
+                var floorIdList = new List<int>();
+                for (var fl = firstFloor; fl <= maxFloor; fl++)
+                {
+                    var floorRow = floorRows.FirstOrDefault(row => row.Floor == fl);
+                    if (floorRow is null)
+                    {
+                        NcDebug.LogError($"FloorSheet is not found. Floor: {fl}");
+                        StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                        return;
+                    }
+                    if (!tableSheets.AdventureBossFloorWaveSheet.TryGetValue(floorRow.Id, out var waveRows))
+                    {
+                        NcDebug.LogError($"FloorWaveSheet is not found. Floor: {fl}");
+                        StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                        return;
+                    }
+
+                    var rewards = AdventureBossSimulator.GetWaveRewards(random, floorRow, tableSheets.MaterialItemSheet);
+
+                    simulator = new AdventureBossSimulator(
+                        bossId: seasonInfo.BossId,
+                        floorId: floorRow.Id,
+                        random,
+                        States.Instance.CurrentAvatarState,
+                        fl == firstFloor ? eval.Action.Foods : new List<Guid>(),
+                        runeStates: States.Instance.AllRuneState,
+                        runeSlotState: States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                        floorRow,
+                        waveRows,
+                        tableSheets.GetStageSimulatorSheets(),
+                        tableSheets.EnemySkillSheet,
+                        tableSheets.CostumeStatSheet,
+                        rewards,
+                        States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
+                        tableSheets.DeBuffLimitSheet,
+                        tableSheets.BuffLinkSheet,
+                        true,
+                        States.Instance.GameConfigState.ShatterStrikeMaxDamage);
+
+                    simulator.Simulate();
+                    lastFloor = fl;
+                    floorIdList.Add(floorRow.Id);
+
+                    // Get Reward if cleared
+                    if (simulator.Log.IsClear)
+                    {
+                        // Add point, reward
+                        if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
+                        {
+                            NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
+                            StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                            return;
+                        }
+
+                        var point = random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
+
+                        score += point;
+
+                        var stageId = floorRows.First(row => row.Floor == fl).Id;
+                        if (!tableSheets.AdventureBossFloorFirstRewardSheet.TryGetValue(stageId, out var firstReward))
+                        {
+                            NcDebug.LogError($"FloorFirstRewardSheet is not found. StageId: {stageId}");
+                            StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                            return;
+                        }
+                        foreach (var reward in firstReward.Rewards)
+                        {
+                            firstRewardList.Add(new AdventureBossSheet.RewardAmountData(
+                                reward.ItemType, reward.ItemId, reward.Amount));
+                        }
+                        selector.Clear();
+
+                        var floorReward = floorRows.First(row => row.Floor == fl);
+                        foreach (var reward in floorReward.Rewards)
+                        {
+                            selector.Add(reward, reward.Ratio);
+                        }
+
+                        var selected = selector.Select(1).First();
+                        rewardList.Add(new AdventureBossSheet.RewardAmountData(
+                            selected.ItemType,
+                            selected.ItemId,
+                            random.Next(selected.Min, selected.Max + 1))
+                        );
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                floorIdList.Remove(floorIdList.Last());
+                if (simulator is not null && lastFloor > firstFloor)
+                {
+                    simulator.AddBreakthrough(floorIdList, tableSheets.AdventureBossFloorWaveSheet);
+                }
+
+                var log = simulator.Log;
+                var stage = Game.Game.instance.Stage;
+                stage.StageType = StageType.AdventureBoss;
+                log.score = score;
+
+                if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
+                {
+                    NcDebug.LogError("BossData is null");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                var totalApPotionUsed = (maxFloor - firstFloor + 1) * bossData.ExploreAp;
+                var apPotionUsed = (lastFloor - firstFloor + 1) * bossData.ExploreAp;
+                var lastClearFloor = log.IsClear ? lastFloor : lastFloor - 1;
+
+                Widget.Find<AdventureBossResultPopup>().SetData(apPotionUsed, totalApPotionUsed, lastClearFloor, prevTotalScore, rewardList, firstRewardList);
+                Widget.Find<UI.Battle>().FloorProgressBar.SetData(firstFloor, maxFloor, lastFloor);
+
+                BattleRenderer.Instance.PrepareStage(log);
+            });
+        }
+
+        private void ExceptionExploreAdventureBoss(ActionEvaluation<ExploreAdventureBoss> eval)
+        {
+            StageExceptionHandle(eval.Exception?.InnerException);
+        }
+
+        private void SweepAdventureBoss()
+        {
+            _actionRenderer.EveryRender<SweepAdventureBoss>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .Subscribe(ResponseSweepAdventureBoss)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<SweepAdventureBoss>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionSweepAdventureBoss)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseSweepAdventureBoss(ActionEvaluation<SweepAdventureBoss> eval)
+        {
+            int firstFloor = 1;
+            int maxFloor = 5;
+            int lastFloor = firstFloor;
+            int prevTotalScore = 0;
+            UniTask.RunOnThreadPool(() =>
+            {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return eval;
+                }
+
+                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                firstFloor = exploreInfo == null ? 1 : exploreInfo.Floor + 1;
+                maxFloor = exploreInfo == null ? 5 : exploreInfo.MaxFloor;
+                lastFloor = firstFloor;
+                prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
+
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+                UpdateCurrentAvatarInventory(eval);
+
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd =
+                    Game.Game.instance.Stage.OnEnterToStageEnd
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            var task = UniTask.RunOnThreadPool(() =>
+                            {
+                                UpdateCurrentAvatarStateAsync(eval).Forget();
+                                _disposableForBattleEnd = null;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            }, configureAwait: false);
+                            task.ToObservable()
+                                .First()
+                                // ReSharper disable once ConvertClosureToMethodGroup
+                                .DoOnError(e => NcDebug.LogException(e));
+                        });
+                return eval;
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    NcDebug.LogError("Not last battle action id.");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+                var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
+                if (seasonInfo == null || seasonInfo.Season != eval.Action.Season)
+                {
+                    NcDebug.LogError("SeasonInfo is null or season is not matched.");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
+                var random = new LocalRandom(eval.RandomSeed);
+                var tableSheets = TableSheets.Instance;
+
+                var bossRow = tableSheets.AdventureBossSheet.Values.FirstOrDefault(row => row.BossId == seasonInfo.BossId);
+                if (bossRow == null)
+                {
+                    NcDebug.LogError($"BossSheet is not found. BossId: {seasonInfo.BossId}");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                var floorRow = tableSheets.AdventureBossFloorSheet.Values.FirstOrDefault(
+                    row => row.AdventureBossId == bossRow.Id && row.Floor == exploreInfo.Floor
+                );
+                if (floorRow is null)
+                {
+                    NcDebug.LogError($"FloorSheet is not found. BossId: {seasonInfo.BossId}, Floor: {exploreInfo.Floor}");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                var breakThroughFloorRows = tableSheets.AdventureBossFloorSheet.Values.Where(
+                    row => row.AdventureBossId == bossRow.Id && row.Floor <= exploreInfo.Floor).
+                    Select(floorRow => floorRow.Id).ToList();
+
+                var simulator = new AdventureBossSimulator(seasonInfo.BossId, floorRow.Id, random, States.Instance.CurrentAvatarState, tableSheets.GetSimulatorSheets(), logEvent: false);
+                simulator.AddBreakthrough(breakThroughFloorRows, tableSheets.AdventureBossFloorWaveSheet);
+
+                // Add point, reward
+                var point = 0;
+                var rewardList = new List<AdventureBossSheet.RewardAmountData>();
+                var selector = new WeightedSelector<AdventureBossFloorSheet.RewardData>(random);
+                var floorRows = tableSheets.AdventureBossFloorSheet.Values.Where(row => row.AdventureBossId == bossRow.Id);
+
+                for (var fl = 1; fl <= exploreInfo.Floor; fl++)
+                {
+                    if (!tableSheets.AdventureBossFloorPointSheet.TryGetValue(fl, out var pointRow))
+                    {
+                        NcDebug.LogError($"FloorPointSheet is not found. Floor: {fl}");
+                        StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                        return;
+                    }
+                    point += random.Next(pointRow.MinPoint, pointRow.MaxPoint + 1);
+
+                    selector.Clear();
+
+                    var floorReward = floorRows.First(row => row.Floor == fl);
+                    foreach (var reward in floorReward.Rewards)
+                    {
+                        selector.Add(reward, reward.Ratio);
+                    }
+                    var selected = selector.Select(1).First();
+                    rewardList.Add(new AdventureBossSheet.RewardAmountData(
+                        selected.ItemType,
+                        selected.ItemId,
+                        random.Next(selected.Min, selected.Max + 1)
+                    ));
+                }
+
+                var log = simulator.Log;
+                var stage = Game.Game.instance.Stage;
+                stage.StageType = StageType.AdventureBoss;
+
+                if (!Game.Game.instance.AdventureBossData.GetCurrentBossData(out var bossData))
+                {
+                    NcDebug.LogError("BossData is null");
+                    StageExceptionHandle(new Exception(L10nManager.Localize("ADVENTURE_BOSS_BATTLE_EXCEPTION")));
+                    return;
+                }
+
+                log.score = point;
+                var totalApPotionUsed = exploreInfo.Floor * bossData.SweepAp;
+
+                Widget.Find<AdventureBossResultPopup>().SetData(totalApPotionUsed, totalApPotionUsed, exploreInfo.Floor, prevTotalScore, rewardList);
+                Widget.Find<UI.Battle>().FloorProgressBar.SetData(1, exploreInfo.Floor, exploreInfo.Floor);
+
+                BattleRenderer.Instance.PrepareStage(log);
+            });
+        }
+
+        private void ExceptionSweepAdventureBoss(ActionEvaluation<SweepAdventureBoss> evaluation)
+        {
+            StageExceptionHandle(evaluation.Exception?.InnerException);
         }
     }
 }

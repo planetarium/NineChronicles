@@ -18,6 +18,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Inventory = Nekoyume.Model.Item.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -169,6 +170,11 @@ namespace Nekoyume.UI
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
                     {
+                        if (Game.Game.instance.States?.CurrentAvatarState?.inventory is not null)
+                        {
+                            _models?.UpdateMaterials(Game.Game.instance.States.CurrentAvatarState.inventory);
+                        }
+
                         CurrentItemType = itemTypeToggle.type;
 
                         var toggle = statToggles.First().toggle;
@@ -187,6 +193,11 @@ namespace Nekoyume.UI
                     .Where(isOn => isOn)
                     .Subscribe(_ =>
                     {
+                        if (Game.Game.instance.States?.CurrentAvatarState?.inventory is not null)
+                        {
+                            _models?.UpdateMaterials(Game.Game.instance.States.CurrentAvatarState.inventory);
+                        }
+
                         _currentStatType = statToggle.stat;
 
                         UpdateItems();
@@ -238,7 +249,7 @@ namespace Nekoyume.UI
             UpdateEffectView();
             UpdateToggleDictionary();
 
-            ReactiveAvatarState.Inventory.Subscribe(_ => OnUpdateInventory()).AddTo(gameObject);
+            ReactiveAvatarState.Inventory.Subscribe(OnUpdateInventory).AddTo(gameObject);
         }
 
         #region ScrollView
@@ -347,18 +358,21 @@ namespace Nekoyume.UI
             UpdateEffectView(); // on update model.Active
         }
 
-        private void OnUpdateInventory()
+        private void OnUpdateInventory(Inventory inventory)
         {
-            _models.UpdateMaterials(); // on update inventory
+            _models.UpdateMaterials(inventory); // on update inventory
 
             UpdateToggleDictionary(); // on update model.CanActivate
-            if (gameObject.activeSelf)
-            {
-                UpdateToggleView(); // on update toggleDictionary
-                UpdateStatToggleView(); // on update toggleDictionary
 
-                UpdateItems(); // on update model.CanActivate
+            if (!gameObject.activeSelf)
+            {
+                return;
             }
+
+            UpdateToggleView();     // on update toggleDictionary
+            UpdateStatToggleView(); // on update toggleDictionary
+
+            UpdateItems(); // on update model.CanActivate
         }
 
         // on update model.Active
@@ -709,15 +723,16 @@ namespace Nekoyume.UI
             foreach (var material in model.Materials)
             {
                 var upgradeFlag = material.Row.Level switch
-                                  {
-                                      0    => ItemFilterPopupBase.UpgradeLevel.Level0,
-                                      1    => ItemFilterPopupBase.UpgradeLevel.Level1,
-                                      2    => ItemFilterPopupBase.UpgradeLevel.Level2,
-                                      3    => ItemFilterPopupBase.UpgradeLevel.Level3,
-                                      4    => ItemFilterPopupBase.UpgradeLevel.Level4,
-                                      >= 5 => ItemFilterPopupBase.UpgradeLevel.Level5More,
-                                      _    => ItemFilterPopupBase.UpgradeLevel.All
-                                  };
+                {
+                    0 => ItemFilterPopupBase.UpgradeLevel.Level0,
+                    1 => ItemFilterPopupBase.UpgradeLevel.Level1,
+                    2 => ItemFilterPopupBase.UpgradeLevel.Level2,
+                    3 => ItemFilterPopupBase.UpgradeLevel.Level3,
+                    4 => ItemFilterPopupBase.UpgradeLevel.Level4,
+                    5 => ItemFilterPopupBase.UpgradeLevel.Level5,
+                    >= 6 => ItemFilterPopupBase.UpgradeLevel.Level6More,
+                    _ => ItemFilterPopupBase.UpgradeLevel.All
+                };
 
                 hasFlag |= itemFilterOptions.UpgradeLevel.HasFlag(upgradeFlag);
                 hasFlag &= upgradeFlag != ItemFilterPopupBase.UpgradeLevel.All;

@@ -1,8 +1,17 @@
 using Coffee.UIEffects;
+using Nekoyume.Blockchain;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.TableData;
+using Nekoyume.UI;
 using Nekoyume.UI.Module;
+using System.Collections.Generic;
+using System;
+using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,6 +19,9 @@ using UnityEngine.UI;
 
 namespace Nekoyume
 {
+    using Lib9c;
+    using Libplanet.Types.Assets;
+    using UniRx;
     public class BaseItemView : MonoBehaviour
     {
         [SerializeField]
@@ -155,6 +167,8 @@ namespace Nekoyume
         public GameObject SelectCollectionObject => selectCollectionObject;
         public GameObject SelectArrowObject => selectArrowObject;
 
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
         public static Sprite GetItemIcon(ItemBase itemBase)
         {
             var icon = itemBase.GetIconSprite();
@@ -175,6 +189,134 @@ namespace Nekoyume
         public ItemViewData GetItemViewData(int grade)
         {
             return itemViewData.GetItemViewData(grade);
+        }
+
+        protected void ClearItem()
+        {
+            Container.SetActive(true);
+            EmptyObject.SetActive(false);
+            EnoughObject.SetActive(false);
+            MinusObject.SetActive(false);
+            ExpiredObject.SetActive(false);
+            SelectBaseItemObject.SetActive(false);
+            SelectMaterialItemObject.SetActive(false);
+            LockObject.SetActive(false);
+            ShadowObject.SetActive(false);
+            PriceText.gameObject.SetActive(false);
+            LoadingObject.SetActive(false);
+            EquippedObject.SetActive(false);
+            DimObject.SetActive(false);
+            TradableObject.SetActive(false);
+            SelectObject.SetActive(false);
+            FocusObject.SetActive(false);
+            NotificationObject.SetActive(false);
+            GrindingCountObject.SetActive((false));
+            LevelLimitObject.SetActive(false);
+            RewardReceived.SetActive(false);
+            LevelLimitObject.SetActive(false);
+            RuneNotificationObj.SetActiveSafe(false);
+        }
+
+        public void ItemViewSetCurrencyData(FungibleAssetValue fav)
+        {
+            gameObject.SetActive(true);
+            ClearItem();
+            ItemImage.overrideSprite = SpriteHelper.GetFavIcon(fav.Currency.Ticker);
+            CountText.text = fav.GetQuantityString();
+            GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(fav.Currency.Ticker));
+        }
+
+        public void ItemViewSetCurrencyData(string ticker, decimal amount)
+        {
+            gameObject.SetActive(true);
+            ClearItem();
+            ItemImage.overrideSprite = SpriteHelper.GetFavIcon(ticker);
+            CountText.text = ((BigInteger)amount).ToCurrencyNotation();
+            GradeImage.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(ticker));
+        }
+
+        public bool ItemViewSetCurrencyData(int favId, decimal amount)
+        {
+            RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            runeSheet.TryGetValue(favId, out var runeRow);
+            if (runeRow != null)
+            {
+                ItemViewSetCurrencyData(runeRow.Ticker, amount);
+                _disposables.DisposeAllAndClear();
+                touchHandler.OnClick.Subscribe(_ =>
+                {
+                    Widget.Find<FungibleAssetTooltip>().Show(runeRow.Ticker, ((BigInteger)amount).ToCurrencyNotation(), null);
+                }).AddTo(_disposables);
+                return true;
+            }
+
+            NcDebug.LogWarning($"[ItemViewSetCurrencyData] Can't Find Fav ID {favId} in RuneSheet");
+            switch (favId)
+            {
+                case 9999999:
+                    ItemViewSetCurrencyData("NCG", amount);
+                    return true;
+                case 9999998:
+                    ItemViewSetCurrencyData(Currencies.Crystal.Ticker, amount);
+                    return true;
+                case 9999997:
+                    ItemViewSetCurrencyData("HOURGLASS", amount);
+                    return true;
+            }
+            NcDebug.LogError($"[ItemViewSetCurrencyData] Can't Find Fav ID {favId} in RuneSheet");
+            gameObject.SetActive(false);
+            return false;
+        }
+
+        private void AddSimpleTooltip(int id, decimal amount)
+        {
+            _disposables.DisposeAllAndClear();
+            if (!TableSheets.Instance.ItemSheet.TryGetValue(id, out var itemRow))
+            {
+                NcDebug.LogWarning($"Can't Find Item ID {id} in ItemSheet");
+                return;
+            }
+            ItemBase itemBase = null;
+            if (itemRow is MaterialItemSheet.Row materialRow)
+            {
+                itemBase = ItemFactory.CreateMaterial(materialRow);
+            }
+            else
+            {
+                for (var i = 0; i < amount; i++)
+                {
+                    if (itemRow.ItemSubType != ItemSubType.Aura)
+                    {
+                        itemBase = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                    }
+                }
+            }
+            if (itemBase != null)
+            {
+                touchHandler.OnClick.Subscribe(_ =>
+                {
+                    var tooltip = ItemTooltip.Find(itemBase.ItemType);
+                    tooltip.Show(itemBase, string.Empty, false, null);
+                }).AddTo(_disposables);
+            }
+        }
+
+        public void ItemViewSetItemData(int itemId, int amount)
+        {
+            gameObject.SetActive(true);
+            ClearItem();
+            AddSimpleTooltip(itemId, amount);
+            ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemId);
+            CountText.text = $"x{amount}";
+            try
+            {
+                var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[itemId];
+                GradeImage.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
+            }
+            catch
+            {
+                NcDebug.LogError($"Can't Find Item ID {itemId} in ItemSheet");
+            }
         }
     }
 }

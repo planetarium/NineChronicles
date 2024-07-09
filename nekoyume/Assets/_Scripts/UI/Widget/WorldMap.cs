@@ -21,6 +21,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Cysharp.Threading.Tasks;
     using mixpanel;
     using UniRx;
 
@@ -59,6 +60,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button eventDungeonLockButton;
+
+        [SerializeField]
+        private WorldMapAdventureBoss worldMapAdventureBossButton;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
@@ -170,6 +174,8 @@ namespace Nekoyume.UI
             {
                 ShowManyWorldUnlockPopup(worldInformation);
             }
+
+            Widget.Find<AdventureBossRewardPopup>().Show();
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
@@ -177,6 +183,7 @@ namespace Nekoyume.UI
             SubscribeAtShow();
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show(true);
+            Widget.Find<AdventureBossRewardPopup>().Show();
         }
 
         private void SubscribeAtShow()
@@ -199,12 +206,14 @@ namespace Nekoyume.UI
 
                 if (value is null)
                 {
-                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                    Find<HeaderMenuStatic>()
+                        .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
                     eventDungeonLockButton.gameObject.SetActive(true);
                 }
                 else
                 {
-                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+                    Find<HeaderMenuStatic>()
+                        .UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
 
                     eventDungeonLockButton.gameObject.SetActive(false);
                     var eventDungeonObject = eventDungeonObjects.Last(o => o.eventId == value.Id);
@@ -248,7 +257,8 @@ namespace Nekoyume.UI
                 var unlockRow = TableSheets.Instance.WorldUnlockSheet
                     .OrderedList
                     .FirstOrDefault(row => row.WorldIdToUnlock == buttonWorldId);
-                var canTryThisWorld = worldInformation.IsStageCleared(unlockRow?.StageId ?? int.MaxValue);
+                var canTryThisWorld =
+                    worldInformation.IsStageCleared(unlockRow?.StageId ?? int.MaxValue);
                 var worldIsUnlocked =
                     (worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
                      worldModel.IsUnlocked) ||
@@ -307,8 +317,10 @@ namespace Nekoyume.UI
                 });
 
                 var evt = new AirbridgeEvent("Click_Yggdrasil");
-                evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
-                evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
+                evt.AddCustomAttribute("agent-address",
+                    States.Instance.AgentState.address.ToString());
+                evt.AddCustomAttribute("avatar-address",
+                    States.Instance.CurrentAvatarState.address.ToString());
                 AirbridgeUnity.TrackEvent(evt);
             }
 
@@ -330,6 +342,7 @@ namespace Nekoyume.UI
             {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
+
             SubscribeAtShow();
 
             TableSheets.Instance.WorldSheet.TryGetValue(
@@ -358,6 +371,7 @@ namespace Nekoyume.UI
             {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
+
             SubscribeAtShow();
 
             Show(true);
@@ -426,7 +440,8 @@ namespace Nekoyume.UI
                 () =>
                 {
                     Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldUnlock);
-                    ActionManager.Instance.UnlockWorld(new List<int> { worldId }, (int) cost).Subscribe();
+                    ActionManager.Instance.UnlockWorld(new List<int> { worldId }, (int)cost)
+                        .Subscribe();
                 },
                 OnAttractInPaymentPopup);
         }
@@ -457,7 +472,8 @@ namespace Nekoyume.UI
                         () =>
                         {
                             Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldUnlock);
-                            ActionManager.Instance.UnlockWorld(worldIdListForUnlock, (int) cost).Subscribe();
+                            ActionManager.Instance.UnlockWorld(worldIdListForUnlock, (int)cost)
+                                .Subscribe();
                         },
                         OnAttractInPaymentPopup);
                     return true;
@@ -474,5 +490,11 @@ namespace Nekoyume.UI
                 worldButton.SetOpenCostTextColor(crystal.MajorUnit);
             }
         }
+
+        public void SetAdventureBossButtonLoading(bool isLoading)
+        {
+            worldMapAdventureBossButton.SetLoadingIndicator(isLoading);
+        }
+
     }
 }

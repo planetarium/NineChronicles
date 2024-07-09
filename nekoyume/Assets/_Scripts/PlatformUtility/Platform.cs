@@ -29,7 +29,7 @@ namespace Nekoyume
         private static void OnRuntimeMethodLoad()
         {
 #if !UNITY_EDITOR && UNITY_ANDROID
-            Debug.Log("[OnRuntimeMethodLoad] After Scene is loaded and game is running");
+            NcDebug.Log("[OnRuntimeMethodLoad] After Scene is loaded and game is running");
             AndroidKeyStorePathChange();
 #endif
         }

@@ -237,8 +237,6 @@ MonoBehaviour:
   gradeImage: {fileID: 722425532850955470}
   gradeHsv: {fileID: 3081713397720630798}
   enhancementImage: {fileID: 1382718575695869683}
-  upNotification: {fileID: 0}
-  downNotification: {fileID: 0}
 --- !u!114 &6202325387254898463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1655,20 +1653,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5398869146890453574}
     m_Modifications:
+    - target: {fileID: 1763179122772775953, guid: 7f4259e2f69eb4206a1e12936590e9d9,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3406640326257623083, guid: 7f4259e2f69eb4206a1e12936590e9d9,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3406640326257623083, guid: 7f4259e2f69eb4206a1e12936590e9d9,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3406640326257623083, guid: 7f4259e2f69eb4206a1e12936590e9d9,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5921266971287187662, guid: 7f4259e2f69eb4206a1e12936590e9d9,
         type: 3}
