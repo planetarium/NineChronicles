@@ -169,13 +169,13 @@ namespace Nekoyume.UI
             if(!ignoreShowAnimation)
                 PageEffect();
 
-            if (!PlayerPrefs.HasKey(seasonPassManager.GetSeassonPassPopupViewKey()))
+            if (!PlayerPrefs.HasKey(seasonPassManager.GetSeasonPassPopupViewKey()))
             {
                 async UniTaskVoid ShowCellEffect()
                 {
                     await UniTask.Delay(popupViewDelay);
                     Find<SeasonPassCouragePopup>().Show();
-                    PlayerPrefs.SetInt(seasonPassManager.GetSeassonPassPopupViewKey(), 1);
+                    PlayerPrefs.SetInt(seasonPassManager.GetSeasonPassPopupViewKey(), 1);
                 }
                 ShowCellEffect().Forget();
             }

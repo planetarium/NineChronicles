@@ -2165,15 +2165,9 @@ namespace Nekoyume.Game
             PatrolRewardServiceClient = new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
 
             // NOTE: Initialize season pass service.
-            if (string.IsNullOrEmpty(_commandLineOptions.SeasonPassServiceHost))
+            SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
+            if (SeasonPassServiceManager.IsInitialized)
             {
-                NcDebug.Log("[Game] Start()... SeasonPassServiceManager not initialized" +
-                          " because of no SeasonPassServiceHost");
-                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
-            }
-            else
-            {
-                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
                 if (!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
                 {
                     SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
@@ -2185,9 +2179,9 @@ namespace Nekoyume.Game
                 }
 
                 NcDebug.Log("[Game] Start()... SeasonPassServiceManager initialized." +
-                          $" host: {_commandLineOptions.SeasonPassServiceHost}" +
-                          $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
-                          $", apple: {SeasonPassServiceManager.AppleMarketURL}");
+                            $" host: {_commandLineOptions.SeasonPassServiceHost}" +
+                            $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
+                            $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
         }
 
