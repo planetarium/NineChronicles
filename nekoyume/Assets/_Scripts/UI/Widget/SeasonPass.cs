@@ -11,6 +11,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.L10n;
 using Nekoyume.UI.Scroller;
 using DG.Tweening;
+using Nekoyume.ApiClient;
 
 namespace Nekoyume.UI
 {

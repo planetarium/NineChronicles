@@ -10,9 +10,8 @@ using MarketService.Response;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using UnityEngine;
 
-namespace Nekoyume.Game
+namespace Nekoyume.ApiClient
 {
     public class MarketServiceClient
     {
@@ -180,7 +179,7 @@ namespace Nekoyume.Game
             var itemProduct = response.ItemProducts.FirstOrDefault();
             if (itemProduct != null)
             {
-                var itemSheet = Game.instance.TableSheets.ItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                 itemSheet.TryGetValue(itemProduct.ItemId, out var row);
                 return (row.GetLocalizedName(hasColor, useElementalIcon), itemProduct, null);
             }

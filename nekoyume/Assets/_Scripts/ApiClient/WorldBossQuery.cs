@@ -5,7 +5,7 @@ using Libplanet.Crypto;
 using Nekoyume.UI.Model;
 using UnityEngine.Networking;
 
-namespace Nekoyume.UI.Module.WorldBoss
+namespace Nekoyume.ApiClient
 {
     public static class WorldBossQuery
     {

@@ -32,6 +32,7 @@ using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Battle;
