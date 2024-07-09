@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using GraphQL;
 using GraphQL.Client.Http;
@@ -10,7 +12,7 @@ namespace Nekoyume.GraphQL
     {
         public bool IsInitialized => _client != null;
 
-        private readonly GraphQLHttpClient _client = null;
+        private readonly GraphQLHttpClient? _client = null;
 
         public NineChroniclesAPIClient(string host)
         {
@@ -22,17 +24,17 @@ namespace Nekoyume.GraphQL
             _client = new GraphQLHttpClient(host, new NewtonsoftJsonSerializer());
         }
 
-        public async Task<T> GetObjectAsync<T>(string query) where T : class
+        public async Task<T?> GetObjectAsync<T>(string query) where T : class
         {
             var graphQlRequest = new GraphQLHttpRequest(query);
             return await GetObjectAsync<T>(graphQlRequest);
         }
 
-        public async Task<T> GetObjectAsync<T>(GraphQLRequest request) where T : class
+        public async Task<T?> GetObjectAsync<T>(GraphQLRequest request) where T : class
         {
             if (_client == null)
             {
-                NcDebug.LogError("This API client is not initialized.");
+                NcDebug.LogWarning("This API client is not initialized.");
                 return null;
             }
             
