@@ -175,6 +175,13 @@ namespace Nekoyume
 
         public async Task AvatarStateRefreshAsync()
         {
+            if (Client == null)
+            {
+                AvatarInfo.SetValueAndForceNotify(null);
+                NcDebug.LogWarning("$SeasonPassServiceManager [AvatarStateRefreshAsync] Client is null");
+                return;
+            }
+            
             if(CurrentSeasonPassData == null || LevelInfos == null) {
                 AvatarInfo.SetValueAndForceNotify(null);
                 NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] CurrentSeasonPassData or LevelInfos is null");
@@ -196,13 +203,6 @@ namespace Nekoyume
             }
 
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-
-            if(Client == null)
-            {
-                AvatarInfo.SetValueAndForceNotify(null);
-                NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Client is null");
-                return;
-            }
 
             await Client.GetSeasonpassCurrentAsync(
                 (result) =>
