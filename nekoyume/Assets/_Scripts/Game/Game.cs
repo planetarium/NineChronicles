@@ -177,6 +177,7 @@ namespace Nekoyume.Game
 
         public CommandLineOptions CommandLineOptions { get => _commandLineOptions; }
 
+        // TODO: 이건 뭔지 확인 필요. 로그에 사용하는듯 해 보인다.
         private AmazonCloudWatchLogsClient _logsClient;
 
         private PlayableDirector _activeDirector;
