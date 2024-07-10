@@ -64,23 +64,7 @@ namespace Nekoyume.ApiClient
 
             // NOTE: Initialize season pass service.
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
-            if (SeasonPassServiceManager.IsInitialized)
-            {
-                if (!string.IsNullOrEmpty(clo.GoogleMarketUrl))
-                {
-                    SeasonPassServiceManager.GoogleMarketURL = clo.GoogleMarketUrl;
-                }
-
-                if (!string.IsNullOrEmpty(clo.AppleMarketUrl))
-                {
-                    SeasonPassServiceManager.AppleMarketURL = clo.AppleMarketUrl;
-                }
-
-                NcDebug.Log("[Game] Start()... SeasonPassServiceManager initialized." +
-                            $" host: {clo.SeasonPassServiceHost}" +
-                            $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
-                            $", apple: {SeasonPassServiceManager.AppleMarketURL}");
-            }
+            ApplySeasonPassMarketUrl(clo);
             
 #if UNITY_IOS
             IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Apple);
@@ -90,6 +74,29 @@ namespace Nekoyume.ApiClient
 #endif
             
             IsInitialized = true;
+        }
+
+        private void ApplySeasonPassMarketUrl(CommandLineOptions clo)
+        {
+            if (!SeasonPassServiceManager.IsInitialized)
+            {
+                return;
+            }
+            
+            if (!string.IsNullOrEmpty(clo.GoogleMarketUrl))
+            {
+                SeasonPassServiceManager.GoogleMarketURL = clo.GoogleMarketUrl;
+            }
+
+            if (!string.IsNullOrEmpty(clo.AppleMarketUrl))
+            {
+                SeasonPassServiceManager.AppleMarketURL = clo.AppleMarketUrl;
+            }
+
+            NcDebug.Log("[Game] Start()... SeasonPassServiceManager initialized." +
+                        $" host: {clo.SeasonPassServiceHost}" +
+                        $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
+                        $", apple: {SeasonPassServiceManager.AppleMarketURL}");
         }
     }
 }
