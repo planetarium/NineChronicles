@@ -155,6 +155,7 @@ namespace Nekoyume.Game
 
         public PortalConnect PortalConnect { get; private set; }
 
+        // TODO: 공용으로 쓰는건가? 확인 필요
         public Url URL { get; private set; }
 
         public readonly LruCache<Address, IValue> CachedStates = new();
