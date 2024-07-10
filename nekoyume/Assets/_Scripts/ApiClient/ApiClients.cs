@@ -42,27 +42,9 @@ namespace Nekoyume.ApiClient
             
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
-            // NOTE: Initialize api client.
             WorldBossClient = new NineChroniclesAPIClient(clo.ApiServerHost);
-            
-            // NOTE: Initialize graphql client which is targeting to RPC server.
             RpcGraphQlClient = new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
-            
-            // NOTE: Initialize world boss query.
-            if (string.IsNullOrEmpty(clo.OnBoardingHost))
-            {
-                WorldBossQuery.SetUrl(string.Empty);
-                NcDebug.Log($"[Game] Start()... WorldBossQuery initialized with empty host url" +
-                            " because of no OnBoardingHost." +
-                            $" url: {WorldBossQuery.Url}");
-            }
-            else
-            {
-                WorldBossQuery.SetUrl(clo.OnBoardingHost);
-                NcDebug.Log("[Game] Start()... WorldBossQuery initialized." +
-                            $" host: {clo.OnBoardingHost}" +
-                            $" url: {WorldBossQuery.Url}");
-            }
+            WorldBossQuery.SetUrl(clo.OnBoardingHost);
             
             // NOTE: Initialize market service.
             if (string.IsNullOrEmpty(clo.MarketServiceHost))

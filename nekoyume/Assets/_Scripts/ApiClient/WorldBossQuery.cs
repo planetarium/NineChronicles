@@ -13,7 +13,15 @@ namespace Nekoyume.ApiClient
 
         public static void SetUrl(string host)
         {
+            if (string.IsNullOrEmpty(host))
+            {
+                Url = string.Empty;
+                NcDebug.Log($"[{nameof(WorldBossQuery)}] initialized with empty host url because of no OnBoardingHost. url: {Url}");
+                return;
+            }
+            
             Url = $"{host}/raid";
+            NcDebug.Log($"[{nameof(WorldBossQuery)}] initialized. host: {host} url: {Url}");
         }
 
         public static async Task<WorldBossRankingResponse> QueryRankingAsync(
