@@ -45,24 +45,8 @@ namespace Nekoyume.ApiClient
             WorldBossClient = new NineChroniclesAPIClient(clo.ApiServerHost);
             RpcGraphQlClient = new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
             WorldBossQuery.SetUrl(clo.OnBoardingHost);
-            
-            // NOTE: Initialize market service.
-            if (string.IsNullOrEmpty(clo.MarketServiceHost))
-            {
-                MarketServiceClient = new MarketServiceClient(string.Empty);
-                NcDebug.Log("[Game] Start()... MarketServiceClient initialized with empty host url" +
-                            " because of no MarketServiceHost");
-            }
-            else
-            {
-                MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
-                NcDebug.Log("[Game] Start()... MarketServiceClient initialized." +
-                            $" host: {clo.MarketServiceHost}");
-            }
-            // NOTE: Initialize patrol reward service.
+            MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
             PatrolRewardServiceClient = new NineChroniclesAPIClient(clo.PatrolRewardServiceHost);
-
-            // NOTE: Initialize season pass service.
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
             ApplySeasonPassMarketUrl(clo);
             
