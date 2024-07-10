@@ -164,10 +164,11 @@ namespace Nekoyume.UI
             {
                 if(!worldMapLoading.isActiveAndEnabled)
                 {
-                    worldMapLoading.Show(LoadingScreen.LoadingType.AdventureBoss);
+                    worldMapLoading.Show(LoadingScreen.LoadingType.AdventureBoss, ignoreShowAnimation: true);
                 }
                 await UniTask.WaitForEndOfFrame();
             }
+            worldMapLoading.Close();
         }
 
         public void OnClickTower()
