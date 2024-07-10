@@ -1,6 +1,7 @@
 [submodule "nekoyume/Assets/_Scripts/Lib9c/lib9c"]
 	path = nekoyume/Assets/_Scripts/Lib9c/lib9c
 	url = https://github.com/planetarium/lib9c.git
+	fetchRecurseSubmodules = no
 [submodule "nekoyume/Assets/_Scripts/NineChronicles.RPC.Shared"]
 	path = nekoyume/Assets/_Scripts/NineChronicles.RPC.Shared
 	url = https://github.com/planetarium/NineChronicles.RPC.Shared.git
