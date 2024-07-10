@@ -9,6 +9,7 @@ using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Nekoyume.Helper;
 using Cysharp.Threading.Tasks;
 using System.Numerics;
+using Nekoyume.ApiClient;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -134,7 +135,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Game.Game.instance.IAPServiceManager.CheckProductAvailable(_data.Sku, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
+                    ApiClients.Instance.IAPServiceManager.CheckProductAvailable(_data.Sku, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
                         //success
                         () =>
                         {

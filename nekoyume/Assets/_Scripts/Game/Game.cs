@@ -54,6 +54,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using NineChronicles.ExternalServices.IAPService.Runtime;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 using UnityEngine.Playables;
 using Currency = Libplanet.Types.Assets.Currency;
@@ -63,7 +64,6 @@ using Random = UnityEngine.Random;
 using UnityEngine.Android;
 #endif
 using Nekoyume.Model.Mail;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
@@ -131,8 +131,6 @@ namespace Nekoyume.Game
         public Analyzer Analyzer { get; private set; }
 
         public IAPStoreManager IAPStoreManager { get; private set; }
-
-        public IAPServiceManager IAPServiceManager { get; private set; }
 
         public AdventureBossData AdventureBossData { get; private set; }
 
@@ -496,13 +494,8 @@ namespace Nekoyume.Game
                 var innerSw = new Stopwatch();
                 innerSw.Reset();
                 innerSw.Start();
-#if UNITY_IOS
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Apple);
-#else
-                //pc has to find iap product for mail box system
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-#endif
-                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+                
+                yield return ApiClients.Instance.IAPServiceManager.InitializeAsync().AsCoroutine();
 
                 Task.Run(async () =>
                 {

@@ -217,7 +217,7 @@ namespace Nekoyume.UI
 
         private void OnPurchase(string productKey)
         {
-            Game.Game.instance.IAPServiceManager.CheckProductAvailable(productKey, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
+            ApiClients.Instance.IAPServiceManager.CheckProductAvailable(productKey, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
             //success
             () =>
             {

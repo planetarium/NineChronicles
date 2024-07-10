@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -52,7 +53,7 @@ namespace Nekoyume.IAPStore
                 NcDebug.LogException(exception);
             }
 
-            _initializedCategorySchema = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
+            _initializedCategorySchema = await ApiClients.Instance.IAPServiceManager.GetProductsAsync(
                 States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
 
             if (_initializedCategorySchema is null)
@@ -247,7 +248,7 @@ namespace Nekoyume.IAPStore
             var states = States.Instance;
             try
             {
-                var result = await Game.Game.instance.IAPServiceManager
+                var result = await ApiClients.Instance.IAPServiceManager
                     .PurchaseLogAsync(
                         states.AgentState.address.ToHex(),
                         states.CurrentAvatarState.address.ToHex(),
@@ -297,7 +298,7 @@ namespace Nekoyume.IAPStore
                 pData.PlanetId = Game.Game.instance?.CurrentPlanetId?.ToString();
             }
 
-            var result = await Game.Game.instance.IAPServiceManager
+            var result = await ApiClients.Instance.IAPServiceManager
                     .PurchaseRequestAsync(
                         product.receipt,
                         pData.AgentAddressHex != null ? pData.AgentAddressHex : string.Empty,
@@ -470,7 +471,7 @@ namespace Nekoyume.IAPStore
             var states = States.Instance;
             try
             {
-                var result = await Game.Game.instance.IAPServiceManager.
+                var result = await ApiClients.Instance.IAPServiceManager.
                     PurchaseFreeAsync(
                     states.AgentState.address.ToHex(),
                     states.CurrentAvatarState.address.ToHex(),
@@ -533,7 +534,7 @@ namespace Nekoyume.IAPStore
 
             try
             {
-                var result = await Game.Game.instance.IAPServiceManager
+                var result = await ApiClients.Instance.IAPServiceManager
                     .PurchaseRequestAsync(
                         e.purchasedProduct.receipt,
                         states.AgentState.address.ToHex(),

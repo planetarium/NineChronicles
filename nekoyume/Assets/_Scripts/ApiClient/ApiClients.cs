@@ -1,5 +1,7 @@
 using Nekoyume.GraphQL;
 using Nekoyume.Helper;
+using NineChronicles.ExternalServices.IAPService.Runtime;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 
 namespace Nekoyume.ApiClient
 {
@@ -24,7 +26,8 @@ namespace Nekoyume.ApiClient
         
         public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
         
-        // TODO: IAP??
+        // Game.IAPStoreManager와 기능 정리 가능할지도?
+        public IAPServiceManager IAPServiceManager { get; private set; }
         
         public bool IsInitialized { get; private set; }
         
@@ -96,6 +99,13 @@ namespace Nekoyume.ApiClient
                             $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
                             $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
+            
+#if UNITY_IOS
+            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Apple);
+#else
+            //pc has to find iap product for mail box system
+            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Google);
+#endif
             
             IsInitialized = true;
         }
