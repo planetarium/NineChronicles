@@ -148,6 +148,11 @@ namespace Nekoyume.Game
 
         private IEnumerator OnFrostBite()
         {
+            if (!_isPlaying)
+            {
+                yield break;
+            }
+            
             var castingTrack = summonedSpine.AnimationState.SetAnimation(0, CastingAnimation, false);
             frostBiteParticle.Play();
             while (!castingTrack.IsComplete)
@@ -155,10 +160,7 @@ namespace Nekoyume.Game
                 yield return null;
             }
 
-            if (_isPlaying)
-            {
-                summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
-            }
+            summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
         }
         
         public static bool IsFrostBiteBuff(int buffId)
