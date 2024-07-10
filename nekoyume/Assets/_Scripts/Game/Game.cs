@@ -134,8 +134,6 @@ namespace Nekoyume.Game
 
         public IAPServiceManager IAPServiceManager { get; private set; }
 
-        public GuildServiceClient GuildServiceClient { get; private set; }
-
         public AdventureBossData AdventureBossData { get; private set; }
 
         public Stage Stage => stage;
@@ -480,8 +478,6 @@ namespace Nekoyume.Game
 
             var showNextEvt = new AirbridgeEvent("Intro_Start_ShowNext");
             AirbridgeUnity.TrackEvent(showNextEvt);
-
-            yield return InitializeGuildService();
 
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
@@ -2109,36 +2105,6 @@ namespace Nekoyume.Game
             RaidStage.Initialize();
             sw.Stop();
             NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-        }
-
-        private IEnumerator InitializeGuildService()
-        {
-            if (string.IsNullOrEmpty(_commandLineOptions.GuildServiceUrl))
-            {
-                yield break;
-            }
-            GuildServiceClient = new GuildServiceClient(_commandLineOptions.GuildServiceUrl);
-            if (!string.IsNullOrEmpty(_commandLineOptions.GuildIconBucket))
-            {
-                _guildBucketUrl = _commandLineOptions.GuildIconBucket;
-            }
-
-            yield return GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
-            {
-                GuildModels = guildModels;
-                NcDebug.Log($"[Guild] GetGuildAsync success");
-                {
-                    foreach (var guildModel in guildModels)
-                    {
-                        var url = $"{_guildBucketUrl}/{guildModel.Name}.png";
-                        Helper.Util.DownloadTexture(url).Forget();
-                    }
-                }
-            }, onError: message =>
-            {
-                // cannot convert into method group because the method might not exist in some builds.
-                NcDebug.LogError(message);
-            }).AsUniTask().ToCoroutine();
         }
 #endregion Initialize On Start
         
