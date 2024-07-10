@@ -189,7 +189,7 @@ namespace Nekoyume.UI
                 {
                     var (statMap, _) = option.Stats[i];
                     statViewList[i].gameObject.SetActive(true);
-                    statViewList[i].Show(statMap.StatType, statMap.TotalValueAsLong, true);
+                    statViewList[i].Show(statMap.StatType, statMap.TotalValue, true);
                 }
 
                 cpText.text = $"<size=80%>CP</size> {option.Cp}";

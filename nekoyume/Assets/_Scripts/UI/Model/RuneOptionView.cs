@@ -224,7 +224,7 @@ namespace Nekoyume.UI.Model
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
                     info.stat.StatType.ToString(),
-                    info.stat.StatType.ValueToString(info.stat.TotalValueAsLong),
+                    info.stat.StatType.ValueToString(info.stat.TotalValue),
                     string.Empty);
             }
 
