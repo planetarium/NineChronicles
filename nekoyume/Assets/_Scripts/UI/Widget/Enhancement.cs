@@ -80,16 +80,7 @@ namespace Nekoyume.UI
         private PositionTooltip statTooltip;
 
         [SerializeField]
-        private Slider expSlider;
-
-        [SerializeField]
-        private float minimumSliderEffectExtraDuration = 1f;
-
-        [SerializeField]
-        private AnimationCurve sliderEffectCurve;
-
-        [SerializeField]
-        private TextMeshProUGUI sliderPercentText;
+        private EnhancementExpSlider enhancementExpSlider;
 
         [SerializeField]
         private TextMeshProUGUI levelStateText;
@@ -125,9 +116,6 @@ namespace Nekoyume.UI
         private BigInteger _costNcg = 0;
         private string _errorMessage;
         private IOrderedEnumerable<KeyValuePair<int, EnhancementCostSheetV3.Row>> _decendingbyExpCostSheet;
-        private float _sliderAnchorPoint = 0;
-        private int _levelAnchorPoint = 0;
-        private Coroutine _sliderEffectCor;
         private UnityEngine.UI.Extensions.Scroller _matarialsScroller;
 
         protected override void Awake()
@@ -335,62 +323,6 @@ namespace Nekoyume.UI
             loadingScreen.AnimateNPC(CombinationLoadingScreen.SpeechBubbleItemType.Equipment, quote);
         }
 
-        private void SliderGageEffect(Equipment equipment, long targetExp, int targetLevel)
-        {
-            var expTable = _costSheet.Values.
-                            Where((r) =>
-                            r.Grade == equipment.Grade &&
-                            r.ItemSubType == equipment.ItemSubType).Select((r) => r.Exp).ToList();
-            expTable.Insert(0, 0);
-
-            float GetSliderGage(float exp, out long nextExp)
-            {
-                nextExp = 0;
-                for (int i = 0; i < expTable.Count; i++)
-                {
-                    if(expTable[i] > exp)
-                    {
-                        nextExp = expTable[i];
-                        _levelAnchorPoint = i - 1;
-                        return Mathf.InverseLerp(expTable[i-1], expTable[i], exp);
-                    }
-                }
-                nextExp = expTable[expTable.Count - 1];
-                return 1;
-            }
-
-            IEnumerator CoroutineEffect(float duration)
-            {
-                float elapsedTime = 0;
-                float startAnchorPoint = _sliderAnchorPoint;
-                while (elapsedTime <= duration)
-                {
-                    elapsedTime += Time.deltaTime;
-
-                    _sliderAnchorPoint = Mathf.Lerp(startAnchorPoint, targetExp, sliderEffectCurve.Evaluate(elapsedTime / duration));
-                    expSlider.value = GetSliderGage(_sliderAnchorPoint, out var nextExp);
-                    sliderPercentText.text = $"{(int)(expSlider.value * 100)}% {(long)_sliderAnchorPoint}/{nextExp}";
-                    yield return new WaitForEndOfFrame();
-                }
-                _sliderAnchorPoint = targetExp;
-                expSlider.value = GetSliderGage(_sliderAnchorPoint, out var lastExp);
-                sliderPercentText.text = $"{(int)(expSlider.value * 100)}% {(long)_sliderAnchorPoint}/{lastExp}";
-                yield return 0;
-            }
-
-            if (_sliderEffectCor != null)
-                StopCoroutine(_sliderEffectCor);
-
-            float extraDuration = 0;
-            int levelDiff = Mathf.Abs(_levelAnchorPoint - targetLevel);
-            if (levelDiff > 0)
-            {
-                extraDuration = Mathf.Lerp(minimumSliderEffectExtraDuration, 3f, (float)levelDiff / 20);
-            }
-
-            _sliderEffectCor = StartCoroutine(CoroutineEffect(sliderEffectCurve.keys.Last().time + extraDuration));
-        }
-
         private void ClearInformation()
         {
             itemNameText.text = string.Empty;
@@ -447,13 +379,8 @@ namespace Nekoyume.UI
                 closeButton.interactable = true;
                 ClearInformation();
 
-                if (_sliderEffectCor != null)
-                    StopCoroutine(_sliderEffectCor);
+                enhancementExpSlider.SetEquipment(null, true);
 
-                expSlider.value = 0;
-                _sliderAnchorPoint = 0;
-                _levelAnchorPoint = 0;
-                sliderPercentText.text = "0% 0/0";
                 removeAllButton.Interactable = false;
             }
             else
@@ -541,7 +468,8 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    SliderGageEffect(equipment, targetExp, targetRow.Level);
+                    enhancementExpSlider.SetEquipment(equipment);
+                    enhancementExpSlider.SliderGageEffect(targetExp, targetRow.Level);
                 }
 
                 levelStateText.text = $"Lv. {targetRow.Level}/{ItemEnhancement.GetEquipmentMaxLevel(equipment, _costSheet)}";
