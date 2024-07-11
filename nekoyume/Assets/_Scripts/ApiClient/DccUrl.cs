@@ -121,7 +121,7 @@ namespace Nekoyume.ApiClient
             {
                 // wait for data load
             }
-            return JsonSerializer.Deserialize<Url>(www.text, jsonOptions);
+            return JsonSerializer.Deserialize<DccUrl>(www.text, jsonOptions);
 #endif
             try
             {
