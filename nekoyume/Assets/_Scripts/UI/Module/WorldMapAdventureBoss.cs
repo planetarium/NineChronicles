@@ -41,19 +41,19 @@ namespace Nekoyume.UI.Module
                 }
 
                 var curState = Game.Game.instance.AdventureBossData.CurrentState.Value;
-                if(curState == AdventureBossData.AdventureBossSeasonState.Ready)
+                if (curState == AdventureBossData.AdventureBossSeasonState.Ready)
                 {
                     OnClickOpenEnterBountyPopup();
                     return;
                 }
 
-                if(curState == AdventureBossData.AdventureBossSeasonState.Progress)
+                if (curState == AdventureBossData.AdventureBossSeasonState.Progress)
                 {
                     OnClickOpenAdventureBoss();
                     return;
                 }
 
-                if(curState == AdventureBossData.AdventureBossSeasonState.End)
+                if (curState == AdventureBossData.AdventureBossSeasonState.End)
                 {
                     var adventureBossData = Game.Game.instance.AdventureBossData;
                     long remainBlock = 0;
@@ -61,7 +61,16 @@ namespace Nekoyume.UI.Module
                     {
                         remainBlock = endedSeasonInfo.NextStartBlockIndex - Game.Game.instance.Agent.BlockIndex;
                     }
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_ADVENTUREBOSS_SEASON_ENDED", remainBlock), NotificationCell.NotificationType.Alert);
+                    var NextStartTime = string.Empty;
+                    try
+                    {
+                        NextStartTime = endedSeasonInfo.NextStartBlockIndex.BlockIndexToDateTimeStringHour(Game.Game.instance.Agent.BlockIndex);
+                    }
+                    catch (System.Exception e)
+                    {
+                        NcDebug.LogError(e);
+                    }
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_ADVENTUREBOSS_SEASON_ENDED", remainBlock, remainBlock.BlockRangeToTimeSpanString(), NextStartTime), NotificationCell.NotificationType.Alert);
                     return;
                 }
             }).AddTo(gameObject);
@@ -95,7 +104,7 @@ namespace Nekoyume.UI.Module
         private void UpdateViewAsync(long blockIndex)
         {
             var seasonInfo = Game.Game.instance.AdventureBossData.SeasonInfo.Value;
-            if(seasonInfo == null)
+            if (seasonInfo == null)
             {
                 NcDebug.LogWarning("SeasonInfo is null");
                 return;
@@ -110,7 +119,7 @@ namespace Nekoyume.UI.Module
             if (Game.Game.instance.AdventureBossData.CurrentState.Value == AdventureBossData.AdventureBossSeasonState.End)
             {
                 var adventureBossData = Game.Game.instance.AdventureBossData;
-                if(adventureBossData.EndedSeasonInfos.TryGetValue(adventureBossData.SeasonInfo.Value.Season, out var endedSeasonInfo))
+                if (adventureBossData.EndedSeasonInfos.TryGetValue(adventureBossData.SeasonInfo.Value.Season, out var endedSeasonInfo))
                 {
                     RefreshBlockIndexText(blockIndex, endedSeasonInfo.NextStartBlockIndex);
                     return;
@@ -172,7 +181,7 @@ namespace Nekoyume.UI.Module
         public void OnClickAdventureSeasonAlert()
         {
             var remaingTimespan = _remainingBlockIndex.BlockToTimeSpan();
-            OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_REMAINIG_TIME", remaingTimespan.Hours, remaingTimespan.Minutes%60), NotificationCell.NotificationType.Notification);
+            OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_REMAINIG_TIME", remaingTimespan.Hours, remaingTimespan.Minutes % 60), NotificationCell.NotificationType.Notification);
         }
 
         private void OnAdventureBossStateChanged(AdventureBossData.AdventureBossSeasonState state)
@@ -214,9 +223,9 @@ namespace Nekoyume.UI.Module
                     worldButton.Unlock();
                     open.SetActive(true);
                     wantedClose.SetActive(false);
-                    if(_bossId != Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId)
+                    if (_bossId != Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId)
                     {
-                        if(_bossImage != null)
+                        if (_bossImage != null)
                         {
                             DestroyImmediate(_bossImage);
                         }

@@ -26,6 +26,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_InputField bountyInputArea;
         [SerializeField]
+        private TextMeshProUGUI bountyInputPlaceholder;
+        [SerializeField]
         private GameObject inputCountObj;
         [SerializeField]
         private GameObject inputWarning;
@@ -83,6 +85,7 @@ namespace Nekoyume.UI
             {
                 OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_STAKING_LEVEL_WARNING"), Scroller.NotificationCell.NotificationType.Alert);
             });
+            bountyInputPlaceholder.text = L10nManager.Localize("ADVENTURE_BOSS_BOUNTY_INPUT_PLACEHOLDER", States.Instance.GameConfigState.AdventureBossMinBounty);
             bountyInputArea.onValueChanged.AddListener(OnBountyInputAreaValueChanged);
             bountyInputArea.onEndEdit.AddListener(OnBountyInputAreaValueChanged);
             _bountyDefaultColor = bountyInputArea.textComponent.color;

@@ -215,7 +215,7 @@ namespace Nekoyume.UI
                 for (var i = 0; i < nextOption.Stats.Count; i++)
                 {
                     var info = nextOption.Stats[i];
-                    addStatTextList[i].text = $"(+{info.stat.StatType.ValueToString(info.stat.TotalValueAsLong)})";
+                    addStatTextList[i].text = $"(+{info.stat.StatType.ValueToString(info.stat.TotalValue)})";
                 }
             }
         }
