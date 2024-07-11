@@ -224,7 +224,7 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             PreAwake();
-            
+
 #if !UNITY_EDITOR && UNITY_IOS
             AppTrackingTransparency.OnAuthorizationStatusReceived += OnAuthorizationStatusReceived;
             AppTrackingTransparency.AuthorizationStatus status = AppTrackingTransparency.TrackingAuthorizationStatus();
@@ -294,13 +294,15 @@ namespace Nekoyume.Game
             }
 
             yield return InitializeL10N();
+            yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
+            NcDebug.Log("[Game] Start()... L10nManager initialized");
 
             // NOTE: Initialize planet registry.
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
             var planetContext = new PlanetContext(_commandLineOptions);
             yield return PlanetSelector.InitializePlanetRegistryAsync(planetContext).ToCoroutine();
-            
+
 #if RUN_ON_MOBILE
             if (planetContext.HasError)
             {
@@ -351,7 +353,7 @@ namespace Nekoyume.Game
             // NOTE: Initialize Firebase.
             yield return FirebaseManager.InitializeAsync().ToCoroutine();
 #endif
-            
+
             // TODO: 내부 분기 제거, 인스턴스 관리 주체 Analyzer내부에서 하도록 변경
             // NOTE: Initialize Analyzer after load CommandLineOptions, initialize States,
             //       initialize Firebase Manager.
@@ -372,7 +374,7 @@ namespace Nekoyume.Game
                 // NOTE: Required update is detected.
                 yield break;
             }
-            
+
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
 
             InitializeFirstResources();
@@ -389,7 +391,7 @@ namespace Nekoyume.Game
                     }
                 )
             );
-            
+
             var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
             grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
             yield return new WaitUntil(() => agentInitialized);
@@ -476,9 +478,9 @@ namespace Nekoyume.Game
 
             var secondWidgetCompletedEvt = new AirbridgeEvent("Intro_Start_SecondWidgetCompleted");
             AirbridgeUnity.TrackEvent(secondWidgetCompletedEvt);
-            
+
             InitializeStage();
-            
+
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             Helper.Util.TryGetAppProtocolVersionFromToken(
@@ -1373,7 +1375,7 @@ namespace Nekoyume.Game
             planetContext = PlanetSelector.InitializeSelectedPlanetInfo(planetContext);
             sw.Stop();
             NcDebug.Log($"[Game] CoLogin()... PlanetInfo selected in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            
+
             if (planetContext.HasError)
             {
                 loginCallback.Invoke(false);
@@ -1438,7 +1440,7 @@ namespace Nekoyume.Game
                     yield return AgentInitialize(false, loginCallback);
                     yield break;
                 }
-                
+
                 yield return PortalLoginProcess(socialType, idToken, outAddr =>
                 {
                     agentAddrInPortal = outAddr;
@@ -1564,7 +1566,7 @@ namespace Nekoyume.Game
                 {
                     Directory.Delete(keyPath, true);
                 }
-                
+
                 ApplicationQuit();
             };
 
@@ -1881,18 +1883,19 @@ namespace Nekoyume.Game
         {
             NcDebug.Log("[Game] InitializeAnalyzer() invoked." +
                       $" agentAddr: {agentAddr}, planetId: {planetId}, rpcServerHost: {rpcServerHost}");
-#if UNITY_EDITOR
-            NcDebug.Log("[Game] InitializeAnalyzer()... Analyze is disabled in editor mode.");
-            Analyzer = new Analyzer(
-                agentAddr?.ToString(),
-                planetId?.ToString(),
-                rpcServerHost,
-                isTrackable: false);
-            return;
-#endif
+            if (GameConfig.IsEditor)
+            {
+                NcDebug.Log("[Game] InitializeAnalyzer()... Analyze is disabled in editor mode.");
+                Analyzer = new Analyzer(
+                    agentAddr?.ToString(),
+                    planetId?.ToString(),
+                    rpcServerHost,
+                    isTrackable: false);
+                return;
+            }
 
             var isTrackable = true;
-            if (UnityEngine.Debug.isDebugBuild)
+            if (Debug.isDebugBuild)
             {
                 NcDebug.Log("This is debug build.");
                 isTrackable = false;
@@ -1927,7 +1930,7 @@ namespace Nekoyume.Game
                 widget = Widget.Create<OneButtonSystem>();
             }
 
-            widget.Show(message, 
+            widget.Show(message,
                         L10nManager.Localize("UI_QUIT"),
                         ApplicationQuit);
         }
@@ -1975,37 +1978,35 @@ namespace Nekoyume.Game
             MainCanvas.instance.InitializeIntro();
         }
 #endregion Initialize On Awake
-        
+
 #region Initialize On Start
         private IEnumerator InitializeL10N()
         {
             if (LiveAsset.GameConfig.IsKoreanBuild)
             {
                 yield return L10nManager.Initialize(LanguageType.Korean).ToYieldInstruction();
+                yield break;
             }
-#if UNITY_EDITOR
-            else if (useSystemLanguage)
-            {
-                yield return L10nManager.Initialize().ToYieldInstruction();
-            }
-            else
-            {
-                yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
-                languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
-            }
-#else
-            else
-            {
-                yield return L10nManager
-                    .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
-                        ? L10nManager.CurrentLanguage
-                        : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
-                    .ToYieldInstruction();
-            }
-#endif
-            yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
 
-            NcDebug.Log("[Game] Start()... L10nManager initialized");
+            if (GameConfig.IsEditor)
+            {
+                if (useSystemLanguage)
+                {
+                    yield return L10nManager.Initialize().ToYieldInstruction();
+                }
+                else
+                {
+                    yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
+                    languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
+                }
+                yield break;
+            }
+
+            yield return L10nManager
+                         .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
+                             ? L10nManager.CurrentLanguage
+                             : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                         .ToYieldInstruction();
         }
 
         private void InitializeMessagePackResolver()
@@ -2062,7 +2063,7 @@ namespace Nekoyume.Game
         }
 
         private void InitializeFirstResources()
-        { 
+        {
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
 
@@ -2075,7 +2076,7 @@ namespace Nekoyume.Game
             AudioController.instance.Initialize();
             NcDebug.Log("[Game] Start()... AudioController initialized");
         }
-        
+
         private void OnAgentInitializeSucceed()
         {
             Analyzer.SetAgentAddress(Agent.Address.ToString());
@@ -2122,7 +2123,7 @@ namespace Nekoyume.Game
 
         // TODO: 중복코드 정리, 초기화 안 된 경우 로직 정리
         private void UpdateServices()
-        {           
+        {
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
             // NOTE: Initialize api client.
@@ -2252,7 +2253,7 @@ namespace Nekoyume.Game
             }).AsUniTask().ToCoroutine();
         }
 #endregion Initialize On Start
-        
+
 #region Initialize On Login
         private void ShowMaintenancePopup()
         {
@@ -2298,7 +2299,7 @@ namespace Nekoyume.Game
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
-            
+
             if (needDimmed)
             {
                 var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
@@ -2309,11 +2310,11 @@ namespace Nekoyume.Game
                 _commandLineOptions,
                 KeyManager.Instance.SignedInPrivateKey,
                 loginCallback);
-            sw.Stop(); 
+            sw.Stop();
             NcDebug.Log($"[Game] CoLogin()... AgentInitialized Complete in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            
+
             if (needDimmed)
-            {            
+            {
                 var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
                 dimmedLoadingScreen.Close();
             }
@@ -2400,7 +2401,7 @@ namespace Nekoyume.Game
             var introScreen = Widget.Find<IntroScreen>();
             var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
             dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-            
+
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
@@ -2420,7 +2421,7 @@ namespace Nekoyume.Game
         {
             var sw = new Stopwatch();
             var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
-            
+
             // NOTE: Portal login flow.
             dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
             NcDebug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
@@ -2539,7 +2540,7 @@ namespace Nekoyume.Game
             {
                 return;
             }
-            
+
             Application.OpenURL(updateUrl);
         }
 
