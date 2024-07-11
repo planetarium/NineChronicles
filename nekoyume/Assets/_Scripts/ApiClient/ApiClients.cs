@@ -16,6 +16,9 @@ namespace Nekoyume.ApiClient
         public static ApiClients Instance => Singleton.Value;
 #endregion Singleton
 
+        private static readonly string DccUrlJsonPath =
+            Platform.GetStreamingAssetsPath("dccUrl.json");
+
         public NineChroniclesAPIClient WorldBossClient { get; private set; }
 
         public NineChroniclesAPIClient RpcGraphQlClient { get; private set; }
@@ -30,6 +33,13 @@ namespace Nekoyume.ApiClient
         public IAPServiceManager IAPServiceManager { get; private set; }
         
         public bool IsInitialized { get; private set; }
+        
+        public DccUrl DccURL { get; private set; }
+
+        public void SetDccUrl()
+        {
+            DccURL = DccUrl.Load(DccUrlJsonPath);
+        }
         
         // TODO: 중복코드 정리, 초기화 안 된 경우 로직 정리
         public void Initialize(CommandLineOptions clo)

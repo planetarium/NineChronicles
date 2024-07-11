@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Libplanet.Common;
+using Nekoyume.ApiClient;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -57,16 +58,18 @@ namespace Nekoyume.UI
 
         private void ConnectDcc()
         {
+            var dccUrl = ApiClients.Instance.DccURL;
+            
             string url;
             if (_isMileageShop)
             {
-                url = Game.Game.instance.DccURL.DccMileageShop;
+                url = dccUrl.DccMileageShop;
             }
             else
             {
-                var urlRoot = Game.Game.instance.DccURL.DccConnect;
+                var urlRoot      = dccUrl.DccConnect;
                 var agentAddress = Game.Game.instance.Agent.Address.ToHex();
-                var message = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                var message      = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
                 var privateKey = Game.Game.instance.Agent.PrivateKey;
                 var publicKey = privateKey.PublicKey;

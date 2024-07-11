@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Model;
@@ -61,11 +62,12 @@ namespace Nekoyume.Game
                 return parts;
             }
 
+            var dccUrl = ApiClients.Instance.DccURL;
             _parts.TryAdd(dccId, null);
-            var dccParts = new Dictionary<DccPartsType, int>();
-            var url = $"{Game.instance.DccURL.DccMetadata}{dccId}.json";
-            var headerName = Game.instance.DccURL.DccEthChainHeaderName;
-            var headerValue = Game.instance.DccURL.DccEthChainHeaderValue;
+            var dccParts    = new Dictionary<DccPartsType, int>();
+            var url         = $"{dccUrl.DccMetadata}{dccId}.json";
+            var headerName  = dccUrl.DccEthChainHeaderName;
+            var headerValue = dccUrl.DccEthChainHeaderValue;
 
             var client = new HttpClient();
             client.Timeout = TimeSpan.FromSeconds(TimeOut);
