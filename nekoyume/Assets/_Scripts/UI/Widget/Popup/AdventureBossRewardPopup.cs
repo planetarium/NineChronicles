@@ -74,7 +74,7 @@ namespace Nekoyume.UI
                     var tableSheets = Game.instance.TableSheets;
                     var mailRewards = new List<MailReward>();
 
-                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.Value.RawValue > 0)
+                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null)
                     {
                         mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
                     }
@@ -253,7 +253,7 @@ namespace Nekoyume.UI
                 rewardItemsBounty.SetActive(true);
                 noRewardItemsBounty.SetActive(false);
                 int i = 0;
-                if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue && wantedClaimableReward.NcgReward.Value.RawValue > 0)
+                if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue)
                 {
                     rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value);
                     i++;
@@ -294,7 +294,7 @@ namespace Nekoyume.UI
                 rewardItemsExplore.SetActive(true);
                 noRewardItemsExplore.SetActive(false);
                 int i = 0;
-                if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue && exprolerClaimableReward.NcgReward.Value.RawValue > 0)
+                if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue)
                 {
                     rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value);
                     i++;
