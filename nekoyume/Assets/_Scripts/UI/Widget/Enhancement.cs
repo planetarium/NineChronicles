@@ -131,9 +131,9 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnSubmit())
                 .AddTo(gameObject);
 
-            baseSlot.AddRemoveButtonAction(() => enhancementInventory.DeselectItem(true));
+            baseSlot.AddRemoveButtonAction(() => enhancementInventory.DeselectBaseItem());
             removeAllButton.OnSubmitSubject
-                .Subscribe(_ => enhancementInventory.DeselectItem(false))
+                .Subscribe(_ => enhancementInventory.DeselectAllMaterialItems())
                 .AddTo(gameObject);
         }
 
@@ -256,7 +256,7 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItem, materialItems, slotIndex, _costNcg).Subscribe();
 
-            enhancementInventory.DeselectItem(true);
+            enhancementInventory.DeselectBaseItem();
 
             StartCoroutine(CoCombineNPCAnimation(baseItem, requiredBlockIndex, Clear));
         }
@@ -264,7 +264,7 @@ namespace Nekoyume.UI
         private void Clear()
         {
             ClearInformation();
-            enhancementInventory.DeselectItem(true);
+            enhancementInventory.DeselectBaseItem();
         }
 
         private bool IsInteractableButton(IItem item, List<Equipment> materials)
@@ -605,7 +605,7 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationDeleteButton()
         {
-            enhancementInventory.DeselectItem(true);
+            enhancementInventory.DeselectBaseItem();
         }
     }
 }
