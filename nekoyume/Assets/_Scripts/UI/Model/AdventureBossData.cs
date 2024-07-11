@@ -116,132 +116,151 @@ namespace Nekoyume.UI.Model
             }
         }
 
+        private static bool RefreshAllByCurrentStateLock = false;
         public async UniTask RefreshAllByCurrentState(HashDigest<SHA256>? stateRootHash = null, long blockIndex = 0)
         {
-            SeasonInfo.Value = await Game.Game.instance.Agent.GetAdventureBossLatestSeasonAsync(stateRootHash, blockIndex);
-
-            //알림 등록
-            if (SeasonInfo.Value != null && SeasonInfo.Value.EndBlockIndex != 0)
+            while (RefreshAllByCurrentStateLock)
             {
+                await UniTask.Yield(); // 현재의 UniTask를 일시 중지하고 다음 프레임까지 기다립니다.
+            }
+            RefreshAllByCurrentStateLock = true;
+
+            try
+            {
+                SeasonInfo.Value = await Game.Game.instance.Agent.GetAdventureBossLatestSeasonAsync(stateRootHash, blockIndex);
+                //알림 등록
+                if (SeasonInfo.Value != null && SeasonInfo.Value.EndBlockIndex != 0)
+                {
+                    try
+                    {
+                        int secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+                        double blocksPerHour = 3600.0 / secondsPerBlock;
+                        int roundedBlocksPerHour = (int)Math.Round(blocksPerHour);
+                        ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_END_HOUR_AGO_CONTENT", SeasonInfo.Value.Season, SeasonInfo.Value.EndBlockIndex - roundedBlocksPerHour);
+                    }
+                    catch (System.Exception e)
+                    {
+                        NcDebug.LogError($"[AdventureBossData]{e}");
+                    }
+
+                    ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_END_CONTENT", SeasonInfo.Value.Season, SeasonInfo.Value.EndBlockIndex);
+                    ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_START_CONTENT", SeasonInfo.Value.Season + 1, SeasonInfo.Value.NextStartBlockIndex);
+                }
+
                 try
                 {
-                    int secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-                    double blocksPerHour = 3600.0 / secondsPerBlock;
-                    int roundedBlocksPerHour = (int)Math.Round(blocksPerHour);
-                    ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_END_HOUR_AGO_CONTENT", SeasonInfo.Value.Season, SeasonInfo.Value.EndBlockIndex - roundedBlocksPerHour);
+                    //최근시즌이 종료된경우 끝난시즌정보에 추가.
+                    int startIndex = SeasonInfo.Value.EndBlockIndex < Game.Game.instance.Agent.BlockIndex ? 0 : 1;
+                    //최대 10개의 종료된 시즌정보를 가져온다.(만일을 대비 해서)
+                    for (int i = startIndex; i < _endedSeasonSearchTryCount; i++)
+                    {
+                        var endedSeasonIndex = SeasonInfo.Value.Season - i;
+
+                        //최초시즌이 0이하로 내려가면 더이상 찾지않음.
+                        if (endedSeasonIndex <= 0)
+                            break;
+
+                        if (!EndedExploreInfos.TryGetValue(endedSeasonIndex, out var endedExploreInfo) && Game.Game.instance.States.CurrentAvatarState != null)
+                        {
+                            endedExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, endedSeasonIndex, stateRootHash, blockIndex);
+                            EndedExploreInfos.Add(endedSeasonIndex, endedExploreInfo);
+                        }
+
+                        //이미 가져온 시즌정보는 다시 가져오지않음.
+                        if (!EndedSeasonInfos.TryGetValue(endedSeasonIndex, out var endedSeasonInfo))
+                        {
+                            endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex, stateRootHash, blockIndex);
+                            var endedBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex, stateRootHash, blockIndex);
+                            var endedExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(endedSeasonIndex, stateRootHash, blockIndex);
+
+                            EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
+                            EndedBountyBoards.Add(endedSeasonIndex, endedBountyBoard);
+                            EndedExploreBoards.Add(endedSeasonIndex, endedExploreBoard);
+
+
+                            //보상수령기간이 지날경우 더이상 가져오지않음.
+                            if (endedSeasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval < Game.Game.instance.Agent.BlockIndex)
+                            {
+                                break;
+                            }
+                        }
+                    }
                 }
                 catch (System.Exception e)
                 {
                     NcDebug.LogError($"[AdventureBossData]{e}");
                 }
 
-                ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_END_CONTENT", SeasonInfo.Value.Season, SeasonInfo.Value.EndBlockIndex);
-                ReserveAdventureBossSeasonPush("PUSH_ADVENTURE_BOSS_SEASON_START_CONTENT", SeasonInfo.Value.Season+1, SeasonInfo.Value.NextStartBlockIndex);
-            }
-
-            try
-            {
-                //최근시즌이 종료된경우 끝난시즌정보에 추가.
-                int startIndex = SeasonInfo.Value.EndBlockIndex < Game.Game.instance.Agent.BlockIndex ? 0 : 1;
-                //최대 10개의 종료된 시즌정보를 가져온다.(만일을 대비 해서)
-                for (int i = startIndex; i < _endedSeasonSearchTryCount; i++)
+                //시즌이 진행중인 경우.
+                if (SeasonInfo.Value.StartBlockIndex <= Game.Game.instance.Agent.BlockIndex && Game.Game.instance.Agent.BlockIndex < SeasonInfo.Value.EndBlockIndex)
                 {
-                    var endedSeasonIndex = SeasonInfo.Value.Season - i;
-
-                    //최초시즌이 0이하로 내려가면 더이상 찾지않음.
-                    if (endedSeasonIndex <= 0)
-                        break;
-
-                    if (!EndedExploreInfos.TryGetValue(endedSeasonIndex, out var endedExploreInfo) && Game.Game.instance.States.CurrentAvatarState != null)
+                    BountyBoard.Value = await Game.Game.instance.Agent.GetBountyBoardAsync(SeasonInfo.Value.Season, stateRootHash, blockIndex);
+                    ExploreBoard.Value = await Game.Game.instance.Agent.GetExploreBoardAsync(SeasonInfo.Value.Season, stateRootHash, blockIndex);
+                    if (Game.Game.instance.States.CurrentAvatarState != null)
                     {
-                        endedExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, endedSeasonIndex, stateRootHash, blockIndex);
-                        EndedExploreInfos.Add(endedSeasonIndex, endedExploreInfo);
+                        ExploreInfo.Value = await Game.Game.instance.Agent.GetExploreInfoAsync(Game.Game.instance.States.CurrentAvatarState.address, SeasonInfo.Value.Season, stateRootHash, blockIndex);
                     }
-
-                    //이미 가져온 시즌정보는 다시 가져오지않음.
-                    if (!EndedSeasonInfos.TryGetValue(endedSeasonIndex, out var endedSeasonInfo))
-                    {
-                        endedSeasonInfo = await Game.Game.instance.Agent.GetAdventureBossSeasonInfoAsync(endedSeasonIndex, stateRootHash, blockIndex);
-                        var endedBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(endedSeasonIndex, stateRootHash, blockIndex);
-                        var endedExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(endedSeasonIndex, stateRootHash, blockIndex);
-
-                        EndedSeasonInfos.Add(endedSeasonIndex, endedSeasonInfo);
-                        EndedBountyBoards.Add(endedSeasonIndex, endedBountyBoard);
-                        EndedExploreBoards.Add(endedSeasonIndex, endedExploreBoard);
-
-
-                        //보상수령기간이 지날경우 더이상 가져오지않음.
-                        if (endedSeasonInfo.EndBlockIndex + State.States.Instance.GameConfigState.AdventureBossClaimInterval < Game.Game.instance.Agent.BlockIndex)
-                        {
-                            break;
-                        }
-                    }
+                    CurrentState.Value = AdventureBossSeasonState.Progress;
+                    NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] Progress");
+                    RefreshAllByCurrentStateLock = false;
+                    return;
                 }
-            }
-            catch (System.Exception e)
-            {
-                NcDebug.LogError($"[AdventureBossData]{e}");
-            }
 
-            //시즌이 진행중인 경우.
-            if (SeasonInfo.Value.StartBlockIndex <= Game.Game.instance.Agent.BlockIndex && Game.Game.instance.Agent.BlockIndex < SeasonInfo.Value.EndBlockIndex)
-            {
-                BountyBoard.Value = await Game.Game.instance.Agent.GetBountyBoardAsync(SeasonInfo.Value.Season, stateRootHash, blockIndex);
-                ExploreBoard.Value = await Game.Game.instance.Agent.GetExploreBoardAsync(SeasonInfo.Value.Season, stateRootHash, blockIndex);
-                if (Game.Game.instance.States.CurrentAvatarState != null)
+                //시즌시작은되었으나 아무도 현상금을 걸지않아서 시즌데이터가없는경우.
+                if (SeasonInfo.Value.NextStartBlockIndex <= Game.Game.instance.Agent.BlockIndex)
                 {
-                    ExploreInfo.Value = await Game.Game.instance.Agent.GetExploreInfoAsync(Game.Game.instance.States.CurrentAvatarState.address, SeasonInfo.Value.Season, stateRootHash, blockIndex);
+                    try
+                    {
+                        BountyBoard.Value = null;
+                        ExploreInfo.Value = null;
+                        ExploreBoard.Value = null;
+                    }
+                    catch (System.Exception e)
+                    {
+                        NcDebug.LogError($"[AdventureBossData]{e}");
+                    }
+                    try
+                    {
+                        CurrentState.Value = AdventureBossSeasonState.Ready;
+                    }
+                    catch (System.Exception e)
+                    {
+                        NcDebug.LogError($"[AdventureBossData]{e}");
+                    }
+                    NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] Ready");
+                    RefreshAllByCurrentStateLock = false;
+                    return;
                 }
-                CurrentState.Value = AdventureBossSeasonState.Progress;
-                NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] Progress");
-                return;
-            }
 
-            //시즌시작은되었으나 아무도 현상금을 걸지않아서 시즌데이터가없는경우.
-            if (SeasonInfo.Value.NextStartBlockIndex <= Game.Game.instance.Agent.BlockIndex)
-            {
+                //시즌이 종료후 대기중인 경우.
+                //종료된 상황인경우 시즌정보 받아서 저장.
+                if (SeasonInfo.Value.Season > 0 && !EndedSeasonInfos.ContainsKey(SeasonInfo.Value.Season))
+                {
+                    EndedSeasonInfos.TryAdd(SeasonInfo.Value.Season, SeasonInfo.Value);
+                    EndedBountyBoards.TryAdd(SeasonInfo.Value.Season, BountyBoard.Value);
+                    EndedExploreBoards.TryAdd(SeasonInfo.Value.Season, ExploreBoard.Value);
+                }
                 try
                 {
                     BountyBoard.Value = null;
                     ExploreInfo.Value = null;
                     ExploreBoard.Value = null;
+                    CurrentState.Value = AdventureBossSeasonState.End;
                 }
                 catch (System.Exception e)
                 {
                     NcDebug.LogError($"[AdventureBossData]{e}");
                 }
-                try
-                {
-                    CurrentState.Value = AdventureBossSeasonState.Ready;
-                }
-                catch (System.Exception e)
-                {
-                    NcDebug.LogError($"[AdventureBossData]{e}");
-                }
-                NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] Ready");
-                return;
-            }
-
-            //시즌이 종료후 대기중인 경우.
-            //종료된 상황인경우 시즌정보 받아서 저장.
-            if (SeasonInfo.Value.Season > 0 && !EndedSeasonInfos.ContainsKey(SeasonInfo.Value.Season))
-            {
-                EndedSeasonInfos.TryAdd(SeasonInfo.Value.Season, SeasonInfo.Value);
-                EndedBountyBoards.TryAdd(SeasonInfo.Value.Season, BountyBoard.Value);
-                EndedExploreBoards.TryAdd(SeasonInfo.Value.Season, ExploreBoard.Value);
-            }
-            try
-            {
-                BountyBoard.Value = null;
-                ExploreInfo.Value = null;
-                ExploreBoard.Value = null;
-                CurrentState.Value = AdventureBossSeasonState.End;
+                NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] End");
             }
             catch (System.Exception e)
             {
-                NcDebug.LogError($"[AdventureBossData]{e}");
+                NcDebug.LogError($"[AdventureBossData RefreshAllByCurrentState]{e}");
             }
-            NcDebug.Log("[AdventureBossData.RefreshAllByCurrentState] End");
+            finally
+            {
+                RefreshAllByCurrentStateLock = false;
+            }
             return;
         }
 
@@ -476,7 +495,7 @@ namespace Nekoyume.UI.Model
             {
                 origin.NcgReward = addable.NcgReward;
             }
-            else
+            else if (addable.NcgReward != null && addable.NcgReward.HasValue)
             {
                 origin.NcgReward += addable.NcgReward;
             }

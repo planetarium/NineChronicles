@@ -1325,6 +1325,7 @@ namespace Nekoyume.Blockchain
                    out var avatarState))
             {
                 // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
+                LocalLayerModifier.AddNonFungibleItem(avatarAddress, eval.Action.itemId, false);
                 foreach (var tradableId in result.materialItemIdList)
                 {
                     if (avatarState.inventory.TryGetNonFungibleItem(

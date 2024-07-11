@@ -219,6 +219,7 @@ namespace Nekoyume
 
         public void ItemViewSetCurrencyData(FungibleAssetValue fav)
         {
+            _disposables.DisposeAllAndClear();
             gameObject.SetActive(true);
             ClearItem();
             ItemImage.overrideSprite = SpriteHelper.GetFavIcon(fav.Currency.Ticker);
@@ -228,6 +229,7 @@ namespace Nekoyume
 
         public void ItemViewSetCurrencyData(string ticker, decimal amount)
         {
+            _disposables.DisposeAllAndClear();
             gameObject.SetActive(true);
             ClearItem();
             ItemImage.overrideSprite = SpriteHelper.GetFavIcon(ticker);
@@ -237,12 +239,12 @@ namespace Nekoyume
 
         public bool ItemViewSetCurrencyData(int favId, decimal amount)
         {
+            _disposables.DisposeAllAndClear();
             RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             runeSheet.TryGetValue(favId, out var runeRow);
             if (runeRow != null)
             {
                 ItemViewSetCurrencyData(runeRow.Ticker, amount);
-                _disposables.DisposeAllAndClear();
                 touchHandler.OnClick.Subscribe(_ =>
                 {
                     Widget.Find<FungibleAssetTooltip>().Show(runeRow.Ticker, ((BigInteger)amount).ToCurrencyNotation(), null);
