@@ -22,6 +22,8 @@ namespace Nekoyume.Game.Character
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
     public class Player : Actor
     {
+        public const float PlayerSpeechBreakTime = 2f;
+
         [SerializeField]
         private CharacterAppearance appearance;
 
@@ -170,7 +172,7 @@ namespace Nekoyume.Game.Character
                 SpeechBubble = Widget.Create<SpeechBubble>();
             }
 
-            SpeechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
+            SpeechBubble.speechBreakTime = PlayerSpeechBreakTime;
             if (!(this is EnemyPlayer))
             {
                 Widget.Find<UI.Battle>().ComboText.comboMax = CharacterModel.AttackCountMax;

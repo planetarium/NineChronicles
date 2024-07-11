@@ -6,6 +6,10 @@ namespace Nekoyume.UI.Module
 {
     public class RankingRewards : MonoBehaviour
     {
+        public const int RankingRewardFirst = 50;
+        public const int RankingRewardSecond = 30;
+        public const int RankingRewardThird = 10;
+
         [SerializeField]
         private TextMeshProUGUI descriptionText = null;
         [SerializeField]
@@ -18,9 +22,9 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             descriptionText.text = L10nManager.Localize("UI_RANKING_REWARDS_DESCRIPTION");
-            firstRewardText.text = GameConfig.RankingRewardFirst.ToString();
-            secondRewardText.text = GameConfig.RankingRewardSecond.ToString();
-            thirdRewardText.text = GameConfig.RankingRewardThird.ToString();
+            firstRewardText.text = RankingRewardFirst.ToString();
+            secondRewardText.text = RankingRewardSecond.ToString();
+            thirdRewardText.text = RankingRewardThird.ToString();
         }
 
         public void Show()
