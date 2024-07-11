@@ -60,11 +60,11 @@ namespace Nekoyume.UI
             string url;
             if (_isMileageShop)
             {
-                url = Game.Game.instance.URL.DccMileageShop;
+                url = Game.Game.instance.DccURL.DccMileageShop;
             }
             else
             {
-                var urlRoot = Game.Game.instance.URL.DccConnect;
+                var urlRoot = Game.Game.instance.DccURL.DccConnect;
                 var agentAddress = Game.Game.instance.Agent.Address.ToHex();
                 var message = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 

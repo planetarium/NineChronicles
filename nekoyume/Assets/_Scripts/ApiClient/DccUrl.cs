@@ -1,16 +1,12 @@
 using CommandLine;
-using CommandLine.Text;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using UnityEngine;
+using Nekoyume.Helper;
 
-namespace Nekoyume.Helper
+namespace Nekoyume.ApiClient
 {
-    public class Url
+    public class DccUrl
     {
         private string dccAvatars;
         private string dccMetadata;
@@ -98,9 +94,9 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static Url Load(string localPath)
+        public static DccUrl Load(string localPath)
         {
-            var options = CommandLineParser.GetCommandLineOptions<Url>();
+            var options = CommandLineParser.GetCommandLineOptions<DccUrl>();
             if (options is { Empty: false })
             {
                 NcDebug.Log($"Get options from commandline.");
@@ -132,12 +128,12 @@ namespace Nekoyume.Helper
                 NcDebug.Log($"Get url from local: {localPath}");
                 var jsonText = File.ReadAllText(localPath);
                 NcDebug.Log($"loaded plain json: {jsonText}");
-                return JsonSerializer.Deserialize<Url>(jsonText, jsonOptions);
+                return JsonSerializer.Deserialize<DccUrl>(jsonText, jsonOptions);
             }
             catch(Exception e)
             {
                 NcDebug.LogErrorFormat("Failed to find {0}. Using default url.\nException: {1}", localPath, e);
-                return new Url();
+                return new DccUrl();
             }
         }
     }

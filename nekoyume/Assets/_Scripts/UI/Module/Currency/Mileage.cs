@@ -24,9 +24,9 @@ namespace Nekoyume.UI.Module
             {
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);
-                var url = $"{Game.Game.instance.URL.DccMileageAPI}{States.Instance.AgentState.address}";
-                var headerName = Game.Game.instance.URL.DccEthChainHeaderName;
-                var headerValue = Game.Game.instance.URL.DccEthChainHeaderValue;
+                var url = $"{Game.Game.instance.DccURL.DccMileageAPI}{States.Instance.AgentState.address}";
+                var headerName = Game.Game.instance.DccURL.DccEthChainHeaderName;
+                var headerValue = Game.Game.instance.DccURL.DccEthChainHeaderValue;
                 _request = StartCoroutine(RequestManager.instance.GetJson(
                     url,
                     headerName,

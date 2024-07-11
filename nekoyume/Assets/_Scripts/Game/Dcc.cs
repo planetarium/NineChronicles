@@ -63,9 +63,9 @@ namespace Nekoyume.Game
 
             _parts.TryAdd(dccId, null);
             var dccParts = new Dictionary<DccPartsType, int>();
-            var url = $"{Game.instance.URL.DccMetadata}{dccId}.json";
-            var headerName = Game.instance.URL.DccEthChainHeaderName;
-            var headerValue = Game.instance.URL.DccEthChainHeaderValue;
+            var url = $"{Game.instance.DccURL.DccMetadata}{dccId}.json";
+            var headerName = Game.instance.DccURL.DccEthChainHeaderName;
+            var headerValue = Game.instance.DccURL.DccEthChainHeaderValue;
 
             var client = new HttpClient();
             client.Timeout = TimeSpan.FromSeconds(TimeOut);

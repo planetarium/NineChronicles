@@ -155,8 +155,7 @@ namespace Nekoyume.Game
 
         public PortalConnect PortalConnect { get; private set; }
 
-        // TODO: 공용으로 쓰는건가? 확인 필요
-        public Url URL { get; private set; }
+        public DccUrl DccURL { get; private set; }
 
         public readonly LruCache<Address, IValue> CachedStates = new();
 
@@ -184,8 +183,8 @@ namespace Nekoyume.Game
         public static readonly string CommandLineOptionsJsonPath =
             Platform.GetStreamingAssetsPath("clo.json");
 
-        private static readonly string UrlJsonPath =
-            Platform.GetStreamingAssetsPath("url.json");
+        private static readonly string DccUrlJsonPath =
+            Platform.GetStreamingAssetsPath("dccUrl.json");
 
         private Thread _headlessThread;
         private Thread _marketThread;
@@ -229,7 +228,7 @@ namespace Nekoyume.Game
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
             OnLoadCommandlineOptions();
 #endif
-            URL = Url.Load(UrlJsonPath);
+            DccURL = DccUrl.Load(DccUrlJsonPath);
 
             CreateAgent();
             PostAwake();
@@ -1554,9 +1553,9 @@ namespace Nekoyume.Game
             sw.Reset();
             sw.Start();
             yield return RequestManager.instance.GetJson(
-                URL.DccAvatars,
-                URL.DccEthChainHeaderName,
-                URL.DccEthChainHeaderValue,
+                DccURL.DccAvatars,
+                DccURL.DccEthChainHeaderName,
+                DccURL.DccEthChainHeaderValue,
                 json =>
                 {
                     var responseData = DccAvatars.FromJson(json);
@@ -1573,9 +1572,9 @@ namespace Nekoyume.Game
             sw.Reset();
             sw.Start();
             yield return RequestManager.instance.GetJson(
-                $"{URL.DccMileageAPI}{Agent.Address}",
-                URL.DccEthChainHeaderName,
-                URL.DccEthChainHeaderValue,
+                $"{DccURL.DccMileageAPI}{Agent.Address}",
+                DccURL.DccEthChainHeaderName,
+                DccURL.DccEthChainHeaderValue,
                 _ => { Dcc.instance.IsConnected = true; },
                 _ => { Dcc.instance.IsConnected = false; });
             sw.Stop();
