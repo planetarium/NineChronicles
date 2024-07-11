@@ -177,9 +177,6 @@ namespace Nekoyume.Game
 
         public CommandLineOptions CommandLineOptions { get => _commandLineOptions; }
 
-        // TODO: 이건 뭔지 확인 필요. 로그에 사용하는듯 해 보인다.
-        private AmazonCloudWatchLogsClient _logsClient;
-
         private PlayableDirector _activeDirector;
 
         private string _msg;
@@ -1167,8 +1164,6 @@ namespace Nekoyume.Game
                 var evt = new AirbridgeEvent("Intro_Player_Quit");
                 AirbridgeUnity.TrackEvent(evt);
             }
-
-            _logsClient?.Dispose();
         }
 
         private IEnumerator CoUpdate()
@@ -1551,101 +1546,6 @@ namespace Nekoyume.Game
             };
 
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
-        }
-
-        private async void UploadLog(string logString, string stackTrace, LogType type)
-        {
-            // Avoid NRE
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (Agent.PrivateKey is null)
-            {
-                _msg += logString + "\n";
-                if (!string.IsNullOrEmpty(stackTrace))
-                {
-                    _msg += stackTrace + "\n";
-                }
-            }
-            else
-            {
-                const string groupName = "9c-player-logs";
-                var streamName = _commandLineOptions.AwsSinkGuid;
-                try
-                {
-                    var req = new CreateLogGroupRequest(groupName);
-                    await _logsClient.CreateLogGroupAsync(req);
-                }
-                catch (ResourceAlreadyExistsException)
-                {
-                }
-                catch (ObjectDisposedException)
-                {
-                    return;
-                }
-
-                try
-                {
-                    var req = new CreateLogStreamRequest(groupName, streamName);
-                    await _logsClient.CreateLogStreamAsync(req);
-                }
-                catch (ResourceAlreadyExistsException)
-                {
-                    // ignored
-                }
-
-                PutLog(groupName, streamName, GetMessage(logString, stackTrace));
-            }
-        }
-
-        private async void PutLog(string groupName, string streamName, string msg)
-        {
-            try
-            {
-                var req = new DescribeLogStreamsRequest(groupName)
-                {
-                    LogStreamNamePrefix = streamName
-                };
-                var resp = await _logsClient.DescribeLogStreamsAsync(req);
-                var token = resp.LogStreams.FirstOrDefault(s =>
-                    s.LogStreamName == streamName)?.UploadSequenceToken;
-                var ie = new InputLogEvent
-                {
-                    Message = msg,
-                    Timestamp = DateTime.UtcNow
-                };
-                var request = new PutLogEventsRequest(
-                    groupName,
-                    streamName,
-                    new List<InputLogEvent> { ie });
-                if (!string.IsNullOrEmpty(token))
-                {
-                    request.SequenceToken = token;
-                }
-
-                await _logsClient.PutLogEventsAsync(request);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-        }
-
-        private string GetMessage(string logString, string stackTrace)
-        {
-            var msg = string.Empty;
-            if (!string.IsNullOrEmpty(_msg))
-            {
-                msg = _msg;
-                _msg = string.Empty;
-                return msg;
-            }
-
-            msg += logString + "\n";
-            if (!string.IsNullOrEmpty(stackTrace))
-            {
-                msg += stackTrace;
-            }
-
-            return msg;
         }
 
         private IEnumerator CoInitDccAvatar()
