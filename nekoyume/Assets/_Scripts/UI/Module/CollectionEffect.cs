@@ -35,6 +35,7 @@ namespace Nekoyume.UI.Module
 
             var data = stats
                 .GroupBy(stat => stat.StatType)
+                .OrderBy(grouping => grouping.Key)
                 .Select(grouping => (
                     StatType: grouping.Key,
                     AddValue: grouping
