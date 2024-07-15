@@ -33,6 +33,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton upgradeButton;
 
         [SerializeField]
+        private ConditionalButton autoSelectButton;
+
+        [SerializeField]
         private ConditionalButton removeAllButton;
 
         [SerializeField]
@@ -132,6 +135,10 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             baseSlot.AddRemoveButtonAction(() => enhancementInventory.DeselectBaseItem());
+
+            autoSelectButton.OnSubmitSubject
+                .Subscribe(_ => enhancementInventory.AutoSelectMaterialItems(20))
+                .AddTo(gameObject);
             removeAllButton.OnSubmitSubject
                 .Subscribe(_ => enhancementInventory.DeselectAllMaterialItems())
                 .AddTo(gameObject);
@@ -364,6 +371,7 @@ namespace Nekoyume.UI
 
                 enhancementExpSlider.SetEquipment(null, true);
 
+                autoSelectButton.Interactable = false;
                 removeAllButton.Interactable = false;
             }
             else
@@ -441,6 +449,7 @@ namespace Nekoyume.UI
                 }
 
                 // Update UI
+                autoSelectButton.Interactable = materialModels.Count < EnhancementInventory.MaxMaterialCount;
                 removeAllButton.Interactable = materialModels.Count >= 2;
 
                 _costNcg = targetRow.Cost - baseItemCostRow.Cost;

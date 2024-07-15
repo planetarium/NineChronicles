@@ -143,19 +143,19 @@ namespace Nekoyume.UI.Module
         {
             item.SelectedMaterialCount.Value = count;
             if (count > 0)
-        {
-                if (!_materialModels.Contains(item))
             {
+                if (!_materialModels.Contains(item))
+                {
                     _materialModels.Add(item);
                 }
             }
             else
             {
                 _materialModels.Remove(item);
-                }
+            }
 
             UpdateView();
-            }
+        }
 
         private void SelectMaterialItem(EnhancementInventoryItem item)
         {
@@ -182,6 +182,28 @@ namespace Nekoyume.UI.Module
             DeselectAllMaterialItems();
         }
 
+        public void AutoSelectMaterialItems(int amount)
+        {
+            if (_baseModel is null)
+            {
+                return;
+            }
+
+            var models = GetModels();
+            models.Reverse();
+            foreach (var model in models.Take(amount).Where(model =>
+                !model.Equals(_baseModel) && model.SelectedMaterialCount.Value <= 0 &&
+                !model.Disabled.Value))
+            {
+                if (_materialModels.Count >= MaxMaterialCount)
+                {
+                    break;
+                }
+
+                SelectMaterialItem(model);
+            }
+        }
+
         public void DeselectAllMaterialItems()
         {
             foreach (var model in _materialModels)
@@ -206,9 +228,9 @@ namespace Nekoyume.UI.Module
                 item.ItemBase is Equipment equipment && equipment.ItemId == itemId);
 
             if (_baseModel is null)
-                {
+            {
                 SelectBaseItem(item);
-                }
+            }
             else if (!item.Disabled.Value)
             {
                 SelectMaterialItem(item);
