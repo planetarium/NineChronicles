@@ -47,13 +47,13 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
-        private List<CategoryToggle> categoryToggles = null;
+        private List<CategoryToggle> categoryToggles;
 
         [SerializeField]
-        private TMP_Dropdown gradeFilter = null;
+        private TMP_Dropdown gradeFilter;
 
         [SerializeField]
-        private TMP_Dropdown elementalFilter = null;
+        private TMP_Dropdown elementalFilter;
 
         [SerializeField]
         private EnhancementInventoryScroll scroll;
@@ -80,7 +80,7 @@ namespace Nekoyume.UI.Module
 
         private EnhancementInventoryItem _selectedModel;
         private EnhancementInventoryItem _baseModel;
-        private List<EnhancementInventoryItem> _materialModels = new List<EnhancementInventoryItem>();
+        private readonly List<EnhancementInventoryItem> _materialModels = new List<EnhancementInventoryItem>();
 
         private Action<EnhancementInventoryItem, RectTransform> _onSelectItem;
 
@@ -124,125 +124,21 @@ namespace Nekoyume.UI.Module
         public (Equipment, List<Equipment>) GetSelectedModels()
         {
             var baseItem = (Equipment)_baseModel?.ItemBase;
-            var materialItems = _materialModels.Select((i) => (Equipment)i.ItemBase).ToList();
+            var materialItems = _materialModels.Select(item => (Equipment)item.ItemBase).ToList();
 
             return (baseItem, materialItems);
         }
 
-        public string GetSubmitText()
-        {
-            return L10nManager.Localize(_baseModel is null
-                ? "UI_COMBINATION_REGISTER_ITEM"
-                : "UI_COMBINATION_REGISTER_MATERIAL");
-        }
+        #region Select Item
 
-        public void ClearSelectedItem()
+        private void ClearSelectedItem()
         {
             _selectedModel?.Selected.SetValueAndForceNotify(false);
             _selectedModel = null;
         }
 
-        public void SelectItem()
+        private void SelectItem(EnhancementInventoryItem item)
         {
-            if (_baseModel is null)
-            {
-                _baseModel = _selectedModel;
-                _baseModel.SelectedBase.SetValueAndForceNotify(true);
-            }
-            else
-            {
-                _selectedModel.SelectedMaterial.SetValueAndForceNotify(true);
-                _materialModels.Add(_selectedModel);
-            }
-
-            UpdateView();
-        }
-
-        public void DeselectItem(bool isAll = false)
-        {
-            if (isAll)
-            {
-                _baseModel?.SelectedBase.SetValueAndForceNotify(false);
-                _baseModel = null;
-            }
-
-            ClearAllMaterialModels();
-
-            UpdateView();
-        }
-
-        private void ClearAllMaterialModels()
-        {
-            foreach (var model in _materialModels)
-            {
-                model?.SelectedMaterial.SetValueAndForceNotify(false);
-            }
-            _materialModels.Clear();
-        }
-
-        public void Select(ItemSubType itemSubType,Guid itemId)
-        {
-            var items = _equipments[itemSubType];
-            foreach (var item in items)
-            {
-                if (item.ItemBase is not Equipment equipment)
-                {
-                    continue;
-                }
-
-                if (equipment.ItemId != itemId)
-                {
-                    continue;
-                }
-
-
-                var toggle = categoryToggles.FirstOrDefault(x => x.Type == itemSubType);
-                toggle.Toggle.isOn = true;
-                ClearSelectedItem();
-                _selectedModel = item;
-                // _selectedModel.Selected.SetValueAndForceNotify(true);
-                SelectItem();
-                return;
-            }
-        }
-
-        public EnhancementInventoryItem GetEnabledItem(int index)
-        {
-            return GetModels().ElementAt(index);
-        }
-
-        public bool TryGetCellByIndex(int index, out EnhancementInventoryCell cell)
-        {
-            return scroll.TryGetCellByIndex(index, out cell);
-        }
-
-        private void OnClickItem(EnhancementInventoryItem item)
-        {
-            ClearSelectedItem();
-
-            if (item.Equals(_baseModel)) // 둘다 해제
-            {
-                _baseModel.SelectedBase.SetValueAndForceNotify(false);
-                _baseModel = null;
-
-                ClearAllMaterialModels();
-
-                UpdateView();
-                return;
-            }
-
-            foreach (var model in _materialModels)
-            {
-                if (item.Equals(model))
-                {
-                    model.SelectedMaterial.SetValueAndForceNotify(false);
-                    _materialModels.Remove(model);
-                    UpdateView();
-                    return;
-                }
-            }
-
-
             if (_baseModel is null)
             {
                 _baseModel = item;
@@ -262,27 +158,87 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        private void DisableItem(IEnumerable<EnhancementInventoryItem> items)
+        private void DeselectMaterialItem(EnhancementInventoryItem item)
         {
-            if (_baseModel is null)
+            item.SelectedMaterial.SetValueAndForceNotify(false);
+            _materialModels.Remove(item);
+            UpdateView();
+        }
+
+        public void DeselectBaseItem()
+        {
+            _baseModel?.SelectedBase.SetValueAndForceNotify(false);
+            _baseModel = null;
+
+            DeselectAllMaterialItems();
+        }
+
+        public void DeselectAllMaterialItems()
+        {
+            foreach (var model in _materialModels)
             {
-                foreach (var model in items)
-                {
-                    model.Disabled.Value = false;
-                }
+                model?.SelectedMaterial.SetValueAndForceNotify(false);
             }
-            else
+
+            _materialModels.Clear();
+
+            UpdateView();
+        }
+
+        #endregion
+
+        public void Select(ItemSubType itemSubType, Guid itemId)
+        {
+            var items = _equipments[itemSubType];
+            foreach (var item in items)
             {
-                foreach (var model in items)
+                if (item.ItemBase is not Equipment equipment)
                 {
-                    model.Disabled.Value = IsDisable(_baseModel, model);
+                    continue;
                 }
+
+                if (equipment.ItemId != itemId)
+                {
+                    continue;
+                }
+
+                var toggle = categoryToggles.FirstOrDefault(x => x.Type == itemSubType);
+                toggle.Toggle.isOn = true;
+                ClearSelectedItem();
+                _selectedModel = item;
+                // _selectedModel.Selected.SetValueAndForceNotify(true);
+                SelectItem(_selectedModel);
+                return;
             }
         }
 
-        private bool IsDisable(EnhancementInventoryItem a, EnhancementInventoryItem b)
+        public EnhancementInventoryItem GetEnabledItem(int index)
         {
-            return a.ItemBase.ItemSubType != b.ItemBase.ItemSubType || _materialModels.Count >= 50;
+            return GetModels().ElementAt(index);
+        }
+
+        public bool TryGetCellByIndex(int index, out EnhancementInventoryCell cell)
+        {
+            return scroll.TryGetCellByIndex(index, out cell);
+        }
+
+        private void OnClickItem(EnhancementInventoryItem item)
+        {
+            ClearSelectedItem();
+
+            if (_baseModel.Equals(item))
+            {
+                DeselectBaseItem();
+                return;
+            }
+
+            if (_materialModels.Contains(item))
+            {
+                DeselectMaterialItem(item);
+                return;
+            }
+
+            SelectItem(item);
         }
 
         private void UpdateView(bool jumpToFirst = false)
@@ -291,26 +247,47 @@ namespace Nekoyume.UI.Module
             DisableItem(models);
             _onUpdateView?.Invoke(_baseModel, _materialModels);
             scroll.UpdateData(models, jumpToFirst);
+            return;
+
+            void DisableItem(IEnumerable<EnhancementInventoryItem> items)
+            {
+                if (_baseModel is null)
+                {
+                    foreach (var item in items)
+                    {
+                        item.Disabled.Value = false;
+                    }
+                }
+                else
+                {
+                    var baseItemSubType = _baseModel.ItemBase.ItemSubType;
+                    var fullOfMaterials = _materialModels.Count >= 50;
+                    foreach (var item in items)
+                    {
+                        item.Disabled.Value = baseItemSubType != item.ItemBase.ItemSubType ||
+                                              fullOfMaterials;
+                    }
+                }
+            }
         }
 
         private List<EnhancementInventoryItem> GetModels()
         {
-            if (!_equipments.ContainsKey(_selectedItemSubType.Value))
+            if (!_equipments.TryGetValue(_selectedItemSubType.Value, out var equipments))
             {
                 return new List<EnhancementInventoryItem>();
             }
 
-            var equipments = _equipments[_selectedItemSubType.Value].ToList();
             if (_grade.Value != Grade.All)
             {
-                var value = (int)(_grade.Value);
-                equipments = equipments.Where(x => x.ItemBase.Grade == value).ToList();
+                var value = (int)_grade.Value;
+                equipments = equipments.Where(item => item.ItemBase.Grade == value).ToList();
             }
 
             if (_elemental.Value != Elemental.All)
             {
                 var value = (int)_elemental.Value - 1;
-                equipments = equipments.Where(x => (int)x.ItemBase.ElementalType == value).ToList();
+                equipments = equipments.Where(item => (int)item.ItemBase.ElementalType == value).ToList();
             }
 
             var usableItems = new List<EnhancementInventoryItem>();
@@ -334,8 +311,11 @@ namespace Nekoyume.UI.Module
                     .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment)).ToList();
             }
 
-            usableItems.AddRange(unusableItems);
-            return usableItems;
+            var result = new List<EnhancementInventoryItem>();
+            result.AddRange(usableItems);
+            result.AddRange(unusableItems);
+
+            return result;
         }
 
         public void Set(Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> onUpdateView,
@@ -344,39 +324,45 @@ namespace Nekoyume.UI.Module
             _onUpdateView = onUpdateView;
 
             _disposables.DisposeAllAndClear();
-            ReactiveAvatarState.Inventory.Subscribe(inventory =>
-            {
-                _equipments.Clear();
-
-                if (inventory is null)
-                {
-                    return;
-                }
-
-                _selectedModel = null;
-                foreach (var item in inventory.Items)
-                {
-                    if (!(item.item is Equipment) || item.Locked)
-                    {
-                        continue;
-                    }
-
-                    AddItem(item.item);
-                }
-
-                _baseModel = null;
-                _materialModels.Clear();
-
-                UpdateView(resetScrollOnEnable);
-            }).AddTo(_disposables);
-
+            ReactiveAvatarState.Inventory.Subscribe(UpdateInventory).AddTo(_disposables);
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
             enhancementSelectedMaterialItemScroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
         }
 
+        #region Update Inventory
+
+        private void UpdateInventory(Nekoyume.Model.Item.Inventory inventory)
+        {
+            _equipments.Clear();
+            if (inventory is null)
+            {
+                return;
+            }
+
+            foreach (var item in inventory.Items)
+            {
+                if (item.Locked)
+                {
+                    continue;
+                }
+
+                switch (item.item.ItemType)
+                {
+                    case ItemType.Equipment:
+                        AddItem(item.item);
+                        break;
+                }
+            }
+
+            _selectedModel = null;
+            _baseModel = null;
+            _materialModels.Clear();
+
+            UpdateView(resetScrollOnEnable);
+        }
+
         private void AddItem(ItemBase itemBase)
         {
-            var equipment = (Equipment)itemBase;
             if (itemBase is ITradableItem tradableItem)
             {
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
@@ -386,17 +372,27 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            var inventoryItem = new EnhancementInventoryItem(itemBase,
-                equipped: equipment.equipped,
-                levelLimited: !Util.IsUsableItem(itemBase));
+            EnhancementInventoryItem inventoryItem;
+            switch (itemBase)
+            {
+                case Equipment equipment:
+                    inventoryItem = new EnhancementInventoryItem(
+                        itemBase, equipment.equipped, !Util.IsUsableItem(itemBase));
+                    break;
+                default:
+                    return;
+            }
 
             if (!_equipments.ContainsKey(inventoryItem.ItemBase.ItemSubType))
             {
-                _equipments.Add(inventoryItem.ItemBase.ItemSubType,
+                _equipments.Add(
+                    inventoryItem.ItemBase.ItemSubType,
                     new List<EnhancementInventoryItem>());
             }
 
             _equipments[inventoryItem.ItemBase.ItemSubType].Add(inventoryItem);
         }
+
+        #endregion
     }
 }
