@@ -225,11 +225,18 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var targetExp = GetItemExp(baseItem) + materialItems.Sum(GetItemExp);
+            var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
+            var baseModelExp = baseItem.GetRealExp(equipmentItemSheet, enhancementCostSheet);
+            var materialItemsExp = materialItems.Sum(equipment =>
+                equipment.GetRealExp(equipmentItemSheet, enhancementCostSheet));
+            var hammersExp = hammers.Sum(pair =>
+                Equipment.GetHammerExp(pair.Key, enhancementCostSheet) * pair.Value);
+            var targetExp = baseModelExp + materialItemsExp + hammersExp;
+
             int requiredBlockIndex;
             try
             {
-                var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
                 var baseItemCostRows = enhancementCostSheet.Values
                     .Where(row => row.ItemSubType == baseItem.ItemSubType &&
                                   row.Grade == baseItem.Grade).ToList();
@@ -391,6 +398,7 @@ namespace Nekoyume.UI
                     noneContainer.SetActive(true);
                 }
 
+                var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
                 var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
                 var equipment = baseModel.ItemBase as Equipment;
                 var baseItemCostRows = enhancementCostSheet.Values
@@ -401,9 +409,23 @@ namespace Nekoyume.UI
                     new EnhancementCostSheetV3.Row();
 
                 // Get Target Exp
-                var baseModelExp = GetItemExp(equipment);
+                var baseModelExp = equipment.GetRealExp(
+                    equipmentItemSheet,
+                    enhancementCostSheet);
                 var targetExp = baseModelExp + materialModels.Sum(inventoryItem =>
-                    GetItemExp(inventoryItem.ItemBase as Equipment));
+                {
+                    if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id))
+                    {
+                        var hammerExp = Equipment.GetHammerExp(
+                            inventoryItem.ItemBase.Id,
+                            enhancementCostSheet);
+                        return hammerExp * inventoryItem.SelectedMaterialCount.Value;
+                    }
+
+                    return (inventoryItem.ItemBase as Equipment).GetRealExp(
+                        equipmentItemSheet,
+                        enhancementCostSheet);
+                });
 
                 // Get Target Level
                 EnhancementCostSheetV3.Row targetRow;
