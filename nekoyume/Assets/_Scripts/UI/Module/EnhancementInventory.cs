@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -85,6 +86,8 @@ namespace Nekoyume.UI.Module
         private Action<EnhancementInventoryItem, RectTransform> _onSelectItem;
 
         private Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> _onUpdateView;
+
+        public const int MaxMaterialCount = 50;
 
         private void Awake()
         {
@@ -261,11 +264,13 @@ namespace Nekoyume.UI.Module
                 else
                 {
                     var baseItemSubType = _baseModel.ItemBase.ItemSubType;
-                    var fullOfMaterials = _materialModels.Count >= 50;
+                    var fullOfMaterials = _materialModels.Count >= MaxMaterialCount;
+                    var enableHammer = !ItemEnhancement.HammerBannedTypes.Contains(baseItemSubType);
                     foreach (var item in items)
                     {
-                        item.Disabled.Value = baseItemSubType != item.ItemBase.ItemSubType ||
-                                              fullOfMaterials;
+                        item.Disabled.Value = fullOfMaterials ||
+                            item.ItemBase.ItemSubType != baseItemSubType &&
+                            !(enableHammer && ItemEnhancement.HammerIds.Contains(item.ItemBase.Id));
                     }
                 }
             }
@@ -312,6 +317,12 @@ namespace Nekoyume.UI.Module
             }
 
             var result = new List<EnhancementInventoryItem>();
+            if (!ItemEnhancement.HammerBannedTypes.Contains(_selectedItemSubType.Value) &&
+                _equipments.TryGetValue(ItemSubType.EquipmentMaterial, out var hammers))
+            {
+                result.AddRange(hammers);
+            }
+
             result.AddRange(usableItems);
             result.AddRange(unusableItems);
 
