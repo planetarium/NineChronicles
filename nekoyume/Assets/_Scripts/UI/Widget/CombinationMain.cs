@@ -26,6 +26,9 @@ namespace Nekoyume.UI
         private Button runeButton;
 
         [SerializeField]
+        private Button blueprintButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -87,6 +90,13 @@ namespace Nekoyume.UI
             {
                 Close(true);
                 Find<Rune>().Show(true);
+                AudioController.PlayClick();
+            });
+
+            blueprintButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<PaperCraft>().Show(true);
                 AudioController.PlayClick();
             });
 

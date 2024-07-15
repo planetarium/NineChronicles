@@ -46,6 +46,11 @@ namespace Nekoyume.State
         public static QuestList QuestList => _questList.Value;
         public static IObservable<QuestList> ObservableQuestList => _questList.ObserveOnMainThread();
 
+        private static readonly ReactiveProperty<long> _paperCraftingSkill = new();
+        public static long PaperCraftingSkill = _paperCraftingSkill.Value;
+        public static IObservable<long> ObservablePaperCraftingSkill =>
+            _paperCraftingSkill.ObserveOnMainThread();
+
         public static void Initialize(AvatarState state)
         {
             // todo: 선택된 아바타가 없을 경우 null이 들어 오는데, 이 때 아래에서 별도로 처리해줘야 하겠음.. 구독하는 쪽에서도 null 검사를 잘 하도록..
