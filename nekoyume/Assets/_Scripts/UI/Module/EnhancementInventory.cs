@@ -191,7 +191,8 @@ namespace Nekoyume.UI.Module
 
             var models = GetModels();
             models.Reverse();
-            foreach (var model in models.Take(amount).Where(model =>
+            var count = 0;
+            foreach (var model in models.Where(model =>
                 !model.Equals(_baseModel) && model.SelectedMaterialCount.Value <= 0 &&
                 !model.Disabled.Value))
             {
@@ -200,7 +201,13 @@ namespace Nekoyume.UI.Module
                     break;
                 }
 
+                if (count >= amount)
+                {
+                    break;
+                }
+
                 SelectMaterialItem(model);
+                count++;
             }
         }
 
