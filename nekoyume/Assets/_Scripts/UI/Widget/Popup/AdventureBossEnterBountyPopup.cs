@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI
 {
@@ -29,6 +30,8 @@ namespace Nekoyume.UI
         private TextMeshProUGUI bountyInputPlaceholder;
         [SerializeField]
         private GameObject inputCountObj;
+        [SerializeField]
+        private GameObject inputPlaceholderObj;
         [SerializeField]
         private GameObject inputWarning;
         [SerializeField]
@@ -86,6 +89,7 @@ namespace Nekoyume.UI
                 OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_STAKING_LEVEL_WARNING"), Scroller.NotificationCell.NotificationType.Alert);
             });
             bountyInputPlaceholder.text = L10nManager.Localize("ADVENTURE_BOSS_BOUNTY_INPUT_PLACEHOLDER", States.Instance.GameConfigState.AdventureBossMinBounty);
+            bountyInputArea.onSelect.AddListener(OnBountyInputAreaFocus);
             bountyInputArea.onValueChanged.AddListener(OnBountyInputAreaValueChanged);
             bountyInputArea.onEndEdit.AddListener(OnBountyInputAreaValueChanged);
             _bountyDefaultColor = bountyInputArea.textComponent.color;
@@ -95,6 +99,15 @@ namespace Nekoyume.UI
             ).AddTo(gameObject);
             base.Awake();
         }
+        
+        private void OnBountyInputAreaFocus(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                inputCountObj.SetActive(true);
+                inputPlaceholderObj.SetActive(false);
+            }
+        }
 
         private void OnBountyInputAreaValueChanged(string input)
         {
@@ -102,6 +115,7 @@ namespace Nekoyume.UI
             if (string.IsNullOrEmpty(input))
             {
                 inputCountObj.SetActive(false);
+                inputPlaceholderObj.SetActive(true);
                 var bountyRewards = adventureBossData.GetCurrentBountyRewards();
                 RefreshRewards(bountyRewards);
             }
@@ -147,6 +161,18 @@ namespace Nekoyume.UI
 
         public void ClearBountyInputField()
         {
+            if (string.IsNullOrEmpty(bountyInputArea.text))
+            {
+                OnBountyInputAreaValueChanged("");
+                bountyInputArea.ReleaseSelection();
+                var eventSystem = EventSystem.current;
+                if (eventSystem != null && eventSystem.currentSelectedGameObject == bountyInputArea.gameObject)
+                {
+                    eventSystem.SetSelectedGameObject(null);
+                }
+                return;
+            }
+            
             bountyInputArea.text = "";
         }
 
