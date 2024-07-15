@@ -12,6 +12,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
@@ -134,37 +135,38 @@ namespace Nekoyume.UI.Module
 
         #region Select Item
 
-        private void ClearSelectedItem()
+        private void SetMaterialItemCount(EnhancementInventoryItem item, int count)
         {
-            _selectedModel?.Selected.SetValueAndForceNotify(false);
-            _selectedModel = null;
-        }
-
-        private void SelectItem(EnhancementInventoryItem item)
+            item.SelectedMaterialCount.Value = count;
+            if (count > 0)
         {
-            if (_baseModel is null)
+                if (!_materialModels.Contains(item))
             {
-                _baseModel = item;
-                _baseModel.SelectedBase.SetValueAndForceNotify(true);
+                    _materialModels.Add(item);
+                }
             }
             else
             {
-                if (item.Disabled.Value)
-                {
-                    return;
+                _materialModels.Remove(item);
                 }
 
-                item.SelectedMaterial.SetValueAndForceNotify(true);
-                _materialModels.Add(item);
+            UpdateView();
             }
 
-            UpdateView();
+        private void SelectMaterialItem(EnhancementInventoryItem item)
+        {
+            SetMaterialItemCount(item, 1);
         }
 
         private void DeselectMaterialItem(EnhancementInventoryItem item)
         {
-            item.SelectedMaterial.SetValueAndForceNotify(false);
-            _materialModels.Remove(item);
+            SetMaterialItemCount(item, 0);
+        }
+
+        private void SelectBaseItem(EnhancementInventoryItem item)
+        {
+            _baseModel = item;
+            _baseModel.SelectedBase.SetValueAndForceNotify(true);
             UpdateView();
         }
 
@@ -180,7 +182,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var model in _materialModels)
             {
-                model?.SelectedMaterial.SetValueAndForceNotify(false);
+                model.SelectedMaterialCount.Value = 0;
             }
 
             _materialModels.Clear();
@@ -192,26 +194,20 @@ namespace Nekoyume.UI.Module
 
         public void Select(ItemSubType itemSubType, Guid itemId)
         {
+            var toggle = categoryToggles.FirstOrDefault(x => x.Type == itemSubType);
+            toggle.Toggle.isOn = true;
+
             var items = _equipments[itemSubType];
-            foreach (var item in items)
+            var item = items.First(item =>
+                item.ItemBase is Equipment equipment && equipment.ItemId == itemId);
+
+            if (_baseModel is null)
+                {
+                SelectBaseItem(item);
+                }
+            else if (!item.Disabled.Value)
             {
-                if (item.ItemBase is not Equipment equipment)
-                {
-                    continue;
-                }
-
-                if (equipment.ItemId != itemId)
-                {
-                    continue;
-                }
-
-                var toggle = categoryToggles.FirstOrDefault(x => x.Type == itemSubType);
-                toggle.Toggle.isOn = true;
-                ClearSelectedItem();
-                _selectedModel = item;
-                // _selectedModel.Selected.SetValueAndForceNotify(true);
-                SelectItem(_selectedModel);
-                return;
+                SelectMaterialItem(item);
             }
         }
 
@@ -227,21 +223,42 @@ namespace Nekoyume.UI.Module
 
         private void OnClickItem(EnhancementInventoryItem item)
         {
-            ClearSelectedItem();
-
-            if (_baseModel.Equals(item))
+            if (item.Equals(_baseModel))
             {
                 DeselectBaseItem();
-                return;
             }
-
-            if (_materialModels.Contains(item))
+            else if (_materialModels.Contains(item))
             {
                 DeselectMaterialItem(item);
+            }
+            else if (_baseModel is null)
+            {
+                SelectBaseItem(item);
+            }
+            else if (!item.Disabled.Value)
+            {
+                SelectMaterialItem(item);
+            }
+        }
+
+        private void OnClickHammerItem(EnhancementInventoryItem item)
+        {
+            // Hammer isn't selected to base item
+            if (_baseModel is null)
+            {
                 return;
             }
 
-            SelectItem(item);
+            if (item.Disabled.Value)
+            {
+                return;
+            }
+
+            Widget.Find<AddHammerPopup>().Show(
+                _baseModel.ItemBase as Equipment,
+                _materialModels,
+                item,
+                count => SetMaterialItemCount(item, count));
         }
 
         private void UpdateView(bool jumpToFirst = false)
@@ -336,8 +353,28 @@ namespace Nekoyume.UI.Module
 
             _disposables.DisposeAllAndClear();
             ReactiveAvatarState.Inventory.Subscribe(UpdateInventory).AddTo(_disposables);
-            scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
-            enhancementSelectedMaterialItemScroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
+            scroll.OnClick.Subscribe(item =>
+            {
+                if (ItemEnhancement.HammerIds.Contains(item.ItemBase.Id))
+                {
+                    OnClickHammerItem(item);
+                }
+                else
+                {
+                    OnClickItem(item);
+                }
+            }).AddTo(_disposables);
+            enhancementSelectedMaterialItemScroll.OnClick.Subscribe(item =>
+            {
+                if (ItemEnhancement.HammerIds.Contains(item.ItemBase.Id))
+                {
+                    DeselectMaterialItem(item);
+                }
+                else
+                {
+                    OnClickItem(item);
+                }
+            }).AddTo(_disposables);
         }
 
         #region Update Inventory
@@ -362,17 +399,20 @@ namespace Nekoyume.UI.Module
                     case ItemType.Equipment:
                         AddItem(item.item);
                         break;
+                    case ItemType.Material when
+                        ItemEnhancement.HammerIds.Contains(item.item.Id):
+                        AddItem(item.item, item.count);
+                        break;
                 }
             }
 
-            _selectedModel = null;
             _baseModel = null;
             _materialModels.Clear();
 
             UpdateView(resetScrollOnEnable);
         }
 
-        private void AddItem(ItemBase itemBase)
+        private void AddItem(ItemBase itemBase, int count = 1)
         {
             if (itemBase is ITradableItem tradableItem)
             {
@@ -388,7 +428,10 @@ namespace Nekoyume.UI.Module
             {
                 case Equipment equipment:
                     inventoryItem = new EnhancementInventoryItem(
-                        itemBase, equipment.equipped, !Util.IsUsableItem(itemBase));
+                        itemBase, equipment.equipped, !Util.IsUsableItem(itemBase), count);
+                    break;
+                case Material:
+                    inventoryItem = new EnhancementInventoryItem(itemBase, false, false, count);
                     break;
                 default:
                     return;
