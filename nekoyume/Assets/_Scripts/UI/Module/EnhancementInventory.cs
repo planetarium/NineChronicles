@@ -125,12 +125,16 @@ namespace Nekoyume.UI.Module
             _selectedItemSubType.Subscribe(_ => UpdateView(true)).AddTo(gameObject);
         }
 
-        public (Equipment, List<Equipment>) GetSelectedModels()
+        public (Equipment, List<Equipment>, Dictionary<int, int>) GetSelectedModels()
         {
             var baseItem = (Equipment)_baseModel?.ItemBase;
-            var materialItems = _materialModels.Select(item => (Equipment)item.ItemBase).ToList();
+            var materialItems = _materialModels
+                .Select(item => item.ItemBase).OfType<Equipment>().ToList();
+            var hammers = _materialModels
+                .Where(item => ItemEnhancement.HammerIds.Contains(item.ItemBase.Id))
+                .ToDictionary(item => item.ItemBase.Id, item => item.SelectedMaterialCount.Value);
 
-            return (baseItem, materialItems);
+            return (baseItem, materialItems, hammers);
         }
 
         #region Select Item

@@ -185,7 +185,7 @@ namespace Nekoyume.UI
 
         private void OnSubmit()
         {
-            var (baseItem, materialItems) = enhancementInventory.GetSelectedModels();
+            var (baseItem, materialItems, hammers) = enhancementInventory.GetSelectedModels();
 
             // Equip Upgrade ToDO
             if (!IsInteractableButton(baseItem, materialItems))
@@ -203,7 +203,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            EnhancementAction(baseItem, materialItems);
+            EnhancementAction(baseItem, materialItems, hammers);
         }
 
         //Used for migrating and showing equipment before update
@@ -214,7 +214,10 @@ namespace Nekoyume.UI
                 Game.Game.instance.TableSheets.EnhancementCostSheetV3);
         }
 
-        private void EnhancementAction(Equipment baseItem, List<Equipment> materialItems)
+        private void EnhancementAction(
+            Equipment baseItem,
+            List<Equipment> materialItems,
+            Dictionary<int, int> hammers)
         {
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
@@ -254,7 +257,7 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItems, slotIndex, _costNcg).Subscribe();
+                .ItemEnhancement(baseItem, materialItems, slotIndex, hammers, _costNcg).Subscribe();
 
             enhancementInventory.DeselectBaseItem();
 

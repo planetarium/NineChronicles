@@ -799,6 +799,7 @@ namespace Nekoyume.Blockchain
             Equipment baseEquipment,
             List<Equipment> materialEquipments,
             int slotIndex,
+            Dictionary<int, int> hammers,
             BigInteger costNCG)
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -854,6 +855,7 @@ namespace Nekoyume.Blockchain
                 materialIds = materialEquipments.Select((matEquipment) => matEquipment.NonFungibleId).ToList(),
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
+                hammers = hammers,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
