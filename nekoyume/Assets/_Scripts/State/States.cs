@@ -20,6 +20,7 @@ using static Lib9c.SerializeKeys;
 using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -556,7 +557,7 @@ namespace Nekoyume.State
                 });
 
                 Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
-                Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
             }
 
             return CurrentAvatarState;

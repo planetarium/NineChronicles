@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;

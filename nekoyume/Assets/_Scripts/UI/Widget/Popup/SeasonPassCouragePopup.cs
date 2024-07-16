@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.ApiClient;
 using UnityEngine;
 using TMPro;
 
@@ -16,9 +17,9 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            arena.text = $"+{Game.Game.instance.SeasonPassServiceManager.ArenaCourageAmount}";
-            worldboss.text = $"+{Game.Game.instance.SeasonPassServiceManager.WorldBossCourageAmount}";
-            advanture.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount}";
+            arena.text = $"+{ApiClients.Instance.SeasonPassServiceManager.ArenaCourageAmount}";
+            worldboss.text = $"+{ApiClients.Instance.SeasonPassServiceManager.WorldBossCourageAmount}";
+            advanture.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureCourageAmount}";
             base.Show(ignoreShowAnimation);
         }
 

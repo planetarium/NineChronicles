@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Nekoyume.ApiClient;
 using Nekoyume.Game;
 using Nekoyume.State;
 using Newtonsoft.Json.Linq;
@@ -24,9 +25,10 @@ namespace Nekoyume.UI.Module
             {
                 loadingObject.SetActive(true);
                 amountText.gameObject.SetActive(false);
-                var url = $"{Game.Game.instance.URL.DccMileageAPI}{States.Instance.AgentState.address}";
-                var headerName = Game.Game.instance.URL.DccEthChainHeaderName;
-                var headerValue = Game.Game.instance.URL.DccEthChainHeaderValue;
+                var dccUrl      = ApiClients.Instance.DccURL;
+                var url         = $"{dccUrl.DccMileageAPI}{States.Instance.AgentState.address}";
+                var headerName  = dccUrl.DccEthChainHeaderName;
+                var headerValue = dccUrl.DccEthChainHeaderValue;
                 _request = StartCoroutine(RequestManager.instance.GetJson(
                     url,
                     headerName,

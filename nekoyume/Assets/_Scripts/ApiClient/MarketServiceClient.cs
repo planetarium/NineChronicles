@@ -10,9 +10,8 @@ using MarketService.Response;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using UnityEngine;
 
-namespace Nekoyume.Game
+namespace Nekoyume.ApiClient
 {
     public class MarketServiceClient
     {
@@ -21,9 +20,17 @@ namespace Nekoyume.Game
 
         public MarketServiceClient(string url)
         {
+            if (string.IsNullOrEmpty(url))
+            {
+                _url = string.Empty;
+                NcDebug.Log($"[{nameof(MarketServiceClient)}] initialized with empty host url because of no MarketServiceHost");
+                return;
+            }
+            
             _url = url;
             _client = new HttpClient();
             _client.Timeout = TimeSpan.FromSeconds(30);
+            NcDebug.Log($"[{nameof(MarketServiceClient)}] initialized host: {url}");
         }
 
         public async Task<(List<ItemProductResponseModel>, int)> GetBuyProducts(
@@ -180,7 +187,7 @@ namespace Nekoyume.Game
             var itemProduct = response.ItemProducts.FirstOrDefault();
             if (itemProduct != null)
             {
-                var itemSheet = Game.instance.TableSheets.ItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                 itemSheet.TryGetValue(itemProduct.ItemId, out var row);
                 return (row.GetLocalizedName(hasColor, useElementalIcon), itemProduct, null);
             }

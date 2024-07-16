@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Nekoyume.ApiClient;
 using Nekoyume.GraphQL;
 
 using Debug = UnityEngine.Debug;
@@ -28,12 +29,11 @@ namespace Nekoyume.UI.Model
 
         public Dictionary<int, CraftRankingModel> AgentCraftRankingInfos = new Dictionary<int, CraftRankingModel>();
 
-        public Dictionary<int, Dictionary<ItemSubType, EquipmentRankingModel>> AgentEquipmentRankingInfos =
-            new Dictionary<int, Dictionary<ItemSubType, EquipmentRankingModel>>();
+        public Dictionary<int, Dictionary<ItemSubType, EquipmentRankingModel>> AgentEquipmentRankingInfos = new();
 
         public Task Update(int displayCount)
         {
-            var apiClient = Game.Game.instance.ApiClient;
+            var apiClient = ApiClients.Instance.WorldBossClient;
 
             if (apiClient.IsInitialized)
             {

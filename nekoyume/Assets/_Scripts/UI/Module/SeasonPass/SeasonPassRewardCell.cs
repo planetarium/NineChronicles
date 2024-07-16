@@ -13,6 +13,7 @@ using DG.Tweening;
 using Nekoyume.Model.Mail;
 using Nekoyume.L10n;
 using Cysharp.Threading.Tasks;
+using Nekoyume.ApiClient;
 using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI.Module
@@ -98,7 +99,7 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                disposable = Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) =>
+                disposable = ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) =>
                 {
                     if (avatarInfo == null)
                         return;
@@ -130,8 +131,8 @@ namespace Nekoyume.UI.Module
                         }
                         AudioController.PlayClick();
 
-                        if(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium ||
-                        Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremiumPlus)
+                        if(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium ||
+                        ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremiumPlus)
                         {
                             var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
                             tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
@@ -187,7 +188,7 @@ namespace Nekoyume.UI.Module
 
         public void Awake()
         {
-            Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) =>
+            ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) =>
             {
                 RefreshWithAvatarInfo(avatarInfo);
             });
@@ -195,11 +196,11 @@ namespace Nekoyume.UI.Module
             ReceiveBtn.onClick.AddListener(() =>
             {
                 ReceiveBtn.gameObject.SetActive(false);
-                Game.Game.instance.SeasonPassServiceManager.ReceiveAll(
+                ApiClients.Instance.SeasonPassServiceManager.ReceiveAll(
                     (result) =>
                     {
                         OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
-                        Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                        ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
                     },
                     (error) =>
                     {
@@ -241,7 +242,7 @@ namespace Nekoyume.UI.Module
                 item.text = rewardSchema.Level > SeasonPass.SeasonPassMaxLevel ? SeasonPass.MaxLevelString : rewardSchema.Level.ToString();
             }
 
-            RefreshWithAvatarInfo(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);
+            RefreshWithAvatarInfo(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value);
 
             normal.SetData(rewardSchema.Normal.Item.Count > 0 ? rewardSchema.Normal.Item.First() : null,
                 rewardSchema.Normal.Currency.Count > 0 ? rewardSchema.Normal.Currency.First() : null,

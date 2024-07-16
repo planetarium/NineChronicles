@@ -5,7 +5,7 @@ using Libplanet.Crypto;
 using Nekoyume.UI.Model;
 using UnityEngine.Networking;
 
-namespace Nekoyume.UI.Module.WorldBoss
+namespace Nekoyume.ApiClient
 {
     public static class WorldBossQuery
     {
@@ -13,14 +13,22 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public static void SetUrl(string host)
         {
+            if (string.IsNullOrEmpty(host))
+            {
+                Url = string.Empty;
+                NcDebug.Log($"[{nameof(WorldBossQuery)}] initialized with empty host url because of no OnBoardingHost. url: {Url}");
+                return;
+            }
+            
             Url = $"{host}/raid";
+            NcDebug.Log($"[{nameof(WorldBossQuery)}] initialized. host: {host} url: {Url}");
         }
 
         public static async Task<WorldBossRankingResponse> QueryRankingAsync(
             int raidId,
             Address address)
         {
-            var apiClient = Game.Game.instance.ApiClient;
+            var apiClient = ApiClients.Instance.WorldBossClient;
             if (!apiClient.IsInitialized)
             {
                 return null;

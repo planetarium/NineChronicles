@@ -570,6 +570,7 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Obsolete("Removed from event guild logic on client")]
         [Option("guild-service-url", Required = false, HelpText = "guild service url")]
         public string GuildServiceUrl
         {

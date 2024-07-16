@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -199,18 +200,18 @@ namespace Nekoyume
 
                 case ProductCancelMail productCancelMail:
                     var (productName, _, _) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(
+                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(
                             productCancelMail
                                 .ProductId);
                     return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", productName);
                 case ProductBuyerMail productBuyerMail:
                     var (buyProductName, _, _) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productBuyerMail
+                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(productBuyerMail
                             .ProductId);
                     return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", buyProductName);
                 case ProductSellerMail productSellerMail:
                     var (sellProductName, item, fav) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(
+                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(
                             productSellerMail.ProductId);
                     var price = item?.Price ?? fav?.Price ?? 0;
                     var tax = decimal.Divide(price, 100) * Buy.TaxRate;

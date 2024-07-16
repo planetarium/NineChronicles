@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -310,7 +311,7 @@ namespace Nekoyume.UI
 
         public static async Task LoadL10Ns()
         {
-            MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
+            MOBILE_L10N_SCHEMA = await ApiClients.Instance.IAPServiceManager.L10NAsync();
             await UniTask.SwitchToMainThread();
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
@@ -318,7 +319,7 @@ namespace Nekoyume.UI
 
         public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
         {
-            return await Game.Game.instance.IAPServiceManager
+            return await ApiClients.Instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
         }
 

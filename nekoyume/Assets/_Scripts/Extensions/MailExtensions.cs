@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -32,9 +33,8 @@ namespace Nekoyume
                     return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS");
                 }
             }
-
-            var game = Game.Game.instance;
-            var iapServiceManager = game.IAPServiceManager;
+;
+            var iapServiceManager = ApiClients.Instance.IAPServiceManager;
             if (iapServiceManager is null)
             {
                 NcDebug.Log($"{nameof(IAPServiceManager)} is null.");
@@ -45,8 +45,6 @@ namespace Nekoyume
             {
                 return mail.GetCellContentsForException();
             }
-
-            var agentAddr = game.Agent.Address;
 
             ProductSchema product = null;
             if (mail.Memo.Contains("iap"))
@@ -166,8 +164,7 @@ namespace Nekoyume
                 return L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED");
             }
 
-            var game = Game.Game.instance;
-            var iapServiceManager = game.IAPServiceManager;
+            var iapServiceManager = ApiClients.Instance.IAPServiceManager;
             if (iapServiceManager is null)
             {
                 NcDebug.Log($"{nameof(IAPServiceManager)} is null.");
@@ -179,6 +176,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
+            var game      = Game.Game.instance;
             var agentAddr = game.Agent.Address;
 
             ProductSchema product = null;

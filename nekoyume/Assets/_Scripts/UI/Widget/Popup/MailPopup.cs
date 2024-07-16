@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -155,7 +156,7 @@ namespace Nekoyume.UI
             {
                 case ProductBuyerMail productBuyerMail:
                     var productId = productBuyerMail.ProductId;
-                    var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productId);
+                    var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productId);
                     if (itemProduct is not null)
                     {
                         var item = States.Instance.CurrentAvatarState.inventory.Items
@@ -178,7 +179,7 @@ namespace Nekoyume.UI
                     break;
 
                 case ProductCancelMail productCancelMail:
-                    var (_, cItemProduct, cFavProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productCancelMail.ProductId);
+                    var (_, cItemProduct, cFavProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productCancelMail.ProductId);
                     if (cItemProduct is not null)
                     {
                         var item = States.Instance.CurrentAvatarState.inventory.Items
@@ -546,7 +547,7 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var productId = productBuyerMail.ProductId;
-            var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productId);
+            var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productId);
             if (itemProduct is not null)
             {
                 var count = (int)itemProduct.Quantity;
@@ -592,7 +593,7 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var agentAddress = States.Instance.AgentState.address;
-            var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
+            var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
             var currency = States.Instance.GoldBalanceState.Gold.Currency;
             var price = itemProduct?.Price ?? favProduct.Price;
             var fav = new FungibleAssetValue(currency, (int)price, 0);

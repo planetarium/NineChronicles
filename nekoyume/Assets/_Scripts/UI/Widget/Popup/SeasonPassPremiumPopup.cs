@@ -10,6 +10,7 @@ using Nekoyume.Game.Controller;
 using System.Numerics;
 using TMPro;
 using System.Linq;
+using Nekoyume.ApiClient;
 using Nekoyume.State;
 using Nekoyume.Model.Mail;
 using Nekoyume.L10n;
@@ -63,7 +64,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             seasonPassManager.AvatarInfo.Subscribe((seasonPassInfo) =>
             {
                 RefreshIcons(seasonPassInfo);
@@ -112,7 +113,7 @@ namespace Nekoyume.UI
                 item.gameObject.SetActive(false);
             }
 
-            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             var iapStoreManager = Game.Game.instance.IAPStoreManager;
 
             string premiumProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premium";
@@ -139,7 +140,7 @@ namespace Nekoyume.UI
             }
 
             string premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}PremiumAll";
-            if (Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium)
+            if (ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium)
             {
                 premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
             }
@@ -216,7 +217,7 @@ namespace Nekoyume.UI
 
         private void OnPurchase(string productKey)
         {
-            Game.Game.instance.IAPServiceManager.CheckProductAvailable(productKey, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
+            ApiClients.Instance.IAPServiceManager.CheckProductAvailable(productKey, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
             //success
             () =>
             {
@@ -234,7 +235,7 @@ namespace Nekoyume.UI
 
         public void PurchaseSeasonPassPremiumButton()
         {
-            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             if (seasonPassManager.AvatarInfo.Value.IsPremium)
                 return;
 
@@ -251,7 +252,7 @@ namespace Nekoyume.UI
 
         public void PurchaseSeasonPassPremiumPlusButton()
         {
-            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             if (seasonPassManager.AvatarInfo.Value.IsPremiumPlus)
                 return;
 
@@ -277,10 +278,10 @@ namespace Nekoyume.UI
 
         public void PurchaseButtonLoadingEnd()
         {
-            Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+            ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
             premiumPurchaseButtonLoadingObj.SetActive(false);
             premiumPlusPurchaseButtonLoadingObj.SetActive(false);
-            RefreshIcons(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);
+            RefreshIcons(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using mixpanel;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.L10n;
@@ -88,7 +89,7 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
-            var clientInitialized = Game.Game.instance.PatrolRewardServiceClient.IsInitialized;
+            var clientInitialized = ApiClients.Instance.PatrolRewardServiceClient.IsInitialized;
             if (!clientInitialized)
             {
                 NcDebug.Log(

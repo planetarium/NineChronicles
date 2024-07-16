@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -403,14 +404,14 @@ namespace Nekoyume.UI
             await foreach (var product in itemProducts)
             {
                 reRegisterInfos.Add(GetReRegisterInfo(product.ProductId, (int)product.Price));
-                var (itemName, _, _) = await Game.Game.instance.MarketServiceClient.GetProductInfo(product.ProductId);
+                var (itemName, _, _) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(product.ProductId);
                 oneLineSystemInfos.Add((itemName, (int)product.Quantity));
             }
 
             await foreach (var product in favProducts)
             {
                 reRegisterInfos.Add(GetReRegisterInfo(product.ProductId, (int)product.Price));
-                var (itemName, _, _) = await Game.Game.instance.MarketServiceClient.GetProductInfo(product.ProductId);
+                var (itemName, _, _) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(product.ProductId);
                 oneLineSystemInfos.Add((itemName, (int)product.Quantity));
             }
 
@@ -491,7 +492,7 @@ namespace Nekoyume.UI
                     TradableId = itemProduct.TradableId
                 });
 
-                var (itemName, _, _) = await Game.Game.instance.MarketServiceClient.GetProductInfo(itemProduct.ProductId);
+                var (itemName, _, _) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(itemProduct.ProductId);
                 oneLineSystemInfos.Add((itemName, (int)itemProduct.Quantity));
             }
 
@@ -506,7 +507,7 @@ namespace Nekoyume.UI
                     Type = ProductType.FungibleAssetValue,
                 });
 
-                var (itemName, _, _) = await Game.Game.instance.MarketServiceClient.GetProductInfo(favProduct.ProductId);
+                var (itemName, _, _) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(favProduct.ProductId);
                 oneLineSystemInfos.Add((itemName, (int)favProduct.Quantity));
             }
 

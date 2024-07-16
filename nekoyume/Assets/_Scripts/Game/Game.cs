@@ -32,6 +32,7 @@ using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Battle;
@@ -53,6 +54,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using NineChronicles.ExternalServices.IAPService.Runtime;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 using UnityEngine.Playables;
 using Currency = Libplanet.Types.Assets.Currency;
@@ -62,7 +64,6 @@ using Random = UnityEngine.Random;
 using UnityEngine.Android;
 #endif
 using Nekoyume.Model.Mail;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
@@ -131,12 +132,6 @@ namespace Nekoyume.Game
 
         public IAPStoreManager IAPStoreManager { get; private set; }
 
-        public IAPServiceManager IAPServiceManager { get; private set; }
-
-        public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
-
-        public GuildServiceClient GuildServiceClient { get; private set; }
-
         public AdventureBossData AdventureBossData { get; private set; }
 
         public Stage Stage => stage;
@@ -158,17 +153,7 @@ namespace Nekoyume.Game
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
-        public NineChroniclesAPIClient ApiClient { get; private set; }
-
-        public NineChroniclesAPIClient RpcGraphQLClient { get; private set; }
-
-        public MarketServiceClient MarketServiceClient { get; private set; }
-
-        public NineChroniclesAPIClient PatrolRewardServiceClient { get; private set; }
-
         public PortalConnect PortalConnect { get; private set; }
-
-        public Url URL { get; private set; }
 
         public readonly LruCache<Address, IValue> CachedStates = new();
 
@@ -189,17 +174,12 @@ namespace Nekoyume.Game
 
         public CommandLineOptions CommandLineOptions { get => _commandLineOptions; }
 
-        private AmazonCloudWatchLogsClient _logsClient;
-
         private PlayableDirector _activeDirector;
 
         private string _msg;
 
         public static readonly string CommandLineOptionsJsonPath =
             Platform.GetStreamingAssetsPath("clo.json");
-
-        private static readonly string UrlJsonPath =
-            Platform.GetStreamingAssetsPath("url.json");
 
         private Thread _headlessThread;
         private Thread _marketThread;
@@ -243,7 +223,7 @@ namespace Nekoyume.Game
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
             OnLoadCommandlineOptions();
 #endif
-            URL = Url.Load(UrlJsonPath);
+            ApiClients.Instance.SetDccUrl();
 
             CreateAgent();
             PostAwake();
@@ -427,7 +407,7 @@ namespace Nekoyume.Game
 
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
-            UpdateServices();
+            ApiClients.Instance.Initialize(_commandLineOptions);
 
             StartCoroutine(InitializeIAP());
 
@@ -490,8 +470,6 @@ namespace Nekoyume.Game
             var showNextEvt = new AirbridgeEvent("Intro_Start_ShowNext");
             AirbridgeUnity.TrackEvent(showNextEvt);
 
-            yield return InitializeGuildService();
-
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
 
@@ -509,13 +487,8 @@ namespace Nekoyume.Game
                 var innerSw = new Stopwatch();
                 innerSw.Reset();
                 innerSw.Start();
-#if UNITY_IOS
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Apple);
-#else
-                //pc has to find iap product for mail box system
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-#endif
-                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+                
+                yield return ApiClients.Instance.IAPServiceManager.InitializeAsync().AsCoroutine();
 
                 Task.Run(async () =>
                 {
@@ -1185,8 +1158,6 @@ namespace Nekoyume.Game
                 var evt = new AirbridgeEvent("Intro_Player_Quit");
                 AirbridgeUnity.TrackEvent(evt);
             }
-
-            _logsClient?.Dispose();
         }
 
         private IEnumerator CoUpdate()
@@ -1571,110 +1542,16 @@ namespace Nekoyume.Game
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
 
-        private async void UploadLog(string logString, string stackTrace, LogType type)
-        {
-            // Avoid NRE
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (Agent.PrivateKey is null)
-            {
-                _msg += logString + "\n";
-                if (!string.IsNullOrEmpty(stackTrace))
-                {
-                    _msg += stackTrace + "\n";
-                }
-            }
-            else
-            {
-                const string groupName = "9c-player-logs";
-                var streamName = _commandLineOptions.AwsSinkGuid;
-                try
-                {
-                    var req = new CreateLogGroupRequest(groupName);
-                    await _logsClient.CreateLogGroupAsync(req);
-                }
-                catch (ResourceAlreadyExistsException)
-                {
-                }
-                catch (ObjectDisposedException)
-                {
-                    return;
-                }
-
-                try
-                {
-                    var req = new CreateLogStreamRequest(groupName, streamName);
-                    await _logsClient.CreateLogStreamAsync(req);
-                }
-                catch (ResourceAlreadyExistsException)
-                {
-                    // ignored
-                }
-
-                PutLog(groupName, streamName, GetMessage(logString, stackTrace));
-            }
-        }
-
-        private async void PutLog(string groupName, string streamName, string msg)
-        {
-            try
-            {
-                var req = new DescribeLogStreamsRequest(groupName)
-                {
-                    LogStreamNamePrefix = streamName
-                };
-                var resp = await _logsClient.DescribeLogStreamsAsync(req);
-                var token = resp.LogStreams.FirstOrDefault(s =>
-                    s.LogStreamName == streamName)?.UploadSequenceToken;
-                var ie = new InputLogEvent
-                {
-                    Message = msg,
-                    Timestamp = DateTime.UtcNow
-                };
-                var request = new PutLogEventsRequest(
-                    groupName,
-                    streamName,
-                    new List<InputLogEvent> { ie });
-                if (!string.IsNullOrEmpty(token))
-                {
-                    request.SequenceToken = token;
-                }
-
-                await _logsClient.PutLogEventsAsync(request);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-        }
-
-        private string GetMessage(string logString, string stackTrace)
-        {
-            var msg = string.Empty;
-            if (!string.IsNullOrEmpty(_msg))
-            {
-                msg = _msg;
-                _msg = string.Empty;
-                return msg;
-            }
-
-            msg += logString + "\n";
-            if (!string.IsNullOrEmpty(stackTrace))
-            {
-                msg += stackTrace;
-            }
-
-            return msg;
-        }
-
         private IEnumerator CoInitDccAvatar()
         {
-            var sw = new Stopwatch();
+            var dccUrl = ApiClients.Instance.DccURL;
+            var sw     = new Stopwatch();
             sw.Reset();
             sw.Start();
             yield return RequestManager.instance.GetJson(
-                URL.DccAvatars,
-                URL.DccEthChainHeaderName,
-                URL.DccEthChainHeaderValue,
+                dccUrl.DccAvatars,
+                dccUrl.DccEthChainHeaderName,
+                dccUrl.DccEthChainHeaderValue,
                 json =>
                 {
                     var responseData = DccAvatars.FromJson(json);
@@ -1687,13 +1564,14 @@ namespace Nekoyume.Game
 
         private IEnumerator CoInitDccConnecting()
         {
-            var sw = new Stopwatch();
+            var dccUrl = ApiClients.Instance.DccURL;
+            var sw     = new Stopwatch();
             sw.Reset();
             sw.Start();
             yield return RequestManager.instance.GetJson(
-                $"{URL.DccMileageAPI}{Agent.Address}",
-                URL.DccEthChainHeaderName,
-                URL.DccEthChainHeaderValue,
+                $"{dccUrl.DccMileageAPI}{Agent.Address}",
+                dccUrl.DccEthChainHeaderName,
+                dccUrl.DccEthChainHeaderValue,
                 _ => { Dcc.instance.IsConnected = true; },
                 _ => { Dcc.instance.IsConnected = false; });
             sw.Stop();
@@ -2118,138 +1996,6 @@ namespace Nekoyume.Game
             RaidStage.Initialize();
             sw.Stop();
             NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-        }
-
-        // TODO: 중복코드 정리, 초기화 안 된 경우 로직 정리
-        private void UpdateServices()
-        {           
-            // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
-            // NOTE: Initialize several services after Agent initialized.
-            // NOTE: Initialize api client.
-            if (string.IsNullOrEmpty(_commandLineOptions.ApiServerHost))
-            {
-                ApiClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... ApiClient initialized with empty host url" +
-                          " because of no ApiServerHost");
-            }
-            else
-            {
-                ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
-                NcDebug.Log("[Game] Start()... ApiClient initialized." +
-                          $" host: {_commandLineOptions.ApiServerHost}");
-            }
-
-            // NOTE: Initialize graphql client which is targeting to RPC server.
-            if (string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
-            {
-                RpcGraphQLClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... RpcGraphQLClient initialized with empty host url" +
-                          " because of no RpcServerHost");
-            }
-            else
-            {
-                RpcGraphQLClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
-            }
-
-            // NOTE: Initialize world boss query.
-            if (string.IsNullOrEmpty(_commandLineOptions.OnBoardingHost))
-            {
-                WorldBossQuery.SetUrl(string.Empty);
-                NcDebug.Log($"[Game] Start()... WorldBossQuery initialized with empty host url" +
-                          " because of no OnBoardingHost." +
-                          $" url: {WorldBossQuery.Url}");
-            }
-            else
-            {
-                WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
-                NcDebug.Log("[Game] Start()... WorldBossQuery initialized." +
-                          $" host: {_commandLineOptions.OnBoardingHost}" +
-                          $" url: {WorldBossQuery.Url}");
-            }
-
-            // NOTE: Initialize market service.
-            if (string.IsNullOrEmpty(_commandLineOptions.MarketServiceHost))
-            {
-                MarketServiceClient = new MarketServiceClient(string.Empty);
-                NcDebug.Log("[Game] Start()... MarketServiceClient initialized with empty host url" +
-                          " because of no MarketServiceHost");
-            }
-            else
-            {
-                MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-                NcDebug.Log("[Game] Start()... MarketServiceClient initialized." +
-                          $" host: {_commandLineOptions.MarketServiceHost}");
-            }
-
-            // NOTE: Initialize patrol reward service.
-            if (string.IsNullOrEmpty(_commandLineOptions.PatrolRewardServiceHost))
-            {
-                PatrolRewardServiceClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... PatrolRewardServiceClient initialized with empty host url" +
-                          " because of no PatrolRewardServiceHost");
-            }
-            else
-            {
-                PatrolRewardServiceClient = new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
-                NcDebug.Log("[Game] Start()... PatrolRewardServiceClient initialized." +
-                          $" host: {_commandLineOptions.PatrolRewardServiceHost}");
-            }
-
-            // NOTE: Initialize season pass service.
-            if (string.IsNullOrEmpty(_commandLineOptions.SeasonPassServiceHost))
-            {
-                NcDebug.Log("[Game] Start()... SeasonPassServiceManager not initialized" +
-                          " because of no SeasonPassServiceHost");
-                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
-            }
-            else
-            {
-                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
-                if (!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
-                {
-                    SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
-                }
-
-                if (!string.IsNullOrEmpty(_commandLineOptions.AppleMarketUrl))
-                {
-                    SeasonPassServiceManager.AppleMarketURL = _commandLineOptions.AppleMarketUrl;
-                }
-
-                NcDebug.Log("[Game] Start()... SeasonPassServiceManager initialized." +
-                          $" host: {_commandLineOptions.SeasonPassServiceHost}" +
-                          $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
-                          $", apple: {SeasonPassServiceManager.AppleMarketURL}");
-            }
-        }
-
-        private IEnumerator InitializeGuildService()
-        {
-            if (string.IsNullOrEmpty(_commandLineOptions.GuildServiceUrl))
-            {
-                yield break;
-            }
-            GuildServiceClient = new GuildServiceClient(_commandLineOptions.GuildServiceUrl);
-            if (!string.IsNullOrEmpty(_commandLineOptions.GuildIconBucket))
-            {
-                _guildBucketUrl = _commandLineOptions.GuildIconBucket;
-            }
-
-            yield return GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
-            {
-                GuildModels = guildModels;
-                NcDebug.Log($"[Guild] GetGuildAsync success");
-                {
-                    foreach (var guildModel in guildModels)
-                    {
-                        var url = $"{_guildBucketUrl}/{guildModel.Name}.png";
-                        Helper.Util.DownloadTexture(url).Forget();
-                    }
-                }
-            }, onError: message =>
-            {
-                // cannot convert into method group because the method might not exist in some builds.
-                NcDebug.LogError(message);
-            }).AsUniTask().ToCoroutine();
         }
 #endregion Initialize On Start
         

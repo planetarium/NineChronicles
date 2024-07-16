@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;

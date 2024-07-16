@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module.Lobby
 
             if (!popup.PatrolReward.Initialized)
             {
-                NcDebug.LogError("PatrolReward is not initialized.");
+                NcDebug.LogWarning("PatrolReward is not initialized.");
                 return;
             }
 
