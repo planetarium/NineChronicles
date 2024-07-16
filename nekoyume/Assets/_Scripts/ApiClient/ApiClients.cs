@@ -56,7 +56,7 @@ namespace Nekoyume.ApiClient
             // NOTE: Initialize several services after Agent initialized.
             WorldBossClient = new NineChroniclesAPIClient(clo.ApiServerHost);
             RpcGraphQlClient = string.IsNullOrEmpty(clo.RpcServerHost) ?
-                new NineChroniclesAPIClient("") :
+                new NineChroniclesAPIClient(string.Empty) :
                 new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
             WorldBossQuery.SetUrl(clo.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
