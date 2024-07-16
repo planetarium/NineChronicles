@@ -64,20 +64,12 @@ namespace Nekoyume.ApiClient
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
             ApplySeasonPassMarketUrl(clo);
 
-            if (string.IsNullOrEmpty(clo.IAPServiceHost))
-            {
-                NcDebug.LogError($"[{nameof(ApiClients)}] IAPServiceHost is null.");
-            }
-            else
-            {
 #if UNITY_IOS
-                IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Apple);
+            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Apple);
 #else
-                //pc has to find iap product for mail box system
-                IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Google);
+            //pc has to find iap product for mail box system
+            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Google);
 #endif
-            }
-
             IsInitialized = true;
         }
 
