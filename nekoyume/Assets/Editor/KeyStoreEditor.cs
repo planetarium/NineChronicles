@@ -36,9 +36,9 @@ namespace Editor
                 if (!KeyManager.Instance.IsInitialized)
                 {
                     KeyManager.Instance.Initialize(
-                        keyStorePath: null,
-                        encryptPassphraseFunc: Util.AesEncrypt,
-                        decryptPassphraseFunc: Util.AesDecrypt);
+                        null,
+                        Util.AesEncrypt,
+                        Util.AesDecrypt);
                 }
 
                 KeyManager.Instance.TryChangePassphrase(new Address(_addr), _originPw, _newPw);
@@ -50,9 +50,9 @@ namespace Editor
                 if (!KeyManager.Instance.IsInitialized)
                 {
                     KeyManager.Instance.Initialize(
-                        keyStorePath: null,
-                        encryptPassphraseFunc: Util.AesEncrypt,
-                        decryptPassphraseFunc: Util.AesDecrypt);
+                        null,
+                        Util.AesEncrypt,
+                        Util.AesDecrypt);
                 }
 
                 KeyManager.Instance.Register(new PrivateKey(_rawPrivateKeyString), _newPw);

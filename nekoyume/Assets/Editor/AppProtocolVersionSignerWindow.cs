@@ -43,7 +43,7 @@ namespace Editor
         [MenuItem("Tools/Libplanet/Sign A New Version")]
         public static void Init()
         {
-            var window = EditorWindow.GetWindow<AppProtocolVersionSignerWindow>();
+            var window = GetWindow<AppProtocolVersionSignerWindow>();
             window.Show();
         }
 
@@ -62,7 +62,7 @@ namespace Editor
             RefreshPrivateKeys();
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             _showPrivateKey = EditorGUILayout.Foldout(_showPrivateKey, "Private Key");
             if (_showPrivateKey)
@@ -132,7 +132,7 @@ namespace Editor
 
             EditorGUI.BeginDisabledGroup(
                 !(_privateKeyPassphrase.Any() &&
-                  _selectedPrivateKeyIndex < _privateKeyOptions.Length - 1));
+                    _selectedPrivateKeyIndex < _privateKeyOptions.Length - 1));
             if (GUILayout.Button("Sign"))
             {
                 var appProtocolVersionExtra =
@@ -159,11 +159,11 @@ namespace Editor
             EditorGUI.EndDisabledGroup();
         }
 
-        void FillAttributes()
+        private void FillAttributes()
         {
             if (Platform.IsMobilePlatform())
             {
-                string dataPath = Platform.GetPersistentDataPath("keystore");
+                var dataPath = Platform.GetPersistentDataPath("keystore");
                 _keyStore = new Web3KeyStore(dataPath);
             }
             else
@@ -176,7 +176,7 @@ namespace Editor
             titleContent = new GUIContent("Libplanet Version Signer");
         }
 
-        void RefreshPrivateKeys()
+        private void RefreshPrivateKeys()
         {
             _privateKeys = _keyStore
                 .List()
@@ -194,11 +194,11 @@ namespace Editor
             }
             else
             {
-                _privateKeyOptions = new[] {"No private key; create one first:"};
+                _privateKeyOptions = new[] { "No private key; create one first:" };
             }
         }
 
-        static void ShowError(string message)
+        private static void ShowError(string message)
         {
             if (message is null)
             {
@@ -210,9 +210,9 @@ namespace Editor
             EditorGUILayout.LabelField(message, style);
         }
 
-        static void HorizontalLine()
+        private static void HorizontalLine()
         {
-            Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(6));
+            var r = EditorGUILayout.GetControlRect(GUILayout.Height(6));
             r.height = 1;
             r.y += 5;
             r.x -= 2;

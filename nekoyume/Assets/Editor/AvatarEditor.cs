@@ -9,7 +9,9 @@ namespace Anima2D
         public static void CreateAvatar()
         {
             if (Selection.objects.Length == 0)
+            {
                 return;
+            }
 
             var root = new GameObject("Avatar");
             var mesh = new GameObject("Mesh");
@@ -17,7 +19,7 @@ namespace Anima2D
             var spine = new GameObject("Spine");
             spine.transform.SetParent(root.transform);
 
-            foreach (Object obj in Selection.objects)
+            foreach (var obj in Selection.objects)
             {
                 var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(AssetDatabase.GetAssetPath(obj));
                 var part = new GameObject(sprite.name);
