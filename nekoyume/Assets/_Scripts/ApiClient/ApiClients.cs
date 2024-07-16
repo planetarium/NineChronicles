@@ -55,19 +55,28 @@ namespace Nekoyume.ApiClient
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
             WorldBossClient = new NineChroniclesAPIClient(clo.ApiServerHost);
-            RpcGraphQlClient = new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
+            RpcGraphQlClient = string.IsNullOrEmpty(clo.RpcServerHost) ?
+                new NineChroniclesAPIClient("") :
+                new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
             WorldBossQuery.SetUrl(clo.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
             PatrolRewardServiceClient = new NineChroniclesAPIClient(clo.PatrolRewardServiceHost);
             SeasonPassServiceManager = new SeasonPassServiceManager(clo.SeasonPassServiceHost);
             ApplySeasonPassMarketUrl(clo);
 
+            if (string.IsNullOrEmpty(clo.IAPServiceHost))
+            {
+                NcDebug.LogError($"[{nameof(ApiClients)}] IAPServiceHost is null.");
+            }
+            else
+            {
 #if UNITY_IOS
-            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Apple);
+                IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Apple);
 #else
-            //pc has to find iap product for mail box system
-            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Google);
+                //pc has to find iap product for mail box system
+                IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Google);
 #endif
+            }
 
             IsInitialized = true;
         }
