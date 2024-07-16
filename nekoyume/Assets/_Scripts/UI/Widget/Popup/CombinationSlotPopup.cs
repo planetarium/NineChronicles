@@ -19,7 +19,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Game;
+    using Game;
     using UniRx;
 
     public class CombinationSlotPopup : PopupWidget
@@ -28,7 +28,7 @@ namespace Nekoyume.UI
         {
             CombineEquipment,
             CombineConsumable,
-            Enhancement,
+            Enhancement
         }
 
         [Serializable]
@@ -280,7 +280,7 @@ namespace Nekoyume.UI
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
                 var optionView = information.StatOptions[i];
-                if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0 ||
+                if ((row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0) ||
                     i >= itemOptionInfo.StatOptions.Count)
                 {
                     optionView.Hide();
@@ -301,8 +301,8 @@ namespace Nekoyume.UI
             for (var i = 0; i < information.SkillOptions.Count; i++)
             {
                 var optionView = information.SkillOptions[i];
-                if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
-                    row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0 ||
+                if ((row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
+                        row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0) ||
                     i >= itemOptionInfo.SkillOptions.Count)
                 {
                     optionView.Hide();
@@ -436,6 +436,7 @@ namespace Nekoyume.UI
             {
                 cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             }
+
             rapidCombinationButton.SetCost(CostType.Hourglass, cost);
         }
 

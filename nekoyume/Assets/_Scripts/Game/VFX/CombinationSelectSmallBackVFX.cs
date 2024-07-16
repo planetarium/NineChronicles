@@ -1,4 +1,3 @@
-
 namespace Nekoyume.Game.VFX
 {
     public class CombinationSelectSmallBackVFX : VFX

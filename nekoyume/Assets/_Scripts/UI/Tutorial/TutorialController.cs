@@ -14,14 +14,12 @@ namespace Nekoyume.UI
 {
     public class TutorialController
     {
-        private readonly Dictionary<TutorialTargetType, RectTransform> _targets =
-            new Dictionary<TutorialTargetType, RectTransform>(new TutorialTargetTypeComparer());
+        private readonly Dictionary<TutorialTargetType, RectTransform> _targets = new(new TutorialTargetTypeComparer());
 
-        private readonly Dictionary<TutorialActionType, TutorialAction> _actions =
-            new Dictionary<TutorialActionType, TutorialAction>(new TutorialActionTypeComparer());
+        private readonly Dictionary<TutorialActionType, TutorialAction> _actions = new(new TutorialActionTypeComparer());
 
-        private readonly List<Preset> _preset = new List<Preset>();
-        private readonly List<Scenario> _scenario = new List<Scenario>();
+        private readonly List<Preset> _preset = new();
+        private readonly List<Scenario> _scenario = new();
 
         private readonly Tutorial _tutorial;
         private readonly RectTransform _buttonRectTransform;
@@ -29,8 +27,7 @@ namespace Nekoyume.UI
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
         private const int CreateAvatarRewardTutorialId = 50000;
-        private static string CheckPointKey =>
-            $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
+        private static string CheckPointKey => $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
         public static readonly int[] TutorialStageArray = { 5, 7, 10, 15, 23, 35, 40, 45, 49 };
 
@@ -57,6 +54,7 @@ namespace Nekoyume.UI
                         NcDebug.LogError($"Duplication Tutorial Targets AlreadyRegisterd : {_targets[target.type].gameObject.name}  TryRegisterd : {target.rectTransform.gameObject.name}");
                         continue;
                     }
+
                     _targets.Add(target.type, target.rectTransform);
                 }
 
@@ -71,6 +69,7 @@ namespace Nekoyume.UI
                             NcDebug.LogError($"Duplication Tutorial {action} Action AlreadyRegisterd : {_actions[action].ActionWidget.name}  TryRegisterd : {widget.name}");
                             continue;
                         }
+
                         _actions.Add(action, new TutorialAction(widget, methodInfo));
                     }
                 }
@@ -151,7 +150,6 @@ namespace Nekoyume.UI
                 _tutorial.gameObject.SetActive(false);
                 WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
             });
-
         }
 
         // force-set tutorial target. not recommend.
@@ -197,7 +195,7 @@ namespace Nekoyume.UI
                     preset.isSkipArrowAnimation),
                 new GuideDialogData(
                     data.emojiType,
-                    (DialogCommaType) preset.commaId,
+                    (DialogCommaType)preset.commaId,
                     data.dialogPositionType,
                     script,
                     target)
@@ -227,7 +225,7 @@ namespace Nekoyume.UI
             }
 
             // format example
-            void Check(int stageIdForTutorial)  // ex) 5, 10
+            void Check(int stageIdForTutorial) // ex) 5, 10
             {
                 // clearedStageId == stageIdForTutorial => 튜토리얼이 실행되어야 하는 스테이지
                 // 튜토리얼이 종료된 후 checkPoint = -stageIdForTutorial 연산을 함
@@ -242,7 +240,7 @@ namespace Nekoyume.UI
             {
                 var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
                 if (summonRow is not null && SimpleCostButton.CheckCostOfType(
-                        (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount))
+                    (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount))
                 {
                     checkPoint = 50000;
                 }
@@ -283,14 +281,13 @@ namespace Nekoyume.UI
 
             var props = new Dictionary<string, Value>()
             {
-                ["Id"] = id,
+                ["Id"] = id
             };
             Analyzer.Instance.Track("Unity/Tutorial progress", props);
 
             var evt = new AirbridgeEvent("Tutorial_Progress");
             evt.SetValue(id);
             AirbridgeUnity.TrackEvent(evt);
-
         }
 
         private IEnumerator CoShowTutorialRewardScreen()
@@ -325,7 +322,7 @@ namespace Nekoyume.UI
                 TableSheets.Instance.CreateAvatarFavSheet.Values
                     .Select(row =>
                         new MailReward(row.Currency * row.Quantity, row.Quantity)));
-            Widget.Find<RewardScreen>().Show(mailRewards, "First Tutorial Rewards!");
+            Widget.Find<RewardScreen>().Show(mailRewards, "UI_TUTORIAL_5_CLAIM_REWARD");
         }
 
         public void RegisterWidget(Widget widget)
@@ -337,6 +334,7 @@ namespace Nekoyume.UI
                     NcDebug.LogError($"Duplication Tutorial Targets AlreadyRegisterd : {_targets[target.type].gameObject.name}  TryRegisterd : {target.rectTransform.gameObject.name}");
                     continue;
                 }
+
                 _targets.Add(target.type, target.rectTransform);
             }
 
@@ -351,6 +349,7 @@ namespace Nekoyume.UI
                         NcDebug.LogError($"Duplication Tutorial {action} Action AlreadyRegisterd : {_actions[action].ActionWidget.name}  TryRegisterd : {widget.name}");
                         continue;
                     }
+
                     _actions.Add(action, new TutorialAction(widget, methodInfo));
                 }
             }

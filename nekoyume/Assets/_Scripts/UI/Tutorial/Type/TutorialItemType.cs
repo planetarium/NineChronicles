@@ -8,6 +8,6 @@ namespace Nekoyume.UI
         None = 0,
         Arrow,
         Background,
-        Dialog,
+        Dialog
     }
 }

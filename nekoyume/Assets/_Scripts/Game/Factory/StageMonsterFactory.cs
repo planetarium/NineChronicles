@@ -14,7 +14,9 @@ namespace Nekoyume.Game.Factory
             var objectPool = Game.instance.Stage.objectPool;
             var enemy = objectPool.Get<StageMonster>(position);
             if (!enemy)
+            {
                 throw new NotFoundComponentException<StageMonster>();
+            }
 
             enemy.Set(spawnCharacter, player, true);
 
@@ -26,10 +28,12 @@ namespace Nekoyume.Game.Factory
             var objectPool = Game.instance.Stage.objectPool;
             var enemy = objectPool.Get<EnemyPlayer>(position);
             if (!enemy)
+            {
                 throw new NotFoundComponentException<EnemyPlayer>();
+            }
 
             var player = Game.instance.Stage.GetPlayer();
-            enemy.Set(spawnCharacter, player,true);
+            enemy.Set(spawnCharacter, player, true);
 
             return enemy;
         }
@@ -40,7 +44,9 @@ namespace Nekoyume.Game.Factory
             var objectPool = Game.instance.Stage.objectPool;
             var enemy = objectPool.Get<PrologueCharacter>(new Vector2(position.x + offset, position.y));
             if (!enemy)
+            {
                 throw new NotFoundComponentException<PrologueCharacter>();
+            }
 
             enemy.Set(characterId, target);
 
@@ -50,7 +56,7 @@ namespace Nekoyume.Game.Factory
             }
 
             var effectPos = BuffHelper.GetDefaultBuffPosition();
-            var effect         = objectPool.Get<BattleSummonVFX>();
+            var effect = objectPool.Get<BattleSummonVFX>();
             var effectPosition = new Vector2(position.x + effectPos.x, position.y + effectPos.y);
             effect.gameObject.transform.position = effectPosition;
             effect.Play();
@@ -64,7 +70,9 @@ namespace Nekoyume.Game.Factory
             var objectPool = Game.instance.Stage.objectPool;
             var enemy = objectPool.Get<BreakthroughCharacter>(new Vector2(position.x + offset, position.y));
             if (!enemy)
+            {
                 throw new NotFoundComponentException<BreakthroughCharacter>();
+            }
 
             enemy.Set(characterId, target);
 

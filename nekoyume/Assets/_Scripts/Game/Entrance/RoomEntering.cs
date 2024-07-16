@@ -1,4 +1,5 @@
 using System.Collections;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
@@ -91,7 +92,6 @@ namespace Nekoyume.Game.Entrance
             {
                 try
                 {
-
 #if UNITY_ANDROID || UNITY_IOS
                     var shopListPopup = Widget.Find<ShopListPopup>();
                     if (shopListPopup.HasUnread)
@@ -100,7 +100,7 @@ namespace Nekoyume.Game.Entrance
                     }
 #endif
 
-                    var avatarInfo = Game.instance.SeasonPassServiceManager.AvatarInfo;
+                    var avatarInfo = ApiClients.Instance.SeasonPassServiceManager.AvatarInfo;
                     var seasonPassNewPopup = Widget.Find<SeasonPassNewPopup>();
                     if (seasonPassNewPopup.HasUnread && avatarInfo.HasValue &&
                         !avatarInfo.Value.IsPremium)

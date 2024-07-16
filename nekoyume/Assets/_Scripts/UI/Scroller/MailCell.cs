@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Scroller
 {
     using UniRx;
 
-    public class MailCell : RectCell<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
+    public class MailCell : RectCell<Mail, MailScroll.ContextModel>
     {
         [SerializeField]
         private Image iconImage = null;
@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Scroller
 
             button.Interactable = isNew;
             iconImage.overrideSprite = SpriteHelper.GetLocalMailIcon(_mail) ??
-                                       SpriteHelper.GetMailIcon(_mail.MailType);
+                SpriteHelper.GetMailIcon(_mail.MailType);
 
             content.text = await _mail.ToInfo();
             content.color = isNew

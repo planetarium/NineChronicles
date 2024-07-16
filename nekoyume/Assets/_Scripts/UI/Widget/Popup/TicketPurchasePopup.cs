@@ -95,7 +95,7 @@ namespace Nekoyume.UI
 
 
             var purchaseMessage = L10nManager.Localize("UI_TICKET_PURCHASE_LIMIT");
-            if(isMaxPurchaseInfinite)
+            if (isMaxPurchaseInfinite)
             {
                 purchaseCountText.gameObject.SetActive(true);
                 purchaseCountText.text = $"<size=150%>{purchasedCount}/∞</size>";
@@ -106,6 +106,7 @@ namespace Nekoyume.UI
                 purchaseCountText.gameObject.SetActive(false);
                 purchaseMessage = $"{purchaseMessage} {purchasedCount}/{maxPurchaseCount}";
             }
+
             purchaseText.text = purchaseMessage;
             purchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
 
@@ -127,6 +128,7 @@ namespace Nekoyume.UI
                         L10nManager.Localize("UI_SHOP"),
                         goToMarget);
                 }
+
                 Close(!enoughBalance);
             };
         }

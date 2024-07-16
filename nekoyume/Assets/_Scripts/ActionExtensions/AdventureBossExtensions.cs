@@ -8,8 +8,8 @@ namespace Nekoyume.ActionExtensions
     {
         public static string GetParsedName(this Investor investor)
         {
-            string pattern = "\"([^\"]+)\"";
-            Match match = Regex.Match(investor.Name, pattern);
+            var pattern = "\"([^\"]+)\"";
+            var match = Regex.Match(investor.Name, pattern);
             if (match.Success)
             {
                 return match.Groups[1].Value;

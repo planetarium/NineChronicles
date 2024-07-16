@@ -14,7 +14,7 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
     {
         private static readonly JsonSerializerOptions JsonSerializerOptions = new()
         {
-            WriteIndented = true,
+            WriteIndented = true
         };
 
         private string _host =

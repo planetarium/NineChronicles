@@ -98,6 +98,7 @@ namespace Nekoyume.UI.Module
             {
                 TryToEquip(equipment);
             }
+
             UpdateDim(elementalTypes);
         }
 
@@ -134,6 +135,7 @@ namespace Nekoyume.UI.Module
             {
                 TryToEquip(equipment);
             }
+
             UpdateDim(elementalTypes);
         }
 
@@ -227,19 +229,19 @@ namespace Nekoyume.UI.Module
             {
                 // Find the first slot which contains the same `non-fungible item`
                 slot = typeSlots.FirstOrDefault(e =>
-                            !e.IsEmpty &&
-                            e.Item is INonFungibleItem nonFungibleItem &&
-                            nonFungibleItem.NonFungibleId.Equals(equipment.NonFungibleId))
-                        // Find the first empty slot.
-                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
-                        // Find the first slot of `ElementalType` that is different from `elementalTypeToIgnore`.
-                        ?? (elementalTypeToIgnore != null
-                            ? typeSlots.FirstOrDefault(e =>
-                                !e.Item.ElementalType.Equals(elementalTypeToIgnore))
-                            : null)
-                        // Find the first slot with the lowest 'CP'.
-                        ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
-                            .First();
+                        !e.IsEmpty &&
+                        e.Item is INonFungibleItem nonFungibleItem &&
+                        nonFungibleItem.NonFungibleId.Equals(equipment.NonFungibleId))
+                    // Find the first empty slot.
+                    ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
+                    // Find the first slot of `ElementalType` that is different from `elementalTypeToIgnore`.
+                    ?? (elementalTypeToIgnore != null
+                        ? typeSlots.FirstOrDefault(e =>
+                            !e.Item.ElementalType.Equals(elementalTypeToIgnore))
+                        : null)
+                    // Find the first slot with the lowest 'CP'.
+                    ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable)e.Item))
+                        .First();
             }
             else
             {
@@ -266,8 +268,8 @@ namespace Nekoyume.UI.Module
             slot = slots.FirstOrDefault(e =>
                 !e.IsLock &&
                 !e.IsEmpty &&
-                ((INonFungibleItem) e.Item).NonFungibleId
-                .Equals(((INonFungibleItem) itemBase).NonFungibleId) &&
+                ((INonFungibleItem)e.Item).NonFungibleId
+                .Equals(((INonFungibleItem)itemBase).NonFungibleId) &&
                 e.Item.Equals(itemBase));
             return slot;
         }
@@ -283,7 +285,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        #region IEnumerable<EquipmentSlot>
+#region IEnumerable<EquipmentSlot>
 
         public IEnumerator<EquipmentSlot> GetEnumerator()
         {
@@ -295,7 +297,7 @@ namespace Nekoyume.UI.Module
             return GetEnumerator();
         }
 
-        #endregion
+#endregion
 
         private void UpdateSlots(int avatarLevel)
         {

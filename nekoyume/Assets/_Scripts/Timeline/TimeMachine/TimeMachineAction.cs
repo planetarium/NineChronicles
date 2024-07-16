@@ -5,6 +5,6 @@
         Marker = 0,
         JumpToTime = 1,
         JumpToMarker = 2,
-        Pause = 3,
+        Pause = 3
     }
 }

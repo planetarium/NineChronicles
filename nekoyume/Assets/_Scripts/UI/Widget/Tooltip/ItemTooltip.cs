@@ -97,7 +97,9 @@ namespace Nekoyume.UI
             SubmitWidget = () =>
             {
                 if (!submitButton.IsSubmittable)
+                {
                     return;
+                }
 
                 AudioController.PlayClick();
                 _onSubmit?.Invoke();
@@ -107,10 +109,7 @@ namespace Nekoyume.UI
             if (descriptionButton != null)
             {
                 _descriptionButtonRectTransform = descriptionButton.GetComponent<RectTransform>();
-                descriptionButton.onClick.AddListener(() =>
-                {
-                    acquisitionPlaceDescription.Show(panel, _descriptionButtonRectTransform);
-                });
+                descriptionButton.onClick.AddListener(() => { acquisitionPlaceDescription.Show(panel, _descriptionButtonRectTransform); });
             }
         }
 
@@ -140,7 +139,7 @@ namespace Nekoyume.UI
                 itemCount,
                 !Util.IsUsableItem(item) &&
                 (item.ItemType == ItemType.Equipment ||
-                 item.ItemType == ItemType.Costume));
+                    item.ItemType == ItemType.Costume));
 
             submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
@@ -171,7 +170,7 @@ namespace Nekoyume.UI
                 item.Count.Value,
                 !Util.IsUsableItem(item.ItemBase) &&
                 (item.ItemBase.ItemType == ItemType.Equipment ||
-                 item.ItemBase.ItemType == ItemType.Costume));
+                    item.ItemBase.ItemType == ItemType.Costume));
 
             submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
@@ -229,10 +228,10 @@ namespace Nekoyume.UI
 
             detail.Set(
                 item.ItemBase,
-                (int) item.Product.Quantity,
+                (int)item.Product.Quantity,
                 !Util.IsUsableItem(item.ItemBase) &&
                 (item.ItemBase.ItemType == ItemType.Equipment ||
-                 item.ItemBase.ItemType == ItemType.Costume));
+                    item.ItemBase.ItemType == ItemType.Costume));
             _onClose = onClose;
 
             scrollbar.value = 1f;
@@ -273,7 +272,7 @@ namespace Nekoyume.UI
                 (int)item.Product.Quantity,
                 !Util.IsUsableItem(item.ItemBase) &&
                 (item.ItemBase.ItemType == ItemType.Equipment ||
-                 item.ItemBase.ItemType == ItemType.Costume),
+                    item.ItemBase.ItemType == ItemType.Costume),
                 // it isn't implemented to get equipment.exp in the MarketService.
                 // so, it doesn't show the expText in the shop buy UI.
                 false);
@@ -300,7 +299,7 @@ namespace Nekoyume.UI
                 1,
                 !Util.IsUsableItem(item.ItemBase) &&
                 (item.ItemBase.ItemType == ItemType.Equipment ||
-                 item.ItemBase.ItemType == ItemType.Costume));
+                    item.ItemBase.ItemType == ItemType.Costume));
 
             submitButtonContainer.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;

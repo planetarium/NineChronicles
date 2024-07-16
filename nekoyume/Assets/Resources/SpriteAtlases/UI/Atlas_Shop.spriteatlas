@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 1024
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 0
+      m_TextureCompression: 1
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -115,6 +115,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f1b26d5cf0d82406992c76377df80415, type: 3}
   - {fileID: 21300000, guid: e668fd6c2bb3f403ab1f092d1b798252, type: 3}
   - {fileID: 21300000, guid: b823399c8d4d5485c8b8fad9f1e170b3, type: 3}
+  - {fileID: 21300000, guid: 4eb3a2ac3af590e478fa786cd6f4861d, type: 3}
   - {fileID: 21300000, guid: 8d588bcce5df614479a6cead4702daae, type: 3}
   - {fileID: 21300000, guid: df0e66dc89720402983e87564578ed97, type: 3}
   - {fileID: 21300000, guid: 558359dc5133443d28fbec9eec6d4fe6, type: 3}
@@ -126,6 +127,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 99c5f78d9d60a4b5385e12e79d30e8c9, type: 3}
   - {fileID: 21300000, guid: 0906929dd89eb4e03852f680b657ec35, type: 3}
   - {fileID: 21300000, guid: bb56b1dd931de4f6fbaae82298e417e9, type: 3}
+  - {fileID: 21300000, guid: 754249dd05ca05643853c33537880916, type: 3}
   - {fileID: 21300000, guid: 452723ed3d7a34919b996c897f3476b0, type: 3}
   - {fileID: 21300000, guid: 543a872e0e3b842578d7e9f53ff3c187, type: 3}
   - {fileID: 21300000, guid: e437033eed9a201469bf1382e0930dae, type: 3}
@@ -205,6 +207,7 @@ SpriteAtlas:
   - Shop_bg_06
   - icon_Cancle
   - UI_icon_check_04
+  - Common_TabBtn_Normal2
   - Icon_Shop_GoldenDust
   - Shop_bg_19
   - Main_rock_02
@@ -216,6 +219,7 @@ SpriteAtlas:
   - icon_Arrow
   - item_bg_Plusbg_notice
   - Shop_bg_10
+  - Common_TabBtn_Select2
   - UI_icon_check
   - Common_Btn_Normal
   - Shop_List_Bg_3_s

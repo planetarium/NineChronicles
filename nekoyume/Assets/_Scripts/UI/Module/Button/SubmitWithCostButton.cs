@@ -138,13 +138,19 @@ namespace Nekoyume.UI.Module
             TMP_Text textField,
             TMP_Text submitField,
             bool isEnough,
-            int cost) => SetText(textField, submitField, isEnough, cost.ToString(CultureInfo.InvariantCulture));
+            int cost)
+        {
+            SetText(textField, submitField, isEnough, cost.ToString(CultureInfo.InvariantCulture));
+        }
 
         private static void SetText(
             TMP_Text textField,
             TMP_Text submitField,
             bool isEnough,
-            BigInteger cost) => SetText(textField, submitField, isEnough, cost.ToString(CultureInfo.InvariantCulture));
+            BigInteger cost)
+        {
+            SetText(textField, submitField, isEnough, cost.ToString(CultureInfo.InvariantCulture));
+        }
 
         private static void SetText(
             TMP_Text textField,
@@ -162,12 +168,15 @@ namespace Nekoyume.UI.Module
             TMP_Text submitField,
             bool isEnough,
             int cost,
-            int reserve) => SetText(
-            textField,
-            submitField,
-            isEnough,
-            cost.ToString(CultureInfo.InvariantCulture),
-            reserve.ToString(CultureInfo.InvariantCulture));
+            int reserve)
+        {
+            SetText(
+                textField,
+                submitField,
+                isEnough,
+                cost.ToString(CultureInfo.InvariantCulture),
+                reserve.ToString(CultureInfo.InvariantCulture));
+        }
 
         private static void SetText(
             TMP_Text textField,

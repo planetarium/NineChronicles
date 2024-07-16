@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class AdventureBossOpenInfoPopup : PopupWidget
     {
         [SerializeField] private ConditionalButton goToAdventureBossButton;
@@ -29,7 +30,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.AdventureBossPopUp);
-            goToAdventureBossButton.gameObject.SetActive(!BattleRenderer.Instance.IsOnBattle && !Widget.Find<LoadingScreen>().isActiveAndEnabled);
+            goToAdventureBossButton.gameObject.SetActive(!BattleRenderer.Instance.IsOnBattle && !Find<LoadingScreen>().isActiveAndEnabled);
         }
 
         public void OnClickGoToAdventureBoss()
@@ -37,13 +38,13 @@ namespace Nekoyume.UI
             if (BattleRenderer.Instance.IsOnBattle)
             {
                 OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_ADVENTUREBOSS_OPEN_FAILED_WHILE_BATTLE"),
-                        NotificationCell.NotificationType.Alert);
+                    MailType.System,
+                    L10nManager.Localize("UI_ADVENTUREBOSS_OPEN_FAILED_WHILE_BATTLE"),
+                    NotificationCell.NotificationType.Alert);
                 return;
             }
 
-            var e = Widget.Find<AdventureBoss>();
+            var e = Find<AdventureBoss>();
             e.CloseWithOtherWidgets();
             Find<WorldMap>().Show(true);
             e.Show();

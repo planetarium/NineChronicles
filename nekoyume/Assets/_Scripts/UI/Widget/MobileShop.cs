@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -40,14 +41,11 @@ namespace Nekoyume.UI
 
         private bool _isInitializedObj;
 
-        private readonly Dictionary<string, IAPShopProductCellView> _allProductObjs =
-            new Dictionary<string, IAPShopProductCellView>();
+        private readonly Dictionary<string, IAPShopProductCellView> _allProductObjs = new();
 
-        private readonly Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory =
-            new Dictionary<string, List<IAPShopProductCellView>>();
+        private readonly Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory = new();
 
-        private readonly Dictionary<string, IAPCategoryTab> _allCategoryTab =
-            new Dictionary<string, IAPCategoryTab>();
+        private readonly Dictionary<string, IAPCategoryTab> _allCategoryTab = new();
 
         private Toggle _recommendedToggle;
 
@@ -67,7 +65,7 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(false);
                 AudioController.PlayClick();
             });
-            
+
             CloseWidget = () =>
             {
                 Close();
@@ -170,6 +168,7 @@ namespace Nekoyume.UI
                         "UI_OK",
                         true);
                 }
+
                 return;
             }
 
@@ -291,6 +290,7 @@ namespace Nekoyume.UI
                             NcDebug.LogError(e.Message);
                             NcDebug.LogError($"Failed to refresh localized: {product.Sku}");
                         }
+
                         _allProductObjs.Add(product.Sku, productObj);
                     }
 
@@ -310,7 +310,7 @@ namespace Nekoyume.UI
 
         public static async Task LoadL10Ns()
         {
-            MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
+            MOBILE_L10N_SCHEMA = await ApiClients.Instance.IAPServiceManager.L10NAsync();
             await UniTask.SwitchToMainThread();
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
@@ -318,7 +318,7 @@ namespace Nekoyume.UI
 
         public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
         {
-            return await Game.Game.instance.IAPServiceManager
+            return await ApiClients.Instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
         }
 
@@ -369,6 +369,7 @@ namespace Nekoyume.UI
             {
                 item.gameObject.SetActive(true);
             }
+
             emptyCategoryPannel.SetActive(buyableItems.Count() == 0);
 
             iAPShopDynamicGridLayout.Refresh();

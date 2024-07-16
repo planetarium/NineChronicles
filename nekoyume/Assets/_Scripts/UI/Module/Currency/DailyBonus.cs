@@ -17,7 +17,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.UI.Scroller;
+    using Scroller;
     using UniRx;
 
     public class DailyBonus : AlphaAnimateModule
@@ -46,10 +46,10 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Animator animator = null;
 
-        [SerializeField, CanBeNull]
+        [SerializeField][CanBeNull]
         private ActionPoint actionPoint = null;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
         private bool _isFull;
@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module
         private static readonly int IsFull = Animator.StringToHash("IsFull");
         private static readonly int GetReward = Animator.StringToHash("GetReward");
 
-        #region Mono
+#region Mono
 
         private void Awake()
         {
@@ -96,7 +96,7 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
-        #endregion
+#endregion
 
         private void SetBlockIndex(long blockIndex, bool useAnimation)
         {
@@ -208,6 +208,7 @@ namespace Nekoyume.UI.Module
             {
                 GameConfigStateSubject.ActionPointState.Remove(address);
             }
+
             GameConfigStateSubject.ActionPointState.Add(address, true);
 
             StartCoroutine(CoGetDailyRewardAnimation());

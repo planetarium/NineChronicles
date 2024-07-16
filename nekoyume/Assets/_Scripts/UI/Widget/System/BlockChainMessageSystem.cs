@@ -16,7 +16,7 @@ namespace Nekoyume.UI
             Off
         }
 
-        private static readonly string[] AnimationTextAtlas = {".", "..", "..."};
+        private static readonly string[] AnimationTextAtlas = { ".", "..", "..." };
         private static readonly int AnimationTextAtlasLength = AnimationTextAtlas.Length;
 
         public GameObject panel;
@@ -61,7 +61,11 @@ namespace Nekoyume.UI
 
             if (_currentPanelAnimationState == PanelAnimationState.On)
             {
-                if (!panel.activeSelf) panel.SetActive(true);
+                if (!panel.activeSelf)
+                {
+                    panel.SetActive(true);
+                }
+
                 _panelAnimator.Play("Show");
                 UpdateAnimation();
             }

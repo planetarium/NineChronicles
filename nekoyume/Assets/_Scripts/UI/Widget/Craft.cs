@@ -94,13 +94,15 @@ namespace Nekoyume.UI
         private const string EquipmentSubRecipeTabs = "Recipe/EquipmentSubRecipeTab";
 
         private static readonly int EquipmentClick = Animator.StringToHash("EquipmentClick");
+
         private static readonly int ConsumableClick = Animator.StringToHash("ConsumableClick");
+
         // Play toggle animation except the first time when show with toggle index.
         private bool _canPlayToggleAnimation;
 
         private bool _isTutorial;
 
-        private List<IDisposable> _disposables = new List<IDisposable>();
+        private List<IDisposable> _disposables = new();
 
         private Address _currentAvatarAddress;
 
@@ -237,7 +239,7 @@ namespace Nekoyume.UI
             ShowWithToggleIndex(0, ignoreShowAnimation);
 
             if (!TableSheets.Instance.EquipmentItemRecipeSheet
-                    .TryGetValue(equipmentRecipeId, out var row))
+                .TryGetValue(equipmentRecipeId, out var row))
             {
                 return;
             }
@@ -311,7 +313,7 @@ namespace Nekoyume.UI
             }
 
             if (!AudioController.instance.CurrentPlayingMusicName
-                    .Equals(AudioController.MusicCode.Workshop))
+                .Equals(AudioController.MusicCode.Workshop))
             {
                 AudioController.instance
                     .PlayMusic(AudioController.MusicCode.Workshop);
@@ -361,7 +363,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        # region Invoke from animation
+# region Invoke from animation
 
         private void ShowEquipment()
         {
@@ -379,7 +381,6 @@ namespace Nekoyume.UI
             {
                 consumableSubRecipeView.ResetSelectedIndex();
                 recipeScroll.ShowAsFood(StatType.HP, true);
-
             }
             else if (eventConsumableToggle.isOn)
             {
@@ -391,7 +392,7 @@ namespace Nekoyume.UI
             _canPlayToggleAnimation = true;
         }
 
-        # endregion Invoke from animation
+# endregion Invoke from animation
 
         private void SetSubRecipe(SheetRow<int> row)
         {
@@ -547,7 +548,7 @@ namespace Nekoyume.UI
                 SubrecipeId = recipeInfo.SubRecipeId ?? 0,
                 CostCrystal = recipeInfo.CostCrystal,
                 RequiredBlockMin = requiredBlock,
-                RequiredBlockMax = requiredBlock + additionalBlock,
+                RequiredBlockMax = requiredBlock + additionalBlock
             };
 
             if (_isTutorial)
@@ -557,10 +558,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                Find<PetSelectionPopup>().Show(craftInfo, petId =>
-                {
-                    CombinationEquipmentAction(recipeInfo, petId);
-                });
+                Find<PetSelectionPopup>().Show(craftInfo, petId => { CombinationEquipmentAction(recipeInfo, petId); });
             }
         }
 
@@ -626,7 +624,7 @@ namespace Nekoyume.UI
                                 ["MaterialCount"] = materialCount,
                                 ["BurntCrystal"] = (long)recipeInfo.CostCrystal.MajorUnit,
                                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                             });
 
                         var evt = new AirbridgeEvent("Replace_Combination_Material");
@@ -674,8 +672,8 @@ namespace Nekoyume.UI
         private void CombinationConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
         {
             if (!consumableSubRecipeView.CheckSubmittable(
-                    out var errorMessage,
-                    out var slotIndex))
+                out var errorMessage,
+                out var slotIndex))
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -704,8 +702,8 @@ namespace Nekoyume.UI
         private void EventConsumableItemCraftsAction(SubRecipeView.RecipeInfo recipeInfo)
         {
             if (!eventConsumableSubRecipeView.CheckSubmittable(
-                    out var errorMessage,
-                    out var slotIndex))
+                out var errorMessage,
+                out var slotIndex))
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -785,7 +783,8 @@ namespace Nekoyume.UI
             var format = L10nManager.Localize("UI_COST_BLOCK");
             var quote = string.Format(format, blockIndex);
             var itemType = itemBase.ItemType != ItemType.Material
-                ? itemBase.ItemType : ItemType.Consumable;
+                ? itemBase.ItemType
+                : ItemType.Consumable;
             loadingScreen.AnimateNPC(itemType switch
             {
                 ItemType.Equipment => CombinationLoadingScreen.SpeechBubbleItemType.Equipment,

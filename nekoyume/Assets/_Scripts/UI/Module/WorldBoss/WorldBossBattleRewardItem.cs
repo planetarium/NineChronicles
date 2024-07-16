@@ -72,8 +72,8 @@ namespace Nekoyume.UI.Module.WorldBoss
                             ? $"{row.RateMin}%~{row.RateMax}%"
                             : $"{row.RateMax}%";
 
-                        var rate = userCount > 0 ? (int)(((float)myRank / userCount) * 100) : 0;
-                        var value = myRank > 100 && (row.RateMin <= rate && rate <= row.RateMax);
+                        var rate = userCount > 0 ? (int)((float)myRank / userCount * 100) : 0;
+                        var value = myRank > 100 && row.RateMin <= rate && rate <= row.RateMax;
                         selected.SetActive(value);
                     }
                     else
@@ -82,6 +82,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                         var value = row.RankingMin <= myRank && myRank <= row.RankingMax;
                         selected.SetActive(value);
                     }
+
                     break;
             }
 

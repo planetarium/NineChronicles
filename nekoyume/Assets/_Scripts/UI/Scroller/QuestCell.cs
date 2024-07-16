@@ -15,7 +15,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
-    using Nekoyume.L10n;
+    using L10n;
     using UniRx;
 
     public class QuestCell : RectCell<QuestModel, QuestScroll.ContextModel>
@@ -48,9 +48,9 @@ namespace Nekoyume.UI.Scroller
 
         public event System.Action onClickSubmitButton = null;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
-        #region Mono
+#region Mono
 
         private void Awake()
         {
@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Scroller
                 L10nManager.Localize("UI_PROGRESS"));
         }
 
-        #endregion
+#endregion
 
         public override void UpdateContent(QuestModel itemData)
         {
@@ -92,16 +92,17 @@ namespace Nekoyume.UI.Scroller
                         .transform.position);
                 }
             }
+
             ShowAsComplete();
             if (lastVFX != null)
             {
                 lastVFX.OnFinished = () =>
                 {
-                    var rectTransform = (RectTransform) transform;
+                    var rectTransform = (RectTransform)transform;
 
                     questWidget.DisappearAnimation(
                         Mathf.FloorToInt(-rectTransform.anchoredPosition.y /
-                                         rectTransform.sizeDelta.y));
+                            rectTransform.sizeDelta.y));
                     lastVFX.OnFinished = null;
                 };
             }

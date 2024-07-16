@@ -35,6 +35,7 @@ namespace Nekoyume.UI
         [SerializeField] private ResultVideoClip normalVideoClip;
         [SerializeField] private ResultVideoClip goldenVideoClip;
         [SerializeField] private ResultVideoClip rubyVideoClip;
+        [SerializeField] private ResultVideoClip emeraldVideoClip;
 
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
@@ -194,7 +195,7 @@ namespace Nekoyume.UI
             }
 
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
-            drawButton.Subscribe(data, summonCount, GoToMarket,_disposables);
+            drawButton.Subscribe(data, summonCount, GoToMarket, _disposables);
             drawButton.gameObject.SetActive(true);
         }
 
@@ -258,6 +259,7 @@ namespace Nekoyume.UI
                 CostType.SilverDust => normalVideoClip,
                 CostType.GoldDust => goldenVideoClip,
                 CostType.RubyDust => rubyVideoClip,
+                CostType.EmeraldDust => emeraldVideoClip,
                 _ => null
             };
         }

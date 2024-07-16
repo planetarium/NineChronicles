@@ -22,7 +22,7 @@ namespace Nekoyume.UI
         public void Set(int current, int max)
         {
             SetText($"{current} / {max}");
-            SetValue((float) current / max);
+            SetValue((float)current / max);
         }
 
         protected void SetText(string text)

@@ -146,7 +146,7 @@ namespace Nekoyume.UI
             contentText.text = content;
             actionButtonText.text = buttonText;
             infoText.infoText.gameObject.SetActive(infoText.infoText.text != string.Empty);
-            infoText.container.SetActive(false);  // set default
+            infoText.container.SetActive(false); // set default
             subItem.container.SetActive(false);
             blockGauge.container.SetActive(false);
             actionButton.gameObject.SetActive(enableActionButton);
@@ -188,7 +188,7 @@ namespace Nekoyume.UI
             conditionalButtonBrown.gameObject.SetActive(true);
             conditionalButtonYellow.gameObject.SetActive(true);
 
-            const int subItemId = 500000;  // APStone
+            const int subItemId = 500000; // APStone
             subItem.container.SetActive(true);
             subItem.icon.sprite = SpriteHelper.GetItemIcon(subItemId);
             subItem.countText.text =
@@ -207,6 +207,7 @@ namespace Nekoyume.UI
                 {
                     return;
                 }
+
                 Find<MaterialNavigationPopup>().ShowRuneStone(runeData.id);
             });
 
@@ -289,7 +290,7 @@ namespace Nekoyume.UI
                             Find<PatrolRewardPopup>().Show();
                         };
                     }
-                    else  // All other dusts
+                    else // All other dusts
                     {
                         buttonText = L10nManager.Localize("UI_SHOP");
                         callback = () =>
@@ -304,6 +305,7 @@ namespace Nekoyume.UI
                             Find<ShopBuy>().Show();
                         };
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(costType), costType, null);

@@ -34,6 +34,7 @@ namespace Nekoyume.UI.Scroller
         public IObservable<RuneStoneEnhancementInventoryItem> OnClick => Context.OnClick;
 
         protected override FancyCell<RuneStoneEnhancementInventoryItem, ContextModel> CellTemplate => cellTemplate;
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -41,4 +42,3 @@ namespace Nekoyume.UI.Scroller
         }
     }
 }
-

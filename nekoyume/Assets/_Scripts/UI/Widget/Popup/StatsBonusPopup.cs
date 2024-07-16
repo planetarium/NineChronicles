@@ -46,10 +46,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 CloseWidget.Invoke();
             });
-            CloseWidget = () =>
-            {
-                Close(true);
-            };
+            CloseWidget = () => { Close(true); };
 
             goToCollectionButton.onClick.AddListener(() =>
             {
@@ -88,7 +85,9 @@ namespace Nekoyume.UI
         private void GoToCollection()
         {
             var clearedStageId = States.Instance.CurrentAvatarState
-                .worldInformation.TryGetLastClearedStageId(out var id) ? id : 1;
+                .worldInformation.TryGetLastClearedStageId(out var id)
+                ? id
+                : 1;
             const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.TutorialEnd;
             if (clearedStageId < requiredStage)
             {
@@ -114,7 +113,9 @@ namespace Nekoyume.UI
         private void GoToRune()
         {
             var clearedStageId = States.Instance.CurrentAvatarState
-                .worldInformation.TryGetLastClearedStageId(out var id) ? id : 1;
+                .worldInformation.TryGetLastClearedStageId(out var id)
+                ? id
+                : 1;
             const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.Rune;
             if (clearedStageId < requiredStage)
             {

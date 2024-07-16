@@ -13,14 +13,13 @@ namespace Nekoyume
 {
     public static class SkillExtensions
     {
-        private static readonly Dictionary<int, List<StatBuffSheet.Row>> SkillBuffs =
-            new Dictionary<int, List<StatBuffSheet.Row>>();
+        private static readonly Dictionary<int, List<StatBuffSheet.Row>> SkillBuffs = new();
 
         public static string GetLocalizedName(this SkillSheet.Row row)
         {
             if (row is null)
             {
-                throw new System.ArgumentNullException(nameof(row));
+                throw new ArgumentNullException(nameof(row));
             }
 
             return L10nManager.Localize($"SKILL_NAME_{row.Id}");
@@ -37,6 +36,7 @@ namespace Nekoyume
             {
                 sb.AppendLine($"{L10nManager.Localize("UI_SKILL_POWER")}: {skill.Power}");
             }
+
             sb.Append($"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%");
 
             return sb.ToString();
@@ -72,7 +72,7 @@ namespace Nekoyume
         {
             var sheets = TableSheets.Instance;
 
-            if(sheets.SkillSheet.TryGetValue(skillId,out var skillSheetRow))
+            if (sheets.SkillSheet.TryGetValue(skillId, out var skillSheetRow))
             {
                 switch (skillSheetRow.SkillCategory)
                 {
@@ -82,11 +82,12 @@ namespace Nekoyume
                         return $"({multiplierText} {referencedStatType})";
                     case SkillCategory.Focus:
                     case SkillCategory.Dispel:
-                        if(sheets.SkillActionBuffSheet.TryGetValue(skillId, out var skillActionBuffSheetRow) &&
-                            sheets.ActionBuffSheet.TryGetValue(skillActionBuffSheetRow.BuffIds.First(),out var actionBuffSheetRow))
+                        if (sheets.SkillActionBuffSheet.TryGetValue(skillId, out var skillActionBuffSheetRow) &&
+                            sheets.ActionBuffSheet.TryGetValue(skillActionBuffSheetRow.BuffIds.First(), out var actionBuffSheetRow))
                         {
                             return $"{actionBuffSheetRow.Chance}%";
                         }
+
                         break;
                     default:
                         break;

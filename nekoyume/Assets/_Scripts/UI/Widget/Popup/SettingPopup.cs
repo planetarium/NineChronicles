@@ -122,7 +122,7 @@ namespace Nekoyume.UI
 
         private PrivateKey _privateKey;
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -158,7 +158,7 @@ namespace Nekoyume.UI
                 var cachedPassphrase = KeyManager.GetCachedPassphrase(
                     agent.Address,
                     Util.AesDecrypt,
-                    defaultValue: string.Empty);
+                    string.Empty);
                 if (cachedPassphrase.Equals(string.Empty))
                 {
                     Find<LoginSystem>().ShowResetPassword();
@@ -171,7 +171,7 @@ namespace Nekoyume.UI
 
             deleteAccountButton.OnClickAsObservable().Subscribe(_ =>
             {
-                var confirm = Widget.Find<ConfirmPopup>();
+                var confirm = Find<ConfirmPopup>();
                 confirm.CloseCallback = result =>
                 {
                     if (result == ConfirmResult.No)
@@ -240,7 +240,7 @@ namespace Nekoyume.UI
 
         private void InitResolution()
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             var options = settings.Resolutions
                 .Select(resolution => $"{resolution.Width} x {resolution.Height}").ToList();
             resolutionDropdown.onValueChanged.AddListener(SetResolution);
@@ -251,7 +251,7 @@ namespace Nekoyume.UI
             windowedToggle.onValueChanged.AddListener(SetWindowed);
         }
 
-        #endregion
+#endregion
 
         public override void Show(bool ignoreStartAnimation = false)
         {
@@ -270,11 +270,12 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-
                     addressContentInputField.text = agent.Address.ToString();
                     privateKeyContentInputField.text = agent.PrivateKey.ToHexWithZeroPaddings();
                 }
             }
+
+            adventurebossPushToggle.transform.parent.gameObject.SetActive(!Game.LiveAsset.GameConfig.IsKoreanBuild);
 
             var muteString = L10nManager.Localize("UI_MUTE_AUDIO");
             foreach (var text in muteTexts)
@@ -282,7 +283,7 @@ namespace Nekoyume.UI
                 text.text = muteString;
             }
 
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             UpdateSoundSettings();
 
             volumeMasterSlider.value = settings.volumeMaster;
@@ -325,14 +326,14 @@ namespace Nekoyume.UI
 
         public void RevertSettings()
         {
-            Nekoyume.Settings.Instance.ReloadSettings();
+            Settings.Instance.ReloadSettings();
             UpdateSoundSettings();
             Close(true);
         }
 
         public void UpdateSoundSettings()
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             SetVolumeMaster(settings.volumeMaster);
             SetVolumeMasterMute(settings.isVolumeMasterMuted);
         }
@@ -369,7 +370,7 @@ namespace Nekoyume.UI
 
         private void SetVolumeMaster(float value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.volumeMaster = value;
             AudioListener.volume = settings.MasterVolume;
             UpdateVolumeMasterText();
@@ -377,7 +378,7 @@ namespace Nekoyume.UI
 
         private void SetVolumeMasterMute(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isVolumeMasterMuted = value;
             AudioListener.volume = value ? 0f : settings.volumeMaster;
             UpdateVolumeMasterText();
@@ -393,76 +394,76 @@ namespace Nekoyume.UI
 
         private void SetVolumeSfx(float value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.volumeSfx = value;
         }
 
         private void SetVolumeSfxMute(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isVolumeSfxMuted = value;
         }
 
         public void SetResolution(int index)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.resolutionIndex = index;
             settings.ApplyCurrentResolution();
         }
 
         public void SetWindowed(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isWindowed = value;
             settings.ApplyCurrentResolution();
         }
 
         public void SetPushEnabled(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isPushEnabled = value;
             pushDisabledImage.enabled = !value;
         }
 
         public void SetNightTimePush(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isNightTimePushEnabled = value;
         }
 
         public void SetRewardPush(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isRewardPushEnabled = value;
         }
 
         public void SetWorkshopPush(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isWorkshopPushEnabled = value;
         }
 
         public void SetArenaPush(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isArenaPushEnabled = value;
         }
 
         public void SetWorldbossPush(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isWorldbossPushEnabled = value;
         }
 
         public void SetPatrolRewardPush(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isPatrolRewardPushEnabled = value;
         }
 
         private void SetAdventureBossPush(bool value)
         {
-            var settings = Nekoyume.Settings.Instance;
+            var settings = Settings.Instance;
             settings.isAdventureBossPushEnabled = value;
         }
 

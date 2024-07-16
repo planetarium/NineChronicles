@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Scroller
             Notification,
             Alert,
             UnlockCondition,
-            RuneAcquisition,
+            RuneAcquisition
         }
 
         public class ViewModel
@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Scroller
 
         private Coroutine _coCheckCompleteOfAnimation;
 
-        private readonly List<IDisposable> _disposablesForSetContext = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetContext = new();
 
         private void OnDisable()
         {
@@ -146,9 +146,7 @@ namespace Nekoyume.UI.Scroller
             runeAcquisitionContent.root
                 .SetActive(_viewModel.notificationType == NotificationType.RuneAcquisition);
 
-            var iconSprite = _viewModel.notificationType == NotificationType.UnlockCondition ?
-                Resources.Load<Sprite>("UI/Icons/Mail/icon_mail_unlockCondition") :
-                SpriteHelper.GetMailIcon(_viewModel.mailType);
+            var iconSprite = _viewModel.notificationType == NotificationType.UnlockCondition ? Resources.Load<Sprite>("UI/Icons/Mail/icon_mail_unlockCondition") : SpriteHelper.GetMailIcon(_viewModel.mailType);
 
             switch (_viewModel.notificationType)
             {

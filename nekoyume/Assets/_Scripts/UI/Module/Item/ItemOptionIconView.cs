@@ -49,8 +49,8 @@ namespace Nekoyume.UI.Module
             _uiHsvModifier.enabled = true;
             _foreground.color = _so.skillForegroundColor;
         }
-        
-        #region Invoke from Animation
+
+#region Invoke from Animation
 
         public void OnAnimatorStateBeginning(string stateName)
         {
@@ -66,9 +66,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void OnRequestPlaySFX(string sfxCode) =>
+        public void OnRequestPlaySFX(string sfxCode)
+        {
             AudioController.instance.PlaySfx(sfxCode);
+        }
 
-        #endregion
+#endregion
     }
 }

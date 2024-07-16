@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using Nekoyume.ApiClient;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -18,11 +19,12 @@ namespace Nekoyume.UI
         {
             get
             {
-                string seasonId = string.Empty;
-                if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+                var seasonId = string.Empty;
+                if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
                 {
-                    seasonId = Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData.Id.ToString();
+                    seasonId = ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData.Id.ToString();
                 }
+
                 return $"{LastReadingDayKey}{seasonId}";
             }
         }
@@ -30,29 +32,25 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            
+
             PlayerPrefs.SetString(LastReadingDayBySeasonId, DateTime.Today.ToString(DateTimeFormat));
         }
 
-        public bool HasUnread
-        {
-            get
-            {
-                return !PlayerPrefs.HasKey(LastReadingDayBySeasonId);
-            }
-        }
+        public bool HasUnread => !PlayerPrefs.HasKey(LastReadingDayBySeasonId);
 
         public void OnSeasonPassBtnClick()
         {
-            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData == null)
+            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData == null)
             {
                 return;
             }
-            if (Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value == null)
+
+            if (ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value == null)
             {
                 OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
                 return;
             }
+
             base.Close();
             Find<SeasonPass>().Show();
         }

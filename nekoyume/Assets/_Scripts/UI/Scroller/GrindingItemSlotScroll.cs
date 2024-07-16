@@ -14,7 +14,7 @@ namespace Nekoyume.UI.Scroller
     {
         public class ContextModel : GridScrollDefaultContext
         {
-            public readonly Subject<InventoryItem> OnClick = new Subject<InventoryItem>();
+            public readonly Subject<InventoryItem> OnClick = new();
 
             public override void Dispose()
             {

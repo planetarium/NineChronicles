@@ -15,9 +15,11 @@ namespace Nekoyume
         /// <param name="begin">"yyyy-MM-ddTHH:mm:ss"</param>
         /// <param name="end">"yyyy-MM-ddTHH:mm:ss"</param>
         /// <returns></returns>
-        public static bool IsInTime(this DateTime value, string begin, string end) =>
-            value.IsInTime(
+        public static bool IsInTime(this DateTime value, string begin, string end)
+        {
+            return value.IsInTime(
                 DateTime.ParseExact(begin, "yyyy-MM-ddTHH:mm:ss", null),
                 DateTime.ParseExact(end, "yyyy-MM-ddTHH:mm:ss", null));
+        }
     }
 }

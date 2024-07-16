@@ -15,7 +15,7 @@ namespace Nekoyume.Helper
         {
             TextEditor.text = value;
             TextEditor.SelectAll();
-            TextEditor.Copy();   
+            TextEditor.Copy();
         }
     }
 }

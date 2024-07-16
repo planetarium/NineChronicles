@@ -18,9 +18,11 @@ namespace Planetarium.Nekoyume.Editor
     public static class ReportAnything
     {
         [MenuItem("Tools/Report Anything/Check the shop items is made with mimisbrunnr recipe", true)]
-        public static bool ShopItemCheckMimisbrunnrReportValidation() =>
-            Application.isPlaying &&
-            Game.instance is { };
+        public static bool ShopItemCheckMimisbrunnrReportValidation()
+        {
+            return Application.isPlaying &&
+                Game.instance is not null;
+        }
 
         [MenuItem("Tools/Report Anything/Check the shop items is made with mimisbrunnr recipe")]
         public static void ShopItemCheckMimisbrunnrReport()
@@ -71,15 +73,15 @@ namespace Planetarium.Nekoyume.Editor
             var iSheetType = typeof(ISheet);
             var sheetTypes = Assembly.GetAssembly(iSheetType).GetTypes()
                 .Where(type => type.IsClass &&
-                               !type.IsAbstract &&
-                               iSheetType.IsAssignableFrom(type))
+                    !type.IsAbstract &&
+                    iSheetType.IsAssignableFrom(type))
                 .ToArray();
             var sb = new StringBuilder("========== All of sheet addresses ==========\n");
             for (var i = 0; i < sheetTypes.Length; i++)
             {
                 var sheetType = sheetTypes[i];
                 sb.AppendLine($"[{i + 1:000}] {sheetType.Name,40}:" +
-                              $" {Addresses.GetSheetAddress(sheetType.Name).ToString()}");
+                    $" {Addresses.GetSheetAddress(sheetType.Name).ToString()}");
             }
 
             NcDebug.Log(sb.ToString());

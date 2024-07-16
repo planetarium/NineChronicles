@@ -20,12 +20,14 @@ namespace Nekoyume
             fullCostume = inventory.Costumes.FirstOrDefault(e =>
                 e.ItemSubType == ItemSubType.FullCostume &&
                 e.Equipped);
-            return fullCostume is { };
+            return fullCostume is not null;
         }
 
-        public static int GetArmorIdForPortrait(this AvatarState avatarState) =>
-            TryGetEquippedFullCostume(avatarState, out var fullCostume)
+        public static int GetArmorIdForPortrait(this AvatarState avatarState)
+        {
+            return TryGetEquippedFullCostume(avatarState, out var fullCostume)
                 ? fullCostume.Id
                 : avatarState.GetArmorId();
+        }
     }
 }

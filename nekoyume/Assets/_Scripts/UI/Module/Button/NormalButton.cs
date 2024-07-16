@@ -25,9 +25,9 @@ namespace Nekoyume.UI.Module
 
         private int _originalSortingOrderOffset;
 
-        public readonly Subject<NormalButton> OnClick = new Subject<NormalButton>();
+        public readonly Subject<NormalButton> OnClick = new();
 
-        #region Mono
+#region Mono
 
         protected virtual void Awake()
         {
@@ -65,7 +65,7 @@ namespace Nekoyume.UI.Module
             sortingGroup.sortingLayerName = "UI";
         }
 
-        #endregion
+#endregion
 
         public void Show()
         {

@@ -19,7 +19,7 @@ namespace Nekoyume
         [SerializeField]
         private ConditionalCostButton registerButton;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         // It's a function for legacy. You must delete it after 100380
         public void Set(

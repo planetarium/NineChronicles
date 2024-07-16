@@ -154,8 +154,7 @@ namespace Nekoyume.UI.Module
             var isUsable = Util.IsUsableItem(itemBase);
             var level = Util.GetItemRequirementLevel(itemBase);
             descriptionArea.levelLimitText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", level);
-            descriptionArea.levelLimitText.color = isUsable ?
-                Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
+            descriptionArea.levelLimitText.color = isUsable ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
             descriptionArea.levelLimitGameObject.SetActive(level > 0);
             descriptionArea.crystalGameObject.SetActive(itemBase.ItemType == ItemType.Equipment);
 
@@ -233,7 +232,7 @@ namespace Nekoyume.UI.Module
 
                     var stats = statsMap.GetDecimalStats(true).ToList();
                     var usableStatCount = stats.Count;
-                    for(var i = 0; i < statViewList.Count; i++)
+                    for (var i = 0; i < statViewList.Count; i++)
                     {
                         var statView = statViewList[i];
                         if (i < usableStatCount)
@@ -281,7 +280,9 @@ namespace Nekoyume.UI.Module
             var statView = GetDisabledStatRow();
             if (statView.Equals(default) ||
                 statView.StatView is null)
+            {
                 throw new NotFoundComponentException<StatView>();
+            }
 
             statView.StatView.Show(model);
             var starImage = statView.StarImages.FirstOrDefault();
@@ -290,6 +291,7 @@ namespace Nekoyume.UI.Module
                 NcDebug.LogError("Failed to get star image for option.");
                 return;
             }
+
             starImage.SetActive(true);
         }
 
@@ -298,7 +300,10 @@ namespace Nekoyume.UI.Module
             var statView = GetDisabledStatRow();
             if (statView.Equals(default) ||
                 statView.StatView is null)
+            {
                 throw new NotFoundComponentException<StatView>();
+            }
+
             statView.StatView.Show(statType, value, true);
 
             for (var i = 0; i < count; ++i)

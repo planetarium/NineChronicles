@@ -44,7 +44,7 @@ namespace Nekoyume.EnumType
         Equipment,
         Food,
         Costume,
-        Stones,
+        Stones
     }
 
     public static class ItemSubTypeFilterExtension
@@ -72,10 +72,11 @@ namespace Nekoyume.EnumType
                     ItemSubTypeFilter.Hourglass,
                     ItemSubTypeFilter.ApStone,
                     ItemSubTypeFilter.RuneStone,
-                    ItemSubTypeFilter.PetSoulStone,
+                    ItemSubTypeFilter.PetSoulStone
                 };
             }
         }
+
         public static string TypeToString(this ItemSubTypeFilter type, bool useSell = false)
         {
             switch (type)
@@ -123,7 +124,7 @@ namespace Nekoyume.EnumType
                     return "PetSoulStone";
 
                 default:
-                    return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
+                    return ((ItemSubType)Enum.Parse(typeof(ItemSubType), type.ToString()))
                         .GetLocalizedString();
             }
         }
@@ -278,7 +279,7 @@ namespace Nekoyume.EnumType
             var row = TableSheets.Instance.ItemSheet[itemId];
             if (row.ItemType == ItemType.Consumable)
             {
-                var consumableRow = (ConsumableItemSheet.Row) row;
+                var consumableRow = (ConsumableItemSheet.Row)row;
                 foreach (var statMap in consumableRow.Stats)
                 {
                     switch (statMap.StatType)

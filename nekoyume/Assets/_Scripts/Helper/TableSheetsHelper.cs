@@ -14,7 +14,9 @@ namespace Nekoyume.Helper
             var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
             await monoBehaviour.StartCoroutineAsync(request);
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            {
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            }
 
             return InitializeInternal(addressableAssetsContainer.tableCsvAssets);
         }

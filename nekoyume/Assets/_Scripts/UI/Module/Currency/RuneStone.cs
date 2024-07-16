@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class RuneStone: AlphaAnimateModule
+    public class RuneStone : AlphaAnimateModule
     {
         [SerializeField]
         private Image iconImage;
@@ -46,6 +46,7 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
+
             Widget.Find<MaterialNavigationPopup>().ShowRuneStone(runeData.id);
         }
     }

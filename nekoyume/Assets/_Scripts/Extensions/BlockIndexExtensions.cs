@@ -25,8 +25,17 @@ namespace Nekoyume
             this long targetBlockIndex,
             long currentBlockIndex,
             int secondsPerBlock,
-            DateTime now) =>
-            BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, secondsPerBlock, now, "yyyy/MM/dd");
+            DateTime now)
+        {
+            return BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, secondsPerBlock, now, "yyyy/MM/dd");
+        }
+
+        public static string BlockIndexToDateTimeStringHour(
+            this long targetBlockIndex,
+            long currentBlockIndex)
+        {
+            return BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, LiveAssetManager.instance.GameConfig.SecondsPerBlock, DateTime.Now, "yyyy/MM/dd HH:mm");
+        }
 
         public static string BlockRangeToTimeSpanString(this long blockRange, bool limitUnit = false)
         {

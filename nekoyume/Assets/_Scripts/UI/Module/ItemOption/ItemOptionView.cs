@@ -57,10 +57,12 @@ namespace Nekoyume.UI.Module
             IsEmpty = string.IsNullOrEmpty(leftText) && string.IsNullOrEmpty(rightText);
         }
 
-        public void UpdateViewAsTotalAndPlusStat(StatType type, long totalValue, long plusValue) =>
+        public void UpdateViewAsTotalAndPlusStat(StatType type, long totalValue, long plusValue)
+        {
             UpdateView(
                 $"{type} {type.ValueToString(totalValue)}",
                 plusValue > 0 ? $"+{type.ValueToString(plusValue)}" : string.Empty);
+        }
 
         public void UpdateAsTotalAndPlusSkill(
             string skillName,
@@ -69,14 +71,19 @@ namespace Nekoyume.UI.Module
             decimal plusPower,
             decimal plusRatio,
             int plusChance,
-            string plusPowerString) =>
+            string plusPowerString)
+        {
             UpdateView(
                 $"{skillName} {totalPowerString} / {totalChance}%",
                 plusPower > 0 || plusRatio > 0 || plusChance > 0 ? $"+{plusPowerString} / +{plusChance}%" : string.Empty);
+        }
 
-        public virtual void UpdateToEmpty() => UpdateView(string.Empty, string.Empty);
+        public virtual void UpdateToEmpty()
+        {
+            UpdateView(string.Empty, string.Empty);
+        }
 
-        #region Invoke from Animation
+#region Invoke from Animation
 
         public void OnAnimatorStateBeginning(string stateName)
         {
@@ -92,10 +99,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void OnRequestPlaySFX(string sfxCode) =>
+        public void OnRequestPlaySFX(string sfxCode)
+        {
             AudioController.instance.PlaySfx(sfxCode);
+        }
 
-        #endregion
+#endregion
 
         protected static void UpdateText(TMP_Text textObject, string text)
         {

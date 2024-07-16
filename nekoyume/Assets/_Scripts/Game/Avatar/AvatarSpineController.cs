@@ -161,6 +161,7 @@ namespace Nekoyume.Game.Avatar
                             skeletonAnimation.gameObject.SetActive(value);
                         }
                     }
+
                     Destroy(_cachedWeaponVFX);
                 }
                 else
@@ -215,20 +216,21 @@ namespace Nekoyume.Game.Avatar
             }
 
             var skeletonAnimation = _parts[AvatarPartsType.body_front];
-            var weaponSlot        = skeletonAnimation.Skeleton.FindSlot(WeaponSlot);
-            var weaponSlotIndex   = weaponSlot == null ? -1 : weaponSlot.Data.Index;
-            var weaponSprite      = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
-            var newWeapon         = MakeAttachment(weaponSprite);
+            var weaponSlot = skeletonAnimation.Skeleton.FindSlot(WeaponSlot);
+            var weaponSlotIndex = weaponSlot == null ? -1 : weaponSlot.Data.Index;
+            var weaponSprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
+            var newWeapon = MakeAttachment(weaponSprite);
             skeletonAnimation.Skeleton.Data.DefaultSkin
                 .SetAttachment(weaponSlotIndex, WeaponSlot, newWeapon);
             skeletonAnimation.Skeleton.SetSlotsToSetupPose();
             SetVisibleBodyParts(AvatarPartsType.body_back, true);
             SetVisibleBodyParts(AvatarPartsType.body_front, false);
 
-            if(_prevWeaponObj == weaponVFXPrefab)
+            if (_prevWeaponObj == weaponVFXPrefab)
             {
                 return;
             }
+
             _prevWeaponObj = weaponVFXPrefab;
 
             Destroy(_cachedWeaponVFX);
@@ -256,18 +258,20 @@ namespace Nekoyume.Game.Avatar
                 {
                     return;
                 }
-                
+
                 if (_cachedAuraVFX.TryGetComponent(out AuraPrefabBase cachedAuraObject))
                 {
                     cachedAuraObject.Owner = owner;
                 }
+
                 return;
             }
+
             _prevAuraPrefab = auraVFXPrefab;
 
             Destroy(_cachedAuraVFX);
 
-            if(auraVFXPrefab == null)
+            if (auraVFXPrefab == null)
             {
                 auraPos.SetActive(false);
                 return;
@@ -287,7 +291,7 @@ namespace Nekoyume.Game.Avatar
         public void UpdateFullCostume(int index, bool isDcc)
         {
             _isActiveFullCostume = true;
-            var key   = $"{index}_SkeletonData";
+            var key = $"{index}_SkeletonData";
             var asset = ResourceManager.Instance.Load<SkeletonDataAsset>(key);
 
             if (asset == null)
@@ -324,12 +328,14 @@ namespace Nekoyume.Game.Avatar
             {
                 index = 10235001;
             }
+
             var s = SplitIndex(index);
             var preIndex = s[0] + s[4] + s[5] + s[6] + s[7];
             if (skinTone > 0)
             {
                 skinTone -= 1;
             }
+
             var skinName = $"{index}-{skinTone}";
 
             var key = $"body_skin_{preIndex}_SkeletonData";
@@ -370,19 +376,18 @@ namespace Nekoyume.Game.Avatar
 
                 if (removeWeapon)
                 {
-                    if (list.Any(x=> slot.ToString().Contains(x)))
+                    if (list.Any(x => slot.ToString().Contains(x)))
                     {
                         slot.Attachment = null;
                     }
                 }
                 else
                 {
-                    if (!list.Any(x=> slot.ToString().Contains(x)))
+                    if (!list.Any(x => slot.ToString().Contains(x)))
                     {
                         slot.Attachment = null;
                     }
                 }
-
             }
         }
 
@@ -416,6 +421,7 @@ namespace Nekoyume.Game.Avatar
             {
                 skinName = "40200001";
             }
+
             UpdateSkin(isActive, AvatarPartsType.hair_back, skinName);
         }
 
@@ -428,6 +434,7 @@ namespace Nekoyume.Game.Avatar
             {
                 skinName = "40200001";
             }
+
             UpdateSkin(isActive, AvatarPartsType.hair_front, skinName);
         }
 
@@ -440,6 +447,7 @@ namespace Nekoyume.Game.Avatar
             {
                 skinName = "40500001";
             }
+
             UpdateSkin(isActive, AvatarPartsType.tail, skinName);
         }
 
@@ -460,6 +468,7 @@ namespace Nekoyume.Game.Avatar
             {
                 skinName = "40300001";
             }
+
             UpdateSkin(isActive, AvatarPartsType.ear, skinName);
         }
 
@@ -485,7 +494,8 @@ namespace Nekoyume.Game.Avatar
             }
 
             var zero = index < 10 ? "0" : string.Empty;
-            var skinName = isDcc ? $"DCC_{zero}{index}" : $"{index}";;
+            var skinName = isDcc ? $"DCC_{zero}{index}" : $"{index}";
+            ;
             UpdateSkin(isActive, AvatarPartsType.ac_eye, skinName);
         }
 

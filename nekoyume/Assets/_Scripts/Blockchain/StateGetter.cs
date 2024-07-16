@@ -22,20 +22,26 @@ namespace Nekoyume.Blockchain
 {
     public static partial class StateGetter
     {
-        public static IValue GetState(HashDigest<SHA256> hash, Address accountAddress, Address address) =>
-            Game.Game.instance.Agent.GetStateAsync(hash, accountAddress, address).ConfigureAwait(false).GetAwaiter().GetResult();
+        public static IValue GetState(HashDigest<SHA256> hash, Address accountAddress, Address address)
+        {
+            return Game.Game.instance.Agent.GetStateAsync(hash, accountAddress, address).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
 
         public static IReadOnlyList<IValue> GetStates(
             HashDigest<SHA256> hash,
             Address accountAddress,
-            IEnumerable<Address> addresses) =>
-            Game.Game.instance.Agent.GetStateBulkAsync(hash, accountAddress, addresses).Result.Values.ToArray();
+            IEnumerable<Address> addresses)
+        {
+            return Game.Game.instance.Agent.GetStateBulkAsync(hash, accountAddress, addresses).Result.Values.ToArray();
+        }
 
         public static FungibleAssetValue GetBalance(
             HashDigest<SHA256> hash,
             Address address,
-            Currency currency) =>
-            Game.Game.instance.Agent.GetBalanceAsync(hash, address, currency).Result;
+            Currency currency)
+        {
+            return Game.Game.instance.Agent.GetBalanceAsync(hash, address, currency).Result;
+        }
 
         public static GameConfigState GetGameConfigState(HashDigest<SHA256> hash)
         {
@@ -62,7 +68,7 @@ namespace Nekoyume.Blockchain
             var result = Game.Game.instance.Agent
                 .GetAvatarStatesAsync(hash, new[] { avatarAddress }).Result;
 
-            if (result.TryGetValue(avatarAddress, out AvatarState value))
+            if (result.TryGetValue(avatarAddress, out var value))
             {
                 return value;
             }
@@ -78,15 +84,17 @@ namespace Nekoyume.Blockchain
         public static GoldBalanceState GetGoldBalanceState(
             HashDigest<SHA256> hash,
             Address address,
-            Currency currency) =>
-            new GoldBalanceState(
+            Currency currency)
+        {
+            return new GoldBalanceState(
                 address,
                 Game.Game.instance.Agent.GetBalanceAsync(hash, address, currency).Result);
+        }
 
         public static StakeStateV2? GetStakeStateV2(HashDigest<SHA256> hash, Address address)
         {
             var stakeStateAddr = StakeStateV2.DeriveAddress(address);
-            IValue serialized = Game.Game.instance.Agent.GetState(
+            var serialized = Game.Game.instance.Agent.GetState(
                 hash,
                 ReservedAddresses.LegacyAccount,
                 stakeStateAddr);

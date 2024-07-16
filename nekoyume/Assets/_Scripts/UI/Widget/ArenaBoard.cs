@@ -77,10 +77,12 @@ namespace Nekoyume.UI
 
         public void Show(
             List<ArenaParticipantModel> arenaParticipants,
-            bool ignoreShowAnimation = false) =>
+            bool ignoreShowAnimation = false)
+        {
             Show(_roundData,
                 arenaParticipants,
                 ignoreShowAnimation);
+        }
 
         public void Show(
             ArenaSheet.RoundData roundData,
@@ -135,7 +137,7 @@ namespace Nekoyume.UI
             var win = 0;
             var lose = 0;
             var currentInfo = RxProps.ArenaInfoTuple.Value.current;
-            if (currentInfo is { })
+            if (currentInfo is not null)
             {
                 win = currentInfo.Win;
                 lose = currentInfo.Lose;
@@ -226,7 +228,7 @@ namespace Nekoyume.UI
                     interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                     canFight = true,
                     address = e.AvatarAddr.ToHex(),
-                    guildName = e.GuildName,
+                    guildName = e.GuildName
                 }).ToList();
             for (var i = 0; i < _boundedData.Count; i++)
             {

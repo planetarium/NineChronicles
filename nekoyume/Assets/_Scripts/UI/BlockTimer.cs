@@ -18,7 +18,7 @@ namespace Nekoyume.UI
         [SerializeField] private Slider remainTimeSlider = null;
         [SerializeField] private GameObject expiredText;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private long _expiredTime;
 
@@ -49,7 +49,7 @@ namespace Nekoyume.UI
 
         private void OnSliderChange(float value)
         {
-            var time = ((long) value).BlockRangeToTimeSpanString();
+            var time = ((long)value).BlockRangeToTimeSpanString();
             remainTime.text = string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, time);
         }
 

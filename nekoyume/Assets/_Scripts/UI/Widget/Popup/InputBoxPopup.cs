@@ -10,7 +10,7 @@ namespace Nekoyume.UI
     public enum InputBoxResult : int
     {
         Yes,
-        No,
+        No
     }
 
     public delegate void InputBoxDelegate(ConfirmResult result);
@@ -41,7 +41,6 @@ namespace Nekoyume.UI
         public void Show(string placeHolderText, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
-
             text = inputField.text = string.Empty;
             if (localize)
             {

@@ -32,18 +32,12 @@ namespace Nekoyume.UI
                 Animator.Play(OpenHash);
             }).AddTo(gameObject);
 
-            closeTouchHandler.OnClick.Subscribe(pointerEventData =>
-            {
-                Close(true);
-            }).AddTo(gameObject);
+            closeTouchHandler.OnClick.Subscribe(pointerEventData => { Close(true); }).AddTo(gameObject);
 
             closeButton.SetSubmitText(L10nManager.Localize("UI_RECEIVE"),
                 L10nManager.Localize("UI_RECEIVE"));
 
-            closeButton.OnSubmitClick.Subscribe(_ =>
-            {
-                Close(true);
-            }).AddTo(gameObject);
+            closeButton.OnSubmitClick.Subscribe(_ => { Close(true); }).AddTo(gameObject);
 
             CloseWidget = null;
             gameObject.SetActive(false);

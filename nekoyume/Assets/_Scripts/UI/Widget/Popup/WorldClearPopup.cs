@@ -38,7 +38,7 @@ namespace Nekoyume.UI
             var numbers = new[] { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
 
             var result = string.Empty;
-            int i = 0;
+            var i = 0;
             while (num > 0)
             {
                 if (num >= numbers[i])

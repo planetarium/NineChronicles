@@ -13,8 +13,7 @@ namespace Nekoyume.UI.Module.Arena.Board
     {
         [SerializeField] private List<ArenaBoardPlayerItemData> _arenaBoardPlayerScrollData;
 
-        public List<ArenaBoardPlayerItemData> ArenaBoardPlayerScrollData =>
-            _arenaBoardPlayerScrollData;
+        public List<ArenaBoardPlayerItemData> ArenaBoardPlayerScrollData => _arenaBoardPlayerScrollData;
 
         [SerializeField] private string _seasonText;
 
@@ -44,7 +43,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         {
             _arenaBoardPlayerScrollData = new List<ArenaBoardPlayerItemData>
             {
-                new ArenaBoardPlayerItemData
+                new()
                 {
                     name = "Alpha",
                     level = 99,
@@ -54,9 +53,9 @@ namespace Nekoyume.UI.Module.Arena.Board
                     score = 999_999,
                     rank = 1,
                     expectWinDeltaScore = 999,
-                    interactableChoiceButton = true,
+                    interactableChoiceButton = true
                 },
-                new ArenaBoardPlayerItemData
+                new()
                 {
                     name = "Bravo",
                     level = 99,
@@ -66,9 +65,9 @@ namespace Nekoyume.UI.Module.Arena.Board
                     score = 999_998,
                     rank = 2,
                     expectWinDeltaScore = 998,
-                    interactableChoiceButton = true,
+                    interactableChoiceButton = true
                 },
-                new ArenaBoardPlayerItemData
+                new()
                 {
                     name = "Charlie",
                     level = 99,
@@ -78,9 +77,9 @@ namespace Nekoyume.UI.Module.Arena.Board
                     score = 999_997,
                     rank = 3,
                     expectWinDeltaScore = 997,
-                    interactableChoiceButton = true,
+                    interactableChoiceButton = true
                 },
-                new ArenaBoardPlayerItemData
+                new()
                 {
                     name = "Delta",
                     level = 99,
@@ -90,9 +89,9 @@ namespace Nekoyume.UI.Module.Arena.Board
                     score = 999_996,
                     rank = 4,
                     expectWinDeltaScore = 996,
-                    interactableChoiceButton = true,
+                    interactableChoiceButton = true
                 },
-                new ArenaBoardPlayerItemData
+                new()
                 {
                     name = "Echo",
                     level = 99,
@@ -102,9 +101,9 @@ namespace Nekoyume.UI.Module.Arena.Board
                     score = 999_995,
                     rank = 5,
                     expectWinDeltaScore = 995,
-                    interactableChoiceButton = true,
+                    interactableChoiceButton = true
                 },
-                new ArenaBoardPlayerItemData
+                new()
                 {
                     name = "Foxtrot",
                     level = 99,
@@ -114,9 +113,9 @@ namespace Nekoyume.UI.Module.Arena.Board
                     score = 999_994,
                     rank = 6,
                     expectWinDeltaScore = 994,
-                    interactableChoiceButton = true,
+                    interactableChoiceButton = true
                 },
-                new ArenaBoardPlayerItemData
+                new()
                 {
                     name = "Golf",
                     level = 99,
@@ -126,8 +125,8 @@ namespace Nekoyume.UI.Module.Arena.Board
                     score = 999_993,
                     rank = 7,
                     expectWinDeltaScore = 993,
-                    interactableChoiceButton = true,
-                },
+                    interactableChoiceButton = true
+                }
             };
 
             _seasonText = "offseason";

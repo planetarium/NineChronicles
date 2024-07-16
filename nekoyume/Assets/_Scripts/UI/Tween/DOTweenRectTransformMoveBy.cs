@@ -7,10 +7,10 @@ namespace Nekoyume.UI.Tween
     public class DOTweenRectTransformMoveBy : DOTweenBase
     {
         public bool startFromDelta = false;
-        public Vector3 deltaValue = new Vector3();
+        public Vector3 deltaValue = new();
 
-        private Vector3 _beginValue = new Vector3();
-        private Vector3 _endValue = new Vector3();
+        private Vector3 _beginValue = new();
+        private Vector3 _endValue = new();
         private RectTransform _transform;
 
         protected override void Awake()

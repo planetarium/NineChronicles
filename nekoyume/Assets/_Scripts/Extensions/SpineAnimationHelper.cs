@@ -16,14 +16,15 @@ namespace Nekoyume
             return state != null ? state.animation.Animation.Duration : 2f;
         }
 
-        public static float GetAnimationDuration(CharacterAppearance appearance, string stateName) =>
-            GetAnimationDuration(appearance.SpineController, stateName);
+        public static float GetAnimationDuration(CharacterAppearance appearance, string stateName)
+        {
+            return GetAnimationDuration(appearance.SpineController, stateName);
+        }
 
         public static float GetAnimationDuration(AvatarSpineController controller, string stateName)
         {
             var state = controller.GetBodySkeletonAnimation().Skeleton.Data.FindAnimation(stateName);
             return state?.Duration ?? 2f;
         }
-
     }
 }

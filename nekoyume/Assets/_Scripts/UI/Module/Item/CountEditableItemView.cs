@@ -8,17 +8,17 @@ namespace Nekoyume.UI.Module
     {
         public Button minusButton;
         public Button plusButton;
-        
-        public readonly Subject<CountEditableItemView<T>> OnMinus = new Subject<CountEditableItemView<T>>();
-        public readonly Subject<CountEditableItemView<T>> OnPlus = new Subject<CountEditableItemView<T>>();
-        public readonly Subject<int> OnCountChange = new Subject<int>();
+
+        public readonly Subject<CountEditableItemView<T>> OnMinus = new();
+        public readonly Subject<CountEditableItemView<T>> OnPlus = new();
+        public readonly Subject<int> OnCountChange = new();
 
         public bool IsMinCount => !(Model is null) && Model.Count.Value == Model.MinCount.Value;
         public bool IsMaxCount => !(Model is null) && Model.Count.Value == Model.MaxCount.Value;
 
         protected override ImageSizeType imageSizeType => ImageSizeType.Middle;
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
                     OnMinus.OnNext(this);
                 })
                 .AddTo(gameObject);
-            
+
             plusButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Module
                 })
                 .AddTo(gameObject);
         }
-        
+
         protected override void OnDestroy()
         {
             OnMinus.Dispose();
@@ -51,16 +51,20 @@ namespace Nekoyume.UI.Module
             base.OnDestroy();
         }
 
-        #endregion
+#endregion
 
         public bool TryIncreaseCount(int value = 1)
         {
             if (Model is null)
+            {
                 return false;
+            }
 
             if (Model.Count.Value + value > Model.MaxCount.Value)
+            {
                 return false;
-                
+            }
+
             Model.Count.Value += value;
             OnCountChange.OnNext(Model.Count.Value);
             return true;
@@ -69,11 +73,15 @@ namespace Nekoyume.UI.Module
         public bool TryDecreaseCount(int value = 1)
         {
             if (Model is null)
+            {
                 return false;
+            }
 
             if (Model.Count.Value - value < Model.MinCount.Value)
+            {
                 return false;
-                
+            }
+
             Model.Count.Value -= value;
             OnCountChange.OnNext(Model.Count.Value);
             return true;

@@ -20,6 +20,7 @@ namespace Nekoyume.UI
 {
     using TableData;
     using UniRx;
+
     public class PetEnhancementPopup : PopupWidget
     {
         [SerializeField]
@@ -86,18 +87,9 @@ namespace Nekoyume.UI
         {
             base.Awake();
             closeButton.onClick.AddListener(() => Close());
-            plusButton.onClick.AddListener(() =>
-            {
-                _enhancementCount.Value = Math.Min(_sliderCurrentValue + 1, _sliderMax);
-            });
-            minusButton.onClick.AddListener(() =>
-            {
-                _enhancementCount.Value = Math.Max(_sliderCurrentValue - 1, 1);
-            });
-            soulStoneIconButton.onClick.AddListener(() =>
-            {
-                OnClickSoulStone(_petRow);
-            });
+            plusButton.onClick.AddListener(() => { _enhancementCount.Value = Math.Min(_sliderCurrentValue + 1, _sliderMax); });
+            minusButton.onClick.AddListener(() => { _enhancementCount.Value = Math.Max(_sliderCurrentValue - 1, 1); });
+            soulStoneIconButton.onClick.AddListener(() => { OnClickSoulStone(_petRow); });
         }
 
         public void ShowForSummon(PetSheet.Row petRow)
@@ -174,18 +166,9 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            _enhancementCount.Subscribe(value =>
-            {
-                slider.ForceMove(value);
-            }).AddTo(_disposables);
-            LoadingHelper.PetEnhancement.Subscribe(id =>
-            {
-                submitButton.Interactable = _enoughBalance && id == 0;
-            }).AddTo(_disposables);
-            submitButton.OnSubmitSubject.Subscribe(_ =>
-            {
-                Action(_petRow.Id, _targetLevel);
-            }).AddTo(_disposables);
+            _enhancementCount.Subscribe(value => { slider.ForceMove(value); }).AddTo(_disposables);
+            LoadingHelper.PetEnhancement.Subscribe(id => { submitButton.Interactable = _enoughBalance && id == 0; }).AddTo(_disposables);
+            submitButton.OnSubmitSubject.Subscribe(_ => { Action(_petRow.Id, _targetLevel); }).AddTo(_disposables);
             submitButton.OnClickDisabledSubject.Subscribe(_ =>
             {
                 OneLineSystem.Push(

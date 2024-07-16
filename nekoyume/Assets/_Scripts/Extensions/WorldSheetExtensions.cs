@@ -47,7 +47,7 @@ namespace Nekoyume
         public static bool ContainsStageId(this WorldSheet.Row worldRow, int stageId)
         {
             return stageId >= worldRow.StageBegin &&
-                   stageId <= worldRow.StageEnd;
+                stageId <= worldRow.StageEnd;
         }
 
         [Obsolete("이전에는 스테이지 번호를 스테이지 ID와 다르게 월드 내의 스테이지 순서로 표시했는데, 지금은 스테이지 ID를 그대로 표시하게 수정했습니다.")]

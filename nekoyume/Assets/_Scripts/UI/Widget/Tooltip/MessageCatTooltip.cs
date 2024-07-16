@@ -9,7 +9,7 @@ namespace Nekoyume.UI
 {
     public class MessageCatTooltip : Widget
     {
-        private readonly List<MessageCat> _pool = new List<MessageCat>();
+        private readonly List<MessageCat> _pool = new();
 
         [SerializeField]
         private GameObject messageCatPrefab = null;

@@ -118,7 +118,7 @@ namespace Nekoyume.UI
         private static readonly int AnimatorHashClose = Animator.StringToHash("Close");
 
         private ItemOptionInfo _itemOptionInfo;
-        private readonly List<decimal> _cpListForAnimationSteps = new List<decimal>();
+        private readonly List<decimal> _cpListForAnimationSteps = new();
         private IDisposable _disposableOfSkip;
         private IDisposable _disposableOfCPAnimation;
         private Coroutine _coroutineOfPlayOptionAnimation;
@@ -347,7 +347,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #region Invoke from Animation
+#region Invoke from Animation
 
         public void OnAnimatorStateBeginning(string stateName)
         {
@@ -358,9 +358,9 @@ namespace Nekoyume.UI
                 case "Success":
                     _disposableOfSkip ??= Observable.EveryUpdate()
                         .Where(_ => Input.GetMouseButtonDown(0) ||
-                                    Input.GetKeyDown(KeyCode.Return) ||
-                                    Input.GetKeyDown(KeyCode.KeypadEnter) ||
-                                    Input.GetKeyDown(KeyCode.Escape))
+                            Input.GetKeyDown(KeyCode.Return) ||
+                            Input.GetKeyDown(KeyCode.KeypadEnter) ||
+                            Input.GetKeyDown(KeyCode.Escape))
                         .Take(1)
                         .DoOnCompleted(() => _disposableOfSkip = null)
                         .Subscribe(_ =>
@@ -382,8 +382,10 @@ namespace Nekoyume.UI
             }
         }
 
-        public void OnRequestPlaySFX(string sfxCode) =>
+        public void OnRequestPlaySFX(string sfxCode)
+        {
             AudioController.instance.PlaySfx(sfxCode);
+        }
 
         public void ShowOptionIconsAll()
         {
@@ -426,7 +428,7 @@ namespace Nekoyume.UI
             _coroutineOfPlayOptionAnimation = StartCoroutine(CoPlayOptionAnimation());
         }
 
-        #endregion
+#endregion
 
         private void SkipAnimation()
         {
@@ -584,16 +586,19 @@ namespace Nekoyume.UI
                 });
         }
 
-        private void PressToContinue() => Observable.EveryUpdate()
-            .Where(_ => Input.GetMouseButtonDown(0) ||
-                        Input.GetKeyDown(KeyCode.Return) ||
-                        Input.GetKeyDown(KeyCode.KeypadEnter) ||
-                        Input.GetKeyDown(KeyCode.Escape))
-            .First()
-            .Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                Animator.SetTrigger(AnimatorHashClose);
-            });
+        private void PressToContinue()
+        {
+            Observable.EveryUpdate()
+                .Where(_ => Input.GetMouseButtonDown(0) ||
+                    Input.GetKeyDown(KeyCode.Return) ||
+                    Input.GetKeyDown(KeyCode.KeypadEnter) ||
+                    Input.GetKeyDown(KeyCode.Escape))
+                .First()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Animator.SetTrigger(AnimatorHashClose);
+                });
+        }
     }
 }

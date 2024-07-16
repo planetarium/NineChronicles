@@ -16,7 +16,6 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private SummonSkillsCell cellPrefab;
 
-        protected override FancyCell<SummonSkillsCell.Model, ContextModel> CellTemplate =>
-            cellPrefab;
+        protected override FancyCell<SummonSkillsCell.Model, ContextModel> CellTemplate => cellPrefab;
     }
 }

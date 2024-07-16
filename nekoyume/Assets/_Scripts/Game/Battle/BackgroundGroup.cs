@@ -30,6 +30,7 @@ namespace Nekoyume.Game.Battle
             {
                 return;
             }
+
             _fadeTime += Time.deltaTime;
             UpdateFade();
         }

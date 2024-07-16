@@ -16,6 +16,7 @@ namespace Nekoyume.UI
         [SerializeField] private Image bossImage;
 
         private CancellationTokenSource cancellationTokenSource;
+
         protected override void Awake()
         {
             base.Awake();
@@ -26,7 +27,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             cancellationTokenSource?.Cancel();
             cancellationTokenSource = new CancellationTokenSource();
-            if(Game.Game.instance.AdventureBossData.SeasonInfo.Value != null)
+            if (Game.Game.instance.AdventureBossData.SeasonInfo.Value != null)
             {
                 bossImage.sprite = SpriteHelper.GetBigCharacterIcon(Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId);
                 bossImage.SetNativeSize();
@@ -36,6 +37,7 @@ namespace Nekoyume.UI
                 bossImage.sprite = SpriteHelper.GetBigCharacterIcon(0);
                 bossImage.SetNativeSize();
             }
+
             ShowCount(cancellationTokenSource.Token).Forget();
         }
 
@@ -50,7 +52,7 @@ namespace Nekoyume.UI
         {
             try
             {
-                for (int i = 3; i >= 0; i--)
+                for (var i = 3; i >= 0; i--)
                 {
                     continueText.text = L10nManager.Localize("UI_ADVENTUREBOSS_START_NOTI_SUB_DESC", i);
                     continueText.DORewind();
@@ -58,6 +60,7 @@ namespace Nekoyume.UI
                     continueText.DOFade(0, 1f).SetEase(Ease.InCubic);
                     await UniTask.Delay(1000, cancellationToken: cancellationToken);
                 }
+
                 Close();
             }
             catch (OperationCanceledException)

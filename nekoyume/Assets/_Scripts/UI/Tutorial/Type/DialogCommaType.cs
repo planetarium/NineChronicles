@@ -7,6 +7,6 @@ namespace Nekoyume.UI
     {
         None = 0,
         Next,
-        End,
+        End
     }
 }

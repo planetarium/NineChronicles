@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -22,7 +23,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Blockchain;
+    using Blockchain;
     using System.Text.RegularExpressions;
     using UniRx;
 
@@ -75,13 +76,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject loading;
 
-        private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
+        private readonly Module.ToggleGroup _toggleGroup = new();
 
         private const int TutorialEquipmentId = 10110000;
 
         public MailBox MailBox { get; private set; }
 
-        #region override
+#region override
 
         protected override void Awake()
         {
@@ -139,6 +140,7 @@ namespace Nekoyume.UI
                         LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
                         break;
                 }
+
                 // 레이어 제거전에 New값을 바꾸면 루프안에서 레이어가 제거되지 않음
                 mail.New = false;
             }
@@ -155,12 +157,12 @@ namespace Nekoyume.UI
             {
                 case ProductBuyerMail productBuyerMail:
                     var productId = productBuyerMail.ProductId;
-                    var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productId);
+                    var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productId);
                     if (itemProduct is not null)
                     {
                         var item = States.Instance.CurrentAvatarState.inventory.Items
                             .FirstOrDefault(i => i.item is ITradableItem item &&
-                                                 item.TradableId.Equals(itemProduct.TradableId));
+                                item.TradableId.Equals(itemProduct.TradableId));
                         if (item?.item is null)
                         {
                             return;
@@ -175,15 +177,16 @@ namespace Nekoyume.UI
                         var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
                         mailRewards.Add(new MailReward(fav, (int)favProduct.Quantity, true));
                     }
+
                     break;
 
                 case ProductCancelMail productCancelMail:
-                    var (_, cItemProduct, cFavProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productCancelMail.ProductId);
+                    var (_, cItemProduct, cFavProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productCancelMail.ProductId);
                     if (cItemProduct is not null)
                     {
                         var item = States.Instance.CurrentAvatarState.inventory.Items
                             .FirstOrDefault(i => i.item is ITradableItem item &&
-                                                 item.TradableId.Equals(cItemProduct.TradableId));
+                                item.TradableId.Equals(cItemProduct.TradableId));
                         if (item?.item is null)
                         {
                             return;
@@ -198,6 +201,7 @@ namespace Nekoyume.UI
                         var fav = new FungibleAssetValue(currency, (int)cFavProduct.Quantity, 0);
                         mailRewards.Add(new MailReward(fav, (int)cFavProduct.Quantity, true));
                     }
+
                     break;
 
 
@@ -235,6 +239,7 @@ namespace Nekoyume.UI
                     {
                         mailRewards.Add(new MailReward(cItem, 1));
                     }
+
                     break;
 
                 case ItemEnhanceMail itemEnhanceMail:
@@ -243,6 +248,7 @@ namespace Nekoyume.UI
                     {
                         mailRewards.Add(new MailReward(eItem, 1));
                     }
+
                     break;
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
                     if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
@@ -257,7 +263,7 @@ namespace Nekoyume.UI
                         var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
                         var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                         foreach (var (fungibleId, fungibleCount) in
-                                 unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                            unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
                         {
                             var row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
                             if (row != null)
@@ -282,9 +288,11 @@ namespace Nekoyume.UI
                                 mailRewards.Add(new MailReward(item, fungibleCount));
                                 continue;
                             }
+
                             NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
                         }
                     }
+
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
                     break;
                 case ClaimItemsMail claimItemsMail:
@@ -300,7 +308,7 @@ namespace Nekoyume.UI
                         var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
                         var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                         foreach (var (fungibleId, itemCount) in
-                                 claimItemsMail.Items)
+                            claimItemsMail.Items)
                         {
                             var row = materialSheet.OrderedList!
                                 .FirstOrDefault(row => row.Id.Equals(fungibleId));
@@ -329,6 +337,7 @@ namespace Nekoyume.UI
                             NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
                         }
                     }
+
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
                     break;
             }
@@ -360,7 +369,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        #endregion
+#endregion
 
         public void ChangeState(int state)
         {
@@ -373,12 +382,16 @@ namespace Nekoyume.UI
         private IEnumerable<Mail> GetAvailableMailList(long blockIndex,
             MailTabState state)
         {
-            bool Predicate(Mail mail) => state switch
+            bool Predicate(Mail mail)
             {
-                MailTabState.All => true,
-                MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop,
-                _ => mail.MailType == (MailType)state
-            };
+                return state switch
+                {
+                    MailTabState.All => true,
+                    MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop,
+                    _ => mail.MailType == (MailType)state
+                };
+            }
+
             return MailBox?.Where(mail => mail.requiredBlockIndex <= blockIndex)
                 .Where(Predicate)
                 .OrderByDescending(mail => mail.New);
@@ -428,17 +441,17 @@ namespace Nekoyume.UI
         private bool IsReceivableMail(Mail mail)
         {
             return mail.New &&
-                   mail.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex &&
-                   mail is ProductBuyerMail or
-                       ProductCancelMail or
-                       OrderBuyerMail or
-                       OrderSellerMail or
-                       OrderExpirationMail or
-                       CancelOrderMail or
-                       CombinationMail or
-                       ItemEnhanceMail or
-                       UnloadFromMyGaragesRecipientMail or
-                       ClaimItemsMail;
+                mail.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex &&
+                mail is ProductBuyerMail or
+                    ProductCancelMail or
+                    OrderBuyerMail or
+                    OrderSellerMail or
+                    OrderExpirationMail or
+                    CancelOrderMail or
+                    CombinationMail or
+                    ItemEnhanceMail or
+                    UnloadFromMyGaragesRecipientMail or
+                    ClaimItemsMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -546,13 +559,13 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var productId = productBuyerMail.ProductId;
-            var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productId);
+            var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productId);
             if (itemProduct is not null)
             {
                 var count = (int)itemProduct.Quantity;
                 var item = States.Instance.CurrentAvatarState.inventory.Items
                     .FirstOrDefault(i => i.item is ITradableItem item &&
-                                         item.TradableId.Equals(itemProduct.TradableId));
+                        item.TradableId.Equals(itemProduct.TradableId));
                 if (item is null || item.item is null)
                 {
                     return;
@@ -592,11 +605,11 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var agentAddress = States.Instance.AgentState.address;
-            var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
+            var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
             var currency = States.Instance.GoldBalanceState.Gold.Currency;
             var price = itemProduct?.Price ?? favProduct.Price;
             var fav = new FungibleAssetValue(currency, (int)price, 0);
-            var taxedPrice = fav.DivRem(100, out _) * Action.Buy.TaxRate;
+            var taxedPrice = fav.DivRem(100, out _) * Buy.TaxRate;
             LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
             productSellerMail.New = false;
             LocalLayerModifier.RemoveNewMail(avatarAddress, productSellerMail.id);
@@ -668,10 +681,7 @@ namespace Nekoyume.UI
                 itemEnhanceMail.New = false;
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id);
                 ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
-            }).ToObservable().SubscribeOnMainThread().Subscribe(_ =>
-            {
-                NcDebug.Log("ItemEnhanceMail LocalLayer task completed");
-            });
+            }).ToObservable().SubscribeOnMainThread().Subscribe(_ => { NcDebug.Log("ItemEnhanceMail LocalLayer task completed"); });
             // ~LocalLayer
 
             Find<EnhancementResultPopup>().Show(itemEnhanceMail);
@@ -685,7 +695,7 @@ namespace Nekoyume.UI
         public void Read(MonsterCollectionMail monsterCollectionMail)
         {
             if (!(monsterCollectionMail.attachment is MonsterCollectionResult
-                    monsterCollectionResult))
+                monsterCollectionResult))
             {
                 return;
             }
@@ -730,19 +740,19 @@ namespace Nekoyume.UI
                 var mailRewards = new List<MailReward>();
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
 
-                bool iapProductFindComplete = false;
+                var iapProductFindComplete = false;
                 if (unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
                 {
 #if UNITY_IOS
                     Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
 #else
-                    Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+                    var gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
 #endif
-                    Match gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
+                    var gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
                     if (gSkuMatch.Success)
                     {
                         var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == gSkuMatch.Groups[1].Value);
-                        if(findKey.Value != null)
+                        if (findKey.Value != null)
                         {
                             iapProductFindComplete = true;
                             foreach (var item in findKey.Value.FungibleItemList)
@@ -754,9 +764,11 @@ namespace Nekoyume.UI
                                     NcDebug.LogWarning($"Not found material sheet row. {item.FungibleItemId}");
                                     continue;
                                 }
+
                                 var material = ItemFactory.CreateMaterial(row);
                                 mailRewards.Add(new MailReward(material, item.Amount));
                             }
+
                             foreach (var item in findKey.Value.FavList)
                             {
                                 var currency = Currency.Legacy(item.Ticker, 0, null);
@@ -770,7 +782,7 @@ namespace Nekoyume.UI
                 if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null && !iapProductFindComplete)
                 {
                     foreach (var (fungibleId, fungibleCount) in
-                             unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                        unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
                     {
                         var row = materialSheet.OrderedList!
                             .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
@@ -783,6 +795,7 @@ namespace Nekoyume.UI
                         var material = ItemFactory.CreateMaterial(row);
                         mailRewards.Add(new MailReward(material, fungibleCount));
                     }
+
                     foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
                     {
                         mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
@@ -807,7 +820,7 @@ namespace Nekoyume.UI
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
                 var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                 foreach (var (fungibleId, count) in
-                            unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                    unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
                 {
                     var row = materialSheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
                     if (row != null)
@@ -834,6 +847,7 @@ namespace Nekoyume.UI
                     }
                 }
             }
+
             UpdateTabs();
             Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
             return;
@@ -860,7 +874,7 @@ namespace Nekoyume.UI
             {
                 rewards.AddRange(
                     claimItemsMail.FungibleAssetValues.Select(fav =>
-                        new MailReward(fav, (int) fav.MajorUnit)));
+                        new MailReward(fav, (int)fav.MajorUnit)));
             }
 
             if (claimItemsMail.Items is not null)
@@ -868,7 +882,7 @@ namespace Nekoyume.UI
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
                 var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                 foreach (var (fungibleId, count) in
-                         claimItemsMail.Items)
+                    claimItemsMail.Items)
                 {
                     var row = materialSheet.OrderedList!
                         .FirstOrDefault(row => row.Id.Equals(fungibleId));
@@ -919,6 +933,13 @@ namespace Nekoyume.UI
             }
 
             Read(mail);
+        }
+
+        public void Read(AdventureBossRaffleWinnerMail adventureBossRaffleWinnerMail)
+        {
+            NcDebug.Log($"[{nameof(AdventureBossRaffleWinnerMail)}] ItemCount: {adventureBossRaffleWinnerMail.id}, Season: {adventureBossRaffleWinnerMail.Season}, ");
+            adventureBossRaffleWinnerMail.New = false;
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
         [Obsolete]

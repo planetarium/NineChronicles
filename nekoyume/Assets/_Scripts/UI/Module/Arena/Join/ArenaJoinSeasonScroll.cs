@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         public ArenaJoinSeasonItemData SelectedItemData => _data[Context.SelectedIndex];
 
-        private readonly Subject<int> _onSelectionChanged = new Subject<int>();
+        private readonly Subject<int> _onSelectionChanged = new();
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
 
         public void SetData(IList<ArenaJoinSeasonItemData> data, int? index = null)

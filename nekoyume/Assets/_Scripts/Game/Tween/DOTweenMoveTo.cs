@@ -12,13 +12,13 @@ namespace Nekoyume.Game.Tween
             Reverse,
             Repeat,
             PingPongOnce,
-            PingPongRepeat,
+            PingPongRepeat
         }
 
         public float Duration = 0.0f;
         public TweenType TweenType_ = TweenType.Forward;
-        public Vector3 BeginValue = new Vector3();
-        public Vector3 EndValue = new Vector3();
+        public Vector3 BeginValue = new();
+        public Vector3 EndValue = new();
 
         public void Start()
         {

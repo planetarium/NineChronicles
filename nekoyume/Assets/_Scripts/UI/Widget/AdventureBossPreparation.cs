@@ -16,7 +16,7 @@ using System;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.UI.Module;
+    using Module;
     using System.Linq;
     using UniRx;
 
@@ -25,7 +25,7 @@ namespace Nekoyume.UI
         public enum AdventureBossPreparationType
         {
             Challenge,
-            BreakThrough,
+            BreakThrough
         }
 
         [SerializeField]
@@ -47,14 +47,13 @@ namespace Nekoyume.UI
         private Transform buttonStarImageTransform;
 
 
-        [SerializeField, Range(.5f, 3.0f)]
+        [SerializeField][Range(.5f, 3.0f)]
         private float animationTime = 1f;
 
         [SerializeField]
         private bool moveToLeft = false;
 
-        [SerializeField, Range(0f, 10f),
-         Tooltip("Gap between start position X and middle position X")]
+        [SerializeField][Range(0f, 10f)][Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         [SerializeField]
@@ -74,9 +73,9 @@ namespace Nekoyume.UI
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (startButton.Interactable);
+            startButton.Interactable;
 
-        #region override
+#region override
 
         protected override void Awake()
         {
@@ -126,7 +125,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Click AdventureBoss Prepareation", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             });
 
             var evt = new AirbridgeEvent("Click_AdventureBoss_Prepareation");
@@ -185,7 +184,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        #endregion
+#endregion
 
         private void UpdateRequiredCostByStageId()
         {
@@ -234,7 +233,7 @@ namespace Nekoyume.UI
         {
             Find<WorldMap>().Close(true);
             Find<AdventureBoss>().Close(true);
-            Widget.Find<LoadingScreen>().Show(loadingType: LoadingScreen.LoadingType.AdventureBoss);
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.AdventureBoss);
             startButton.gameObject.SetActive(false);
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var costumes = itemSlotState.Costumes;
@@ -263,6 +262,7 @@ namespace Nekoyume.UI
                         {
                             ActionManager.Instance.ExploreAdventureBoss(costumes, equipments, consumables, runeInfos, (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season);
                         }
+
                         break;
                     case AdventureBossPreparationType.BreakThrough:
                         if (Game.Game.instance.AdventureBossData.SeasonInfo?.Value is null)
@@ -273,6 +273,7 @@ namespace Nekoyume.UI
                         {
                             ActionManager.Instance.SweepAdventureBoss(costumes, equipments, runeInfos, (int)Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season);
                         }
+
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -280,7 +281,7 @@ namespace Nekoyume.UI
             }
             catch (Exception e)
             {
-                Widget.Find<LoadingScreen>().Close();
+                Find<LoadingScreen>().Close();
                 NcDebug.LogError(e);
             }
         }
@@ -288,7 +289,9 @@ namespace Nekoyume.UI
         private void GoToPrepareStage(BattleLog battleLog)
         {
             if (!IsActive() || !Find<LoadingScreen>().IsActive())
+            {
                 return;
+            }
 
             StartCoroutine(CoGoToStage(battleLog));
         }

@@ -35,10 +35,9 @@ namespace Nekoyume.Helper
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
         private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
-        private static Dictionary<string, Sprite> CachedDownloadTextures = new Dictionary<string, Sprite>();
+        private static Dictionary<string, Sprite> CachedDownloadTextures = new();
 
-        private static Dictionary<string, byte[]> CachedDownloadTexturesRaw =
-            new Dictionary<string, byte[]>();
+        private static Dictionary<string, byte[]> CachedDownloadTexturesRaw = new();
 
         public const float GridScrollerAdjustCellCount = 20;
 
@@ -56,7 +55,7 @@ namespace Nekoyume.Helper
                 }
 
                 return null;
-            }, configureAwait: false);
+            }, false);
         }
 
         public static async Task<string> GetItemNameByOrderId(Guid orderId, bool isNonColored = false)
@@ -82,7 +81,7 @@ namespace Nekoyume.Helper
                 }
 
                 return string.Empty;
-            }, configureAwait: false);
+            }, false);
         }
 
         public static async Task<ItemBase> GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
@@ -102,7 +101,7 @@ namespace Nekoyume.Helper
                 }
 
                 return null;
-            }, configureAwait: false);
+            }, false);
         }
 
         public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
@@ -379,6 +378,7 @@ namespace Nekoyume.Helper
             {
                 return 0;
             }
+
             if (!optionRow.LevelOptionMap.TryGetValue(runeState.Level, out var option))
             {
                 return 0;
@@ -516,18 +516,18 @@ namespace Nekoyume.Helper
 
         public static string AesEncrypt(string plainText)
         {
-            using Aes aesAlg = Aes.Create();
-            using SHA256 sha256 = SHA256.Create();
+            using var aesAlg = Aes.Create();
+            using var sha256 = SHA256.Create();
             aesAlg.Key = sha256.ComputeHash(Encoding.UTF8.GetBytes(SystemInfo.deviceUniqueIdentifier));
-            byte[] iv = new byte[16];
+            var iv = new byte[16];
             Array.Copy(aesAlg.Key, iv, 16);
             aesAlg.IV = iv;
 
-            ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+            var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
-            using var msEncrypt = new System.IO.MemoryStream();
+            using var msEncrypt = new MemoryStream();
             using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using (var swEncrypt = new System.IO.StreamWriter(csEncrypt))
+            using (var swEncrypt = new StreamWriter(csEncrypt))
             {
                 swEncrypt.Write(plainText);
             }
@@ -537,26 +537,28 @@ namespace Nekoyume.Helper
 
         public static string AesDecrypt(string encryptedText)
         {
-            string result = string.Empty;
-            try {
-                using Aes aesAlg = Aes.Create();
-                using SHA256 sha256 = SHA256.Create();
+            var result = string.Empty;
+            try
+            {
+                using var aesAlg = Aes.Create();
+                using var sha256 = SHA256.Create();
                 aesAlg.Key = sha256.ComputeHash(Encoding.UTF8.GetBytes(SystemInfo.deviceUniqueIdentifier));
-                byte[] iv = new byte[16];
+                var iv = new byte[16];
                 Array.Copy(aesAlg.Key, iv, 16);
                 aesAlg.IV = iv;
 
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+                var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
-                using var msDecrypt = new System.IO.MemoryStream(Convert.FromBase64String(encryptedText));
+                using var msDecrypt = new MemoryStream(Convert.FromBase64String(encryptedText));
                 using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
-                using var srDecrypt = new System.IO.StreamReader(csDecrypt);
+                using var srDecrypt = new StreamReader(csDecrypt);
                 result = srDecrypt.ReadToEnd();
             }
             catch
             {
                 return result;
             }
+
             return result;
         }
 
@@ -566,7 +568,7 @@ namespace Nekoyume.Helper
 
             if (Platform.IsMobilePlatform())
             {
-                string dataPath = Platform.GetPersistentDataPath("keystore");
+                var dataPath = Platform.GetPersistentDataPath("keystore");
                 store = new Web3KeyStore(dataPath);
             }
             else
@@ -599,8 +601,8 @@ namespace Nekoyume.Helper
                 Options = new QrCodeEncodingOptions
                 {
                     Width = 400,
-                    Height = 400,
-                },
+                    Height = 400
+                }
             };
 
             var encoded = new Texture2D(400, 400);
@@ -619,7 +621,7 @@ namespace Nekoyume.Helper
 
             if (CachedDownloadTexturesRaw.TryGetValue(url, out var cachedTextureRaw))
             {
-                Sprite result = CreateSprite(cachedTextureRaw);
+                var result = CreateSprite(cachedTextureRaw);
                 CachedDownloadTextures.Add(url, result);
                 return result;
             }
@@ -652,7 +654,10 @@ namespace Nekoyume.Helper
         private static Sprite CreateSprite(byte[] cachedTextureRaw)
         {
             if (cachedTextureRaw == null)
+            {
                 return null;
+            }
+
             var myTexture = new Texture2D(0, 0, TextureFormat.RGBA32, false);
             myTexture.LoadImage(cachedTextureRaw);
             var result = Sprite.Create(

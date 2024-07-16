@@ -14,13 +14,16 @@ namespace Nekoyume.UI.Module.Arena.Join
         public int? SeasonNumber;
         public List<int> ChampionshipSeasonNumbers;
 
-        public string GetRoundName() => RoundData.ArenaType switch
+        public string GetRoundName()
         {
-            ArenaType.OffSeason => "off-season",
-            ArenaType.Season => $"season #{SeasonNumber}",
-            ArenaType.Championship => $"championship #{RoundData.ChampionshipId}",
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+            return RoundData.ArenaType switch
+            {
+                ArenaType.OffSeason => "off-season",
+                ArenaType.Season => $"season #{SeasonNumber}",
+                ArenaType.Championship => $"championship #{RoundData.ChampionshipId}",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
     }
 
     public class ArenaJoinSeasonScrollContext
@@ -58,7 +61,10 @@ namespace Nekoyume.UI.Module.Arena.Join
         private float _currentPosition;
 #endif
 
-        private void OnEnable() => UpdatePosition(_currentPosition);
+        private void OnEnable()
+        {
+            UpdatePosition(_currentPosition);
+        }
 
         public override void Initialize()
         {

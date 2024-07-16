@@ -14,6 +14,7 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.UI.Module
 {
     using UniRx;
+
     public class CollectionInventory : MonoBehaviour
     {
         [SerializeField] private InventoryScroll scroll;
@@ -24,7 +25,7 @@ namespace Nekoyume.UI.Module
         private CollectionMaterial[] _requiredItems;
         private bool canSelect = true;
 
-        private readonly List<InventoryItem> _items = new List<InventoryItem>();
+        private readonly List<InventoryItem> _items = new();
 
         public InventoryItem SelectedItem { get; private set; }
 
@@ -45,7 +46,7 @@ namespace Nekoyume.UI.Module
             scrollCanvasGroup.interactable = value;
         }
 
-        #region NonFungibleItems (Equipment, Costume) - select one
+#region NonFungibleItems (Equipment, Costume) - select one
 
         public void SetRequiredItem(CollectionMaterial requiredItem)
         {
@@ -140,9 +141,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        #endregion
+#endregion
 
-        #region FungibleItems (Consumable, Material) - select auto
+#region FungibleItems (Consumable, Material) - select auto
 
         public void SetRequiredItems(CollectionMaterial[] requiredItems)
         {
@@ -162,9 +163,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        #endregion
+#endregion
 
-        #region Update Inventory
+#region Update Inventory
 
         private void UpdateInventory(Nekoyume.Model.Item.Inventory inventory)
         {
@@ -259,11 +260,11 @@ namespace Nekoyume.UI.Module
         private bool TryGetConsumable(Consumable consumable, out InventoryItem model)
         {
             model = _items.FirstOrDefault(item => item.ItemBase.Id.Equals(consumable.Id) &&
-                                                  item.ItemBase.ItemType == ItemType.Consumable);
+                item.ItemBase.ItemType == ItemType.Consumable);
 
             return model != null;
         }
 
-        #endregion
+#endregion
     }
 }

@@ -37,9 +37,12 @@ namespace Nekoyume.UI.Scroller
 
         protected abstract FancyCell<TItemData, TContext> CellTemplate { get; }
 
-        protected override void SetupCellTemplate() => Setup<TCellGroup>(CellTemplate);
+        protected override void SetupCellTemplate()
+        {
+            Setup<TCellGroup>(CellTemplate);
+        }
 
-        #region FancyScrollRect
+#region FancyScrollRect
 
         private float ScrollLength => 1f / Mathf.Max(cellInterval, 1e-2f) - 1f;
 
@@ -53,9 +56,9 @@ namespace Nekoyume.UI.Scroller
             + reuseCellMarginCount * 2f
             + (paddingHead + paddingTail - spacing) / (CellSize + spacing);
 
-        #endregion
+#endregion
 
-        #region MonoBehaviour
+#region MonoBehaviour
 
         private void Reset()
         {
@@ -68,9 +71,9 @@ namespace Nekoyume.UI.Scroller
             Context.Dispose();
         }
 
-        #endregion
+#endregion
 
-        #region Control
+#region Control
 
         public void Show()
         {
@@ -98,7 +101,7 @@ namespace Nekoyume.UI.Scroller
 
             var itemsSource = new List<TItemData>(items);
 
-            if(fillWithNullToMinimumCount > itemsSource.Count)
+            if (fillWithNullToMinimumCount > itemsSource.Count)
             {
                 var addCount = math.max(0, fillWithNullToMinimumCount - itemsSource.Count);
                 for (var i = 0; i < addCount; i++)
@@ -109,7 +112,7 @@ namespace Nekoyume.UI.Scroller
 
             if (fillWithNullToEmptyViewport)
             {
-                var cellGroupCount = (int) (Scroller.ViewportSize / CellSize);
+                var cellGroupCount = (int)(Scroller.ViewportSize / CellSize);
                 var cellCountInGroup = Context.GetGroupCount();
                 var cellCount = cellGroupCount * cellCountInGroup;
                 var addCount = math.max(0, cellCount - itemsSource.Count);
@@ -197,9 +200,9 @@ namespace Nekoyume.UI.Scroller
             base.ScrollTo(itemIndex, duration, ease, alignment, onComplete);
         }
 
-        #endregion
+#endregion
 
-        #region Getter
+#region Getter
 
         private bool TryGetCellGroupIndex(TItemData itemData, out int cellGroupIndex)
         {
@@ -246,9 +249,9 @@ namespace Nekoyume.UI.Scroller
             return false;
         }
 
-        #endregion
+#endregion
 
-        #region Override
+#region Override
 
         protected override void Refresh()
         {
@@ -268,7 +271,7 @@ namespace Nekoyume.UI.Scroller
             Scroller.ScrollSensitivity = forcedScrollSensitivity;
         }
 
-        #endregion
+#endregion
 
         private float GetAlignmentToIncludeWithinViewport(TItemData itemData)
         {

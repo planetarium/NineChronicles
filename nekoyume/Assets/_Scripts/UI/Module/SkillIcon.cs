@@ -22,10 +22,7 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             touchHandler.OnClick
-                .Subscribe(_ =>
-                {
-                    _callback?.Invoke();
-                })
+                .Subscribe(_ => { _callback?.Invoke(); })
                 .AddTo(_disposables);
         }
 

@@ -13,20 +13,24 @@ namespace Nekoyume.UI
     {
         [SerializeField]
         private TextMeshProUGUI titleText = null;
+
         [SerializeField]
         private TextMeshProUGUI informationText = null;
+
         [SerializeField]
         private TextButton cancelButton = null;
+
         [SerializeField]
         private SimpleCountableItemView itemView = null;
+
         [SerializeField]
         protected ConditionalCostButton submitButton = null;
 
         protected T _data;
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForAwake = new();
+        private readonly List<IDisposable> _disposablesForSetData = new();
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -47,10 +51,7 @@ namespace Nekoyume.UI
             }
 
             submitButton.OnClickSubject
-                .Subscribe(state =>
-                {
-                    _data?.OnClickConditional.OnNext((state, _data));
-                })
+                .Subscribe(state => { _data?.OnClickConditional.OnNext((state, _data)); })
                 .AddTo(_disposablesForAwake);
 
             SubmitWidget = () => submitButton.OnSubmitSubject.OnNext(default);
@@ -62,6 +63,7 @@ namespace Nekoyume.UI
                 {
                     informationText.text = L10nManager.Localize("UI_RETRIEVE_INFO");
                 }
+
                 if (cancelButton != null)
                 {
                     cancelButton.Text = L10nManager.Localize("UI_CANCEL");
@@ -76,7 +78,7 @@ namespace Nekoyume.UI
             base.OnDestroy();
         }
 
-        #endregion
+#endregion
 
         public virtual void Pop(T data)
         {
@@ -103,8 +105,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForSetData);
             _data.SubmitText.Subscribe(text => submitButton.Text = text)
                 .AddTo(_disposablesForSetData);
-            _data.Submittable.Subscribe(value => submitButton.SetState(value ?
-                ConditionalButton.State.Normal : ConditionalButton.State.Conditional))
+            _data.Submittable.Subscribe(value => submitButton.SetState(value ? ConditionalButton.State.Normal : ConditionalButton.State.Conditional))
                 .AddTo(_disposablesForSetData);
             _data.InfoText.Subscribe(value =>
                 {

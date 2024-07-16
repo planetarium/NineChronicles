@@ -10,6 +10,7 @@ using UnityEngine;
 namespace Nekoyume.UI.Module.Lobby
 {
     using UniRx;
+
     public class StakingMenu : MainMenu
     {
         [SerializeField]
@@ -62,13 +63,13 @@ namespace Nekoyume.UI.Module.Lobby
                 var remaining = Math.Max(nullableStakeState.Value.ClaimableBlockIndex - tip, 0);
                 enableNotification = remaining <= 0;
                 claimableTimeBlock.gameObject.SetActive(true);
-                claimableTimeBlock.SetTimeBlock($"{remaining:#,0}",remaining.BlockRangeToTimeSpanString());
+                claimableTimeBlock.SetTimeBlock($"{remaining:#,0}", remaining.BlockRangeToTimeSpanString());
             }
             else
             {
                 var minimumNcg = States.Instance.StakeRegularRewardSheet
-                        .First(pair => pair.Value.Level == 1)
-                        .Value.RequiredGold;
+                    .First(pair => pair.Value.Level == 1)
+                    .Value.RequiredGold;
                 enableNotification = enableNotStaking =
                     States.Instance.GoldBalanceState.Gold.MajorUnit >= minimumNcg;
                 claimableTimeBlock.gameObject.SetActive(false);

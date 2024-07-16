@@ -27,7 +27,9 @@ namespace Nekoyume.Constraints
         {
             _canvas = _rectTransform.GetComponentInParent<Canvas>();
             if (_canvas is null)
+            {
                 return;
+            }
 
             switch (_canvas.renderMode)
             {
@@ -73,16 +75,17 @@ namespace Nekoyume.Constraints
         private void Constraints(bool lerp)
         {
             if (_canvas is null || _camera is null)
+            {
                 return;
+            }
 
             var position = _rectTransform.position;
             var mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
             mousePosition.z = position.z;
-            
+
             _rectTransform.position = lerp
                 ? Vector3.Lerp(position, mousePosition, Time.deltaTime * speed)
                 : mousePosition;
         }
     }
 }
- 

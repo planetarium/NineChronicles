@@ -46,7 +46,7 @@ namespace Nekoyume.UI
         public RectTransform crystalAnimationTargetRect;
 
         private Coroutine _npcAppearCoroutine = null;
-        private readonly WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
+        private readonly WaitForSeconds _waitForOneSec = new(1f);
 
         public System.Action OnDisappear { get; set; }
         public int CrystalAnimationCount { get; set; }
@@ -177,15 +177,15 @@ namespace Nekoyume.UI
         private void AnimateCrystalMoving()
         {
             var crystalAnimationStartPosition = crystalAnimationStartRect != null
-                ? (Vector3) crystalAnimationStartRect
+                ? (Vector3)crystalAnimationStartRect
                     .GetWorldPositionOfCenter()
                 : speechBubble.transform.position;
             var crystalAnimationTargetPosition =
                 crystalAnimationTargetRect != null
-                    ? (Vector3) crystalAnimationTargetRect
+                    ? (Vector3)crystalAnimationTargetRect
                         .GetWorldPositionOfCenter()
                     : Find<HeaderMenuStatic>().Crystal.IconPosition +
-                      GrindModule.CrystalMovePositionOffset;
+                    GrindModule.CrystalMovePositionOffset;
             StartCoroutine(ItemMoveAnimationFactory.CoItemMoveAnimation(
                 ItemMoveAnimationFactory.AnimationItemType.Crystal,
                 crystalAnimationStartPosition,

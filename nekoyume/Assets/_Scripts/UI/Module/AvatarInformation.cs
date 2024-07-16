@@ -111,9 +111,7 @@ namespace Nekoyume.UI.Module
             });
 
             _disposables.DisposeAllAndClear();
-            LoadingHelper.UnlockRuneSlot.ObserveCountChanged().Subscribe(x => {
-                UpdateRuneView();
-            }).AddTo(_disposables);
+            LoadingHelper.UnlockRuneSlot.ObserveCountChanged().Subscribe(x => { UpdateRuneView(); }).AddTo(_disposables);
         }
 
         public bool TryGetFirstCell(out InventoryItem item)
@@ -209,7 +207,7 @@ namespace Nekoyume.UI.Module
             if (consumeSlots != null)
             {
                 var consumables = GetEquippedConsumables();
-                consumeSlots.SetPlayerConsumables(level, consumables,OnClickSlot, OnDoubleClickSlot);
+                consumeSlots.SetPlayerConsumables(level, consumables, OnClickSlot, OnDoubleClickSlot);
             }
 
             var itemSlotState = States.Instance.CurrentItemSlotStates[_battleType];
@@ -309,11 +307,7 @@ namespace Nekoyume.UI.Module
                     enough ? enoughContent : notEnoughContent,
                     enough ? L10nManager.Localize("UI_YES") : attractMessage,
                     enough
-                        ? () =>
-                        {
-                            ActionManager.Instance.UnlockRuneSlot(slot.RuneSlot.Index);
-
-                        }
+                        ? () => { ActionManager.Instance.UnlockRuneSlot(slot.RuneSlot.Index); }
                         : onAttractWhenNotEnough);
             }
             else
@@ -433,7 +427,7 @@ namespace Nekoyume.UI.Module
             var states = States.Instance.CurrentItemSlotStates[_battleType];
             switch (inventoryItem.ItemBase.ItemType)
             {
-              case ItemType.Equipment:
+                case ItemType.Equipment:
                     var items = avatarState.inventory.Equipments;
                     if (items is null)
                     {
@@ -466,6 +460,7 @@ namespace Nekoyume.UI.Module
                                         equipments.Remove(guid);
                                     }
                                 }
+
                                 break;
                             case 2:
                                 var cp = new Dictionary<Guid, int>();
@@ -546,18 +541,22 @@ namespace Nekoyume.UI.Module
                     {
                         slotCount++;
                     }
+
                     if (gameConfig.RequireCharacterLevel_ConsumableSlot2 <= avatarState.level)
                     {
                         slotCount++;
                     }
+
                     if (gameConfig.RequireCharacterLevel_ConsumableSlot3 <= avatarState.level)
                     {
                         slotCount++;
                     }
+
                     if (gameConfig.RequireCharacterLevel_ConsumableSlot4 <= avatarState.level)
                     {
                         slotCount++;
                     }
+
                     if (gameConfig.RequireCharacterLevel_ConsumableSlot5 <= avatarState.level)
                     {
                         slotCount++;
@@ -601,6 +600,7 @@ namespace Nekoyume.UI.Module
                     {
                         states.Equipments.Remove(equipment.ItemId);
                     }
+
                     inventory.UpdateEquipments(states.Equipments);
                     break;
 
@@ -609,6 +609,7 @@ namespace Nekoyume.UI.Module
                     {
                         states.Costumes.Remove(costume.ItemId);
                     }
+
                     inventory.UpdateCostumes(states.Costumes);
                     break;
 
@@ -618,6 +619,7 @@ namespace Nekoyume.UI.Module
                         _consumableIds.Remove(consumable.Id);
                         inventoryItem.Count.Value++;
                     }
+
                     inventory.UpdateConsumables(_consumableIds);
                     break;
             }
@@ -640,7 +642,7 @@ namespace Nekoyume.UI.Module
                 .ToDictionary(x => x.Index, x => x);
 
             var selectedSlot = slots.Values.FirstOrDefault(x => !x.RuneId.HasValue);
-            if (selectedSlot != null)// 비어있으면
+            if (selectedSlot != null) // 비어있으면
             {
                 selectedSlot.Equip(inventoryItem.RuneState.RuneId);
             }
@@ -660,7 +662,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     var firstRuneId = firstSlot.Value.RuneId.Value;
-                    if(!States.Instance.AllRuneState.TryGetRuneState(firstRuneId, out var firstState))
+                    if (!States.Instance.AllRuneState.TryGetRuneState(firstRuneId, out var firstState))
                     {
                         return;
                     }
@@ -675,7 +677,7 @@ namespace Nekoyume.UI.Module
                         }
 
                         var runeId = runeSlot.RuneId.Value;
-                        if(!States.Instance.AllRuneState.TryGetRuneState(runeId, out var state))
+                        if (!States.Instance.AllRuneState.TryGetRuneState(runeId, out var state))
                         {
                             return;
                         }
@@ -770,7 +772,7 @@ namespace Nekoyume.UI.Module
                         else
                         {
                             interactable = !model.LevelLimited.Value ||
-                                           model.LevelLimited.Value && model.Equipped.Value;
+                                (model.LevelLimited.Value && model.Equipped.Value);
                         }
                     }
 
@@ -795,23 +797,25 @@ namespace Nekoyume.UI.Module
                 MailType.System,
                 blockedMessage,
                 NotificationCell.NotificationType.Alert);
-            System.Action enhancement = item.ItemType == ItemType.Equipment ? () =>
-            {
-                if (BattleRenderer.Instance.IsOnBattle)
+            System.Action enhancement = item.ItemType == ItemType.Equipment
+                ? () =>
                 {
-                    return;
-                }
+                    if (BattleRenderer.Instance.IsOnBattle)
+                    {
+                        return;
+                    }
 
-                if (item is not Equipment equipment)
-                {
-                    return;
-                }
+                    if (item is not Equipment equipment)
+                    {
+                        return;
+                    }
 
-                var e = Widget.Find<Enhancement>();
-                e.CloseWithOtherWidgets();
-                e.Show(item.ItemSubType, equipment.ItemId, true);
-                AudioController.PlayClick();
-            } : null;
+                    var e = Widget.Find<Enhancement>();
+                    e.CloseWithOtherWidgets();
+                    e.Show(item.ItemSubType, equipment.ItemId, true);
+                    AudioController.PlayClick();
+                }
+                : null;
 
             ItemTooltip.Find(model.ItemBase.ItemType).Show(
                 model,
@@ -825,8 +829,7 @@ namespace Nekoyume.UI.Module
 
         private void ShowRuneTooltip(InventoryItem model)
         {
-            Widget.Find<RuneTooltip>().
-                Show(
+            Widget.Find<RuneTooltip>().Show(
                 model,
                 L10nManager.Localize(model.Equipped.Value ? "UI_UNEQUIP" : "UI_EQUIP"),
                 !BattleRenderer.Instance.IsOnBattle && !model.DimObjectEnabled.Value,
@@ -860,13 +863,12 @@ namespace Nekoyume.UI.Module
 
         private void ShowFavTooltip(InventoryItem model)
         {
-            Widget.Find<FungibleAssetTooltip>().
-                Show(model,
-                    () =>
-                    {
-                        inventory.ClearSelectedItem();
-                        UpdateRuneView();
-                    });
+            Widget.Find<FungibleAssetTooltip>().Show(model,
+                () =>
+                {
+                    inventory.ClearSelectedItem();
+                    UpdateRuneView();
+                });
         }
 
         private void EquipOrUnequip(InventoryItem inventoryItem, bool inSlot = false)
@@ -987,7 +989,8 @@ namespace Nekoyume.UI.Module
         {
             _previousCp = _currentCp;
             var consumables = GetEquippedConsumables();
-            _currentCp = Util.TotalCP(_battleType) + consumables.Sum(CPHelper.GetCP);;
+            _currentCp = Util.TotalCP(_battleType) + consumables.Sum(CPHelper.GetCP);
+            ;
             cp.text = _currentCp.ToString();
             if (_compareCp.HasValue)
             {
@@ -1012,6 +1015,7 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
+
             var cpScreen = Widget.Find<CPScreen>();
             cpScreen.Show(_previousCp, _currentCp);
         }

@@ -95,8 +95,10 @@ namespace Nekoyume.UI
             BigInteger cost,
             string content,
             string attractMessage,
-            System.Action onAttract) =>
+            System.Action onAttract)
+        {
             ShowAttract(costType, cost.ToString(), content, attractMessage, onAttract);
+        }
 
         public void ShowAttract(
             CostType costType,

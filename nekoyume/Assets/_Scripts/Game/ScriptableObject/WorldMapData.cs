@@ -45,6 +45,7 @@ namespace Nekoyume
 
         [Header("Stage Icons")]
         public StageIcon defaultStageIcon;
+
         public BossStageIcon[] bossStageIcons;
         public EventStageIcon[] eventStageIcons;
 

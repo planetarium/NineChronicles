@@ -8,7 +8,7 @@ namespace Nekoyume.Pattern
     public class Fsm<T> where T : struct, IComparable, IConvertible, IFormattable
     {
         private readonly MonoBehaviour _mono;
-        private readonly Dictionary<T, Func<IEnumerator>> _states = new Dictionary<T, Func<IEnumerator>>();
+        private readonly Dictionary<T, Func<IEnumerator>> _states = new();
 
         private Coroutine _runningCoroutineHandle;
         private Coroutine _stateCoroutineHandle;

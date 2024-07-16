@@ -8,6 +8,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module.Lobby
 {
     using UniRx;
+
     public class PatrolRewardMenu : MainMenu
     {
         [SerializeField]
@@ -51,7 +52,7 @@ namespace Nekoyume.UI.Module.Lobby
 
             if (!popup.PatrolReward.Initialized)
             {
-                NcDebug.LogError("PatrolReward is not initialized.");
+                NcDebug.LogWarning("PatrolReward is not initialized.");
                 return;
             }
 

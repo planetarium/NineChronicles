@@ -9,7 +9,7 @@ namespace Nekoyume
     public class TimeScaleClip : PlayableAsset, ITimelineClipAsset
     {
         [HideInInspector]
-        public TimeScaleBehaviour template = new TimeScaleBehaviour();
+        public TimeScaleBehaviour template = new();
 
         public float timeScale = 1;
 

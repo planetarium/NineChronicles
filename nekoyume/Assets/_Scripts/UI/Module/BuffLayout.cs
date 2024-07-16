@@ -9,31 +9,37 @@ namespace Nekoyume.UI.Module
     public class BuffLayout : MonoBehaviour
     {
         public GameObject iconPrefab;
-        private readonly HashSet<Buff> AddedBuffs = new HashSet<Buff>();
+        private readonly HashSet<Buff> AddedBuffs = new();
         public IReadOnlyDictionary<int, Buff> buffData = new Dictionary<int, Buff>();
 
         private Transform _buffParent;
-        [SerializeField] private List<BuffIcon> pool = new List<BuffIcon>(20);
+        [SerializeField] private List<BuffIcon> pool = new(20);
 
-        public bool IsBuffAdded(StatType statType) => AddedBuffs.Any(buff =>
+        public bool IsBuffAdded(StatType statType)
         {
-            if (buff is not StatBuff stat)
+            return AddedBuffs.Any(buff =>
             {
-                return false;
-            }
+                if (buff is not StatBuff stat)
+                {
+                    return false;
+                }
 
-            return stat.RowData.StatType == statType;
-        });
+                return stat.RowData.StatType == statType;
+            });
+        }
 
-        public bool HasBuff(StatType statType) => buffData.Values.Any(buff =>
+        public bool HasBuff(StatType statType)
         {
-            if (buff is not StatBuff stat)
+            return buffData.Values.Any(buff =>
             {
-                return false;
-            }
+                if (buff is not StatBuff stat)
+                {
+                    return false;
+                }
 
-            return stat.RowData.StatType == statType;
-        });
+                return stat.RowData.StatType == statType;
+            });
+        }
 
         public void Awake()
         {

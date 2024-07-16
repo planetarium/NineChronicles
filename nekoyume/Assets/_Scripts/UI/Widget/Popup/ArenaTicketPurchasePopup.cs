@@ -124,6 +124,7 @@ namespace Nekoyume.UI
                 long remaining = ticketProgress.totalBlockRange - ticketProgress.progressedBlockRange;
                 purchaseMessage = $"{purchaseMessage}\n({remaining.BlockRangeToTimeSpanString()})";
             }
+
             purchaseText.text = purchaseMessage;
             purchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);
 

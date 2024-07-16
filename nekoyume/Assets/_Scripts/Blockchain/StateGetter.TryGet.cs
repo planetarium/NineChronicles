@@ -50,6 +50,7 @@ namespace Nekoyume.Blockchain
             {
                 return false;
             }
+
             avatarState = value;
 
             return avatarState.agentAddress == agentAddress;

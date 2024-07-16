@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button button;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public Image IconImage => iconImage;
 

@@ -29,7 +29,7 @@ namespace Nekoyume.UI
             public RankCategory Category;
         }
 
-        private static readonly Model.Rank SharedModel = new Model.Rank();
+        private static readonly Rank SharedModel = new();
 
         private static Task RankLoadingTask = null;
 
@@ -81,18 +81,18 @@ namespace Nekoyume.UI
 
         public const int RankingBoardDisplayCount = 100;
 
-        private readonly Dictionary<RankCategory, Toggle> _toggleMap = new Dictionary<RankCategory, Toggle>();
+        private readonly Dictionary<RankCategory, Toggle> _toggleMap = new();
 
-        private readonly Dictionary<RankCategory, (string, string)> _rankColumnMap = new Dictionary<RankCategory, (string, string)>
+        private readonly Dictionary<RankCategory, (string, string)> _rankColumnMap = new()
         {
             { RankCategory.Ability, ("UI_CP", "UI_LEVEL") },
-            { RankCategory.Stage, ("UI_STAGE", null)},
+            { RankCategory.Stage, ("UI_STAGE", null) },
             { RankCategory.Crafting, ("UI_COUNTS_CRAFTED", null) },
             { RankCategory.EquipmentWeapon, ("UI_CP", "UI_NAME") },
             { RankCategory.EquipmentArmor, ("UI_CP", "UI_NAME") },
             { RankCategory.EquipmentBelt, ("UI_CP", "UI_NAME") },
             { RankCategory.EquipmentNecklace, ("UI_CP", "UI_NAME") },
-            { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") }
         };
 
         public override void Initialize()
@@ -328,6 +328,7 @@ namespace Nekoyume.UI
                 {
                     dropdown.isOn = true;
                 }
+
                 toggle.isOn = true;
             }
             else if (toggle is ToggleDropdown dropdown)

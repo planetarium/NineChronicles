@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 2048
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 0
+      m_TextureCompression: 1
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -98,12 +98,14 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 428d84912696d314db999ea0c7b470a6, type: 3}
   - {fileID: 21300000, guid: e02581b18127e254d8687f48d6f640e5, type: 3}
+  - {fileID: 21300000, guid: 65f1bc136c0d8f74fbf995be2376d089, type: 3}
   - {fileID: 21300000, guid: 8a91fb539f88ae140aaa49b51245c79c, type: 3}
   - {fileID: 21300000, guid: 1130f9142dadacd4dabf58b2628c27d2, type: 3}
-  - {fileID: 21300000, guid: a38ac894a45221b4ba9ab252a09cb6f0, type: 3}
   - {fileID: 21300000, guid: 58112005f4a52954cbb9d2e4fb837fd1, type: 3}
   - {fileID: 21300000, guid: 6f93c60523623cf4d9cc8cc672b40d9a, type: 3}
+  - {fileID: 21300000, guid: 490d3026279dfa84b847be0a03ba9941, type: 3}
   - {fileID: 21300000, guid: 3e7196769e054ae46b455a81e33499d8, type: 3}
   - {fileID: 21300000, guid: 1dcf9887baa68c644bc34691a7cf6c92, type: 3}
   - {fileID: 21300000, guid: ef0d4848905a9434b9567581e7a82552, type: 3}
@@ -118,13 +120,16 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 13cded4e2ad393e4eb4bdd580e0395f6, type: 3}
   - {fileID: 21300000, guid: e463780ff8eb8b14f97c08b7bab07b49, type: 3}
   - {fileID: 21300000, guid: 5d3426bf562be5f47bbc5dca6ea7a060, type: 3}
+  - {fileID: 21300000, guid: 446536cf265586445903f156f4b7e510, type: 3}
   m_PackedSpriteNamesToIndex:
+  - UI_StageBuff_Bg
   - AB_Result_Bg_02
+  - UI_StageBuff_Bg_2
   - AB_Result_Bg_06
   - AdventureUI_22
-  - button_green_02
   - AB_Ingame_Bg_03
   - AB_Result_Bg_04
+  - button_Green_01
   - AB_OpenInfo_Bg_02
   - AB_OpenInfo_Bg_03
   - AB_Result_Bg_03
@@ -139,6 +144,7 @@ SpriteAtlas:
   - AB_Result_Bg_05
   - UI_result_bg_green_3
   - AB_Ingame_Bg_04
+  - AB_NcgUser_Bg_01
   m_RenderDataMap: {}
   m_Tag: Atlas_AdventureBossResult
   m_IsVariant: 0

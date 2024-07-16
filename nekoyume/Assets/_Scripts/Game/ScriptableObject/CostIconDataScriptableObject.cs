@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Nekoyume
 {
     [CreateAssetMenu(fileName = "CostIconData", menuName = "Scriptable Object/Cost Icon Data",
-           order = int.MaxValue)]
+        order = int.MaxValue)]
     public class CostIconDataScriptableObject : ScriptableObject
     {
         [Serializable]

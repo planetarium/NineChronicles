@@ -91,6 +91,7 @@ namespace Nekoyume.UI.Model
                         case ItemSubType.Title:
                             return level >= gameConfig.RequireCharacterLevel_TitleSlot;
                     }
+
                     break;
                 case ItemType.Equipment:
                     switch (inventoryItem.ItemBase.ItemSubType)
@@ -110,10 +111,10 @@ namespace Nekoyume.UI.Model
                         case ItemSubType.Grimoire:
                             return level >= gameConfig.RequireCharacterLevel_EquipmentSlotGrimoire;
                     }
+
                     break;
                 case ItemType.Consumable:
                     return level >= gameConfig.RequireCharacterLevel_ConsumableSlot1;
-
             }
 
             return false;

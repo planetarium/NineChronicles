@@ -103,10 +103,10 @@ namespace Nekoyume.Helper
         }
 
         public static bool TryGetRunStoneInformation(
-        long currentBlockIndex,
-        int runeStoneId,
-        out string info,
-        out bool canObtain)
+            long currentBlockIndex,
+            int runeStoneId,
+            out string info,
+            out bool canObtain)
         {
             switch (runeStoneId)
             {
@@ -127,6 +127,7 @@ namespace Nekoyume.Helper
                             ? L10nManager.Localize("UI_INFO_ON_SEASON_NOT_OBTAINED")
                             : L10nManager.Localize("UI_INFO_PRACTICE_MODE");
                     }
+
                     return true;
             }
         }
@@ -135,7 +136,7 @@ namespace Nekoyume.Helper
         {
             var tableSheets = Game.Game.instance.TableSheets;
             if (tableSheets.SkillActionBuffSheet.TryGetValue(option.SkillId,
-                    out var skillActionBuffRow))
+                out var skillActionBuffRow))
             {
                 var buffIds = skillActionBuffRow.BuffIds;
                 var isVampiric = tableSheets.ActionBuffSheet.Any(tuple =>
@@ -172,8 +173,7 @@ namespace Nekoyume.Helper
             }
             else
             {
-                valueString = curPower == (long)curPower ?
-                    $"{(long)curPower}" : $"{curPower}";
+                valueString = curPower == (long)curPower ? $"{(long)curPower}" : $"{curPower}";
             }
 
             return valueString;
@@ -218,7 +218,7 @@ namespace Nekoyume.Helper
         {
             var bonusLevel = allRuneState.Runes.Values
                 .Select(rune => runeListSheet[rune.RuneId].BonusCoef *
-                                (rune.RuneId != editRune.id ? rune.Level : 0))
+                    (rune.RuneId != editRune.id ? rune.Level : 0))
                 .Sum();
 
             if (runeListSheet.TryGetValue(editRune.id, out var runeListRow))

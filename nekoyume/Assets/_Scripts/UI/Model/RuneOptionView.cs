@@ -173,6 +173,7 @@ namespace Nekoyume.UI.Model
                 {
                     nextValueString = $"<color=#FFF3D4>{currentValueString}</color>";
                 }
+
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
                     option.SkillChance, option.BuffDuration, currentValueString);
 
@@ -224,7 +225,7 @@ namespace Nekoyume.UI.Model
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
                     info.stat.StatType.ToString(),
-                    info.stat.StatType.ValueToString(info.stat.TotalValueAsLong),
+                    info.stat.StatType.ValueToString(info.stat.TotalValue),
                     string.Empty);
             }
 

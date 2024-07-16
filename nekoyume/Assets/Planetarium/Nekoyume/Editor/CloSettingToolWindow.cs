@@ -37,6 +37,7 @@ namespace Planetarium.Nekoyume.Editor
             {
                 onFailed?.Invoke(request);
             }
+
             Repaint();
             EditorUtility.ClearProgressBar();
         }
@@ -47,7 +48,7 @@ namespace Planetarium.Nekoyume.Editor
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             if (_currentCLOSettingEditState)
             {
-                Color prev = GUI.backgroundColor;
+                var prev = GUI.backgroundColor;
                 GUI.backgroundColor = Color.green;
                 _lastEditJson = EditorGUILayout.TextArea(_lastEditJson, EditorStyles.textArea);
                 GUI.backgroundColor = prev;
@@ -81,10 +82,14 @@ namespace Planetarium.Nekoyume.Editor
                 GUILayout.Label("FileName");
 
                 if (_saveFileName.Length < SAVE_FILE_PREFIX.Length)
+                {
                     _saveFileName = SAVE_FILE_PREFIX;
+                }
 
                 if (!_saveFileName.Substring(0, SAVE_FILE_PREFIX.Length).Contains(SAVE_FILE_PREFIX))
+                {
                     _saveFileName = SAVE_FILE_PREFIX + _saveFileName;
+                }
 
                 _saveFileName = GUILayout.TextField(_saveFileName);
 
@@ -95,6 +100,7 @@ namespace Planetarium.Nekoyume.Editor
                     _saveFileName = SAVE_FILE_PREFIX;
                     _currentCLOSettingEditState = false;
                 }
+
                 GUILayout.EndHorizontal();
 
                 if (GUILayout.Button("Exit"))
@@ -115,18 +121,12 @@ namespace Planetarium.Nekoyume.Editor
             EditorGUILayout.LabelField("RemoteSettings", EditorStyles.boldLabel);
             if (GUILayout.Button("Internal Launcher CLO Setting"))
             {
-                EditorCoroutineUtility.StartCoroutineOwnerless(GetJson("https://release.nine-chronicles.com/internal/config.json", (cloData) =>
-                {
-                    File.WriteAllText(Platform.GetStreamingAssetsPath("clo.json"), cloData);
-                }));
+                EditorCoroutineUtility.StartCoroutineOwnerless(GetJson("https://release.nine-chronicles.com/internal/config.json", (cloData) => { File.WriteAllText(Platform.GetStreamingAssetsPath("clo.json"), cloData); }));
             }
 
             if (GUILayout.Button("Main Launcher CLO Setting"))
             {
-                EditorCoroutineUtility.StartCoroutineOwnerless(GetJson("https://download.nine-chronicles.com/9c-launcher-config.json", (cloData) =>
-                {
-                    File.WriteAllText(Platform.GetStreamingAssetsPath("clo.json"), cloData);
-                }));
+                EditorCoroutineUtility.StartCoroutineOwnerless(GetJson("https://download.nine-chronicles.com/9c-launcher-config.json", (cloData) => { File.WriteAllText(Platform.GetStreamingAssetsPath("clo.json"), cloData); }));
             }
 
             GUILayout.Space(10);
@@ -152,6 +152,7 @@ namespace Planetarium.Nekoyume.Editor
                     }
                 }
             }
+
             GUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();

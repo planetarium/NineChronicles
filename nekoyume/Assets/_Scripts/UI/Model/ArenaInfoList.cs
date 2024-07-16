@@ -8,13 +8,13 @@ namespace Nekoyume.UI.Model
 {
     public class ArenaInfoList
     {
-        private Dictionary<Address, ArenaInfo> _map = new Dictionary<Address, ArenaInfo>();
+        private Dictionary<Address, ArenaInfo> _map = new();
 
         private WeeklyArenaState _cachedState;
 
         public bool Locked;
 
-        public List<ArenaInfo> OrderedArenaInfos = new List<ArenaInfo>();
+        public List<ArenaInfo> OrderedArenaInfos = new();
 
         public void Update(WeeklyArenaState weeklyArenaState, bool @lock)
         {
@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Model
             {
                 _map[kv.Key] = kv.Value.State;
             }
+
             OrderedArenaInfos = _map.Values
                 .OrderByDescending(i => i.Score)
                 .ThenBy(i => i.CombatPoint)
@@ -37,6 +38,7 @@ namespace Nekoyume.UI.Model
             {
                 _map[arenaInfo.AvatarAddress] = arenaInfo;
             }
+
             OrderedArenaInfos = _map.Values
                 .OrderByDescending(i => i.Score)
                 .ThenBy(i => i.CombatPoint)

@@ -67,22 +67,13 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(raidButton);
 
             adventureButton.OnClick
-                .Subscribe(b =>
-                {
-                    OnClickPresetTab(b, BattleType.Adventure);
-                })
+                .Subscribe(b => { OnClickPresetTab(b, BattleType.Adventure); })
                 .AddTo(gameObject);
             arenaButton.OnClick
-                .Subscribe(b =>
-                {
-                    OnClickPresetTab(b, BattleType.Arena);
-                })
+                .Subscribe(b => { OnClickPresetTab(b, BattleType.Arena); })
                 .AddTo(gameObject);
             raidButton.OnClick
-                .Subscribe(b =>
-                {
-                    OnClickPresetTab(b, BattleType.Raid);
-                })
+                .Subscribe(b => { OnClickPresetTab(b, BattleType.Raid); })
                 .AddTo(gameObject);
 
             base.Awake();

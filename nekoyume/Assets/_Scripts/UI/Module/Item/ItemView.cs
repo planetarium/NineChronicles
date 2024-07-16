@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Module
 
         public List<IDisposable> DisposablesAtSetData => _disposablesAtSetData;
 
-        private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesAtSetData = new();
 
         public RectTransform RectTransform { get; private set; }
 
@@ -72,10 +72,9 @@ namespace Nekoyume.UI.Module
 
         public bool IsEmpty => Model?.ItemBase.Value is null;
 
-        public readonly Subject<ItemView<TViewModel>> OnClick = new Subject<ItemView<TViewModel>>();
+        public readonly Subject<ItemView<TViewModel>> OnClick = new();
 
-        public readonly Subject<ItemView<TViewModel>> OnDoubleClick =
-            new Subject<ItemView<TViewModel>>();
+        public readonly Subject<ItemView<TViewModel>> OnDoubleClick = new();
 
 #region Mono
 

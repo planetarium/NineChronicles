@@ -137,9 +137,7 @@ namespace Nekoyume.UI
             speechBubble.beforeText.gameObject.SetActive(!isCombine);
             speechBubble.beforeText.text = $"+{runeItem.Level}";
             speechBubble.afterText.text = $"+{resultLevel}";
-            speechBubble.dialogText.text = isCombine ?
-                L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE") :
-                L10nManager.Localize("UI_RUNE_UPGRADE_COMPLETE");
+            speechBubble.dialogText.text = isCombine ? L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE") : L10nManager.Localize("UI_RUNE_UPGRADE_COMPLETE");
             speechBubble.container.SetActive(true);
 
             animator.Play(HashToSuccess);
@@ -192,7 +190,7 @@ namespace Nekoyume.UI
             {
                 var info = nextOption.Stats[i];
                 stats[i].gameObject.SetActive(true);
-                statTextList[i].text = $"{info.stat.StatType.ToString()} {info.stat.StatType.ValueToString(info.stat.TotalValueAsLong)}";
+                statTextList[i].text = $"{info.stat.StatType.ToString()} {info.stat.StatType.ValueToString(info.stat.TotalValue)}";
             }
 
             if (item.Level > 0)
@@ -206,7 +204,7 @@ namespace Nekoyume.UI
                 {
                     var next = nextOption.Stats[i];
                     var cur = curOption.Stats[i];
-                    var result = next.stat.TotalValueAsLong - cur.stat.TotalValueAsLong;
+                    var result = next.stat.TotalValue - cur.stat.TotalValue;
                     addStatTextList[i].text = $"(+{cur.stat.StatType.ValueToString(result)})";
                 }
             }
@@ -215,7 +213,7 @@ namespace Nekoyume.UI
                 for (var i = 0; i < nextOption.Stats.Count; i++)
                 {
                     var info = nextOption.Stats[i];
-                    addStatTextList[i].text = $"(+{info.stat.StatType.ValueToString(info.stat.TotalValueAsLong)})";
+                    addStatTextList[i].text = $"(+{info.stat.StatType.ValueToString(info.stat.TotalValue)})";
                 }
             }
         }

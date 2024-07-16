@@ -9,6 +9,7 @@ using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Nekoyume.Helper;
 using Cysharp.Threading.Tasks;
 using System.Numerics;
+using Nekoyume.ApiClient;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -134,12 +135,9 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Game.Game.instance.IAPServiceManager.CheckProductAvailable(_data.Sku, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
+                    ApiClients.Instance.IAPServiceManager.CheckProductAvailable(_data.Sku, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
                         //success
-                        () =>
-                        {
-                            Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
-                        },
+                        () => { Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku); },
                         //failed
                         () =>
                         {
@@ -207,7 +205,7 @@ namespace Nekoyume.UI
 
             // Initialize IAP Reward
 
-            int iapRewardIndex = 0;
+            var iapRewardIndex = 0;
             foreach (var item in _data.FavList)
             {
                 if (iapRewardIndex < iapRewards.Length)
@@ -270,6 +268,7 @@ namespace Nekoyume.UI
                     var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
                     item.text = origin;
                 }
+
                 tagObj.SetActive(true);
                 discountText.gameObject.SetActive(true);
             }
@@ -281,7 +280,7 @@ namespace Nekoyume.UI
             }
 
 
-            if(_data.RequiredLevel != null)
+            if (_data.RequiredLevel != null)
             {
                 buttonDisableObj.SetActive(_data.RequiredLevel > States.Instance.CurrentAvatarState.level);
                 buyButton.interactable = !buttonDisableObj.activeSelf;

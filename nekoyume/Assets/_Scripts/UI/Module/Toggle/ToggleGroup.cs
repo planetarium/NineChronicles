@@ -7,16 +7,16 @@ namespace Nekoyume.UI.Module
 {
     public class ToggleGroup : IToggleGroup
     {
-        private readonly Dictionary<int, IToggleable> _idAndToggleablePairs = new Dictionary<int, IToggleable>();
+        private readonly Dictionary<int, IToggleable> _idAndToggleablePairs = new();
 
-        public readonly Subject<IToggleable> OnToggledOn = new Subject<IToggleable>();
-        public readonly Subject<IToggleable> OnToggledOff = new Subject<IToggleable>();
+        public readonly Subject<IToggleable> OnToggledOn = new();
+        public readonly Subject<IToggleable> OnToggledOff = new();
 
         public IEnumerable<IToggleable> Toggleables => _idAndToggleablePairs.Values;
 
         public Func<bool> DisabledFunc = null;
 
-        #region IToggleGroup
+#region IToggleGroup
 
         public void OnToggle(IToggleable toggleable)
         {
@@ -55,7 +55,9 @@ namespace Nekoyume.UI.Module
         {
             var id = toggleable.GetInstanceID();
             if (_idAndToggleablePairs.ContainsKey(id))
+            {
                 return;
+            }
 
             _idAndToggleablePairs.Add(id, toggleable);
             toggleable.SetToggleListener(this);
@@ -89,6 +91,6 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        #endregion
+#endregion
     }
 }

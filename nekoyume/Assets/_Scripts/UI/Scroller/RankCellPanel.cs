@@ -70,6 +70,7 @@ namespace Nekoyume.UI.Scroller
                             (await Game.Game.instance.Agent.GetAvatarStatesAsync(
                                 new[] { address }))[address];
                     }
+
                     Widget.Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Adventure).Forget();
                     loadingScreen.Close();
                 })

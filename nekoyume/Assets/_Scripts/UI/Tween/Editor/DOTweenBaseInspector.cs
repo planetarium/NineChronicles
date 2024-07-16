@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Tween
 {
-[CustomEditor(typeof(DOTweenBase), true)]
+    [CustomEditor(typeof(DOTweenBase), true)]
     public class DOTweenBaseInspector : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Tween
                 || tween.tweenType == DOTweenBase.TweenType.PingPongOnce)
             {
                 GUILayout.Space(4.0f);
-                GUILayout.Label ("[Tween Complete Callback]");
+                GUILayout.Label("[Tween Complete Callback]");
                 tween.target = (GameObject)EditorGUILayout.ObjectField("GameObject", tween.target, typeof(GameObject), true);
                 if (tween.target)
                 {
@@ -30,6 +30,7 @@ namespace Nekoyume.UI.Tween
                 {
                     tween.completeMethod = "";
                 }
+
                 tween.completeDelay = EditorGUILayout.FloatField("CompleteDelay", tween.completeDelay);
             }
 
@@ -43,7 +44,7 @@ namespace Nekoyume.UI.Tween
             }
             else
             {
-                tween.ease = (Ease) EditorGUILayout.EnumPopup("Easing function", tween.ease);
+                tween.ease = (Ease)EditorGUILayout.EnumPopup("Easing function", tween.ease);
             }
 
             DrawGUIRectTransformMoveTo();
@@ -54,9 +55,12 @@ namespace Nekoyume.UI.Tween
             var tween = target as DOTweenBase;
             var components = tween.target.GetComponents(typeof(Component));
             if (components.Length == 0)
+            {
                 return;
-            string[] options = components.Select((x, i) => $"[{i}] " + x.GetType().ToString()).ToArray();
-            int selected = tween.componentIndex;
+            }
+
+            var options = components.Select((x, i) => $"[{i}] " + x.GetType().ToString()).ToArray();
+            var selected = tween.componentIndex;
             selected = selected < 0 ? 0 : selected;
             selected = EditorGUILayout.Popup("Component", selected, options);
             tween.componentIndex = selected;
@@ -74,12 +78,15 @@ namespace Nekoyume.UI.Tween
                 System.Reflection.BindingFlags.Public
                 | System.Reflection.BindingFlags.Instance
                 | System.Reflection.BindingFlags.DeclaredOnly);
-            string[] options = methodInfos.Select(x => x.Name).ToArray();
-            int selected = Array.IndexOf(options, tween.completeMethod);
+            var options = methodInfos.Select(x => x.Name).ToArray();
+            var selected = Array.IndexOf(options, tween.completeMethod);
             selected = selected < 0 ? 0 : selected;
             selected = EditorGUILayout.Popup("Method", selected, options);
             if (options.Length == 0)
+            {
                 return;
+            }
+
             tween.completeMethod = options[selected];
         }
 
@@ -87,14 +94,17 @@ namespace Nekoyume.UI.Tween
         {
             var rectMoveToTween = target as DOTweenRectTransformMoveTo;
             if (!rectMoveToTween)
+            {
                 return;
+            }
 
             GUILayout.Space(4.0f);
-            GUILayout.Label ("[MoveTo Control]");
+            GUILayout.Label("[MoveTo Control]");
             if (GUILayout.Button("Current -> BeginValue"))
             {
                 rectMoveToTween.beginValue = rectMoveToTween.transform.position;
             }
+
             if (GUILayout.Button("Current -> EndValue"))
             {
                 rectMoveToTween.endValue = rectMoveToTween.transform.position;
@@ -104,6 +114,7 @@ namespace Nekoyume.UI.Tween
             {
                 rectMoveToTween.transform.position = rectMoveToTween.beginValue;
             }
+
             if (GUILayout.Button("EndValue -> Current"))
             {
                 rectMoveToTween.transform.position = rectMoveToTween.endValue;

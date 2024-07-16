@@ -56,12 +56,14 @@ namespace Nekoyume.UI
         public void Set(long current, long additional, long max)
         {
             SetText($"{current} / {max}");
-            SetValue((float) math.min(current, max - additional) / max);
+            SetValue((float)math.min(current, max - additional) / max);
 
-            bool isHPBoosted = additional > 0;
+            var isHPBoosted = additional > 0;
             additionalSlider.gameObject.SetActive(isHPBoosted);
             if (isHPBoosted)
-                additionalSlider.value = (float) current / max;
+            {
+                additionalSlider.value = (float)current / max;
+            }
         }
 
         protected override void OnDestroy()

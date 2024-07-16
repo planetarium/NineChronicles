@@ -23,12 +23,12 @@ namespace Nekoyume.Helper
             Converters =
             {
                 new StringEnumerableConverter(),
-                new NullablePlanetIdJsonConverter(),
+                new NullablePlanetIdJsonConverter()
             },
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReadCommentHandling = JsonCommentHandling.Skip,
+            ReadCommentHandling = JsonCommentHandling.Skip
         };
 
         private string _planetRegistryUrl;
@@ -570,6 +570,7 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Obsolete("Removed from event guild logic on client")]
         [Option("guild-service-url", Required = false, HelpText = "guild service url")]
         public string GuildServiceUrl
         {
@@ -605,21 +606,22 @@ namespace Nekoyume.Helper
 
         public override string ToString()
         {
-            string result = "";
+            var result = "";
             IEnumerable<PropertyInfo> properties = GetType().GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
-            foreach (PropertyInfo property in properties)
+            foreach (var property in properties)
             {
-                OptionAttribute optAttr = Attribute.GetCustomAttribute(property, typeof(OptionAttribute)) as OptionAttribute;
+                var optAttr = Attribute.GetCustomAttribute(property, typeof(OptionAttribute)) as OptionAttribute;
                 if (optAttr != null && property.GetValue(this) != null)
                 {
-
                     if (property.PropertyType.ToString() == "System.Collections.Generic.IEnumerable`1[System.String]")
                     {
-                        string[] value = property.GetValue(this) as string[];
+                        var value = property.GetValue(this) as string[];
 
                         if (value.Length == 0)
+                        {
                             continue;
+                        }
 
                         result += $"[{optAttr.LongName}]\n";
                         foreach (var item in value)
@@ -633,6 +635,7 @@ namespace Nekoyume.Helper
                     }
                 }
             }
+
             return result;
         }
 
@@ -706,10 +709,11 @@ namespace Nekoyume.Helper
                 JsonSerializerOptions options)
             {
                 writer.WriteStartArray();
-                foreach (string el in value)
+                foreach (var el in value)
                 {
                     writer.WriteStringValue(el);
                 }
+
                 writer.WriteEndArray();
             }
         }

@@ -7,14 +7,14 @@ namespace Nekoyume.EnumType
         TopLeft,
         TopCenter,
         TopRight,
- 
+
         MiddleLeft,
         MiddleCenter,
         MiddleRight,
- 
+
         BottomLeft,
         BottomCenter,
-        BottomRight,
+        BottomRight
     }
 
     public static class PivotPresetTypeExtension
@@ -48,7 +48,7 @@ namespace Nekoyume.EnumType
 
         public static PivotPresetType ReverseX(this PivotPresetType pivotPresetType)
         {
-            switch(pivotPresetType)
+            switch (pivotPresetType)
             {
                 case PivotPresetType.TopLeft:
                     return PivotPresetType.TopRight;

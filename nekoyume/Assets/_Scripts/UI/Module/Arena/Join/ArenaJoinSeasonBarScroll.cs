@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         protected override GameObject CellPrefab => _cellPrefab;
 
-        private readonly Subject<int> _onSelectionChanged = new Subject<int>();
+        private readonly Subject<int> _onSelectionChanged = new();
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
 
         public void SetData(IList<ArenaJoinSeasonBarItemData> data, int? index = null)
@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             }
 
             var scrollBarIndex = Math.Clamp(data.Count, 6, 8) - 6;
-            for (int i = 0; i < scrollBarParents.Length; i++)
+            for (var i = 0; i < scrollBarParents.Length; i++)
             {
                 scrollBarParents[i].SetActive(i == scrollBarIndex);
             }

@@ -12,10 +12,13 @@ namespace Nekoyume.UI.Module
     {
         [SerializeField]
         private List<WorldMapStage> stages = null;
+
         [SerializeField]
         private Image line = null;
+
         [SerializeField]
         private Image line2 = null;
+
         [SerializeField]
         private Image background = null;
 
@@ -53,6 +56,7 @@ namespace Nekoyume.UI.Module
                     view.Hide();
                 }
             }
+
             var enable = activeCount > 10;
             line.gameObject.SetActive(enable);
             line2.gameObject.SetActive(!enable);

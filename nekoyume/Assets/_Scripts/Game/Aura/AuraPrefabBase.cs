@@ -18,6 +18,7 @@ namespace Nekoyume.Game
         }
 
 #region MonoBehaviour
+
         protected virtual void OnDisable()
         {
             RemoveEventFromOwner();
@@ -27,12 +28,15 @@ namespace Nekoyume.Game
         {
             RemoveEventFromOwner();
         }
+
 #endregion MonoBehaviour
 
         protected virtual void AddEventToOwner()
         {
             if (_owner == null)
+            {
                 return;
+            }
 
             _owner.OnBuff += ProcessBuff;
             _owner.OnCustomEvent += ProcessCustomEvent;
@@ -42,7 +46,9 @@ namespace Nekoyume.Game
         protected virtual void RemoveEventFromOwner()
         {
             if (_owner == null)
+            {
                 return;
+            }
 
             _owner.OnBuff -= ProcessBuff;
             _owner.OnCustomEvent -= ProcessCustomEvent;
@@ -55,17 +61,14 @@ namespace Nekoyume.Game
         /// <param name="buffId">발생된 버프 ID</param>
         protected virtual void ProcessBuff(int buffId)
         {
-
         }
 
         protected virtual void ProcessCustomEvent(int customEventId)
         {
-
         }
 
         protected virtual void ProcessBuffEnd(int buffId)
         {
-
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
             // Mobile platform adaptation
-            if(Platform.IsMobilePlatform())
+            if (Platform.IsMobilePlatform())
             {
                 closeMask.gameObject.SetActive(true);
                 // Only add listener once
@@ -47,7 +47,7 @@ namespace Nekoyume.UI.Module
 
         public void HideTooltip()
         {
-            Widget.Find<VanilaTooltip>().Close();
+            Find<VanilaTooltip>().Close();
         }
 
         public void SetSize(float width, float height)

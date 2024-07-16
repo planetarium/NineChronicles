@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
@@ -11,6 +12,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module.WorldBoss
 {
     using UniRx;
+
     public class WorldBossSeason : MonoBehaviour
     {
         [SerializeField]
@@ -97,8 +99,10 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void UpdateUserCount(int count)
         {
-            raidersText.text = count > 0 ? $"{count:#,0}" : string.Empty;;
+            raidersText.text = count > 0 ? $"{count:#,0}" : string.Empty;
+            ;
         }
+
         public void UpdateBossInformation(
             int bossId,
             int level,
@@ -146,8 +150,8 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             myRankContainer.SetActive(false);
             emptyRecordContainer.SetActive(false);
-            apiMissingContainer.SetActive(!Game.Game.instance.ApiClient.IsInitialized);
-            if (!Game.Game.instance.ApiClient.IsInitialized)
+            apiMissingContainer.SetActive(!ApiClients.Instance.WorldBossClient.IsInitialized);
+            if (!ApiClients.Instance.WorldBossClient.IsInitialized)
             {
                 return;
             }

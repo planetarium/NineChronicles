@@ -12,18 +12,22 @@ namespace Planetarium.Nekoyume.Editor
         private static void SetScreenDynamicRatio()
         {
             ActionCamera.instance.UpdateDynamicRatio();
-            var raidCam = Component.FindObjectOfType<RaidCamera>();
+            var raidCam = Object.FindObjectOfType<RaidCamera>();
             if (raidCam != null)
+            {
                 raidCam.UpdateDynamicRatio();
+            }
         }
 
         [MenuItem("Screen/StaticRatio")]
         private static void SetScreenStaticRatio()
         {
             ActionCamera.instance.UpdateStaticRatioWithLetterBox();
-            var raidCam = Component.FindObjectOfType<RaidCamera>();
+            var raidCam = Object.FindObjectOfType<RaidCamera>();
             if (raidCam != null)
+            {
                 raidCam.UpdateStaticRatioWithLetterBox();
+            }
         }
     }
 }

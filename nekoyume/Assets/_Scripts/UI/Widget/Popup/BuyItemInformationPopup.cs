@@ -29,11 +29,11 @@ namespace Nekoyume.UI
         public Image equipmentHeader;
         public TextMeshProUGUI cpText;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
         private Model.BuyItemInformationPopup Model { get; set; }
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -43,7 +43,9 @@ namespace Nekoyume.UI
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
                 if (!pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
+                {
                     return;
+                }
 
                 Close();
             }).AddTo(gameObject);
@@ -58,7 +60,7 @@ namespace Nekoyume.UI
             base.OnDestroy();
         }
 
-        #endregion
+#endregion
 
         public void Pop(Model.BuyItemInformationPopup data)
         {
@@ -69,7 +71,7 @@ namespace Nekoyume.UI
 
             base.Show();
             SetData(data);
-            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) verticalLayoutGroup.transform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -161,12 +163,15 @@ namespace Nekoyume.UI
             equipmentHeader.gameObject.SetActive(isEquipment);
             if (isEquipment)
             {
-                cpText.text = CPHelper.GetCP((Equipment) item).ToString();
+                cpText.text = CPHelper.GetCP((Equipment)item).ToString();
             }
+
             cpText.transform.parent.gameObject.SetActive(isEquipment);
         }
 
-        public void TutorialActionClickCombinationResultPopupSubmitButton() =>
+        public void TutorialActionClickCombinationResultPopupSubmitButton()
+        {
             Close();
+        }
     }
 }

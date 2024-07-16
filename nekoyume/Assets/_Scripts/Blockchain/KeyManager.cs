@@ -19,6 +19,7 @@ namespace Nekoyume.Blockchain
         {
             private static readonly object _lock = new();
             private static KeyManager _value;
+
             internal static KeyManager Value
             {
                 get
@@ -96,7 +97,7 @@ namespace Nekoyume.Blockchain
             Func<string, string> decryptPassphraseFunc)
         {
             NcDebug.Log($"[KeyManager] Initialize(string, Func<string, string>, Func<string, string>) invoked: " +
-                      $"{keyStorePath}");
+                $"{keyStorePath}");
             if (encryptPassphraseFunc is null)
             {
                 NcDebug.LogError("[KeyManager] argument encryptPassphraseFunc is null.");
@@ -115,14 +116,15 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            _keyStore = GetKeyStore(keyStorePath, fileNameOnMobile: "keystore");
+            _keyStore = GetKeyStore(keyStorePath, "keystore");
             _encryptPassphraseFunc = encryptPassphraseFunc;
             _decryptPassphraseFunc = decryptPassphraseFunc;
             NcDebug.Log($"[KeyManager] Successfully initialize the key store: " +
-                      $"{_keyStore.Path}");
+                $"{_keyStore.Path}");
         }
 
-        #region Sign in
+#region Sign in
+
         /// <summary>
         /// Just sign in with the given private key hex.
         /// It does not register the key.
@@ -212,19 +214,19 @@ namespace Nekoyume.Blockchain
         public bool TrySigninWithTheFirstRegisteredKey()
         {
             NcDebug.Log("[KeyManager] TrySigninWithTheFirstRegisteredKey(Func<string, string>) invoked " +
-                      "with decryptFunc.");
+                "with decryptFunc.");
             // FIXME: Can we remove this check? `if (!Platform.IsMobilePlatform())`
             if (!Platform.IsMobilePlatform())
             {
                 NcDebug.Log("[KeyManager] TrySignInWithLocalPpk(Func<string, string>) failed." +
-                          "platform is not mobile");
+                    "platform is not mobile");
                 return false;
             }
 
             if (_keyStore is null)
             {
                 NcDebug.Log("[KeyManager] TrySigninWithTheFirstRegisteredKey(Func<string, string>) failed." +
-                          "KeyStore is not initialized.");
+                    "KeyStore is not initialized.");
                 return false;
             }
 
@@ -232,16 +234,18 @@ namespace Nekoyume.Blockchain
             if (firstKey is null)
             {
                 NcDebug.Log("[KeyManager] TrySigninWithTheFirstRegisteredKey(Func<string, string>) failed." +
-                          "KeyStore does not have any key.");
+                    "KeyStore does not have any key.");
                 return false;
             }
 
             var passphrase = GetCachedPassphrase(firstKey.Item2.Address);
             return TrySigninWithTheFirstRegisteredKey(passphrase);
         }
-        #endregion Sign in
 
-        #region Sign out
+#endregion Sign in
+
+#region Sign out
+
         /// <summary>
         /// Sign out.
         /// </summary>
@@ -250,9 +254,11 @@ namespace Nekoyume.Blockchain
             NcDebug.Log($"[KeyManager] SignOut() invoked.");
             _signedInPrivateKey = null;
         }
-        #endregion Sign out
 
-        #region IKeyStore as readonly
+#endregion Sign out
+
+#region IKeyStore as readonly
+
         public IEnumerable<Guid> GetListIds()
         {
             if (_keyStore is null)
@@ -296,9 +302,11 @@ namespace Nekoyume.Blockchain
                 return false;
             }
         }
-        #endregion IKeyStore as readonly
 
-        #region Register
+#endregion IKeyStore as readonly
+
+#region Register
+
         /// <summary>
         /// Register the key with the given private key hex and passphrase.
         /// Replace the key when there is already a key registered with the same address.
@@ -366,8 +374,8 @@ namespace Nekoyume.Blockchain
             bool replaceWhenAlreadyRegistered = false)
         {
             NcDebug.Log($"[KeyManager] Register(ProtectedPrivateKey, bool) invoked: " +
-                      $"{protectedPrivateKey.Address}, " +
-                      $"replaceWhenAlreadyRegistered({replaceWhenAlreadyRegistered})");
+                $"{protectedPrivateKey.Address}, " +
+                $"replaceWhenAlreadyRegistered({replaceWhenAlreadyRegistered})");
             if (protectedPrivateKey is null)
             {
                 NcDebug.LogError("[KeyManager] argument protectedPrivateKey is null.");
@@ -385,23 +393,25 @@ namespace Nekoyume.Blockchain
                 if (!replaceWhenAlreadyRegistered)
                 {
                     NcDebug.LogError("[KeyManager] KeyStore already has the key: " +
-                                   $"{protectedPrivateKey.Address}");
+                        $"{protectedPrivateKey.Address}");
                     return;
                 }
 
                 NcDebug.Log($"[KeyManager] KeyStore already has the key: " +
-                          $"{protectedPrivateKey.Address}. " +
-                          $"Replace the key.");
+                    $"{protectedPrivateKey.Address}. " +
+                    $"Replace the key.");
                 Unregister(protectedPrivateKey.Address);
             }
 
             _keyStore.Add(protectedPrivateKey);
             NcDebug.Log($"[KeyManager] Successfully register the key: " +
-                      $"{protectedPrivateKey.Address}");
+                $"{protectedPrivateKey.Address}");
         }
-        #endregion Register
 
-        #region Unregister
+#endregion Register
+
+#region Unregister
+
         /// <summary>
         /// Unregister the key with the given address.
         /// </summary>
@@ -417,7 +427,7 @@ namespace Nekoyume.Blockchain
             if (!TryGetKeyTuple(address, out var keyTuples))
             {
                 NcDebug.LogError("[KeyManager] KeyStore does not have the key: " +
-                               $"{address}");
+                    $"{address}");
                 return;
             }
 
@@ -426,9 +436,11 @@ namespace Nekoyume.Blockchain
                 _keyStore.Remove(keyTuple.Item1);
             }
         }
-        #endregion Unregister
 
-        #region Has
+#endregion Unregister
+
+#region Has
+
         /// <summary>
         /// Check if the key store has the key with the given private key hex.
         /// </summary>
@@ -465,16 +477,18 @@ namespace Nekoyume.Blockchain
 
             return _keyStore.List().Any(tuple => tuple.Item2.Address == address);
         }
-        #endregion Has key
 
-        #region Backup
+#endregion Has key
+
+#region Backup
+
         /// <summary>
         /// Backup the key with the given address to the given key store path.
         /// </summary>
         public void BackupKey(Address address, string keyStorePathToBackup)
         {
             NcDebug.Log($"[KeyManager] BackupKey(Address, string) invoked: {address}, " +
-                      $"{keyStorePathToBackup}");
+                $"{keyStorePathToBackup}");
             if (_keyStore is null)
             {
                 NcDebug.LogError("[KeyManager] KeyStore is not initialized.");
@@ -484,14 +498,15 @@ namespace Nekoyume.Blockchain
             var targetKeyList = _keyStore.List()
                 .Where(tuple => !tuple.Item2.Address.Equals(address))
                 .ToList();
-            var backupKeyStore = GetKeyStore(keyStorePathToBackup, fileNameOnMobile: "backup_keystore");
+            var backupKeyStore = GetKeyStore(keyStorePathToBackup, "backup_keystore");
             foreach (var tuple in targetKeyList)
             {
                 _keyStore.Remove(tuple.Item1);
                 backupKeyStore.Add(tuple.Item2);
             }
         }
-        #endregion Backup
+
+#endregion Backup
 
         /// <summary>
         /// Try change the passphrase for the key with the given address.
@@ -504,7 +519,7 @@ namespace Nekoyume.Blockchain
             string newPassphrase)
         {
             NcDebug.Log("[KeyManager] TryChangePassphrase(Address, string, string) invoked: " +
-                      $"{address}");
+                $"{address}");
             if (originPassphrase is null)
             {
                 NcDebug.LogWarning("[KeyManager] argument originPassphrase is null.");
@@ -526,7 +541,7 @@ namespace Nekoyume.Blockchain
             if (!TryGetKeyTuple(address, out var keyTuples))
             {
                 NcDebug.LogWarning("[KeyManager] KeyStore does not have the key: " +
-                                 $"{address}");
+                    $"{address}");
                 return false;
             }
 
@@ -553,7 +568,7 @@ namespace Nekoyume.Blockchain
             }
 
             NcDebug.Log($"[KeyManager] Successfully change all passphrases for the key: " +
-                      $"{address}");
+                $"{address}");
             return atLeastOneSuccess;
         }
 
@@ -566,17 +581,17 @@ namespace Nekoyume.Blockchain
             out PrivateKey privateKey)
         {
             NcDebug.Log($"[KeyManager] TryUnprotect(ProtectedPrivateKey, string, out PrivateKey) " +
-                      $"invoked: {protectedPrivateKey.Address}");
+                $"invoked: {protectedPrivateKey.Address}");
             try
             {
                 privateKey = protectedPrivateKey.Unprotect(passphrase);
                 NcDebug.Log("[KeyManager] Successfully unprotect the key: " +
-                          $"{protectedPrivateKey.Address}");
+                    $"{protectedPrivateKey.Address}");
             }
             catch (IncorrectPassphraseException)
             {
                 NcDebug.LogWarning("[KeyManager] The passphrase is incorrect for the key: " +
-                                 $"{protectedPrivateKey.Address}");
+                    $"{protectedPrivateKey.Address}");
                 privateKey = null;
             }
 
@@ -591,7 +606,7 @@ namespace Nekoyume.Blockchain
             out IEnumerable<Tuple<Guid, ProtectedPrivateKey>> keyTuple)
         {
             NcDebug.Log($"[KeyManager] TryGetKeyTuple(Address, out IEnumerable<Tuple<Guid, ProtectedPrivateKey>>) " +
-                      $"invoked: {address}");
+                $"invoked: {address}");
             try
             {
                 keyTuple = _keyStore.List().Where(tuple =>
@@ -613,7 +628,7 @@ namespace Nekoyume.Blockchain
         private static Web3KeyStore GetKeyStore(string path, string fileNameOnMobile)
         {
             NcDebug.Log($"[KeyManager] GetKeyStore(string, string) invoked: {path}, " +
-                      $"{fileNameOnMobile}");
+                $"{fileNameOnMobile}");
             if (Platform.IsMobilePlatform())
             {
                 path ??= Platform.GetPersistentDataPath(fileNameOnMobile);
@@ -627,7 +642,8 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        #region Passphrase
+#region Passphrase
+
         /// <summary>
         /// Cache the passphrase for the key with the given address.
         /// It uses <see cref="_encryptPassphraseFunc"/> to encrypt the passphrase.
@@ -635,16 +651,21 @@ namespace Nekoyume.Blockchain
         /// </summary>
         public void CachePassphrase(
             Address address,
-            string passphrase) =>
+            string passphrase)
+        {
             CachePassphrase(address, passphrase, _encryptPassphraseFunc);
+        }
 
         /// <summary>
         /// Get the cached passphrase for the key with the given address.
         /// It uses <see cref="_decryptPassphraseFunc"/> to decrypt the passphrase.
         /// _decryptPassphraseFunc is set in <see cref="Initialize"/>.
         /// </summary>
-        public string GetCachedPassphrase(Address address, string defaultValue = "") =>
-            GetCachedPassphrase(address, _decryptPassphraseFunc, defaultValue);
-        #endregion Passphrase
+        public string GetCachedPassphrase(Address address, string defaultValue = "")
+        {
+            return GetCachedPassphrase(address, _decryptPassphraseFunc, defaultValue);
+        }
+
+#endregion Passphrase
     }
 }

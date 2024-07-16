@@ -11,7 +11,7 @@ namespace Nekoyume.UI
 
     public class DialogEffectShake : DialogEffect
     {
-        public Vector3 value = new Vector3();
+        public Vector3 value = new();
         public float duration = 1.0f;
         public int loops = 1;
 
@@ -19,11 +19,12 @@ namespace Nekoyume.UI
         {
             duration = duration / (loops * 2.0f);
             var seq = DOTween.Sequence();
-            for (int i = 0; i < loops; ++i)
+            for (var i = 0; i < loops; ++i)
             {
                 seq.Append(widget.imgCharacter.transform.DOBlendableLocalMoveBy(value, duration));
                 seq.Append(widget.imgCharacter.transform.DOBlendableLocalMoveBy(-value, duration));
             }
+
             seq.Play();
         }
     }

@@ -17,6 +17,7 @@ namespace Nekoyume.UI
         /// W = Top
         /// </summary>
         public Vector4 buttonRaycastPadding;
+
         public Vector2 targetPositionOffset;
         public Vector2 targetSizeOffset;
 

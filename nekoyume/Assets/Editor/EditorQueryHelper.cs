@@ -42,10 +42,7 @@ namespace Editor
 
         public static void FindQuery(VisualElement root, string[] testName)
         {
-            root.Query(classes: testName).ForEach((result) =>
-            {
-                Debug.Log($"FindQuery / name : {result.name}");
-            });
+            root.Query(classes: testName).ForEach((result) => { Debug.Log($"FindQuery / name : {result.name}"); });
         }
 
         public static bool IsChild(VisualElement parent, VisualElement child)

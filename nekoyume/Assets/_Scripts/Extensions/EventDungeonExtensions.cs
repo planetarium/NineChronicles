@@ -8,8 +8,10 @@ namespace Nekoyume
 {
     public static class EventDungeonExtensions
     {
-        public static string GetLocalizedName(this EventDungeonSheet.Row row) =>
-            L10nManager.Localize($"EVENT_DUNGEON_NAME_{row.Id}");
+        public static string GetLocalizedName(this EventDungeonSheet.Row row)
+        {
+            return L10nManager.Localize($"EVENT_DUNGEON_NAME_{row.Id}");
+        }
 
         public static List<EventDungeonStageSheet.Row> GetStagesContainsReward(
             this List<EventDungeonStageSheet.Row> rows,

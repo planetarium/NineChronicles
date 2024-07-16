@@ -123,8 +123,8 @@ namespace Nekoyume
 
         public static bool TryGetPivotPresetType(this RectTransform rectTransform, out PivotPresetType result)
         {
-            int pivotPresetTypeIndex = 0;
-            switch(rectTransform.pivot.y)
+            var pivotPresetTypeIndex = 0;
+            switch (rectTransform.pivot.y)
             {
                 case 0:
                     pivotPresetTypeIndex += 6;
@@ -139,7 +139,7 @@ namespace Nekoyume
                     return false;
             }
 
-            switch(rectTransform.pivot.x)
+            switch (rectTransform.pivot.x)
             {
                 case 0:
                     break;
@@ -230,7 +230,7 @@ namespace Nekoyume
         }
 
         public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target, PivotPresetType pivotPresetType,
-             float2 offset)
+            float2 offset)
         {
             if (target is null)
             {
@@ -303,7 +303,9 @@ namespace Nekoyume
                 endValue = to + anchoredPosition;
             }
             else
+            {
                 endValue = to;
+            }
 
             return DOTween.To(() => rectTransform.anchoredPosition,
                 value => rectTransform.anchoredPosition = value, to, duration);
@@ -313,13 +315,15 @@ namespace Nekoyume
             this RectTransform rectTransform, float to, float duration, bool relative = false)
         {
             Vector2 endValue;
-            if(relative)
+            if (relative)
             {
                 var anchoredPosition = rectTransform.anchoredPosition;
                 endValue = new Vector2(to, 0) + anchoredPosition;
             }
             else
+            {
                 endValue = new Vector2(rectTransform.anchoredPosition.x, to);
+            }
 
             return DOTween.To(() => rectTransform.anchoredPosition,
                 value => rectTransform.anchoredPosition = value, endValue, duration);
@@ -329,13 +333,15 @@ namespace Nekoyume
             this RectTransform rectTransform, float to, float duration, bool relative = false)
         {
             Vector2 endValue;
-            if(relative)
+            if (relative)
             {
                 var anchoredPosition = rectTransform.anchoredPosition;
                 endValue = new Vector2(0, to) + anchoredPosition;
             }
             else
+            {
                 endValue = new Vector2(rectTransform.anchoredPosition.x, to);
+            }
 
             return DOTween.To(() => rectTransform.anchoredPosition,
                 value => rectTransform.anchoredPosition = value, endValue, duration);
@@ -386,7 +392,7 @@ namespace Nekoyume
             var flipFlag = isFlipped ^ isFlip;
 
             var localScale = vfx.transform.localScale;
-            localScale               = new Vector3(localScale.x * (flipFlag ? -1 : 1), localScale.y, localScale.z);
+            localScale = new Vector3(localScale.x * (flipFlag ? -1 : 1), localScale.y, localScale.z);
             vfx.transform.localScale = localScale;
         }
     }

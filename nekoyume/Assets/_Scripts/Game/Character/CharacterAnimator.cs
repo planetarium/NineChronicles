@@ -86,7 +86,7 @@ namespace Nekoyume.Game.Character
             return HUDPosition;
         }
 
-        #region Animation
+#region Animation
 
         public void Play(CharacterAnimation.Type type)
         {
@@ -116,6 +116,7 @@ namespace Nekoyume.Game.Character
                     break;
             }
         }
+
         public bool HasType(CharacterAnimation.Type type)
         {
             var stateId = Animator.StringToHash(type.ToString());
@@ -245,7 +246,7 @@ namespace Nekoyume.Game.Character
         public void Hit()
         {
             if (!ValidateAnimator() || !Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex)
-                    .IsName(nameof(CharacterAnimation.Type.Idle)))
+                .IsName(nameof(CharacterAnimation.Type.Idle)))
             {
                 return;
             }
@@ -309,7 +310,7 @@ namespace Nekoyume.Game.Character
             Animator.Play(animation.ToString(), BaseLayerIndex, 0f);
         }
 
-        #endregion
+#endregion
 
         private void ColorTween()
         {

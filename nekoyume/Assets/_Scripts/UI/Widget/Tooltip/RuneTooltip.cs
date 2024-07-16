@@ -24,6 +24,7 @@ using SkillView = Nekoyume.UI.Module.SkillView;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class RuneTooltip : NewVerticalTooltipWidget
     {
         [SerializeField]
@@ -116,12 +117,12 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
 
             confirmButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_MESSAGE_CAN_NOT_EQUIPPED"),
-                    NotificationCell.NotificationType.Alert);
-            })
-            .AddTo(gameObject);
+                {
+                    NotificationSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_MESSAGE_CAN_NOT_EQUIPPED"),
+                        NotificationCell.NotificationType.Alert);
+                })
+                .AddTo(gameObject);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -132,7 +133,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-         public void ShowForDisplay(RuneState runeState)
+        public void ShowForDisplay(RuneState runeState)
         {
             confirmButton.gameObject.SetActive(false);
             enhancementButton.gameObject.SetActive(false);
@@ -189,7 +190,7 @@ namespace Nekoyume.UI
                 {
                     var (statMap, _) = option.Stats[i];
                     statViewList[i].gameObject.SetActive(true);
-                    statViewList[i].Show(statMap.StatType, statMap.TotalValueAsLong, true);
+                    statViewList[i].Show(statMap.StatType, statMap.TotalValue, true);
                 }
 
                 cpText.text = $"<size=80%>CP</size> {option.Cp}";
@@ -267,7 +268,7 @@ namespace Nekoyume.UI
                 {
                     var (statMap, _) = option.Stats[i];
                     statViewList[i].gameObject.SetActive(true);
-                    statViewList[i].Show(statMap.StatType, statMap.TotalValueAsLong, true);
+                    statViewList[i].Show(statMap.StatType, statMap.TotalValue, true);
                 }
 
                 cpText.text = $"<size=80%>CP</size> {option.Cp}";

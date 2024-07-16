@@ -36,9 +36,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected string localizationKey = null;
 
-        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> HasNotification = new(false);
 
-        #region IToggleable
+#region IToggleable
 
         private IToggleListener _toggleListener;
 
@@ -65,7 +65,7 @@ namespace Nekoyume.UI.Module
             _toggleListener = toggleListener;
         }
 
-        #endregion
+#endregion
 
         private void Awake()
         {
@@ -82,7 +82,9 @@ namespace Nekoyume.UI.Module
         private void SubscribeOnClick()
         {
             if (IsToggledOn)
+            {
                 return;
+            }
 
             AudioController.PlayClick();
             _toggleListener?.OnToggle(this);

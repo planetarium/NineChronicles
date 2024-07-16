@@ -12,7 +12,7 @@ namespace Nekoyume.L10n
         order = 1)]
     public class FontAssetGenerationSettings : ScriptableObject
     {
-        [SerializeField] 
+        [SerializeField]
         public List<FontAssetGenerationSetting> settings;
     }
 

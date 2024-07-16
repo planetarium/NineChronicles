@@ -33,11 +33,9 @@ namespace Nekoyume.Game.Util
         {
             private Transform _parent;
 
-            private readonly Dictionary<string, PoolData> _dict =
-                new Dictionary<string, PoolData>();
+            private readonly Dictionary<string, PoolData> _dict = new();
 
-            private readonly Dictionary<string, List<GameObject>> _objects =
-                new Dictionary<string, List<GameObject>>();
+            private readonly Dictionary<string, List<GameObject>> _objects = new();
 
             public Impl(Transform parent, IEnumerable<PoolData> list)
             {
@@ -65,7 +63,7 @@ namespace Nekoyume.Game.Util
             public GameObject Add(GameObject prefab, int count)
             {
                 GameObject first = null;
-                for (int i = 0; i < count; ++i)
+                for (var i = 0; i < count; ++i)
                 {
                     var go = Instantiate(prefab, _parent);
                     if (!first)
@@ -125,10 +123,13 @@ namespace Nekoyume.Game.Util
 
             public void RemoveAllExceptFirst()
             {
-                _objects.Values.ToList().ForEach(list => {
-                    if (list.Count > 1) {
-                        bool first = true;
-                        list.ForEach(gameObject => {
+                _objects.Values.ToList().ForEach(list =>
+                {
+                    if (list.Count > 1)
+                    {
+                        var first = true;
+                        list.ForEach(gameObject =>
+                        {
                             if (first)
                             {
                                 first = false;
@@ -164,7 +165,7 @@ namespace Nekoyume.Game.Util
                 }
             }
 
-            public GameObject Get(string objName, bool create, Vector3 position = default(Vector3))
+            public GameObject Get(string objName, bool create, Vector3 position = default)
             {
                 if (_objects.TryGetValue(objName, out var gameObjects))
                 {
@@ -214,7 +215,7 @@ namespace Nekoyume.Game.Util
 
         private Impl _impl;
 
-        public List<PoolData> list = new List<PoolData>();
+        public List<PoolData> list = new();
 
         public void Initialize()
         {

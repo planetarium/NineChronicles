@@ -18,10 +18,10 @@ namespace Nekoyume.Helper
                 !str.Contains("private")).ToList();
             var argsString = string.Join(" ", filteredArgs);
             NcDebug.Log($"[CommandLineParser] GetCommandLineOptions<{typeof(T).Name}> invoked" +
-                      $" with {argsString}");
+                $" with {argsString}");
 
             var parser = new Parser(with => with.IgnoreUnknownArguments = true);
-            ParserResult<T> result = parser.ParseArguments<T>(args);
+            var result = parser.ParseArguments<T>(args);
             if (result.Tag == ParserResultType.Parsed)
             {
                 return ((Parsed<T>)result).Value;

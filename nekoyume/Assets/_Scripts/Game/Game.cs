@@ -32,6 +32,7 @@ using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Battle;
@@ -53,6 +54,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using NineChronicles.ExternalServices.IAPService.Runtime;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 using UnityEngine.Playables;
 using Currency = Libplanet.Types.Assets.Currency;
@@ -62,7 +64,6 @@ using Random = UnityEngine.Random;
 using UnityEngine.Android;
 #endif
 using Nekoyume.Model.Mail;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
@@ -71,9 +72,9 @@ using NineChronicles.GoogleServices.Firebase.Runtime;
 namespace Nekoyume.Game
 {
     using GraphQL;
-    using Nekoyume.Arena;
+    using Arena;
     using Nekoyume.Model.EnumType;
-    using Nekoyume.TableData;
+    using TableData;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -131,12 +132,6 @@ namespace Nekoyume.Game
 
         public IAPStoreManager IAPStoreManager { get; private set; }
 
-        public IAPServiceManager IAPServiceManager { get; private set; }
-
-        public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
-
-        public GuildServiceClient GuildServiceClient { get; private set; }
-
         public AdventureBossData AdventureBossData { get; private set; }
 
         public Stage Stage => stage;
@@ -158,17 +153,7 @@ namespace Nekoyume.Game
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
-        public NineChroniclesAPIClient ApiClient { get; private set; }
-
-        public NineChroniclesAPIClient RpcGraphQLClient { get; private set; }
-
-        public MarketServiceClient MarketServiceClient { get; private set; }
-
-        public NineChroniclesAPIClient PatrolRewardServiceClient { get; private set; }
-
         public PortalConnect PortalConnect { get; private set; }
-
-        public Url URL { get; private set; }
 
         public readonly LruCache<Address, IValue> CachedStates = new();
 
@@ -187,9 +172,7 @@ namespace Nekoyume.Game
 
         private CommandLineOptions _commandLineOptions;
 
-        public CommandLineOptions CommandLineOptions { get => _commandLineOptions; }
-
-        private AmazonCloudWatchLogsClient _logsClient;
+        public CommandLineOptions CommandLineOptions => _commandLineOptions;
 
         private PlayableDirector _activeDirector;
 
@@ -197,9 +180,6 @@ namespace Nekoyume.Game
 
         public static readonly string CommandLineOptionsJsonPath =
             Platform.GetStreamingAssetsPath("clo.json");
-
-        private static readonly string UrlJsonPath =
-            Platform.GetStreamingAssetsPath("url.json");
 
         private Thread _headlessThread;
         private Thread _marketThread;
@@ -212,7 +192,7 @@ namespace Nekoyume.Game
         private const string WorldbossTicketPushIdentifierKey = "WORLDBOSS_TICKET_PUSH_IDENTIFIER";
         private const int TicketPushBlockCountThreshold = 300;
 
-        #region Mono & Initialization
+#region Mono & Initialization
 
 #if !UNITY_EDITOR && UNITY_IOS
         void OnAuthorizationStatusReceived(AppTrackingTransparency.AuthorizationStatus status)
@@ -243,7 +223,7 @@ namespace Nekoyume.Game
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
             OnLoadCommandlineOptions();
 #endif
-            URL = Url.Load(UrlJsonPath);
+            ApiClients.Instance.SetDccUrl();
 
             CreateAgent();
             PostAwake();
@@ -276,9 +256,9 @@ namespace Nekoyume.Game
             if (!KeyManager.Instance.IsInitialized)
             {
                 KeyManager.Instance.Initialize(
-                    keyStorePath: _commandLineOptions.KeyStorePath,
-                    encryptPassphraseFunc: Helper.Util.AesEncrypt,
-                    decryptPassphraseFunc: Helper.Util.AesDecrypt);
+                    _commandLineOptions.KeyStorePath,
+                    Helper.Util.AesEncrypt,
+                    Helper.Util.AesDecrypt);
             }
 
             // NOTE: Try to sign in with the first registered key
@@ -288,7 +268,7 @@ namespace Nekoyume.Game
                 KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
             {
                 NcDebug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty in mobile." +
-                                  " Set cached private key instead.");
+                    " Set cached private key instead.");
                 _commandLineOptions.PrivateKey =
                     KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             }
@@ -316,12 +296,12 @@ namespace Nekoyume.Game
             if (planetContext.IsSkipped)
             {
                 NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.IsSkipped is true." +
-                                   "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
+                    "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
             }
             else if (planetContext.HasError)
             {
                 NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.HasError is true." +
-                                   "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
+                    "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
             }
             else if (planetContext.PlanetRegistry!.TryGetPlanetInfoByHeadlessGrpc(_commandLineOptions.RpcServerHost, out var planetInfo))
             {
@@ -336,7 +316,7 @@ namespace Nekoyume.Game
             else
             {
                 NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planet id is not found in planet registry." +
-                                   "\nCheck CommandLineOptions.PlaneRegistryUrl and CommandLineOptions.RpcServerHost.");
+                    "\nCheck CommandLineOptions.PlaneRegistryUrl and CommandLineOptions.RpcServerHost.");
             }
 
             if (CurrentPlanetId is not null)
@@ -360,11 +340,11 @@ namespace Nekoyume.Game
             //       The planetId is null because it is not initialized yet. It will be
             //       updated after initialize Agent.
             InitializeAnalyzer(
-                agentAddr: _commandLineOptions.PrivateKey is null
+                _commandLineOptions.PrivateKey is null
                     ? null
                     : PrivateKey.FromString(_commandLineOptions.PrivateKey).Address,
-                planetId: null,
-                rpcServerHost: _commandLineOptions.RpcServerHost);
+                null,
+                _commandLineOptions.RpcServerHost);
             Analyzer.Track("Unity/Started");
 
             InitializeMessagePackResolver();
@@ -429,7 +409,7 @@ namespace Nekoyume.Game
 
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
-            UpdateServices();
+            ApiClients.Instance.Initialize(_commandLineOptions);
 
             StartCoroutine(InitializeIAP());
 
@@ -492,8 +472,6 @@ namespace Nekoyume.Game
             var showNextEvt = new AirbridgeEvent("Intro_Start_ShowNext");
             AirbridgeUnity.TrackEvent(showNextEvt);
 
-            yield return InitializeGuildService();
-
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
 
@@ -511,13 +489,8 @@ namespace Nekoyume.Game
                 var innerSw = new Stopwatch();
                 innerSw.Reset();
                 innerSw.Start();
-#if UNITY_IOS
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Apple);
-#else
-                //pc has to find iap product for mail box system
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-#endif
-                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+
+                yield return ApiClients.Instance.IAPServiceManager.InitializeAsync().AsCoroutine();
 
                 Task.Run(async () =>
                 {
@@ -544,7 +517,7 @@ namespace Nekoyume.Game
 
                 innerSw.Stop();
                 NcDebug.Log("[Game] Start()... IAPServiceManager initialized in" +
-                          $" {innerSw.ElapsedMilliseconds}ms.(elapsed)");
+                    $" {innerSw.ElapsedMilliseconds}ms.(elapsed)");
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
             }
 
@@ -615,7 +588,7 @@ namespace Nekoyume.Game
                 NcDebug.LogError(message);
                 QuitWithMessage(
                     L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
-                    debugMessage: message);
+                    message);
                 return;
             }
 
@@ -638,7 +611,7 @@ namespace Nekoyume.Game
                         NcDebug.LogError(message);
                         QuitWithMessage(
                             L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
-                            debugMessage: message);
+                            message);
                         return;
                     }
 
@@ -648,7 +621,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            if(Widget.TryFind<IntroScreen>(out var introscreen))
+            if (Widget.TryFind<IntroScreen>(out var introscreen))
             {
                 introscreen.GetGuestPrivateKey();
             }
@@ -658,7 +631,7 @@ namespace Nekoyume.Game
             NcDebug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
         }
 
-        #region RPCAgent
+#region RPCAgent
 
         private void SubscribeRPCAgent()
         {
@@ -797,7 +770,7 @@ namespace Nekoyume.Game
                 .Forget();
         }
 
-        #endregion
+#endregion
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
         {
@@ -872,7 +845,7 @@ namespace Nekoyume.Game
                             States.AgentState.address);
                         swForRequestPledge.Stop();
                         NcDebug.Log("[Game] CoCheckPledge()... PortalConnect.RequestPledge()" +
-                                  $" finished in {swForRequestPledge.ElapsedMilliseconds}ms.(elapsed)");
+                            $" finished in {swForRequestPledge.ElapsedMilliseconds}ms.(elapsed)");
 
                         if (!swForRenderingRequestPledge.IsRunning)
                         {
@@ -885,7 +858,7 @@ namespace Nekoyume.Game
                         {
                             swForRenderingRequestPledge.Stop();
                             NcDebug.Log("[Game] CoCheckPledge()... Rendering RequestPledge" +
-                                      $" finished in {swForRenderingRequestPledge.ElapsedMilliseconds}ms.(elapsed)");
+                                $" finished in {swForRenderingRequestPledge.ElapsedMilliseconds}ms.(elapsed)");
                         }
 
                         Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
@@ -916,7 +889,7 @@ namespace Nekoyume.Game
 
                     swForRenderingApprovePledge.Stop();
                     NcDebug.Log("[Game] CoCheckPledge()... Rendering ApprovePledge" +
-                              $" finished in {swForRenderingApprovePledge.ElapsedMilliseconds}ms.(elapsed)");
+                        $" finished in {swForRenderingApprovePledge.ElapsedMilliseconds}ms.(elapsed)");
 
                     Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
 
@@ -926,6 +899,7 @@ namespace Nekoyume.Game
 
                 Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.EndPledge);
             }
+
             yield break;
 
             IEnumerator SetTimeOut(Func<bool> condition)
@@ -933,7 +907,7 @@ namespace Nekoyume.Game
                 const int timeLimit = 180;
 
                 // Wait 180 minutes
-                for (int second = 0; second < timeLimit; second++)
+                for (var second = 0; second < timeLimit; second++)
                 {
                     yield return new WaitForSeconds(1f);
                     if (condition.Invoke())
@@ -994,6 +968,7 @@ namespace Nekoyume.Game
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(
                     AddressableAssetsContainerPath);
             }
+
             sw.Stop();
             NcDebug.Log($"[{nameof(SyncTableSheetsAsync)}] load container: {sw.Elapsed}");
             sw.Restart();
@@ -1029,9 +1004,9 @@ namespace Nekoyume.Game
             Address[] sheetAddr;
             Model.Stake.StakeStateV2? stakeState = null;
             if (!StakeStateUtilsForClient.TryMigrate(
-                    stakeStateIValue,
-                    States.Instance.GameConfigState,
-                    out var stakeStateV2))
+                stakeStateIValue,
+                States.Instance.GameConfigState,
+                out var stakeStateV2))
             {
                 if (Agent is RPCAgent)
                 {
@@ -1056,14 +1031,14 @@ namespace Nekoyume.Game
             {
                 stakeState = stakeStateV2;
                 balance = await Agent.GetBalanceAsync(stakeAddr, goldCurrency);
-                if(Agent is RPCAgent)
+                if (Agent is RPCAgent)
                 {
                     sheetAddr = new[]
                     {
                         Addresses.GetSheetAddress(
                             stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
                         Addresses.GetSheetAddress(
-                            stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                            stakeStateV2.Contract.StakeRegularRewardSheetTableName)
                     };
                 }
                 // It is local play. local genesis block not has Stake***Sheet_V*.
@@ -1120,7 +1095,7 @@ namespace Nekoyume.Game
                     await RxProps.SelectAvatarAsync(slotIndex, Agent.BlockTipStateRootHash, true);
                     sw.Stop();
                     NcDebug.Log("[Game] EnterNext()... SelectAvatarAsync() finished in" +
-                              $" {sw.ElapsedMilliseconds}ms.(elapsed)");
+                        $" {sw.ElapsedMilliseconds}ms.(elapsed)");
                     loadingScreen.Close();
                     Event.OnRoomEnter.Invoke(false);
                     Event.OnUpdateAddresses.Invoke();
@@ -1152,7 +1127,7 @@ namespace Nekoyume.Game
                         await RxProps.SelectAvatarAsync(slotIndex, Agent.BlockTipStateRootHash, true);
                         sw.Stop();
                         NcDebug.Log("[Game] EnterNext()... SelectAvatarAsync() finished in" +
-                                  $" {sw.ElapsedMilliseconds}ms.(elapsed)");
+                            $" {sw.ElapsedMilliseconds}ms.(elapsed)");
                         Event.OnRoomEnter.Invoke(false);
                         Event.OnUpdateAddresses.Invoke();
                     }
@@ -1187,8 +1162,6 @@ namespace Nekoyume.Game
                 var evt = new AirbridgeEvent("Intro_Player_Quit");
                 AirbridgeUnity.TrackEvent(evt);
             }
-
-            _logsClient?.Dispose();
         }
 
         private IEnumerator CoUpdate()
@@ -1239,7 +1212,7 @@ namespace Nekoyume.Game
             if (BattleRenderer.Instance.IsOnBattle)
             {
                 NotificationSystem.Push(
-                    Model.Mail.MailType.System,
+                    MailType.System,
                     L10nManager.Localize("UI_BLOCK_EXIT"),
                     NotificationCell.NotificationType.Information);
                 yield break;
@@ -1335,7 +1308,7 @@ namespace Nekoyume.Game
             var sw = new Stopwatch();
             if (Application.isBatchMode)
             {
-                loginSystem.Show(privateKeyString: _commandLineOptions.PrivateKey);
+                loginSystem.Show(_commandLineOptions.PrivateKey);
                 yield return AgentInitialize(false, loginCallback);
                 yield break;
             }
@@ -1352,7 +1325,7 @@ namespace Nekoyume.Game
                     introScreen.Show(
                         _commandLineOptions.KeyStorePath,
                         _commandLineOptions.PrivateKey,
-                        planetContext: null);
+                        null);
                 }
 
                 NcDebug.Log("[Game] CoLogin()... WaitUntil KeyManager.Instance.IsSignedIn.");
@@ -1362,7 +1335,7 @@ namespace Nekoyume.Game
                 // NOTE: Update CommandlineOptions.PrivateKey finally.
                 _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
                 NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                          $" to ({KeyManager.Instance.SignedInAddress}).");
+                    $" to ({KeyManager.Instance.SignedInAddress}).");
             }
 
             yield return AgentInitialize(true, loginCallback);
@@ -1441,10 +1414,7 @@ namespace Nekoyume.Game
                     yield break;
                 }
 
-                yield return PortalLoginProcess(socialType, idToken, outAddr =>
-                {
-                    agentAddrInPortal = outAddr;
-                });
+                yield return PortalLoginProcess(socialType, idToken, outAddr => { agentAddrInPortal = outAddr; });
             }
 
             // NOTE: Update PlanetContext.PlanetAccountInfos.
@@ -1458,7 +1428,7 @@ namespace Nekoyume.Game
                     // NOTE: Don't set the autoGeneratedAgentAddress to agentAddr.
                     var autoGeneratedAgentAddress = KeyManager.Instance.SignedInAddress;
                     NcDebug.Log($"[Game] CoLogin()... auto generated agent address: {autoGeneratedAgentAddress}." +
-                              " And Update planet account infos w/ empty agent address.");
+                        " And Update planet account infos w/ empty agent address.");
                 }
 
                 // NOTE: Initialize planet account infos as default(empty) value
@@ -1466,20 +1436,20 @@ namespace Nekoyume.Game
                 planetContext.PlanetAccountInfos = planetContext.PlanetRegistry?.PlanetInfos
                     .Select(planetInfo => new PlanetAccountInfo(
                         planetInfo.ID,
-                        agentAddress: null,
-                        isAgentPledged: null))
+                        null,
+                        null))
                     .ToArray();
             }
             else
             {
                 var requiredAddress = agentAddrInPortal.Value;
                 NcDebug.Log($"[Game] CoLogin()... AgentAddress({requiredAddress}) in portal" +
-                          $" is not null. Try to update planet account infos.");
+                    $" is not null. Try to update planet account infos.");
                 dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
                     requiredAddress,
-                    updateSelectedPlanetAccountInfo: false).ToCoroutine();
+                    false).ToCoroutine();
                 dimmedLoadingScreen.Close();
                 if (planetContext.HasError)
                 {
@@ -1518,7 +1488,7 @@ namespace Nekoyume.Game
 
                 NcDebug.Log("[Game] CoLogin()... Player have to make a pledge.");
                 NcDebug.Log("[Game] CoLogin()... Set planetContext.SelectedPlanetAccountInfo" +
-                          " w/ planetContext.SelectedPlanetInfo.ID.");
+                    " w/ planetContext.SelectedPlanetInfo.ID.");
                 planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos!.First(e =>
                     e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
             }
@@ -1528,7 +1498,7 @@ namespace Nekoyume.Game
             // NOTE: Update CommandlineOptions.PrivateKey finally.
             _commandLineOptions.PrivateKey = KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                      $" to ({KeyManager.Instance.SignedInAddress}).");
+                $" to ({KeyManager.Instance.SignedInAddress}).");
 
             yield return AgentInitialize(true, loginCallback);
         }
@@ -1573,110 +1543,16 @@ namespace Nekoyume.Game
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
 
-        private async void UploadLog(string logString, string stackTrace, LogType type)
-        {
-            // Avoid NRE
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (Agent.PrivateKey is null)
-            {
-                _msg += logString + "\n";
-                if (!string.IsNullOrEmpty(stackTrace))
-                {
-                    _msg += stackTrace + "\n";
-                }
-            }
-            else
-            {
-                const string groupName = "9c-player-logs";
-                var streamName = _commandLineOptions.AwsSinkGuid;
-                try
-                {
-                    var req = new CreateLogGroupRequest(groupName);
-                    await _logsClient.CreateLogGroupAsync(req);
-                }
-                catch (ResourceAlreadyExistsException)
-                {
-                }
-                catch (ObjectDisposedException)
-                {
-                    return;
-                }
-
-                try
-                {
-                    var req = new CreateLogStreamRequest(groupName, streamName);
-                    await _logsClient.CreateLogStreamAsync(req);
-                }
-                catch (ResourceAlreadyExistsException)
-                {
-                    // ignored
-                }
-
-                PutLog(groupName, streamName, GetMessage(logString, stackTrace));
-            }
-        }
-
-        private async void PutLog(string groupName, string streamName, string msg)
-        {
-            try
-            {
-                var req = new DescribeLogStreamsRequest(groupName)
-                {
-                    LogStreamNamePrefix = streamName
-                };
-                var resp = await _logsClient.DescribeLogStreamsAsync(req);
-                var token = resp.LogStreams.FirstOrDefault(s =>
-                    s.LogStreamName == streamName)?.UploadSequenceToken;
-                var ie = new InputLogEvent
-                {
-                    Message = msg,
-                    Timestamp = DateTime.UtcNow
-                };
-                var request = new PutLogEventsRequest(
-                    groupName,
-                    streamName,
-                    new List<InputLogEvent> { ie });
-                if (!string.IsNullOrEmpty(token))
-                {
-                    request.SequenceToken = token;
-                }
-
-                await _logsClient.PutLogEventsAsync(request);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-        }
-
-        private string GetMessage(string logString, string stackTrace)
-        {
-            var msg = string.Empty;
-            if (!string.IsNullOrEmpty(_msg))
-            {
-                msg = _msg;
-                _msg = string.Empty;
-                return msg;
-            }
-
-            msg += logString + "\n";
-            if (!string.IsNullOrEmpty(stackTrace))
-            {
-                msg += stackTrace;
-            }
-
-            return msg;
-        }
-
         private IEnumerator CoInitDccAvatar()
         {
+            var dccUrl = ApiClients.Instance.DccURL;
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
             yield return RequestManager.instance.GetJson(
-                URL.DccAvatars,
-                URL.DccEthChainHeaderName,
-                URL.DccEthChainHeaderValue,
+                dccUrl.DccAvatars,
+                dccUrl.DccEthChainHeaderName,
+                dccUrl.DccEthChainHeaderValue,
                 json =>
                 {
                     var responseData = DccAvatars.FromJson(json);
@@ -1689,18 +1565,19 @@ namespace Nekoyume.Game
 
         private IEnumerator CoInitDccConnecting()
         {
+            var dccUrl = ApiClients.Instance.DccURL;
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
             yield return RequestManager.instance.GetJson(
-                $"{URL.DccMileageAPI}{Agent.Address}",
-                URL.DccEthChainHeaderName,
-                URL.DccEthChainHeaderValue,
+                $"{dccUrl.DccMileageAPI}{Agent.Address}",
+                dccUrl.DccEthChainHeaderName,
+                dccUrl.DccEthChainHeaderValue,
                 _ => { Dcc.instance.IsConnected = true; },
                 _ => { Dcc.instance.IsConnected = false; });
             sw.Stop();
             NcDebug.Log("[Game] CoInitDccConnecting()... DCC Connecting initialized in" +
-                      $" {sw.ElapsedMilliseconds}ms.(elapsed)");
+                $" {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         public void PauseTimeline(PlayableDirector whichOne)
@@ -1792,7 +1669,7 @@ namespace Nekoyume.Game
 
             var interval = States.Instance.GameConfigState.DailyArenaInterval;
             var remainingBlockCount = interval -
-                                      (currentBlockIndex - roundData.StartBlockIndex) % interval;
+                (currentBlockIndex - roundData.StartBlockIndex) % interval;
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;
@@ -1858,7 +1735,7 @@ namespace Nekoyume.Game
             }
 
             var remainingBlockCount =
-                interval - ((currentBlockIndex - row.StartedBlockIndex) % interval);
+                interval - (currentBlockIndex - row.StartedBlockIndex) % interval;
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;
@@ -1882,7 +1759,7 @@ namespace Nekoyume.Game
             string rpcServerHost = null)
         {
             NcDebug.Log("[Game] InitializeAnalyzer() invoked." +
-                      $" agentAddr: {agentAddr}, planetId: {planetId}, rpcServerHost: {rpcServerHost}");
+                $" agentAddr: {agentAddr}, planetId: {planetId}, rpcServerHost: {rpcServerHost}");
             if (GameConfig.IsEditor)
             {
                 NcDebug.Log("[Game] InitializeAnalyzer()... Analyze is disabled in editor mode.");
@@ -1931,11 +1808,12 @@ namespace Nekoyume.Game
             }
 
             widget.Show(message,
-                        L10nManager.Localize("UI_QUIT"),
-                        ApplicationQuit);
+                L10nManager.Localize("UI_QUIT"),
+                ApplicationQuit);
         }
 
 #region Initialize On Awake
+
         private void PreAwake()
         {
             CurrentSocialEmail = string.Empty;
@@ -1972,14 +1850,16 @@ namespace Nekoyume.Game
 
         private void PostAwake()
         {
-            States            = new States();
-            LocalLayer        = new LocalLayer();
+            States = new States();
+            LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
         }
+
 #endregion Initialize On Awake
 
 #region Initialize On Start
+
         private IEnumerator InitializeL10N()
         {
             if (LiveAsset.GameConfig.IsKoreanBuild)
@@ -2001,12 +1881,12 @@ namespace Nekoyume.Game
                 }
                 yield break;
             }
-
+            
             yield return L10nManager
-                         .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
-                             ? L10nManager.CurrentLanguage
-                             : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
-                         .ToYieldInstruction();
+                .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
+                    ? L10nManager.CurrentLanguage
+                    : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                .ToYieldInstruction();
         }
 
         private void InitializeMessagePackResolver()
@@ -2036,6 +1916,7 @@ namespace Nekoyume.Game
             {
                 return false;
             }
+
             var popup = Widget.Find<IconAndButtonSystem>();
             if (Nekoyume.Helper.Util.GetKeystoreJson() != string.Empty)
             {
@@ -2121,140 +2002,10 @@ namespace Nekoyume.Game
             NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
-        // TODO: 중복코드 정리, 초기화 안 된 경우 로직 정리
-        private void UpdateServices()
-        {
-            // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
-            // NOTE: Initialize several services after Agent initialized.
-            // NOTE: Initialize api client.
-            if (string.IsNullOrEmpty(_commandLineOptions.ApiServerHost))
-            {
-                ApiClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... ApiClient initialized with empty host url" +
-                          " because of no ApiServerHost");
-            }
-            else
-            {
-                ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
-                NcDebug.Log("[Game] Start()... ApiClient initialized." +
-                          $" host: {_commandLineOptions.ApiServerHost}");
-            }
-
-            // NOTE: Initialize graphql client which is targeting to RPC server.
-            if (string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
-            {
-                RpcGraphQLClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... RpcGraphQLClient initialized with empty host url" +
-                          " because of no RpcServerHost");
-            }
-            else
-            {
-                RpcGraphQLClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
-            }
-
-            // NOTE: Initialize world boss query.
-            if (string.IsNullOrEmpty(_commandLineOptions.OnBoardingHost))
-            {
-                WorldBossQuery.SetUrl(string.Empty);
-                NcDebug.Log($"[Game] Start()... WorldBossQuery initialized with empty host url" +
-                          " because of no OnBoardingHost." +
-                          $" url: {WorldBossQuery.Url}");
-            }
-            else
-            {
-                WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
-                NcDebug.Log("[Game] Start()... WorldBossQuery initialized." +
-                          $" host: {_commandLineOptions.OnBoardingHost}" +
-                          $" url: {WorldBossQuery.Url}");
-            }
-
-            // NOTE: Initialize market service.
-            if (string.IsNullOrEmpty(_commandLineOptions.MarketServiceHost))
-            {
-                MarketServiceClient = new MarketServiceClient(string.Empty);
-                NcDebug.Log("[Game] Start()... MarketServiceClient initialized with empty host url" +
-                          " because of no MarketServiceHost");
-            }
-            else
-            {
-                MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-                NcDebug.Log("[Game] Start()... MarketServiceClient initialized." +
-                          $" host: {_commandLineOptions.MarketServiceHost}");
-            }
-
-            // NOTE: Initialize patrol reward service.
-            if (string.IsNullOrEmpty(_commandLineOptions.PatrolRewardServiceHost))
-            {
-                PatrolRewardServiceClient = new NineChroniclesAPIClient(string.Empty);
-                NcDebug.Log("[Game] Start()... PatrolRewardServiceClient initialized with empty host url" +
-                          " because of no PatrolRewardServiceHost");
-            }
-            else
-            {
-                PatrolRewardServiceClient = new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
-                NcDebug.Log("[Game] Start()... PatrolRewardServiceClient initialized." +
-                          $" host: {_commandLineOptions.PatrolRewardServiceHost}");
-            }
-
-            // NOTE: Initialize season pass service.
-            if (string.IsNullOrEmpty(_commandLineOptions.SeasonPassServiceHost))
-            {
-                NcDebug.Log("[Game] Start()... SeasonPassServiceManager not initialized" +
-                          " because of no SeasonPassServiceHost");
-                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
-            }
-            else
-            {
-                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
-                if (!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
-                {
-                    SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
-                }
-
-                if (!string.IsNullOrEmpty(_commandLineOptions.AppleMarketUrl))
-                {
-                    SeasonPassServiceManager.AppleMarketURL = _commandLineOptions.AppleMarketUrl;
-                }
-
-                NcDebug.Log("[Game] Start()... SeasonPassServiceManager initialized." +
-                          $" host: {_commandLineOptions.SeasonPassServiceHost}" +
-                          $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
-                          $", apple: {SeasonPassServiceManager.AppleMarketURL}");
-            }
-        }
-
-        private IEnumerator InitializeGuildService()
-        {
-            if (string.IsNullOrEmpty(_commandLineOptions.GuildServiceUrl))
-            {
-                yield break;
-            }
-            GuildServiceClient = new GuildServiceClient(_commandLineOptions.GuildServiceUrl);
-            if (!string.IsNullOrEmpty(_commandLineOptions.GuildIconBucket))
-            {
-                _guildBucketUrl = _commandLineOptions.GuildIconBucket;
-            }
-
-            yield return GuildServiceClient.GetGuildAsync(onSuccess: guildModels =>
-            {
-                GuildModels = guildModels;
-                NcDebug.Log($"[Guild] GetGuildAsync success");
-                {
-                    foreach (var guildModel in guildModels)
-                    {
-                        var url = $"{_guildBucketUrl}/{guildModel.Name}.png";
-                        Helper.Util.DownloadTexture(url).Forget();
-                    }
-                }
-            }, onError: message =>
-            {
-                // cannot convert into method group because the method might not exist in some builds.
-                NcDebug.LogError(message);
-            }).AsUniTask().ToCoroutine();
-        }
 #endregion Initialize On Start
 
 #region Initialize On Login
+
         private void ShowMaintenancePopup()
         {
             var w = Widget.Create<IconAndButtonSystem>();
@@ -2263,20 +2014,20 @@ namespace Nekoyume.Game
             {
                 w.SetCancelCallbackToBackup();
                 w.ShowWithTwoButton("UI_MAINTENANCE",
-                                    "UI_MAINTENANCE_CONTENT",
-                                    "UI_OK",
-                                    "UI_KEY_BACKUP",
-                                    true,
-                                    IconAndButtonSystem.SystemType.Information
+                    "UI_MAINTENANCE_CONTENT",
+                    "UI_OK",
+                    "UI_KEY_BACKUP",
+                    true,
+                    IconAndButtonSystem.SystemType.Information
                 );
             }
             else
             {
                 w.Show("UI_MAINTENANCE",
-                       "UI_MAINTENANCE_CONTENT",
-                       "UI_OK",
-                       true,
-                       IconAndButtonSystem.SystemType.Information);
+                    "UI_MAINTENANCE_CONTENT",
+                    "UI_OK",
+                    true,
+                    IconAndButtonSystem.SystemType.Information);
             }
         }
 
@@ -2289,6 +2040,7 @@ namespace Nekoyume.Game
                 {
                     Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
                 }
+
                 ApplicationQuit();
             };
             w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
@@ -2326,13 +2078,13 @@ namespace Nekoyume.Game
             if (KeyManager.Instance.IsSignedIn || KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
             {
                 NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is true or" +
-                          " LoginSystem.TryLoginWithLocalPpk() is true.");
+                    " LoginSystem.TryLoginWithLocalPpk() is true.");
                 var pk = KeyManager.Instance.SignedInPrivateKey;
 
                 // NOTE: Update CommandlineOptions.PrivateKey.
                 _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
                 NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey updated" +
-                          $" to ({pk.Address}).");
+                    $" to ({pk.Address}).");
 
                 // NOTE: Check PlanetContext.CanSkipPlanetSelection.
                 //       If true, then update planet account infos for IntroScreen.
@@ -2344,7 +2096,7 @@ namespace Nekoyume.Game
                     yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                         planetContext,
                         pk.Address,
-                        updateSelectedPlanetAccountInfo: true).ToCoroutine();
+                        true).ToCoroutine();
                     dimmedLoadingScreen.Close();
                     if (planetContext.HasError)
                     {
@@ -2355,8 +2107,8 @@ namespace Nekoyume.Game
 
                 // TODO: UniTask등을 이용해서 리턴값을 받아서 처리하는 방법으로 변경할 수 있음 좋을듯
                 introScreen.SetData(_commandLineOptions.KeyStorePath,
-                                    pk.ToHexWithZeroPaddings(),
-                                    planetContext);
+                    pk.ToHexWithZeroPaddings(),
+                    planetContext);
             }
             else
             {
@@ -2377,8 +2129,8 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] CoLogin()... Has pledged account.");
             var pk = KeyManager.Instance.SignedInPrivateKey;
             introScreen.Show(_commandLineOptions.KeyStorePath,
-                             pk.ToHexWithZeroPaddings(),
-                             planetContext);
+                pk.ToHexWithZeroPaddings(),
+                planetContext);
 
             NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
             yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
@@ -2387,7 +2139,7 @@ namespace Nekoyume.Game
             // NOTE: Update CommandlineOptions.PrivateKey finally.
             _commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
             NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
-                        $" to ({pk.Address}).");
+                $" to ({pk.Address}).");
 
             yield return AgentInitialize(true, loginCallback);
         }
@@ -2448,7 +2200,7 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo is not null.");
             yield return new WaitUntil(() => planetContext.SelectedPlanetAccountInfo is not null);
             NcDebug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
-                        $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
+                $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
         }
 
         private void IsSelectedPlanetAccountPledgedProcess()
@@ -2456,7 +2208,7 @@ namespace Nekoyume.Game
             var introScreen = Widget.Find<IntroScreen>();
             // NOTE: Player selected the planet that has agent.
             NcDebug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
-                        " Player don't have to make a pledge.");
+                " Player don't have to make a pledge.");
 
             // NOTE: Complex logic here...
             //       - LoginSystem.Login is false.
@@ -2475,7 +2227,7 @@ namespace Nekoyume.Game
             var introScreen = Widget.Find<IntroScreen>();
             // NOTE: Player selected the planet that has no agent.
             NcDebug.Log("[Game] CoLogin()... Try to create a new agent." +
-                        " Player may have to make a pledge.");
+                " Player may have to make a pledge.");
 
             // NOTE: Complex logic here...
             //       - LoginSystem.Login is false.
@@ -2515,22 +2267,23 @@ namespace Nekoyume.Game
             //        - etc...
 
             NcDebug.LogError("Portal has agent address which connected with social account." +
-                           " But no agent states in the all planets." +
-                           $"\n Portal: {PortalConnect.PortalUrl}" +
-                           $"\n Social Account: {email}" +
-                           $"\n Agent Address in portal: {agentAddrInPortal}");
+                " But no agent states in the all planets." +
+                $"\n Portal: {PortalConnect.PortalUrl}" +
+                $"\n Social Account: {email}" +
+                $"\n Agent Address in portal: {agentAddrInPortal}");
             planetContext.SetError(
                 PlanetContext.ErrorType.UnsupportedCase01,
                 PortalConnect.PortalUrl,
                 email,
                 agentAddrInPortal?.ToString() ?? "null");
         }
+
 #endregion Initialize On Login
 
         private void OpenUpdateURL()
         {
             // ReSharper disable once JoinDeclarationAndInitializer
-            string updateUrl = string.Empty;
+            var updateUrl = string.Empty;
 #if RUN_ON_MOBILE && UNITY_ANDROID
             updateUrl = _commandLineOptions?.GoogleMarketUrl;
 #elif RUN_ON_MOBILE && UNITY_IOS

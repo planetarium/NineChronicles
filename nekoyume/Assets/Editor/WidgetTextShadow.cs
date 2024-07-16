@@ -11,37 +11,42 @@ namespace NekoyumeEditor
         public static void WidgetTextShadow()
         {
             if (Selection.activeGameObject == null)
+            {
                 return;
+            }
 
             var texts = Selection.activeGameObject.GetComponentsInChildren<Text>();
 
-            bool useGraphicAlpha = true;
+            var useGraphicAlpha = true;
 
-            Color blackColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
-            Color blueColor = new Color(0.04313726f, 0.08627451f, 0.2470588f, 1.0f);
+            var blackColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+            var blueColor = new Color(0.04313726f, 0.08627451f, 0.2470588f, 1.0f);
 
-            Vector2Int[] outlines = {
-                new Vector2Int(1, 1),
+            Vector2Int[] outlines =
+            {
+                new(1, 1)
             };
 
-            Vector2Int[] shadows = {
-                new Vector2Int(0, -1),
-                new Vector2Int(0, -1)
+            Vector2Int[] shadows =
+            {
+                new(0, -1),
+                new(0, -1)
             };
 
             foreach (var text in texts)
             {
                 ClearEffects(text.gameObject);
             }
+
             foreach (var text in texts)
             {
-                Color effectColor = blackColor;
+                var effectColor = blackColor;
                 if (text.gameObject.transform.parent)
                 {
                     var parentImage = text.gameObject.transform.parent.GetComponent<Image>();
                     if (parentImage)
                     {
-                        bool isBlue = parentImage.sprite.name.ToLower().Contains("blue");
+                        var isBlue = parentImage.sprite.name.ToLower().Contains("blue");
                         if (isBlue)
                         {
                             effectColor = blueColor;
@@ -49,14 +54,15 @@ namespace NekoyumeEditor
                     }
                 }
 
-                for (int i = 0; i < outlines.Length; ++i)
+                for (var i = 0; i < outlines.Length; ++i)
                 {
                     var outline = text.gameObject.AddComponent<Outline>();
                     outline.effectColor = effectColor;
                     outline.effectDistance = outlines[i];
                     outline.useGraphicAlpha = useGraphicAlpha;
                 }
-                for (int i = 0; i < shadows.Length; ++i)
+
+                for (var i = 0; i < shadows.Length; ++i)
                 {
                     var shadow = text.gameObject.AddComponent<Shadow>();
                     shadow.effectColor = effectColor;
@@ -68,15 +74,16 @@ namespace NekoyumeEditor
 
         private static void ClearEffects(GameObject go)
         {
-            Shadow[] shadows = go.GetComponents<Shadow>();
+            var shadows = go.GetComponents<Shadow>();
             foreach (var shadow in shadows)
             {
-                GameObject.DestroyImmediate(shadow);
+                Object.DestroyImmediate(shadow);
             }
-            Outline[] outlines = go.GetComponents<Outline>();
+
+            var outlines = go.GetComponents<Outline>();
             foreach (var outline in outlines)
             {
-                GameObject.DestroyImmediate(outline);
+                Object.DestroyImmediate(outline);
             }
         }
     }

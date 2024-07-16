@@ -17,14 +17,8 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            dccButton.onClick.AddListener(() =>
-            {
-                Find<ConfirmConnectPopup>().ShowConnectDcc();
-            });
-            openSeaButton.onClick.AddListener(() =>
-            {
-                Find<ConfirmConnectPopup>().ShowConnectOpenSea();
-            });
+            dccButton.onClick.AddListener(() => { Find<ConfirmConnectPopup>().ShowConnectDcc(); });
+            openSeaButton.onClick.AddListener(() => { Find<ConfirmConnectPopup>().ShowConnectOpenSea(); });
             closeButton.onClick.AddListener(() => { Close(); });
 
             CloseWidget = () => Close();

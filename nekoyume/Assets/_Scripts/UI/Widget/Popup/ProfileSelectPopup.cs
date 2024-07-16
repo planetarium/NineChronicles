@@ -37,10 +37,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             closeButton.onClick.AddListener(() => Close());
-            dccShortCutButton.onClick.AddListener(() =>
-            {
-                Find<ConfirmConnectPopup>().ShowConnectDcc();
-            });
+            dccShortCutButton.onClick.AddListener(() => { Find<ConfirmConnectPopup>().ShowConnectDcc(); });
         }
 
         public void Show()

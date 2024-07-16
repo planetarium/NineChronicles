@@ -55,7 +55,7 @@ namespace Nekoyume.UI.Model
                 models.Add(model);
             }
 
-            models.UpdateMaterials();
+            models.UpdateMaterials(Game.Game.instance.States.CurrentAvatarState.inventory);
         }
 
         // Update model.Active, model.Materials => material.Active
@@ -77,9 +77,8 @@ namespace Nekoyume.UI.Model
         }
 
         // Update materials' condition
-        public static void UpdateMaterials(this List<CollectionModel> models)
+        public static void UpdateMaterials(this List<CollectionModel> models, Inventory inventory)
         {
-            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
             foreach (var model in models.Where(model => !model.Active))
             {
                 foreach (var collectionMaterial in model.Materials)
