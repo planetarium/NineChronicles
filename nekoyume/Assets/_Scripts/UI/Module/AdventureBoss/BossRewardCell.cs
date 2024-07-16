@@ -15,6 +15,7 @@ namespace Nekoyume
 
         private int _bossId;
         private GameObject _bossImage;
+
         private void SetBossData(int bossId)
         {
             if (_bossId != bossId)
@@ -39,6 +40,7 @@ namespace Nekoyume
                 NcDebug.LogError($"AdventureBossWantedRewardSheet not found id:{adventureBossRow.Id}");
                 return;
             }
+
             var fixedReward = wantedRewardRow.FixedReward;
             if (fixedReward == null)
             {
@@ -48,8 +50,9 @@ namespace Nekoyume
             {
                 confirmRewardItemView.ItemViewSetAdventureBossItemData(fixedReward);
             }
+
             var rendomRewards = wantedRewardRow.RandomRewards;
-            for (int i = 0; i < randomRewardItemViews.Length; i++)
+            for (var i = 0; i < randomRewardItemViews.Length; i++)
             {
                 if (i < rendomRewards.Count)
                 {

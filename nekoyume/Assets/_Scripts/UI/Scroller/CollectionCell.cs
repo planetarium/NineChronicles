@@ -11,6 +11,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Scroller
 {
     using UniRx;
+
     public class CollectionCell : RectCell<CollectionModel, CollectionScroll.ContextModel>
     {
         [Serializable]
@@ -39,7 +40,7 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             activeButton.OnSubmitSubject
-                .Subscribe(_=> Context.OnClickActiveButton.OnNext(_itemData))
+                .Subscribe(_ => Context.OnClickActiveButton.OnNext(_itemData))
                 .AddTo(gameObject);
             activeButtonLoading.button.onClick.AddListener(() =>
                 OneLineSystem.Push(

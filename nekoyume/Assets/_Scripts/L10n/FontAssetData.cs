@@ -63,7 +63,7 @@ namespace Nekoyume.L10n
             var fontMaterialTypes = Enum
                 .GetNames(fontMaterialType)
                 .Select(fontMaterialTypeName =>
-                    (FontMaterialType) Enum.Parse(fontMaterialType, fontMaterialTypeName))
+                    (FontMaterialType)Enum.Parse(fontMaterialType, fontMaterialTypeName))
                 .ToList();
             for (var j = 0; j < fontMaterialTypes.Count; j++)
             {

@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Nekoyume.ApiClient;
 using Nekoyume.GraphQL;
-
 using Debug = UnityEngine.Debug;
 using Nekoyume.Model.Item;
 
@@ -23,11 +22,11 @@ namespace Nekoyume.UI.Model
 
         public Dictionary<ItemSubType, List<EquipmentRankingModel>> EquipmentRankingInfosMap = null;
 
-        public Dictionary<int, AbilityRankingModel> AgentAbilityRankingInfos = new Dictionary<int, AbilityRankingModel>();
+        public Dictionary<int, AbilityRankingModel> AgentAbilityRankingInfos = new();
 
-        public Dictionary<int, StageRankingModel> AgentStageRankingInfos = new Dictionary<int, StageRankingModel>();
+        public Dictionary<int, StageRankingModel> AgentStageRankingInfos = new();
 
-        public Dictionary<int, CraftRankingModel> AgentCraftRankingInfos = new Dictionary<int, CraftRankingModel>();
+        public Dictionary<int, CraftRankingModel> AgentCraftRankingInfos = new();
 
         public Dictionary<int, Dictionary<ItemSubType, EquipmentRankingModel>> AgentEquipmentRankingInfos = new();
 
@@ -90,7 +89,7 @@ namespace Nekoyume.UI.Model
                         AvatarLevel = e.AvatarLevel,
                         ArmorId = e.ArmorId,
                         TitleId = e.TitleId,
-                        Cp = e.Cp,
+                        Cp = e.Cp
                     };
                 })
                 .Select(t => t)
@@ -135,7 +134,7 @@ namespace Nekoyume.UI.Model
                     AvatarLevel = myRecord.AvatarLevel,
                     ArmorId = myRecord.ArmorId,
                     TitleId = myRecord.TitleId,
-                    Cp = myRecord.Cp,
+                    Cp = myRecord.Cp
                 };
             }
         }
@@ -173,7 +172,7 @@ namespace Nekoyume.UI.Model
                         AvatarLevel = e.AvatarLevel,
                         ArmorId = e.ArmorId,
                         TitleId = e.TitleId,
-                        ClearedStageId = e.ClearedStageId,
+                        ClearedStageId = e.ClearedStageId
                     };
                 })
                 .Select(t => t)
@@ -218,7 +217,7 @@ namespace Nekoyume.UI.Model
                     AvatarLevel = myRecord.AvatarLevel,
                     ArmorId = myRecord.ArmorId,
                     TitleId = myRecord.TitleId,
-                    ClearedStageId = myRecord.ClearedStageId,
+                    ClearedStageId = myRecord.ClearedStageId
                 };
             }
         }
@@ -256,7 +255,7 @@ namespace Nekoyume.UI.Model
                         AvatarLevel = e.AvatarLevel,
                         ArmorId = e.ArmorId,
                         TitleId = e.TitleId,
-                        CraftCount = e.CraftCount,
+                        CraftCount = e.CraftCount
                     };
                 })
                 .Select(t => t)
@@ -301,7 +300,7 @@ namespace Nekoyume.UI.Model
                     AvatarLevel = myRecord.AvatarLevel,
                     ArmorId = myRecord.ArmorId,
                     TitleId = myRecord.TitleId,
-                    CraftCount = myRecord.CraftCount,
+                    CraftCount = myRecord.CraftCount
                 };
             }
         }
@@ -349,7 +348,7 @@ namespace Nekoyume.UI.Model
                             TitleId = e.TitleId,
                             Level = e.Level,
                             Cp = e.Cp,
-                            EquipmentId = e.EquipmentId,
+                            EquipmentId = e.EquipmentId
                         };
                     })
                     .Select(t => t)
@@ -403,7 +402,7 @@ namespace Nekoyume.UI.Model
                         TitleId = myRecord.TitleId,
                         Level = myRecord.Level,
                         Cp = myRecord.Cp,
-                        EquipmentId = myRecord.EquipmentId,
+                        EquipmentId = myRecord.EquipmentId
                     };
                 }
             }

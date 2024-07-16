@@ -62,14 +62,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private Toggle repeatToggle; // It is not currently in use
 
-        [SerializeField, Range(.5f, 3.0f)]
+        [SerializeField][Range(.5f, 3.0f)]
         private float animationTime = 1f;
 
         [SerializeField]
         private bool moveToLeft = false;
 
-        [SerializeField, Range(0f, 10f),
-         Tooltip("Gap between start position X and middle position X")]
+        [SerializeField][Range(0f, 10f)][Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         [SerializeField]
@@ -115,21 +114,23 @@ namespace Nekoyume.UI
             base.CanHandleInputEvent &&
             (startButton.Interactable || !EnoughToPlay);
 
-        private bool EnoughToPlay => _stageType switch
-        {
-            StageType.EventDungeon =>
-                RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost,
-            _ =>
-                ReactiveAvatarState.ActionPoint >= _requiredCost,
-        };
+        private bool EnoughToPlay =>
+            _stageType switch
+            {
+                StageType.EventDungeon =>
+                    RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost,
+                _ =>
+                    ReactiveAvatarState.ActionPoint >= _requiredCost
+            };
 
-        private bool IsFirstStage => _stageType switch
-        {
-            StageType.EventDungeon => _stageId.ToEventDungeonStageNumber() == 1,
-            _ => _stageId == 1,
-        };
+        private bool IsFirstStage =>
+            _stageType switch
+            {
+                StageType.EventDungeon => _stageId.ToEventDungeonStageNumber() == 1,
+                _ => _stageId == 1
+            };
 
-        #region override
+#region override
 
         protected override void Awake()
         {
@@ -197,7 +198,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Click Stage", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             });
 
             var evt = new AirbridgeEvent("Click_Stage");
@@ -323,7 +324,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        #endregion
+#endregion
 
         private void UpdateBackground()
         {
@@ -336,6 +337,7 @@ namespace Nekoyume.UI
                     {
                         eventDungeonBg.background.SetActive(false);
                     }
+
                     break;
                 case StageType.Mimisbrunnr:
                     hasBg.SetActive(false);
@@ -344,6 +346,7 @@ namespace Nekoyume.UI
                     {
                         eventDungeonBg.background.SetActive(false);
                     }
+
                     break;
                 case StageType.EventDungeon:
                     hasBg.SetActive(false);
@@ -360,6 +363,7 @@ namespace Nekoyume.UI
                     {
                         eventDungeonBackground.SetActive(true);
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -663,7 +667,9 @@ namespace Nekoyume.UI
         private void GoToPrepareStage(BattleLog battleLog)
         {
             if (!IsActive() || !Find<LoadingScreen>().IsActive())
+            {
                 return;
+            }
 
             StartCoroutine(CoGoToStage(battleLog));
         }
@@ -698,8 +704,8 @@ namespace Nekoyume.UI
         private static int GetBoostMaxCount(int stageId)
         {
             if (!TableSheets.Instance.GameConfigSheet.TryGetValue(
-                    "action_point_max",
-                    out var ap))
+                "action_point_max",
+                out var ap))
             {
                 return 1;
             }
@@ -740,7 +746,7 @@ namespace Nekoyume.UI
 
             const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.Sweep;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
+            var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
             var canBattle = Util.CanBattle(equipments, costumes, consumables);
             var canSweep = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage);
 

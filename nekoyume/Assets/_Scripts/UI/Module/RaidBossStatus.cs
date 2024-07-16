@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Module
         public void SetHp(long current, long max)
         {
             current = Math.Max(current, 0);
-            hpBar.value = (float) current / max;
+            hpBar.value = (float)current / max;
             hpText.text = $"{current}/{max}";
         }
 

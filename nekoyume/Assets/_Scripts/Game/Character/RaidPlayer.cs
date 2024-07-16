@@ -14,8 +14,8 @@ namespace Nekoyume.Game.Character
         [SerializeField]
         private CharacterAppearance appearance;
 
-        private readonly List<Costume> _costumes = new List<Costume>();
-        private readonly List<Equipment> _equipments = new List<Equipment>();
+        private readonly List<Costume> _costumes = new();
+        private readonly List<Equipment> _equipments = new();
 
         public Pet Pet => appearance.Pet;
 

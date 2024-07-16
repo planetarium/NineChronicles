@@ -190,7 +190,7 @@ namespace Nekoyume.UI
                 content,
                 L10nManager.Localize("UI_BUY"),
                 L10nManager.Localize("UI_CANCEL"),
-                (() => Buy(models)));
+                () => Buy(models));
         }
 
         private void Buy(List<ShopItem> models)
@@ -229,13 +229,13 @@ namespace Nekoyume.UI
                             (BigInteger)fungibleAssetProduct.Price, 0),
                         AgentAddress = fungibleAssetProduct.SellerAgentAddress,
                         AvatarAddress = fungibleAssetProduct.SellerAvatarAddress,
-                        Type = ProductType.FungibleAssetValue,
+                        Type = ProductType.FungibleAssetValue
                     };
                     productInfos.Add(productInfo);
                 }
             }
 
-            ReactiveShopState.UpdatePurchaseProductIds(productInfos.Select(x=> x.ProductId).ToList());
+            ReactiveShopState.UpdatePurchaseProductIds(productInfos.Select(x => x.ProductId).ToList());
             Game.Game.instance.ActionManager.BuyProduct(avatarAddress, productInfos).Subscribe();
 
 
@@ -245,7 +245,7 @@ namespace Nekoyume.UI
                 {
                     ["Count"] = models.Count,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                 };
                 Analyzer.Instance.Track("Unity/Number of Purchased Items", props);
 
@@ -263,7 +263,7 @@ namespace Nekoyume.UI
                 {
                     ["Price"] = price,
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                 };
                 Analyzer.Instance.Track("Unity/BuyProduct", props);
 

@@ -15,7 +15,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.UI.Scroller;
+    using Scroller;
     using UniRx;
 
     public class ItemCountableAndPricePopup : ItemCountPopup<Model.ItemCountableAndPricePopup>
@@ -36,13 +36,13 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI unitPrice;
         [SerializeField] private GameObject unitPriceInvalidText;
 
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForAwake = new();
+        private readonly List<IDisposable> _disposablesForSetData = new();
 
         private const int DefaultPrice = 10;
         public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -50,10 +50,7 @@ namespace Nekoyume.UI
 
             if (overrideCancelButton != null)
             {
-                overrideCancelButton.onClick.AddListener(() =>
-                {
-                    _data?.OnClickCancel.OnNext(_data);
-                });
+                overrideCancelButton.onClick.AddListener(() => { _data?.OnClickCancel.OnNext(_data); });
                 CloseWidget = overrideCancelButton.onClick.Invoke;
             }
 
@@ -68,16 +65,16 @@ namespace Nekoyume.UI
                 else
                 {
                     var maxCount = 1;
-                    if (_data.Item is { Value: { } })
+                    if (_data.Item is { Value: not null })
                     {
                         maxCount = _data.Item.Value.MaxCount.Value;
                     }
+
                     var count = InputFieldValueToValue<int>(countInputField);
                     var result = Mathf.Clamp(count, 1, maxCount);
                     countInputField.text = result.ToString();
                     _data.OnChangeCount.OnNext(result);
                 }
-
             }).AddTo(_disposablesForAwake);
 
             addCountButton.OnClickAsObservable().Subscribe(_ =>
@@ -120,29 +117,25 @@ namespace Nekoyume.UI
                     var price = InputFieldValueToValue<decimal>(priceInputField);
                     _data.OnChangePrice.OnNext(price);
                 }
-
             }).AddTo(_disposablesForAwake);
 
             resetPriceButton.OnClickAsObservable()
                 .Subscribe(_ => _data.OnChangePrice.OnNext(Model.Shop.MinimumPrice));
 
-            for (int i = 0; i < addPriceButton.Count; i++)
+            for (var i = 0; i < addPriceButton.Count; i++)
             {
-                int digit = i;
+                var digit = i;
                 addPriceButton[i].OnClickAsObservable().Subscribe(_ =>
                 {
                     var price = InputFieldValueToValue<decimal>(priceInputField) +
-                                (int) Mathf.Pow(DefaultPrice, digit);
+                        (int)Mathf.Pow(DefaultPrice, digit);
                     _data.OnChangePrice.OnNext(price);
                 }).AddTo(_disposablesForAwake);
             }
 
             reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
             reregisterButton.OnClickSubject
-                .Subscribe(_ =>
-                {
-                    _data?.OnClickReregister.OnNext(_data);
-                })
+                .Subscribe(_ => { _data?.OnClickReregister.OnNext(_data); })
                 .AddTo(_disposablesForAwake);
 
             notificationButton.OnClickAsObservable().Subscribe(_ =>
@@ -163,10 +156,7 @@ namespace Nekoyume.UI
                 _data?.OnClickCancel.OnNext(_data);
             };
 
-            L10nManager.OnLanguageChange.Subscribe(_ =>
-            {
-                reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
-            }).AddTo(_disposablesForAwake);
+            L10nManager.OnLanguageChange.Subscribe(_ => { reregisterButton.Text = L10nManager.Localize("UI_REREGISTER"); }).AddTo(_disposablesForAwake);
         }
 
         protected override void OnDestroy()
@@ -177,7 +167,7 @@ namespace Nekoyume.UI
             Clear();
         }
 
-        #endregion
+#endregion
 
         protected override void SetData(Model.ItemCountableAndPricePopup data)
         {
@@ -235,7 +225,7 @@ namespace Nekoyume.UI
         private bool IsPriceValid()
         {
             if (!decimal.TryParse(_data.Price.Value.GetQuantityString(),
-                    NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var price))
+                NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var price))
             {
                 return false;
             }
@@ -258,7 +248,7 @@ namespace Nekoyume.UI
             }
 
             if (!decimal.TryParse(_data.UnitPrice.Value.GetQuantityString(),
-                    NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var outUnitPrice))
+                NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var outUnitPrice))
             {
                 return false;
             }
@@ -283,6 +273,7 @@ namespace Nekoyume.UI
                 {
                     price = 0;
                 }
+
                 return (T)Convert.ChangeType(price, typeof(T));
             }
 
@@ -293,6 +284,7 @@ namespace Nekoyume.UI
                 {
                     price = 0;
                 }
+
                 return (T)Convert.ChangeType(price, typeof(T));
             }
 
@@ -331,7 +323,7 @@ namespace Nekoyume.UI
                         x.item.ItemSubType == ItemSubType.ApStone &&
                         !x.Locked &&
                         !(x.item is ITradableItem tradableItem &&
-                          tradableItem.RequiredBlockIndex > blockIndex))
+                            tradableItem.RequiredBlockIndex > blockIndex))
                     .Sum(item => item.count);
 
                 submitButton.SetCost(CostType.ActionPoint, 5);

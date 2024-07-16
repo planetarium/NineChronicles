@@ -158,8 +158,8 @@ public class TestbedTool : EditorWindow
     private void ConfirmPopup(string title, string text, string content = "")
     {
         var transforms = Selection.GetTransforms(SelectionMode.Deep |
-                                                 SelectionMode.ExcludePrefab |
-                                                 SelectionMode.Editable);
+            SelectionMode.ExcludePrefab |
+            SelectionMode.Editable);
         if (EditorUtility.DisplayDialog(title, $"{text}\n{content}", "confirm"))
         {
             foreach (var transform in transforms)

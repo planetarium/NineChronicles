@@ -11,7 +11,7 @@ namespace Nekoyume.UI
         Circle = 2,
         Outline = 3,
         Stop = 4,
-        End = 5,
+        End = 5
     }
 
     public class GuideTypeEqualityComparer : IEqualityComparer<GuideType>
@@ -23,7 +23,7 @@ namespace Nekoyume.UI
 
         public int GetHashCode(GuideType obj)
         {
-            return (int) obj;
+            return (int)obj;
         }
     }
 }

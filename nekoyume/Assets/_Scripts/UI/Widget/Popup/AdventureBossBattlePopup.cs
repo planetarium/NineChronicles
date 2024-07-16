@@ -6,8 +6,8 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.ActionExtensions;
-    using Nekoyume.L10n;
+    using ActionExtensions;
+    using L10n;
     using Nekoyume.TableData.AdventureBoss;
     using System.Linq;
     using UniRx;
@@ -114,11 +114,11 @@ namespace Nekoyume.UI
                             floorRow.AdventureBossId == bossRow.Id &&
                             floorRow.Floor > currentFloor &&
                             floorRow.Floor <= maxFloor)
-                    .Join(tableSheets.AdventureBossFloorPointSheet,
-                                        floorRow => floorRow.Id,
-                                        pointRow => pointRow.Key,
-                        (floorRow, pointRow) => pointRow.Value.MaxPoint)
-                    .Sum();
+                        .Join(tableSheets.AdventureBossFloorPointSheet,
+                            floorRow => floorRow.Id,
+                            pointRow => pointRow.Key,
+                            (floorRow, pointRow) => pointRow.Value.MaxPoint)
+                        .Sum();
                     challengeMaxScore.text = $"{totalMaxPoint}";
                 }
                 catch (System.Exception e)
@@ -144,11 +144,11 @@ namespace Nekoyume.UI
                             floorRow.AdventureBossId == bossRow.Id &&
                             floorRow.Floor > 0 &&
                             floorRow.Floor <= currentFloor)
-                    .Join(tableSheets.AdventureBossFloorPointSheet,
-                                        floorRow => floorRow.Id,
-                                        pointRow => pointRow.Key,
-                        (floorRow, pointRow) => pointRow.Value.MaxPoint)
-                    .Sum();
+                        .Join(tableSheets.AdventureBossFloorPointSheet,
+                            floorRow => floorRow.Id,
+                            pointRow => pointRow.Key,
+                            (floorRow, pointRow) => pointRow.Value.MaxPoint)
+                        .Sum();
                     breakThroughMaxScore.text = $"{totalMaxPoint}";
                 }
                 catch (System.Exception e)
@@ -157,7 +157,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            for (int i = 0; i < challengeFloors.Length; i++)
+            for (var i = 0; i < challengeFloors.Length; i++)
             {
                 breakThroughFloors[i].SetActive(i < currentFloor);
                 challengeFloors[i].SetActive(i >= currentFloor && i < maxFloor);
@@ -182,26 +182,26 @@ namespace Nekoyume.UI
                 currentApPotionCount >= _challengeApPotionCost ? "" : "<color=#ff5d5d>";
 
             breakThroughApCostText.text = breakThroughColorString +
-                                          L10nManager.Localize(
-                                              "UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC",
-                                              _breakThroughApPotionCost);
+                L10nManager.Localize(
+                    "UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC",
+                    _breakThroughApPotionCost);
             challengeApCostText.text = challengeColorString +
-                                       L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC",
-                                           _challengeApPotionCost);
+                L10nManager.Localize("UI_ADVENTURE_BOSS_BATTLEPOPUP_AP_DESC",
+                    _challengeApPotionCost);
 
             var challengeFloorRows = tableSheets.AdventureBossFloorSheet.Values
                 .Where(row => row.AdventureBossId == bossRow.Id
-                                && row.Floor > currentFloor
-                                && row.Floor <= maxFloor);
+                    && row.Floor > currentFloor
+                    && row.Floor <= maxFloor);
 
             var challengeFloorFirstRewardDatas = tableSheets.AdventureBossFloorFirstRewardSheet.Values
                 .Join(challengeFloorRows,
-                      rewardRow => rewardRow.FloorId,
-                      floorRow => floorRow.Id,
-                      (rewardRow, floorRow) => new
-                      {
-                          rewardRow.Rewards
-                      })
+                    rewardRow => rewardRow.FloorId,
+                    floorRow => floorRow.Id,
+                    (rewardRow, floorRow) => new
+                    {
+                        rewardRow.Rewards
+                    })
                 .SelectMany(rewardRow => rewardRow.Rewards)
                 .GroupBy(r => r.ItemId)
                 .Select(g => new AdventureBossSheet.RewardAmountData(
@@ -221,7 +221,7 @@ namespace Nekoyume.UI
 
             var breakthroughFloorRandomRewardDatas = tableSheets.AdventureBossFloorSheet.Values
                 .Where(row => row.AdventureBossId == bossRow.Id
-                                && row.Floor <= currentFloor)
+                    && row.Floor <= currentFloor)
                 .SelectMany(row => row.Rewards)
                 .GroupBy(r => r.ItemId)
                 .Select(g => new AdventureBossSheet.RewardAmountData(
@@ -230,7 +230,7 @@ namespace Nekoyume.UI
                     g.Sum(r => r.Max)))
                 .ToList();
 
-            for (int i = 0; i < firstClearItems.Length; i++)
+            for (var i = 0; i < firstClearItems.Length; i++)
             {
                 if (i < challengeFloorFirstRewardDatas.Count)
                 {
@@ -242,7 +242,8 @@ namespace Nekoyume.UI
                     firstClearItems[i].gameObject.SetActive(false);
                 }
             }
-            for (int i = 0; i < challengeRandomItems.Length; i++)
+
+            for (var i = 0; i < challengeRandomItems.Length; i++)
             {
                 if (i < challengeFloorRandomRewardDatas.Count)
                 {
@@ -254,7 +255,8 @@ namespace Nekoyume.UI
                     challengeRandomItems[i].gameObject.SetActive(false);
                 }
             }
-            for (int i = 0; i < breakThroughRandomItems.Length; i++)
+
+            for (var i = 0; i < breakThroughRandomItems.Length; i++)
             {
                 if (i < breakthroughFloorRandomRewardDatas.Count)
                 {
@@ -266,6 +268,7 @@ namespace Nekoyume.UI
                     breakThroughRandomItems[i].gameObject.SetActive(false);
                 }
             }
+
             base.Show(ignoreShowAnimation);
         }
     }

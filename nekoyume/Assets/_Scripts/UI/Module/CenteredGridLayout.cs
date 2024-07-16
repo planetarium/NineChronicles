@@ -24,26 +24,26 @@ public class CenteredGridLayout : GridLayoutGroup
 
     private void AlignItemsInCenter()
     {
-        int totalRows = Mathf.CeilToInt(rectChildren.Count / (float)constraintCount);
-        float rowWidth = constraintCount * (cellSize.x + spacing.x) - spacing.x;
-        float containerWidth = rectTransform.rect.width;
-        float offset = (containerWidth - rowWidth) / 2;
+        var totalRows = Mathf.CeilToInt(rectChildren.Count / (float)constraintCount);
+        var rowWidth = constraintCount * (cellSize.x + spacing.x) - spacing.x;
+        var containerWidth = rectTransform.rect.width;
+        var offset = (containerWidth - rowWidth) / 2;
 
-        int rowCount = rectChildren.Count / constraintCount;
-        int lastRowItemCount = rectChildren.Count % constraintCount;
+        var rowCount = rectChildren.Count / constraintCount;
+        var lastRowItemCount = rectChildren.Count % constraintCount;
 
-        float containerHeight = rectTransform.rect.height;
-        float totalHeightOfAllItems = totalRows * cellSize.y + (totalRows - 1) * spacing.y;
-        float bottomOffset = containerHeight - totalHeightOfAllItems;
+        var containerHeight = rectTransform.rect.height;
+        var totalHeightOfAllItems = totalRows * cellSize.y + (totalRows - 1) * spacing.y;
+        var bottomOffset = containerHeight - totalHeightOfAllItems;
 
-        float lastRowOffset = lastRowItemCount > 0 ? (containerWidth - (lastRowItemCount * (cellSize.x + spacing.x) - spacing.x)) / 2 : offset;
+        var lastRowOffset = lastRowItemCount > 0 ? (containerWidth - (lastRowItemCount * (cellSize.x + spacing.x) - spacing.x)) / 2 : offset;
 
-        for (int i = 0; i < rectChildren.Count; i++)
+        for (var i = 0; i < rectChildren.Count; i++)
         {
-            int row = i / constraintCount;
-            int column = i % constraintCount;
+            var row = i / constraintCount;
+            var column = i % constraintCount;
 
-            float finalOffset = row < rowCount ? offset : lastRowOffset;
+            var finalOffset = row < rowCount ? offset : lastRowOffset;
 
             var item = rectChildren[i];
             var xPos = finalOffset + (cellSize.x + spacing.x) * column;

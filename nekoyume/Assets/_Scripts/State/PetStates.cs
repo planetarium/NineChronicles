@@ -36,6 +36,7 @@ namespace Nekoyume.State
             {
                 _lockedPets.Remove(id);
             }
+
             PetStatesSubject.OnNext(this);
         }
 

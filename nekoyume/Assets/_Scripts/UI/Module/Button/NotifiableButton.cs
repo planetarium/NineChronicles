@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Module
     {
         public class Model : IDisposable
         {
-            public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotification = new();
 
             public void Dispose()
             {
@@ -18,9 +18,9 @@ namespace Nekoyume.UI.Module
 
         public Image hasNotificationImage;
 
-        public readonly Model SharedModel = new Model();
+        public readonly Model SharedModel = new();
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -33,6 +33,6 @@ namespace Nekoyume.UI.Module
             SharedModel.Dispose();
         }
 
-        #endregion
+#endregion
     }
 }

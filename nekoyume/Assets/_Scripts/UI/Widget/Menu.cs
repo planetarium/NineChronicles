@@ -33,7 +33,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.UI.Model;
+    using Model;
     using Scroller;
     using UniRx;
 
@@ -153,7 +153,7 @@ namespace Nekoyume.UI
                     btnDcc.GetComponent<Button>(),
                     btnPatrolReward.GetComponent<Button>(),
                     btnSeasonPass.GetComponent<Button>(),
-                    btnCollection.GetComponent<Button>(),
+                    btnCollection.GetComponent<Button>()
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -175,7 +175,7 @@ namespace Nekoyume.UI
                         return;
                     }
 
-                    bool activeMark = seasonInfo != null
+                    var activeMark = seasonInfo != null
                         && seasonInfo.StartBlockIndex <= Game.Game.instance.Agent.BlockIndex
                         && seasonInfo.EndBlockIndex >= Game.Game.instance.Agent.BlockIndex;
 
@@ -262,13 +262,13 @@ namespace Nekoyume.UI
             }
 
             if (ShortcutHelper.CheckConditionOfShortcut(ShortcutHelper.PlaceType.EventDungeonStage,
-                    eventDungeonStageId))
+                eventDungeonStageId))
             {
                 CloseWithOtherWidgets();
                 ShortcutHelper.ShortcutActionForEventStage(eventDungeonStageId, true);
             }
             else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType
-                         .EventDungeonStage))
+                .EventDungeonStage))
             {
                 Find<Menu>().QuestClick();
             }
@@ -289,7 +289,7 @@ namespace Nekoyume.UI
 
         public void EnterRoom()
         {
-            player.localPosition = playerPosition.localPosition + (Vector3.left * 300);
+            player.localPosition = playerPosition.localPosition + Vector3.left * 300;
             player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);
 
             Game.Game.instance.AdventureBossData.RefreshAllByCurrentState().Forget();
@@ -298,7 +298,9 @@ namespace Nekoyume.UI
         private void GoToPrepareStage(BattleLog battleLog)
         {
             if (!IsActive() || !Find<LoadingScreen>().IsActive())
+            {
                 return;
+            }
 
             StartCoroutine(CoGoToStage(battleLog));
         }
@@ -344,7 +346,7 @@ namespace Nekoyume.UI
                 new Dictionary<string, Value>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                 });
 
             var evt = new AirbridgeEvent("Click_Guided_Quest_Combination_Equipment");
@@ -394,8 +396,8 @@ namespace Nekoyume.UI
 
             combinationExclamationMark.SetActive(
                 (btnCombination.IsUnlocked &&
-                 (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                  Craft.SharedModel.HasNotification)) || Summon.HasNotification);
+                    (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
+                        Craft.SharedModel.HasNotification)) || Summon.HasNotification);
             shopExclamationMark.SetActive(
                 btnShop.IsUnlocked
                 && ShopNoti(addressHex));
@@ -405,7 +407,7 @@ namespace Nekoyume.UI
             var hasNotificationInWorldMap = worldMap.HasNotification;
             questExclamationMark.SetActive(
                 (btnQuest.IsUnlocked
-                 && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0)
+                    && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0)
                 || hasNotificationInWorldMap);
         }
 
@@ -481,8 +483,10 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public void CombinationClick() =>
+        public void CombinationClick()
+        {
             CombinationClickInternal(() => Find<CombinationMain>().Show());
+        }
 
         private void CombinationClickInternal(System.Action showAction)
         {
@@ -522,7 +526,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Enter arena page", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             });
 
             var evt = new AirbridgeEvent("Enter_Arena_Page");
@@ -655,7 +659,7 @@ namespace Nekoyume.UI
 
         public void PatrolRewardClick()
         {
-            if(!btnPatrolReward.IsUnlocked)
+            if (!btnPatrolReward.IsUnlocked)
             {
                 return;
             }
@@ -671,12 +675,14 @@ namespace Nekoyume.UI
                 NcDebug.LogWarning("SeasonPassClick() : CurrentSeasonPassData is null.");
                 return;
             }
+
             if (!seasonPassManager.IsInitialized || seasonPassManager.AvatarInfo.Value == null)
             {
                 OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
                 NcDebug.LogWarning("SeasonPassClick() : SeasonPass Is not Initialized");
                 return;
             }
+
             Find<SeasonPass>().Show();
         }
 
@@ -894,12 +900,12 @@ namespace Nekoyume.UI
                     Find<CombinationResultPopup>().ShowWithEditorProperty();
                 }
                 else if (Input.GetKeyDown(KeyCode.E) &&
-                         !Find<EnhancementResultPopup>().gameObject.activeSelf)
+                    !Find<EnhancementResultPopup>().gameObject.activeSelf)
                 {
                     Find<EnhancementResultPopup>().ShowWithEditorProperty();
                 }
                 else if (Input.GetKeyDown(KeyCode.U) &&
-                         !Find<OneButtonSystem>().gameObject.activeSelf)
+                    !Find<OneButtonSystem>().gameObject.activeSelf)
                 {
                     var game = Game.Game.instance;
                     var states = game.States;
@@ -908,7 +914,7 @@ namespace Nekoyume.UI
                         game.Agent.BlockIndex,
                         Guid.NewGuid(),
                         game.Agent.BlockIndex,
-                        fungibleAssetValue: new[]
+                        new[]
                         {
                             (
                                 states.AgentState.address,
@@ -917,15 +923,15 @@ namespace Nekoyume.UI
                                     9,
                                     99)
                             ),
-                            (states.CurrentAvatarState.address, 99 * Currencies.Crystal),
+                            (states.CurrentAvatarState.address, 99 * Currencies.Crystal)
                         },
-                        fungibleIdAndCount: sheet.OrderedList!.Take(3)
+                        sheet.OrderedList!.Take(3)
                             .Select((row, index) => (
                                 row.ItemId,
                                 index + 1)),
                         "memo")
                     {
-                        New = true,
+                        New = true
                     };
                     var mailBox = states.CurrentAvatarState.mailBox;
                     mailBox.Add(mail);

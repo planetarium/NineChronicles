@@ -30,13 +30,13 @@ namespace Nekoyume.UI.Module
             Empty,
             Appraise,
             Working,
-            WaitingReceive,
+            WaitingReceive
         }
 
         public enum CacheType
         {
             Appraise,
-            WaitingReceive,
+            WaitingReceive
         }
 
         [SerializeField]
@@ -242,15 +242,16 @@ namespace Nekoyume.UI.Module
 
                 case SlotType.WaitingReceive:
                     SetContainer(false, false, false, true);
-                    if(state != null)
+                    if (state != null)
                     {
                         waitingReceiveItemView.SetData(new Item(state.Result.itemUsable));
                         waitingReceiveText.text = string.Format(
                             L10nManager.Localize("UI_SENDING_THROUGH_MAIL"),
                             state.Result.itemUsable.GetLocalizedName(
-                                useElementalIcon: false,
-                                ignoreLevel: true));
+                                false,
+                                true));
                     }
+
                     break;
             }
         }
@@ -329,6 +330,7 @@ namespace Nekoyume.UI.Module
             {
                 cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             }
+
             var row = Game.instance.TableSheets.MaterialItemSheet
                 .OrderedList
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
@@ -377,8 +379,7 @@ namespace Nekoyume.UI.Module
             itemNameText.text = TextHelper.GetItemNameInCombinationSlot(item);
             preparingText.text = string.Format(
                 L10nManager.Localize("UI_COMBINATION_SLOT_IDENTIFYING"),
-                item.GetLocalizedName(useElementalIcon: false, ignoreLevel: true));
-
+                item.GetLocalizedName(false, true));
         }
 
         private static void OnClickSlot(
@@ -392,7 +393,7 @@ namespace Nekoyume.UI.Module
                 case SlotType.Empty:
                     if (BattleRenderer.Instance.IsOnBattle)
                     {
-                        UI.NotificationSystem.Push(
+                        NotificationSystem.Push(
                             Nekoyume.Model.Mail.MailType.System,
                             L10nManager.Localize("UI_BLOCK_EXIT"),
                             NotificationCell.NotificationType.Alert);
@@ -403,10 +404,10 @@ namespace Nekoyume.UI.Module
                         .GetLayerRootTransform(WidgetType.Widget);
                     var statusWidget = Widget.Find<Status>();
                     foreach (var widget in MainCanvas.instance.Widgets
-                                 .Where(widget =>
-                                     widget.isActiveAndEnabled
-                                     && widget.transform.parent.Equals(widgetLayerRoot)
-                                     && !widget.Equals(statusWidget)))
+                        .Where(widget =>
+                            widget.isActiveAndEnabled
+                            && widget.transform.parent.Equals(widgetLayerRoot)
+                            && !widget.Equals(statusWidget)))
                     {
                         widget.Close(true);
                     }

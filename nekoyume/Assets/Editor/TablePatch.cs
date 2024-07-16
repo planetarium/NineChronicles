@@ -15,7 +15,7 @@ namespace NekoyumeEditor
 {
     public static class TablePatch
     {
-        private static Codec _codec = new Codec();
+        private static Codec _codec = new();
 
         [MenuItem("Tools/Print TablePatch Action Hash")]
         public static void PrintTablePatchActionHash()
@@ -39,11 +39,11 @@ namespace NekoyumeEditor
                     var type = typeof(ISheet).Assembly
                         .GetTypes()
                         .First(type => type.Namespace is { } @namespace &&
-                                       @namespace.StartsWith(
-                                           $"{nameof(Nekoyume)}.{nameof(Nekoyume.TableData)}") &&
-                                       !type.IsAbstract &&
-                                       typeof(ISheet).IsAssignableFrom(type) &&
-                                       type.Name == tableSheet.name);
+                            @namespace.StartsWith(
+                                $"{nameof(Nekoyume)}.{nameof(Nekoyume.TableData)}") &&
+                            !type.IsAbstract &&
+                            typeof(ISheet).IsAssignableFrom(type) &&
+                            type.Name == tableSheet.name);
                     var sheet = (ISheet)Activator.CreateInstance(type);
                     sheet!.Set(tableSheet.text);
                 }

@@ -9,7 +9,7 @@ namespace Nekoyume.GraphQL.GraphTypes
 
         [JsonPropertyName("pledge")]
         public PledgeGraphType.InnerType Pledge;
-        
+
         public override string ToString()
         {
             var agent = Agent is null ? "null" : Agent.ToString();

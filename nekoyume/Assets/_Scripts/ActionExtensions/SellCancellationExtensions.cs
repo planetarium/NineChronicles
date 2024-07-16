@@ -37,7 +37,6 @@ namespace Nekoyume.ActionExtensions
             {
                 return;
             }
-
         }
     }
 }

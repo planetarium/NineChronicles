@@ -52,8 +52,8 @@ namespace Nekoyume.Game.Character
             Widget.Find<Menu>().UpdateTitle(title);
 
             var items = new List<Guid>();
-            items.AddRange(costumes.Select(x=> x.ItemId));
-            items.AddRange(equipments.Select(x=> x.ItemId));
+            items.AddRange(costumes.Select(x => x.ItemId));
+            items.AddRange(equipments.Select(x => x.ItemId));
             avatarState.EquipItems(items);
 
             var status = Widget.Find<Status>();

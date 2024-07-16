@@ -49,11 +49,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private string conditionInfoKey = null;
 
-        public readonly Subject<State> OnClickSubject = new Subject<State>();
+        public readonly Subject<State> OnClickSubject = new();
 
-        public readonly Subject<Unit> OnSubmitSubject = new Subject<Unit>();
+        public readonly Subject<Unit> OnSubmitSubject = new();
 
-        public readonly Subject<Unit> OnClickDisabledSubject = new Subject<Unit>();
+        public readonly Subject<Unit> OnClickDisabledSubject = new();
 
         public bool IsSubmittable => _interactable && CurrentState.Value == State.Normal;
 
@@ -71,7 +71,7 @@ namespace Nekoyume.UI.Module
                     State.Normal => normalText.text,
                     State.Conditional => conditionalText.text,
                     State.Disabled => disabledText.text,
-                    _ => normalText.text,
+                    _ => normalText.text
                 };
             }
             set
@@ -82,7 +82,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public readonly ReactiveProperty<State> CurrentState = new ReactiveProperty<State>();
+        public readonly ReactiveProperty<State> CurrentState = new();
 
         private Func<bool> _conditionFunc = null;
         private bool _interactable = true;
@@ -131,9 +131,20 @@ namespace Nekoyume.UI.Module
 
         public void SetText(string text)
         {
-            if(normalText != null) { normalText.text = text; }
-            if(conditionalText != null) { conditionalText.text = text; }
-            if(disabledText != null) { disabledText.text = text; }
+            if (normalText != null)
+            {
+                normalText.text = text;
+            }
+
+            if (conditionalText != null)
+            {
+                conditionalText.text = text;
+            }
+
+            if (disabledText != null)
+            {
+                disabledText.text = text;
+            }
         }
 
         public virtual void UpdateObjects()
@@ -195,10 +206,13 @@ namespace Nekoyume.UI.Module
                     break;
                 case State.Conditional:
                     if (!string.IsNullOrEmpty(conditionInfoKey))
+                    {
                         NotificationSystem.Push(
                             Nekoyume.Model.Mail.MailType.System,
                             L10nManager.Localize(conditionInfoKey),
                             NotificationCell.NotificationType.Information);
+                    }
+
                     break;
                 case State.Disabled:
                     break;

@@ -9,7 +9,7 @@ namespace Nekoyume.UI
     public enum ConfirmResult : int
     {
         Yes,
-        No,
+        No
     }
 
     public delegate void ConfirmDelegate(ConfirmResult result);
@@ -47,11 +47,14 @@ namespace Nekoyume.UI
         public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
-            bool titleExists = !string.IsNullOrEmpty(title);
+            var titleExists = !string.IsNullOrEmpty(title);
             if (localize)
             {
                 if (titleExists)
+                {
                     this.title.text = L10nManager.Localize(title);
+                }
+
                 this.content.text = L10nManager.Localize(content);
                 buttonYes.Text = L10nManager.Localize(labelYes);
                 buttonNo.Text = L10nManager.Localize(labelNo);

@@ -12,6 +12,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module.WorldBoss
 {
     using UniRx;
+
     public class WorldBossSeason : MonoBehaviour
     {
         [SerializeField]
@@ -98,8 +99,10 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void UpdateUserCount(int count)
         {
-            raidersText.text = count > 0 ? $"{count:#,0}" : string.Empty;;
+            raidersText.text = count > 0 ? $"{count:#,0}" : string.Empty;
+            ;
         }
+
         public void UpdateBossInformation(
             int bossId,
             int level,

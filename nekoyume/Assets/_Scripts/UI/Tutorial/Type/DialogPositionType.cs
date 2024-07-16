@@ -8,7 +8,7 @@ namespace Nekoyume.UI
     {
         None = 0,
         Top = 1,
-        Bottom = 2,
+        Bottom = 2
     }
 
     public class DialogPositionTypeEqualityComparer : IEqualityComparer<DialogPositionType>
@@ -20,7 +20,7 @@ namespace Nekoyume.UI
 
         public int GetHashCode(DialogPositionType obj)
         {
-            return (int) obj;
+            return (int)obj;
         }
     }
 }

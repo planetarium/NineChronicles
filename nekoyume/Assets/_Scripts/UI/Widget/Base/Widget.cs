@@ -70,7 +70,7 @@ namespace Nekoyume.UI
 
         protected bool CanClose => CanHandleInputEvent;
 
-        #region Mono
+#region Mono
 
         private bool _isClosed;
 
@@ -113,7 +113,7 @@ namespace Nekoyume.UI
             _onDisableSubject.Dispose();
         }
 
-        #endregion
+#endregion
 
         public virtual void Initialize()
         {
@@ -126,7 +126,9 @@ namespace Nekoyume.UI
             var resName = $"UI/Prefabs/UI_{names[names.Length - 1]}";
             var res = Resources.Load<GameObject>(resName);
             if (res is null)
+            {
                 throw new FailedToLoadResourceException<GameObject>(resName);
+            }
 
             if (Pool.ContainsKey(type))
             {
@@ -269,7 +271,7 @@ namespace Nekoyume.UI
 
         public virtual void Show(bool ignoreShowAnimation = false)
         {
-            NcDebug.Log($"[Widget][{GetType().Name}] Show({ignoreShowAnimation}) invoked.", channel: "Widget");
+            NcDebug.Log($"[Widget][{GetType().Name}] Show({ignoreShowAnimation}) invoked.", "Widget");
             if (_coClose is not null)
             {
                 StopCoroutine(_coClose);
@@ -308,7 +310,7 @@ namespace Nekoyume.UI
 
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
-            NcDebug.Log($"[Widget][{GetType().Name}] Close({ignoreCloseAnimation}) invoked.", channel: "Widget");
+            NcDebug.Log($"[Widget][{GetType().Name}] Close({ignoreCloseAnimation}) invoked.", "Widget");
             if (WidgetStack.Count > 0 &&
                 WidgetStack.Peek() == gameObject)
             {
@@ -447,7 +449,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #region Call From Animation
+#region Call From Animation
 
         private void OnCompleteOfShowAnimation()
         {
@@ -470,7 +472,7 @@ namespace Nekoyume.UI
         {
         }
 
-        #endregion
+#endregion
 
         private void CheckInput()
         {

@@ -33,7 +33,7 @@ namespace Nekoyume.Game.Character
                 .Subscribe(_ => PlayAnimation(NPCAnimation.Type.Touch))
                 .AddTo(gameObject);
 
-            Animator = new NPCAnimator(this) {TimeScale = AnimatorTimeScale};
+            Animator = new NPCAnimator(this) { TimeScale = AnimatorTimeScale };
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
         }
 
@@ -86,7 +86,9 @@ namespace Nekoyume.Game.Character
             {
                 var animatorTargetName = spineResourcePath.Split('/').Last();
                 if (Animator.Target.name.Contains(animatorTargetName))
+                {
                     return;
+                }
 
                 Animator.DestroyTarget();
             }
@@ -131,7 +133,7 @@ namespace Nekoyume.Game.Character
                     var bodyBone = SpineController.SkeletonAnimation.skeleton.FindBone("body_01");
                     var spineControllerTransform = SpineController.transform;
                     var position = bodyBone?.GetWorldPosition(spineControllerTransform)
-                                   ?? spineControllerTransform.position;
+                        ?? spineControllerTransform.position;
                     VFXController.instance.CreateAndChaseCam<EmotionHeartVFX>(
                         position,
                         new Vector3(0f, 0f, -10f));

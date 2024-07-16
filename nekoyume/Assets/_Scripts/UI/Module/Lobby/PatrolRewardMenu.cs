@@ -8,6 +8,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module.Lobby
 {
     using UniRx;
+
     public class PatrolRewardMenu : MainMenu
     {
         [SerializeField]

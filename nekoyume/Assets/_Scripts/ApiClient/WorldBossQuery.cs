@@ -19,7 +19,7 @@ namespace Nekoyume.ApiClient
                 NcDebug.Log($"[{nameof(WorldBossQuery)}] initialized with empty host url because of no OnBoardingHost. url: {Url}");
                 return;
             }
-            
+
             Url = $"{host}/raid";
             NcDebug.Log($"[{nameof(WorldBossQuery)}] initialized. host: {host} url: {Url}");
         }

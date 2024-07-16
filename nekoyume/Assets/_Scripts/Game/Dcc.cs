@@ -64,9 +64,9 @@ namespace Nekoyume.Game
 
             var dccUrl = ApiClients.Instance.DccURL;
             _parts.TryAdd(dccId, null);
-            var dccParts    = new Dictionary<DccPartsType, int>();
-            var url         = $"{dccUrl.DccMetadata}{dccId}.json";
-            var headerName  = dccUrl.DccEthChainHeaderName;
+            var dccParts = new Dictionary<DccPartsType, int>();
+            var url = $"{dccUrl.DccMetadata}{dccId}.json";
+            var headerName = dccUrl.DccEthChainHeaderName;
             var headerValue = dccUrl.DccEthChainHeaderValue;
 
             var client = new HttpClient();

@@ -16,10 +16,7 @@ namespace Nekoyume.UI
                 Close(true);
             });
 
-            cancel.onClick.AddListener(() =>
-            {
-                Close(true);
-            });
+            cancel.onClick.AddListener(() => { Close(true); });
 
             base.Initialize();
         }

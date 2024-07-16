@@ -7,6 +7,7 @@ using System.Linq;
 namespace Nekoyume.ApiClient
 {
     using UniRx;
+
     public class SeasonPassServiceManager : IDisposable
     {
         public int AdventureCourageAmount = 10;
@@ -27,22 +28,22 @@ namespace Nekoyume.ApiClient
         public ReactiveProperty<DateTime> PrevSeasonClaimEndDate = new(DateTime.MinValue);
         public ReactiveProperty<string> PrevSeasonClaimRemainingDateTime = new("");
         public ReactiveProperty<bool> PrevSeasonClaimAvailable = new(false);
-        
+
         private bool _prevSeasonClaimAvailable = false;
 
         public string GoogleMarketURL { get; set; } = "https://play.google.com/store/search?q=Nine%20Chronicles&c=apps&hl=en-EN"; // default
         public string AppleMarketURL { get; set; } = "https://nine-chronicles.com/"; // default
-        
+
         public bool IsInitialized => Client != null;
 
         public SeasonPassServiceManager(string url)
         {
-            if(string.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 NcDebug.LogError($"SeasonPassServiceManager Initialized Fail url is Null");
                 return;
             }
-            
+
             Client = new SeasonPassServiceClient(url);
             Initialize();
         }
@@ -61,12 +62,16 @@ namespace Nekoyume.ApiClient
                 {
                     NcDebug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonPassCurrentAsync] error: {error}");
                     if (retry <= 0)
+                    {
                         return;
+                    }
+
                     GetSeasonPassCurrentRetry(--retry);
                 }).AsUniTask().Forget();
             }
+
             GetSeasonPassCurrentRetry(3);
-            
+
             Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1)).Subscribe((time) =>
             {
                 RefreshRemainingTime();
@@ -82,17 +87,18 @@ namespace Nekoyume.ApiClient
         {
             void GetSeasonPassLevelRetry(int retry)
             {
-                Client.GetSeasonpassLevelAsync((result) =>
-                {
-                    LevelInfos = result.OrderBy(info => info.Level).ToList();
-                }, (error) =>
+                Client.GetSeasonpassLevelAsync((result) => { LevelInfos = result.OrderBy(info => info.Level).ToList(); }, (error) =>
                 {
                     NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassLevelAsync] error: {error}");
                     if (retry <= 0)
+                    {
                         return;
+                    }
+
                     GetSeasonPassLevelRetry(--retry);
                 }).AsUniTask().Forget();
             }
+
             GetSeasonPassLevelRetry(3);
 
             void GetSeasonPassExpRetry(int retry)
@@ -126,10 +132,14 @@ namespace Nekoyume.ApiClient
                 {
                     NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassExpAsync] error: {error}");
                     if (retry <= 0)
+                    {
                         return;
+                    }
+
                     GetSeasonPassExpRetry(--retry);
                 }).AsUniTask().Forget();
             }
+
             GetSeasonPassExpRetry(3);
         }
 
@@ -145,6 +155,7 @@ namespace Nekoyume.ApiClient
             {
                 minText = $"{(int)timeSpan.Minutes}m";
             }
+
             RemainingDateTime.SetValueAndForceNotify($"{dayText}{hourText}{minText}");
         }
 
@@ -167,6 +178,7 @@ namespace Nekoyume.ApiClient
             {
                 prevSeasonMinText = $"{(int)prevSeasonTimeSpan.Minutes}m";
             }
+
             PrevSeasonClaimRemainingDateTime.SetValueAndForceNotify($"{prevSeasonDayText}{prevSeasonHourText}{prevSeasonMinText}");
             PrevSeasonClaimAvailable.Value = _prevSeasonClaimAvailable;
         }
@@ -179,8 +191,9 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogWarning("$SeasonPassServiceManager [AvatarStateRefreshAsync] Client is null");
                 return;
             }
-            
-            if(CurrentSeasonPassData == null || LevelInfos == null) {
+
+            if (CurrentSeasonPassData == null || LevelInfos == null)
+            {
                 AvatarInfo.SetValueAndForceNotify(null);
                 NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] CurrentSeasonPassData or LevelInfos is null");
                 return;
@@ -193,7 +206,7 @@ namespace Nekoyume.ApiClient
                 return;
             }
 
-            if(Game.Game.instance.States == null || Game.Game.instance.States.CurrentAvatarState == null)
+            if (Game.Game.instance.States == null || Game.Game.instance.States.CurrentAvatarState == null)
             {
                 AvatarInfo.SetValueAndForceNotify(null);
                 NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] States or CurrentAvatarState is null");
@@ -206,7 +219,9 @@ namespace Nekoyume.ApiClient
                 (result) =>
                 {
                     if (CurrentSeasonPassData.Id == result.Id)
+                    {
                         return;
+                    }
 
                     CurrentSeasonPassData = result;
                     DateTime.TryParse(CurrentSeasonPassData.EndTimestamp, out var endDateTime);
@@ -214,16 +229,10 @@ namespace Nekoyume.ApiClient
                     RefreshRemainingTime();
                     RefreshSeasonPassExpAmount();
                 },
-                (error) =>
-                {
-                    NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [GetSeasonPassCurrentAsync] error: {error}");
-                });
+                (error) => { NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [GetSeasonPassCurrentAsync] error: {error}"); });
 
             await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
-                (result) =>
-                {
-                    AvatarInfo.SetValueAndForceNotify(result);
-                },
+                (result) => { AvatarInfo.SetValueAndForceNotify(result); },
                 (error) =>
                 {
                     AvatarInfo.SetValueAndForceNotify(null);
@@ -231,7 +240,7 @@ namespace Nekoyume.ApiClient
                 });
 
 
-            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id -1, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
+            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id - 1, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
                 (result) =>
                 {
                     _prevSeasonClaimAvailable = result.IsPremium && result.LastPremiumClaim < result.Level;
@@ -239,10 +248,7 @@ namespace Nekoyume.ApiClient
                     PrevSeasonClaimEndDate.SetValueAndForceNotify(claimLimitTimestamp);
                     RefreshPrevRemainingClaim();
                 },
-                (error) =>
-                {
-                    NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [PrevSeasonStatus] error: {error}");
-                });
+                (error) => { NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [PrevSeasonStatus] error: {error}"); });
         }
 
         public void ReceiveAll(Action<SeasonPassServiceClient.ClaimResultSchema> onSucces, Action<string> onError)
@@ -256,19 +262,17 @@ namespace Nekoyume.ApiClient
                 onError?.Invoke(errorString);
                 return;
             }
+
             Client.PostUserClaimAsync(new SeasonPassServiceClient.ClaimRequestSchema
-            {
-                AgentAddr = agentAddress.ToString(),
-                AvatarAddr = avatarAddress.ToString(),
-                SeasonId = AvatarInfo.Value.SeasonPassId,
-                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
-                Force = false,
-                Prev = false,
-            },
-                (result) =>
                 {
-                    onSucces?.Invoke(result);
+                    AgentAddr = agentAddress.ToString(),
+                    AvatarAddr = avatarAddress.ToString(),
+                    SeasonId = AvatarInfo.Value.SeasonPassId,
+                    PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
+                    Force = false,
+                    Prev = false
                 },
+                (result) => { onSucces?.Invoke(result); },
                 (error) =>
                 {
                     NcDebug.LogError($"SeasonPassServiceManager [ReceiveAll] error: {error}");
@@ -287,19 +291,17 @@ namespace Nekoyume.ApiClient
                 onError?.Invoke(errorString);
                 return;
             }
+
             Client.PostUserClaimprevAsync(new SeasonPassServiceClient.ClaimRequestSchema
-            {
-                AgentAddr = agentAddress.ToString(),
-                AvatarAddr = avatarAddress.ToString(),
-                SeasonId = AvatarInfo.Value.SeasonPassId - 1,
-                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
-                Force = false,
-                Prev = true,
-            },
-                (result) =>
                 {
-                    onSuccess?.Invoke(result);
+                    AgentAddr = agentAddress.ToString(),
+                    AvatarAddr = avatarAddress.ToString(),
+                    SeasonId = AvatarInfo.Value.SeasonPassId - 1,
+                    PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
+                    Force = false,
+                    Prev = true
                 },
+                (result) => { onSuccess?.Invoke(result); },
                 (error) =>
                 {
                     NcDebug.LogError($"SeasonPassServiceManager [PrevClaim] error: {error}");
@@ -307,9 +309,9 @@ namespace Nekoyume.ApiClient
                 }).AsUniTask().Forget();
         }
 
-        public void GetExp(int level,  out int minExp, out int maxExp)
+        public void GetExp(int level, out int minExp, out int maxExp)
         {
-            if(LevelInfos == null)
+            if (LevelInfos == null)
             {
                 NcDebug.LogError("[SeasonPassServiceManager] LevelInfos Not Set");
                 minExp = 0;
@@ -317,7 +319,7 @@ namespace Nekoyume.ApiClient
                 return;
             }
 
-            if(level >= LevelInfos.Count)
+            if (level >= LevelInfos.Count)
             {
                 minExp = LevelInfos[LevelInfos.Count - 2].Exp;
                 maxExp = LevelInfos[LevelInfos.Count - 1].Exp;

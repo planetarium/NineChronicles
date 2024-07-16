@@ -34,6 +34,7 @@ namespace Nekoyume.Blockchain
                         key = "ERROR_REQUIRE_BLOCK";
                         code = "01";
                     }
+
                     break;
                 case EquipmentSlotUnlockException _:
                     key = "ERROR_SLOT_UNLOCK";
@@ -244,7 +245,7 @@ namespace Nekoyume.Blockchain
                     code = "47";
                     var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
                     errorMsg = $"Arena battle is possible after at least {battleArenaInterval} blocks." +
-                               $"\nError Code: {code}";
+                        $"\nError Code: {code}";
                     break;
                 case MismatchRuneSlotTypeException _:
                     code = "48";

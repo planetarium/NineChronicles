@@ -5,7 +5,7 @@ namespace Nekoyume.UI.Model
 {
     public class ItemInformation : IDisposable
     {
-        public readonly ReactiveProperty<CountableItem> item = new ReactiveProperty<CountableItem>();
+        public readonly ReactiveProperty<CountableItem> item = new();
 
         public ItemInformation(CountableItem countableItem = null)
         {

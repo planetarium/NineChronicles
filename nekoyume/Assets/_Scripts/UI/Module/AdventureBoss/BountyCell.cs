@@ -30,7 +30,7 @@ namespace Nekoyume
             ncgText.text = itemData.Ncg.ToString("#,0");
             bonusObj.SetActive(itemData.Bonus > 0);
 
-            if(itemData.Bonus > 0)
+            if (itemData.Bonus > 0)
             {
                 rankText.color = bonusStateColor;
                 nameText.color = bonusStateColor;

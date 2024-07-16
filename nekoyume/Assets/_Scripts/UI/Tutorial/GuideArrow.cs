@@ -20,10 +20,9 @@ namespace Nekoyume.UI
         private Image _cachedImage;
         private Camera _camera;
 
-        private readonly Dictionary<GuideType, int> _guideTypes =
-            new Dictionary<GuideType, int>(new GuideTypeEqualityComparer());
+        private readonly Dictionary<GuideType, int> _guideTypes = new(new GuideTypeEqualityComparer());
 
-        private readonly List<Vector2> _arrowDefaultPositionOffset = new List<Vector2>();
+        private readonly List<Vector2> _arrowDefaultPositionOffset = new();
 
         private void Awake()
         {
@@ -31,9 +30,9 @@ namespace Nekoyume.UI
             _arrow = GetComponent<Animator>();
             _camera = Camera.main;
 
-            for (var i = 0; i < (int) GuideType.End; ++i)
+            for (var i = 0; i < (int)GuideType.End; ++i)
             {
-                var type = (GuideType) i;
+                var type = (GuideType)i;
                 _guideTypes.Add(type, Animator.StringToHash(type.ToString()));
             }
 
@@ -92,7 +91,7 @@ namespace Nekoyume.UI
             }
 
             Reset();
-            _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, 0,false, callback));
+            _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, 0, false, callback));
         }
 
         private IEnumerator PlayGuideAnimation(GuideType guideType, float additionalDelay, bool isSkip, System.Action delayCallback, System.Action callback)
@@ -152,7 +151,7 @@ namespace Nekoyume.UI
 
             data.target.GetWorldCorners(targetWorldCorners);
 
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 // 타겟의 각 모서리 월드 좌표를 화면 좌표로 변환
                 // Convert A.worldCorners to screen position

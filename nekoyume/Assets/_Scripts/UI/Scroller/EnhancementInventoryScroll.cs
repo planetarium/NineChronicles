@@ -13,36 +13,37 @@ namespace Nekoyume.UI.Scroller
         EnhancementInventoryScroll.ContextModel,
         EnhancementInventoryScroll.CellCellGroup>
     {
-    public class ContextModel : GridScrollDefaultContext
-    {
-        public readonly Dictionary<int, EnhancementInventoryCell> CellDictionary = new();
-        public readonly Subject<EnhancementInventoryItem> OnClick = new Subject<EnhancementInventoryItem>();
-        public readonly Subject<EnhancementInventoryItem> OnDoubleClick = new Subject<EnhancementInventoryItem>();
-
-        public override void Dispose()
+        public class ContextModel : GridScrollDefaultContext
         {
-            OnClick?.Dispose();
-            OnDoubleClick?.Dispose();
-            base.Dispose();
+            public readonly Dictionary<int, EnhancementInventoryCell> CellDictionary = new();
+            public readonly Subject<EnhancementInventoryItem> OnClick = new();
+            public readonly Subject<EnhancementInventoryItem> OnDoubleClick = new();
+
+            public override void Dispose()
+            {
+                OnClick?.Dispose();
+                OnDoubleClick?.Dispose();
+                base.Dispose();
+            }
         }
-    }
 
-    public class CellCellGroup : GridCellGroup<EnhancementInventoryItem, ContextModel>
-    {
-    }
+        public class CellCellGroup : GridCellGroup<EnhancementInventoryItem, ContextModel>
+        {
+        }
 
-    [SerializeField]
-    private EnhancementInventoryCell cellTemplate = null;
+        [SerializeField]
+        private EnhancementInventoryCell cellTemplate = null;
 
-    public IObservable<EnhancementInventoryItem> OnClick => Context.OnClick;
-    public IObservable<EnhancementInventoryItem> OnDoubleClick => Context.OnDoubleClick;
+        public IObservable<EnhancementInventoryItem> OnClick => Context.OnClick;
+        public IObservable<EnhancementInventoryItem> OnDoubleClick => Context.OnDoubleClick;
 
-    public bool TryGetCellByIndex(int index, out EnhancementInventoryCell cell)
-    {
-        return Context.CellDictionary.TryGetValue(index, out cell);
-    }
+        public bool TryGetCellByIndex(int index, out EnhancementInventoryCell cell)
+        {
+            return Context.CellDictionary.TryGetValue(index, out cell);
+        }
 
-    protected override FancyCell<EnhancementInventoryItem, ContextModel> CellTemplate => cellTemplate;
+        protected override FancyCell<EnhancementInventoryItem, ContextModel> CellTemplate => cellTemplate;
+
         protected override void Initialize()
         {
             base.Initialize();

@@ -16,11 +16,10 @@ namespace Nekoyume.UI
     {
         private class Model
         {
-            public readonly ReactiveProperty<List<MonsterCollectionRewardSheet.RewardInfo>> RewardInfos
-                = new ReactiveProperty<List<MonsterCollectionRewardSheet.RewardInfo>>();
+            public readonly ReactiveProperty<List<MonsterCollectionRewardSheet.RewardInfo>> RewardInfos = new();
         }
 
-        private readonly Model _model = new Model();
+        private readonly Model _model = new();
 
         // View
         [SerializeField]

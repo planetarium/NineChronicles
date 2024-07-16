@@ -10,8 +10,10 @@ namespace Nekoyume.UI.Model
         [JsonProperty("avatars")]
         public Dictionary<string, int> Avatars { get; set; }
 
-        public static DccAvatars FromJson(string json) =>
-            JsonConvert.DeserializeObject<DccAvatars>(json, Converter.Settings);
+        public static DccAvatars FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<DccAvatars>(json, Converter.Settings);
+        }
 
         private static class Converter
         {
@@ -22,7 +24,7 @@ namespace Nekoyume.UI.Model
                 Converters =
                 {
                     new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-                },
+                }
             };
         }
     }

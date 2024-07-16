@@ -23,7 +23,7 @@ namespace Nekoyume.Game.LiveAsset
         {
             NeedInitialize,
             Initializing,
-            Initialized,
+            Initialized
         }
 
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
@@ -42,25 +42,26 @@ namespace Nekoyume.Game.LiveAsset
         private Notices _notices;
         private LiveAssetEndpointScriptableObject _endpoint;
 
-        public bool HasUnreadEvent =>
-            _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
+        public bool HasUnreadEvent => _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
 
-        public bool HasUnreadNotice =>
-            _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
+        public bool HasUnreadNotice => _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
 
         public bool HasUnread => IsInitialized && (HasUnreadEvent || HasUnreadNotice);
 
-        public IObservable<bool> ObservableHasUnreadEvent => _alreadyReadNotices
-            .ObserveAdd()
-            .Select(_ => HasUnreadEvent);
+        public IObservable<bool> ObservableHasUnreadEvent =>
+            _alreadyReadNotices
+                .ObserveAdd()
+                .Select(_ => HasUnreadEvent);
 
-        public IObservable<bool> ObservableHasUnreadNotice => _alreadyReadNotices
-            .ObserveAdd()
-            .Select(_ => HasUnreadNotice);
+        public IObservable<bool> ObservableHasUnreadNotice =>
+            _alreadyReadNotices
+                .ObserveAdd()
+                .Select(_ => HasUnreadNotice);
 
-        public IObservable<bool> ObservableHasUnread => _alreadyReadNotices
-            .ObserveAdd()
-            .Select(_ => HasUnread);
+        public IObservable<bool> ObservableHasUnread =>
+            _alreadyReadNotices
+                .ObserveAdd()
+                .Select(_ => HasUnread);
 
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
@@ -281,10 +282,7 @@ namespace Nekoyume.Game.LiveAsset
             StakingLevelSprite = await Helper.Util.DownloadTexture($"{_endpoint.ImageRootUrl}/{StakingLevelImageUrl}");
             StakingRewardSprite = await Helper.Util.DownloadTexture($"{_endpoint.ImageRootUrl}/{StakingRewardImageUrl}");
             RequestManager.instance
-                .GetJson(StakingArenaBonusUrl, response =>
-                {
-                    StakingArenaBonusValues = response.Split(",").Select(int.Parse).ToArray();
-                })
+                .GetJson(StakingArenaBonusUrl, response => { StakingArenaBonusValues = response.Split(",").Select(int.Parse).ToArray(); })
                 .ToUniTask()
                 .Forget();
         }

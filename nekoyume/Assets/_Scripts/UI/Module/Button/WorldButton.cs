@@ -21,14 +21,14 @@ namespace Nekoyume.UI.Module
         {
             Unlocked,
             Locked,
-            Unlockable,
+            Unlockable
         }
 
         private enum AnimationState
         {
             None,
             Idle,
-            Hover,
+            Hover
         }
 
         [SerializeField]
@@ -40,10 +40,10 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image colorImage = null;
 
-        [SerializeField, Tooltip("마우스 호버 상태일 때 월드 버튼이 스케일 되는 크기")]
+        [SerializeField][Tooltip("마우스 호버 상태일 때 월드 버튼이 스케일 되는 크기")]
         private float hoverScaleTo = 1.1f;
 
-        [SerializeField, Tooltip("마우스 호버 상태일 때 월드 버튼이 스케일 되는 속도")]
+        [SerializeField][Tooltip("마우스 호버 상태일 때 월드 버튼이 스케일 되는 속도")]
         private float hoverScaleSpeed = 0.7f;
 
         [SerializeField]
@@ -240,7 +240,7 @@ namespace Nekoyume.UI.Module
             if (openCostText != null)
             {
                 _openCost = CrystalCalculator
-                    .CalculateWorldUnlockCost(new[] {Id}, TableSheets.Instance.WorldUnlockSheet)
+                    .CalculateWorldUnlockCost(new[] { Id }, TableSheets.Instance.WorldUnlockSheet)
                     .MajorUnit;
                 openCostText.text = _openCost.ToString();
             }

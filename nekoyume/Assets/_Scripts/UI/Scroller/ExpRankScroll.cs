@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Scroller
     {
         public class ContextModel : RectScrollDefaultContext
         {
-            public readonly Subject<ExpRankCell> OnClick = new Subject<ExpRankCell>();
+            public readonly Subject<ExpRankCell> OnClick = new();
 
             public override void Dispose()
             {

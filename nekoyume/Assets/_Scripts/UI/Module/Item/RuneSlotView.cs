@@ -77,7 +77,7 @@ namespace Nekoyume.UI.Module
                 throw new NotFoundComponentException<EventTrigger>();
             }
 
-            EventTrigger.Entry entry = new EventTrigger.Entry();
+            var entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerClick;
             entry.callback.AddListener(OnClick);
             _eventTrigger.triggers.Add(entry);
@@ -171,9 +171,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if(!RuneFrontHelper.TryGetRuneIcon(state.RuneId, out var icon))
+            if (!RuneFrontHelper.TryGetRuneIcon(state.RuneId, out var icon))
             {
-              return;
+                return;
             }
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
@@ -209,7 +209,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if(!RuneFrontHelper.TryGetRuneIcon(runeState.RuneId, out var icon))
+            if (!RuneFrontHelper.TryGetRuneIcon(runeState.RuneId, out var icon))
             {
                 return;
             }

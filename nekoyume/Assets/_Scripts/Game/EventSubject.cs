@@ -7,8 +7,7 @@ namespace Nekoyume.Game
 {
     public class EventSubject : MonoBehaviour
     {
-        public Dictionary<string, Subject<Unit>> SubjectMap { get; }
-            = new Dictionary<string, Subject<Unit>>();
+        public Dictionary<string, Subject<Unit>> SubjectMap { get; } = new();
 
         private void OnDestroy()
         {

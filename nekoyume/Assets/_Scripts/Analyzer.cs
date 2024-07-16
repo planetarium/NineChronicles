@@ -17,7 +17,7 @@ using Firebase.Analytics;
  * https://issuetracker.unity3d.com/issues/il2cpp-build-fails-when-using-an-assembly-renamed-via-sentrys-assembly-alias-tool
  * Sentry will cause error in Android il2cpp build when use current unity version.
  * DON'T use this package, or UPDATE unity to any version above "2022.1.12f1, 2022.2.0b4, 2023.1.0a5".
-*/
+ */
 using UnityEngine;
 
 namespace Nekoyume

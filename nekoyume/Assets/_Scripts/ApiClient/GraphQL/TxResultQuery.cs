@@ -33,11 +33,12 @@ namespace Nekoyume.GraphQL
         }
 
         [Serializable]
-        public enum TxStatus {
+        public enum TxStatus
+        {
             INVALID,
             STAGING,
             SUCCESS,
-            FAILURE,
+            FAILURE
         }
 
         public static async Task<TxResultResponse> QueryTxResultAsync(string txId)

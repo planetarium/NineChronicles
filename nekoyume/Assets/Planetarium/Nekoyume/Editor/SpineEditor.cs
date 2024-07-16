@@ -153,7 +153,7 @@ namespace Planetarium.Nekoyume.Editor
             CreateAnimationReferenceAssets(skeletonDataAsset);
 
             var skeletonAnimation = EditorInstantiation.InstantiateSkeletonAnimation(
-                    skeletonDataAsset);
+                skeletonDataAsset);
             skeletonAnimation.AnimationName = nameof(CharacterAnimation.Type.Idle);
 
             var gameObject = skeletonAnimation.gameObject;
@@ -303,6 +303,7 @@ namespace Planetarium.Nekoyume.Editor
                                 animation = asset
                             });
                     }
+
                     break;
                 case NPCSpineController npcSpineController:
                     foreach (var animationType in NPCAnimation.List)
@@ -395,6 +396,7 @@ namespace Planetarium.Nekoyume.Editor
                                 animation = asset
                             });
                     }
+
                     break;
                 case PetSpineController petSpineController:
                     foreach (var animationType in PetAnimation.List)
@@ -421,7 +423,7 @@ namespace Planetarium.Nekoyume.Editor
             return controller;
         }
 
-        #region Validate Spine Resource
+#region Validate Spine Resource
 
         private static bool ValidateSpineResource(
             string prefabName,
@@ -455,8 +457,10 @@ namespace Planetarium.Nekoyume.Editor
             return false;
         }
 
-        private static bool ValidateForFullCostume(SkeletonDataAsset skeletonDataAsset) =>
-            ValidateForPlayer(skeletonDataAsset);
+        private static bool ValidateForFullCostume(SkeletonDataAsset skeletonDataAsset)
+        {
+            return ValidateForPlayer(skeletonDataAsset);
+        }
 
         private static bool ValidateForMonster(SkeletonDataAsset skeletonDataAsset)
         {
@@ -466,7 +470,10 @@ namespace Planetarium.Nekoyume.Editor
             return !(hud is null);
         }
 
-        private static bool ValidateForNPC(SkeletonDataAsset skeletonDataAsset) => true;
+        private static bool ValidateForNPC(SkeletonDataAsset skeletonDataAsset)
+        {
+            return true;
+        }
 
         private static bool ValidateForPlayer(SkeletonDataAsset skeletonDataAsset)
         {
@@ -485,7 +492,7 @@ namespace Planetarium.Nekoyume.Editor
                 PlayerSpineController.EarLeftSlot,
                 PlayerSpineController.EarRightSlot,
                 PlayerSpineController.EyeHalfSlot,
-                PlayerSpineController.EyeOpenSlot,
+                PlayerSpineController.EyeOpenSlot
             };
             foreach (var slotName in slotNames)
             {
@@ -500,9 +507,12 @@ namespace Planetarium.Nekoyume.Editor
             return result;
         }
 
-        private static bool ValidateForPet(SkeletonDataAsset skeletonDataAsset) => true;
+        private static bool ValidateForPet(SkeletonDataAsset skeletonDataAsset)
+        {
+            return true;
+        }
 
-        #endregion
+#endregion
 
         // CharacterAnimation.Type에서 포함하지 않는 것을 이곳에서 걸러낼 수도 있겠다.
         /// <summary>

@@ -11,12 +11,12 @@ namespace Nekoyume.UI.Module.Timer
         protected TextMeshProUGUI timeText;
 
         private const double TimerInterval = 1.0f;
-        private readonly WaitForSeconds WaitInterval = new WaitForSeconds((float) TimerInterval);
+        private readonly WaitForSeconds WaitInterval = new((float)TimerInterval);
 
         private Coroutine _timerCoroutine = null;
 
         protected double _time;
-        
+
         public virtual void Show()
         {
             gameObject.SetActive(true);
@@ -27,19 +27,19 @@ namespace Nekoyume.UI.Module.Timer
             _time = seconds;
             PostShow();
         }
-        
+
         public virtual void Show(int minutes, int seconds)
         {
             _time = minutes * 60 + seconds;
             PostShow();
         }
-        
+
         public virtual void Show(int hours, int minutes, int seconds)
         {
             _time = hours * 60 * 60 + minutes * 60 + seconds;
             PostShow();
         }
-        
+
         public virtual void Show(TimeSpan timeSpan)
         {
             _time = timeSpan.TotalSeconds;
@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module.Timer
             {
                 StopCoroutine(_timerCoroutine);
                 _timerCoroutine = null;
-            }   
+            }
         }
 
         private IEnumerator CoUpdate()
@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Module.Timer
             UpdateTimeText();
             _time -= TimerInterval;
         }
-        
+
         private void UpdateTimeText()
         {
             timeText.text = _time.ToString("N0");

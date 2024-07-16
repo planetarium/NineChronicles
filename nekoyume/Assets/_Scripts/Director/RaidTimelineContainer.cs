@@ -79,15 +79,30 @@ namespace Nekoyume.Director
             gameObject.SetActive(false);
         }
 
-        public IEnumerator CoPlayAppearCutscene() => CoPlayCutscene(appearCutscene);
+        public IEnumerator CoPlayAppearCutscene()
+        {
+            return CoPlayCutscene(appearCutscene);
+        }
 
-        public IEnumerator CoPlaySkillCutscene() => CoPlayCutscene(skillCutscene);
+        public IEnumerator CoPlaySkillCutscene()
+        {
+            return CoPlayCutscene(skillCutscene);
+        }
 
-        public IEnumerator CoPlayRunAwayCutscene(int wave) => CoPlayCutscene(runAwayCutscenes[wave]);
+        public IEnumerator CoPlayRunAwayCutscene(int wave)
+        {
+            return CoPlayCutscene(runAwayCutscenes[wave]);
+        }
 
-        public IEnumerator CoPlayFallDownCutscene() => CoPlayCutscene(fallDownCutscene);
+        public IEnumerator CoPlayFallDownCutscene()
+        {
+            return CoPlayCutscene(fallDownCutscene);
+        }
 
-        public IEnumerator CoPlayPlayerDefeatCutscene() => CoPlayCutscene(playerDefeatCutscene);
+        public IEnumerator CoPlayPlayerDefeatCutscene()
+        {
+            return CoPlayCutscene(playerDefeatCutscene);
+        }
 
         public bool SkillCutsceneExists(int skillId)
         {
@@ -118,9 +133,10 @@ namespace Nekoyume.Director
             yield return CoPlayCutscene(info.Playable);
         }
 
-        #region PlayTimelineCutscene
+#region PlayTimelineCutscene
+
         private const int NumOfCharacterSlots = 11;
-        private const int NumOfBossSlots      = 1;
+        private const int NumOfBossSlots = 1;
 
         private IEnumerator CoPlayCutscene(TimelineAsset asset)
         {
@@ -136,7 +152,7 @@ namespace Nekoyume.Director
             BindCharacterToTimeline(deepCopyAsset);
             BindBossToTimeline(deepCopyAsset);
 
-            IsCutscenePlaying      = true;
+            IsCutscenePlaying = true;
             director.playableAsset = deepCopyAsset;
             director.RebuildGraph();
             director.Play();
@@ -150,9 +166,9 @@ namespace Nekoyume.Director
         private void BindCharacterToTimeline(TimelineAsset timelineAsset)
         {
             var tracks = timelineAsset.GetRootTracks()?
-                                      .FirstOrDefault(x => x.name.Equals("Spine_Player"))?
-                                      .GetChildTracks()
-                                      .ToList();
+                .FirstOrDefault(x => x.name.Equals("Spine_Player"))?
+                .GetChildTracks()
+                .ToList();
 
             if (tracks == null)
             {
@@ -161,7 +177,7 @@ namespace Nekoyume.Director
             }
 
             var appearance = player.GetComponent<CharacterAppearance>();
-            for (int i = 0; i < NumOfCharacterSlots; i++)
+            for (var i = 0; i < NumOfCharacterSlots; i++)
             {
                 if (tracks[i] == null)
                 {
@@ -169,27 +185,32 @@ namespace Nekoyume.Director
                     continue;
                 }
 
-                var avatarPartsType = ((AvatarPartsType)(i + 1));
+                var avatarPartsType = (AvatarPartsType)(i + 1);
                 var skeletonAnimation = appearance.SpineController.GetSkeletonAnimation(avatarPartsType);
                 TimelineHelper.BindingSpineInstanceToTrack(tracks[i], skeletonAnimation);
 
                 director.SetGenericBinding(tracks[i], skeletonAnimation);
             }
 
-            if (!timelineAsset.markerTrack) return;
+            if (!timelineAsset.markerTrack)
+            {
+                return;
+            }
 
             var markers = timelineAsset.markerTrack.GetMarkers().OfType<SkipMarker>();
             _currentSkipMarker = markers.FirstOrDefault();
             if (_currentSkipMarker != null)
+            {
                 skipButton.gameObject.SetActive(true);
+            }
         }
 
         private void BindBossToTimeline(TimelineAsset timelineAsset)
         {
             var tracks = timelineAsset.GetRootTracks()?
-                                      .FirstOrDefault(x => x.name.Equals("Spine_Boss"))?
-                                      .GetChildTracks()
-                                      .ToList();
+                .FirstOrDefault(x => x.name.Equals("Spine_Boss"))?
+                .GetChildTracks()
+                .ToList();
 
             if (tracks == null)
             {
@@ -198,7 +219,7 @@ namespace Nekoyume.Director
             }
 
             var skeletonAnimation = boss.GetComponent<SkeletonAnimation>();
-            for (int i = 0; i < NumOfBossSlots; i++)
+            for (var i = 0; i < NumOfBossSlots; i++)
             {
                 if (tracks[i] == null)
                 {
@@ -212,7 +233,10 @@ namespace Nekoyume.Director
 
         private void EnableSkipMarker(TimelineAsset timelineAsset)
         {
-            if (!timelineAsset.markerTrack) return;
+            if (!timelineAsset.markerTrack)
+            {
+                return;
+            }
 
             var markers = timelineAsset.markerTrack.GetMarkers().OfType<SkipMarker>();
             _currentSkipMarker = markers.FirstOrDefault();
@@ -221,7 +245,8 @@ namespace Nekoyume.Director
                 skipButton.gameObject.SetActive(true);
             }
         }
-        #endregion PlayTimelineCutscene
+
+#endregion PlayTimelineCutscene
 
         public void ReverseX()
         {
@@ -232,7 +257,7 @@ namespace Nekoyume.Director
 
             if (raidCanvas != null)
             {
-                for (int i = 0; i < raidCanvas.transform.childCount; i++)
+                for (var i = 0; i < raidCanvas.transform.childCount; i++)
                 {
                     var canvasChildTansform = raidCanvas.transform.GetChild(i);
                     canvasChildTansform.transform.localScale = new Vector3(
@@ -240,6 +265,7 @@ namespace Nekoyume.Director
                         canvasChildTansform.transform.localScale.y,
                         canvasChildTansform.transform.localScale.z);
                 }
+
                 if (skipButton.TryGetComponent<RectTransform>(out var skipBtnRect))
                 {
                     FlipRectTransformWithAnchor(skipBtnRect);
@@ -259,13 +285,13 @@ namespace Nekoyume.Director
 
         private static void FlipRectTransformWithAnchor(RectTransform rectTrans)
         {
-            Vector2 anchoredPosition = rectTrans.anchoredPosition;
+            var anchoredPosition = rectTrans.anchoredPosition;
             anchoredPosition.x = -anchoredPosition.x;
             rectTrans.anchoredPosition = anchoredPosition;
 
-            Vector2 anchorMin = rectTrans.anchorMin;
-            Vector2 anchorMax = rectTrans.anchorMax;
-            float temp = anchorMin.x;
+            var anchorMin = rectTrans.anchorMin;
+            var anchorMax = rectTrans.anchorMax;
+            var temp = anchorMin.x;
             anchorMin.x = 1 - anchorMax.x;
             anchorMax.x = 1 - temp;
             rectTrans.anchorMin = anchorMin;

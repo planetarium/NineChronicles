@@ -59,13 +59,13 @@ namespace Nekoyume
             }
         }
 
-        public readonly List< Resolution> Resolutions = new List< Resolution>()
+        public readonly List<Resolution> Resolutions = new()
         {
-            {new Resolution(1176, 664)},
-            {new Resolution(1280, 720)},
-            {new Resolution(1366, 768)},
-            {new Resolution(1600, 900)},
-            {new Resolution(1920, 1080)},
+            { new(1176, 664) },
+            { new(1280, 720) },
+            { new(1366, 768) },
+            { new(1600, 900) },
+            { new(1920, 1080) }
         };
 
         /// <summary>

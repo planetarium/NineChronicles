@@ -14,8 +14,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    [RequireComponent(typeof(Canvas)),
-     RequireComponent(typeof(RectTransform))]
+    [RequireComponent(typeof(Canvas))][RequireComponent(typeof(RectTransform))]
     public class MainCanvas : MonoSingleton<MainCanvas>
     {
         [Serializable]
@@ -81,7 +80,7 @@ namespace Nekoyume.UI
         private List<Widget> _secondWidgets = new();
         public RectTransform RectTransform { get; private set; }
         public Canvas Canvas { get; private set; }
-        public List<Widget> Widgets { get; private set; } = new List<Widget>();
+        public List<Widget> Widgets { get; private set; } = new();
 
         public bool Interactable
         {
@@ -110,7 +109,7 @@ namespace Nekoyume.UI
                     return tutorialMaskLayer;
                 case WidgetType.Screen:
                     return screenLayer;
-            // SystemUI
+                // SystemUI
                 case WidgetType.System:
                     return systemLayer;
                 case WidgetType.Development:
@@ -149,7 +148,7 @@ namespace Nekoyume.UI
                     animationLayer,
                     systemLayer,
                     developmentLayer,
-                    tutorialMaskLayer,
+                    tutorialMaskLayer
                 };
             }
 
@@ -189,13 +188,14 @@ namespace Nekoyume.UI
                 Widget.Create<OneLineSystem>(true),
                 Widget.Create<NotificationSystem>(true),
                 Widget.Create<BlockChainMessageSystem>(true),
-                Widget.Create<VersionSystem>(true),
+                Widget.Create<VersionSystem>(true)
             };
 
             foreach (var value in firstWidgets)
             {
                 value.Initialize();
             }
+
             Widgets.AddRange(firstWidgets);
 
             UpdateLayers();
@@ -513,6 +513,7 @@ namespace Nekoyume.UI
                 yield return null;
                 last = value;
             }
+
             Widgets.AddRange(_secondWidgets);
             UpdateLayers();
 
@@ -523,7 +524,7 @@ namespace Nekoyume.UI
         public void InitWidgetInMain()
         {
             var layer = widgetLayer.root.transform;
-            for(int i = 0; i < layer.childCount; ++i)
+            for (var i = 0; i < layer.childCount; ++i)
             {
                 var child = layer.GetChild(i);
                 var widget = child.GetComponent<Widget>();

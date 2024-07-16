@@ -39,7 +39,9 @@ namespace Nekoyume.Game.Character
             if (Animator.Target != null)
             {
                 if (Animator.Target.name.Contains(key))
+                {
                     return;
+                }
 
                 Animator.DestroyTarget();
             }
@@ -75,10 +77,11 @@ namespace Nekoyume.Game.Character
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.gameObject != _target.gameObject)
+            if (other.gameObject != _target.gameObject)
             {
                 return;
             }
+
             IsTriggerd = true;
             NcDebug.Log($"[BreakthroughCharacter] OnTriggered {other.name}");
 
@@ -89,6 +92,7 @@ namespace Nekoyume.Game.Character
             {
                 ActionCamera.instance.Shake();
             }
+
             AudioController.instance.PlaySfx(AudioController.SfxCode.AdventureBossMonCollision);
             var vfx = VFXController.instance.CreateAndChaseCam<AdventureBossSweepAttackVFX>(pos);
             vfx.transform.localScale = new Vector3(2f, 2f, 2f);
@@ -106,6 +110,5 @@ namespace Nekoyume.Game.Character
             //OnDeadEnd();
             Animator.DestroyTarget();
         }
-
     }
 }

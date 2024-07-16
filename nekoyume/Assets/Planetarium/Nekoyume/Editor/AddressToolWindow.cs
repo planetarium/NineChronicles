@@ -120,11 +120,11 @@ namespace Planetarium.Nekoyume.Editor
             GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
             GUILayout.Label("Agent Addresses", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(!Application.isPlaying ||
-                                         !Game.instance.IsInitialized);
+                !Game.instance.IsInitialized);
             if (GUILayout.Button("Setup Current Agent") &&
                 Application.isPlaying &&
                 Game.instance.IsInitialized &&
-                Game.instance.Agent is { })
+                Game.instance.Agent is not null)
             {
                 _agentAddr = Game.instance.Agent.Address.ToString();
                 DeriveAvatarAddresses();

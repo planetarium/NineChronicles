@@ -13,7 +13,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
 {
-    using Nekoyume.Helper;
+    using Helper;
     // NOTE: Avoid Ambiguous invocation:
     // System.IDisposable Subscribe<T>(this IObservable<T>, Action<T>)
     // System.ObservableExtensions and UniRx.ObservableExtensions
@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Character
         [SerializeField]
         private CharacterAppearance appearance;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
         private GameObject _cachedCharacterTitle;
 
         public long EXP = 0;
@@ -37,7 +37,7 @@ namespace Nekoyume.Game.Character
 
         protected override float RunSpeedDefault => CharacterModel.RunSpeed * Game.instance.Stage.AnimationTimeScaleWeight;
 
-        protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
+        protected override Vector3 DamageTextForce => new(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
         public AvatarSpineController SpineController => appearance.SpineController;
@@ -50,7 +50,7 @@ namespace Nekoyume.Game.Character
 
         public override string TargetTag => Tag.Enemy;
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -108,7 +108,7 @@ namespace Nekoyume.Game.Character
             Animator.Dispose();
         }
 
-        #endregion
+#endregion
 
         public void Set(AvatarState avatarState)
         {
@@ -202,7 +202,7 @@ namespace Nekoyume.Game.Character
             return appearance.BoxCollider;
         }
 
-        #region AttackPoint & HitPoint
+#region AttackPoint & HitPoint
 
         protected override void UpdateHitPoint()
         {
@@ -225,7 +225,7 @@ namespace Nekoyume.Game.Character
             return targetHitPosition - attackRangeStartPosition;
         }
 
-        #endregion
+#endregion
 
         public void EquipForPrologue(int armorId, int weaponId)
         {
@@ -343,7 +343,7 @@ namespace Nekoyume.Game.Character
                 {
                     ["code"] = beforeLevel,
                     ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = Game.instance.States.AgentState.address.ToString(),
+                    ["AgentAddress"] = Game.instance.States.AgentState.address.ToString()
                 });
 
                 var evt = new AirbridgeEvent("User_Level_Up");
@@ -353,10 +353,11 @@ namespace Nekoyume.Game.Character
                 AirbridgeUnity.TrackEvent(evt);
 
                 Widget.Find<LevelUpCelebratePopup>()?.Show(beforeLevel, Level);
-                for (int interLevel = beforeLevel + 1; interLevel <= Level; interLevel++)
+                for (var interLevel = beforeLevel + 1; interLevel <= Level; interLevel++)
                 {
                     Widget.Find<UI.Module.HeaderMenuStatic>().UpdatePortalRewardByLevel(interLevel);
                 }
+
                 InitStats(Model);
             }
 
@@ -387,7 +388,7 @@ namespace Nekoyume.Game.Character
 
         protected override void ShowCutscene()
         {
-            AreaAttackCutscene.Show(Helper.Util.GetArmorId());
+            AreaAttackCutscene.Show(Util.GetArmorId());
         }
 
         public override void SetSpineColor(Color color, int propertyID = -1)

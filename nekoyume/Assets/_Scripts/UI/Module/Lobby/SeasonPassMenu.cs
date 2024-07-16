@@ -7,20 +7,27 @@ using Nekoyume.ApiClient;
 namespace Nekoyume.UI.Module.Lobby
 {
     using UniRx;
+
     public class SeasonPassMenu : MainMenu
     {
         [SerializeField]
         private GameObject premiumIcon;
+
         [SerializeField]
         private GameObject premiumPlusIcon;
+
         [SerializeField]
         private TextMeshProUGUI levelText;
+
         [SerializeField]
         private TextMeshProUGUI timeText;
+
         [SerializeField]
         private GameObject notificationObj;
+
         [SerializeField]
         private GameObject dim;
+
         [SerializeField]
         private GameObject iconRoot;
 
@@ -31,7 +38,8 @@ namespace Nekoyume.UI.Module.Lobby
             dim.SetActive(false);
             iconRoot.SetActive(true);
             var seasonPassService = ApiClients.Instance.SeasonPassServiceManager;
-            seasonPassService.AvatarInfo.Subscribe((info)=> {
+            seasonPassService.AvatarInfo.Subscribe((info) =>
+            {
                 dim.SetActive(info == null);
                 iconRoot.SetActive(info != null);
                 if (info == null)
@@ -51,13 +59,9 @@ namespace Nekoyume.UI.Module.Lobby
                 {
                     levelText.text = $"Lv.{info.Level}";
                 }
-
             }).AddTo(gameObject);
 
-            ApiClients.Instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) =>
-            {
-                timeText.text = $"<Style=Clock> {endDate}";
-            });
+            ApiClients.Instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) => { timeText.text = $"<Style=Clock> {endDate}"; });
         }
     }
 }

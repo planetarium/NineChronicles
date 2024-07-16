@@ -93,7 +93,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public async Task CheckProductAvailable(string productSku, Address agentAddr, string planetId, Action success, Action failed)
         {
             var categoryList = await GetProductsAsync(agentAddr, planetId);
-            if(categoryList == null)
+            if (categoryList == null)
             {
                 failed();
                 return;
@@ -107,7 +107,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                     if (product.Sku == productSku)
                     {
                         selectedProduct = product;
-                        if(product.Active && product.Buyable)
+                        if (product.Active && product.Buyable)
                         {
                             success();
                             return;
@@ -124,6 +124,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             {
                 Debug.LogError($"CheckProductAvailable Fail can't find {productSku}");
             }
+
             failed();
 
             return;

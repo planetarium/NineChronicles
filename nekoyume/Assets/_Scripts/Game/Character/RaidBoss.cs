@@ -53,6 +53,7 @@ namespace Nekoyume.Game.Character
                 var exceeded = dmg - _currentHp;
                 dmg -= exceeded;
             }
+
             Game.instance.RaidStage.AddScore(dmg);
             base.ProcessDamage(info, isConsiderElementalType);
         }
@@ -99,6 +100,7 @@ namespace Nekoyume.Game.Character
                         ProcessBuff(buffTarget, info);
                         yield return new WaitForSeconds(buffVFXInterval);
                     }
+
                     break;
                 case SkillCategory.Heal:
                     if (playAll)
@@ -115,6 +117,7 @@ namespace Nekoyume.Game.Character
                         var info = _skillEnumerator.Current;
                         ProcessHeal(info);
                     }
+
                     break;
                 default:
                     if (playAll)
@@ -152,6 +155,7 @@ namespace Nekoyume.Game.Character
                             yield return new WaitForSeconds(buffVFXInterval);
                         }
                     }
+
                     break;
             }
         }

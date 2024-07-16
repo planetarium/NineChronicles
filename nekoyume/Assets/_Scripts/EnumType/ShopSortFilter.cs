@@ -12,7 +12,7 @@ namespace Nekoyume.EnumType
         CrystalPerPrice = 4,
         EquipmentLevel = 5,
         OptionCount = 6,
-        UnitPrice = 7,
+        UnitPrice = 7
     }
 
     public static class ShopSortFilterExtension
@@ -30,7 +30,7 @@ namespace Nekoyume.EnumType
                     ShopSortFilter.CrystalPerPrice,
                     ShopSortFilter.EquipmentLevel,
                     ShopSortFilter.OptionCount,
-                    ShopSortFilter.UnitPrice,
+                    ShopSortFilter.UnitPrice
                 };
             }
         }

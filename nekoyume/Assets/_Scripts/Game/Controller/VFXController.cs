@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Controller
 
         private ObjectPool _pool = null;
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Controller
             }
         }
 
-        #endregion
+#endregion
 
         public T Create<T>(Vector3 position) where T : VFX.VFX
         {
@@ -78,7 +78,7 @@ namespace Nekoyume.Game.Controller
             var g = vfx.gameObject;
             var t = vfx.transform;
             while (g.activeSelf &&
-                   target)
+                target)
             {
                 t.position = target.position + offset;
                 yield return null;

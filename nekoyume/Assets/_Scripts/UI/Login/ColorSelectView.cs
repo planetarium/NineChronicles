@@ -20,7 +20,10 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Image lightColor2;
 
 
-        public bool Selected { set => selected.SetActive(value); }
+        public bool Selected
+        {
+            set => selected.SetActive(value);
+        }
 
         public void Set(ColorSelect itemData, System.Action onClick)
         {

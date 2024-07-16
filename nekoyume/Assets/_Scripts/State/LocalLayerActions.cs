@@ -22,9 +22,9 @@ namespace Nekoyume.State
             public bool isRendered;
         }
 
-        private readonly Stack<Info> _reusableInfoPool = new Stack<Info>();
+        private readonly Stack<Info> _reusableInfoPool = new();
 
-        private readonly Dictionary<Guid, Info> _infos = new Dictionary<Guid, Info>();
+        private readonly Dictionary<Guid, Info> _infos = new();
 
         /// <summary>
         /// Register `GameAction` information.

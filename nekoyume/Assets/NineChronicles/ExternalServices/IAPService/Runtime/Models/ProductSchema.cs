@@ -16,8 +16,10 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("apple_sku")]
         public string AppleSku { get; set; }
 
-        public string Sku {
-            get {
+        public string Sku
+        {
+            get
+            {
 #if UNITY_ANDROID
                 return GoogleSku;
 #elif UNITY_IOS
@@ -75,5 +77,5 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
 
         [JsonPropertyName("required_level")]
         public int? RequiredLevel { get; set; }
-    } 
+    }
 }

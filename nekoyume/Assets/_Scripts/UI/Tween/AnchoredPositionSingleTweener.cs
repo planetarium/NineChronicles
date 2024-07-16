@@ -30,9 +30,10 @@ namespace Nekoyume.UI.Tween
         private Vector2 _startPosition;
         private Vector2 _endPosition;
 
-        public RectTransform RectTransform => _rectTransformCache
-            ? _rectTransformCache
-            : _rectTransformCache = GetComponent<RectTransform>();
+        public RectTransform RectTransform =>
+            _rectTransformCache
+                ? _rectTransformCache
+                : _rectTransformCache = GetComponent<RectTransform>();
 
         private Vector2 OriginAnchoredPosition =>
             _originAnchoredPositionCache

@@ -145,8 +145,8 @@ namespace Nekoyume.State
 
             var products = new List<ItemProductResponseModel>();
             foreach (var model in CachedBuyItemProducts.Where(model =>
-                         model.SellerAgentAddress != agentAddress &&
-                         !PurchasedProductIds.Contains(model.ProductId)))
+                model.SellerAgentAddress != agentAddress &&
+                !PurchasedProductIds.Contains(model.ProductId)))
             {
                 if (model.Legacy)
                 {
@@ -170,8 +170,8 @@ namespace Nekoyume.State
             var agentAddress = States.Instance.AgentState.address;
 
             var favProducts = CachedBuyFungibleAssetProducts.Where(x =>
-                    !x.SellerAgentAddress.Equals(agentAddress) &&
-                    !PurchasedProductIds.Contains(x.ProductId)).ToList();
+                !x.SellerAgentAddress.Equals(agentAddress) &&
+                !PurchasedProductIds.Contains(x.ProductId)).ToList();
 
             BuyFungibleAssetProducts.Value = favProducts;
             BuyItemProducts.Value?.Clear();

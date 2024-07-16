@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private BaseItemView baseItemView;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public void Set(ShopItem model, Action<ShopItem> onClick)
         {

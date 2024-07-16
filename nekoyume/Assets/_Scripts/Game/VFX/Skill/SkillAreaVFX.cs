@@ -13,7 +13,10 @@ namespace Nekoyume.Game.VFX.Skill
         public override void Play()
         {
             if (finisher)
+            {
                 finisher.gameObject.SetActive(false);
+            }
+
             base.Play();
         }
 
@@ -24,6 +27,7 @@ namespace Nekoyume.Game.VFX.Skill
                 ps.Stop(false);
             }
         }
+
         public void Finisher()
         {
             if (finisher)

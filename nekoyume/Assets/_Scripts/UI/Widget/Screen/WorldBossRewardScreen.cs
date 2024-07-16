@@ -57,10 +57,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            CloseWidget = () =>
-            {
-                Close(true);
-            };
+            CloseWidget = () => { Close(true); };
         }
 
         public void CachingInformation(RaiderState raiderState, int bossId)
@@ -83,6 +80,7 @@ namespace Nekoyume.UI
             {
                 StopCoroutine(_coCloseCoroutine);
             }
+
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
@@ -98,6 +96,7 @@ namespace Nekoyume.UI
             {
                 StopCoroutine(_coCloseCoroutine);
             }
+
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
@@ -112,6 +111,7 @@ namespace Nekoyume.UI
             {
                 StopCoroutine(_coCloseCoroutine);
             }
+
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
@@ -201,6 +201,7 @@ namespace Nekoyume.UI
                 {
                     runes[index].Icon.sprite = icon;
                 }
+
                 index++;
             }
         }
@@ -238,6 +239,7 @@ namespace Nekoyume.UI
                 {
                     runes[index].Icon.sprite = icon;
                 }
+
                 index++;
             }
         }

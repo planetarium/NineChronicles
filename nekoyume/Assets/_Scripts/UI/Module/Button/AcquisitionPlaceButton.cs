@@ -69,12 +69,11 @@ namespace Nekoyume.UI.Module
             enableObject.SetActive(false);
             disableObject.SetActive(false);
 
-            string iconName = string.Empty;
+            var iconName = string.Empty;
             switch (model.Type)
             {
                 case ShortcutHelper.PlaceType.Stage:
-                    if (Game.Game.instance.TableSheets.WorldSheet.
-                        TryGetByStageId(model.StageId, out var worldRow))
+                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(model.StageId, out var worldRow))
                     {
                         iconName = string.Format(IconNameFormat, (100 + worldRow.Id).ToString());
                     }

@@ -45,7 +45,9 @@ namespace Nekoyume.Game.Battle
         private bool _isPlaying;
 
         public SkillController SkillController { get; private set; }
+
         public BuffController BuffController { get; private set; }
+
         // Only Changed on Thread Pool
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int TurnNumber => _turnNumber;
@@ -205,6 +207,7 @@ namespace Nekoyume.Game.Battle
                 me.Spawn(character);
                 me.ShowSpeech("PLAYER_INIT");
             }
+
             yield return null;
         }
 
@@ -297,7 +300,7 @@ namespace Nekoyume.Game.Battle
         public IEnumerator CoTickDamage(ArenaCharacter affectedCharacter,
             IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
-            Character.ArenaCharacter target = affectedCharacter.Id == me.Id ? me : enemy;
+            var target = affectedCharacter.Id == me.Id ? me : enemy;
             foreach (var info in skillInfos)
             {
                 yield return new WaitWhile(() => target.HasAction());
@@ -342,8 +345,10 @@ namespace Nekoyume.Game.Battle
                         {
                             continue;
                         }
+
                         var frostBite = kvp.Value;
                         var sourceCharacter = caster.Id == me.Id ? enemy : me;
+
                         IEnumerator CoFrostBite(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
                         {
                             sourceCharacter.CustomEvent(tick.SkillId);
@@ -366,8 +371,11 @@ namespace Nekoyume.Game.Battle
                         affectedCharacter.AddAction(actionParams);
                         yield return null;
                         break;
-                    };
+                    }
+
+                    ;
                 }
+
                 // This Tick from 'Stun'
                 if (!tick.SkillInfos.Any())
                 {

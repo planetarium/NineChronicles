@@ -14,5 +14,5 @@ public enum CostType
     RubyDust = 600202,
     EmeraldDust = 600203,
     SilverDust = 800201,
-    ApPotion = 500000,
+    ApPotion = 500000
 }

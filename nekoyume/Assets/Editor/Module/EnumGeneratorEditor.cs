@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Util
         {
             base.OnInspectorGUI();
 
-            var script = (ScriptableObjectIncludeEnum<T>) target;
+            var script = (ScriptableObjectIncludeEnum<T>)target;
 
             if (GUILayout.Button("Apply List to Enum", GUILayout.Height(40)))
             {

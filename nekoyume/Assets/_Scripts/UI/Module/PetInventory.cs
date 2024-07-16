@@ -92,6 +92,7 @@ namespace Nekoyume.UI.Module
                 _disposableOnDisabled?.Dispose();
                 _disposableOnDisabled = null;
             }
+
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
                 .Subscribe(state => UpdateView(state));
             gameObject.SetActive(true);
@@ -113,6 +114,7 @@ namespace Nekoyume.UI.Module
                 _disposableOnDisabled?.Dispose();
                 _disposableOnDisabled = null;
             }
+
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
                 .Subscribe(state => UpdateView(state, craftInfo));
             gameObject.SetActive(true);
@@ -156,7 +158,7 @@ namespace Nekoyume.UI.Module
             var viewData = new PetDescriptionData
             {
                 PetId = petId,
-                CombinationSlotIndex = int.MaxValue,
+                CombinationSlotIndex = int.MaxValue
             };
             var tableSheets = TableSheets.Instance;
             var petLevel = 1;
@@ -170,6 +172,7 @@ namespace Nekoyume.UI.Module
             {
                 viewData.HasState = false;
             }
+
             viewData.Level = petLevel;
 
             if (!tableSheets.PetOptionSheet.TryGetValue(petId, out var optionRow))
@@ -185,11 +188,12 @@ namespace Nekoyume.UI.Module
                 viewData.Empty = true;
                 return viewData;
             }
+
             viewData.OptionInfo = optionInfo;
 
             var equipped = viewData.HasState &&
                 (petStates.IsLocked(petId) ||
-                petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex);
+                    petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex);
             viewData.Equipped = equipped;
 
             if (equipped)
@@ -197,13 +201,12 @@ namespace Nekoyume.UI.Module
                 var combinationState = States.Instance.GetCombinationSlotState();
                 var equippedSlot = combinationState.FirstOrDefault(x => x.Value.PetId == petId);
                 viewData.CombinationSlotIndex =
-                    equippedSlot.Equals(default(KeyValuePair<int, CombinationSlotState>)) ?
-                    int.MaxValue : equippedSlot.Key;
+                    equippedSlot.Equals(default(KeyValuePair<int, CombinationSlotState>)) ? int.MaxValue : equippedSlot.Key;
             }
 
             if (craftInfo.HasValue && viewData.HasState)
             {
-                (var description, var applied) = PetFrontHelper.GetDescriptionText(
+                var (description, applied) = PetFrontHelper.GetDescriptionText(
                     optionInfo,
                     craftInfo.Value,
                     petState,

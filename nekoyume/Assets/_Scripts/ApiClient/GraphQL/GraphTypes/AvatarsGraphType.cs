@@ -13,7 +13,7 @@ namespace Nekoyume.GraphQL.GraphTypes
         public override string ToString()
         {
             return $"Avatars({Avatars.Length}):" +
-                   $" [ {string.Join(", ", Avatars.Select(e => e is null ? "null" : $"{{ {e} }}"))} ]";
+                $" [ {string.Join(", ", Avatars.Select(e => e is null ? "null" : $"{{ {e} }}"))} ]";
         }
     }
 }

@@ -27,13 +27,13 @@ namespace Nekoyume
             Arena,
             Worldboss,
             PatrolReward,
-            AdventureBoss,
+            AdventureBoss
         }
 
         public const string ChannelId = "NineChroniclesLocal";
 
-        public static readonly TimeSpan NightStartTime = new TimeSpan(21, 0, 0);
-        public static readonly TimeSpan NightEndTime = new TimeSpan(8, 0, 0);
+        public static readonly TimeSpan NightStartTime = new(21, 0, 0);
+        public static readonly TimeSpan NightEndTime = new(8, 0, 0);
 
 #if UNITY_ANDROID
         private static int androidApiLevel;
@@ -44,7 +44,6 @@ namespace Nekoyume
 #if !UNITY_EDITOR && UNITY_ANDROID
             InitializeAndroid();
 #elif !UNITY_EDITOR && UNITY_IOS
-
 #endif
         }
 
@@ -133,12 +132,14 @@ namespace Nekoyume
                     {
                         return string.Empty;
                     }
+
                     break;
                 case PushType.AdventureBoss:
                     if (!Settings.Instance.isAdventureBossPushEnabled)
                     {
                         return string.Empty;
                     }
+
                     break;
             }
 

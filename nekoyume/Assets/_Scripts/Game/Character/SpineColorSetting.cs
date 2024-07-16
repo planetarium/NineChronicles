@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Character
     {
         None,
         FrostBite,
-        Test,
+        Test
     }
 
     /// <summary>
@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Character
         Always = 0,
         Hit = 5,
         Frostbite = 10,
-        Test = 10000,
+        Test = 10000
     }
 
     // struct을 사용하려 했으나, SimplePQ를 사용하면서 내부적으로 값이 복사되어 class로 변경
@@ -30,50 +30,51 @@ namespace Nekoyume.Game.Character
         /// 텍스처에 곱해지는 컬러, 해당 값이 클수록 밝은 부분이 어두워진다.
         /// </summary>
         public static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
+
         /// <summary>
         /// 어두울수록 더 많이 더해지는 컬러, 해당 값이 클수록 어두운 부분이 밝아진다.
         /// </summary>
         public static readonly int BlackPropertyId = Shader.PropertyToID("_Black");
 
-        private readonly Color         _color;
-        private readonly Color         _black;
-        private readonly bool          _hasDuration;
+        private readonly Color _color;
+        private readonly Color _black;
+        private readonly bool _hasDuration;
         private readonly SpineColorKey _key;
 
         private float _duration;
-        private bool  _isExpired;
+        private bool _isExpired;
 
         public SpineColorSetting(Color color, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
         {
-            _color       = color;
-            _black       = Color.black;
+            _color = color;
+            _black = Color.black;
             _hasDuration = hasDuration;
-            _duration    = duration;
-            _key         = key;
-            _isExpired   = false;
+            _duration = duration;
+            _key = key;
+            _isExpired = false;
         }
 
         public SpineColorSetting(Color color, Color blackColor, bool hasDuration = false, float duration = 0f, SpineColorKey key = SpineColorKey.None)
         {
-            _color       = color;
-            _black       = blackColor;
+            _color = color;
+            _black = blackColor;
             _hasDuration = hasDuration;
-            _duration    = duration;
-            _key         = key;
-            _isExpired   = false;
+            _duration = duration;
+            _key = key;
+            _isExpired = false;
         }
 
         public override int GetHashCode()
         {
-            var colorHash    = _color.GetHashCode();
-            var blackHash    = _black.GetHashCode();
+            var colorHash = _color.GetHashCode();
+            var blackHash = _black.GetHashCode();
             var durationHash = _hasDuration.GetHashCode();
-            var keyHash      = _key.GetHashCode();
+            var keyHash = _key.GetHashCode();
             return colorHash ^ blackHash ^ durationHash ^ keyHash;
         }
 
-        public Color Color     => _color;
-        public bool  IsExpired => _isExpired;
+        public Color Color => _color;
+        public bool IsExpired => _isExpired;
         public SpineColorKey Key => _key;
 
         public void UpdateDuration(float deltaTime)

@@ -83,11 +83,12 @@ namespace Nekoyume.UI
         private RaidPreparation _raidPreparation;
         private Grind _grind;
         private readonly ToggleGroup _toggleGroup = new();
+
         private readonly Dictionary<BattleType, System.Action> _onToggleCallback = new()
         {
-            { BattleType.Adventure , null},
-            { BattleType.Arena , null},
-            { BattleType.Raid , null},
+            { BattleType.Adventure, null },
+            { BattleType.Arena, null },
+            { BattleType.Raid, null }
         };
 
         private int isActiveDcc = 0;
@@ -104,22 +105,13 @@ namespace Nekoyume.UI
             _activeCostume = activeCostumeButton.GetComponent<Image>();
 
             adventureButton.OnClick
-                .Subscribe(b =>
-                {
-                    OnClickPresetTab(b, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]);
-                })
+                .Subscribe(b => { OnClickPresetTab(b, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]); })
                 .AddTo(gameObject);
             arenaButton.OnClick
-                .Subscribe(b =>
-                {
-                    OnClickPresetTab(b, BattleType.Arena, _onToggleCallback[BattleType.Arena]);
-                })
+                .Subscribe(b => { OnClickPresetTab(b, BattleType.Arena, _onToggleCallback[BattleType.Arena]); })
                 .AddTo(gameObject);
             raidButton.OnClick
-                .Subscribe(b =>
-                {
-                    OnClickPresetTab(b, BattleType.Raid, _onToggleCallback[BattleType.Raid]);
-                })
+                .Subscribe(b => { OnClickPresetTab(b, BattleType.Raid, _onToggleCallback[BattleType.Raid]); })
                 .AddTo(gameObject);
 
             closeButton.onClick.AddListener(() =>
@@ -196,7 +188,9 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             var clearedStageId = States.Instance.CurrentAvatarState
-                .worldInformation.TryGetLastClearedStageId(out var stageId) ? stageId : 1;
+                .worldInformation.TryGetLastClearedStageId(out var stageId)
+                ? stageId
+                : 1;
             grindModeToggle.obsolete = clearedStageId < Game.LiveAsset.GameConfig.RequiredStage.Grind;
             grindModeToggle.isOn = false;
             information.UpdateInventory(BattleType.Adventure);
@@ -274,7 +268,9 @@ namespace Nekoyume.UI
             raidButton.HasNotification.Value = false;
 
             var clearedStageId = States.Instance.CurrentAvatarState
-                .worldInformation.TryGetLastClearedStageId(out var id) ? id : 1;
+                .worldInformation.TryGetLastClearedStageId(out var id)
+                ? id
+                : 1;
             var adventure = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var arena = States.Instance.CurrentItemSlotStates[BattleType.Arena];
             var raid = States.Instance.CurrentItemSlotStates[BattleType.Raid];
@@ -327,7 +323,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #region For tutorial5
+#region For tutorial5
 
         public void TutorialActionClickAvatarInfoFirstInventoryCellView()
         {
@@ -341,8 +337,11 @@ namespace Nekoyume.UI
             }
         }
 
-        public void TutorialActionCloseAvatarInfoWidget() => Close();
+        public void TutorialActionCloseAvatarInfoWidget()
+        {
+            Close();
+        }
 
-        #endregion
+#endregion
     }
 }

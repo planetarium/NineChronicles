@@ -40,7 +40,7 @@ namespace Nekoyume.UI.Module
 
         protected override void SetCount(int count)
         {
-            bool isEnough = count >= RequiredCount;
+            var isEnough = count >= RequiredCount;
 
             countText.text = string.Format(
                 isEnough ? CountTextFormatEnough : CountTextFormatNotEnough,

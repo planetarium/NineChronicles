@@ -42,8 +42,8 @@ namespace Nekoyume
         /// </summary>
         private static void AndroidKeyStorePathChange()
         {
-            CopyFolder("storage/emulated/0/Documents/NineChronicles", Platform.PersistentDataPath);
-            DeleteSameFileName(Platform.PersistentDataPath, "storage/emulated/0/Documents/NineChronicles");
+            CopyFolder("storage/emulated/0/Documents/NineChronicles", PersistentDataPath);
+            DeleteSameFileName(PersistentDataPath, "storage/emulated/0/Documents/NineChronicles");
         }
 
         /// <summary>
@@ -63,13 +63,13 @@ namespace Nekoyume
                 NcDebug.Log($"[Directory.CreateDirectory] target: {target}");
             }
 
-            foreach (string file in Directory.GetFiles(path))
+            foreach (var file in Directory.GetFiles(path))
             {
                 File.Copy(file, Path.Combine(target, Path.GetFileName(file)));
                 NcDebug.Log($"[File.Copy] path:{Path.GetFileName(file)}    target:{target}");
             }
 
-            foreach (string directory in Directory.GetDirectories(path))
+            foreach (var directory in Directory.GetDirectories(path))
             {
                 CopyFolder(directory, Path.Combine(target, Path.GetFileName(directory)));
             }
@@ -86,10 +86,10 @@ namespace Nekoyume
         private static void DeleteSameFileName(string path, string target)
         {
             NcDebug.Log($"[DeleteCopiedFile] path:{path}    target:{target}");
-            foreach (string file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+            foreach (var file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
             {
-                string relativePath = file.Substring(path.Length + 1);
-                string targetFile = Path.Combine(target, relativePath);
+                var relativePath = file.Substring(path.Length + 1);
+                var targetFile = Path.Combine(target, relativePath);
 
                 if (File.Exists(targetFile))
                 {
@@ -123,7 +123,7 @@ namespace Nekoyume
         public static bool IsMobilePlatform()
         {
             return IsTargetPlatform(RuntimePlatform.Android) ||
-                   IsTargetPlatform(RuntimePlatform.IPhonePlayer);
+                IsTargetPlatform(RuntimePlatform.IPhonePlayer);
         }
     }
 }

@@ -96,10 +96,10 @@ namespace Nekoyume.Helper
                 PetHelper.GetSoulstoneCurrency(TableSheets.Instance.PetSheet[id].SoulStoneTicker) *
                 nextCost.SoulStoneQuantity;
             return States.Instance.GoldBalanceState.Gold >= ncgCost &&
-                   States.Instance.CurrentAvatarBalances.TryGetValue(
-                       soulStoneCost.Currency.Ticker,
-                       out var soulStone) &&
-                   soulStone >= soulStoneCost;
+                States.Instance.CurrentAvatarBalances.TryGetValue(
+                    soulStoneCost.Currency.Ticker,
+                    out var soulStone) &&
+                soulStone >= soulStoneCost;
         }
 
         public static (string description, bool isApplied) GetDescriptionText(
@@ -141,8 +141,8 @@ namespace Nekoyume.Helper
                         requiredMin,
                         requiredMax,
                         isFixedValue ? optionInfo.OptionValue : $"{optionInfo.OptionValue}%"), true);
-                case Model.Pet.PetOptionType.AdditionalOptionRate:
-                case Model.Pet.PetOptionType.AdditionalOptionRateByFixedValue:
+                case PetOptionType.AdditionalOptionRate:
+                case PetOptionType.AdditionalOptionRateByFixedValue:
                     if (!TableSheets.Instance.EquipmentItemSubRecipeSheetV2
                         .TryGetValue(craftInfo.SubrecipeId, out var subrecipeRow))
                     {
@@ -163,8 +163,7 @@ namespace Nekoyume.Helper
                         if (TableSheets.Instance.EquipmentItemOptionSheet
                             .TryGetValue(equipmentOptionInfo.Id, out var optionRow))
                         {
-                            var format = optionRow.SkillId == default ?
-                                StatOptionFormat : SkillOptionFormat;
+                            var format = optionRow.SkillId == default ? StatOptionFormat : SkillOptionFormat;
                             before.Append(string.Format(
                                 format,
                                 equipmentOptionInfo.Ratio / 100m));
@@ -180,15 +179,15 @@ namespace Nekoyume.Helper
                         appliedColorHex,
                         after.ToString(),
                         $"{optionInfo.OptionValue}%"), true);
-                case Model.Pet.PetOptionType.IncreaseBlockPerHourglass:
+                case PetOptionType.IncreaseBlockPerHourglass:
                     return (string.Format(
                         HourglassFormat,
                         gameConfigState.HourglassPerBlock,
                         appliedColorHex,
                         gameConfigState.HourglassPerBlock + optionInfo.OptionValue,
                         optionInfo.OptionValue), true);
-                case Model.Pet.PetOptionType.DiscountMaterialCostCrystal:
-              var cost = PetHelper.CalculateDiscountedMaterialCost(
+                case PetOptionType.DiscountMaterialCostCrystal:
+                    var cost = PetHelper.CalculateDiscountedMaterialCost(
                         craftInfo.CostCrystal,
                         petState,
                         TableSheets.Instance.PetOptionSheet);
@@ -245,14 +244,14 @@ namespace Nekoyume.Helper
                 var targetOptionValue = targetOption.OptionValue;
                 var targetOptionValueText = $"{originalValue + targetOptionValue} ({originalValue}+{targetOptionValue})";
                 return L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
-                        currentOptionValueText,
-                        targetOptionValueText);
+                    currentOptionValueText,
+                    targetOptionValueText);
             }
             else
             {
                 return L10nManager.Localize($"PET_DESCRIPTION_TWO_OPTION_{targetOption.OptionType}",
-                        currentOption.OptionValue,
-                        targetOption.OptionValue);
+                    currentOption.OptionValue,
+                    targetOption.OptionValue);
             }
         }
     }

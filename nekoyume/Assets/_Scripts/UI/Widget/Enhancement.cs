@@ -149,7 +149,10 @@ namespace Nekoyume.UI
             Clear();
             enhancementInventory.Set(UpdateInformation, enhancementSelectedMaterialItemScroll);
             if (_materialsScroller != null)
+            {
                 _materialsScroller.Position = 0;
+            }
+
             base.Show(ignoreShowAnimation);
             if (enhancementInventory.TryGetCellByIndex(0, out var firstCell))
             {
@@ -246,7 +249,7 @@ namespace Nekoyume.UI
             {
                 var baseItemCostRows = enhancementCostSheet.Values
                     .Where(row => row.ItemSubType == baseItem.ItemSubType &&
-                                  row.Grade == baseItem.Grade).ToList();
+                        row.Grade == baseItem.Grade).ToList();
                 var currentRow =
                     baseItemCostRows.FirstOrDefault(row => row.Level == baseItem.level) ??
                     new EnhancementCostSheetV3.Row();
@@ -411,7 +414,7 @@ namespace Nekoyume.UI
                 var equipment = baseModel.ItemBase as Equipment;
                 var baseItemCostRows = enhancementCostSheet.Values
                     .Where(row => row.ItemSubType == equipment.ItemSubType &&
-                                  row.Grade == equipment.Grade).ToList();
+                        row.Grade == equipment.Grade).ToList();
                 var baseItemCostRow =
                     baseItemCostRows.FirstOrDefault(row => row.Level == equipment.level) ??
                     new EnhancementCostSheetV3.Row();
@@ -477,7 +480,7 @@ namespace Nekoyume.UI
                 // Get Target Range Rows
                 var targetRangeRows = baseItemCostRows
                     .Where(row => row.Level >= equipment.level &&
-                                  row.Level <= targetRow.Level + 1).ToList();
+                        row.Level <= targetRow.Level + 1).ToList();
                 if (equipment.level == 0)
                 {
                     targetRangeRows.Insert(0, new EnhancementCostSheetV3.Row());
@@ -562,7 +565,8 @@ namespace Nekoyume.UI
                     var tooltipContext = $"{optionStatType.ValueToString(statOptionsMin[statIndex])} ~ {optionStatType.ValueToString(statOptionsMax[statIndex])}<sprite name=icon_Arrow>";
                     statView.SetDescriptionButton(() =>
                     {
-                        statTooltip.transform.position = statView.DescriptionPosition;;
+                        statTooltip.transform.position = statView.DescriptionPosition;
+                        ;
                         statTooltip.Set("", tooltipContext);
                         statTooltip.gameObject.SetActive(true);
                     });

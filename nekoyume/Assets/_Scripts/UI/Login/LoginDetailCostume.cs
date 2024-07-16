@@ -27,41 +27,57 @@ namespace Nekoyume.UI
 
         [SerializeField] private CostumeColorScriptableObject costumeColorScriptableObject;
 
-        private readonly List<ColorSelectView> _views = new List<ColorSelectView>();
+        private readonly List<ColorSelectView> _views = new();
         private ColorSelectView _selectedView;
         private ItemSubType _currentSubType;
 
-        private readonly Dictionary<ItemSubType, int> _index = new Dictionary<ItemSubType, int>()
+        private readonly Dictionary<ItemSubType, int> _index = new()
         {
             { ItemSubType.EarCostume, 0 },
             { ItemSubType.TailCostume, 0 },
             { ItemSubType.HairCostume, 0 },
-            { ItemSubType.EyeCostume, 0 },
+            { ItemSubType.EyeCostume, 0 }
         };
 
         private void Awake()
         {
             earToggle.onValueChanged.AddListener(isOn =>
             {
-                if (!isOn) return;
+                if (!isOn)
+                {
+                    return;
+                }
+
                 UpdateTab(ItemSubType.EarCostume);
             });
 
             tailToggle.onValueChanged.AddListener(isOn =>
             {
-                if (!isOn) return;
+                if (!isOn)
+                {
+                    return;
+                }
+
                 UpdateTab(ItemSubType.TailCostume);
             });
 
             hairToggle.onValueChanged.AddListener(isOn =>
             {
-                if (!isOn) return;
+                if (!isOn)
+                {
+                    return;
+                }
+
                 UpdateTab(ItemSubType.HairCostume);
             });
 
             eyeToggle.onValueChanged.AddListener(isOn =>
             {
-                if (!isOn) return;
+                if (!isOn)
+                {
+                    return;
+                }
+
                 UpdateTab(ItemSubType.EyeCostume);
             });
         }
@@ -200,6 +216,7 @@ namespace Nekoyume.UI
             {
                 throw new NullReferenceException(nameof(player));
             }
+
             player.UpdateEarByCustomizeIndex(earIndex);
             player.UpdateTailByCustomizeIndex(tailIndex);
         }

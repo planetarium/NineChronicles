@@ -70,17 +70,17 @@ namespace Nekoyume
                 stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V1";
             }
             else if (stakeStateV1.StartedBlockIndex <
-                     gameConfigState.StakeRegularRewardSheet_V3_StartBlockIndex)
+                gameConfigState.StakeRegularRewardSheet_V3_StartBlockIndex)
             {
                 stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V2";
             }
             else if (stakeStateV1.StartedBlockIndex <
-                     gameConfigState.StakeRegularRewardSheet_V4_StartBlockIndex)
+                gameConfigState.StakeRegularRewardSheet_V4_StartBlockIndex)
             {
                 stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V3";
             }
             else if (stakeStateV1.StartedBlockIndex <
-                     gameConfigState.StakeRegularRewardSheet_V5_StartBlockIndex)
+                gameConfigState.StakeRegularRewardSheet_V5_StartBlockIndex)
             {
                 stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V4";
             }
@@ -92,10 +92,10 @@ namespace Nekoyume
             stakeStateV2 = new StakeStateV2(
                 stakeStateV1,
                 new Contract(
-                    stakeRegularFixedRewardSheetTableName: stakeRegularFixedRewardSheetTableName,
-                    stakeRegularRewardSheetTableName: stakeRegularRewardSheetTableName,
-                    rewardInterval: StakeState.RewardInterval,
-                    lockupInterval: StakeState.LockupInterval));
+                    stakeRegularFixedRewardSheetTableName,
+                    stakeRegularRewardSheetTableName,
+                    StakeState.RewardInterval,
+                    StakeState.LockupInterval));
             return true;
         }
     }

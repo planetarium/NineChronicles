@@ -44,45 +44,71 @@ namespace Nekoyume
             collection.Clear();
         }
 
-        public static IDisposable Subscribe<T>(this IObservable<T> source, Func<T, UniTaskVoid> onNext) =>
-            source.Subscribe(x => onNext(x).Forget());
+        public static IDisposable Subscribe<T>(this IObservable<T> source, Func<T, UniTaskVoid> onNext)
+        {
+            return source.Subscribe(x => onNext(x).Forget());
+        }
 
-        public static IDisposable SubscribeTo<T>(this IObservable<T> source, T target) =>
-            source.SubscribeWithState(target, (x, t) => t = x);
+        public static IDisposable SubscribeTo<T>(this IObservable<T> source, T target)
+        {
+            return source.SubscribeWithState(target, (x, t) => t = x);
+        }
 
-        public static IDisposable SubscribeTo<T>(this IObservable<T> source, ReactiveProperty<T> reactiveProperty) =>
-            source.SubscribeWithState(reactiveProperty, (x, t) => t.Value = x);
+        public static IDisposable SubscribeTo<T>(this IObservable<T> source, ReactiveProperty<T> reactiveProperty)
+        {
+            return source.SubscribeWithState(reactiveProperty, (x, t) => t.Value = x);
+        }
 
-        public static IDisposable SubscribeTo(this IObservable<bool> source, GameObject gameObject) =>
-            source.SubscribeWithState(gameObject, (x, t) => gameObject.SetActive(x));
+        public static IDisposable SubscribeTo(this IObservable<bool> source, GameObject gameObject)
+        {
+            return source.SubscribeWithState(gameObject, (x, t) => gameObject.SetActive(x));
+        }
 
-        public static IDisposable SubscribeTo(this IObservable<bool> source, Behaviour behaviour) =>
-            source.SubscribeWithState(behaviour, (x, t) => behaviour.enabled = x);
+        public static IDisposable SubscribeTo(this IObservable<bool> source, Behaviour behaviour)
+        {
+            return source.SubscribeWithState(behaviour, (x, t) => behaviour.enabled = x);
+        }
 
-        public static IDisposable SubscribeTo(this IObservable<Sprite> source, Image image) =>
-            source.SubscribeWithState(image, (x, t) => t.sprite = x);
+        public static IDisposable SubscribeTo(this IObservable<Sprite> source, Image image)
+        {
+            return source.SubscribeWithState(image, (x, t) => t.sprite = x);
+        }
 
-        public static IDisposable SubscribeTo(this IObservable<int> source, TextMeshProUGUI text) =>
-            source.SubscribeWithState(text, (x, t) => t.text = x.ToString());
+        public static IDisposable SubscribeTo(this IObservable<int> source, TextMeshProUGUI text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.text = x.ToString());
+        }
 
-        public static IDisposable SubscribeTo(this IObservable<string> source, TextMeshProUGUI text) =>
-            source.SubscribeWithState(text, (x, t) => t.text = x);
+        public static IDisposable SubscribeTo(this IObservable<string> source, TextMeshProUGUI text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.text = x);
+        }
 
-        public static IDisposable SubscribeTo(this IObservable<string> source, SubmitButton text) =>
-            source.SubscribeWithState(text, (x, t) => t.SetSubmitText(x));
+        public static IDisposable SubscribeTo(this IObservable<string> source, SubmitButton text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.SetSubmitText(x));
+        }
 
-        public static IDisposable SubscribeTo(this IObservable<string> source, ConditionalButton text) =>
-            source.SubscribeWithState(text, (x, t) => t.Text = x);
+        public static IDisposable SubscribeTo(this IObservable<string> source, ConditionalButton text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.Text = x);
+        }
 
-        public static IDisposable SubscribeTo(this IObservable<string> source, TextButton text) =>
-            source.SubscribeWithState(text, (x, t) => t.Text = x);
+        public static IDisposable SubscribeTo(this IObservable<string> source, TextButton text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.Text = x);
+        }
 
-        public static IDisposable SubscribeToPrice(this IObservable<FungibleAssetValue> source, TextMeshProUGUI text) =>
-            source.SubscribeWithState(text, (x, t) => t.text = x.GetQuantityString());
+        public static IDisposable SubscribeToPrice(this IObservable<FungibleAssetValue> source, TextMeshProUGUI text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.text = x.GetQuantityString());
+        }
 
-        public static IDisposable SubscribeL10nKeyTo(this IObservable<string> source, TextMeshProUGUI text) =>
-            source.SubscribeWithState(
+        public static IDisposable SubscribeL10nKeyTo(this IObservable<string> source, TextMeshProUGUI text)
+        {
+            return source.SubscribeWithState(
                 text,
                 (x, t) => t.text = string.IsNullOrEmpty(x) ? x : L10nManager.Localize(x));
+        }
     }
 }

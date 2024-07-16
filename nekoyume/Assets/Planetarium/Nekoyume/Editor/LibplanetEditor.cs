@@ -10,7 +10,6 @@ using UnityEngine;
 
 namespace Planetarium.Nekoyume.Editor
 {
-
     public static class LibplanetEditor
     {
         private static PublicKey GetOrCreateInitialValidator()
@@ -57,15 +56,15 @@ namespace Planetarium.Nekoyume.Editor
         {
             if (Directory.Exists(path))
             {
-                Directory.Delete(path, recursive: true);
+                Directory.Delete(path, true);
             }
         }
 
         private static void MakeGenesisBlock(string path, PublicKey proposer = null)
         {
             CreateActivationKey(
-                out List<PendingActivationState> pendingActivationStates,
-                out List<ActivationKey> activationKeys,
+                out var pendingActivationStates,
+                out var activationKeys,
                 10);
             activationKeys.ForEach(x => NcDebug.Log(x.Encode()));
 
@@ -83,11 +82,11 @@ namespace Planetarium.Nekoyume.Editor
             pendingActivationStates = new List<PendingActivationState>();
             activationKeys = new List<ActivationKey>();
 
-            for (int i = 0; i < countOfKeys; i++)
+            for (var i = 0; i < countOfKeys; i++)
             {
                 var pendingKey = new PrivateKey();
                 var nonce = pendingKey.PublicKey.Address.ToByteArray();
-                (ActivationKey ak, PendingActivationState s) =
+                (var ak, var s) =
                     ActivationKey.Create(pendingKey, nonce);
                 pendingActivationStates.Add(s);
                 activationKeys.Add(ak);

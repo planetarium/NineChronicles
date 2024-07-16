@@ -19,7 +19,7 @@ namespace Editor
         private enum FeeType
         {
             Shop,
-            BlackSmith,
+            BlackSmith
         }
 
         private static void GetAddress(FeeType feeType)
@@ -35,7 +35,7 @@ namespace Editor
             while (!eof)
             {
                 var line = sr.ReadLine();
-                if(line == null)
+                if (line == null)
                 {
                     eof = true;
                     break;

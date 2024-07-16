@@ -37,9 +37,10 @@ namespace Nekoyume.UI.Tween
         private Transform _transformCache;
         private float3? _originLocalScaleCache;
 
-        public Transform Transform => _transformCache
-            ? _transformCache
-            : _transformCache = transform;
+        public Transform Transform =>
+            _transformCache
+                ? _transformCache
+                : _transformCache = transform;
 
         private float3 OriginLocalScale =>
             _originLocalScaleCache

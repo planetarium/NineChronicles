@@ -30,10 +30,7 @@ namespace Nekoyume.UI.Module
             headerText.text = Data.Header;
             dateText.text = Data.Date;
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() =>
-            {
-                onClick?.Invoke(this);
-            });
+            button.onClick.AddListener(() => { onClick?.Invoke(this); });
             notificationObject.SetActive(hasNotification);
         }
 

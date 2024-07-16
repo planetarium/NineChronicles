@@ -26,13 +26,14 @@ namespace Nekoyume.UI.Module
 
         private Animator _animatorCache;
 
-        public Animator Animator => !_animatorCache
-            ? _animatorCache = GetComponent<Animator>()
-            : _animatorCache;
+        public Animator Animator =>
+            !_animatorCache
+                ? _animatorCache = GetComponent<Animator>()
+                : _animatorCache;
 
         public bool Interactable => button.interactable;
 
-        public readonly Subject<SubmitButton> OnSubmitClick = new Subject<SubmitButton>();
+        public readonly Subject<SubmitButton> OnSubmitClick = new();
 
         public bool IsSubmittable { get; private set; }
 
@@ -45,9 +46,15 @@ namespace Nekoyume.UI.Module
             }).AddTo(gameObject);
         }
 
-        public void Show() => gameObject.SetActive(true);
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
 
-        public void Hide() => gameObject.SetActive(false);
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
 
         public virtual void SetSubmittable(bool submittable)
         {

@@ -6,28 +6,29 @@ namespace Nekoyume.Game.Util
 {
     public class PositionConstraintToScreen : MonoBehaviour
     {
-        [SerializeField, Tooltip("Awake 단계에서 한 번만 강제할 것인지 설정한다.")]
+        [SerializeField][Tooltip("Awake 단계에서 한 번만 강제할 것인지 설정한다.")]
         private bool constraintOnce = false;
 
-        [SerializeField, Tooltip("X축을 강제할 것인지 설정한다.")]
+        [SerializeField][Tooltip("X축을 강제할 것인지 설정한다.")]
         private bool constraintX = false;
 
-        [SerializeField, Tooltip("Y축을 강제할 것인지 설정한다.")]
+        [SerializeField][Tooltip("Y축을 강제할 것인지 설정한다.")]
         private bool constraintY = false;
 
-        [SerializeField, Tooltip("Z축을 강제할 것인지 설정한다.")]
+        [SerializeField][Tooltip("Z축을 강제할 것인지 설정한다.")]
         private bool constraintZ = false;
 
-        [SerializeField, Tooltip("강제할 화면의 피봇을 설정한다.")]
+        [SerializeField][Tooltip("강제할 화면의 피봇을 설정한다.")]
         private PivotPresetType screenPivot = PivotPresetType.MiddleCenter;
 
         private Transform _transform;
 
         protected PivotPresetType ScreenPivot => screenPivot;
 
-        private Transform Transform => _transform
-            ? _transform
-            : _transform = GetComponent<Transform>();
+        private Transform Transform =>
+            _transform
+                ? _transform
+                : _transform = GetComponent<Transform>();
 
         private void Awake()
         {

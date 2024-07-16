@@ -46,7 +46,10 @@ namespace Nekoyume.UI.Module
 
             var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id);
             if (itemSprite is null)
+            {
                 throw new FailedToLoadResourceException<Sprite>(itemRow.Id.ToString());
+            }
+
             iconImage.overrideSprite = itemSprite;
 
             levelBg.gameObject.SetActive(true);
@@ -85,10 +88,11 @@ namespace Nekoyume.UI.Module
             {
                 elementImage.sprite = itemRow.ElementalType.GetSprite();
             }
-            else if(itemRow.ItemType == ItemType.Consumable)
+            else if (itemRow.ItemType == ItemType.Consumable)
             {
                 elementImage.enabled = false;
             }
+
             enabledBgImage.overrideSprite = viewData.BgSprite;
 
             if (countText != null)

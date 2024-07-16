@@ -15,9 +15,10 @@ namespace Nekoyume.UI.Module
 
         private Graphic _graphicCache;
 
-        public Graphic Graphic => _graphicCache == null
-            ? _graphicCache = GetComponent<Graphic>()
-            : _graphicCache;
+        public Graphic Graphic =>
+            _graphicCache == null
+                ? _graphicCache = GetComponent<Graphic>()
+                : _graphicCache;
 
         public bool IsSwitchedOn => Graphic.color.Equals(switchedOnColor);
 

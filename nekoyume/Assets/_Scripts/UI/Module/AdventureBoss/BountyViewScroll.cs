@@ -16,11 +16,10 @@ namespace Nekoyume
         public float Bonus;
     }
 
-    public class BountyViewScroll : RectScroll<BountyItemData,BountyViewScroll.ContextModel>
+    public class BountyViewScroll : RectScroll<BountyItemData, BountyViewScroll.ContextModel>
     {
         public class ContextModel : RectScrollDefaultContext
         {
         }
     }
-
 }

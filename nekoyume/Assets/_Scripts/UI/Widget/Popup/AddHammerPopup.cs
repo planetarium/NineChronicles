@@ -92,14 +92,8 @@ namespace Nekoyume.UI
                     _hammerItem.Count.Value = Mathf.Clamp(count, minCount, maxCount);
                 }
             }).AddTo(gameObject);
-            hammerCountEditable.maxButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                _hammerItem.Count.Value = _hammerItem.MaxCount.Value;
-            }).AddTo(gameObject);
-            hammerCountEditable.resetButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                _hammerItem.Count.Value = 0;
-            }).AddTo(gameObject);
+            hammerCountEditable.maxButton.OnClickAsObservable().Subscribe(_ => { _hammerItem.Count.Value = _hammerItem.MaxCount.Value; }).AddTo(gameObject);
+            hammerCountEditable.resetButton.OnClickAsObservable().Subscribe(_ => { _hammerItem.Count.Value = 0; }).AddTo(gameObject);
             for (var i = 0; i < hammerCountEditable.addButtons.Length; i++)
             {
                 var digit = i;
@@ -108,7 +102,7 @@ namespace Nekoyume.UI
                 {
                     var maxCount = _hammerItem.MaxCount.Value;
                     var count = int.Parse(hammerCountEditable.inputField.text) +
-                                (int)Mathf.Pow(10, digit);
+                        (int)Mathf.Pow(10, digit);
                     _hammerItem.Count.Value = Mathf.Min(count, maxCount);
                 }).AddTo(gameObject);
             }
@@ -192,7 +186,7 @@ namespace Nekoyume.UI
             var baseEquipment = _baseItem;
             var baseItemCostRows = enhancementCostSheet.Values
                 .Where(row => row.ItemSubType == baseEquipment.ItemSubType &&
-                              row.Grade == baseEquipment.Grade).ToList();
+                    row.Grade == baseEquipment.Grade).ToList();
 
             // Get Target Exp
             var materialsExp = Equipment.GetHammerExp(
@@ -220,7 +214,7 @@ namespace Nekoyume.UI
             // Get Target Range Rows <- It might be unnecessary
             var targetRangeRows = baseItemCostRows
                 .Where(row => row.Level >= baseEquipment.level &&
-                              row.Level <= targetRow.Level + 1).ToList();
+                    row.Level <= targetRow.Level + 1).ToList();
             if (baseEquipment.level == 0)
             {
                 // current level row is empty

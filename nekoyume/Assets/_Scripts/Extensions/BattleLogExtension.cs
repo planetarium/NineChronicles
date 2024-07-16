@@ -20,14 +20,13 @@ namespace Nekoyume
                     }
                 }
 
-                if(currentEvent is Breakthrough breakthroughEvent)
+                if (currentEvent is Breakthrough breakthroughEvent)
                 {
                     foreach (var enemy in breakthroughEvent.Monsters)
                     {
                         monsterIds.Add(enemy.CharacterId);
                     }
                 }
-
             }
 
             return monsterIds;

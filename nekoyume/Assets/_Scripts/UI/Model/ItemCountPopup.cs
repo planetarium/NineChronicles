@@ -10,14 +10,14 @@ namespace Nekoyume.UI.Model
     {
         private int _originalCount;
 
-        public readonly ReactiveProperty<string> TitleText = new ReactiveProperty<string>("");
-        public readonly ReactiveProperty<CountEditableItem> Item = new ReactiveProperty<CountEditableItem>(null);
-        public readonly ReactiveProperty<bool> CountEnabled = new ReactiveProperty<bool>(true);
-        public readonly ReactiveProperty<string> SubmitText = new ReactiveProperty<string>("");
-        public readonly ReactiveProperty<bool> Submittable = new ReactiveProperty<bool>(true);
-        public readonly ReactiveProperty<string> InfoText = new ReactiveProperty<string>("");
+        public readonly ReactiveProperty<string> TitleText = new("");
+        public readonly ReactiveProperty<CountEditableItem> Item = new(null);
+        public readonly ReactiveProperty<bool> CountEnabled = new(true);
+        public readonly ReactiveProperty<string> SubmitText = new("");
+        public readonly ReactiveProperty<bool> Submittable = new(true);
+        public readonly ReactiveProperty<string> InfoText = new("");
         public readonly Subject<(ConditionalButton.State, T)> OnClickConditional = new();
-        public readonly Subject<T> OnClickCancel = new Subject<T>();
+        public readonly Subject<T> OnClickCancel = new();
 
         public ItemCountPopup()
         {

@@ -33,6 +33,7 @@ namespace Nekoyume.Helper
             {
                 throw new ArgumentException("SetupMarketServiceRepository first.");
             }
+
             NcDebug.LogFormat($"MarketService project directory is: {_marketPath}");
             var options = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.local.json"));
             var startInfo = new ProcessStartInfo
@@ -49,8 +50,8 @@ namespace Nekoyume.Helper
                     ["WorkerConfig__SyncShop"] = "false",
                     ["RpcConfig__Host"] = options.RpcServerHost,
                     ["RpcConfig__Port"] = options.RpcServerPort.ToString(),
-                    ["ConnectionStrings__MARKET"] = marketDbConnectionString,
-                },
+                    ["ConnectionStrings__MARKET"] = marketDbConnectionString
+                }
             };
             NcDebug.Log(startInfo.Arguments);
             NcDebug.Log($"WorkingDirectory: {startInfo.WorkingDirectory}");

@@ -22,6 +22,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class Rune : Widget
     {
         [Serializable]
@@ -81,13 +82,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
-        [SerializeField] [Header("LeftArea")]
+        [SerializeField][Header("LeftArea")]
         private RuneLevelBonus runeLevelBonus;
 
         [SerializeField]
         private RuneStoneEnhancementInventoryScroll scroll;
 
-        [SerializeField] [Header("RightArea")]
+        [SerializeField][Header("RightArea")]
         private TextMeshProUGUI runeNameText;
 
         [SerializeField]
@@ -99,7 +100,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private RuneOptionView runeOptionView;
 
-        [SerializeField] [Header("CenterArea")]
+        [SerializeField][Header("CenterArea")]
         private GameObject requirement;
 
         [SerializeField]
@@ -141,8 +142,7 @@ namespace Nekoyume.UI
         private static readonly ReactiveProperty<int> TryCount = new();
         private readonly Dictionary<RuneCostType, RuneCostItem> _costItems = new();
 
-        private static string TutorialCheckKey =>
-            $"Tutorial_Check_Rune_{Game.Game.instance.States.CurrentAvatarKey}";
+        private static string TutorialCheckKey => $"Tutorial_Check_Rune_{Game.Game.instance.States.CurrentAvatarKey}";
 
         protected override void Awake()
         {
@@ -158,8 +158,8 @@ namespace Nekoyume.UI
             levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
             {
                 var message = _selectedRuneItem.Level > 0
-                    ? L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2")  // Level Up
-                    : L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1");  // Combine
+                    ? L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2") // Level Up
+                    : L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1"); // Combine
 
                 NotificationSystem.Push(MailType.System,
                     message,
@@ -175,10 +175,7 @@ namespace Nekoyume.UI
 
                 TryCount.Value = Math.Min(TryCount.Value + 1, _maxTryCount);
             });
-            tryCountSlider.minusButton.onClick.AddListener(() =>
-            {
-                TryCount.Value = Math.Max(TryCount.Value - 1, 1);
-            });
+            tryCountSlider.minusButton.onClick.AddListener(() => { TryCount.Value = Math.Max(TryCount.Value - 1, 1); });
             closeButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
@@ -191,8 +188,8 @@ namespace Nekoyume.UI
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             };
             LoadingHelper.RuneEnhancement
-                         .Subscribe(b => loadingObjects.ForEach(x => x.SetActive(b)))
-                         .AddTo(gameObject);
+                .Subscribe(b => loadingObjects.ForEach(x => x.SetActive(b)))
+                .AddTo(gameObject);
             TryCount.Subscribe(x =>
             {
                 tryCountSlider.slider.ForceMove(x);
@@ -277,6 +274,7 @@ namespace Nekoyume.UI
                         _selectedRuneItem = runeItem;
                     }
                 }
+
                 _runeItems.Add(runeItem);
                 items.Add(new RuneStoneEnhancementInventoryItem(runeState, runeRow, runeItem));
             }
@@ -345,8 +343,8 @@ namespace Nekoyume.UI
             UpdateSlider(item);
             animator.Play(item.Level > 0 ? HashToLevelUp : HashToCombine);
             loadingText.text = item.Level > 0
-                ? L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING")  // Level Up Processing
-                : L10nManager.Localize("UI_RUNE_COMBINE_PROCESSING");  // Combine Processing
+                ? L10nManager.Localize("UI_RUNE_LEVEL_UP_PROCESSING") // Level Up Processing
+                : L10nManager.Localize("UI_RUNE_COMBINE_PROCESSING"); // Combine Processing
 
             TryCount.SetValueAndForceNotify(TryCount.Value);
         }
@@ -373,8 +371,8 @@ namespace Nekoyume.UI
 
             levelUpButton.gameObject.SetActive(!item.IsMaxLevel);
             levelUpButton.Text = item.Level > 0
-                ? L10nManager.Localize("UI_UPGRADE_EQUIPMENT")  // Level Up
-                : L10nManager.Localize("UI_COMBINATION_ITEM");  // Combine
+                ? L10nManager.Localize("UI_UPGRADE_EQUIPMENT") // Level Up
+                : L10nManager.Localize("UI_COMBINATION_ITEM"); // Combine
             levelUpButton.Interactable = item.HasNotification;
         }
 

@@ -33,10 +33,13 @@ namespace Planetarium.Nekoyume.Editor
         private static string _genesisPath = FixPath(Application.streamingAssetsPath);
 
 
-        private static string FixPath(string path) => path.Replace("/",
-            (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? Path.DirectorySeparatorChar
-                : Path.AltDirectorySeparatorChar).ToString());
+        private static string FixPath(string path)
+        {
+            return path.Replace("/",
+                (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? Path.DirectorySeparatorChar
+                    : Path.AltDirectorySeparatorChar).ToString());
+        }
 
         public static string SetDirectory(string title)
         {
@@ -66,7 +69,7 @@ namespace Planetarium.Nekoyume.Editor
             {
                 FileName = "git",
                 Arguments = "reset HEAD --hard",
-                WorkingDirectory = _headlessPath,
+                WorkingDirectory = _headlessPath
             };
             process = Process.Start(startInfo);
             process.WaitForExit();
@@ -75,7 +78,7 @@ namespace Planetarium.Nekoyume.Editor
             {
                 FileName = "git",
                 Arguments = "checkout development",
-                WorkingDirectory = _headlessPath,
+                WorkingDirectory = _headlessPath
             };
             process = Process.Start(startInfo);
             process.WaitForExit();
@@ -84,7 +87,7 @@ namespace Planetarium.Nekoyume.Editor
             {
                 FileName = "git",
                 Arguments = "pull origin development",
-                WorkingDirectory = _headlessPath,
+                WorkingDirectory = _headlessPath
             };
             process = Process.Start(startInfo);
             process.WaitForExit();
@@ -94,7 +97,7 @@ namespace Planetarium.Nekoyume.Editor
             {
                 FileName = "git",
                 Arguments = @"submodule update --init --recursive NineChronicles.RPC.Shared",
-                WorkingDirectory = _headlessPath,
+                WorkingDirectory = _headlessPath
             };
             process = Process.Start(startInfo);
             process.WaitForExit();
@@ -113,14 +116,14 @@ namespace Planetarium.Nekoyume.Editor
                     Arguments =
                         $@"/c mklink /d {Path.Combine(_headlessPath, "Lib9c")} {_lib9cDir}",
                     Verb = "runas",
-                    CreateNoWindow = true,
+                    CreateNoWindow = true
                 };
                 process = Process.Start(startInfo);
                 process.WaitForExit();
                 Debug.Log($"Lib9c symlink created. with {process.ExitCode}");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ||
-                     RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 startInfo = new ProcessStartInfo
                 {
@@ -159,7 +162,7 @@ namespace Planetarium.Nekoyume.Editor
         [MenuItem("Tools/Headless/Setup headless config")]
         private static void SetupAppsettingsJson()
         {
-            var appsettings = System.IO.File.ReadAllText(Path.Combine("Assets", "Planetarium",
+            var appsettings = File.ReadAllText(Path.Combine("Assets", "Planetarium",
                 "Nekoyume", "Editor", "appsettings.example.json"));
             Debug.Log($"{appsettings.Length} text read from appsettings.");
             if (string.IsNullOrEmpty(_headlessPath))
@@ -193,7 +196,7 @@ namespace Planetarium.Nekoyume.Editor
             {
                 FileName = "dotnet",
                 Arguments =
-                    $"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path {Path.Combine(_genesisPath, "genesis-block")} --store-path {Path.Combine(_docsRoot, "planetarium", _storeName)} --store-type memory",
+                    $"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path {Path.Combine(_genesisPath, "genesis-block")} --store-path {Path.Combine(_docsRoot, "planetarium", _storeName)} --store-type memory"
             };
 
             var pkHex = Agent.ProposerKey.ToHexWithZeroPaddings();

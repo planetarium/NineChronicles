@@ -12,7 +12,10 @@ namespace Planetarium.Nekoyume.Editor
     public static class StoreDownloader
     {
         [MenuItem("Tools/Store/Download and Extract Main-net Store", true)]
-        public static bool Validation() => !Application.isPlaying;
+        public static bool Validation()
+        {
+            return !Application.isPlaying;
+        }
 
         [MenuItem("Tools/Store/Download and Extract Main-net Store")]
         public static void DownloadAndExtractMainNetStore()

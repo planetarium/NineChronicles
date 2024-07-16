@@ -75,11 +75,11 @@ namespace Nekoyume.UI
                     {
                         EquipmentRow = equipmentRow,
                         RuneTicker = runeTicker,
-                        Ratio = ratio,
+                        Ratio = ratio
                     },
                     SkillRow = skillRow,
                     EquipmentOptionRow = equipmentOptionRow,
-                    RuneOptionInfo = runeOptionInfo,
+                    RuneOptionInfo = runeOptionInfo
                 };
             }).Where(model => model != null).OrderBy(model => model.SummonDetailCellModel.Ratio);
             scroll.UpdateData(models, true);

@@ -21,7 +21,9 @@ namespace Nekoyume.UI.Tween
             KillTween();
 
             if (!_rectTransform)
+            {
                 _rectTransform = GetComponent<RectTransform>();
+            }
 
             var startValue = _rectTransform.anchoredPosition;
 

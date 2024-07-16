@@ -16,10 +16,12 @@ namespace Nekoyume.L10n.Editor
     public static class L10nManagerEditor
     {
         private const string OldCsvFilesRootPath = "Localization";
+
         private static readonly string CharacterFilesPath =
             Path.Combine(Application.dataPath, "Font/CharacterFiles");
+
         private const string GenerationSettingsPath = "L10nSettings/FontAssetGenerationSettings";
-        private static readonly object EditorCoroutineObject = new object();
+        private static readonly object EditorCoroutineObject = new();
 
         // Depending on the computer environment, the corresponding time may change
         private const float WaitTimeForGenerateAtlas = 5f;
@@ -32,7 +34,7 @@ namespace Nekoyume.L10n.Editor
             foreach (var oldCsvAsset in oldCsvAssets)
             {
                 var oldLines = oldCsvAsset.text
-                    .Split(new[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+                    .Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                 var lines = oldLines.Select((oldLine, lineIndex) => lineIndex == 0
                     ? oldLine
@@ -72,7 +74,7 @@ namespace Nekoyume.L10n.Editor
             {
                 var text = request.downloadHandler.text;
                 var lines = text
-                    .Split(new[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries)
+                    .Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries)
                     .Skip(2)
                     .Select(line =>
                     {
@@ -81,7 +83,7 @@ namespace Nekoyume.L10n.Editor
                     })
                     .ToList();
 
-                var counts = new[] {3500, 3000, 1605};
+                var counts = new[] { 3500, 3000, 1605 };
                 for (var i = 0; i < counts.Length; i++)
                 {
                     var targetLines = lines
@@ -126,7 +128,7 @@ namespace Nekoyume.L10n.Editor
                 {
                     charArray.AddRange(additionalDict.Values.SelectMany(value => value.ToCharArray()));
                 }
-                
+
                 var unicodeHexes = defaultCharacters
                     .Union(charArray.Select(char.ToLower))
                     .Union(charArray.Select(char.ToUpper))

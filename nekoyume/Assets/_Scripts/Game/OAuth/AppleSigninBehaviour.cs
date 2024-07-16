@@ -38,20 +38,20 @@ namespace Nekoyume.Game.OAuth
         // Start is called before the first frame update
         private void Start()
         {
-            this.Initialize();
+            Initialize();
         }
 
         public void Initialize()
         {
             // If the current platform is supported
-            if (AppleAuthManager.IsCurrentPlatformSupported && this._appleAuthManager == null)
+            if (AppleAuthManager.IsCurrentPlatformSupported && _appleAuthManager == null)
             {
                 // Creates a default JSON deserializer, to transform JSON Native responses to C# instances
                 var deserializer = new PayloadDeserializer();
                 // Creates an Apple Authentication manager with the deserializer
-                this._appleAuthManager = new AppleAuthManager(deserializer);
+                _appleAuthManager = new AppleAuthManager(deserializer);
 
-                this._appleAuthManager.SetCredentialsRevokedCallback(result =>
+                _appleAuthManager.SetCredentialsRevokedCallback(result =>
                 {
                     NcDebug.Log("Received revoked callback " + result);
                     PlayerPrefs.DeleteKey(AppleUserIdKey);
@@ -64,16 +64,16 @@ namespace Nekoyume.Game.OAuth
         {
             // Updates the AppleAuthManager instance to execute
             // pending callbacks inside Unity's execution loop
-            if (this._appleAuthManager != null)
+            if (_appleAuthManager != null)
             {
-                this._appleAuthManager.Update();
+                _appleAuthManager.Update();
             }
         }
 
         private void CheckCredentialStatusForUserId(string appleUserId)
         {
             // If there is an apple ID available, we should check the credential state
-            this._appleAuthManager.GetCredentialState(
+            _appleAuthManager.GetCredentialState(
                 appleUserId,
                 state =>
                 {
@@ -109,7 +109,7 @@ namespace Nekoyume.Game.OAuth
             var loginArgs = new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName);
 
             State.Value = SignInState.Waiting;
-            this._appleAuthManager.LoginWithAppleId(
+            _appleAuthManager.LoginWithAppleId(
                 loginArgs,
                 credential =>
                 {

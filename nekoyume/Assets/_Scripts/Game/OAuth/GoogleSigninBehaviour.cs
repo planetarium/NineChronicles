@@ -87,7 +87,7 @@ namespace Nekoyume.Game.OAuth
             if (task.IsFaulted)
             {
                 NcDebug.LogWarning("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
-                               " task is faulted.");
+                    " task is faulted.");
                 using var enumerator =
                     task.Exception?.InnerExceptions.GetEnumerator();
                 if (enumerator != null &&
@@ -99,7 +99,7 @@ namespace Nekoyume.Game.OAuth
                 else
                 {
                     NcDebug.LogError("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
-                                   " unexpected exception occurred.");
+                        " unexpected exception occurred.");
                     NcDebug.LogException(task.Exception);
                 }
 
@@ -114,7 +114,7 @@ namespace Nekoyume.Game.OAuth
             {
                 var res = task.Result;
                 NcDebug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
-                          $" Welcome!! {res.Email}, userId({res.UserId}), token({res.IdToken})");
+                    $" Welcome!! {res.Email}, userId({res.UserId}), token({res.IdToken})");
                 Email = res.Email;
                 IdToken = res.IdToken;
                 State.Value = SignInState.Signed;

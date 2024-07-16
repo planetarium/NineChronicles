@@ -92,7 +92,6 @@ namespace Nekoyume.Game.Entrance
             {
                 try
                 {
-
 #if UNITY_ANDROID || UNITY_IOS
                     var shopListPopup = Widget.Find<ShopListPopup>();
                     if (shopListPopup.HasUnread)

@@ -17,6 +17,6 @@
         opt_count,
         opt_count_desc,
         unit_price,
-        unit_price_desc,
+        unit_price_desc
     }
 }

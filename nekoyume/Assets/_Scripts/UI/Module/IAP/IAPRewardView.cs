@@ -10,13 +10,13 @@ namespace Nekoyume.UI.Module
 {
     public class IAPRewardView : MonoBehaviour
     {
-        [field:SerializeField]
+        [field: SerializeField]
         public Image RewardGrade { get; private set; }
 
-        [field:SerializeField]
+        [field: SerializeField]
         public Image RewardImage { get; private set; }
 
-        [field:SerializeField]
+        [field: SerializeField]
         public TextMeshProUGUI RewardCount { get; private set; }
 
         private ItemBase itemBaseForToolTip = null;
@@ -25,7 +25,8 @@ namespace Nekoyume.UI.Module
 
         public void Awake()
         {
-            GetComponent<Button>().onClick.AddListener(() => {
+            GetComponent<Button>().onClick.AddListener(() =>
+            {
                 if (itemBaseForToolTip != null)
                 {
                     AudioController.PlayClick();

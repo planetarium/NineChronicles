@@ -117,7 +117,7 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount(bool isEventDungeon = false)
         {
-            if(ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
@@ -244,8 +244,8 @@ namespace Nekoyume.UI
                 {
                     // NOTE: Consider expanding the world.
                     if (TableSheets.Instance.WorldSheet.TryGetByStageId(
-                            stageId,
-                            out var worldRow))
+                        stageId,
+                        out var worldRow))
                     {
                         worldInfo.UpdateWorld(worldRow);
                         if (worldInfo.TryGetWorldByStageId(stageId, out var world2))

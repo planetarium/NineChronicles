@@ -6,6 +6,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module
 {
     using UniRx;
+
     public class HelpButton : MonoBehaviour
     {
         [SerializeField]
@@ -17,7 +18,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private bool showOnceForEachAgentAddress = default;
 
-        public readonly Subject<HelpButton> OnClick = new Subject<HelpButton>();
+        public readonly Subject<HelpButton> OnClick = new();
 
         public int HelpId
         {

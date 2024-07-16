@@ -10,12 +10,12 @@ namespace Nekoyume.UI
 
     public abstract class TooltipWidget<T> : Widget where T : Model.Tooltip
     {
-        public static readonly float2 DefaultOffsetFromTarget = new float2(10f, 0f);
-        public static readonly float2 DefaultMarginFromParent = new float2(10f, 10f);
+        public static readonly float2 DefaultOffsetFromTarget = new(10f, 0f);
+        public static readonly float2 DefaultMarginFromParent = new(10f, 10f);
 
         public RectTransform panel;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
         public override WidgetType WidgetType => WidgetType.Tooltip;
 

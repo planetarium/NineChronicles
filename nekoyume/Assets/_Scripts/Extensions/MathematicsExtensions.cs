@@ -50,7 +50,7 @@ namespace Nekoyume
 
         public static int ConvertToInt32(string value)
         {
-            int result = 0;
+            var result = 0;
             try
             {
                 result = Convert.ToInt32(value);
@@ -70,8 +70,10 @@ namespace Nekoyume
                 {
                     result = int.MaxValue;
                 }
+
                 Console.WriteLine("OverflowException: " + ex.Message);
             }
+
             return result;
         }
     }

@@ -10,8 +10,8 @@ namespace Nekoyume.UI
         private const float TweenDuration = 0.3f;
         private const float DestroyDelay = 1.4f;
 
-        private static readonly Vector3 LocalScaleBefore = new Vector3(2.4f, 2.4f, 1f);
-        private static readonly Vector3 LocalScaleAfter = new Vector3(1.4f, 1.4f, 1f);
+        private static readonly Vector3 LocalScaleBefore = new(2.4f, 2.4f, 1f);
+        private static readonly Vector3 LocalScaleAfter = new(1.4f, 1.4f, 1f);
 
         public CanvasGroup group;
         public Image[] images;
@@ -24,7 +24,7 @@ namespace Nekoyume.UI
                 result.images[i].gameObject.SetActive(false);
                 if (i == index)
                 {
-                   result.images[i].gameObject.SetActive(true);
+                    result.images[i].gameObject.SetActive(true);
                 }
             }
 
@@ -41,6 +41,5 @@ namespace Nekoyume.UI
 
             return result;
         }
-
     }
 }

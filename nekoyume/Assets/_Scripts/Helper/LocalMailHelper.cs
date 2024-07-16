@@ -79,7 +79,7 @@ namespace Nekoyume.Helper
             }
 
             if (_localMailDictionary.TryGetValue(States.Instance.CurrentAvatarState?.address ?? new Address(),
-                    out var localMailList))
+                out var localMailList))
             {
                 foreach (var mail in localMailList)
                 {
