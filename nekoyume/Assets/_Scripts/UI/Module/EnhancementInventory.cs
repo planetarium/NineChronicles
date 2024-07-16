@@ -308,7 +308,7 @@ namespace Nekoyume.UI.Module
                 {
                     foreach (var item in items)
                     {
-                        item.Disabled.Value = false;
+                        item.Disabled.Value = ItemEnhancement.HammerIds.Contains(item.ItemBase.Id);
                     }
                 }
                 else

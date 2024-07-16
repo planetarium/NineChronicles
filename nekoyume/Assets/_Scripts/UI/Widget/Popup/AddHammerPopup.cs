@@ -149,7 +149,7 @@ namespace Nekoyume.UI
             hammerInformation.nameText.text = hammerItem.ItemBase.GetLocalizedName();
             hammerInformation.countText.text = hammerItem.Count.Value.ToString();
 
-            enhancementExpSlider.SetEquipment(baseModel);
+            enhancementExpSlider.SetEquipment(baseModel, true);
 
             _disposables.DisposeAllAndClear();
             _hammerItem.Count
