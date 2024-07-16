@@ -1,78 +1,21 @@
 <dependencies>
   <packages>
     <package>com.google.android.gms:play-services-auth:20+</package>
-    <package>com.google.android.gms:play-services-base:18.2.0</package>
-    <package>com.google.firebase:firebase-analytics:21.3.0</package>
-    <package>com.google.firebase:firebase-analytics-unity:11.3.0</package>
-    <package>com.google.firebase:firebase-app-unity:11.3.0</package>
-    <package>com.google.firebase:firebase-common:20.3.3</package>
+    <package>com.google.android.gms:play-services-base:18.5.0</package>
+    <package>com.google.firebase:firebase-analytics:22.0.2</package>
+    <package>com.google.firebase:firebase-analytics-unity:12.1.0</package>
+    <package>com.google.firebase:firebase-app-unity:12.1.0</package>
+    <package>com.google.firebase:firebase-common:21.0.0</package>
     <package>com.google.signin:google-signin-support:1.0.4</package>
     <package>io.airbridge:sdk-android:2.21.1</package>
   </packages>
   <files>
-    <file>Assets/Plugins/Android/androidx.annotation.annotation-1.5.0.jar</file>
-    <file>Assets/Plugins/Android/androidx.arch.core.core-common-2.0.0.jar</file>
-    <file>Assets/Plugins/Android/androidx.arch.core.core-runtime-2.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.asynclayoutinflater.asynclayoutinflater-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.collection.collection-1.0.0.jar</file>
-    <file>Assets/Plugins/Android/androidx.concurrent.concurrent-futures-1.1.0.jar</file>
-    <file>Assets/Plugins/Android/androidx.coordinatorlayout.coordinatorlayout-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.core.core-1.2.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.cursoradapter.cursoradapter-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.customview.customview-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.documentfile.documentfile-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.drawerlayout.drawerlayout-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.fragment.fragment-1.1.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.interpolator.interpolator-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.legacy.legacy-support-core-ui-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.legacy.legacy-support-core-utils-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.lifecycle.lifecycle-common-2.0.0.jar</file>
-    <file>Assets/Plugins/Android/androidx.lifecycle.lifecycle-livedata-2.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.lifecycle.lifecycle-livedata-core-2.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.lifecycle.lifecycle-runtime-2.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.lifecycle.lifecycle-viewmodel-2.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.loader.loader-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.localbroadcastmanager.localbroadcastmanager-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.print.print-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.slidingpanelayout.slidingpanelayout-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.swiperefreshlayout.swiperefreshlayout-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.versionedparcelable.versionedparcelable-1.1.0.aar</file>
-    <file>Assets/Plugins/Android/androidx.viewpager.viewpager-1.0.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-ads-identifier-18.0.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-auth-20.7.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-auth-api-phone-18.0.1.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-auth-base-18.0.4.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-base-18.2.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-basement-18.2.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-fido-20.0.1.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-measurement-21.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-measurement-api-21.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-measurement-base-21.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-measurement-impl-21.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-measurement-sdk-21.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-measurement-sdk-api-21.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-stats-17.0.2.aar</file>
-    <file>Assets/Plugins/Android/com.google.android.gms.play-services-tasks-18.0.2.aar</file>
-    <file>Assets/Plugins/Android/com.google.errorprone.error_prone_annotations-2.9.0.jar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-analytics-21.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-analytics-unity-11.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-annotations-16.2.0.jar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-app-unity-11.3.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-common-20.3.3.aar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-components-17.1.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-installations-17.0.1.aar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-installations-interop-17.0.1.aar</file>
-    <file>Assets/Plugins/Android/com.google.firebase.firebase-measurement-connector-19.0.0.aar</file>
-    <file>Assets/Plugins/Android/com.google.guava.listenablefuture-1.0.jar</file>
-    <file>Assets/Plugins/Android/com.google.signin.google-signin-support-1.0.4.aar</file>
-    <file>Assets/Plugins/Android/io.airbridge.sdk-android-2.21.1.aar</file>
-    <file>Assets/Plugins/Android/javax.inject.javax.inject-1.jar</file>
-    <file>Assets/Plugins/Android/org.jetbrains.annotations-13.0.jar</file>
-    <file>Assets/Plugins/Android/org.jetbrains.kotlin.kotlin-stdlib-1.7.10.jar</file>
-    <file>Assets/Plugins/Android/org.jetbrains.kotlin.kotlin-stdlib-common-1.7.10.jar</file>
-    <file>Assets/Plugins/Android/org.jetbrains.kotlin.kotlin-stdlib-jdk7-1.4.32.jar</file>
-    <file>Assets/Plugins/Android/org.jetbrains.kotlinx.kotlinx-coroutines-android-1.4.3.jar</file>
-    <file>Assets/Plugins/Android/org.jetbrains.kotlinx.kotlinx-coroutines-core-jvm-1.4.3.jar</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.1.0/firebase-analytics-unity-12.1.0.aar</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.1.0/firebase-analytics-unity-12.1.0.pom</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.1.0/firebase-app-unity-12.1.0.aar</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.1.0/firebase-app-unity-12.1.0.pom</file>
+    <file>Assets/GeneratedLocalRepo/GoogleSignIn/Editor/m2repository/com/google/signin/google-signin-support/1.0.4/google-signin-support-1.0.4.aar</file>
+    <file>Assets/GeneratedLocalRepo/GoogleSignIn/Editor/m2repository/com/google/signin/google-signin-support/1.0.4/google-signin-support-1.0.4.pom</file>
   </files>
   <settings>
     <setting name="androidAbis" value="arm64-v8a" />
@@ -80,7 +23,7 @@
     <setting name="explodeAars" value="True" />
     <setting name="gradleBuildEnabled" value="True" />
     <setting name="gradlePropertiesTemplateEnabled" value="True" />
-    <setting name="gradleTemplateEnabled" value="False" />
+    <setting name="gradleTemplateEnabled" value="True" />
     <setting name="installAndroidPackages" value="False" />
     <setting name="localMavenRepoDir" value="Assets/GeneratedLocalRepo" />
     <setting name="packageDir" value="Assets/Plugins/Android" />
