@@ -2928,7 +2928,7 @@ namespace Nekoyume.Blockchain
             {
                 Widget.Find<LoadingScreen>().Close();
                 worldBoss.Close();
-                await WorldBossStates.Set(avatarAddress);
+                await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
 
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
@@ -2964,7 +2964,6 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
-            var log = simulator.Log;
             Widget.Find<Menu>().Close();
 
             var playerDigest = new ArenaPlayerDigest(
@@ -2974,7 +2973,7 @@ namespace Nekoyume.Blockchain
                 allRuneState,
                 runeSlotStates);
 
-            await WorldBossStates.Set(avatarAddress);
+            await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var killRewards = new List<FungibleAssetValue>();
             if (latestBossLevel < raiderState.LatestBossLevel)
@@ -3015,7 +3014,7 @@ namespace Nekoyume.Blockchain
             var raidStartData = new RaidStage.RaidStartData(
                 eval.Action.AvatarAddress,
                 simulator.BossId,
-                log,
+                simulator.Log,
                 playerDigest,
                 simulator.DamageDealt,
                 isNewRecord,

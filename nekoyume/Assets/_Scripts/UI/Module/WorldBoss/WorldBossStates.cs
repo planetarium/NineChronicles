@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -83,9 +85,13 @@ namespace Nekoyume.UI.Module.WorldBoss
             _killRewards.Clear();
         }
 
-        public static async UniTask Set(Address avatarAddress)
+        public static async UniTask Set(
+            HashDigest<SHA256> hash,
+            long blockIndex,
+            Address avatarAddress)
         {
-            var (raidRow, raider, killReward, isOnSeason) = await GetDataAsync();
+            var (raidRow, raider, killReward, isOnSeason) =
+                await GetDataAsync(hash, blockIndex, avatarAddress);
             if (isOnSeason)
             {
                 UpdateState(avatarAddress, raider, killReward);
@@ -122,23 +128,8 @@ namespace Nekoyume.UI.Module.WorldBoss
             RaiderState raiderState,
             WorldBossKillRewardRecord killReward)
         {
-            if (_raiderStates.ContainsKey(avatarAddress))
-            {
-                _raiderStates[avatarAddress] = raiderState;
-            }
-            else
-            {
-                _raiderStates.Add(avatarAddress, raiderState);
-            }
-
-            if (_killRewards.ContainsKey(avatarAddress))
-            {
-                _killRewards[avatarAddress] = killReward;
-            }
-            else
-            {
-                _killRewards.Add(avatarAddress, killReward);
-            }
+            _raiderStates[avatarAddress] = raiderState;
+            _killRewards[avatarAddress] = killReward;
         }
 
         private static void UpdatePreRaiderState(Address avatarAddress, RaiderState raiderState)
@@ -184,11 +175,12 @@ namespace Nekoyume.UI.Module.WorldBoss
             WorldBossListSheet.Row raidRow,
             RaiderState raider,
             WorldBossKillRewardRecord killReward,
-            bool isOnSeason)> GetDataAsync()
+            bool isOnSeason)> GetDataAsync(
+            HashDigest<SHA256> hash,
+            long blockIndex,
+            Address avatarAddress)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
 
             var task = Task.Run(async () =>
             {
@@ -214,16 +206,14 @@ namespace Nekoyume.UI.Module.WorldBoss
 
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidRow.Id);
                 var raiderState = await Game.Game.instance.Agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    raiderAddress);
+                    hash, ReservedAddresses.LegacyAccount, raiderAddress);
                 var raider = raiderState is Bencodex.Types.List raiderList
                     ? new RaiderState(raiderList)
                     : null;
 
                 var killRewardAddress = Addresses.GetWorldBossKillRewardRecordAddress(avatarAddress, raidRow.Id);
                 var killRewardState = await Game.Game.instance.Agent.GetStateAsync(
-                    ReservedAddresses.LegacyAccount,
-                    killRewardAddress);
+                    hash, ReservedAddresses.LegacyAccount, killRewardAddress);
                 var killReward = killRewardState is Bencodex.Types.List killRewardList
                     ? new WorldBossKillRewardRecord(killRewardList)
                     : null;
