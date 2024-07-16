@@ -8,7 +8,7 @@ namespace Nekoyume
 {
     public static class StageSheetExtensions
     {
-        private static readonly Dictionary<int, List<MaterialItemSheet.Row>> GetRewardItemRowsCache = new Dictionary<int, List<MaterialItemSheet.Row>>();
+        private static readonly Dictionary<int, List<MaterialItemSheet.Row>> GetRewardItemRowsCache = new();
 
         public static string GetLocalizedDescription(this StageWaveSheet.Row stageRow)
         {

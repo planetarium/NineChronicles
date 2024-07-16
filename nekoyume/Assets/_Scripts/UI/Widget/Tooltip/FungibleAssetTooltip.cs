@@ -144,7 +144,7 @@ namespace Nekoyume.UI
             buy.gameObject.SetActive(true);
             sell.gameObject.SetActive(false);
             buy.Set((BigInteger)item.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency,
-                ()=>
+                () =>
                 {
                     onBuy?.Invoke();
                     Close();
@@ -236,8 +236,8 @@ namespace Nekoyume.UI
         private void UpdateInformation(string ticker, string amount, System.Action onClose)
         {
             var tradable = true;
-            var grade    = 1;
-            var id       = 0;
+            var grade = 1;
+            var id = 0;
             if (RuneFrontHelper.TryGetRuneData(ticker, out var runeData))
             {
                 var sheet = Game.Game.instance.TableSheets.RuneListSheet;

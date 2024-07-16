@@ -38,6 +38,7 @@ namespace Nekoyume.Game.Battle
                 spriteRenderer.sprite = resource;
                 spriteRenderer.sortingLayerName = "InGameBackground";
             }
+
             var animator = transform.GetComponent<Animator>();
             var children = new List<GameObject>();
             for (var i = 0; i < transform.childCount; ++i)
@@ -46,7 +47,7 @@ namespace Nekoyume.Game.Battle
             }
 
             spriteRenderer.enabled = false;
-            for (int i = 0; i < 2; ++i)
+            for (var i = 0; i < 2; ++i)
             {
                 var go = new GameObject($"background_{i}");
                 var sr = go.AddComponent<SpriteRenderer>();
@@ -69,6 +70,7 @@ namespace Nekoyume.Game.Battle
                 {
                     g.transform.SetParent(go.transform);
                 }
+
                 go.transform.localScale *= childSizeAdjust;
             }
 
@@ -94,7 +96,7 @@ namespace Nekoyume.Game.Battle
                     if (sr != null)
                     {
                         var minWidth = cameraWidth + 0.5f;
-                        if(sr.drawMode == SpriteDrawMode.Tiled)
+                        if (sr.drawMode == SpriteDrawMode.Tiled)
                         {
                             _parallaxSize = sr.size.x > minWidth ? sr.size.x : minWidth;
                         }
@@ -109,6 +111,7 @@ namespace Nekoyume.Game.Battle
                         }
                     }
                 }
+
                 _images[i].localPosition = new Vector3(_parallaxSize * i * childSizeAdjust + initPosition.x, initPosition.y, initPosition.z);
             }
 

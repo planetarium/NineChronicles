@@ -14,12 +14,11 @@ namespace Nekoyume.UI.Module.Common
 
         public enum sfx
         {
-            sfx_star,
+            sfx_star
         }
 
         public void PlaySfxByEnum(sfx sfx)
         {
-
             AudioController.instance.PlaySfx(sfx.ToString());
         }
     }

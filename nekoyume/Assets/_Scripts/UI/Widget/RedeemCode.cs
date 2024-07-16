@@ -6,14 +6,14 @@ using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.UI.Scroller;
+    using Scroller;
     using UniRx;
 
     public class RedeemCode : Widget
     {
         public TMP_InputField codeField;
 
-        public UnityEvent OnRequested = new UnityEvent();
+        public UnityEvent OnRequested = new();
 
         public override void Show(bool ignoreShowAnimation = false)
         {

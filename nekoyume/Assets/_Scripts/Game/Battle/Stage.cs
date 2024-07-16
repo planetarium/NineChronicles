@@ -98,7 +98,7 @@ namespace Nekoyume.Game.Battle
 
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
-        public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
+        public List<GameObject> ReleaseWhiteList { get; private set; } = new();
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public TutorialController TutorialController { get; private set; }
@@ -110,25 +110,29 @@ namespace Nekoyume.Game.Battle
         public int PlayCount { get; set; }
         public float AnimationTimeScaleWeight { get; set; } = DefaultAnimationTimeScaleWeight;
 
-        public Vector3 SelectPositionBegin(int index) =>
-            new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
+        public Vector3 SelectPositionBegin(int index)
+        {
+            return new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
+        }
 
-        public Vector3 SelectPositionEnd(int index) =>
-            new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
+        public Vector3 SelectPositionEnd(int index)
+        {
+            return new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
+        }
 
         public bool showLoadingScreen;
 
         public float StageSkipSpeed = 3f;
         public bool StageSkipCritical = false;
 
-        #region Events
+#region Events
 
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
         public IObservable<Stage> OnEnterToStageEnd => _onEnterToStageEnd;
 
         public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
 
-        #endregion
+#endregion
 
         protected void Awake()
         {
@@ -173,7 +177,7 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"UpdateTimeScale: {AnimationTimeScaleWeight}");
             foreach (var character in GetComponentsInChildren<Actor>())
             {
-                var isEnemy = character is Character.StageMonster;
+                var isEnemy = character is StageMonster;
                 character.Animator.TimeScale = isEnemy
                     ? Actor.AnimatorTimeScale * AnimationTimeScaleWeight
                     : AnimationTimeScaleWeight;
@@ -276,7 +280,7 @@ namespace Nekoyume.Game.Battle
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
             BattleRenderer.Instance.IsOnBattle = false;
-            
+
             // Clear Memory
             Resources.UnloadUnusedAssets();
             GC.Collect();
@@ -288,7 +292,9 @@ namespace Nekoyume.Game.Battle
             if (hasPrevBackground)
             {
                 if (_background.name.Equals(prefabName))
+                {
                     return;
+                }
 
                 if (fadeTime > 0.0f)
                 {
@@ -296,6 +302,7 @@ namespace Nekoyume.Game.Battle
                     {
                         prevBackgroundGroup.FadeOut(fadeTime);
                     }
+
                     // TODO: 임시코드, 캐싱 전략 정해지면 수정 필요
                     // fade와 동시에 destroy 되는 것을 방지하기 위해 padding을 줌
                     DestroyBackground(fadeTime + 0.1f);
@@ -309,7 +316,9 @@ namespace Nekoyume.Game.Battle
             var path = $"Prefab/Background/{prefabName}";
             var prefab = Resources.Load<GameObject>(path);
             if (!prefab)
+            {
                 throw new FailedToLoadResourceException<GameObject>(path);
+            }
 
             _background = Instantiate(prefab, transform);
             _background.name = prefabName;
@@ -318,7 +327,9 @@ namespace Nekoyume.Game.Battle
             {
                 var childName = child.name;
                 if (!childName.StartsWith("bgvfx"))
+                {
                     continue;
+                }
 
                 var num = childName.Substring(childName.Length - 2);
                 switch (num)
@@ -399,10 +410,10 @@ namespace Nekoyume.Game.Battle
             yield return StartCoroutine(CoStageEnter(log));
 
 
-            if(StageType == StageType.AdventureBoss)
+            if (StageType == StageType.AdventureBoss)
             {
                 var isBreakThroughStarted = false;
-                for (int i = 0; i < log.events.Count; i++)
+                for (var i = 0; i < log.events.Count; i++)
                 {
                     var e = log.events[i];
                     if (!isBreakThroughStarted && e is Breakthrough)
@@ -410,11 +421,13 @@ namespace Nekoyume.Game.Battle
                         isBreakThroughStarted = true;
                         yield return StartCoroutine(CoBreakThroughStart());
                     }
-                    if(isBreakThroughStarted && e is not Breakthrough)
+
+                    if (isBreakThroughStarted && e is not Breakthrough)
                     {
                         isBreakThroughStarted = false;
                         yield return StartCoroutine(CoBreakThroughEnd());
                     }
+
                     e.LogEvent();
                     yield return StartCoroutine(e.CoExecute(this));
                 }
@@ -433,6 +446,7 @@ namespace Nekoyume.Game.Battle
         }
 
         private AdventureBoss_line_character _adventurebossCharacterEffect;
+
         private IEnumerator CoBreakThroughStart()
         {
             NcDebug.Log($"CoBreakThroughStart");
@@ -455,6 +469,7 @@ namespace Nekoyume.Game.Battle
             {
                 SetSpeed(DefaultAnimationTimeScaleWeight);
             }
+
             _adventurebossCharacterEffect.LazyStop();
             yield return new WaitForSeconds(0.5f);
         }
@@ -553,6 +568,7 @@ namespace Nekoyume.Game.Battle
                     {
                         yield break;
                     }
+
                     _adventureBossFloorCount = 0;
                     zone = GetCurrentAdventureBossBackgroundKey();
                     bgmName = stageRow.BGM;
@@ -565,7 +581,7 @@ namespace Nekoyume.Game.Battle
 
             _battleResultModel = new BattleResultPopup.Model
             {
-                StageType = StageType,
+                StageType = StageType
             };
 
             AnimationTimeScaleWeight = DefaultAnimationTimeScaleWeight;
@@ -576,7 +592,7 @@ namespace Nekoyume.Game.Battle
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
             var title = Widget.Find<StageTitle>();
-            if(StageType == StageType.AdventureBoss)
+            if (StageType == StageType.AdventureBoss)
             {
                 title.Show($"{Widget.Find<UI.Battle>().FloorProgressBar.FloorText.text}F");
             }
@@ -585,13 +601,14 @@ namespace Nekoyume.Game.Battle
                 Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
                 title.Show(StageType, stageId);
             }
+
             IsShowHud = false;
             yield return new WaitForSeconds(StageConfig.instance.stageEnterDelay);
 
             yield return StartCoroutine(title.CoClose());
 
             _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleStart);
-            if(StageType == StageType.AdventureBoss)
+            if (StageType == StageType.AdventureBoss)
             {
                 AudioController.instance.PlayMusic(AudioController.MusicCode.AdventureBoss01);
             }
@@ -599,6 +616,7 @@ namespace Nekoyume.Game.Battle
             {
                 AudioController.instance.PlayMusic(bgmName);
             }
+
             IsShowHud = true;
 
             SelectedPlayer.Model.worldInformation.TryGetLastClearedStageId(out var lastClearedStageIdBeforeResponse);
@@ -612,7 +630,7 @@ namespace Nekoyume.Game.Battle
 
         private string GetCurrentAdventureBossBackgroundKey()
         {
-            return $"{adventureBossBackgroundKey}{(_adventureBossFloorCount % 3) + 1}";
+            return $"{adventureBossBackgroundKey}{_adventureBossFloorCount % 3 + 1}";
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -627,11 +645,12 @@ namespace Nekoyume.Game.Battle
                     Widget.Find<UI.Battle>().FloorProgressBar.SetLastFloorCompleted();
                 }
             }
+
             IsAvatarStateUpdatedAfterBattle = false;
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
-            if (_tutorialModels.FirstOrDefault(model => model.ClearedWave == 3) is {} tutorialModel)
+            if (_tutorialModels.FirstOrDefault(model => model.ClearedWave == 3) is { } tutorialModel)
             {
                 Widget.Find<Tutorial>().PlaySmallGuide(tutorialModel.Id);
             }
@@ -639,7 +658,7 @@ namespace Nekoyume.Game.Battle
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             var avatarState = States.Instance.CurrentAvatarState;
 
-            if(StageType != StageType.AdventureBoss)
+            if (StageType != StageType.AdventureBoss)
             {
                 _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             }
@@ -689,7 +708,7 @@ namespace Nekoyume.Game.Battle
             if (log.result == BattleLog.Result.Win)
             {
                 _stageRunningPlayer.DisableHUD();
-                if(StageType == StageType.AdventureBoss)
+                if (StageType == StageType.AdventureBoss)
                 {
                     _stageRunningPlayer.Animator.Win();
                 }
@@ -697,6 +716,7 @@ namespace Nekoyume.Game.Battle
                 {
                     _stageRunningPlayer.Animator.Win(log.clearedWaveNumber);
                 }
+
                 _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
                 _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleEnd);
                 yield return new WaitForSeconds(2.2f);
@@ -715,14 +735,16 @@ namespace Nekoyume.Game.Battle
 
                 ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
             }
+
             objectPool.ReleaseExcept(ReleaseWhiteList);
             _stageRunningPlayer.ClearVfx();
 
-            if(StageType != StageType.AdventureBoss)
+            if (StageType != StageType.AdventureBoss)
             {
                 _battleResultModel.ActionPoint = ReactiveAvatarState.ActionPoint;
                 _battleResultModel.State = log.result;
             }
+
             switch (StageType)
             {
                 case StageType.HackAndSlash:
@@ -816,7 +838,7 @@ namespace Nekoyume.Game.Battle
                     _battleResultModel.NextState = BattleResultPopup.NextState.NextStage;
                 }
             }
-            else  // Failed
+            else // Failed
             {
                 _battleResultModel.NextState = BattleResultPopup.NextState.None;
             }
@@ -835,7 +857,7 @@ namespace Nekoyume.Game.Battle
                 ["CP"] = cp,
                 ["FoodCount"] = foodCount,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             };
             Analyzer.Instance.Track("Unity/Stage End", props);
 
@@ -968,7 +990,7 @@ namespace Nekoyume.Game.Battle
             yield return StartCoroutine(spawner.CoSpawnEnemyPlayer(character, new Vector3(8f, -1.2f)));
         }
 
-        #region Skill
+#region Skill
 
         public IEnumerator CoNormalAttack(
             CharacterBase caster,
@@ -1143,7 +1165,9 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoSkill)}() enter. character: {character.Id}");
 #endif
             if (!character)
+            {
                 throw new ArgumentNullException(nameof(character));
+            }
 
             var infos = skillInfos.ToList();
             var infosFirstWaveTurn = infos.First().WaveTurn;
@@ -1166,14 +1190,14 @@ namespace Nekoyume.Game.Battle
             yield return StartCoroutine(CoAfterSkill(character, buffInfos));
         }
 
-        #endregion
+#endregion
 
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoDropBox)}() enter.");
 #endif
-            var prevEnemies = GetComponentsInChildren<Character.StageMonster>();
+            var prevEnemies = GetComponentsInChildren<StageMonster>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
 
             var isHeaderMenuShown = Widget.Find<HeaderMenuStatic>().IsActive();
@@ -1194,19 +1218,23 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoBeforeSkill)}() enter. character: {character.Id}");
 #endif
             if (!character)
+            {
                 throw new ArgumentNullException(nameof(character));
+            }
 
             var enemy = GetComponentsInChildren<Actor>()
                 .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive)
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
             if (!enemy || character.TargetInAttackRange(enemy))
+            {
                 yield break;
+            }
 
             character.StartRun();
             var time = Time.time;
             yield return new WaitUntil(() =>
                 Time.time - time > 2f || character.TargetInAttackRange(enemy));
-            
+
             if (Time.time - time > 2f)
             {
                 NcDebug.LogWarning($"Time out. character: {character.Id}, enemy: {enemy.Id}");
@@ -1219,7 +1247,9 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoAfterSkill)}() enter. character: {character.Id}");
 #endif
             if (!character)
+            {
                 throw new ArgumentNullException(nameof(character));
+            }
 
             character.UpdateActorHud();
 
@@ -1229,7 +1259,10 @@ namespace Nekoyume.Game.Battle
                 {
                     var buffCharacter = GetActor(buffInfo.Target);
                     if (!buffCharacter)
+                    {
                         throw new ArgumentNullException(nameof(buffCharacter));
+                    }
+
                     buffCharacter.UpdateActorHud();
                 }
             }
@@ -1239,7 +1272,9 @@ namespace Nekoyume.Game.Battle
                 .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive)
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
             if (enemy && !character.TargetInAttackRange(enemy))
+            {
                 character.StartRun();
+            }
         }
 
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
@@ -1277,7 +1312,7 @@ namespace Nekoyume.Game.Battle
             yield return null;
         }
 
-        #region wave
+#region wave
 
         public IEnumerator CoSpawnWave(
             int waveNumber,
@@ -1290,11 +1325,11 @@ namespace Nekoyume.Game.Battle
 #endif
             this.waveNumber = waveNumber;
             this.waveTurn = waveTurn;
-            var prevEnemies = GetComponentsInChildren<Character.StageMonster>();
+            var prevEnemies = GetComponentsInChildren<StageMonster>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
             foreach (var prev in prevEnemies)
             {
-                objectPool.Remove<Character.StageMonster>(prev.gameObject);
+                objectPool.Remove<StageMonster>(prev.gameObject);
             }
 
             Event.OnWaveStart.Invoke(enemies.Sum(enemy => enemy.HP));
@@ -1355,7 +1390,7 @@ namespace Nekoyume.Game.Battle
 #endif
         }
 
-        #endregion
+#endregion
 
         public IEnumerator CoGetExp(long exp)
         {
@@ -1394,14 +1429,17 @@ namespace Nekoyume.Game.Battle
                         {
                             continue;
                         }
+
                         var frostBite = kvp.Value;
-                        var source          = tick.SkillInfos.First().Target;
+                        var source = tick.SkillInfos.First().Target;
                         var sourceCharacter = GetActor(source);
+
                         IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
                         {
                             sourceCharacter.CustomEvent(tick.SkillId);
                             yield return affectedCharacter.CoBuff(skillInfos);
                         }
+
                         var tickSkillInfo = new Skill.SkillInfo(
                             affectedCharacter.Id,
                             !affectedCharacter.IsAlive,
@@ -1415,12 +1453,14 @@ namespace Nekoyume.Game.Battle
                         );
                         affectedCharacter.AddAction(
                             new ActionParams(affectedCharacter,
-                                             ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
-                                             tick.BuffInfos,
-                                             CoFrostBite
+                                ArraySegment<Skill.SkillInfo>.Empty.Append(tickSkillInfo),
+                                tick.BuffInfos,
+                                CoFrostBite
                             ));
                         break;
-                    };
+                    }
+
+                    ;
                 }
                 // This Tick from 'Stun'
                 else if (tick.SkillId == 0)
@@ -1433,26 +1473,26 @@ namespace Nekoyume.Game.Battle
                     }
 
                     var tickSkillInfo = new Skill.SkillInfo(affectedCharacter.Id,
-                                                            !affectedCharacter.IsAlive,
-                                                            0,
-                                                            0,
-                                                            false,
-                                                            SkillCategory.TickDamage,
-                                                            waveTurn,
-                                                            target: character
+                        !affectedCharacter.IsAlive,
+                        0,
+                        0,
+                        false,
+                        SkillCategory.TickDamage,
+                        waveTurn,
+                        target: character
                     );
                     affectedCharacter.AddAction(
                         new ActionParams(affectedCharacter,
-                                         tick.SkillInfos.Append(tickSkillInfo),
-                                         tick.BuffInfos,
-                                         StunTick
+                            tick.SkillInfos.Append(tickSkillInfo),
+                            tick.BuffInfos,
+                            StunTick
                         ));
 
                     yield return null;
                 }
                 // This Tick from 'Vampiric'
                 else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(tick.SkillId,
-                             out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
+                        out var row) && row.ActionBuffType == ActionBuffType.Vampiric)
                 {
                     if (affectedCharacter)
                     {
@@ -1504,9 +1544,14 @@ namespace Nekoyume.Game.Battle
             position.y = StageStartPosition;
             playerTransform.position = position;
             if (chasePlayer)
+            {
                 RunAndChasePlayer(_stageRunningPlayer);
+            }
             else
+            {
                 _stageRunningPlayer.StartRun();
+            }
+
             return _stageRunningPlayer;
         }
 
@@ -1514,9 +1559,14 @@ namespace Nekoyume.Game.Battle
         {
             var player = GetPlayer(position);
             if (chasePlayer)
+            {
                 RunAndChasePlayer(player);
+            }
             else
+            {
                 player.StartRun();
+            }
+
             return player;
         }
 
@@ -1543,7 +1593,9 @@ namespace Nekoyume.Game.Battle
         public Actor GetActor(CharacterBase caster)
         {
             if (caster is null)
+            {
                 throw new ArgumentNullException(nameof(caster));
+            }
 
             var characters = GetComponentsInChildren<Actor>()
                 .Where(c => c.Id == caster.Id);
@@ -1575,15 +1627,23 @@ namespace Nekoyume.Game.Battle
             if (isBoss && bosswaveBGVFX)
             {
                 if (defaultBGVFX)
+                {
                     defaultBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                }
+
                 bosswaveBGVFX.Play(true);
             }
             else
             {
                 if (bosswaveBGVFX)
+                {
                     bosswaveBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                }
+
                 if (defaultBGVFX && !defaultBGVFX.isPlaying)
+                {
                     defaultBGVFX.Play(true);
+                }
             }
         }
 
@@ -1642,9 +1702,10 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[CoCustomEvent] CoBreakthrough Start");
             _adventureBossFloorCount++;
 
-            List<BreakthroughCharacter> createdMonsters = new List<BreakthroughCharacter>();
-            yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnBreakthrough(monsters, (createdMonseter)=> {
-                if(createdMonseter.TryGetComponent<BreakthroughCharacter>(out var monster))
+            var createdMonsters = new List<BreakthroughCharacter>();
+            yield return StartCoroutine(Game.instance.Stage.spawner.CoSpawnBreakthrough(monsters, (createdMonseter) =>
+            {
+                if (createdMonseter.TryGetComponent<BreakthroughCharacter>(out var monster))
                 {
                     createdMonsters.Add(monster);
                 }
@@ -1657,13 +1718,13 @@ namespace Nekoyume.Game.Battle
                 breakthroughMonster.IsTriggerd = false;
             }
 
-            if(!TableSheets.Instance.AdventureBossFloorSheet.TryGetValue(floorId, out var floorRow))
+            if (!TableSheets.Instance.AdventureBossFloorSheet.TryGetValue(floorId, out var floorRow))
             {
                 NcDebug.LogError($"[CoCustomEvent] CoBreakthrough() floorRow is null. floorId: {floorId}");
                 LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
                 yield return null;
             }
-                
+
             Widget.Find<UI.Battle>().FloorProgressBar.SetCompleted(floorRow.Floor);
             LoadBackground(GetCurrentAdventureBossBackgroundKey(), 0.5f);
 

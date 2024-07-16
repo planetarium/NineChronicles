@@ -9,7 +9,7 @@ namespace Nekoyume.UI
         None = 0,
         Idle = 1,
         Reaction = 2,
-        Question = 3,
+        Question = 3
     }
 
     public class DialogEmojiTypeEqualityComparer : IEqualityComparer<DialogEmojiType>
@@ -21,7 +21,7 @@ namespace Nekoyume.UI
 
         public int GetHashCode(DialogEmojiType obj)
         {
-            return (int) obj;
+            return (int)obj;
         }
     }
 }

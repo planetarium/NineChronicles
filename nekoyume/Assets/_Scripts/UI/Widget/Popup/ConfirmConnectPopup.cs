@@ -59,7 +59,7 @@ namespace Nekoyume.UI
         private void ConnectDcc()
         {
             var dccUrl = ApiClients.Instance.DccURL;
-            
+
             string url;
             if (_isMileageShop)
             {
@@ -67,9 +67,9 @@ namespace Nekoyume.UI
             }
             else
             {
-                var urlRoot      = dccUrl.DccConnect;
+                var urlRoot = dccUrl.DccConnect;
                 var agentAddress = Game.Game.instance.Agent.Address.ToHex();
-                var message      = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                var message = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
                 var privateKey = Game.Game.instance.Agent.PrivateKey;
                 var publicKey = privateKey.PublicKey;

@@ -133,7 +133,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
             refreshButton
                 .OnClickAsObservable()
-                .Where(_=> !refreshBlocker.activeSelf)
+                .Where(_ => !refreshBlocker.activeSelf)
                 .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
@@ -162,7 +162,7 @@ namespace Nekoyume.UI
         {
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.WorldBoss);
-            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
+            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
             loading.Close();
             AudioController.instance.PlayMusic(_bgmName);
             base.Show(ignoreShowAnimation);
@@ -291,7 +291,7 @@ namespace Nekoyume.UI
         {
             if (WorldBossFrontHelper.TryGetBossData(row.BossId, out var data))
             {
-                if(_bossId == row.BossId)
+                if (_bossId == row.BossId)
                 {
                     return;
                 }
@@ -333,7 +333,7 @@ namespace Nekoyume.UI
             var range = end - begin;
             var progress = current - begin;
             var remaining = end - current;
-            timerSlider.NormalizedValue = 1f - ((float)progress / range);
+            timerSlider.NormalizedValue = 1f - (float)progress / range;
             timeBlock.SetTimeBlock($"{remaining:#,0}", remaining.BlockRangeToTimeSpanString());
             blocksAndDatesPeriod.Show(begin, end, current, secondsPerBlock, DateTime.Now);
         }
@@ -350,12 +350,12 @@ namespace Nekoyume.UI
         }
 
         private async Task<(
-            WorldBossState worldBoss,
-            RaiderState raiderState,
-            WorldBossKillRewardRecord killReward,
-            WorldBossRankingRecord myRecord,
-            long blockIndex,
-            int userCount)>
+                WorldBossState worldBoss,
+                RaiderState raiderState,
+                WorldBossKillRewardRecord killReward,
+                WorldBossRankingRecord myRecord,
+                long blockIndex,
+                int userCount)>
             GetStatesAsync(WorldBossListSheet.Row row)
         {
             var task = Task.Run(async () =>
@@ -394,9 +394,9 @@ namespace Nekoyume.UI
         }
 
         private static async Task<(
-            WorldBossRankingRecord myRecord,
-            long blockIndex,
-            int userCount)>
+                WorldBossRankingRecord myRecord,
+                long blockIndex,
+                int userCount)>
             QueryRankingAsync(WorldBossListSheet.Row row, Address avatarAddress)
         {
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
@@ -424,8 +424,8 @@ namespace Nekoyume.UI
         {
             SetActiveQueryLoading(true);
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex,
-                forceUpdate: true,
-                ignoreHeaderMenuAnimation: true);
+                true,
+                true);
         }
 
         private void SetActiveQueryLoading(bool value)

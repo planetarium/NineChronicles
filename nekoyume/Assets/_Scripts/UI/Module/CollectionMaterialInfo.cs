@@ -19,20 +19,24 @@ namespace Nekoyume.UI.Module
         {
             [Space]
             public TextMeshProUGUI itemName;
+
             public TooltipItemView itemView;
 
             [Space]
             public TextMeshProUGUI gradeText;
+
             public Image gradeAndSubTypeSpacer;
             public TextMeshProUGUI subTypeText;
 
             [Space]
             public GameObject skillRequiredObject;
+
             public TextMeshProUGUI requiredAmountText;
             public TextMeshProUGUI currentAmountText;
 
             [Space]
             public GameObject elementalTypeObject;
+
             public Image elementalTypeImage;
             public TextMeshProUGUI elementalTypeText;
 

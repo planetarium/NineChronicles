@@ -1,8 +1,6 @@
-﻿
-namespace Nekoyume.UI.Module.WorldBoss
+﻿namespace Nekoyume.UI.Module.WorldBoss
 {
     public class WorldBossPreviousRank : WorldBossDetailItem
     {
-
     }
 }

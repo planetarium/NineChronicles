@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Factory
 {
     public static class ItemMoveAnimationFactory
     {
-        private static readonly Lazy<ObjectPool> ObjectPool = new Lazy<ObjectPool>(() =>
+        private static readonly Lazy<ObjectPool> ObjectPool = new(() =>
         {
             var pool = MainCanvas
                 .instance
@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Factory
         public enum AnimationItemType
         {
             Crystal,
-            Ncg,
+            Ncg
         }
 
         private const string CrystalAnimationPrefabName = "item_CrystalGetAnimation";

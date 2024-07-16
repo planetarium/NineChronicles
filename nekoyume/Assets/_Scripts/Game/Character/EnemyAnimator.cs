@@ -8,12 +8,10 @@ namespace Nekoyume.Game.Character
 
         public EnemyAnimator(PrologueCharacter root) : base(root)
         {
-
         }
 
         public EnemyAnimator(BreakthroughCharacter root) : base(root)
         {
-
         }
     }
 }

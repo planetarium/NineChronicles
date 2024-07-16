@@ -6,11 +6,12 @@ using System;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.Blockchain;
-    using Nekoyume.Game.Controller;
-    using Nekoyume.L10n;
+    using Blockchain;
+    using Game.Controller;
+    using L10n;
     using Nekoyume.Model.Mail;
     using UniRx;
+
     public class AdventureBoss_UnlockLockedFloorPopup : PopupWidget
     {
         [SerializeField] private TextMeshProUGUI floorName;
@@ -22,7 +23,7 @@ namespace Nekoyume.UI
         private int _goldCost;
         private int _goldenDustCost;
         private System.Action _loadingStart;
-        private System.Action<bool> _loadingEnd;
+        private Action<bool> _loadingEnd;
 
         protected override void Awake()
         {
@@ -47,12 +48,10 @@ namespace Nekoyume.UI
                             _loadingEnd?.Invoke(false);
                             return;
                         }
+
                         AudioController.instance.PlaySfx(AudioController.SfxCode.SuccessEffectSlot);
                         _loadingEnd?.Invoke(true);
-                        UniTask.Delay(TimeSpan.FromSeconds(0.5f)).ContinueWith(() =>
-                        {
-                            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState(eval.OutputState, eval.BlockIndex).Forget();
-                        }).Forget();
+                        UniTask.Delay(TimeSpan.FromSeconds(0.5f)).ContinueWith(() => { Game.Game.instance.AdventureBossData.RefreshAllByCurrentState(eval.OutputState, eval.BlockIndex).Forget(); }).Forget();
                     });
                 }
             }).AddTo(gameObject);
@@ -77,18 +76,16 @@ namespace Nekoyume.UI
                             _loadingEnd?.Invoke(false);
                             return;
                         }
+
                         AudioController.instance.PlaySfx(AudioController.SfxCode.SuccessEffectSlot);
                         _loadingEnd?.Invoke(true);
-                        UniTask.Delay(TimeSpan.FromSeconds(0.5f)).ContinueWith(() =>
-                        {
-                            Game.Game.instance.AdventureBossData.RefreshAllByCurrentState(eval.OutputState, eval.BlockIndex).Forget();
-                        }).Forget();
+                        UniTask.Delay(TimeSpan.FromSeconds(0.5f)).ContinueWith(() => { Game.Game.instance.AdventureBossData.RefreshAllByCurrentState(eval.OutputState, eval.BlockIndex).Forget(); }).Forget();
                     });
                 }
             }).AddTo(gameObject);
         }
 
-        public void Show(int floor, System.Action loadingStart, System.Action<bool> loadingEnd, bool ignoreShowAnimation = false)
+        public void Show(int floor, System.Action loadingStart, Action<bool> loadingEnd, bool ignoreShowAnimation = false)
         {
             _floorIndex = floor;
             _loadingStart = loadingStart;

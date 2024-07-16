@@ -12,7 +12,7 @@ using TMPro;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.L10n;
+    using L10n;
     using UniRx;
 
     public class MailRewardScreen : ScreenWidget

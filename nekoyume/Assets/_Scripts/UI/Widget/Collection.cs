@@ -27,7 +27,8 @@ namespace Nekoyume.UI
 
     public class Collection : Widget
     {
-        #region Internal Types
+#region Internal Types
+
         [Serializable]
         private struct ItemTypeToggle
         {
@@ -58,9 +59,10 @@ namespace Nekoyume.UI
         {
             Id,
             Grade,
-            LevelOrQuantity,
+            LevelOrQuantity
         }
-        #endregion Internal Types
+
+#endregion Internal Types
 
         [SerializeField]
         private Button backButton;
@@ -109,7 +111,7 @@ namespace Nekoyume.UI
 
         private ItemFilterOptions itemFilterOptions;
 
-        private readonly List<CollectionModel> _models = new List<CollectionModel>();
+        private readonly List<CollectionModel> _models = new();
 
         private ItemType CurrentItemType
         {
@@ -125,6 +127,7 @@ namespace Nekoyume.UI
         }
 
         private readonly Dictionary<ItemType, Dictionary<StatType, bool>> _filter = new();
+
         private static readonly StatType[] TabStatTypes =
         {
             StatType.NONE,
@@ -252,15 +255,15 @@ namespace Nekoyume.UI
             ReactiveAvatarState.Inventory.Subscribe(OnUpdateInventory).AddTo(gameObject);
         }
 
-        #region ScrollView
+#region ScrollView
 
         private void UpdateItems()
         {
             _items = _models
-                     .Where(model =>
-                         model.ItemType == _currentItemType &&
-                         model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
-                     .ToList();
+                .Where(model =>
+                    model.ItemType == _currentItemType &&
+                    model.Row.StatModifiers.Any(stat => IsInToggle(stat, _currentStatType)))
+                .ToList();
 
             _items.Sort(SortCollection);
 
@@ -349,7 +352,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #endregion
+#endregion
 
         public void OnActionRender()
         {
@@ -369,7 +372,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            UpdateToggleView();     // on update toggleDictionary
+            UpdateToggleView(); // on update toggleDictionary
             UpdateStatToggleView(); // on update toggleDictionary
 
             UpdateItems(); // on update model.CanActivate
@@ -402,7 +405,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #region ToggleView
+#region ToggleView
 
         private void UpdateToggleView()
         {
@@ -427,7 +430,7 @@ namespace Nekoyume.UI
             {
                 StatType.CRI,
                 StatType.DRV, StatType.DRR, StatType.CDMG,
-                StatType.ArmorPenetration, StatType.Thorn,
+                StatType.ArmorPenetration, StatType.Thorn
             };
 
             switch (toggleStatType)
@@ -450,9 +453,10 @@ namespace Nekoyume.UI
             }
         }
 
-        #endregion
+#endregion
 
-        #region Sort
+#region Sort
+
         private void RefreshDescendingUI()
         {
             sortFlip.vertical = _isSortDescending;
@@ -471,7 +475,10 @@ namespace Nekoyume.UI
 
             var options = new List<string>();
             foreach (SortType sortType in Enum.GetValues(typeof(SortType)))
+            {
                 options.Add(GetSortTypeString(sortType));
+            }
+
             sortDropdown.AddOptions(options);
 
             sortDropdown.onValueChanged.AddListener(OnSortDropdownValueChanged);
@@ -518,10 +525,14 @@ namespace Nekoyume.UI
         private void RefreshDropDownText()
         {
             if (sortDropdown.options.Count == 0)
+            {
                 return;
+            }
 
             for (var i = 0; i < sortDropdown.options.Count; i++)
+            {
                 sortDropdown.options[i].text = GetSortTypeString((SortType)i);
+            }
 
             sortDropdown.RefreshShownValue();
         }
@@ -535,30 +546,48 @@ namespace Nekoyume.UI
         private int SortCollection(CollectionModel a, CollectionModel b)
         {
             if (a == null && b == null)
+            {
                 return 0;
-            if (a == null) return 1;
-            if (b == null) return -1;
+            }
+
+            if (a == null)
+            {
+                return 1;
+            }
+
+            if (b == null)
+            {
+                return -1;
+            }
 
             // 1. 활성화 가능
             if (a.CanActivate != b.CanActivate)
+            {
                 return a.CanActivate ? -1 : 1;
+            }
 
             // 2. 재료 일정 부분 달성
             var aPartiallyActive = a.Materials.Any(CheckHasMaterialWhenInactive);
             var bPartiallyActive = b.Materials.Any(CheckHasMaterialWhenInactive);
             if (aPartiallyActive != bPartiallyActive)
+            {
                 return aPartiallyActive ? -1 : 1;
+            }
 
             // 3. 재료 모두 미달성 (나머지)
 
             // 설정된 타입별로 정렬
             var sortByTypeValue = SortByType(a, b, currentSortType);
             if (sortByTypeValue != 0)
+            {
                 return sortByTypeValue;
+            }
 
             // 다른 조건이 같다면 ID로 비교
             if (a.Row.Id != b.Row.Id)
+            {
                 return a.Row.Id < b.Row.Id ? -1 : 1;
+            }
 
             return 0;
         }
@@ -586,28 +615,35 @@ namespace Nekoyume.UI
                         var bCount = b.Materials.Max(material => material.Row.Count);
                         return (bCount - aCount) * sortTypeWeight;
                     }
+
                     if (a.ItemType == ItemType.Equipment)
                     {
                         var aLevel = a.Materials.Max(material => material.Row.Level);
                         var bLevel = b.Materials.Max(material => material.Row.Level);
                         return (bLevel - aLevel) * sortTypeWeight;
                     }
+
                     break;
                 }
             }
+
             return 0;
         }
 
         private bool CheckHasMaterialWhenInactive(CollectionMaterial material)
         {
             if (material == null)
+            {
                 return false;
+            }
 
             return material.HasItem && !material.Active;
         }
-        #endregion Sort
 
-        #region Filter
+#endregion Sort
+
+#region Filter
+
         private readonly List<CollectionModel> _filteredItems = new();
 
         private bool IsNeedSearch => !string.IsNullOrWhiteSpace(itemFilterOptions.SearchText);
@@ -623,10 +659,12 @@ namespace Nekoyume.UI
 
             foreach (var model in _items)
             {
-                bool isContained = !(IsNeedSearch && !IsMatchedSearch(model));
+                var isContained = !(IsNeedSearch && !IsMatchedSearch(model));
                 isContained &= ApplyFilterOption(model);
                 if (isContained)
+                {
                     _filteredItems.Add(model);
+                }
             }
 
             return _filteredItems;
@@ -748,14 +786,18 @@ namespace Nekoyume.UI
         private bool ApplyItemTypeFilterOption(CollectionModel model)
         {
             if (itemFilterOptions.ItemType == ItemFilterPopupBase.ItemType.All)
+            {
                 return true;
+            }
 
             var hasFlag = false;
             var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             foreach (var material in model.Materials)
             {
                 if (!equipmentSheet.TryGetValue(material.Row.ItemId, out var equipment))
+                {
                     return false;
+                }
 
                 var itemType = ItemFilterPopupBase.ItemSubTypeToItemType(equipment.ItemSubType);
                 hasFlag |= itemFilterOptions.ItemType.HasFlag(itemType);
@@ -771,7 +813,9 @@ namespace Nekoyume.UI
         private bool IsMatchedSearch(CollectionModel model)
         {
             if (model == null)
+            {
                 return false;
+            }
 
             var itemName = L10nManager.LocalizeCollectionName(model.Row.Key);
             var nameMatched = Regex.IsMatch(itemName, itemFilterOptions.SearchText, RegexOptions.IgnoreCase);
@@ -781,10 +825,14 @@ namespace Nekoyume.UI
             {
                 var materialName = L10nManager.LocalizeItemName(material.Row.ItemId);
                 if (!Regex.IsMatch(materialName, itemFilterOptions.SearchText, RegexOptions.IgnoreCase))
+                {
                     continue;
+                }
+
                 materialMatched = true;
                 break;
             }
+
             return nameMatched || materialMatched;
         }
 
@@ -793,6 +841,7 @@ namespace Nekoyume.UI
             itemFilterOptions = type;
             UpdateItems();
         }
-        #endregion Filter
+
+#endregion Filter
     }
 }

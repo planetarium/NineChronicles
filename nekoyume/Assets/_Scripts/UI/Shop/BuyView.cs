@@ -28,7 +28,7 @@ namespace Nekoyume
         public enum BuyMode
         {
             Single,
-            Multiple,
+            Multiple
         }
 
         [SerializeField]
@@ -78,7 +78,7 @@ namespace Nekoyume
             ItemSubTypeFilter.Food,
             ItemSubTypeFilter.Materials,
             ItemSubTypeFilter.Costume,
-            ItemSubTypeFilter.Stones,
+            ItemSubTypeFilter.Stones
         };
 
         private readonly Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>> _toggleSubTypes =
@@ -91,7 +91,7 @@ namespace Nekoyume
                         ItemSubTypeFilter.Armor,
                         ItemSubTypeFilter.Belt,
                         ItemSubTypeFilter.Necklace,
-                        ItemSubTypeFilter.Ring,
+                        ItemSubTypeFilter.Ring
                     }
                 },
                 {
@@ -102,30 +102,30 @@ namespace Nekoyume
                         ItemSubTypeFilter.Food_CRI,
                         ItemSubTypeFilter.Food_DEF,
                         ItemSubTypeFilter.Food_SPD,
-                        ItemSubTypeFilter.Food_HIT,
+                        ItemSubTypeFilter.Food_HIT
                     }
                 },
                 {
                     ItemSubTypeFilter.Materials, new List<ItemSubTypeFilter>()
                     {
                         ItemSubTypeFilter.Hourglass,
-                        ItemSubTypeFilter.ApStone,
+                        ItemSubTypeFilter.ApStone
                     }
                 },
                 {
                     ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
                     {
                         ItemSubTypeFilter.FullCostume,
-                        ItemSubTypeFilter.Title,
+                        ItemSubTypeFilter.Title
                     }
                 },
                 {
                     ItemSubTypeFilter.Stones, new List<ItemSubTypeFilter>()
                     {
                         ItemSubTypeFilter.RuneStone,
-                        ItemSubTypeFilter.PetSoulStone,
+                        ItemSubTypeFilter.PetSoulStone
                     }
-                },
+                }
             };
 
         private readonly Dictionary<ItemSubTypeFilter, List<ShopSortFilter>> _toggleSortFilters =
@@ -140,7 +140,7 @@ namespace Nekoyume
                         ShopSortFilter.Crystal,
                         ShopSortFilter.CrystalPerPrice,
                         ShopSortFilter.EquipmentLevel,
-                        ShopSortFilter.OptionCount,
+                        ShopSortFilter.OptionCount
                     }
                 },
                 {
@@ -152,14 +152,14 @@ namespace Nekoyume
                         ShopSortFilter.Crystal,
                         ShopSortFilter.CrystalPerPrice,
                         ShopSortFilter.EquipmentLevel,
-                        ShopSortFilter.OptionCount,
+                        ShopSortFilter.OptionCount
                     }
                 },
                 {
                     ItemSubTypeFilter.Materials, new List<ShopSortFilter>()
                     {
                         ShopSortFilter.Price,
-                        ShopSortFilter.UnitPrice,
+                        ShopSortFilter.UnitPrice
                     }
                 },
                 {
@@ -171,7 +171,7 @@ namespace Nekoyume
                         ShopSortFilter.Crystal,
                         ShopSortFilter.CrystalPerPrice,
                         ShopSortFilter.EquipmentLevel,
-                        ShopSortFilter.OptionCount,
+                        ShopSortFilter.OptionCount
                     }
                 },
                 {
@@ -180,7 +180,7 @@ namespace Nekoyume
                         ShopSortFilter.Price,
                         ShopSortFilter.UnitPrice
                     }
-                },
+                }
             };
 
         private readonly Dictionary<ItemSubTypeFilter, int> _toggleSortFilterIndex = new()
@@ -189,7 +189,7 @@ namespace Nekoyume
             { ItemSubTypeFilter.Food, 0 },
             { ItemSubTypeFilter.Materials, 0 },
             { ItemSubTypeFilter.Costume, 0 },
-            { ItemSubTypeFilter.Stones, 0 },
+            { ItemSubTypeFilter.Stones, 0 }
         };
 
         private readonly List<ShopItem> _selectedItems = new();
@@ -252,8 +252,8 @@ namespace Nekoyume
             _itemIds.AddRange(tableSheets.ConsumableItemSheet.Values.Select(x => x.Id));
             _itemIds.AddRange(tableSheets.CostumeItemSheet.Values.Select(x => x.Id));
             _itemIds.AddRange(tableSheets.MaterialItemSheet.Values.Select(x => x.Id));
-            _runeIds.AddRange(tableSheets.RuneListSheet.Values.Select(x=> x.Id));
-            _petIds.AddRange(tableSheets.PetSheet.Values.Select(x=> x.Id));
+            _runeIds.AddRange(tableSheets.RuneListSheet.Values.Select(x => x.Id));
+            _petIds.AddRange(tableSheets.PetSheet.Values.Select(x => x.Id));
 
             historyButton.onClick.AddListener(() =>
             {
@@ -261,10 +261,7 @@ namespace Nekoyume
                     "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
             });
 
-            showCartButton.onClick.AddListener(() =>
-            {
-                _mode.SetValueAndForceNotify(BuyMode.Multiple);
-            });
+            showCartButton.onClick.AddListener(() => { _mode.SetValueAndForceNotify(BuyMode.Multiple); });
 
             cartView.Set(() =>
                 {
@@ -422,10 +419,10 @@ namespace Nekoyume
             bool IsValid(int id)
             {
                 var inSearch = !_useSearch.Value ||
-                               Regex.IsMatch(L10nManager.LocalizeItemName(id), inputField.text, RegexOptions.IgnoreCase);
+                    Regex.IsMatch(L10nManager.LocalizeItemName(id), inputField.text, RegexOptions.IgnoreCase);
                 var inLevelLimit = !_levelLimit.Value ||
-                                   (requirementSheet.TryGetValue(id, out var requirementRow) &&
-                                    avatarLevel >= requirementRow.Level);
+                    (requirementSheet.TryGetValue(id, out var requirementRow) &&
+                        avatarLevel >= requirementRow.Level);
                 return inSearch && inLevelLimit;
             }
 
@@ -485,6 +482,7 @@ namespace Nekoyume
                 await ReactiveShopState.RequestBuyProductsAsync(
                     filter, orderType, limit * 15, reset, filteredItemIds);
             }
+
             _loadingCount--;
             loading.SetActive(_loadingCount > 0);
 
@@ -493,10 +491,7 @@ namespace Nekoyume
 
         protected override void SubscribeToSearchConditions()
         {
-            _selectedSortFilter.Subscribe(filter =>
-            {
-                _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}");
-            }).AddTo(gameObject);
+            _selectedSortFilter.Subscribe(filter => { _sortText.text = L10nManager.Localize($"UI_{filter.ToString().ToUpper()}"); }).AddTo(gameObject);
             _useSearch.Subscribe(useSearch =>
             {
                 resetButton.interactable = useSearch;
@@ -506,10 +501,7 @@ namespace Nekoyume
                     inputField.text = string.Empty;
                 }
             }).AddTo(gameObject);
-            _isAscending.Subscribe(isAscending =>
-            {
-                sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1);
-            }).AddTo(gameObject);
+            _isAscending.Subscribe(isAscending => { sortOrderIcon.localScale = new Vector3(1, isAscending ? 1 : -1, 1); }).AddTo(gameObject);
 
             _mode.Subscribe(x =>
             {
@@ -536,7 +528,7 @@ namespace Nekoyume
                         if (item.ItemBase is not null)
                         {
                             if (_selectedItems.Exists(x =>
-                                    x.Product.ProductId.Equals(item.Product.ProductId)))
+                                x.Product.ProductId.Equals(item.Product.ProductId)))
                             {
                                 ClearSelectedItems();
                             }
@@ -551,7 +543,7 @@ namespace Nekoyume
                         else
                         {
                             if (_selectedItems.Exists(x =>
-                                    x.FungibleAssetProduct.ProductId.Equals(item.FungibleAssetProduct.ProductId)))
+                                x.FungibleAssetProduct.ProductId.Equals(item.FungibleAssetProduct.ProductId)))
                             {
                                 ClearSelectedItems();
                             }
@@ -633,6 +625,7 @@ namespace Nekoyume
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
             UpdateSelected(_selectedItems);
         }
 

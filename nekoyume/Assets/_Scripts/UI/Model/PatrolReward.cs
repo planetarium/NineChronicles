@@ -8,6 +8,7 @@ using UnityEngine;
 namespace Nekoyume.UI.Model.Patrol
 {
     using UniRx;
+
     public class PatrolReward
     {
         private int AvatarLevel { get; set; }
@@ -31,7 +32,7 @@ namespace Nekoyume.UI.Model.Patrol
             }
 
             var query =
-$@"query {{
+                $@"query {{
     avatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
         avatarAddress
         agentAddress
@@ -150,7 +151,7 @@ $@"query {{
             }
 
             var query =
-$@"query {{
+                $@"query {{
     policy(level: {level}, free: true) {{
         activate
         minimumLevel
@@ -199,7 +200,7 @@ $@"query {{
             }
 
             var query =
-$@"mutation {{
+                $@"mutation {{
     claim(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"")
 }}";
 
@@ -222,7 +223,7 @@ $@"mutation {{
             }
 
             var query =
-$@"mutation {{
+                $@"mutation {{
     putAvatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
         avatarAddress
         agentAddress

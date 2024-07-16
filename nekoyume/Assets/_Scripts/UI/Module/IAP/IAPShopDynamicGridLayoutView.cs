@@ -20,13 +20,14 @@ namespace Nekoyume.UI.Module
 
             var sortbyProductOrderList = new List<IAPShopProductCellView>();
 
-            for (int i = 0; i < transform.childCount; i++)
+            for (var i = 0; i < transform.childCount; i++)
             {
                 if (transform.GetChild(i).gameObject.activeSelf)
                 {
                     sortbyProductOrderList.Add(transform.GetChild(i).GetComponent<IAPShopProductCellView>());
                 }
             }
+
             sortbyProductOrderList.Sort(Compare);
 
             var children = new List<RectTransform>();
@@ -37,7 +38,7 @@ namespace Nekoyume.UI.Module
 
             var lastPos = new Vector2(space, -space);
             var minHeight = 0f;
-            for (int i = 0; i < children.Count; i++)
+            for (var i = 0; i < children.Count; i++)
             {
                 children[i].pivot = new Vector2(0, 1);
                 children[i].anchorMin = new Vector2(0, 1);
@@ -50,12 +51,14 @@ namespace Nekoyume.UI.Module
                     lastPos.x + children[i].rect.width + space + children[Mathf.Min(i + 1, children.Count - 1)].rect.width + space > rectTrans.rect.width)
                 {
                     lastPos.x = space;
-                    lastPos.y -= (children[i].rect.height + space);
+                    lastPos.y -= children[i].rect.height + space;
 
-                    for (int z = i; z >= 0; z--)
+                    for (var z = i; z >= 0; z--)
                     {
                         if (children[z].anchoredPosition.y - children[z].rect.height < lastPos.y)
+                        {
                             lastPos.x += children[z].rect.width + space;
+                        }
                     }
                 }
                 else
@@ -74,9 +77,21 @@ namespace Nekoyume.UI.Module
 
         private static int Compare(IAPShopProductCellView lhs, IAPShopProductCellView rhs)
         {
-            if (lhs == rhs) return 0;
-            if (lhs.GetOrder() > rhs.GetOrder()) return 1;
-            if (lhs.GetOrder() < rhs.GetOrder()) return -1;
+            if (lhs == rhs)
+            {
+                return 0;
+            }
+
+            if (lhs.GetOrder() > rhs.GetOrder())
+            {
+                return 1;
+            }
+
+            if (lhs.GetOrder() < rhs.GetOrder())
+            {
+                return -1;
+            }
+
             return 0;
         }
     }

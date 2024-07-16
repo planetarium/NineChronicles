@@ -23,7 +23,7 @@ using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.UI.Scroller;
+    using Scroller;
     using UniRx;
 
     public class ShopSell : Widget
@@ -157,7 +157,7 @@ namespace Nekoyume.UI
             {
                 Find<FungibleAssetTooltip>().Show(model,
                     () => ShowSell(model),
-                    ()=>
+                    () =>
                     {
                         inventory.ClearSelectedItem();
                         view.ClearSelectedItem();
@@ -173,7 +173,7 @@ namespace Nekoyume.UI
                     x.item.ItemSubType == ItemSubType.ApStone &&
                     !x.Locked &&
                     !(x.item is ITradableItem tradableItem &&
-                      tradableItem.RequiredBlockIndex > blockIndex))
+                        tradableItem.RequiredBlockIndex > blockIndex))
                 .Sum(item => item.count);
 
             if (model.ItemBase is not null)
@@ -196,6 +196,7 @@ namespace Nekoyume.UI
                     view.ClearSelectedItem);
             }
         }
+
         private static void SubscribeConditionalButtonForChargeAp(ConditionalButton.State state,
             string key, Action<bool> action, int? apStoneCount = null)
         {
@@ -207,7 +208,7 @@ namespace Nekoyume.UI
                         x.item.ItemSubType == ItemSubType.ApStone &&
                         !x.Locked &&
                         !(x.item is ITradableItem tradableItem &&
-                          tradableItem.RequiredBlockIndex > blockIndex))
+                            tradableItem.RequiredBlockIndex > blockIndex))
                     .Sum(item => item.count);
             }
 
@@ -299,7 +300,7 @@ namespace Nekoyume.UI
             data.IsSell.Value = true;
             data.InfoText.Value = string.Empty;
             data.CountEnabled.Value = true;
-            data.ChargeAp.Value = false;  // 나중에 버튼 누르면
+            data.ChargeAp.Value = false; // 나중에 버튼 누르면
 
             if (model.ItemBase is not null)
             {
@@ -376,7 +377,6 @@ namespace Nekoyume.UI
                     itemCount,
                     itemCount,
                     itemCount);
-
             }
 
             data.Item.Value.CountEnabled.Value = false;
@@ -421,7 +421,7 @@ namespace Nekoyume.UI
             {
                 ["Quantity"] = reRegisterInfos.Count,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             });
 
             var evt = new AirbridgeEvent("ReRegisterProduct_All");
@@ -504,7 +504,7 @@ namespace Nekoyume.UI
                     Price = new FungibleAssetValue(goldCurrency, (BigInteger)favProduct.Price, 0),
                     AgentAddress = favProduct.SellerAgentAddress,
                     AvatarAddress = favProduct.SellerAvatarAddress,
-                    Type = ProductType.FungibleAssetValue,
+                    Type = ProductType.FungibleAssetValue
                 });
 
                 var (itemName, _, _) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(favProduct.ProductId);
@@ -516,7 +516,7 @@ namespace Nekoyume.UI
             {
                 ["Quantity"] = productInfos.Count,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             });
 
             string message;
@@ -620,7 +620,7 @@ namespace Nekoyume.UI
                 List<ITradableItem> tradableItems;
                 FungibleAssetValue price;
                 int itemCount;
-                if (type == ProductType.NonFungible && count > 1)  // reference: RegisterInfo.Validate()
+                if (type == ProductType.NonFungible && count > 1) // reference: RegisterInfo.Validate()
                 {
                     var consumablesInventory =
                         States.Instance.CurrentAvatarState.inventory.Consumables.ToArray();
@@ -628,7 +628,7 @@ namespace Nekoyume.UI
                     var id = itemBase.Id;
                     // If the item is consumable, it need to sell the same item multiple times.
                     var consumablesToSell = new List<Consumable>();
-                    for (int i = 0; i < count; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         var item = consumablesInventory.FirstOrDefault(consumable =>
                             consumable.Id == id && !consumablesToSell.Contains(consumable));
@@ -661,7 +661,7 @@ namespace Nekoyume.UI
                         Price = price,
                         TradableId = tradableItem.TradableId,
                         ItemCount = itemCount,
-                        Type = type,
+                        Type = type
                     }).Cast<IRegisterInfo>().ToList();
 
                 Game.Game.instance.ActionManager
@@ -738,7 +738,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/ReRegisterProduct", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = avatarAddress.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
 
             var evt = new AirbridgeEvent("ReRegisterProduct");
@@ -791,7 +791,7 @@ namespace Nekoyume.UI
                     Price = new FungibleAssetValue(goldCurrency, (BigInteger)favProduct.Price, 0),
                     AgentAddress = favProduct.SellerAgentAddress,
                     AvatarAddress = favProduct.SellerAvatarAddress,
-                    Type = ProductType.FungibleAssetValue,
+                    Type = ProductType.FungibleAssetValue
                 };
 
                 var currency = Currency.Legacy(favProduct.Ticker, 0, null);
@@ -839,7 +839,7 @@ namespace Nekoyume.UI
 
             var currency = model.Price.Value.Currency;
             var major = (int)price;
-            var minor = (int)((Math.Truncate((price - major) * 100) / 100) * 100);
+            var minor = (int)(Math.Truncate((price - major) * 100) / 100 * 100);
 
             var fungibleAsset = new FungibleAssetValue(currency, major, minor);
             model.Price.SetValueAndForceNotify(fungibleAsset);
@@ -852,8 +852,8 @@ namespace Nekoyume.UI
 
             decimal price = 0;
             if (decimal.TryParse(model.Price.Value.GetQuantityString(),
-                    NumberStyles.AllowDecimalPoint,
-                    CultureInfo.InvariantCulture, out var result))
+                NumberStyles.AllowDecimalPoint,
+                CultureInfo.InvariantCulture, out var result))
             {
                 price = result;
             }
@@ -863,7 +863,7 @@ namespace Nekoyume.UI
 
             var currency = model.UnitPrice.Value.Currency;
             var major = (int)unitPrice;
-            var minor = (int)((Math.Truncate((unitPrice - major) * 100) / 100) * 100);
+            var minor = (int)(Math.Truncate((unitPrice - major) * 100) / 100 * 100);
 
             var fungibleAsset = new FungibleAssetValue(currency, major, minor);
             model.UnitPrice.SetValueAndForceNotify(fungibleAsset);
@@ -923,7 +923,7 @@ namespace Nekoyume.UI
                             (BigInteger)fav.Price, 0),
                         AgentAddress = fav.SellerAgentAddress,
                         AvatarAddress = fav.SellerAvatarAddress,
-                        Type = ProductType.FungibleAssetValue,
+                        Type = ProductType.FungibleAssetValue
                     }
                 };
                 Game.Game.instance.ActionManager.CancelProductRegistration(

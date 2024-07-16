@@ -68,7 +68,7 @@ namespace Nekoyume.Helper
                 runeIds.AddRange(row.RuneInfos.Select(x => x.RuneId));
             }
 
-            var ids  = runeIds.Distinct().ToList();
+            var ids = runeIds.Distinct().ToList();
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             rows = runeSheet.Values.Where(x => ids.Contains(x.Id)).ToList();
             return rows.Any();
@@ -92,14 +92,14 @@ namespace Nekoyume.Helper
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             return sheet.Values.Any(x => x.StartedBlockIndex <= currentBlockIndex &&
-                                                   currentBlockIndex <= x.EndedBlockIndex);
+                currentBlockIndex <= x.EndedBlockIndex);
         }
 
         public static bool TryGetCurrentRow(long currentBlockIndex, out WorldBossListSheet.Row row)
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             row = sheet.Values.FirstOrDefault(x => x.StartedBlockIndex <= currentBlockIndex &&
-                                             currentBlockIndex <= x.EndedBlockIndex);
+                currentBlockIndex <= x.EndedBlockIndex);
             return row != null;
         }
 
@@ -117,8 +117,8 @@ namespace Nekoyume.Helper
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             var rows = sheet.Values.Where(x => x.StartedBlockIndex > currentBlockIndex)
-                                            .OrderBy(x => x.StartedBlockIndex)
-                                            .ToList();
+                .OrderBy(x => x.StartedBlockIndex)
+                .ToList();
             row = rows.Any() ? rows.First() : null;
             return rows.Any();
         }

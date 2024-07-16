@@ -5,7 +5,7 @@ namespace Nekoyume.Game.Util
 {
     public abstract class BaseResourceAnimation : MonoBehaviour, IResourceAnimation
     {
-        [Range(0, 60)] [SerializeField] private int fps = 60;
+        [Range(0, 60)][SerializeField] private int fps = 60;
         [SerializeField] private bool loop;
         [SerializeField] private bool startAutomatically = true;
 
@@ -52,7 +52,7 @@ namespace Nekoyume.Game.Util
 
         private IEnumerator PlayAnimation()
         {
-            var wfs = 1.0f / (float) fps;
+            var wfs = 1.0f / (float)fps;
 
             var index = startIndex;
             while (true)

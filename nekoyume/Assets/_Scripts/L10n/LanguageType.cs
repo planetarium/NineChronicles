@@ -21,7 +21,7 @@ namespace Nekoyume.L10n
         ///     - Character File: Assets/Font/CharacterFiles/English-unicode-hex-range-01.txt
         ///     - Render Mode: SDFAA
         ///     - Get Kerning Pairs: true
-	///	- Size: 0.9
+        ///	- Size: 0.9
         /// </summary>
         English,
 
@@ -105,12 +105,12 @@ namespace Nekoyume.L10n
 
         Tagalog,
 
-        Vietnam,
+        Vietnam
     }
 
     public class LanguageTypeComparer : IEqualityComparer<LanguageType>
     {
-        public static readonly LanguageTypeComparer Instance = new LanguageTypeComparer();
+        public static readonly LanguageTypeComparer Instance = new();
 
         public bool Equals(LanguageType x, LanguageType y)
         {
@@ -132,7 +132,6 @@ namespace Nekoyume.L10n
          * 로 리팩토링한다면 훨씬 깔끔해 질 것 같습니다.
          * https://github.com/planetarium/nekoyume-unity/pull/2835#discussion_r493197244
          */
-
         public static LanguageType ISO639(string iso396)
         {
             iso396 = iso396.Replace("_", "-");

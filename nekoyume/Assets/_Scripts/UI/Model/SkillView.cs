@@ -14,9 +14,9 @@ namespace Nekoyume.UI.Model
     public class SkillView : IDisposable
     {
         public readonly Skill Skill;
-        public readonly ReactiveProperty<string> Name = new ReactiveProperty<string>();
-        public readonly ReactiveProperty<string> Power = new ReactiveProperty<string>();
-        public readonly ReactiveProperty<string> Chance = new ReactiveProperty<string>();
+        public readonly ReactiveProperty<string> Name = new();
+        public readonly ReactiveProperty<string> Power = new();
+        public readonly ReactiveProperty<string> Chance = new();
 
         public SkillView(Skill skill)
         {

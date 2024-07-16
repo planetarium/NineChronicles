@@ -30,6 +30,7 @@ namespace Nekoyume.Blockchain
                     exception = e;
                 }
             }
+
             NcDebug.Log($"Filter Catch Exception: {exception}");
             return null;
         }

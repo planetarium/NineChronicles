@@ -39,7 +39,9 @@ namespace Nekoyume.Game.Character
             if (Animator.Target != null)
             {
                 if (Animator.Target.name.Contains(key))
+                {
                     return;
+                }
 
                 Animator.DestroyTarget();
             }
@@ -61,6 +63,7 @@ namespace Nekoyume.Game.Character
             {
                 Animator.Idle();
             }
+
             _target = target;
         }
 
@@ -127,7 +130,7 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationCastBlow(elementalType));
 
-            var dmgMap = new[] {1374, 2748, 4122, 8244, 16488};
+            var dmgMap = new[] { 1374, 2748, 4122, 8244, 16488 };
             var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(_target.gameObject, elementalType, SkillCategory.BlowAttack, SkillTargetType.Enemies);
             effect.Play();
             for (var i = 0; i < 5; i++)
@@ -209,6 +212,7 @@ namespace Nekoyume.Game.Character
                 {
                     effect.SecondStrike();
                 }
+
                 Prologue.PopupDmg(damageMap[i], go, false, criticalMap[i], ElementalType.Fire, false);
                 _target.Animator.Hit();
                 yield return new WaitUntil(() => _target.Animator.IsIdle());
@@ -241,7 +245,7 @@ namespace Nekoyume.Game.Character
         {
             AttackEndCalled = false;
             var position = ActionCamera.instance.Cam.ScreenToWorldPoint(
-                new Vector2((float) Screen.width / 2, (float) Screen.height / 2));
+                new Vector2((float)Screen.width / 2, (float)Screen.height / 2));
             position.z = 0f;
             var effect = Game.instance.Stage.objectPool.Get<FenrirSkillVFX>(position);
             effect.Stop();
@@ -262,6 +266,7 @@ namespace Nekoyume.Game.Character
                 {
                     Time.timeScale = 0.4f;
                 }
+
                 Prologue.PopupDmg(damageMap[i], _target.gameObject, false, criticalMap[i], ElementalType.Normal, false);
                 _target.Animator.Hit();
                 if (first)

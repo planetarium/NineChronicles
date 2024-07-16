@@ -18,7 +18,6 @@ using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI.Module
 {
-
     public class SeasonPassRewardCell : MonoBehaviour
     {
         [Serializable]
@@ -26,10 +25,13 @@ namespace Nekoyume.UI.Module
         {
             [SerializeField]
             public GameObject Root;
+
             [SerializeField]
             public GameObject Light;
+
             [SerializeField]
             public BaseItemView ItemView;
+
             [SerializeField]
             public Button TooltipButton;
 
@@ -56,7 +58,7 @@ namespace Nekoyume.UI.Module
                 ItemView.SelectObject.SetActive(false);
                 ItemView.FocusObject.SetActive(false);
                 ItemView.NotificationObject.SetActive(false);
-                ItemView.GrindingCountObject.SetActive((false));
+                ItemView.GrindingCountObject.SetActive(false);
                 ItemView.LevelLimitObject.SetActive(false);
                 ItemView.RewardReceived.SetActive(false);
                 ItemView.RuneNotificationObj.SetActiveSafe(false);
@@ -66,7 +68,7 @@ namespace Nekoyume.UI.Module
 
                 disposable?.Dispose();
 
-                if(itemInfo != null)
+                if (itemInfo != null)
                 {
                     Root.SetActive(true);
                     ItemView.ItemImage.overrideSprite = SpriteHelper.GetItemIcon(itemInfo.Id);
@@ -84,7 +86,7 @@ namespace Nekoyume.UI.Module
                         NcDebug.LogError($"Can't Find Item ID {itemInfo.Id} in ItemSheet");
                     }
                 }
-                else if(currencyInfo != null)
+                else if (currencyInfo != null)
                 {
                     Root.SetActive(true);
                     itemBaseForToolTip = null;
@@ -102,12 +104,14 @@ namespace Nekoyume.UI.Module
                 disposable = ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) =>
                 {
                     if (avatarInfo == null)
+                    {
                         return;
+                    }
 
-                    int lastClaim = isNormal ? avatarInfo.LastNormalClaim : avatarInfo.LastPremiumClaim;
-                    bool isUnrReceived = level > lastClaim && level <= avatarInfo.Level;
+                    var lastClaim = isNormal ? avatarInfo.LastNormalClaim : avatarInfo.LastPremiumClaim;
+                    var isUnrReceived = level > lastClaim && level <= avatarInfo.Level;
                     Light.SetActive(isUnrReceived);
-                    if(!avatarInfo.IsPremium && !isNormal)
+                    if (!avatarInfo.IsPremium && !isNormal)
                     {
                         ItemView.LevelLimitObject.SetActive(true);
                         isNotPremium = true;
@@ -116,6 +120,7 @@ namespace Nekoyume.UI.Module
                     {
                         ItemView.LevelLimitObject.SetActive(level > avatarInfo.Level);
                     }
+
                     ItemView.RewardReceived.SetActive(level <= lastClaim);
                 });
 
@@ -129,10 +134,11 @@ namespace Nekoyume.UI.Module
                             Widget.Find<FungibleAssetTooltip>().Show(currencyInfo.Ticker, ((BigInteger)currencyInfo.Amount).ToCurrencyNotation(), null);
                             return;
                         }
+
                         AudioController.PlayClick();
 
-                        if(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium ||
-                        ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremiumPlus)
+                        if (ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium ||
+                            ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremiumPlus)
                         {
                             var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
                             tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
@@ -142,7 +148,7 @@ namespace Nekoyume.UI.Module
                         if (ItemView.LevelLimitObject.activeSelf && isNotPremium)
                         {
                             OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize("NOTIFICATION_SEASONPASS_PREMIUM_LIMIT_UNLOCK_GUIDE"),
+                                L10nManager.Localize("NOTIFICATION_SEASONPASS_PREMIUM_LIMIT_UNLOCK_GUIDE"),
                                 NotificationCell.NotificationType.Notification);
                         }
                         else
@@ -188,10 +194,7 @@ namespace Nekoyume.UI.Module
 
         public void Awake()
         {
-            ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) =>
-            {
-                RefreshWithAvatarInfo(avatarInfo);
-            });
+            ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) => { RefreshWithAvatarInfo(avatarInfo); });
 
             ReceiveBtn.onClick.AddListener(() =>
             {
@@ -202,32 +205,33 @@ namespace Nekoyume.UI.Module
                         OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
                         ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
                     },
-                    (error) =>
-                    {
-                        OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification);
-                    });
+                    (error) => { OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification); });
             });
         }
 
         private void RefreshWithAvatarInfo(SeasonPassServiceClient.UserSeasonPassSchema avatarInfo)
         {
             if (avatarInfo == null || rewardSchema == null)
+            {
                 return;
+            }
 
-            bool isUnReceived = rewardSchema.Level > avatarInfo.LastNormalClaim && rewardSchema.Level <= avatarInfo.Level;
+            var isUnReceived = rewardSchema.Level > avatarInfo.LastNormalClaim && rewardSchema.Level <= avatarInfo.Level;
             Light?.SetActive(isUnReceived);
-            bool isUnReceivedPremium = (rewardSchema.Level > avatarInfo.LastPremiumClaim && avatarInfo.IsPremium && rewardSchema.Level <= avatarInfo.Level);
+            var isUnReceivedPremium = rewardSchema.Level > avatarInfo.LastPremiumClaim && avatarInfo.IsPremium && rewardSchema.Level <= avatarInfo.Level;
             ReceiveBtn?.gameObject.SetActive(isUnReceived || isUnReceivedPremium);
 
-            if(levelLast != null)
+            if (levelLast != null)
             {
                 levelLast.SetActive(isUnReceived);
             }
-            if(levelNormal != null)
+
+            if (levelNormal != null)
             {
                 levelNormal.SetActive(rewardSchema.Level > avatarInfo.Level);
             }
-            if(levelReceived != null)
+
+            if (levelReceived != null)
             {
                 levelReceived.SetActive(rewardSchema.Level <= avatarInfo.LastNormalClaim);
             }
@@ -248,15 +252,16 @@ namespace Nekoyume.UI.Module
                 rewardSchema.Normal.Currency.Count > 0 ? rewardSchema.Normal.Currency.First() : null,
                 rewardSchema.Level, true);
 
-            int index = 0;
+            var index = 0;
 
             foreach (var item in rewardSchema.Premium.Item)
             {
-                if(index > premiums.Length)
+                if (index > premiums.Length)
                 {
                     NcDebug.LogError("[SeasonPassRewardCell] out of range premiums item");
                     continue;
                 }
+
                 premiums[index].SetData(item, null, rewardSchema.Level, false);
                 index++;
             }
@@ -268,6 +273,7 @@ namespace Nekoyume.UI.Module
                     NcDebug.LogError("[SeasonPassRewardCell] out of range premiums currency");
                     continue;
                 }
+
                 premiums[index].SetData(null, item, rewardSchema.Level, false);
                 index++;
             }

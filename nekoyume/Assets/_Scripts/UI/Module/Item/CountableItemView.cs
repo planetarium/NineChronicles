@@ -16,9 +16,9 @@ namespace Nekoyume.UI.Module
 
         protected override ImageSizeType imageSizeType => ImageSizeType.Small;
 
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForSetData = new();
 
-        #region override
+#region override
 
         public override void SetData(T model, System.Action onClick = null)
         {
@@ -37,6 +37,7 @@ namespace Nekoyume.UI.Module
             {
                 touchHandler.OnClick.Subscribe(_ => onClick?.Invoke()).AddTo(_disposablesForSetData);
             }
+
             UpdateView();
         }
 
@@ -48,7 +49,7 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        #endregion
+#endregion
 
         protected virtual void SetCount(int count)
         {

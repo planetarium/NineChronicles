@@ -82,49 +82,61 @@ namespace Nekoyume
             this ArenaSheet sheet,
             long blockIndex,
             int round,
-            int defaultValue = 0) =>
-            sheet.TryGetSeasonNumber(blockIndex, round, out var seasonNumber)
+            int defaultValue = 0)
+        {
+            return sheet.TryGetSeasonNumber(blockIndex, round, out var seasonNumber)
                 ? seasonNumber
                 : defaultValue;
+        }
 
         public static bool TryGetSeasonNumber(
             this ArenaSheet sheet,
             long blockIndex,
             int round,
-            out int seasonNumber) =>
-            sheet
+            out int seasonNumber)
+        {
+            return sheet
                 .GetRowByBlockIndex(blockIndex)
                 .TryGetSeasonNumber(round, out seasonNumber);
+        }
 
         public static int GetSeasonNumber(
             this ArenaSheet.RoundData roundData,
             ArenaSheet arenaSheet,
-            int defaultValue = 0) =>
-            arenaSheet.TryGetValue(roundData.ChampionshipId, out var row)
+            int defaultValue = 0)
+        {
+            return arenaSheet.TryGetValue(roundData.ChampionshipId, out var row)
                 ? row.GetSeasonNumber(roundData.Round)
                 : defaultValue;
+        }
 
         public static int GetSeasonNumber(
             this ArenaSheet.Row row,
             int round,
-            int defaultValue = 0) =>
-            row.TryGetSeasonNumber(round, out var seasonNumber)
+            int defaultValue = 0)
+        {
+            return row.TryGetSeasonNumber(round, out var seasonNumber)
                 ? seasonNumber
                 : defaultValue;
+        }
 
         public static bool TryGetSeasonNumber(
             this ArenaSheet.Row row,
             int round,
-            out int seasonNumber) =>
-            row.Round.TryGetSeasonNumber(round, out seasonNumber);
+            out int seasonNumber)
+        {
+            return row.Round.TryGetSeasonNumber(round, out seasonNumber);
+        }
 
         public static int GetSeasonNumber(
             this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
             int round,
-            int defaultValue = 0) =>
-            roundDataEnumerable.TryGetSeasonNumber(round, out var seasonNumber)
+            int defaultValue = 0)
+        {
+            return roundDataEnumerable.TryGetSeasonNumber(round, out var seasonNumber)
                 ? seasonNumber
                 : defaultValue;
+        }
 
         /// <summary>
         /// This is origin of TryGetSeasonNumber().
@@ -139,7 +151,7 @@ namespace Nekoyume
             out int seasonNumber)
         {
             var roundDataArray = roundDataEnumerable as ArenaSheet.RoundData[]
-                                 ?? roundDataEnumerable.ToArray();
+                ?? roundDataEnumerable.ToArray();
             var firstRound = roundDataArray.FirstOrDefault();
             if (firstRound is null)
             {
@@ -163,9 +175,16 @@ namespace Nekoyume
 
             // Add count of last season by id.
             // championship 1 includes 1 seasons.
-            if (championshipId > 1) seasonNumber += 3;
+            if (championshipId > 1)
+            {
+                seasonNumber += 3;
+            }
+
             // championship 2 or more includes 2 seasons.
-            if (championshipId > 2) seasonNumber += (championshipId - 2) * 2;
+            if (championshipId > 2)
+            {
+                seasonNumber += (championshipId - 2) * 2;
+            }
 
             foreach (var roundData in roundDataArray)
             {
@@ -201,10 +220,13 @@ namespace Nekoyume
 
         public static (long beginning, long end, long current) GetSeasonProgress(
             this ArenaSheet.RoundData roundData,
-            long blockIndex) => (
-            roundData?.StartBlockIndex ?? 0,
-            roundData?.EndBlockIndex ?? 0,
-            blockIndex);
+            long blockIndex)
+        {
+            return (
+                roundData?.StartBlockIndex ?? 0,
+                roundData?.EndBlockIndex ?? 0,
+                blockIndex);
+        }
 
         public static int GetChampionshipYear(this ArenaSheet.Row row)
         {
@@ -233,8 +255,10 @@ namespace Nekoyume
         public static bool IsChampionshipConditionComplete(
             this ArenaSheet sheet,
             int championshipId,
-            AvatarState avatarState) =>
-            sheet[championshipId].IsChampionshipConditionComplete(avatarState);
+            AvatarState avatarState)
+        {
+            return sheet[championshipId].IsChampionshipConditionComplete(avatarState);
+        }
 
         public static bool IsChampionshipConditionComplete(this ArenaSheet.Row row, AvatarState avatarState)
         {
@@ -246,20 +270,24 @@ namespace Nekoyume
         }
 
         public static List<int> GetSeasonNumbersOfChampionship(
-            this ArenaSheet.Row row) =>
-            TryGetSeasonNumbersOfChampionship(
+            this ArenaSheet.Row row)
+        {
+            return TryGetSeasonNumbersOfChampionship(
                 row.Round,
                 out var seasonNumbers)
                 ? seasonNumbers
                 : new List<int>();
+        }
 
         public static List<int> GetSeasonNumbersOfChampionship(
-            this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable) =>
-            TryGetSeasonNumbersOfChampionship(
+            this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable)
+        {
+            return TryGetSeasonNumbersOfChampionship(
                 roundDataEnumerable,
                 out var seasonNumbers)
                 ? seasonNumbers
                 : new List<int>();
+        }
 
         /// <summary>
         /// This is origin of TryGetSeasonNumbersOfChampionship().
@@ -270,7 +298,7 @@ namespace Nekoyume
         {
             seasonNumbers = new List<int>();
             var roundDataArray = roundDataEnumerable as ArenaSheet.RoundData[]
-                                 ?? roundDataEnumerable.ToArray();
+                ?? roundDataEnumerable.ToArray();
             var firstRound = roundDataArray.FirstOrDefault();
             if (firstRound is null)
             {
@@ -292,9 +320,16 @@ namespace Nekoyume
 
             // Add count of last season by id.
             // championship 1 includes 1 seasons.
-            if (championshipId > 1) seasonStartNumber += 3;
+            if (championshipId > 1)
+            {
+                seasonStartNumber += 3;
+            }
+
             // championship 2 or more includes 2 seasons.
-            if (championshipId > 2) seasonStartNumber += (championshipId - 2) * 2;
+            if (championshipId > 2)
+            {
+                seasonStartNumber += (championshipId - 2) * 2;
+            }
 
             foreach (var roundData in roundDataArray)
             {

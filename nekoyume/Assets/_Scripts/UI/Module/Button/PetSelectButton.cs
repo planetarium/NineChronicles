@@ -54,7 +54,7 @@ namespace Nekoyume.UI.Module
             levelText.text = $"Lv.{petState.Level}";
 
             var petGrade = TableSheets.Instance.PetSheet[petState.PetId].Grade;
-            for (int i = 0; i < slotImages.Count; i++)
+            for (var i = 0; i < slotImages.Count; i++)
             {
                 slotImages[i].SetActive(i == petGrade);
             }

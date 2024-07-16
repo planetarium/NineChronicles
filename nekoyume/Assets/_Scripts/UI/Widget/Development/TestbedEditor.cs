@@ -18,8 +18,10 @@ namespace Nekoyume
 
         [SerializeField]
         private InputField championshipId;
+
         [SerializeField]
         private InputField round;
+
         [SerializeField]
         private InputField accountCount;
 

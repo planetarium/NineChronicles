@@ -23,10 +23,7 @@ namespace Nekoyume.UI
 
             public void Init()
             {
-                inputField.onValueChanged.AddListener(value =>
-                {
-                    enterButton.interactable = !string.IsNullOrEmpty(value);
-                });
+                inputField.onValueChanged.AddListener(value => { enterButton.interactable = !string.IsNullOrEmpty(value); });
 
                 enterButton.onClick.AddListener(() =>
                 {
@@ -40,10 +37,7 @@ namespace Nekoyume.UI
                     inputField.text = string.Empty;
                 });
 
-                closeButton.onClick.AddListener(() =>
-                {
-                    gameObject.SetActive(false);
-                });
+                closeButton.onClick.AddListener(() => { gameObject.SetActive(false); });
             }
 
             public void Show(Action<string> onEnter)
@@ -63,10 +57,7 @@ namespace Nekoyume.UI
 
             public void Init()
             {
-                closeButton.onClick.AddListener(() =>
-                {
-                    gameObject.SetActive(false);
-                });
+                closeButton.onClick.AddListener(() => { gameObject.SetActive(false); });
             }
 
             public void Show(string message)
@@ -121,10 +112,7 @@ namespace Nekoyume.UI
                     .Share();
             });
 
-            enterReferralCodeButton.onClick.AddListener(() =>
-            {
-                enterReferralCodePopup.Show(EnterReferralCode);
-            });
+            enterReferralCodeButton.onClick.AddListener(() => { enterReferralCodePopup.Show(EnterReferralCode); });
 
             enterReferralCodePopup.Init();
             errorPopup.Init();

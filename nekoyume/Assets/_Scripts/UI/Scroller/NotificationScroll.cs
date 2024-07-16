@@ -15,22 +15,20 @@ namespace Nekoyume.UI.Scroller
     {
         public class DefaultContext : IDisposable
         {
-            #region From cell
+#region From cell
 
-            public readonly Subject<NotificationCell> OnCompleteOfAddAnimation =
-                new Subject<NotificationCell>();
+            public readonly Subject<NotificationCell> OnCompleteOfAddAnimation = new();
 
-            public readonly Subject<NotificationCell> OnCompleteOfRemoveAnimation =
-                new Subject<NotificationCell>();
+            public readonly Subject<NotificationCell> OnCompleteOfRemoveAnimation = new();
 
-            #endregion
+#endregion
 
-            #region From scroll
+#region From scroll
 
             public readonly Subject<(int index, NotificationCell.ViewModel viewModel)>
-                PlayRemoveAnimation = new Subject<(int, NotificationCell.ViewModel)>();
+                PlayRemoveAnimation = new();
 
-            #endregion
+#endregion
 
             public Func<float> CalculateScrollSize { get; set; }
 
@@ -53,21 +51,19 @@ namespace Nekoyume.UI.Scroller
 
         protected override GameObject CellPrefab => cellPrefab;
 
-        public IObservable<NotificationCell> OnCompleteOfAddAnimation =>
-            Context.OnCompleteOfAddAnimation;
+        public IObservable<NotificationCell> OnCompleteOfAddAnimation => Context.OnCompleteOfAddAnimation;
 
-        public IObservable<NotificationCell> OnCompleteOfRemoveAnimation =>
-            Context.OnCompleteOfRemoveAnimation;
+        public IObservable<NotificationCell> OnCompleteOfRemoveAnimation => Context.OnCompleteOfRemoveAnimation;
 
-        #region FancyScrollRect
+#region FancyScrollRect
 
         private float ScrollLength => 1f / Mathf.Max(cellInterval, 1e-2f) - 1f;
 
         private float MaxScrollPosition => ItemsSource.Count - ScrollLength;
 
-        #endregion
+#endregion
 
-        #region Lifecycle
+#region Lifecycle
 
         protected override void Initialize()
         {
@@ -91,9 +87,9 @@ namespace Nekoyume.UI.Scroller
             Context.Dispose();
         }
 
-        #endregion
+#endregion
 
-        #region Control
+#region Control
 
         public void UpdateData(
             IReadOnlyList<NotificationCell.ViewModel> items,
@@ -161,9 +157,9 @@ namespace Nekoyume.UI.Scroller
             return observable;
         }
 
-        #endregion
+#endregion
 
-        #region Getter
+#region Getter
 
         private bool TryGetCellIndex(NotificationCell.ViewModel itemData, out int itemIndex)
         {
@@ -183,9 +179,9 @@ namespace Nekoyume.UI.Scroller
             return false;
         }
 
-        #endregion
+#endregion
 
-        #region Override
+#region Override
 
         protected override void Refresh()
         {
@@ -201,9 +197,9 @@ namespace Nekoyume.UI.Scroller
             base.Relayout();
         }
 
-        #endregion
+#endregion
 
-        #region FancyScrollRect
+#region FancyScrollRect
 
         private void RefreshScroller()
         {
@@ -222,6 +218,6 @@ namespace Nekoyume.UI.Scroller
             scrollOffset = cellInterval;
         }
 
-        #endregion
+#endregion
     }
 }

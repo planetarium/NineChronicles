@@ -21,7 +21,7 @@ namespace Nekoyume.State
     /// </summary>
     public static class LocalLayerModifier
     {
-        #region Agent, Avatar / Currency
+#region Agent, Avatar / Currency
 
         /// <summary>
         /// Modify the agent's gold.
@@ -132,9 +132,10 @@ namespace Nekoyume.State
                 StateGetter.GetBalance(eval.OutputState, agentAddress, Currencies.Crystal);
             States.Instance.SetCrystalBalance(crystalBalance);
         }
-        #endregion
 
-        #region Avatar / AddItem
+#endregion
+
+#region Avatar / AddItem
 
         public static async void AddNonFungibleItem(Address avatarAddress, Guid itemId, bool resetState = true)
         {
@@ -196,9 +197,9 @@ namespace Nekoyume.State
             await TryResetLoadedAvatarState(avatarAddress);
         }
 
-        #endregion
+#endregion
 
-        #region Avatar / RemoveItem
+#region Avatar / RemoveItem
 
         public static void RemoveNonFungibleItem(Address avatarAddress, Guid itemId)
         {
@@ -249,9 +250,9 @@ namespace Nekoyume.State
             ReactiveAvatarState.UpdateInventory(outAvatarState.inventory);
         }
 
-        #endregion
+#endregion
 
-        #region Avatar / Mail
+#region Avatar / Mail
 
         /// <summary>
         /// Turns into a state where you can receive specific mail.
@@ -372,9 +373,9 @@ namespace Nekoyume.State
             LocalLayer.Instance.Remove(avatarAddress, modifier);
         }
 
-        #endregion
+#endregion
 
-        #region Avatar / Quest
+#region Avatar / Quest
 
         /// <summary>
         /// Changes to a state where you can receive quests.
@@ -428,9 +429,9 @@ namespace Nekoyume.State
             await TryResetLoadedAvatarState(avatarAddress);
         }
 
-        #endregion
+#endregion
 
-        #region Avatar
+#region Avatar
 
         public static void SetItemEquip(
             Address avatarAddress,
@@ -447,11 +448,11 @@ namespace Nekoyume.State
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
-                    avatarAddress,
-                    out var outAvatarState,
-                    out _,
-                    out var isCurrentAvatarState)
-               )
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
             {
                 return;
             }
@@ -515,7 +516,7 @@ namespace Nekoyume.State
             LocalLayer.Instance.Add(avatarAddress, modifier);
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Returns the same object as `avatarAddress` and its key among the avatar states included in `States.AvatarStates`.

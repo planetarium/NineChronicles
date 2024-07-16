@@ -26,7 +26,7 @@ namespace Nekoyume.ApiClient
                 NcDebug.Log($"[{nameof(MarketServiceClient)}] initialized with empty host url because of no MarketServiceHost");
                 return;
             }
-            
+
             _url = url;
             _client = new HttpClient();
             _client.Timeout = TimeSpan.FromSeconds(30);

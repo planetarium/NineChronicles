@@ -22,6 +22,7 @@ namespace Nekoyume
     using Lib9c;
     using Libplanet.Types.Assets;
     using UniRx;
+
     public class BaseItemView : MonoBehaviour
     {
         [SerializeField]
@@ -147,7 +148,9 @@ namespace Nekoyume
         public GameObject EquippedObject => equippedObject;
         public GameObject MinusObject => minusObject;
         public GameObject FocusObject => focusObject;
+
         public GameObject ExpiredObject => expiredObject;
+
         // TODO: 소유하지 않은 장비가 Tradable = true로 설정되어 있음. 네이밍이 꼬인것으로 추정되며 아이템 상태 개선이 필요해보임
         public GameObject TradableObject => tradableObject;
         public GameObject DimObject => dimObject;
@@ -167,7 +170,7 @@ namespace Nekoyume
         public GameObject SelectCollectionObject => selectCollectionObject;
         public GameObject SelectArrowObject => selectArrowObject;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public static Sprite GetItemIcon(ItemBase itemBase)
         {
@@ -210,7 +213,7 @@ namespace Nekoyume
             SelectObject.SetActive(false);
             FocusObject.SetActive(false);
             NotificationObject.SetActive(false);
-            GrindingCountObject.SetActive((false));
+            GrindingCountObject.SetActive(false);
             LevelLimitObject.SetActive(false);
             RewardReceived.SetActive(false);
             LevelLimitObject.SetActive(false);
@@ -240,15 +243,12 @@ namespace Nekoyume
         public bool ItemViewSetCurrencyData(int favId, decimal amount)
         {
             _disposables.DisposeAllAndClear();
-            RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             runeSheet.TryGetValue(favId, out var runeRow);
             if (runeRow != null)
             {
                 ItemViewSetCurrencyData(runeRow.Ticker, amount);
-                touchHandler.OnClick.Subscribe(_ =>
-                {
-                    Widget.Find<FungibleAssetTooltip>().Show(runeRow.Ticker, ((BigInteger)amount).ToCurrencyNotation(), null);
-                }).AddTo(_disposables);
+                touchHandler.OnClick.Subscribe(_ => { Widget.Find<FungibleAssetTooltip>().Show(runeRow.Ticker, ((BigInteger)amount).ToCurrencyNotation(), null); }).AddTo(_disposables);
                 return true;
             }
 
@@ -265,6 +265,7 @@ namespace Nekoyume
                     ItemViewSetCurrencyData("HOURGLASS", amount);
                     return true;
             }
+
             NcDebug.LogError($"[ItemViewSetCurrencyData] Can't Find Fav ID {favId} in RuneSheet");
             gameObject.SetActive(false);
             return false;
@@ -278,6 +279,7 @@ namespace Nekoyume
                 NcDebug.LogWarning($"Can't Find Item ID {id} in ItemSheet");
                 return;
             }
+
             ItemBase itemBase = null;
             if (itemRow is MaterialItemSheet.Row materialRow)
             {
@@ -293,6 +295,7 @@ namespace Nekoyume
                     }
                 }
             }
+
             if (itemBase != null)
             {
                 touchHandler.OnClick.Subscribe(_ =>

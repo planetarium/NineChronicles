@@ -11,6 +11,7 @@ namespace Nekoyume
     {
         [SerializeField]
         private Transform bossImageRoot;
+
         [SerializeField]
         private BaseItemView baseItemView;
 
@@ -25,12 +26,14 @@ namespace Nekoyume
                 gameObject.SetActive(false);
                 return;
             }
+
             if (_bossId != bossData.BossId)
             {
                 if (_bossImage != null)
                 {
                     DestroyImmediate(_bossImage);
                 }
+
                 _bossId = bossData.BossId;
                 _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageRoot);
                 _bossImage.transform.localPosition = Vector3.zero;

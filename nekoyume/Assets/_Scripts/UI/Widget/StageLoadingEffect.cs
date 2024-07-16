@@ -171,7 +171,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            var dialog = Widget.Find<DialogPopup>();
+            var dialog = Find<DialogPopup>();
             foreach (var stageDialog in stageDialogs)
             {
                 dialog.Show(stageDialog.DialogId);
@@ -218,7 +218,11 @@ namespace Nekoyume.UI
                 }
 
                 closeEnd = images.All(i => i.gameObject.activeSelf == false) && dialogEnd;
-                if (closeEnd) break;
+                if (closeEnd)
+                {
+                    break;
+                }
+
                 yield return null;
             }
 
@@ -238,10 +242,7 @@ namespace Nekoyume.UI
                 skippableVideoPlayer.Play();
                 skippableVideoPlayer.Pause();
                 loadingAlphaTweener.ResetToEndingValue();
-                loadingDimTweener.PlayReverse().OnComplete(() =>
-                {
-                    skippableVideoPlayer.Play();
-                });
+                loadingDimTweener.PlayReverse().OnComplete(() => { skippableVideoPlayer.Play(); });
             });
 
             yield return new WaitUntil(() => skippableVideoPlayer.isPlaying);

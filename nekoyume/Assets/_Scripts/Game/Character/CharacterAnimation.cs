@@ -32,14 +32,14 @@ namespace Nekoyume.Game.Character
             TurnOver_02
         }
 
-        public static readonly List<Type> List = new List<Type>();
+        public static readonly List<Type> List = new();
 
         static CharacterAnimation()
         {
             var values = Enum.GetValues(typeof(Type));
             foreach (var value in values)
             {
-                List.Add((Type) value);
+                List.Add((Type)value);
             }
         }
     }

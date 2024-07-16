@@ -18,17 +18,19 @@ namespace Nekoyume.UI
 
         public string SearchText;
 
-        public bool IsNeedFilter => Grade != ItemFilterPopupBase.Grade.All ||
-                                      Elemental != ItemFilterPopupBase.Elemental.All ||
-                                      ItemType != ItemFilterPopupBase.ItemType.All ||
-                                      UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All ||
-                                      OptionCount != ItemFilterPopupBase.OptionCount.All ||
-                                      WithSkill != ItemFilterPopupBase.WithSkill.All;
+        public bool IsNeedFilter =>
+            Grade != ItemFilterPopupBase.Grade.All ||
+            Elemental != ItemFilterPopupBase.Elemental.All ||
+            ItemType != ItemFilterPopupBase.ItemType.All ||
+            UpgradeLevel != ItemFilterPopupBase.UpgradeLevel.All ||
+            OptionCount != ItemFilterPopupBase.OptionCount.All ||
+            WithSkill != ItemFilterPopupBase.WithSkill.All;
     }
 
     public abstract class ItemFilterPopupBase : PopupWidget
     {
-        #region Internal Type
+#region Internal Type
+
         /// <summary>
         /// 아무것도 선택하지 않은 상태가 필터링을 하지 않아 전체 아이템을 보여주는 것으로 간주한다.
         /// </summary>
@@ -41,7 +43,7 @@ namespace Nekoyume.UI
             Epic = 1 << 2,
             Unique = 1 << 3,
             Legendary = 1 << 4,
-            Divinity = 1 << 5,
+            Divinity = 1 << 5
         }
 
         [Flags]
@@ -52,7 +54,7 @@ namespace Nekoyume.UI
             Fire = 1 << 1,
             Water = 1 << 2,
             Land = 1 << 3,
-            Wind = 1 << 4,
+            Wind = 1 << 4
         }
 
         [Flags]
@@ -65,7 +67,7 @@ namespace Nekoyume.UI
             Necklace = 1 << 3,
             Ring = 1 << 4,
             Aura = 1 << 5,
-            Grimoire = 1 << 6,
+            Grimoire = 1 << 6
         }
 
         [Flags]
@@ -78,7 +80,7 @@ namespace Nekoyume.UI
             Level3 = 1 << 3,
             Level4 = 1 << 4,
             Level5 = 1 << 5,
-            Level6More = 1 << 6,
+            Level6More = 1 << 6
         }
 
         [Flags]
@@ -87,7 +89,7 @@ namespace Nekoyume.UI
             All = 0,
             One = 1 << 0,
             Two = 1 << 1,
-            Three = 1 << 2,
+            Three = 1 << 2
         }
 
         [Flags]
@@ -95,7 +97,7 @@ namespace Nekoyume.UI
         {
             All = 0,
             None = 1 << 0,
-            With = 1 << 1,
+            With = 1 << 1
         }
 
         [Serializable]
@@ -110,13 +112,17 @@ namespace Nekoyume.UI
             public void ResetToAll()
             {
                 if (toggle.isOn != IsAll)
+                {
                     toggle.isOn = IsAll;
+                }
             }
 
             public void OffAllToggle()
             {
                 if (IsAll && toggle.isOn)
+                {
                     toggle.isOn = false;
+                }
             }
         }
 
@@ -174,7 +180,7 @@ namespace Nekoyume.UI
             public override string GetOptionName => withSkill.ToString();
         }
 
-        #endregion Internal Type
+#endregion Internal Type
 
         [SerializeField]
         private List<GradeToggle> gradeToggles;
@@ -205,7 +211,8 @@ namespace Nekoyume.UI
 
         private ItemFilterOptions _itemFilterOptions;
 
-        #region Popup
+#region Popup
+
         protected override void Awake()
         {
             base.Awake();
@@ -215,7 +222,9 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 if (_searchInputField.isFocused)
+                {
                     return;
+                }
 
                 Close(true);
             };
@@ -223,7 +232,8 @@ namespace Nekoyume.UI
             _deselectAllButton.onClick.AddListener(DeselectAll);
             _okButton.onClick.AddListener(OnClickOkButton);
         }
-        #endregion Popup
+
+#endregion Popup
 
         private void InitializeToggleGroup()
         {
@@ -242,15 +252,22 @@ namespace Nekoyume.UI
                 item.toggle.name = item.GetOptionName;
                 var textComponent = item.toggle.GetComponentInChildren<Text>();
                 if (textComponent != null)
+                {
                     textComponent.text = item.GetOptionName;
+                }
 
                 if (item.IsAll)
                 {
                     item.toggle.onValueChanged.AddListener(isOn =>
                     {
-                        if (isOn) ResetToAll(toggles);
-                        else if (IsOffAllToggle(toggles))
+                        if (isOn)
+                        {
                             ResetToAll(toggles);
+                        }
+                        else if (IsOffAllToggle(toggles))
+                        {
+                            ResetToAll(toggles);
+                        }
                     });
                 }
                 else
@@ -258,9 +275,13 @@ namespace Nekoyume.UI
                     item.toggle.onValueChanged.AddListener(isOn =>
                     {
                         if (isOn)
+                        {
                             OffAllToggle(toggles);
+                        }
                         else if (IsOffAllToggle(toggles))
+                        {
                             ResetToAll(toggles);
+                        }
                     });
                 }
             }
@@ -273,7 +294,9 @@ namespace Nekoyume.UI
             foreach (var item in toggles)
             {
                 if (item.toggle.isOn)
+                {
                     return false;
+                }
             }
 
             return true;
@@ -282,13 +305,17 @@ namespace Nekoyume.UI
         private void OffAllToggle<T>(List<T> toggles) where T : ItemToggleType
         {
             foreach (var item in toggles)
+            {
                 item.OffAllToggle();
+            }
         }
 
         private void ResetToAll<T>(List<T> toggles) where T : ItemToggleType
         {
             foreach (var item in toggles)
+            {
                 item.ResetToAll();
+            }
         }
 
         private void DeselectAll()
@@ -346,22 +373,34 @@ namespace Nekoyume.UI
             var itemFilterOptionType = new ItemFilterOptions();
 
             foreach (var gradeToggle in gradeToggles)
+            {
                 itemFilterOptionType.Grade |= gradeToggle.toggle.isOn ? gradeToggle.grade : Grade.All;
+            }
 
             foreach (var elementalToggle in elementalToggles)
+            {
                 itemFilterOptionType.Elemental |= elementalToggle.toggle.isOn ? elementalToggle.elemental : Elemental.All;
+            }
 
             foreach (var itemTypeToggle in itemTypeToggles)
+            {
                 itemFilterOptionType.ItemType |= itemTypeToggle.toggle.isOn ? itemTypeToggle.itemType : ItemType.All;
+            }
 
             foreach (var upgradeLevelToggle in upgradeLevelToggles)
+            {
                 itemFilterOptionType.UpgradeLevel |= upgradeLevelToggle.toggle.isOn ? upgradeLevelToggle.upgradeLevel : UpgradeLevel.All;
+            }
 
             foreach (var optionCountToggle in optionCountToggles)
+            {
                 itemFilterOptionType.OptionCount |= optionCountToggle.toggle.isOn ? optionCountToggle.optionCount : OptionCount.All;
+            }
 
             foreach (var withSkillToggle in withSkillToggles)
+            {
                 itemFilterOptionType.WithSkill |= withSkillToggle.toggle.isOn ? withSkillToggle.withSkill : WithSkill.All;
+            }
 
             itemFilterOptionType.SearchText = _searchInputField.text;
 
@@ -382,40 +421,76 @@ namespace Nekoyume.UI
         private void SetTogglesFromFilterOption()
         {
             if (_itemFilterOptions.Grade != Grade.All)
+            {
                 foreach (var gradeToggle in gradeToggles)
+                {
                     gradeToggle.toggle.isOn = _itemFilterOptions.Grade.HasFlag(gradeToggle.grade);
+                }
+            }
             else
+            {
                 ResetToAll(gradeToggles);
+            }
 
             if (_itemFilterOptions.Elemental != Elemental.All)
+            {
                 foreach (var elementalToggle in elementalToggles)
+                {
                     elementalToggle.toggle.isOn = _itemFilterOptions.Elemental.HasFlag(elementalToggle.elemental);
+                }
+            }
             else
+            {
                 ResetToAll(elementalToggles);
+            }
 
             if (_itemFilterOptions.ItemType != ItemType.All)
+            {
                 foreach (var itemTypeToggle in itemTypeToggles)
+                {
                     itemTypeToggle.toggle.isOn = _itemFilterOptions.ItemType.HasFlag(itemTypeToggle.itemType);
+                }
+            }
             else
+            {
                 ResetToAll(itemTypeToggles);
+            }
 
             if (_itemFilterOptions.UpgradeLevel != UpgradeLevel.All)
+            {
                 foreach (var upgradeLevelToggle in upgradeLevelToggles)
+                {
                     upgradeLevelToggle.toggle.isOn = _itemFilterOptions.UpgradeLevel.HasFlag(upgradeLevelToggle.upgradeLevel);
+                }
+            }
             else
+            {
                 ResetToAll(upgradeLevelToggles);
+            }
 
             if (_itemFilterOptions.OptionCount != OptionCount.All)
+            {
                 foreach (var optionCountToggle in optionCountToggles)
+                {
                     optionCountToggle.toggle.isOn = _itemFilterOptions.OptionCount.HasFlag(optionCountToggle.optionCount);
+                }
+            }
             else
+            {
                 ResetToAll(optionCountToggles);
+            }
 
             if (_itemFilterOptions.WithSkill != WithSkill.All)
+            {
                 foreach (var withSkillToggle in withSkillToggles)
+                {
                     withSkillToggle.toggle.isOn = _itemFilterOptions.WithSkill.HasFlag(withSkillToggle.withSkill);
+                }
+            }
             else
+            {
                 ResetToAll(withSkillToggles);
+            }
         }
 
         private void SetInputFiledFromFilterOption()

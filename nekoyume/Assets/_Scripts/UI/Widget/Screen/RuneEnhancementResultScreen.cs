@@ -137,9 +137,7 @@ namespace Nekoyume.UI
             speechBubble.beforeText.gameObject.SetActive(!isCombine);
             speechBubble.beforeText.text = $"+{runeItem.Level}";
             speechBubble.afterText.text = $"+{resultLevel}";
-            speechBubble.dialogText.text = isCombine ?
-                L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE") :
-                L10nManager.Localize("UI_RUNE_UPGRADE_COMPLETE");
+            speechBubble.dialogText.text = isCombine ? L10nManager.Localize("UI_RUNE_COMBINE_COMPLETE") : L10nManager.Localize("UI_RUNE_UPGRADE_COMPLETE");
             speechBubble.container.SetActive(true);
 
             animator.Play(HashToSuccess);

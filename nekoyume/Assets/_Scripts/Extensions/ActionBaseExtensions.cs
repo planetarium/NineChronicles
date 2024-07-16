@@ -23,9 +23,9 @@ namespace Nekoyume
 #if !DEBUG_USE
             return;
 #endif
-            
+
             var sb = new System.Text.StringBuilder();
-            
+
             switch (e)
             {
                 case Dead dead:
@@ -57,13 +57,14 @@ namespace Nekoyume
                             {
                                 continue;
                             }
-                            
+
                             sb.AppendLine($"- has buff: {buffInfo.Buff.BuffInfo.Id}");
                             sb.AppendLine($"  - GroupId: {buffInfo.Buff.BuffInfo.GroupId}");
                             sb.AppendLine($"  - Chance: {buffInfo.Buff.BuffInfo.Chance}");
                             sb.AppendLine($"  - Duration: {buffInfo.Buff.BuffInfo.Duration}");
                         }
                     }
+
                     break;
                 case AreaAttack areaAttack:
                     sb.AppendLine($"OnAreaAttack: {areaAttack.Character.Id}");
@@ -75,6 +76,7 @@ namespace Nekoyume
                         sb.AppendLine($"  - skillCategory: {skill.SkillCategory}");
                         sb.AppendLine($"  - id: {skill.Target?.Id}");
                     }
+
                     break;
                 case DoubleAttack doubleAttack:
                     sb.AppendLine($"OnDoubleAttack: {doubleAttack.Character.Id}");
@@ -86,6 +88,7 @@ namespace Nekoyume
                         sb.AppendLine($"  - skillCategory: {skill.SkillCategory}");
                         sb.AppendLine($"  - id: {skill.Target?.Id}");
                     }
+
                     break;
                 case DoubleAttackWithCombo doubleAttackWithCombo:
                     sb.AppendLine($"OnDoubleAttackWithCombo: {doubleAttackWithCombo.Character.Id}");
@@ -97,6 +100,7 @@ namespace Nekoyume
                         sb.AppendLine($"  - skillCategory: {skill.SkillCategory}");
                         sb.AppendLine($"  - id: {skill.Target?.Id}");
                     }
+
                     break;
                 case HealSkill healSkill:
                     sb.AppendLine($"OnHealSkill: {healSkill.Character.Id}");
@@ -113,6 +117,7 @@ namespace Nekoyume
                         sb.AppendLine($"  - skillCategory: {skill.SkillCategory}");
                         sb.AppendLine($"  - id: {skill.Target?.Id}");
                     }
+
                     break;
                 case RemoveBuffs removeBuffs:
                     sb.AppendLine($"OnRemoveBuffs: {removeBuffs.Character.Id}");
@@ -129,10 +134,12 @@ namespace Nekoyume
                             {
                                 continue;
                             }
+
                             if (kvp.Value is not StatBuff frostBite)
                             {
                                 continue;
                             }
+
                             sb.AppendLine($"- has Frostbite: {frostBite}");
                             sb.AppendLine($"  - Id: {frostBite.RowData.Id}");
                             sb.AppendLine($"  - Stack: {frostBite.Stack}");
@@ -141,6 +148,7 @@ namespace Nekoyume
                             sb.AppendLine($"  - Duration: {frostBite.BuffInfo.Duration}");
                         }
                     }
+
                     break;
                 case TickDamage tickDamage:
                     sb.AppendLine($"OnTickDamage: {tickDamage.Character.Id}");
@@ -152,7 +160,7 @@ namespace Nekoyume
                     sb.AppendLine($"- Id: {waveTurnEnd.Character.RowData.Id}");
                     break;
             }
-            
+
             NcDebug.Log(sb.ToString(), "EventLog");
         }
     }

@@ -53,7 +53,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button button;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
         private long _currentActionPoint;
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Module
 
         public bool NowCharging => loading.activeSelf;
 
-        #region Mono
+#region Mono
 
         private void Awake()
         {
@@ -148,7 +148,7 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
-        #endregion
+#endregion
 
         private void SetActionPoint(long actionPoint, bool useAnimation)
         {
@@ -192,7 +192,7 @@ namespace Nekoyume.UI.Module
             dailyBonus.sliderAnimator.SetValue(value, useAnimation);
             var timeSpanString =
                 remainBlock > 0 ? $"({remainBlock.BlockRangeToTimeSpanString()})" : string.Empty;
-            dailyBonus.blockText.text =  $"{remainBlock:#,0}{timeSpanString}";
+            dailyBonus.blockText.text = $"{remainBlock:#,0}{timeSpanString}";
         }
 
         private void OnSliderChange()
@@ -240,7 +240,7 @@ namespace Nekoyume.UI.Module
                     x.item.ItemSubType == ItemSubType.ApStone &&
                     !x.Locked &&
                     !(x.item is ITradableItem tradableItem &&
-                      tradableItem.RequiredBlockIndex > blockIndex))
+                        tradableItem.RequiredBlockIndex > blockIndex))
                 .Sum(item => item.count);
 
             var itemCountText = $"{sliderAnimator.Value}/{sliderAnimator.MaxValue}";
@@ -278,6 +278,7 @@ namespace Nekoyume.UI.Module
             {
                 GameConfigStateSubject.ActionPointState.Remove(address);
             }
+
             GameConfigStateSubject.ActionPointState.Add(address, true);
 
             animator.SetTrigger(GetReward);

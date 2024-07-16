@@ -29,7 +29,6 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private void UpdateBattleRewards(int bossId)
         {
-
             if (!WorldBossFrontHelper.TryGetBattleRewards(bossId, out var battleRewards))
             {
                 return;

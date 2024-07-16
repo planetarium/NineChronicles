@@ -19,11 +19,12 @@ namespace Nekoyume.UI
         {
             get
             {
-                string seasonId = string.Empty;
+                var seasonId = string.Empty;
                 if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
                 {
                     seasonId = ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData.Id.ToString();
                 }
+
                 return $"{LastReadingDayKey}{seasonId}";
             }
         }
@@ -31,17 +32,11 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            
+
             PlayerPrefs.SetString(LastReadingDayBySeasonId, DateTime.Today.ToString(DateTimeFormat));
         }
 
-        public bool HasUnread
-        {
-            get
-            {
-                return !PlayerPrefs.HasKey(LastReadingDayBySeasonId);
-            }
-        }
+        public bool HasUnread => !PlayerPrefs.HasKey(LastReadingDayBySeasonId);
 
         public void OnSeasonPassBtnClick()
         {
@@ -49,11 +44,13 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
             if (ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Value == null)
             {
                 OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
                 return;
             }
+
             base.Close();
             Find<SeasonPass>().Show();
         }

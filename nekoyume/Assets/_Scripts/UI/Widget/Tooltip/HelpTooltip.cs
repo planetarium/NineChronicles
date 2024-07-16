@@ -26,7 +26,7 @@ namespace Nekoyume.UI
     {
         public override WidgetType WidgetType => WidgetType.Tooltip;
 
-        #region Models
+#region Models
 
         [Serializable]
         public class JsonModel
@@ -48,6 +48,7 @@ namespace Nekoyume.UI
             public string titleL10nKey;
             public PageImageModel[] images;
             public PageTextModel[] texts;
+
             [NonSerialized]
             public List<PageElement> elements;
         }
@@ -75,24 +76,26 @@ namespace Nekoyume.UI
         public class PageTextModel : PageElement
         {
             public string textL10nKey;
+
             public int fontSize;
+
             // Default value : TopLeft
             public string alignment;
         }
 
-        #endregion
+#endregion
 
         private const string JsonDataPath = "HelpPopupData/HelpPopupData";
 
         private static HelpTooltip _instanceCache;
         private static List<ViewModel> _sharedViewModelsCache;
 
-        private static HelpTooltip Instance => _instanceCache
-            ? _instanceCache
-            : _instanceCache = Find<HelpTooltip>();
+        private static HelpTooltip Instance =>
+            _instanceCache
+                ? _instanceCache
+                : _instanceCache = Find<HelpTooltip>();
 
-        private static List<ViewModel> SharedViewModels =>
-            _sharedViewModelsCache ?? (_sharedViewModelsCache = GetViewModels());
+        private static List<ViewModel> SharedViewModels => _sharedViewModelsCache ?? (_sharedViewModelsCache = GetViewModels());
 
         [SerializeField]
         private Button backgroundImageButton = null;
@@ -128,11 +131,11 @@ namespace Nekoyume.UI
         private int _pageIndex = -1;
         private int _pageElementIndex = -1;
         private float _timeSinceStartElement;
-        private List<(Image, float)> _images = new List<(Image, float)>();
-        private List<(Image, float)> _spinningImages = new List<(Image, float)>();
-        private List<(TextMeshProUGUI, float)> _texts = new List<(TextMeshProUGUI, float)>();
+        private List<(Image, float)> _images = new();
+        private List<(Image, float)> _spinningImages = new();
+        private List<(TextMeshProUGUI, float)> _texts = new();
 
-        #region Control
+#region Control
 
         public static void HelpMe(int id, bool showOnceForEachAgentAddress = default)
         {
@@ -153,9 +156,10 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
             var props = new Dictionary<string, Value>()
             {
-                ["HelpPopupId"] = id,
+                ["HelpPopupId"] = id
             };
 
             Analyzer.Instance.Track("Unity/Click HelpPopup", props);
@@ -181,7 +185,7 @@ namespace Nekoyume.UI
 #pragma warning restore 618
         }
 
-        #endregion
+#endregion
 
         private static List<ViewModel> GetViewModels()
         {
@@ -203,9 +207,11 @@ namespace Nekoyume.UI
                         {
                             page.elements.Add(text);
                         }
+
                         page.elements.Sort((a, b) => b.anchoredPosition.y.CompareTo(a.anchoredPosition.y));
                     }
                 }
+
                 return jsonModel.viewModels.ToList();
             }
 
@@ -329,7 +335,7 @@ namespace Nekoyume.UI
             {
                 var (_, timeToReturn) = tuple;
                 return timeToReturn < 0f ||
-                       timeToReturn > Time.timeSinceLevelLoad;
+                    timeToReturn > Time.timeSinceLevelLoad;
             }).ToList();
 
             foreach (var (image, _) in _spinningImages)
@@ -338,9 +344,9 @@ namespace Nekoyume.UI
             }
         }
 
-        #region Widget
+#region Widget
 
-        #pragma warning disable 0809
+#pragma warning disable 0809
         [Obsolete("이 메서드 대신 HelpPopup.HelpMe(int id)를 사용합니다.")]
         public override void Show(bool ignoreShowAnimation = false)
         {
@@ -366,11 +372,11 @@ namespace Nekoyume.UI
                 showingTweener.PlayReverse().OnComplete(() => base.Close());
             }
         }
-        #pragma warning restore 0809
+#pragma warning restore 0809
 
-        #endregion
+#endregion
 
-        #region Try set or add
+#region Try set or add
 
         private bool TrySetId(int id)
         {
@@ -449,8 +455,7 @@ namespace Nekoyume.UI
                     ShowImage(imageModel, pageElementIndex);
                     break;
                 case PageTextModel textModel:
-                    var nextElement = (pageModel.elements.Count > pageElementIndex + 1) ?
-                        pageModel.elements[pageElementIndex + 1] : null;
+                    var nextElement = pageModel.elements.Count > pageElementIndex + 1 ? pageModel.elements[pageElementIndex + 1] : null;
                     var nextElementPosY =
                         nextElement is null ? -textArea.rect.height : nextElement.anchoredPosition.y;
                     ShowText(textModel, pageElementIndex, nextElementPosY);
@@ -504,7 +509,7 @@ namespace Nekoyume.UI
             textRectTransform.anchoredPosition = textModel.anchoredPosition;
             textRectTransform.sizeDelta =
                 new Vector2(textRectTransform.sizeDelta.x,
-                Mathf.Abs(nextElementPosY - textRectTransform.anchoredPosition.y));
+                    Mathf.Abs(nextElementPosY - textRectTransform.anchoredPosition.y));
             var localizedString = L10nManager.Localize(textModel.textL10nKey);
             text.text = Regex.Unescape(localizedString);
             text.fontSizeMax = textModel.fontSize;
@@ -525,7 +530,7 @@ namespace Nekoyume.UI
                     : Time.timeSinceLevelLoad + textModel.duration));
         }
 
-        #endregion
+#endregion
 
         private void ReturnToPoolAll()
         {

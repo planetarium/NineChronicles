@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
             Quit,
             PortalReward,
             Notice,
-            InviteFriend,
+            InviteFriend
         }
 
         public enum AssetVisibleState
@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Module
             Mileage,
             SummonAdvanced,
             SummonNormal,
-            AdventureBoss,
+            AdventureBoss
         }
 
         [Serializable]
@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
-        private List<ToggleInfo> toggles = new List<ToggleInfo>();
+        private List<ToggleInfo> toggles = new();
 
         [SerializeField]
         private Gold ncg;
@@ -122,13 +122,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private CostIconDataScriptableObject costIconData;
 
-        private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesAtOnEnable = new();
 
-        private readonly Dictionary<ToggleType, Widget> _toggleWidgets =
-            new Dictionary<ToggleType, Widget>();
+        private readonly Dictionary<ToggleType, Widget> _toggleWidgets = new();
 
         private readonly Dictionary<ToggleType, ReactiveProperty<bool>> _toggleNotifications =
-            new Dictionary<ToggleType, ReactiveProperty<bool>>()
+            new()
             {
                 { ToggleType.Quest, new ReactiveProperty<bool>(false) },
                 { ToggleType.AvatarInfo, new ReactiveProperty<bool>(false) },
@@ -137,11 +136,11 @@ namespace Nekoyume.UI.Module
                 { ToggleType.Rank, new ReactiveProperty<bool>(false) },
                 { ToggleType.PortalReward, new ReactiveProperty<bool>(false) },
                 { ToggleType.Notice, new ReactiveProperty<bool>(false) },
-                { ToggleType.InviteFriend, new ReactiveProperty<bool>(false) },
+                { ToggleType.InviteFriend, new ReactiveProperty<bool>(false) }
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
-            new Dictionary<ToggleType, int>()
+            new()
             {
                 { ToggleType.Quest, 1 },
                 { ToggleType.AvatarInfo, 1 },
@@ -150,7 +149,7 @@ namespace Nekoyume.UI.Module
                 { ToggleType.Rank, 1 },
                 { ToggleType.Chat, 1 },
                 { ToggleType.Settings, 1 },
-                { ToggleType.Quit, 1 },
+                { ToggleType.Quit, 1 }
             };
 
         private long _blockIndex;
@@ -370,7 +369,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    Animator.Play("HamburgerMenu@Close",-1,1);
+                    Animator.Play("HamburgerMenu@Close", -1, 1);
                     CloseWidget = null;
                     Observable.NextFrame().Subscribe(_ =>
                     {
@@ -393,8 +392,8 @@ namespace Nekoyume.UI.Module
 
                     var requiredStage = _toggleUnlockStages[toggleInfo.Type];
                     var isLock = requiredStage != 0 &&
-                                 !States.Instance.CurrentAvatarState.worldInformation
-                                     .IsStageCleared(requiredStage);
+                        !States.Instance.CurrentAvatarState.worldInformation
+                            .IsStageCleared(requiredStage);
                     toggleInfo.Lock.SetActive(isLock);
                     toggleInfo.LockText.text = L10nManager.Localize("UI_STAGE") + requiredStage;
                 }
@@ -496,34 +495,34 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AssetVisibleState.Main:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isActionPointActive: true);
+                    SetActiveAssets(true, true, true);
                     break;
                 case AssetVisibleState.Combination:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isHourglassActive: true);
+                    SetActiveAssets(true, true, isHourglassActive: true);
                     break;
                 case AssetVisibleState.Shop:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, enabledMaterials: new[] { CostType.GoldDust });
+                    SetActiveAssets(true, true, enabledMaterials: new[] { CostType.GoldDust });
                     break;
                 case AssetVisibleState.Battle:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isActionPointActive: true);
+                    SetActiveAssets(true, true, true);
                     break;
                 case AssetVisibleState.Arena:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isArenaTicketsActive: true);
+                    SetActiveAssets(true, true, isArenaTicketsActive: true);
                     break;
                 case AssetVisibleState.EventDungeon:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isEventDungeonTicketsActive: true);
+                    SetActiveAssets(true, true, isEventDungeonTicketsActive: true);
                     break;
                 case AssetVisibleState.WorldBoss:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isEventWorldBossTicketsActive: true);
+                    SetActiveAssets(true, true, isEventWorldBossTicketsActive: true);
                     break;
                 case AssetVisibleState.CurrencyOnly:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true);
+                    SetActiveAssets(true, true);
                     break;
                 case AssetVisibleState.RuneStone:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isRuneStoneActive: true);
+                    SetActiveAssets(true, true, isRuneStoneActive: true);
                     break;
                 case AssetVisibleState.Mileage:
-                    SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
+                    SetActiveAssets(true, true, isMileageActive: true);
                     break;
                 case AssetVisibleState.SummonAdvanced:
                     SetActiveAssets(enabledMaterials: new[] { CostType.EmeraldDust, CostType.RubyDust, CostType.GoldDust });
@@ -532,7 +531,7 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(enabledMaterials: new[] { CostType.SilverDust });
                     break;
                 case AssetVisibleState.AdventureBoss:
-                    SetActiveAssets(isNcgActive: true, enabledMaterials: new[] { CostType.GoldDust }, isApPotionActive: true);
+                    SetActiveAssets(true, enabledMaterials: new[] { CostType.GoldDust }, isApPotionActive: true);
                     break;
             }
         }
@@ -677,6 +676,7 @@ namespace Nekoyume.UI.Module
             {
                 cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             }
+
             var row = Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.Hourglass);
             var isEnough =
@@ -697,7 +697,7 @@ namespace Nekoyume.UI.Module
         public void UpdatePortalReward(bool hasNotification)
         {
             _toggleNotifications[ToggleType.PortalReward].Value = hasNotification;
-            PlayerPrefs.SetInt(PortalRewardNotificationKey, hasNotification ? 1:0);
+            PlayerPrefs.SetInt(PortalRewardNotificationKey, hasNotification ? 1 : 0);
         }
 
         public void SetActiveAvatarInfo(bool value)
@@ -735,7 +735,7 @@ namespace Nekoyume.UI.Module
 
         public void TutorialActionClickMenuButton()
         {
-            if(menuToggleDropdown != null)
+            if (menuToggleDropdown != null)
             {
                 menuToggleDropdown.isOn = true;
             }
@@ -748,6 +748,7 @@ namespace Nekoyume.UI.Module
             {
                 menuToggleDropdown.isOn = false;
             }
+
             UpdatePortalReward(false);
         }
 
@@ -772,9 +773,11 @@ namespace Nekoyume.UI.Module
         public void UpdatePortalRewardOnce(string key)
         {
             var count = PlayerPrefs.GetInt(key, 0);
-            if(count == 0) {
+            if (count == 0)
+            {
                 UpdatePortalReward(true);
             }
+
             PlayerPrefs.SetInt(key, ++count);
         }
 

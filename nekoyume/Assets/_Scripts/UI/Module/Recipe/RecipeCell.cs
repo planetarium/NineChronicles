@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module
         private bool _unlockable = false;
         private bool _isWaitingForUnlock = false;
 
-        private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForOnDisable = new();
 
         private static readonly int AnimationHashShow = Animator.StringToHash("Show");
         private static readonly int AnimationHashClicked = Animator.StringToHash("Clicked");
@@ -163,7 +163,11 @@ namespace Nekoyume.UI.Module
                 var unlocked = Craft.SharedModel.UnlockedRecipes;
                 var unlockable = Craft.SharedModel.UnlockableRecipes;
 
-                if (!IsLocked) SetSelected(selected.Value);
+                if (!IsLocked)
+                {
+                    SetSelected(selected.Value);
+                }
+
                 selected.Subscribe(SetSelected)
                     .AddTo(_disposablesForOnDisable);
 
@@ -316,6 +320,7 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
+
             var equals = ReferenceEquals(row, _recipeRow);
             selectedObject.SetActive(equals);
             if (!_isWaitingForUnlock)

@@ -35,20 +35,44 @@ namespace Nekoyume.Multiplanetary
             _value = Encoding.Default.GetBytes(value);
         }
 
-        public override string ToString() => $"0x{ToHexString()}";
+        public override string ToString()
+        {
+            return $"0x{ToHexString()}";
+        }
 
-        public string ToHexString() => Encoding.Default.GetString(_value);
+        public string ToHexString()
+        {
+            return Encoding.Default.GetString(_value);
+        }
 
-        public IEnumerable<byte> ToEnumerable() => _value;
+        public IEnumerable<byte> ToEnumerable()
+        {
+            return _value;
+        }
 
-        public IEnumerator<byte> GetEnumerator() => ((IEnumerable<byte>)_value).GetEnumerator();
+        public IEnumerator<byte> GetEnumerator()
+        {
+            return ((IEnumerable<byte>)_value).GetEnumerator();
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-        public bool Equals(PlanetId other) => _value.SequenceEqual(other);
+        public bool Equals(PlanetId other)
+        {
+            return _value.SequenceEqual(other);
+        }
 
-        public override bool Equals(object? obj) => obj is PlanetId other && Equals(other);
+        public override bool Equals(object? obj)
+        {
+            return obj is PlanetId other && Equals(other);
+        }
 
-        public override int GetHashCode() => _value.GetHashCode();
+        public override int GetHashCode()
+        {
+            return _value.GetHashCode();
+        }
     }
 }

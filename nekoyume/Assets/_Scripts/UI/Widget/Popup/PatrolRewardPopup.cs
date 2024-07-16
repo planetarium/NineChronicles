@@ -18,6 +18,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class PatrolRewardPopup : PopupWidget
     {
         [Serializable]

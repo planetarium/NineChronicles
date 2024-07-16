@@ -7,8 +7,7 @@ namespace Nekoyume.Game.Character
     {
         private Player _player;
 
-        protected override bool CanRun =>
-            !TargetInAttackRange(_player) && !_player.TargetInAttackRange(this);
+        protected override bool CanRun => !TargetInAttackRange(_player) && !_player.TargetInAttackRange(this);
 
         public override string TargetTag => Tag.Player;
 

@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Module
             else if (prevCp > currentCp)
             {
                 decreaseCpArea.gameObject.SetActive(true);
-                decreaseCpText.text = (math.abs(currentCp - prevCp)).ToString();
+                decreaseCpText.text = math.abs(currentCp - prevCp).ToString();
             }
         }
     }

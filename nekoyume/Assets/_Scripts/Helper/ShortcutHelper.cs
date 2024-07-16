@@ -32,10 +32,10 @@ namespace Nekoyume.Helper
             Summon = 12,
 
             MobileShop, // Shop icon is same as ShopPC.
-            Upgrade, // Upgrade icon is same as Craft.
+            Upgrade // Upgrade icon is same as Craft.
         }
 
-        #region AcquisitionPlace
+#region AcquisitionPlace
 
         // For Material
         public static List<AcquisitionPlaceButton.Model> GetAcquisitionPlaceList(
@@ -52,27 +52,29 @@ namespace Nekoyume.Helper
             {
                 acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Arena));
             }
-            else switch (itemSubType)
+            else
             {
-                case ItemSubType.EquipmentMaterial
-                    or ItemSubType.MonsterPart
-                    or ItemSubType.NormalMaterial:
+                switch (itemSubType)
                 {
-                    var stages = TableSheets.Instance.StageSheet
-                        .GetStagesContainsReward(itemId)
-                        .OrderStagesByPriority(itemId)
-                        .Select(stage =>
-                        {
-                            TableSheets.Instance.WorldSheet.TryGetByStageId(stage.Id, out var worldRow);
-                            return GetAcquisitionPlace(caller, PlaceType.Stage, (worldRow.Id, stage.Id));
-                        });
+                    case ItemSubType.EquipmentMaterial
+                        or ItemSubType.MonsterPart
+                        or ItemSubType.NormalMaterial:
+                    {
+                        var stages = TableSheets.Instance.StageSheet
+                            .GetStagesContainsReward(itemId)
+                            .OrderStagesByPriority(itemId)
+                            .Select(stage =>
+                            {
+                                TableSheets.Instance.WorldSheet.TryGetByStageId(stage.Id, out var worldRow);
+                                return GetAcquisitionPlace(caller, PlaceType.Stage, (worldRow.Id, stage.Id));
+                            });
 
-                    acquisitionPlaceList.AddRange(stages);
-                    break;
-                }
-                case ItemSubType.Hourglass or ItemSubType.ApStone:
-                    AcquisitionPlaceButton.Model shopByPlatform = null;
-                    // Hourglass and AP Stone can get in both platform.
+                        acquisitionPlaceList.AddRange(stages);
+                        break;
+                    }
+                    case ItemSubType.Hourglass or ItemSubType.ApStone:
+                        AcquisitionPlaceButton.Model shopByPlatform = null;
+                        // Hourglass and AP Stone can get in both platform.
 #if UNITY_ANDROID || UNITY_IOS
                     if (Game.Game.instance.IAPStoreManager.TryGetCategoryName(itemId, out var categoryName))
                     {
@@ -80,25 +82,26 @@ namespace Nekoyume.Helper
                             categoryName: categoryName);
                     }
 #else
-                    shopByPlatform = GetAcquisitionPlace(caller, PlaceType.PCShop);
+                        shopByPlatform = GetAcquisitionPlace(caller, PlaceType.PCShop);
 #endif
 
-                    if (!isTradable.HasValue || isTradable.Value)
-                    {
-                        if (shopByPlatform != null)
+                        if (!isTradable.HasValue || isTradable.Value)
                         {
-                            acquisitionPlaceList.Add(shopByPlatform);
+                            if (shopByPlatform != null)
+                            {
+                                acquisitionPlaceList.Add(shopByPlatform);
+                            }
+
+                            acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                         }
 
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
-                    }
+                        if (!isTradable.HasValue || !isTradable.Value)
+                        {
+                            acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
+                        }
 
-                    if (!isTradable.HasValue || !isTradable.Value)
-                    {
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
-                    }
-
-                    break;
+                        break;
+                }
             }
 
             if (RxProps.EventScheduleRowForDungeon.HasValue)
@@ -117,7 +120,7 @@ namespace Nekoyume.Helper
             {
                 // If can get this item from quest...
                 if (States.Instance.CurrentAvatarState.questList.Any(quest =>
-                        !quest.Complete && quest.Reward.ItemMap.Any(r => r.Item1 == itemId)))
+                    !quest.Complete && quest.Reward.ItemMap.Any(r => r.Item1 == itemId)))
                 {
                     acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Quest));
                 }
@@ -130,7 +133,7 @@ namespace Nekoyume.Helper
         {
             800201, // Silver Dust
             600201, // Golden Dust
-            600202, // Ruby Dust
+            600202 // Ruby Dust
         };
 
         public static List<AcquisitionPlaceButton.Model> GetAcquisitionPlaceList(
@@ -181,7 +184,7 @@ namespace Nekoyume.Helper
                     acquisitionPlaceList.AddRange(new[]
                     {
                         GetAcquisitionPlace(caller, PlaceType.Craft, itemRow: itemRow),
-                        GetAcquisitionPlace(caller, PlaceType.PCShop),
+                        GetAcquisitionPlace(caller, PlaceType.PCShop)
                     });
                     break;
                 case ItemType.Costume:
@@ -388,9 +391,9 @@ namespace Nekoyume.Helper
             return result;
         }
 
-        #endregion
+#endregion
 
-        #region Shortcut
+#region Shortcut
 
         public static void ShortcutActionForStage(
             int worldId,
@@ -462,7 +465,7 @@ namespace Nekoyume.Helper
                         .TryGetWorldByStageId(stageId, out var world))
                     {
                         return stageId <= world.StageClearedId + 1 &&
-                               sharedViewModel.UnlockedWorldIds.Contains(world.Id);
+                            sharedViewModel.UnlockedWorldIds.Contains(world.Id);
                     }
 
                     return false;
@@ -507,7 +510,7 @@ namespace Nekoyume.Helper
                 PlaceType.MobileShop => !BattleRenderer.Instance.IsOnBattle,
                 PlaceType.Arena => !BattleRenderer.Instance.IsOnBattle,
                 PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
-                                   !Widget.Find<RankingBattleResultPopup>().IsActive(),
+                    !Widget.Find<RankingBattleResultPopup>().IsActive(),
                 PlaceType.Staking => true,
                 PlaceType.Craft => true,
                 PlaceType.Upgrade => true,
@@ -516,6 +519,6 @@ namespace Nekoyume.Helper
             };
         }
 
-        #endregion
+#endregion
     }
 }

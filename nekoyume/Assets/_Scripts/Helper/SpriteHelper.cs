@@ -28,6 +28,7 @@ namespace Nekoyume.Helper
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
         private const string MailIconPathFormat = "UI/Icons/Mail/{0}";
+
         private static readonly string MailIconDefaultPath =
             string.Format(MailIconPathFormat, "icon_mail_system");
 
@@ -48,7 +49,7 @@ namespace Nekoyume.Helper
         public static Sprite GetBigCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(BigCharacterIconPathFormat, characterId)) ??
-                   Resources.Load<Sprite>(BigCharacterIconDefaultPath);
+                Resources.Load<Sprite>(BigCharacterIconDefaultPath);
         }
 
         public static GameObject GetBigCharacterIconFace(int characterId)
@@ -64,31 +65,31 @@ namespace Nekoyume.Helper
         public static Sprite GetCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
-                   Resources.Load<Sprite>(CharacterIconDefaultPath);
+                Resources.Load<Sprite>(CharacterIconDefaultPath);
         }
 
         public static Sprite GetItemIcon(int itemId)
         {
             return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
-                   Resources.Load<Sprite>(ItemIconDefaultPath);
+                Resources.Load<Sprite>(ItemIconDefaultPath);
         }
 
         public static Sprite GetDccProfileIcon(int dccId)
         {
             return Resources.Load<Sprite>(string.Format(DccIconPathFormat, dccId)) ??
-                   Resources.Load<Sprite>(CharacterIconDefaultPath);
+                Resources.Load<Sprite>(CharacterIconDefaultPath);
         }
 
         public static Sprite GetProfileFrameIcon(string frameName)
         {
             return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, frameName)) ??
-                   Resources.Load<Sprite>(ProfileFrameDefaultPath);
+                Resources.Load<Sprite>(ProfileFrameDefaultPath);
         }
 
         public static Sprite GetItemBackground(int grade)
         {
             return Resources.Load<Sprite>(string.Format(ItemBackgroundPathFormat, grade)) ??
-                   Resources.Load<Sprite>(ItemBackgroundDefaultPath);
+                Resources.Load<Sprite>(ItemBackgroundDefaultPath);
         }
 
         public static Sprite GetBuffIcon(string iconResource)
@@ -99,19 +100,19 @@ namespace Nekoyume.Helper
             }
 
             return Resources.Load<Sprite>(string.Format(BuffIconPathFormat, iconResource)) ??
-                   Resources.Load<Sprite>(BuffIconDefaultPath);
+                Resources.Load<Sprite>(BuffIconDefaultPath);
         }
 
         public static Sprite GetPlayerSpineTextureWeapon(int equipmentId)
         {
             return Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat, equipmentId)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat, GameConfig.DefaultAvatarWeaponId));
+                Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat, GameConfig.DefaultAvatarWeaponId));
         }
 
         public static Sprite GetAreaAttackCutsceneSprite(int id)
         {
             return Resources.Load<Sprite>($"{AreaAttackCutscenePath}{id}") ??
-                   Resources.Load<Sprite>($"{AreaAttackCutscenePath}{GameConfig.DefaultAvatarArmorId}");
+                Resources.Load<Sprite>($"{AreaAttackCutscenePath}{GameConfig.DefaultAvatarArmorId}");
         }
 
         public static Sprite GetRankIcon(int rank)
@@ -175,15 +176,14 @@ namespace Nekoyume.Helper
 
         public static Sprite GetDialogPortrait(string key, bool isNPC = true)
         {
-            var path = string.Format(isNPC ?
-                DialogNPCPortaitPathFormat : DialogCharacterPortaitPathFormat, key);
+            var path = string.Format(isNPC ? DialogNPCPortaitPathFormat : DialogCharacterPortaitPathFormat, key);
             return Resources.Load<Sprite>(path);
         }
 
         public static Sprite GetFavIcon(string ticker)
         {
             return Resources.Load<Sprite>(string.Format(FavIconPathFormat, ticker)) ??
-                   Resources.Load<Sprite>(DefaultFavIconPathFormat);
+                Resources.Load<Sprite>(DefaultFavIconPathFormat);
         }
     }
 }

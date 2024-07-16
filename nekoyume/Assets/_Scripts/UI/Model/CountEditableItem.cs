@@ -6,8 +6,8 @@ namespace Nekoyume.UI.Model
 {
     public class CountEditableItem : CountableItem
     {
-        public readonly ReactiveProperty<int> MinCount = new ReactiveProperty<int>(0);
-        public readonly ReactiveProperty<int> MaxCount = new ReactiveProperty<int>(1);
+        public readonly ReactiveProperty<int> MinCount = new(0);
+        public readonly ReactiveProperty<int> MaxCount = new(1);
 
         public CountEditableItem(ItemBase item, int count, int minCount, int maxCount) : base(item, count)
         {

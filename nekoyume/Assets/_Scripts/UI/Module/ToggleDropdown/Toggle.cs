@@ -106,7 +106,9 @@ namespace Nekoyume.UI.Module
         protected virtual void StartColorTweens(Color targetColor, bool instant)
         {
             if (colorTransitionGraphics == null)
+            {
                 return;
+            }
 
             foreach (var targetColorGraphic in colorTransitionGraphics)
             {

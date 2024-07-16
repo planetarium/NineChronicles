@@ -33,7 +33,7 @@ namespace Nekoyume.Editor
         {
             var attribute = this.attribute as ShowOnAttribute;
             var field = GetField(target, x => x.Name.Equals(attribute.Condition));
-            return field == null || (bool) field.GetValue(target);
+            return field == null || (bool)field.GetValue(target);
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -46,7 +46,8 @@ namespace Nekoyume.Editor
 
             var attribute = this.attribute as ShowOnAttribute;
             return attribute.DrawOption == ShowOnAttribute.PropertyDrawOption.Disable
-                ? base.GetPropertyHeight(property, label) : 0;
+                ? base.GetPropertyHeight(property, label)
+                : 0;
         }
 
 
@@ -54,7 +55,7 @@ namespace Nekoyume.Editor
             object target,
             Func<FieldInfo, bool> predicate)
         {
-            List<Type> types = new List<Type>()
+            var types = new List<Type>()
             {
                 target.GetType()
             };
@@ -64,14 +65,14 @@ namespace Nekoyume.Editor
                 types.Add(types.Last().BaseType);
             }
 
-            for (int i = types.Count - 1; i >= 0; i--)
+            for (var i = types.Count - 1; i >= 0; i--)
             {
-                IEnumerable<FieldInfo> fieldInfos = types[i].GetFields(
-                    BindingFlags.Instance |
-                    BindingFlags.Static |
-                    BindingFlags.NonPublic |
-                    BindingFlags.Public |
-                    BindingFlags.DeclaredOnly)
+                var fieldInfos = types[i].GetFields(
+                        BindingFlags.Instance |
+                        BindingFlags.Static |
+                        BindingFlags.NonPublic |
+                        BindingFlags.Public |
+                        BindingFlags.DeclaredOnly)
                     .Where(predicate);
 
                 if (fieldInfos.Any())
@@ -79,9 +80,9 @@ namespace Nekoyume.Editor
                     return fieldInfos.First();
                 }
             }
+
             return null;
         }
-
     }
 }
 #endif

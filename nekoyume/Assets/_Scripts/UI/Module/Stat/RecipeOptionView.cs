@@ -51,10 +51,12 @@ namespace Nekoyume.UI.Module
             {
                 optionView.parentObject.SetActive(false);
             }
+
             foreach (var skillView in skillViews)
             {
                 skillView.parentObject.SetActive(false);
             }
+
             optionIcons?.ForEach(obj => obj.SetActive(false));
 
             var tableSheets = TableSheets.Instance;

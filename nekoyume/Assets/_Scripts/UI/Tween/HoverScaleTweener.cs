@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Tween
             _disposables.DisposeAllAndClear();
         }
 
-        public void AddCondition(System.Func<bool> enter = null, System.Func<bool> exit = null)
+        public void AddCondition(Func<bool> enter = null, Func<bool> exit = null)
         {
             _onPointerEnter = enter;
             _onPointerExit = exit;

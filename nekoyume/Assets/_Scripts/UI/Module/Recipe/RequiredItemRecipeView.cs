@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Module
 
             if (materials != null)
             {
-                for (int i = 1; i < requiredItemViews.Length; ++i)
+                for (var i = 1; i < requiredItemViews.Length; ++i)
                 {
                     var itemView = requiredItemViews[i];
                     if (i - 1 >= materials.Count)
@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                for (int i = 1; i < requiredItemViews.Length; ++i)
+                for (var i = 1; i < requiredItemViews.Length; ++i)
                 {
                     requiredItemViews[i].gameObject.SetActive(false);
                 }
@@ -64,9 +64,9 @@ namespace Nekoyume.UI.Module
         public void SetData(
             List<EquipmentItemSubRecipeSheet.MaterialInfo> materials,
             bool checkInventory
-            )
+        )
         {
-            for (int i = 0; i < requiredItemViews.Length; ++i)
+            for (var i = 0; i < requiredItemViews.Length; ++i)
             {
                 var itemView = requiredItemViews[i];
                 if (i >= materials.Count)
@@ -112,7 +112,7 @@ namespace Nekoyume.UI.Module
             bool checkInventory,
             bool hideEnoughObject,
             int? itemCount = null
-            )
+        )
         {
             var material = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, materialId);
             if (itemCount == null)

@@ -26,7 +26,7 @@ namespace Nekoyume
 
             floorText.text = $"{floor}F";
 
-            for (int i = 0; i < rewardItemViews.Length; i++)
+            for (var i = 0; i < rewardItemViews.Length; i++)
             {
                 if (i < rewards.Count)
                 {

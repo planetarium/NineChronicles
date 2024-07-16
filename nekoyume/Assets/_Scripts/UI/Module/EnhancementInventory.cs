@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
             Fire,
             Water,
             Land,
-            Wind,
+            Wind
         }
 
         [Serializable]
@@ -66,23 +66,19 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private RectTransform tooltipSocket;
 
-        private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>> _equipments =
-            new Dictionary<ItemSubType, List<EnhancementInventoryItem>>();
+        private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>> _equipments = new();
 
-        private readonly ReactiveProperty<ItemSubType> _selectedItemSubType =
-            new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
+        private readonly ReactiveProperty<ItemSubType> _selectedItemSubType = new(ItemSubType.Weapon);
 
-        private readonly ReactiveProperty<Grade> _grade =
-            new ReactiveProperty<Grade>(Grade.All);
+        private readonly ReactiveProperty<Grade> _grade = new(Grade.All);
 
-        private readonly ReactiveProperty<Elemental> _elemental =
-            new ReactiveProperty<Elemental>(Elemental.All);
+        private readonly ReactiveProperty<Elemental> _elemental = new(Elemental.All);
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private EnhancementInventoryItem _selectedModel;
         private EnhancementInventoryItem _baseModel;
-        private readonly List<EnhancementInventoryItem> _materialModels = new List<EnhancementInventoryItem>();
+        private readonly List<EnhancementInventoryItem> _materialModels = new();
 
         private Action<EnhancementInventoryItem, RectTransform> _onSelectItem;
 
@@ -96,7 +92,11 @@ namespace Nekoyume.UI.Module
             {
                 categoryToggle.Toggle.onValueChanged.AddListener(value =>
                 {
-                    if (!value) return;
+                    if (!value)
+                    {
+                        return;
+                    }
+
                     AudioController.PlayClick();
                     _selectedItemSubType.Value = categoryToggle.Type;
                 });
@@ -137,7 +137,7 @@ namespace Nekoyume.UI.Module
             return (baseItem, materialItems, hammers);
         }
 
-        #region Select Item
+#region Select Item
 
         private void SetMaterialItemCount(EnhancementInventoryItem item, int count)
         {
@@ -223,7 +223,7 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        #endregion
+#endregion
 
         public void Select(ItemSubType itemSubType, Guid itemId)
         {
@@ -319,8 +319,8 @@ namespace Nekoyume.UI.Module
                     foreach (var item in items)
                     {
                         item.Disabled.Value = fullOfMaterials ||
-                            item.ItemBase.ItemSubType != baseItemSubType &&
-                            !(enableHammer && ItemEnhancement.HammerIds.Contains(item.ItemBase.Id));
+                            (item.ItemBase.ItemSubType != baseItemSubType &&
+                                !(enableHammer && ItemEnhancement.HammerIds.Contains(item.ItemBase.Id)));
                     }
                 }
             }
@@ -410,7 +410,7 @@ namespace Nekoyume.UI.Module
             }).AddTo(_disposables);
         }
 
-        #region Update Inventory
+#region Update Inventory
 
         private void UpdateInventory(Nekoyume.Model.Item.Inventory inventory)
         {
@@ -480,6 +480,6 @@ namespace Nekoyume.UI.Module
             _equipments[inventoryItem.ItemBase.ItemSubType].Add(inventoryItem);
         }
 
-        #endregion
+#endregion
     }
 }

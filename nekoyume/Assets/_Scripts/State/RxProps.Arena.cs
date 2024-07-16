@@ -39,23 +39,23 @@ namespace Nekoyume.State
 
         private static readonly ReactiveProperty<int> _purchasedDuringInterval = new();
 
-        public static IReadOnlyReactiveProperty<int> PurchasedDuringInterval =>
-            _purchasedDuringInterval;
+        public static IReadOnlyReactiveProperty<int> PurchasedDuringInterval => _purchasedDuringInterval;
         private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
 
-        public static IReadOnlyReactiveProperty<long> LastArenaBattleBlockIndex =>
-            _lastArenaBattleBlockIndex;
-        public static IReadOnlyReactiveProperty<ArenaParticipantModel> PlayerArenaInfo =>
-            _playerArenaInfo;
+        public static IReadOnlyReactiveProperty<long> LastArenaBattleBlockIndex => _lastArenaBattleBlockIndex;
+        public static IReadOnlyReactiveProperty<ArenaParticipantModel> PlayerArenaInfo => _playerArenaInfo;
+
         public static
             IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
-            ArenaInfoTuple => _arenaInfoTuple;
+            ArenaInfoTuple =>
+            _arenaInfoTuple;
 
         private static readonly ReactiveProperty<ArenaTicketProgress>
             _arenaTicketsProgress = new(new ArenaTicketProgress());
 
         public static IReadOnlyReactiveProperty<ArenaTicketProgress>
-            ArenaTicketsProgress => _arenaTicketsProgress;
+            ArenaTicketsProgress =>
+            _arenaTicketsProgress;
 
         private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
 
@@ -65,7 +65,8 @@ namespace Nekoyume.State
                 UpdateArenaInformationOrderedWithScoreAsync);
 
         public static IReadOnlyAsyncUpdatableRxProp<List<ArenaParticipantModel>>
-            ArenaInformationOrderedWithScore => _arenaInformationOrderedWithScore;
+            ArenaInformationOrderedWithScore =>
+            _arenaInformationOrderedWithScore;
 
         public static void UpdateArenaInfoToNext()
         {
@@ -127,7 +128,7 @@ namespace Nekoyume.State
                 currentRoundData.StartBlockIndex,
                 ticketResetInterval);
             var purchasedCount = PurchasedDuringInterval.Value;
-            var purchasedCountDuringInterval =  currentArenaInfo.GetPurchasedCountInInterval(
+            var purchasedCountDuringInterval = currentArenaInfo.GetPurchasedCountInInterval(
                 blockIndex,
                 currentRoundData.StartBlockIndex,
                 ticketResetInterval,
@@ -201,10 +202,10 @@ namespace Nekoyume.State
 
         private static async Task<List<ArenaParticipantModel>>
             UpdateArenaInformationOrderedWithScoreAsync(
-            List<ArenaParticipantModel> previous, HashDigest<SHA256> stateRootHash)
+                List<ArenaParticipantModel> previous, HashDigest<SHA256> stateRootHash)
         {
             var avatarAddress = _states.CurrentAvatarState?.address;
-            List<ArenaParticipantModel> avatarAddrAndScoresWithRank =
+            var avatarAddrAndScoresWithRank =
                 new List<ArenaParticipantModel>();
             if (!avatarAddress.HasValue)
             {
@@ -251,7 +252,7 @@ namespace Nekoyume.State
             var arenaAvatarState = stateBulk[arenaAvatarAddress] is List iValue2
                 ? new ArenaAvatarState(iValue2)
                 : null;
-            long lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
+            var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
                 var response = await ApiClients.Instance.RpcGraphQlClient.QueryArenaInfoAsync(currentAvatarAddr);
@@ -266,7 +267,7 @@ namespace Nekoyume.State
                 arenaInfo.AddRange(_states.AvatarStates.Values.Select(avatar => new ArenaParticipantModel
                 {
                     AvatarAddr = avatar.address,
-                    NameWithHash = avatar.NameWithHash,
+                    NameWithHash = avatar.NameWithHash
                 }));
             }
 
@@ -280,6 +281,7 @@ namespace Nekoyume.State
                     {
                         playerGuildName = guildModel.Name;
                     }
+
                     foreach (var info in arenaInfo)
                     {
                         var model = guildModel.AvatarModels.FirstOrDefault(a => a.AvatarAddress == info.AvatarAddr);
@@ -293,7 +295,7 @@ namespace Nekoyume.State
 
             var portraitId = Util.GetPortraitId(BattleType.Arena);
             var cp = Util.TotalCP(BattleType.Arena);
-            ArenaParticipantModel playerArenaInf = new ArenaParticipantModel
+            var playerArenaInf = new ArenaParticipantModel
             {
                 AvatarAddr = currentAvatarAddr,
                 Score = ArenaScore.ArenaScoreDefault,
@@ -303,7 +305,7 @@ namespace Nekoyume.State
                 PortraitId = portraitId,
                 Cp = cp,
                 Level = currentAvatar.level,
-                GuildName = playerGuildName,
+                GuildName = playerGuildName
             };
 
             if (!arenaInfo.Any())

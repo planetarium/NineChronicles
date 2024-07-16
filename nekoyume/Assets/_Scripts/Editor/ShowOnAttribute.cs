@@ -10,7 +10,7 @@ namespace Nekoyume.Editor
         public enum PropertyDrawOption
         {
             Disable = 0,
-            Hide,
+            Hide
         }
 
         public string Condition { get; private set; }

@@ -49,7 +49,8 @@ namespace Nekoyume.UI
         private Player _player;
 
         private int? _activatedDccId;
-        #region Mono
+
+#region Mono
 
         protected override void Awake()
         {
@@ -76,7 +77,7 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        #endregion
+#endregion
 
         public override void Show(bool ignoreStartAnimation = false)
         {
@@ -175,14 +176,14 @@ namespace Nekoyume.UI
             textExp.text =
                 $"{_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
 
-            var hpValue = _player.CurrentHp / (float) _player.Hp;
+            var hpValue = _player.CurrentHp / (float)_player.Hp;
             hpBar.gameObject.SetActive(hpValue > 0.0f);
             hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
             hpBar.fillAmount = hpValue;
 
             var expNeed = _player.Model.Exp.Need;
             var levelExp = _player.EXPMax - expNeed;
-            var expValue = (float) (_player.EXP - levelExp) / expNeed;
+            var expValue = (float)(_player.EXP - levelExp) / expNeed;
             expBar.gameObject.SetActive(expValue > 0.0f);
             expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
             expBar.fillAmount = expValue;

@@ -24,8 +24,8 @@ namespace Nekoyume.UI.Module
 
         private IToggleListener _toggleListener;
 
-        public readonly Subject<CategoryTabButton> OnClick = new Subject<CategoryTabButton>();
-        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+        public readonly Subject<CategoryTabButton> OnClick = new();
+        public readonly ReactiveProperty<bool> HasNotification = new(false);
 
         private void Awake()
         {
@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
         }
 
 
-        #region ILockableWithMessageCat // 가칭. IMessageCatTarget.. 등.
+#region ILockableWithMessageCat // 가칭. IMessageCatTarget.. 등.
 
         // NOTE: 아래 로직들은 반복되니 인터페이스로 묶어서 로직을 한 곳으로 모을 수 있어 보인다.
         private bool _isLock;
@@ -124,10 +124,10 @@ namespace Nekoyume.UI.Module
             SetInteractable(true);
         }
 
-        #endregion
+#endregion
 
 
-        #region IToggleable
+#region IToggleable
 
         public string Name => name;
 
@@ -162,7 +162,7 @@ namespace Nekoyume.UI.Module
             selectedObject.gameObject.SetActive(false);
         }
 
-        #endregion
+#endregion
 
         public void SetInteractable(bool interactable, bool ignoreImageColor = false)
         {

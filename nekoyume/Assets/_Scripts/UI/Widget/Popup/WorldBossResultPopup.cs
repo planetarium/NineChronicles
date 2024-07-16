@@ -142,10 +142,7 @@ namespace Nekoyume.UI
             if (_killRewards is not null && _killRewards.Any())
             {
                 Find<WorldBossRewardScreen>().Show(_killRewards,
-                    () =>
-                    {
-                        Find<WorldBoss>().ShowAsync().Forget();
-                    });
+                    () => { Find<WorldBoss>().ShowAsync().Forget(); });
             }
             else
             {
@@ -163,6 +160,7 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
+
                 seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.WorldBossCourageAmount}";
             }
             else

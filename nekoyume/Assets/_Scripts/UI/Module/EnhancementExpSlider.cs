@@ -47,7 +47,7 @@ namespace Nekoyume.UI
             var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
             _expTable = enhancementCostSheet.Values
                 .Where(row => row.Grade == equipment.Grade &&
-                              row.ItemSubType == equipment.ItemSubType)
+                    row.ItemSubType == equipment.ItemSubType)
                 .Select(row => row.Exp).ToList();
             _expTable.Insert(0, 0);
         }

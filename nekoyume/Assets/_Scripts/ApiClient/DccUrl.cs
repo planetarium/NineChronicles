@@ -108,12 +108,12 @@ namespace Nekoyume.ApiClient
                 AllowTrailingCommas = true,
                 Converters =
                 {
-                    new CommandLineOptions.StringEnumerableConverter(),
+                    new CommandLineOptions.StringEnumerableConverter()
                 },
                 DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                ReadCommentHandling = JsonCommentHandling.Skip,
+                ReadCommentHandling = JsonCommentHandling.Skip
             };
 #if !UNITY_EDITOR && (UNITY_ANDROID)
             UnityEngine.WWW www = new UnityEngine.WWW(localPath);
@@ -130,7 +130,7 @@ namespace Nekoyume.ApiClient
                 NcDebug.Log($"loaded plain json: {jsonText}");
                 return JsonSerializer.Deserialize<DccUrl>(jsonText, jsonOptions);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 NcDebug.LogErrorFormat("Failed to find {0}. Using default url.\nException: {1}", localPath, e);
                 return new DccUrl();

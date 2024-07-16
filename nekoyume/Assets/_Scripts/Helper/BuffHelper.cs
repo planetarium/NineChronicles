@@ -27,13 +27,13 @@ namespace Nekoyume.Helper
 
         public static GameObject GetCastingVFXPrefab(Buff buff)
         {
-            var id               = buff.BuffInfo.Id;
+            var id = buff.BuffInfo.Id;
             var actionBuffCastingPrefab = GetActionBuffCastingPrefab(id);
             if (actionBuffCastingPrefab != null)
             {
                 return actionBuffCastingPrefab;
             }
-            
+
             var overrideData = VFXData.OverrideDataList
                 .FirstOrDefault(x => x.Id == buff.BuffInfo.Id);
 
@@ -46,13 +46,13 @@ namespace Nekoyume.Helper
             {
                 return VFXData.FallbackCastingVFX;
             }
-            
-            var modifier   = statBuff.GetModifier();
+
+            var modifier = statBuff.GetModifier();
             var isPositive = modifier.Value >= 0;
             var data = VFXData.DataList
                 .FirstOrDefault(x => x.StatType == modifier.StatType);
             return data == null ? VFXData.FallbackCastingVFX :
-                isPositive      ? data.PlusCastingVFX : data.MinusCastingVFX;
+                isPositive ? data.PlusCastingVFX : data.MinusCastingVFX;
         }
 
         public static GameObject GetCastingVFXPrefab(int buffId)
@@ -62,24 +62,24 @@ namespace Nekoyume.Helper
             {
                 return actionBuffCastingPrefab;
             }
-            
+
             var overrideData = VFXData.OverrideDataList
                 .FirstOrDefault(x => x.Id == buffId);
 
             return overrideData == null ? VFXData.FallbackCastingVFX : overrideData.CastingVFX;
         }
-        
+
         [CanBeNull]
         private static GameObject GetActionBuffCastingPrefab(int id)
         {
-            var actionSheet   = GetActionBuffSheet();
+            var actionSheet = GetActionBuffSheet();
             var hasActionBuff = actionSheet.TryGetValue(id, out var actionBuffRow);
             if (!hasActionBuff)
             {
                 return null;
             }
-            
-            var actionBuffType     = actionBuffRow.ActionBuffType;
+
+            var actionBuffType = actionBuffRow.ActionBuffType;
             var actionBuffDataList = VFXData.ActionBuffVFXOverrideDataList;
             var actionOverrideData = actionBuffDataList
                 .FirstOrDefault(x => x.Type == actionBuffType);
@@ -94,24 +94,25 @@ namespace Nekoyume.Helper
             {
                 return actionBuffPrefab;
             }
-            
+
             var overrideData = VFXData.OverrideDataList
                 .FirstOrDefault(x => x.Id == id);
             if (overrideData != null)
             {
                 return overrideData.BuffVFX;
             }
-            
+
             if (buff is not StatBuff statBuff)
             {
                 return VFXData.FallbackBuffVFX;
             }
-            var modifier   = statBuff.GetModifier();
+
+            var modifier = statBuff.GetModifier();
             var isPositive = modifier.Value >= 0;
             var data = VFXData.DataList
                 .FirstOrDefault(x => x.StatType == modifier.StatType);
             return data == null ? VFXData.FallbackBuffVFX :
-                isPositive      ? data.PlusVFX : data.MinusVFX;
+                isPositive ? data.PlusVFX : data.MinusVFX;
         }
 
         public static GameObject GetBuffVFXPrefab(int buffId)
@@ -121,23 +122,23 @@ namespace Nekoyume.Helper
             {
                 return actionBuffPrefab;
             }
-            
+
             var overrideData = VFXData.OverrideDataList
                 .FirstOrDefault(x => x.Id == buffId);
             return overrideData == null ? VFXData.FallbackBuffVFX : overrideData.BuffVFX;
         }
-        
+
         [CanBeNull]
         private static GameObject GetActionBuffPrefab(int id)
         {
-            var actionSheet   = GetActionBuffSheet();
+            var actionSheet = GetActionBuffSheet();
             var hasActionBuff = actionSheet.TryGetValue(id, out var actionBuffRow);
             if (!hasActionBuff)
             {
                 return null;
             }
-            
-            var actionBuffType     = actionBuffRow.ActionBuffType;
+
+            var actionBuffType = actionBuffRow.ActionBuffType;
             var actionBuffDataList = VFXData.ActionBuffVFXOverrideDataList;
             var actionOverrideData = actionBuffDataList
                 .FirstOrDefault(x => x.Type == actionBuffType);
@@ -152,25 +153,25 @@ namespace Nekoyume.Helper
             {
                 return actionBuffIcon;
             }
-            
+
             var overrideData = VFXData.OverrideDataList
                 .FirstOrDefault(x => x.Id == id);
             if (overrideData != null)
             {
                 return overrideData.Icon;
             }
-            
+
             if (buff is not StatBuff statBuff)
             {
                 return VFXData.FallbackIcon;
             }
-                
-            var modifier   = statBuff.GetModifier();
+
+            var modifier = statBuff.GetModifier();
             var isPositive = modifier.Value >= 0;
             var data = VFXData.DataList
                 .FirstOrDefault(x => x.StatType == modifier.StatType);
             return data == null ? VFXData.FallbackIcon :
-                isPositive      ? data.PlusIcon : data.MinusIcon;
+                isPositive ? data.PlusIcon : data.MinusIcon;
         }
 
         public static Sprite GetBuffOverrideIcon(int id)
@@ -180,7 +181,7 @@ namespace Nekoyume.Helper
             {
                 return actionBuffIcon;
             }
-            
+
             var overrideData = VFXData.OverrideDataList.FirstOrDefault(x => x.Id == id);
             return overrideData == null ? VFXData.FallbackIcon : overrideData.Icon;
         }
@@ -188,14 +189,14 @@ namespace Nekoyume.Helper
         [CanBeNull]
         private static Sprite GetActionBuffIcon(int id)
         {
-            var actionSheet   = GetActionBuffSheet();
+            var actionSheet = GetActionBuffSheet();
             var hasActionBuff = actionSheet.TryGetValue(id, out var actionBuffRow);
             if (!hasActionBuff)
             {
                 return null;
             }
-            
-            var actionBuffType     = actionBuffRow.ActionBuffType;
+
+            var actionBuffType = actionBuffRow.ActionBuffType;
             var actionBuffDataList = VFXData.ActionBuffVFXOverrideDataList;
             var actionOverrideData = actionBuffDataList
                 .FirstOrDefault(x => x.Type == actionBuffType);
@@ -228,12 +229,12 @@ namespace Nekoyume.Helper
                     return actionOverrideData.Position;
                 }
             }
-            
+
             var overrideData = VFXData.BuffPosOverrideDataList
                 .FirstOrDefault(x => x.Id == id && x.IsCasting == isCasting);
             return overrideData?.Position ?? VFXData.FallbackPosition;
         }
-        
+
         private static ActionBuffSheet GetActionBuffSheet()
         {
             return TableSheets.Instance.ActionBuffSheet;

@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Model
             var items = inventory.Items.Where(item =>
                 item.item.Id == Row.ItemId && !item.Locked &&
                 (item.item is not ITradableItem tradableItem ||
-                 tradableItem.RequiredBlockIndex <= blockIndex)).ToArray();
+                    tradableItem.RequiredBlockIndex <= blockIndex)).ToArray();
 
             var hasItem = items.Any();
             var currentAmount = 0;
@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Model
                 case ItemType.Equipment:
                     var equipments = items.Select(item => item.item).OfType<Equipment>()
                         .Where(equipment => equipment.HasSkill() == Row.SkillContains &&
-                                            equipment.level <= Row.Level).ToArray();
+                            equipment.level <= Row.Level).ToArray();
                     hasItem &= equipments.Any();
                     if (hasItem)
                     {

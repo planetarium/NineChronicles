@@ -39,7 +39,7 @@ namespace Nekoyume.GraphQL
                 NcDebug.LogWarning("This API client is not initialized.");
                 return null;
             }
-            
+
             try
             {
                 var graphQlRequest = await _client.SendQueryAsync<T>(request);
@@ -47,7 +47,7 @@ namespace Nekoyume.GraphQL
                 {
                     return graphQlRequest.Data;
                 }
-                
+
                 foreach (var error in graphQlRequest.Errors)
                 {
                     NcDebug.LogError(error.Message);

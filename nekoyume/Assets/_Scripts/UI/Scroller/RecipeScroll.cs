@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Scroller
             UNLOCK_STAGE,
             NAME,
             LEVEL,
-            GRADE,
+            GRADE
         }
 
         [Serializable]
@@ -122,9 +122,9 @@ namespace Nekoyume.UI.Scroller
 
         private BigInteger _openCost;
 
-        private List<int> _unlockableRecipeIds = new ();
+        private List<int> _unlockableRecipeIds = new();
 
-        private List<IDisposable> _disposablesAtShow = new List<IDisposable>();
+        private List<IDisposable> _disposablesAtShow = new();
 
         protected override FancyCell<SheetRow<int>, ContextModel> CellTemplate => cellTemplate;
 
@@ -135,7 +135,11 @@ namespace Nekoyume.UI.Scroller
                 var type = categoryToggle.Type;
                 categoryToggle.Toggle.onValueChanged.AddListener(value =>
                 {
-                    if (!value) return;
+                    if (!value)
+                    {
+                        return;
+                    }
+
                     AudioController.PlayClick();
                     ShowAsEquipment(type);
                 });
@@ -146,7 +150,11 @@ namespace Nekoyume.UI.Scroller
                 var type = categoryToggle.Type;
                 categoryToggle.Toggle.onValueChanged.AddListener(value =>
                 {
-                    if (!value) return;
+                    if (!value)
+                    {
+                        return;
+                    }
+
                     AudioController.PlayClick();
                     ShowAsFood(type);
                 });
@@ -294,22 +302,27 @@ namespace Nekoyume.UI.Scroller
             {
                 return false;
             }
+
             if (equipmentRow.UnlockStage - clearedStage > 0)
             {
                 return true;
             }
+
             if (sharedModel.DummyLockedRecipes.Contains(equipmentRow.Id))
             {
                 return true;
             }
+
             if (sharedModel.UnlockedRecipes is null)
             {
                 return true;
             }
+
             if (sharedModel.UnlockingRecipes.Contains(equipmentRow.Id))
             {
                 return false;
             }
+
             return !sharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id);
         }
 
@@ -390,7 +403,7 @@ namespace Nekoyume.UI.Scroller
                 items = Craft.SharedModel.EventConsumableRecipeMap;
             }
             else if (RxProps.EventScheduleRowForRecipe is not null &&
-                     RxProps.EventMaterialItemRecipeRows.Value?.Count is not (null or 0))
+                RxProps.EventMaterialItemRecipeRows.Value?.Count is not (null or 0))
             {
                 items = Craft.SharedModel.EventMaterialRecipeMap;
             }
@@ -604,8 +617,8 @@ namespace Nekoyume.UI.Scroller
 
             return sortedItems
                 .Where(row => row is not EquipmentItemRecipeSheet.Row equipmentRow ||
-                              equipmentRow.UnlockStage != 999 ||
-                              Util.IsEventEquipmentRecipe(equipmentRow.Id))
+                    equipmentRow.UnlockStage != 999 ||
+                    Util.IsEventEquipmentRecipe(equipmentRow.Id))
                 .ToList();
         }
     }

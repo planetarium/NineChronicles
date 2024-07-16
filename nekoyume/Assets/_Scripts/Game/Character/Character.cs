@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Character
 {
     public abstract class Character : MonoBehaviour
     {
-        public Guid Id {get; protected set; }
+        public Guid Id { get; protected set; }
         public SizeType SizeType { get; protected set; }
         public CharacterAnimator Animator { get; protected set; }
         protected virtual Vector3 HUDOffset => Animator.GetHUDPosition();
@@ -57,11 +57,15 @@ namespace Nekoyume.Game.Character
         }
 
         // TODO: 이 클래스에 존재해야할 느낌은 아니지만, 중복 구현을 피하기 위해 일단 여기에 둠
+
 #region Temp
+
 #region Event
+
         public Action<int> OnBuff;
         public Action<int> OnBuffEnd;
         public Action<int> OnCustomEvent;
+
 #endregion Event
 
         public bool IsFlipped { get; set; }
@@ -81,10 +85,13 @@ namespace Nekoyume.Game.Character
             await UniTask.Delay(TimeSpan.FromSeconds(Game.DefaultSkillDelay));
             Animator.Idle();
         }
+
 #endregion Temp
 
 // TODO: 별도 클래스로 분리?
+
 #region SpineColor
+
         private readonly Priority_Queue.SimplePriorityQueue<SpineColorSetting, int> _colorPq = new();
 
         private readonly HashSet<SpineColorKey> _expiredColorKeys = new();
@@ -110,6 +117,7 @@ namespace Nekoyume.Game.Character
                     {
                         SetDefaultColor();
                     }
+
                     continue;
                 }
 
@@ -132,6 +140,7 @@ namespace Nekoyume.Game.Character
                 {
                     colorSetting.ExpireByKey(expiredColorKey);
                 }
+
                 colorSetting.UpdateDuration(Time.deltaTime);
 
                 if (colorSetting.IsExpired)
@@ -139,6 +148,7 @@ namespace Nekoyume.Game.Character
                     colorSetting.Expire();
                 }
             }
+
             _expiredColorKeys.Clear();
         }
 
@@ -193,6 +203,7 @@ namespace Nekoyume.Game.Character
         {
             _colorPq.Enqueue(new SpineColorSetting(color, black, hasDuration, duration, key), 0);
         }
+
 #endregion SpineColor
     }
 }

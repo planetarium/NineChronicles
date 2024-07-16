@@ -83,7 +83,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             if (!Game.Game.instance.TableSheets.WorldBossCharacterSheet
-                    .TryGetValue(row.BossId, out var characterRow))
+                .TryGetValue(row.BossId, out var characterRow))
             {
                 return;
             }
@@ -161,7 +161,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                     var cur = highScore - curRankScore;
                     startGaugeImage.fillAmount = 1;
                     middleGaugeImage.fillAmount =
-                        (0.25f * (currentRank - 1)) + (0.25f * (cur / (float)max));
+                        0.25f * (currentRank - 1) + 0.25f * (cur / (float)max);
                     break;
             }
         }

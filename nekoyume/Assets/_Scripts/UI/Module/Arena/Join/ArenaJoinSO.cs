@@ -57,19 +57,22 @@ namespace Nekoyume.UI.Module.Arena.Join
                 MaxPurchaseCountWithInterval = maxPurchaseCountWithInterval;
             }
 
-            public ArenaSheet.RoundData ToRoundData() => new ArenaSheet.RoundData(
-                ChampionshipId,
-                Round,
-                ArenaType,
-                StartBlockIndex,
-                EndBlockIndex,
-                RequiredMedalCount,
-                EntranceFee,
-                TicketPrice,
-                AdditionalTicketPrice,
-                MaxPurchaseCount,
-                MaxPurchaseCountWithInterval
-            );
+            public ArenaSheet.RoundData ToRoundData()
+            {
+                return new ArenaSheet.RoundData(
+                    ChampionshipId,
+                    Round,
+                    ArenaType,
+                    StartBlockIndex,
+                    EndBlockIndex,
+                    RequiredMedalCount,
+                    EntranceFee,
+                    TicketPrice,
+                    AdditionalTicketPrice,
+                    MaxPurchaseCount,
+                    MaxPurchaseCountWithInterval
+                );
+            }
         }
 
         [SerializeField]
@@ -89,7 +92,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         {
             _arenaDataList = new List<ArenaData>
             {
-                new ArenaData
+                new()
                 {
                     RoundDataBridge = new RoundDataBridge(
                         1,
@@ -104,9 +107,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         2,
                         40,
                         8),
-                    RewardType = ArenaJoinSeasonInfo.RewardType.Food,
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food
                 },
-                new ArenaData
+                new()
                 {
                     RoundDataBridge = new RoundDataBridge(
                         1,
@@ -122,10 +125,10 @@ namespace Nekoyume.UI.Module.Arena.Join
                         40,
                         8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food |
-                                 ArenaJoinSeasonInfo.RewardType.Medal |
-                                 ArenaJoinSeasonInfo.RewardType.NCG,
+                        ArenaJoinSeasonInfo.RewardType.Medal |
+                        ArenaJoinSeasonInfo.RewardType.NCG
                 },
-                new ArenaData
+                new()
                 {
                     RoundDataBridge = new RoundDataBridge(
                         1,
@@ -140,9 +143,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         2,
                         40,
                         8),
-                    RewardType = ArenaJoinSeasonInfo.RewardType.Food,
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food
                 },
-                new ArenaData
+                new()
                 {
                     RoundDataBridge = new RoundDataBridge(
                         1,
@@ -158,10 +161,10 @@ namespace Nekoyume.UI.Module.Arena.Join
                         40,
                         8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food |
-                                 ArenaJoinSeasonInfo.RewardType.Medal |
-                                 ArenaJoinSeasonInfo.RewardType.NCG,
+                        ArenaJoinSeasonInfo.RewardType.Medal |
+                        ArenaJoinSeasonInfo.RewardType.NCG
                 },
-                new ArenaData
+                new()
                 {
                     RoundDataBridge = new RoundDataBridge(
                         1,
@@ -176,9 +179,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         2,
                         40,
                         8),
-                    RewardType = ArenaJoinSeasonInfo.RewardType.Food,
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food
                 },
-                new ArenaData
+                new()
                 {
                     RoundDataBridge = new RoundDataBridge(
                         1,
@@ -194,10 +197,10 @@ namespace Nekoyume.UI.Module.Arena.Join
                         40,
                         8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food |
-                                 ArenaJoinSeasonInfo.RewardType.Medal |
-                                 ArenaJoinSeasonInfo.RewardType.NCG,
+                        ArenaJoinSeasonInfo.RewardType.Medal |
+                        ArenaJoinSeasonInfo.RewardType.NCG
                 },
-                new ArenaData
+                new()
                 {
                     RoundDataBridge = new RoundDataBridge(
                         1,
@@ -212,9 +215,9 @@ namespace Nekoyume.UI.Module.Arena.Join
                         2,
                         40,
                         8),
-                    RewardType = ArenaJoinSeasonInfo.RewardType.Food,
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food
                 },
-                new ArenaData
+                new()
                 {
                     RoundDataBridge = new RoundDataBridge(
                         1,
@@ -230,10 +233,10 @@ namespace Nekoyume.UI.Module.Arena.Join
                         40,
                         8),
                     RewardType = ArenaJoinSeasonInfo.RewardType.Food |
-                                 ArenaJoinSeasonInfo.RewardType.Medal |
-                                 ArenaJoinSeasonInfo.RewardType.NCG |
-                                 ArenaJoinSeasonInfo.RewardType.Costume,
-                },
+                        ArenaJoinSeasonInfo.RewardType.Medal |
+                        ArenaJoinSeasonInfo.RewardType.NCG |
+                        ArenaJoinSeasonInfo.RewardType.Costume
+                }
             };
 
             _conditionRequired = 100;

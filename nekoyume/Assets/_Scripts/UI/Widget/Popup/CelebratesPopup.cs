@@ -49,13 +49,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI continueText = null;
 
-        [SerializeField] [Header("Quest")]
+        [SerializeField][Header("Quest")]
         private GameObject questRewards = null;
 
         [SerializeField]
         private SimpleCountableItemView[] questRewardViews = null;
 
-        [SerializeField] [Header("Recipe")]
+        [SerializeField][Header("Recipe")]
         private GameObject recipeAreaParent = null;
 
         [SerializeField]
@@ -70,7 +70,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI recipeOptionText = null;
 
-        [SerializeField] [Header("Menu")]
+        [SerializeField][Header("Menu")]
         private GameObject menuContainer = null;
 
         [SerializeField]
@@ -88,16 +88,16 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<Menu> menuList = new();
 
-        private readonly List<Tweener> _tweeners = new List<Tweener>();
-        private readonly WaitForSeconds _waitItemInterval = new WaitForSeconds(0.4f);
-        private readonly WaitForSeconds _waitForDisappear = new WaitForSeconds(.3f);
+        private readonly List<Tweener> _tweeners = new();
+        private readonly WaitForSeconds _waitItemInterval = new(0.4f);
+        private readonly WaitForSeconds _waitForDisappear = new(.3f);
 
         private Coroutine _timerCoroutine;
         private Coroutine _coShowSomethingCoroutine;
         private List<CountableItem> _rewards;
         private PraiseVFX _praiseVFX;
 
-        #region override
+#region override
 
         public override void Initialize()
         {
@@ -107,7 +107,7 @@ namespace Nekoyume.UI
             continueText.text = string.Format(format, ContinueTime);
         }
 
-        #region Show with menu
+#region Show with menu
 
         /// <param name="menuName">Combination || Shop || RankingBoard</param>
         /// <param name="ignoreShowAnimation"></param>
@@ -134,7 +134,7 @@ namespace Nekoyume.UI
             PlayEffects();
         }
 
-        #endregion
+#endregion
 
         private void PlayAnimation(NPCAnimation.Type animationType)
         {
@@ -144,7 +144,7 @@ namespace Nekoyume.UI
                 NPCAnimation.Type.Idle.ToString(), true, 0f);
         }
 
-        #region Show with quest
+#region Show with quest
 
         public void Show(
             CombinationEquipmentQuestSheet.Row row,
@@ -221,9 +221,9 @@ namespace Nekoyume.UI
             ReactiveAvatarState.UpdateQuestList(States.Instance.CurrentAvatarState.questList);
         }
 
-        #endregion
+#endregion
 
-        #region Show with recipe
+#region Show with recipe
 
         public void Show(EquipmentItemRecipeSheet.Row row, bool ignoreShowAnimation = false)
         {
@@ -243,7 +243,7 @@ namespace Nekoyume.UI
             recipeCell.Show(row, false);
 
             var resultItem = row.GetResultEquipmentItemRow();
-            for (int i = 0; i < gradeImages.Length; ++i)
+            for (var i = 0; i < gradeImages.Length; ++i)
             {
                 gradeImages[i].SetActive(i < resultItem.Grade);
             }
@@ -259,7 +259,7 @@ namespace Nekoyume.UI
             PlayEffects();
         }
 
-        #endregion
+#endregion
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
@@ -313,7 +313,7 @@ namespace Nekoyume.UI
             base.OnCompleteOfCloseAnimationInternal();
         }
 
-        #endregion
+#endregion
 
         private static void MakeNotification(string questContent)
         {

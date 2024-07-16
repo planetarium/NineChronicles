@@ -37,7 +37,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI seasonPassCourageAmount;
 
-        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
+        private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, .25f, 10f);
 
         private System.Action _onClose;
 
@@ -93,6 +93,7 @@ namespace Nekoyume.UI
             {
                 repeatCount = winDefeatCount.Value.win + winDefeatCount.Value.defeat;
             }
+
             RefreshSeasonPassCourageAmount(repeatCount);
 
             _onClose = onClose;
@@ -112,6 +113,7 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
+
                 seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.ArenaCourageAmount * count}";
             }
             else

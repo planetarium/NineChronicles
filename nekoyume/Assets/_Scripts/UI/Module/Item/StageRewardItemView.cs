@@ -8,14 +8,15 @@ using UnityEngine;
 namespace Nekoyume.UI.Module
 {
     using UniRx;
-    public class StageRewardItemView: VanillaItemView
+
+    public class StageRewardItemView : VanillaItemView
     {
         public RectTransform RectTransform { get; private set; }
         public ItemBase Data { get; private set; }
 
         public TouchHandler touchHandler;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         protected override ImageSizeType imageSizeType => ImageSizeType.Small;
 

@@ -6,12 +6,14 @@ using TMPro;
 
 namespace Nekoyume.UI
 {
-    public class SeasonPassCouragePopup: PopupWidget
+    public class SeasonPassCouragePopup : PopupWidget
     {
         [SerializeField]
         private TextMeshProUGUI arena;
+
         [SerializeField]
         private TextMeshProUGUI worldboss;
+
         [SerializeField]
         private TextMeshProUGUI advanture;
 
@@ -26,7 +28,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);
-            Widget.Find<SeasonPassPremiumPopup>().Show();
+            Find<SeasonPassPremiumPopup>().Show();
         }
     }
 }

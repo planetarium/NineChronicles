@@ -9,12 +9,7 @@ namespace Nekoyume.Helper
         public static void LoadAssets(string label, List<GameObject> objects, System.Action callback)
         {
             var handle = Addressables.LoadAssetsAsync<GameObject>(label, objects.Add);
-            handle.Completed += (result) =>
-            {
-                callback?.Invoke();
-            };
+            handle.Completed += (result) => { callback?.Invoke(); };
         }
-
-
     }
 }

@@ -44,9 +44,10 @@ namespace Nekoyume.UI.Scroller
         private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
 
-        public RectTransform RectTransform => _rectTransformCache
-            ? _rectTransformCache
-            : _rectTransformCache = GetComponent<RectTransform>();
+        public RectTransform RectTransform =>
+            _rectTransformCache
+                ? _rectTransformCache
+                : _rectTransformCache = GetComponent<RectTransform>();
 
         public Nekoyume.Model.State.RankingInfo RankingInfo { get; private set; }
 
@@ -74,7 +75,7 @@ namespace Nekoyume.UI.Scroller
 
             RankingInfo = rankingInfo ?? throw new ArgumentNullException(nameof(rankingInfo));
             _isCurrentUser = States.Instance.CurrentAvatarState?.address ==
-                             RankingInfo.AvatarAddress;
+                RankingInfo.AvatarAddress;
 
             backgroundImage.enabled = Index % 2 == 1;
             rankText.text = rank.ToString();

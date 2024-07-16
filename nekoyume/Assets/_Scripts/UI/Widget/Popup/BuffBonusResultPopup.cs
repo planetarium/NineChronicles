@@ -8,7 +8,7 @@ using Nekoyume.TableData.Crystal;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.State;
+    using State;
     using TMPro;
     using UniRx;
 
@@ -34,11 +34,9 @@ namespace Nekoyume.UI
 
         private int _stageId;
 
-        private readonly Dictionary<GameObject, BonusBuffView> buffViewMap
-            = new Dictionary<GameObject, BonusBuffView>();
+        private readonly Dictionary<GameObject, BonusBuffView> buffViewMap = new();
 
-        public readonly Subject<CrystalRandomBuffSheet.Row> OnBuffSelectedSubject
-            = new Subject<CrystalRandomBuffSheet.Row>();
+        public readonly Subject<CrystalRandomBuffSheet.Row> OnBuffSelectedSubject = new();
 
         protected override void Awake()
         {
@@ -52,29 +50,29 @@ namespace Nekoyume.UI
             }
 
             OnBuffSelectedSubject.Subscribe(row =>
-            {
-                foreach (var viewParent in buffViewParents)
                 {
-                    var inner = viewParent;
-                    if (!inner.activeSelf)
+                    foreach (var viewParent in buffViewParents)
                     {
-                        continue;
-                    }
+                        var inner = viewParent;
+                        if (!inner.activeSelf)
+                        {
+                            continue;
+                        }
 
-                    var view = buffViewMap[inner];
-                    if (view.UpdateSelected(row))
-                    {
-                        selectedBuffText.text = view.CurrentSkillName;
-                        selectedBuffIcon.sprite = view.CurrentIcon;
-                        selectedBuffBg.sprite = view.CurrentGradeData.BgSprite;
+                        var view = buffViewMap[inner];
+                        if (view.UpdateSelected(row))
+                        {
+                            selectedBuffText.text = view.CurrentSkillName;
+                            selectedBuffIcon.sprite = view.CurrentIcon;
+                            selectedBuffBg.sprite = view.CurrentGradeData.BgSprite;
 
-                        var avatarAddress = States.Instance.CurrentAvatarState.address;
-                        var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
-                        PlayerPrefs.SetInt(key, row.Id);
+                            var avatarAddress = States.Instance.CurrentAvatarState.address;
+                            var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
+                            PlayerPrefs.SetInt(key, row.Id);
+                        }
                     }
-                }
-            })
-            .AddTo(gameObject);
+                })
+                .AddTo(gameObject);
             retryButton.onClick.AddListener(Retry);
         }
 
@@ -94,6 +92,7 @@ namespace Nekoyume.UI
                     {
                         return null;
                     }
+
                     return bonusBuffRow;
                 })
                 .OrderBy(x => x.Rank)
@@ -111,8 +110,7 @@ namespace Nekoyume.UI
             var key = string.Format("HackAndSlash.SelectedBonusSkillId.{0}", avatarAddress);
             var selectedId = PlayerPrefs.GetInt(key, 0);
             var contains = buffs.Any(x => x.Id == selectedId);
-            var selectedBuff = contains ?
-                buffs.First(x => x.Id == selectedId) : buffs.First();
+            var selectedBuff = contains ? buffs.First(x => x.Id == selectedId) : buffs.First();
             if (!contains)
             {
                 PlayerPrefs.SetInt(key, selectedBuff.Id);

@@ -29,7 +29,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject emptyObject;
 
-        #region Initialized First
+#region Initialized First
+
         [SerializeField]
         private TextMeshProUGUI titleText;
 
@@ -41,9 +42,11 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image petIconImage;
-        #endregion
 
-        #region Updated on enabled
+#endregion
+
+#region Updated on enabled
+
         [SerializeField]
         private TextMeshProUGUI levelText;
 
@@ -55,7 +58,8 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image dimmedImage;
-        #endregion
+
+#endregion
 
         private int? _petId;
 
@@ -126,6 +130,7 @@ namespace Nekoyume.UI.Module
                 button.gameObject.SetActive(data.IsAppliable && !data.Equipped);
                 inUseObject.SetActive(data.Equipped);
             }
+
             descriptionObject.SetActive(true);
             emptyObject.SetActive(false);
             gameObject.SetActive(true);

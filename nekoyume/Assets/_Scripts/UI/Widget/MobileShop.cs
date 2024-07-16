@@ -41,14 +41,11 @@ namespace Nekoyume.UI
 
         private bool _isInitializedObj;
 
-        private readonly Dictionary<string, IAPShopProductCellView> _allProductObjs =
-            new Dictionary<string, IAPShopProductCellView>();
+        private readonly Dictionary<string, IAPShopProductCellView> _allProductObjs = new();
 
-        private readonly Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory =
-            new Dictionary<string, List<IAPShopProductCellView>>();
+        private readonly Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory = new();
 
-        private readonly Dictionary<string, IAPCategoryTab> _allCategoryTab =
-            new Dictionary<string, IAPCategoryTab>();
+        private readonly Dictionary<string, IAPCategoryTab> _allCategoryTab = new();
 
         private Toggle _recommendedToggle;
 
@@ -68,7 +65,7 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(false);
                 AudioController.PlayClick();
             });
-            
+
             CloseWidget = () =>
             {
                 Close();
@@ -171,6 +168,7 @@ namespace Nekoyume.UI
                         "UI_OK",
                         true);
                 }
+
                 return;
             }
 
@@ -292,6 +290,7 @@ namespace Nekoyume.UI
                             NcDebug.LogError(e.Message);
                             NcDebug.LogError($"Failed to refresh localized: {product.Sku}");
                         }
+
                         _allProductObjs.Add(product.Sku, productObj);
                     }
 
@@ -370,6 +369,7 @@ namespace Nekoyume.UI
             {
                 item.gameObject.SetActive(true);
             }
+
             emptyCategoryPannel.SetActive(buyableItems.Count() == 0);
 
             iAPShopDynamicGridLayout.Refresh();

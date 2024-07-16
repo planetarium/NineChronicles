@@ -54,6 +54,7 @@ namespace Nekoyume.Game.Util
             {
                 sb.Append(0);
             }
+
             _number.text = sb.ToString();
         }
 

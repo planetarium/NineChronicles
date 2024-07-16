@@ -17,11 +17,11 @@ using Random = UnityEngine.Random;
 namespace Nekoyume.UI
 {
     using System.Net.Http;
-    using Nekoyume.Blockchain;
+    using Blockchain;
     using UniRx;
+
     public class PortalConnect
     {
-
         [Serializable]
         public class RequestResult
         {
@@ -102,9 +102,9 @@ namespace Nekoyume.UI
             }
 
             NcDebug.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl})" +
-                      $", deeplinkURL({deeplinkURL})" +
-                      $", accessToken({accessToken})" +
-                      $", refreshToken({refreshToken})");
+                $", deeplinkURL({deeplinkURL})" +
+                $", accessToken({accessToken})" +
+                $", refreshToken({refreshToken})");
         }
 
         public void OpenPortal(System.Action onPortalEnd = null)
@@ -195,7 +195,7 @@ namespace Nekoyume.UI
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             const int length = 16;
             var stringBuilder = new StringBuilder(length);
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 stringBuilder.Append(chars[Random.Range(0, chars.Length)]);
             }
@@ -239,7 +239,7 @@ namespace Nekoyume.UI
             else
             {
                 NcDebug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} " +
-                               $"Error: {request.error}\n{json}\nclientSecret: {clientSecret}");
+                    $"Error: {request.error}\n{json}\nclientSecret: {clientSecret}");
                 ShowRequestErrorPopup(data);
             }
         }
@@ -248,7 +248,7 @@ namespace Nekoyume.UI
         {
             var url = $"{PortalUrl}{AccessTokenEndpoint}";
             NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(GetAccessToken)} invoked: " +
-                      $"url({url}), clientSecret({clientSecret}), code({code})");
+                $"url({url}), clientSecret({clientSecret}), code({code})");
 
             var form = new WWWForm();
             form.AddField("clientSecret", clientSecret);
@@ -494,8 +494,8 @@ namespace Nekoyume.UI
             var evt = new AirbridgeEvent("Intro_GoogleSignIn_ConnectToPortal");
             AirbridgeUnity.TrackEvent(evt);
 
-            var body = new JsonObject {{"idToken", idToken}};
-            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
+            var body = new JsonObject { { "idToken", idToken } };
+            var bodyString = body.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
             var request = new UnityWebRequest($"{PortalUrl}{GoogleAuthEndpoint}", "POST");
             var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -537,8 +537,8 @@ namespace Nekoyume.UI
             var evt = new AirbridgeEvent("Intro_AppleSignIn_ConnectToPortal");
             AirbridgeUnity.TrackEvent(evt);
 
-            var body = new JsonObject {{"idToken", idToken}};
-            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
+            var body = new JsonObject { { "idToken", idToken } };
+            var bodyString = body.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
             var request = new UnityWebRequest($"{PortalUrl}{AppleAuthEndpoint}", "POST");
             var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -593,7 +593,7 @@ namespace Nekoyume.UI
                 if (addressInPortal != address)
                 {
                     NcDebug.LogError($"[{nameof(PortalConnect)}] {nameof(CheckTokensAsync)}... " +
-                                   $"addressInPortal({addressInPortal}) != address({address})");
+                        $"addressInPortal({addressInPortal}) != address({address})");
                     return false;
                 }
 
@@ -649,7 +649,7 @@ namespace Nekoyume.UI
 #endif
 
             NcDebug.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} invoked: " +
-                      $"url({url}), os({os}), planetId({planetId}), address({address}), accessToken({accessToken})");
+                $"url({url}), os({os}), planetId({planetId}), address({address}), accessToken({accessToken})");
 
             var form = new WWWForm();
             form.AddField("address", address.ToHex());
@@ -681,7 +681,7 @@ namespace Nekoyume.UI
             else
             {
                 NcDebug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Error: " +
-                               $"{request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
+                    $"{request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
                 ShowRequestErrorPopup(data);
             }
         }

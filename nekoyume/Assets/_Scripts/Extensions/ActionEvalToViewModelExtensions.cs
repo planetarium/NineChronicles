@@ -69,7 +69,7 @@ namespace Nekoyume
                     collectionState.GetEffects(sheets.CollectionSheet),
                     sheets.DeBuffLimitSheet,
                     sheets.BuffLinkSheet,
-                    logEvent: true,
+                    true,
                     States.Instance.GameConfigState.ShatterStrikeMaxDamage);
                 simulator.Simulate();
                 if (simulator.Log.IsClear)

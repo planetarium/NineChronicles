@@ -18,7 +18,9 @@ namespace Nekoyume.Game.Trigger
         private int _wave;
         private const float SpawnOffset = 6.0f;
 
-        private class InvalidWaveException: Exception {}
+        private class InvalidWaveException : Exception
+        {
+        }
 
         public IEnumerator CoSetData(List<Model.Enemy> monsters)
         {
@@ -45,6 +47,7 @@ namespace Nekoyume.Game.Trigger
                     {
                         throw new InvalidWaveException();
                     }
+
                     var pos = new Vector2(
                         point.x + offsetX,
                         point.y);
@@ -53,13 +56,13 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        private IEnumerator CoSpawnMonster(Model.Enemy enemy, Vector2 pos, Character.Player player)
+        private IEnumerator CoSpawnMonster(Model.Enemy enemy, Vector2 pos, Player player)
         {
             StageMonsterFactory.Create(enemy, pos, player);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
-        private IEnumerator CoSpawnBreakthroughMonster(int enemyId, Vector2 pos,float offset, Character.Player player, Action<GameObject> createCallback)
+        private IEnumerator CoSpawnBreakthroughMonster(int enemyId, Vector2 pos, float offset, Player player, Action<GameObject> createCallback)
         {
             var createdObj = StageMonsterFactory.CreateBreakthroughCharacter(enemyId, pos, offset, player);
             createCallback.Invoke(createdObj);
@@ -110,6 +113,7 @@ namespace Nekoyume.Game.Trigger
                     {
                         throw new InvalidWaveException();
                     }
+
                     var pos = new Vector2(
                         offsetX + point.x,
                         point.y);

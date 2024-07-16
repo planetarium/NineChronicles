@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Scroller
 
         private QuestCell[] animationCells = null;
 
-        public readonly Queue<QuestModel> CompletedQuestQueue = new Queue<QuestModel>();
+        public readonly Queue<QuestModel> CompletedQuestQueue = new();
 
         public void DisappearAnimation(int index)
         {
@@ -44,8 +44,8 @@ namespace Nekoyume.UI.Scroller
             for (var i = cell.Index; i < endValue; i++)
             {
                 animationCells[i - cell.Index].transform.localScale = Vector3.one;
-                ((RectTransform) animationCells[i - cell.Index].transform).anchoredPosition =
-                    ((RectTransform) cell.transform).anchoredPosition -
+                ((RectTransform)animationCells[i - cell.Index].transform).anchoredPosition =
+                    ((RectTransform)cell.transform).anchoredPosition -
                     Vector2.up * (CellSize * i - cell.Index);
 
                 animationCells[i - cell.Index].gameObject.SetActive(true);
@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Scroller
 
             for (var i = index + 1; i < animationCells.Length; i++)
             {
-                ((RectTransform) animationCells[i].transform).DoAnchoredMoveY(CellSize, 0.3f, true);
+                ((RectTransform)animationCells[i].transform).DoAnchoredMoveY(CellSize, 0.3f, true);
             }
         }
 
@@ -87,13 +87,17 @@ namespace Nekoyume.UI.Scroller
         public void OnCompleteQuest(bool update, int index)
         {
             if (CompletedQuestQueue.Count <= 0)
+            {
                 return;
+            }
 
             var completedQuest = CompletedQuestQueue.Dequeue();
             Widget.Find<CelebratesPopup>().Show(completedQuest);
 
             if (update)
+            {
                 animationCells[index].UpdateTab();
+            }
         }
 
         public void DoneAnimation()

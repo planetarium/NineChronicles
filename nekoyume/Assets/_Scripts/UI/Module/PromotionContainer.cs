@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module
             None,
             Arena,
             WorldBoss,
-            EventDungeon,
+            EventDungeon
         }
 
         [Serializable]
@@ -40,7 +40,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private string enableKey;
 
-        [SerializeField] [Header("Optional")]
+        [SerializeField][Header("Optional")]
         private TextMeshProUGUI timeText;
 
         [SerializeField]
@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Module
                     var arenaSheet = Game.Game.instance.TableSheets.ArenaSheet;
                     var arenaRoundData = arenaSheet.GetRoundByBlockIndex(blockIndex);
                     inSeason = arenaRoundData.ArenaType == ArenaType.Season &&
-                               !Game.LiveAsset.GameConfig.IsKoreanBuild;
+                        !Game.LiveAsset.GameConfig.IsKoreanBuild;
                     break;
                 case Season.WorldBoss:
                     var worldBossStatus = WorldBossFrontHelper.GetStatus(blockIndex);
@@ -98,7 +98,7 @@ namespace Nekoyume.UI.Module
             }
 
             var hasBanner = _bannerData is not null && _bannerData.UseDateTime &&
-                            DateTime.UtcNow.IsInTime(_bannerData.BeginDateTime, _bannerData.EndDateTime);
+                DateTime.UtcNow.IsInTime(_bannerData.BeginDateTime, _bannerData.EndDateTime);
             if (!hasBanner)
             {
                 gameObject.SetActive(false);

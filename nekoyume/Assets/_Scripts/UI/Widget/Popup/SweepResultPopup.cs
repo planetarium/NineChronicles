@@ -94,8 +94,8 @@ namespace Nekoyume.UI
         private int _apStonePlayCount = 0;
         private int _fixedApStonePlayCount = 0;
 
-        private readonly ReactiveProperty<int> _attackCount = new ReactiveProperty<int>();
-        private readonly ReactiveProperty<bool> _sweepRewind = new ReactiveProperty<bool>(true);
+        private readonly ReactiveProperty<int> _attackCount = new();
+        private readonly ReactiveProperty<bool> _sweepRewind = new(true);
 
         private void Start()
         {
@@ -154,7 +154,7 @@ namespace Nekoyume.UI
             var cutscenePath = $"UI/Prefabs/UI_WorldClear_{worldId:D2}";
             NcDebug.Log($"cutscenePath :{cutscenePath}");
             var clone = Resources.Load<GameObject>(cutscenePath) ??
-                        Resources.Load<GameObject>("UI/Prefabs/UI_WorldClear_01");
+                Resources.Load<GameObject>("UI/Prefabs/UI_WorldClear_01");
             _titleDeco = Instantiate(clone, titleDecoContainer);
         }
 
@@ -212,6 +212,7 @@ namespace Nekoyume.UI
             {
                 max += 1;
             }
+
             var attackMaxCount = Mathf.Clamp(max, 1, maxPlayCount);
             playCountBar.fillAmount = (float)attackCount / attackMaxCount;
 
@@ -289,6 +290,7 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
+
                 seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureSweepCourageAmount * playCount}";
             }
             else

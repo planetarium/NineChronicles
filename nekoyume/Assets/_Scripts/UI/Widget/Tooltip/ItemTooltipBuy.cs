@@ -24,6 +24,7 @@ namespace Nekoyume
         private long _expiredBlockIndex;
 
         private System.Action _onSubmit;
+
         private void Awake()
         {
             button.OnSubmitClick.Subscribe(_ =>

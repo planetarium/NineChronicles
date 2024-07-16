@@ -17,6 +17,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class DccCollection : Widget
     {
         [SerializeField]
@@ -72,10 +73,7 @@ namespace Nekoyume.UI
 #endif
             };
             backButton.onClick.AddListener(() => CloseWidget.Invoke());
-            dccButton.onClick.AddListener(() =>
-            {
-                Find<ConfirmConnectPopup>().ShowConnectDcc(true);
-            });
+            dccButton.onClick.AddListener(() => { Find<ConfirmConnectPopup>().ShowConnectDcc(true); });
             lockedButton.onClick.AddListener(() =>
             {
                 OneLineSystem.Push(
@@ -102,10 +100,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
                     NotificationCell.NotificationType.Information);
             }).AddTo(gameObject);
-            LoadingHelper.PetEnhancement.Subscribe(id =>
-            {
-                levelUpButton.Interactable = id == 0;
-            }).AddTo(gameObject);
+            LoadingHelper.PetEnhancement.Subscribe(id => { levelUpButton.Interactable = id == 0; }).AddTo(gameObject);
         }
 
         protected override void OnDisable()

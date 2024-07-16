@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module
             set => _button.interactable = value;
         }
 
-        #region Mono
+#region Mono
 
         protected void Awake()
         {
@@ -34,6 +34,6 @@ namespace Nekoyume.UI.Module
             _button.onClick.AddListener(() => OnClick?.Invoke());
         }
 
-        #endregion
+#endregion
     }
 }

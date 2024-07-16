@@ -24,7 +24,7 @@ namespace Nekoyume
 
             if (mail.Memo != null && mail.Memo.Contains("season_pass"))
             {
-                if(mail.Memo.Contains("\"t\": \"auto\""))
+                if (mail.Memo.Contains("\"t\": \"auto\""))
                 {
                     return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS_ENDED");
                 }
@@ -33,7 +33,8 @@ namespace Nekoyume
                     return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS");
                 }
             }
-;
+
+            ;
             var iapServiceManager = ApiClients.Instance.IAPServiceManager;
             if (iapServiceManager is null)
             {
@@ -41,7 +42,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            if(Game.Game.instance.IAPStoreManager is null)
+            if (Game.Game.instance.IAPStoreManager is null)
             {
                 return mail.GetCellContentsForException();
             }
@@ -70,9 +71,9 @@ namespace Nekoyume
 #if UNITY_IOS
                 Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
 #else
-            Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+            var gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
 #endif
-            Match gSkuMatch = gSkuRegex.Match(memo);
+            var gSkuMatch = gSkuRegex.Match(memo);
             if (gSkuMatch.Success)
             {
                 product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
@@ -84,7 +85,7 @@ namespace Nekoyume
         private static string GetCellContentsForException(
             this UnloadFromMyGaragesRecipientMail mail)
         {
-            string itemNames = string.Empty;
+            var itemNames = string.Empty;
             if (mail.FungibleAssetValues is not null)
             {
                 foreach (var fav in mail.FungibleAssetValues)
@@ -98,7 +99,7 @@ namespace Nekoyume
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
                 var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                 foreach (var (fungibleId, count) in
-                         mail.FungibleIdAndCounts)
+                    mail.FungibleIdAndCounts)
                 {
                     var row = materialSheet.OrderedList!
                         .FirstOrDefault(row => row.Id.Equals(fungibleId));
@@ -108,6 +109,7 @@ namespace Nekoyume
                         itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
                         continue;
                     }
+
                     NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
 
                     row = materialSheet.OrderedList!
@@ -120,7 +122,7 @@ namespace Nekoyume
                     }
 
                     var itemRow = itemSheet.OrderedList!.FirstOrDefault(row => row.Equals(fungibleId));
-                    if(itemRow != null)
+                    if (itemRow != null)
                     {
                         var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
                         itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
@@ -129,7 +131,7 @@ namespace Nekoyume
                 }
             }
 
-            string stringToRemove = ", ";
+            var stringToRemove = ", ";
             if (itemNames.EndsWith(stringToRemove))
             {
                 itemNames = itemNames.Substring(0, itemNames.Length - stringToRemove.Length);
@@ -137,7 +139,7 @@ namespace Nekoyume
 
             var exceptionFormat = L10nManager.Localize(
                 "UI_RECEIVED");
-            itemNames += " "+ exceptionFormat;
+            itemNames += " " + exceptionFormat;
 
             return itemNames;
         }
@@ -176,7 +178,7 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var game      = Game.Game.instance;
+            var game = Game.Game.instance;
             var agentAddr = game.Agent.Address;
 
             ProductSchema product = null;
@@ -185,9 +187,9 @@ namespace Nekoyume
 #if UNITY_IOS
                 Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
 #else
-                Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+                var gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
 #endif
-                Match gSkuMatch = gSkuRegex.Match(mail.Memo);
+                var gSkuMatch = gSkuRegex.Match(mail.Memo);
                 if (gSkuMatch.Success)
                 {
                     product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
@@ -209,7 +211,7 @@ namespace Nekoyume
         private static string GetCellContentsForException(
             this ClaimItemsMail mail)
         {
-            string itemNames = string.Empty;
+            var itemNames = string.Empty;
             if (mail.FungibleAssetValues is not null)
             {
                 foreach (var fav in mail.FungibleAssetValues)
@@ -223,7 +225,7 @@ namespace Nekoyume
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
                 var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                 foreach (var (fungibleId, count) in
-                         mail.Items)
+                    mail.Items)
                 {
                     var row = materialSheet.OrderedList!
                         .FirstOrDefault(row => row.Id.Equals(fungibleId));
@@ -249,11 +251,12 @@ namespace Nekoyume
                         itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
                         continue;
                     }
+
                     NcDebug.LogWarning($"Not found material sheet row. {fungibleId}");
                 }
             }
 
-            string stringToRemove = ", ";
+            var stringToRemove = ", ";
             if (itemNames.EndsWith(stringToRemove))
             {
                 itemNames = itemNames.Substring(0, itemNames.Length - stringToRemove.Length);

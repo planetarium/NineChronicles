@@ -10,7 +10,7 @@ namespace Nekoyume.Helper
 {
     public static class ResourcesHelper
     {
-        private static readonly List<ScriptableObject> Resources = new List<ScriptableObject>();
+        private static readonly List<ScriptableObject> Resources = new();
 
         public static void Initialize()
         {
@@ -46,12 +46,14 @@ namespace Nekoyume.Helper
         public static GameObject GetAuraPrefab(int id, int level)
         {
             if (level < 0)
+            {
                 return null;
+            }
 
             var datas = Get<AuraScriptableObject>().data;
 
             var auras = datas.FirstOrDefault(x => x.id == id);
-            if(auras != null)
+            if (auras != null)
             {
                 var index = AuraLevelToIndex(level);
                 return auras.prefab[Mathf.Clamp(index, 0, auras.prefab.Count - 1)];
@@ -63,10 +65,14 @@ namespace Nekoyume.Helper
         private static int AuraLevelToIndex(int level)
         {
             if (level < 2)
+            {
                 return 0;
+            }
 
             if (level < 5)
+            {
                 return 1;
+            }
 
             return 2;
         }
@@ -77,9 +83,11 @@ namespace Nekoyume.Helper
 
             var auras = datas.FirstOrDefault(x => x.id == id);
             if (auras == null)
+            {
                 return null;
+            }
 
-            if(auras.prefab.Count == 1)
+            if (auras.prefab.Count == 1)
             {
                 return auras.prefab[0];
             }

@@ -23,8 +23,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI count;
 
-        private readonly Dictionary<string, List<(ItemBase, int)>> _codeRewards =
-            new Dictionary<string, List<(ItemBase, int)>>();
+        private readonly Dictionary<string, List<(ItemBase, int)>> _codeRewards = new();
 
         protected override void Awake()
         {

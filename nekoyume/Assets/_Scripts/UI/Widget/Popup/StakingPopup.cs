@@ -28,6 +28,7 @@ namespace Nekoyume.UI
     {
         [Header("Top")]
         [SerializeField] private Image levelIconImage;
+
         [SerializeField] private Image[] levelImages;
         [SerializeField] private TextMeshProUGUI depositText; // it shows having NCG, not staked.
         [SerializeField] private TextMeshProUGUI stakedNcgValueText; // it shows staked NCG, not having.
@@ -43,6 +44,7 @@ namespace Nekoyume.UI
 
         [Header("Center")]
         [SerializeField] private StakingBuffBenefitsView[] buffBenefitsViews;
+
         [SerializeField] private StakingInterestBenefitsView[] interestBenefitsViews;
         [SerializeField] private TextMeshProUGUI remainingBlockText;
         [SerializeField] private ConditionalButton archiveButton;
@@ -53,6 +55,7 @@ namespace Nekoyume.UI
 
         [Header("Bottom")]
         [SerializeField] private CategoryTabButton currentBenefitsTabButton;
+
         [SerializeField] private CategoryTabButton levelBenefitsTabButton;
         [SerializeField] private GameObject currentBenefitsTab;
         [SerializeField] private GameObject levelBenefitsTab;
@@ -119,18 +122,12 @@ namespace Nekoyume.UI
                 archiveButton.UpdateObjects();
             }).AddTo(gameObject);
             editSaveButton.onClick.AddListener(OnClickSaveButton);
-            editCancelButton.onClick.AddListener(() =>
-            {
-                OnChangeEditingState(false);
-            });
-            informationBg.OnClick = () =>
-            {
-                stakingInformationObject.SetActive(false);
-            };
+            editCancelButton.onClick.AddListener(() => { OnChangeEditingState(false); });
+            informationBg.OnClick = () => { stakingInformationObject.SetActive(false); };
             stakingNcgInputField.onEndEdit.AddListener(value =>
             {
                 var totalDeposit = (States.Instance.GoldBalanceState.Gold +
-                                    States.Instance.StakedBalanceState.Gold)
+                        States.Instance.StakedBalanceState.Gold)
                     .MajorUnit;
                 stakingNcgInputField.textComponent.color =
                     BigInteger.TryParse(value, out var inputBigInt) && totalDeposit < inputBigInt
@@ -183,10 +180,10 @@ namespace Nekoyume.UI
 
             // if StakePolicySheet has diff with my StakeStateV2.Contract, require migration
             var requiredMigrate = hasStakeState &&
-                                  States.Instance.StakeStateV2.Value.Contract
-                                      .StakeRegularRewardSheetTableName !=
-                                  TableSheets.Instance.StakePolicySheet
-                                      .StakeRegularRewardSheetValue;
+                States.Instance.StakeStateV2.Value.Contract
+                    .StakeRegularRewardSheetTableName !=
+                TableSheets.Instance.StakePolicySheet
+                    .StakeRegularRewardSheetValue;
             stakingStartButton.gameObject.SetActive(!hasStakeState);
             migrateButton.gameObject.SetActive(requiredMigrate);
             ncgEditButton.gameObject.SetActive(hasStakeState && !requiredMigrate);
@@ -282,14 +279,11 @@ namespace Nekoyume.UI
             confirmUI.ShowWithTwoButton(
                 confirmTitle,
                 confirmContent,
-                labelYes: L10nManager.Localize("UI_OK"),
-                labelNo: L10nManager.Localize("UI_CANCEL"),
-                localize:false,
-                type: IconAndButtonSystem.SystemType.Information);
-            var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo =>
-            {
-                Application.OpenURL(linkInfo.GetLinkID());
-            });
+                L10nManager.Localize("UI_OK"),
+                L10nManager.Localize("UI_CANCEL"),
+                false,
+                IconAndButtonSystem.SystemType.Information);
+            var disposable = confirmUI.ContentText.SubscribeForClickLink(linkInfo => { Application.OpenURL(linkInfo.GetLinkID()); });
             confirmUI.ConfirmCallback = () =>
             {
                 ActionManager.Instance.Stake(States.Instance.StakedBalanceState.Gold.MajorUnit)
@@ -297,10 +291,7 @@ namespace Nekoyume.UI
                 disposable.Dispose();
                 OnChangeEditingState(false);
             };
-            confirmUI.CancelCallback = () =>
-            {
-                disposable.Dispose();
-            };
+            confirmUI.CancelCallback = () => { disposable.Dispose(); };
         }
 
         private void OnClickSaveButton()
@@ -331,7 +322,7 @@ namespace Nekoyume.UI
             }
 
             var totalDepositNcg = States.Instance.GoldBalanceState.Gold +
-                                  States.Instance.StakedBalanceState.Gold;
+                States.Instance.StakedBalanceState.Gold;
             if (inputBigInt > totalDepositNcg.MajorUnit)
             {
                 OneLineSystem.Push(MailType.System,
@@ -367,7 +358,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize:true, type: confirmIcon);
+            confirmUI.ShowWithTwoButton(confirmTitle, confirmContent, localize: true, type: confirmIcon);
             confirmUI.ConfirmCallback = () =>
             {
                 ActionManager.Instance.Stake(BigInteger.Parse(stakingNcgInputField.text))
@@ -386,7 +377,7 @@ namespace Nekoyume.UI
                 levelImages[i].enabled = i < level;
             }
 
-            for (int i = 0; i < myLevelHighlightObjects.Length; i++)
+            for (var i = 0; i < myLevelHighlightObjects.Length; i++)
             {
                 myLevelHighlightObjects[i].SetActive(i + 1 == level);
             }
@@ -427,18 +418,18 @@ namespace Nekoyume.UI
             var regularFixedSheet = states.StakeRegularFixedRewardSheet;
             var stakeStateV2 = states.StakeStateV2;
             var rewardBlockInterval = stakeStateV2.HasValue
-                ? (int) stakeStateV2.Value.Contract.RewardInterval
-                : (int) StakeState.RewardInterval;
+                ? (int)stakeStateV2.Value.Contract.RewardInterval
+                : (int)StakeState.RewardInterval;
 
             TryGetWaitedBlockIndex(blockIndex, rewardBlockInterval, out var waitedBlockRange);
-            var rewardCount = (int) waitedBlockRange / rewardBlockInterval;
+            var rewardCount = (int)waitedBlockRange / rewardBlockInterval;
             regularSheet.TryGetValue(level, out var regular);
             regularFixedSheet.TryGetValue(level, out var regularFixed);
 
             var materialSheet = TableSheets.Instance.MaterialItemSheet;
             for (var i = 0; i < interestBenefitsViews.Length; i++)
             {
-                var result = GetReward(regular, regularFixed, (long) deposit, i);
+                var result = GetReward(regular, regularFixed, (long)deposit, i);
                 result *= Mathf.Max(rewardCount, 1);
                 if (result <= 0)
                 {
@@ -455,18 +446,18 @@ namespace Nekoyume.UI
                             interestBenefitsViews[i].Set(
                                 ItemFactory.CreateMaterial(materialSheet,
                                     regular.Rewards[i].ItemId),
-                                (int) result);
+                                (int)result);
                             break;
                         case StakeRegularRewardSheet.StakeRewardType.Rune:
                             interestBenefitsViews[i].Set(
                                 regular.Rewards[i].ItemId,
-                                (int) result);
+                                (int)result);
                             break;
                         case StakeRegularRewardSheet.StakeRewardType.Currency:
                             var ticker = regular.Rewards[i].CurrencyTicker;
                             interestBenefitsViews[i].Set(
                                 ticker,
-                                (int) result,
+                                (int)result,
                                 ticker.Equals(Currencies.Crystal.Ticker));
                             break;
                     }

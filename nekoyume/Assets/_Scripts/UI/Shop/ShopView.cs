@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module
         private Image _nextPageImage;
         private Image _previousPageImage;
         protected int _column;
-        protected  int _row;
+        protected int _row;
         private int _pageCount = 1;
         protected bool _isActive;
 
@@ -101,16 +101,10 @@ namespace Nekoyume.UI.Module
             SubscribeToSearchConditions();
 
             _nextPageImage = nextPageButton.GetComponent<Image>();
-            nextPageButton.onClick.AddListener(() =>
-            {
-                _page.Value = math.min(_pageCount - 1, _page.Value + 1);
-            });
+            nextPageButton.onClick.AddListener(() => { _page.Value = math.min(_pageCount - 1, _page.Value + 1); });
 
             _previousPageImage = previousPageButton.GetComponent<Image>();
-            previousPageButton.onClick.AddListener(() =>
-            {
-                _page.Value = math.max(0, _page.Value - 1);
-            });
+            previousPageButton.onClick.AddListener(() => { _page.Value = math.max(0, _page.Value - 1); });
 
             _page.ObserveOnMainThread().Subscribe(UpdatePage).AddTo(gameObject);
         }
@@ -268,7 +262,7 @@ namespace Nekoyume.UI.Module
         {
             var grade = sheet[product.ItemId].Grade;
             var limit = item.ItemType != ItemType.Material &&
-                        !Util.IsUsableItem(item);
+                !Util.IsUsableItem(item);
             return new ShopItem(item, product, grade, limit);
         }
 

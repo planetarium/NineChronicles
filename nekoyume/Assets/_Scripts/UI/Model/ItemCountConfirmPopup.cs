@@ -1,7 +1,6 @@
 ﻿namespace Nekoyume.UI.Model
 {
-    public class ItemCountConfirmPopup : ItemCountPopup<Model.ItemCountConfirmPopup>
+    public class ItemCountConfirmPopup : ItemCountPopup<ItemCountConfirmPopup>
     {
-
     }
 }

@@ -19,7 +19,7 @@ namespace Nekoyume.GraphQL.GraphTypes
             public override string ToString()
             {
                 return $"Address: {Address}, AvatarStates({AvatarStates.Length}):" +
-                       $" [{string.Join(", ", AvatarStates.Select(e => e.ToString()))}]";
+                    $" [{string.Join(", ", AvatarStates.Select(e => e.ToString()))}]";
             }
         }
 

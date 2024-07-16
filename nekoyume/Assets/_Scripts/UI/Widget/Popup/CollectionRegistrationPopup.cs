@@ -14,6 +14,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class CollectionRegistrationPopup : PopupWidget
     {
         [SerializeField] private Button closeButton;
@@ -46,10 +47,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 CloseWidget.Invoke();
             });
-            CloseWidget = () =>
-            {
-                Close();
-            };
+            CloseWidget = () => { Close(); };
 
             registrationButton.OnSubmitSubject
                 .Subscribe(_ => OnClickRegisterButton())
@@ -112,7 +110,7 @@ namespace Nekoyume.UI
             CloseWidget.Invoke();
         }
 
-        #region NonFungibleCollectionMaterial (Equipment, Costume)
+#region NonFungibleCollectionMaterial (Equipment, Costume)
 
         private void RegisterItem(InventoryItem item)
         {
@@ -135,7 +133,7 @@ namespace Nekoyume.UI
                         ItemId = item.ItemBase.Id,
                         ItemCount = 1,
                         NonFungibleId = costume.NonFungibleId,
-                        SkillContains = false,
+                        SkillContains = false
                     };
                     break;
                 default:
@@ -187,7 +185,7 @@ namespace Nekoyume.UI
                 : L10nManager.Localize("UI_REGISTER");
         }
 
-        #endregion
+#endregion
 
         // For NonFungibleCollectionMaterial (Equipment, Costume)
         public void ShowForNonFungibleMaterial(
@@ -242,7 +240,7 @@ namespace Nekoyume.UI
                 var registered = new FungibleCollectionMaterial
                 {
                     ItemId = material.Row.ItemId,
-                    ItemCount = material.Row.Count,
+                    ItemCount = material.Row.Count
                 };
 
                 _registeredItems.Add(required, registered);

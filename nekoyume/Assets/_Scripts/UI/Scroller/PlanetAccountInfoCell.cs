@@ -131,7 +131,7 @@ namespace Nekoyume.UI.Scroller
                     {
                         var avatar = avatars[i];
                         text.text = string.Format(
-                            format: AccountTextFormat,
+                            AccountTextFormat,
                             avatar.Level,
                             avatar.Name,
                             avatar.Address[..6]);

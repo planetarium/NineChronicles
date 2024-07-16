@@ -7,6 +7,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Tween
 {
     using UniRx;
+
     [RequireComponent(typeof(Mask))]
     public class MaskedRectTransformXRoller : MonoBehaviour
     {
@@ -38,7 +39,7 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private bool useAnimationSpeed;
 
-        [SerializeField] [Range(0f, 1f)]
+        [SerializeField][Range(0f, 1f)]
         private float animationSpeed;
 
         [SerializeField]
@@ -68,7 +69,7 @@ namespace Nekoyume.UI.Tween
 
         private bool _isEnabledAndFirstLoop;
 
-        public BoolReactiveProperty isSelected = new BoolReactiveProperty(true);
+        public BoolReactiveProperty isSelected = new(true);
 
         private void Awake()
         {
@@ -209,16 +210,15 @@ namespace Nekoyume.UI.Tween
                         contentRectTransform.rect.width < RightInXPosition,
                     _ => throw new ArgumentOutOfRangeException(nameof(timing), timing, null)
                 };
-
             }
 
             return t >= timing switch
             {
                 PauseTiming.Left => (RightInXPosition - LeftOutXPosition) /
-                                    (RightOutXPosition - LeftOutXPosition),
+                    (RightOutXPosition - LeftOutXPosition),
                 PauseTiming.Middle => .5f,
                 PauseTiming.Right => (LeftInXPosition - LeftOutXPosition) /
-                                     (RightOutXPosition - LeftOutXPosition),
+                    (RightOutXPosition - LeftOutXPosition),
                 _ => throw new ArgumentOutOfRangeException(nameof(timing), timing, null)
             };
         }

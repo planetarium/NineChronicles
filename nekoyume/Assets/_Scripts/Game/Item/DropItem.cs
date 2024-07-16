@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Item
         private const float MultiplyForLerpSpeed = 3f;
 
         private static readonly Vector3 DefaultScale = Vector3.one * 0.625f;
-        private static readonly Vector3 DropAmount = new Vector3(0.8f, 0f);
+        private static readonly Vector3 DropAmount = new(0.8f, 0f);
 
         private static UI.Battle _battle;
         private static Vector3 _inventoryPosition = Vector3.zero;
@@ -34,7 +34,7 @@ namespace Nekoyume.Game.Item
         private Tweener _tweenFade;
         private Sequence _sequenceDrop;
 
-        #region Mono
+#region Mono
 
         private void Awake()
         {
@@ -58,7 +58,7 @@ namespace Nekoyume.Game.Item
             _sequenceDrop = null;
         }
 
-        #endregion
+#endregion
 
         public IEnumerator CoSet(List<ItemBase> items)
         {
@@ -108,6 +108,7 @@ namespace Nekoyume.Game.Item
             {
                 throw new WidgetNotFoundException<HeaderMenuStatic>();
             }
+
             headerMenu.PlayVFX(ItemMoveAnimation.EndPoint.Inventory);
 
             Event.OnGetItem.Invoke(this);

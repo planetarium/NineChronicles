@@ -10,12 +10,12 @@ namespace Nekoyume.UI.Module
     [Serializable]
     public class ToggleDropdown : Toggle
     {
-        public List<Toggle> items = new List<Toggle>();
+        public List<Toggle> items = new();
         public float duration;
         public bool allOffOnAwake = false;
 
-        private List<RectTransform> _itemRectTransforms = new List<RectTransform>();
-        private List<CanvasGroup> _itemCanvasGroups = new List<CanvasGroup>();
+        private List<RectTransform> _itemRectTransforms = new();
+        private List<CanvasGroup> _itemCanvasGroups = new();
         private Sequence _seq;
         private RectTransform _rectTransform;
         private Vector2 _parentSize;
@@ -74,13 +74,13 @@ namespace Nekoyume.UI.Module
                 _seq = DOTween.Sequence();
 
                 var eachDuration = duration / _itemRectTransforms.Count;
-                for (int i = 0; i < _itemRectTransforms.Count; i++)
+                for (var i = 0; i < _itemRectTransforms.Count; i++)
                 {
                     var item = _itemRectTransforms[i];
                     var itemCanvasGroup = _itemCanvasGroups[i];
                     var itemSizeDelta = item.sizeDelta;
 
-                    var targetMoveY = (i) * -itemSizeDelta.y - _parentSize.y;
+                    var targetMoveY = i * -itemSizeDelta.y - _parentSize.y;
                     var targetSize = new Vector2(_parentSize.x,
                         (i + 1) * itemSizeDelta.y + _parentSize.y);
                     _seq.Append(item.DoAnchoredMoveY(targetMoveY, eachDuration))

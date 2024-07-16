@@ -29,10 +29,10 @@ namespace Nekoyume
             public Color color;
         }
 
-        [field:SerializeField]
+        [field: SerializeField]
         public List<PetRenderingData> PetRenderingDataList { get; private set; }
 
-        [field:SerializeField]
+        [field: SerializeField]
         public List<PetUIPalette> PetUIPaletteList { get; private set; }
     }
 }

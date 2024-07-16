@@ -46,7 +46,7 @@ namespace Nekoyume.State
         {
             Value = defaultValue;
             _updateAsyncFunc = updateAsyncFunc
-                               ?? throw new ArgumentNullException(nameof(updateAsyncFunc));
+                ?? throw new ArgumentNullException(nameof(updateAsyncFunc));
         }
 
         public async UniTask<T> UpdateAsync(HashDigest<SHA256> stateRootHash, bool forceNotify = false)
@@ -67,8 +67,10 @@ namespace Nekoyume.State
             return t;
         }
 
-        public IObservable<T> UpdateAsObservable(HashDigest<SHA256> stateRootHash, bool forceNotify = false) =>
-            UpdateAsync(stateRootHash, forceNotify).ToObservable();
+        public IObservable<T> UpdateAsObservable(HashDigest<SHA256> stateRootHash, bool forceNotify = false)
+        {
+            return UpdateAsync(stateRootHash, forceNotify).ToObservable();
+        }
 
         public IDisposable SubscribeWithUpdateOnce(Action<T> onNext, HashDigest<SHA256> stateRootHash, bool forceNotify = false)
         {

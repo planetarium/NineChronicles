@@ -94,7 +94,7 @@ public class BattleSimulator : Widget
 
     private static void SaveEquipField(string name, IReadOnlyList<InputField> list)
     {
-        for (int i = 0; i < list.Count; i++)
+        for (var i = 0; i < list.Count; i++)
         {
             PlayerPrefs.SetString($"battle_simulator_{name}_{i}", list[i].text);
         }
@@ -102,7 +102,7 @@ public class BattleSimulator : Widget
 
     private static void LoadEquipField(string name, IReadOnlyList<InputField> list)
     {
-        for (int i = 0; i < list.Count; i++)
+        for (var i = 0; i < list.Count; i++)
         {
             var key = $"battle_simulator_{name}_{i}";
             if (PlayerPrefs.HasKey(key))
@@ -117,6 +117,7 @@ public class BattleSimulator : Widget
         content.SetActive(!content.activeSelf);
         SaveField();
     }
+
     public void OnClickGoStage()
     {
         var log = Simulate();
@@ -129,7 +130,7 @@ public class BattleSimulator : Widget
     {
         var clearCount = 0;
         var count = TextToInt(trials.text);
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             var log = Simulate();
             if (log.IsClear)
@@ -139,15 +140,15 @@ public class BattleSimulator : Widget
         }
 
         clear.text = clearCount.ToString();
-        var ratio = clearCount > 0 ? ((float) clearCount / (float) count) * 100.0f : 0;
-        odds.text =  $"{ratio:f2}%";
+        var ratio = clearCount > 0 ? (float)clearCount / (float)count * 100.0f : 0;
+        odds.text = $"{ratio:f2}%";
         NcDebug.Log($"[Simulate] SUCCESS / count : {count} /clear {clearCount} / odds : {ratio:f2}");
     }
 
     private BattleLog Simulate()
     {
         var tableSheets = Game.instance.TableSheets;
-        var avatarState = new AvatarState(States.Instance.CurrentAvatarState) {level = TextToInt(level.text)};
+        var avatarState = new AvatarState(States.Instance.CurrentAvatarState) { level = TextToInt(level.text) };
         var skillSheet = tableSheets.SkillSheet;
         var equipmentItemSheet = tableSheets.EquipmentItemSheet;
         var optionSheet = tableSheets.EquipmentItemOptionSheet;
@@ -176,40 +177,40 @@ public class BattleSimulator : Widget
 
         var random = new DebugRandom();
         // weapon
-        AddCustomEquipment(avatarState: avatarState, random: random,
-            skillSheet: skillSheet, equipmentItemSheet: equipmentItemSheet,
-            equipmentItemOptionSheet: optionSheet, level: TextToInt(weapon[1].text),
-            recipeId: TextToInt(weapon[0].text), GetOptions(weapon[2].text, weapon[3].text));
+        AddCustomEquipment(avatarState, random,
+            skillSheet, equipmentItemSheet,
+            optionSheet, TextToInt(weapon[1].text),
+            TextToInt(weapon[0].text), GetOptions(weapon[2].text, weapon[3].text));
 
         // armor
-        AddCustomEquipment(avatarState: avatarState, random: random,
-            skillSheet: skillSheet, equipmentItemSheet: equipmentItemSheet,
-            equipmentItemOptionSheet: optionSheet, level: TextToInt(armor[1].text),
-            recipeId: TextToInt(armor[0].text), GetOptions(armor[2].text, armor[3].text));
+        AddCustomEquipment(avatarState, random,
+            skillSheet, equipmentItemSheet,
+            optionSheet, TextToInt(armor[1].text),
+            TextToInt(armor[0].text), GetOptions(armor[2].text, armor[3].text));
 
         // belt
-        AddCustomEquipment(avatarState: avatarState, random: random,
-            skillSheet: skillSheet, equipmentItemSheet: equipmentItemSheet,
-            equipmentItemOptionSheet: optionSheet, level: TextToInt(belt[1].text),
-            recipeId: TextToInt(belt[0].text), GetOptions(belt[2].text, belt[3].text));
+        AddCustomEquipment(avatarState, random,
+            skillSheet, equipmentItemSheet,
+            optionSheet, TextToInt(belt[1].text),
+            TextToInt(belt[0].text), GetOptions(belt[2].text, belt[3].text));
 
         // necklace
-        AddCustomEquipment(avatarState: avatarState, random: random,
-            skillSheet: skillSheet, equipmentItemSheet: equipmentItemSheet,
-            equipmentItemOptionSheet: optionSheet, level: TextToInt(necklace[1].text),
-            recipeId: TextToInt(necklace[0].text), GetOptions(necklace[2].text, necklace[3].text));
+        AddCustomEquipment(avatarState, random,
+            skillSheet, equipmentItemSheet,
+            optionSheet, TextToInt(necklace[1].text),
+            TextToInt(necklace[0].text), GetOptions(necklace[2].text, necklace[3].text));
 
         // ringR
-        AddCustomEquipment(avatarState: avatarState, random: random,
-            skillSheet: skillSheet, equipmentItemSheet: equipmentItemSheet,
-            equipmentItemOptionSheet: optionSheet, level: TextToInt(ringR[1].text),
-            recipeId: TextToInt(ringR[0].text), GetOptions(ringR[2].text, ringR[3].text));
+        AddCustomEquipment(avatarState, random,
+            skillSheet, equipmentItemSheet,
+            optionSheet, TextToInt(ringR[1].text),
+            TextToInt(ringR[0].text), GetOptions(ringR[2].text, ringR[3].text));
 
         // ringL
-        AddCustomEquipment(avatarState: avatarState, random: random,
-            skillSheet: skillSheet, equipmentItemSheet: equipmentItemSheet,
-            equipmentItemOptionSheet: optionSheet, level: TextToInt(ringL[1].text),
-            recipeId: TextToInt(ringL[0].text), GetOptions(ringL[2].text, ringL[3].text));
+        AddCustomEquipment(avatarState, random,
+            skillSheet, equipmentItemSheet,
+            optionSheet, TextToInt(ringL[1].text),
+            TextToInt(ringL[0].text), GetOptions(ringL[2].text, ringL[3].text));
 
         // food
         var consumables = AddFood(avatarState, foodItemSheet, random, food);
@@ -236,7 +237,7 @@ public class BattleSimulator : Widget
             collectionModifiers,
             tableSheets.DeBuffLimitSheet,
             tableSheets.BuffLinkSheet,
-            logEvent: true,
+            true,
             States.Instance.GameConfigState.ShatterStrikeMaxDamage);
 
         simulator.Simulate();
@@ -247,7 +248,7 @@ public class BattleSimulator : Widget
 
     private static int TextToInt(string text)
     {
-        return text.Equals(string.Empty) ? 1 : Nekoyume.MathematicsExtensions.ConvertToInt32(text);
+        return text.Equals(string.Empty) ? 1 : MathematicsExtensions.ConvertToInt32(text);
     }
 
     private int[] GetOptions(string first, string second)
@@ -268,120 +269,123 @@ public class BattleSimulator : Widget
     }
 
     private static void AddCustomEquipment(
-            AvatarState avatarState,
-            IRandom random,
-            SkillSheet skillSheet,
-            EquipmentItemSheet equipmentItemSheet,
-            EquipmentItemOptionSheet equipmentItemOptionSheet,
-            int level,
-            int recipeId,
-            params int[] optionIds
-            )
+        AvatarState avatarState,
+        IRandom random,
+        SkillSheet skillSheet,
+        EquipmentItemSheet equipmentItemSheet,
+        EquipmentItemOptionSheet equipmentItemOptionSheet,
+        int level,
+        int recipeId,
+        params int[] optionIds
+    )
+    {
+        if (!equipmentItemSheet.TryGetValue(recipeId, out var equipmentRow))
         {
-            if (!equipmentItemSheet.TryGetValue(recipeId, out var equipmentRow))
-            {
-                return;
-            }
-
-            var itemId = random.GenerateRandomGuid();
-            var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, itemId, 0, level);
-            var optionRows = new List<EquipmentItemOptionSheet.Row>();
-            foreach (var optionId in optionIds)
-            {
-                if (!equipmentItemOptionSheet.TryGetValue(optionId, out var optionRow))
-                {
-                    continue;
-                }
-                optionRows.Add(optionRow);
-            }
-
-            AddOption(skillSheet, equipment, optionRows, random);
-            avatarState.inventory.AddItem(equipment);
-            equipment.Equip();
-            LocalLayerModifier.AddItem(avatarState.agentAddress, equipment.ItemId, equipment.RequiredBlockIndex,1, false);
+            return;
         }
 
-        private static HashSet<int> AddOption(
-            SkillSheet skillSheet,
-            Equipment equipment,
-            IEnumerable<EquipmentItemOptionSheet.Row> optionRows,
-            IRandom random)
+        var itemId = random.GenerateRandomGuid();
+        var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, itemId, 0, level);
+        var optionRows = new List<EquipmentItemOptionSheet.Row>();
+        foreach (var optionId in optionIds)
         {
-            var optionIds = new HashSet<int>();
-
-            foreach (var optionRow in optionRows.OrderBy(r => r.Id))
+            if (!equipmentItemOptionSheet.TryGetValue(optionId, out var optionRow))
             {
-                if (optionRow.StatType != StatType.NONE)
-                {
-                    var statMap = CombinationEquipment5.GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.TotalValue);
-                }
-                else
-                {
-                    var skill = CombinationEquipment5.GetSkill(optionRow, skillSheet, random);
-                    if (!(skill is null))
-                    {
-                        equipment.Skills.Add(skill);
-                    }
-                }
-
-                optionIds.Add(optionRow.Id);
+                continue;
             }
 
-            return optionIds;
+            optionRows.Add(optionRow);
         }
 
-        private static List<Guid> AddFood(AvatarState avatarState,
-            ConsumableItemSheet foodItemSheet,
-            IRandom random,
-            IEnumerable<InputField> list)
+        AddOption(skillSheet, equipment, optionRows, random);
+        avatarState.inventory.AddItem(equipment);
+        equipment.Equip();
+        LocalLayerModifier.AddItem(avatarState.agentAddress, equipment.ItemId, equipment.RequiredBlockIndex, 1, false);
+    }
+
+    private static HashSet<int> AddOption(
+        SkillSheet skillSheet,
+        Equipment equipment,
+        IEnumerable<EquipmentItemOptionSheet.Row> optionRows,
+        IRandom random)
+    {
+        var optionIds = new HashSet<int>();
+
+        foreach (var optionRow in optionRows.OrderBy(r => r.Id))
         {
-            var guids = new List<Guid>();
-            foreach (var i in list)
+            if (optionRow.StatType != StatType.NONE)
             {
-                if (i.text.Equals(string.Empty))
+                var statMap = CombinationEquipment5.GetStat(optionRow, random);
+                equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.TotalValue);
+            }
+            else
+            {
+                var skill = CombinationEquipment5.GetSkill(optionRow, skillSheet, random);
+                if (!(skill is null))
                 {
-                    continue;
+                    equipment.Skills.Add(skill);
                 }
-                var row = foodItemSheet.OrderedList.First(x => x.Id == TextToInt(i.text));
-                var food= ItemFactory.CreateItemUsable(row,
-                    random.GenerateRandomGuid(),
-                    default);
-                avatarState.inventory.AddItem(food);
-                guids.Add(food.ItemId);
             }
-            return guids;
+
+            optionIds.Add(optionRow.Id);
         }
 
-        private class DebugRandom : IRandom
+        return optionIds;
+    }
+
+    private static List<Guid> AddFood(AvatarState avatarState,
+        ConsumableItemSheet foodItemSheet,
+        IRandom random,
+        IEnumerable<InputField> list)
+    {
+        var guids = new List<Guid>();
+        foreach (var i in list)
         {
-            private readonly System.Random _random = new System.Random();
-
-            public int Seed => throw new NotImplementedException();
-
-            public int Next()
+            if (i.text.Equals(string.Empty))
             {
-                return _random.Next();
+                continue;
             }
 
-            public int Next(int maxValue)
-            {
-                return _random.Next(maxValue);
-            }
-
-            public int Next(int minValue, int maxValue)
-            {
-                return _random.Next(minValue, maxValue);
-            }
-
-            public void NextBytes(byte[] buffer)
-            {
-                _random.NextBytes(buffer);
-            }
-
-            public double NextDouble()
-            {
-                return _random.NextDouble();
-            }
+            var row = foodItemSheet.OrderedList.First(x => x.Id == TextToInt(i.text));
+            var food = ItemFactory.CreateItemUsable(row,
+                random.GenerateRandomGuid(),
+                default);
+            avatarState.inventory.AddItem(food);
+            guids.Add(food.ItemId);
         }
+
+        return guids;
+    }
+
+    private class DebugRandom : IRandom
+    {
+        private readonly System.Random _random = new();
+
+        public int Seed => throw new NotImplementedException();
+
+        public int Next()
+        {
+            return _random.Next();
+        }
+
+        public int Next(int maxValue)
+        {
+            return _random.Next(maxValue);
+        }
+
+        public int Next(int minValue, int maxValue)
+        {
+            return _random.Next(minValue, maxValue);
+        }
+
+        public void NextBytes(byte[] buffer)
+        {
+            _random.NextBytes(buffer);
+        }
+
+        public double NextDouble()
+        {
+            return _random.NextDouble();
+        }
+    }
 }

@@ -7,12 +7,14 @@ using UnityEngine;
 namespace Nekoyume.UI.Scroller
 {
     using UniRx;
+
     public class RuneStoneEnhancementInventoryCell : GridCell<RuneStoneEnhancementInventoryItem, RuneStoneEnhancementInventoryScroll.ContextModel>
     {
         [SerializeField]
         private BaseItemView view;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
+
         public override void UpdateContent(RuneStoneEnhancementInventoryItem viewModel)
         {
             _disposables.DisposeAllAndClear();
@@ -23,6 +25,7 @@ namespace Nekoyume.UI.Scroller
                 view.EmptyObject.SetActive(true);
                 return;
             }
+
             //view.Set(viewModel, Context);
             view.Container.SetActive(true);
             view.EmptyObject.SetActive(false);
@@ -56,7 +59,7 @@ namespace Nekoyume.UI.Scroller
             view.GradeHsv.saturation = data.GradeHsvSaturation;
             view.GradeHsv.value = data.GradeHsvValue;
 
-            if(viewModel.State is null)
+            if (viewModel.State is null)
             {
                 view.EnhancementText.gameObject.SetActive(false);
                 view.EnhancementImage.gameObject.SetActive(false);
@@ -92,7 +95,7 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            if (!optionRow.LevelOptionMap.TryGetValue(viewModel.State is null ? 0: viewModel.State.Level, out var option))
+            if (!optionRow.LevelOptionMap.TryGetValue(viewModel.State is null ? 0 : viewModel.State.Level, out var option))
             {
                 return;
             }

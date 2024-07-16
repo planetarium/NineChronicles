@@ -36,7 +36,7 @@ namespace Nekoyume.UI
             StatType.DEF,
             StatType.CRI,
             StatType.HIT,
-            StatType.SPD,
+            StatType.SPD
         };
 
         protected override void PlayPopupSound()
@@ -53,8 +53,9 @@ namespace Nekoyume.UI
             var costumeStatSheet = gameInstance.TableSheets.CostumeStatSheet;
             if (!characterSheet.TryGetValue(characterId, out var row))
             {
-                throw new System.Exception($"CharacterId{characterId} is invaild.");
+                throw new Exception($"CharacterId{characterId} is invaild.");
             }
+
             _model.Level = beforeLevel;
             var previousCP = CPHelper.GetCP(_model, costumeStatSheet);
             cpTextTweener.beginValue = previousCP;

@@ -43,12 +43,16 @@ namespace Nekoyume.Game.Character
         public virtual void ResetTarget(GameObject value)
         {
             if (!value)
+            {
                 throw new ArgumentNullException();
+            }
 
             Target = value;
             Animator = value.GetComponentInChildren<Animator>();
             if (Animator is null)
+            {
                 throw new NotFoundComponentException<Animator>();
+            }
 
             Animator.speed = TimeScale;
 

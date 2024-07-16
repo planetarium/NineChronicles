@@ -94,7 +94,7 @@ namespace Nekoyume.UI
                 var texture = new Texture2D(400, 400);
                 texture.LoadImage(bytes);
 
-                var barcodeReader = new BarcodeReader { Options = { PureBarcode = false, }, };
+                var barcodeReader = new BarcodeReader { Options = { PureBarcode = false } };
                 try
                 {
                     var result = barcodeReader.Decode(
@@ -104,8 +104,8 @@ namespace Nekoyume.UI
                     if (result != null)
                     {
                         NcDebug.Log("[CodeReaderView] QR code detected from Gallery." +
-                                    $" Text: {result.Text}" +
-                                    $", Format: {result.BarcodeFormat}");
+                            $" Text: {result.Text}" +
+                            $", Format: {result.BarcodeFormat}");
                         callback?.Invoke(result);
                     }
                     else
@@ -192,8 +192,8 @@ namespace Nekoyume.UI
             {
                 Options =
                 {
-                    PureBarcode = false,
-                },
+                    PureBarcode = false
+                }
             };
             while (gameObject.activeSelf)
             {
@@ -226,8 +226,8 @@ namespace Nekoyume.UI
                         }
 
                         NcDebug.Log("[CodeReaderView] QR code detected." +
-                                  $" Text: {result.Text}" +
-                                  $", Format: {result.BarcodeFormat}");
+                            $" Text: {result.Text}" +
+                            $", Format: {result.BarcodeFormat}");
                         NcDebug.Log("[CodeReaderView] CoRequestPermission end.");
                         onSuccess?.Invoke(result);
                     }
@@ -281,8 +281,8 @@ namespace Nekoyume.UI
 
             widget.Show(
                 L10nManager.Localize("STC_REQUIRED_CAMERA_PERMISSION_FOR_IMPORT_ACCOUNT_QR_CODE"),
-                confirmText: L10nManager.Localize("BTN_OPEN_SYSTEM_SETTINGS"),
-                confirmCallback: () =>
+                L10nManager.Localize("BTN_OPEN_SYSTEM_SETTINGS"),
+                () =>
                 {
 #if UNITY_ANDROID
                     NcDebug.Log("[CodeReaderView] Open system settings.");

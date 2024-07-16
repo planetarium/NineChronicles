@@ -10,9 +10,9 @@ namespace Nekoyume.UI
     public class GuideBackground : TutorialItem
     {
         [SerializeField] private float fadeDuration = 1.0f;
-        [SerializeField] private AnimationCurve fadeCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        [SerializeField] private AnimationCurve fadeCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
         [SerializeField] private float maskDuration = 1.0f;
-        [SerializeField] private AnimationCurve maskCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        [SerializeField] private AnimationCurve maskCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
         [SerializeField] private float alpha = 0.8f;
         [SerializeField] private SoftMask mask;
         [SerializeField] private Image background;
@@ -76,6 +76,7 @@ namespace Nekoyume.UI
             {
                 mask.alpha = 0.0f;
             }
+
             callback?.Invoke();
         }
 

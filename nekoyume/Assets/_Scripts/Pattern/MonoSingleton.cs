@@ -13,7 +13,7 @@ namespace Nekoyume.Pattern
     {
         private static T _instance;
 
-        private static readonly object Lock = new object();
+        private static readonly object Lock = new();
         private static bool _applicationIsQuitting;
 
         protected virtual bool ShouldRename => false;
@@ -32,9 +32,11 @@ namespace Nekoyume.Pattern
                 lock (Lock)
                 {
                     if (_instance)
+                    {
                         return _instance;
+                    }
 
-                    _instance = (T) FindObjectOfType(typeof(T));
+                    _instance = (T)FindObjectOfType(typeof(T));
 
                     if (!_instance)
                     {
@@ -58,7 +60,7 @@ namespace Nekoyume.Pattern
             }
         }
 
-        #region Mono
+#region Mono
 
         protected virtual void Awake()
         {
@@ -72,7 +74,7 @@ namespace Nekoyume.Pattern
 
             if (!_instance)
             {
-                _instance = (T) this;
+                _instance = (T)this;
             }
 
             if (ShouldRename)
@@ -100,7 +102,7 @@ namespace Nekoyume.Pattern
             _applicationIsQuitting = true;
         }
 
-        #endregion
+#endregion
 
         // instance를 생성하기 위한 빈 메소드.
         public void EmptyMethod()

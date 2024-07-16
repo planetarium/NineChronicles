@@ -55,7 +55,7 @@ namespace Nekoyume.UI.Module
                 stakingLevelText.text = $"Staking Lv.{level}";
                 stakingBonusText.text = _bonusTextFunc?.Invoke(level);
                 enableIcon.sprite = enableIcons[level - 1];
-                for(var i = 0; i < enableObjects.Count; i++)
+                for (var i = 0; i < enableObjects.Count; i++)
                 {
                     enableObjects[i].SetActive(i < level);
                 }

@@ -35,8 +35,10 @@ namespace Nekoyume.UI.Model.Patrol
         public bool Activate { get; set; }
         public int MinimumLevel { get; set; }
         public int? MaxLevel { get; set; }
+
         [JsonConverter(typeof(TimespanConverter))]
         public TimeSpan MinimumRequiredInterval { get; set; }
+
         public List<PatrolRewardModel> Rewards { get; set; }
     }
 
@@ -44,6 +46,7 @@ namespace Nekoyume.UI.Model.Patrol
     {
         // FungibleAssetValueRewardModel
         public string Currency { get; set; }
+
         // FungibleItemRewardModel
         public string FungibleId { get; set; }
         public int? ItemId { get; set; }
@@ -77,17 +80,22 @@ namespace Nekoyume.UI.Model.Patrol
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (objectType != typeof(TimeSpan))
+            {
                 throw new ArgumentException();
+            }
 
             var spanString = reader.Value as string;
             if (spanString == null)
+            {
                 return null;
+            }
+
             return XmlConvert.ToTimeSpan(spanString);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var duration = (TimeSpan) value;
+            var duration = (TimeSpan)value;
             writer.WriteValue(XmlConvert.ToString(duration));
         }
     }

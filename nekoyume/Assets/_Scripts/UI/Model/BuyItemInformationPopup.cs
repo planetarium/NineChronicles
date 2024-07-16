@@ -6,8 +6,8 @@ namespace Nekoyume.UI.Model
 {
     public class BuyItemInformationPopup : IDisposable
     {
-        public readonly Subject<BuyItemInformationPopup> OnClickSubmit = new Subject<BuyItemInformationPopup>();
-        public readonly ReactiveProperty<ItemInformation> itemInformation = new ReactiveProperty<ItemInformation>();
+        public readonly Subject<BuyItemInformationPopup> OnClickSubmit = new();
+        public readonly ReactiveProperty<ItemInformation> itemInformation = new();
         public bool isSuccess;
         public ICollection<CombinationMaterial> materialItems;
 

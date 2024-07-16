@@ -88,7 +88,7 @@ namespace Nekoyume.UI.Module
                 (ItemType.Equipment, _ => false),
                 (ItemType.Consumable, _ => true),
                 (ItemType.Material, _ => true),
-                (ItemType.Costume, _ => true),
+                (ItemType.Costume, _ => true)
             };
 
         private const int LimitGrindingCount = 50;
@@ -192,10 +192,7 @@ namespace Nekoyume.UI.Module
                     animator.SetTrigger(FirstRegister);
                 }
             }).AddTo(gameObject);
-            _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
-            {
-                item.Value.GrindingCountEnabled.SetValueAndForceNotify(false);
-            }).AddTo(gameObject);
+            _selectedItemsForGrind.ObserveRemove().Subscribe(item => { item.Value.GrindingCountEnabled.SetValueAndForceNotify(false); }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
             {
@@ -230,7 +227,7 @@ namespace Nekoyume.UI.Module
             var inLimit = _selectedItemsForGrind.Count < LimitGrindingCount;
             var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
             var isEquipped = model.Equipped.Value;
-            var isValid = inLimit && isEquipment || !isRegister;
+            var isValid = (inLimit && isEquipment) || !isRegister;
 
             if (isValid)
             {
@@ -345,8 +342,8 @@ namespace Nekoyume.UI.Module
             if (_cachedGrindingRewardCrystal.MajorUnit > 0)
             {
                 crystalRewardTweener.Play(
-                        (long) prevCrystalReward,
-                        (long) _cachedGrindingRewardCrystal.MajorUnit);
+                    (long)prevCrystalReward,
+                    (long)_cachedGrindingRewardCrystal.MajorUnit);
             }
             else
             {

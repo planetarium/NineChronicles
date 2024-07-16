@@ -19,12 +19,13 @@ namespace Nekoyume.UI
     using Nekoyume.Model.Skill;
     using UniRx;
     using UnityEngine.UI;
+
     public class SuperCraftPopup : PopupWidget
     {
         [SerializeField]
         private ConditionalCostButton superCraftButton;
 
-        [SerializeField] [Space]
+        [SerializeField][Space]
         private GameObject skillTextGroupParent;
 
         [SerializeField]
@@ -36,10 +37,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_Text skillChanceText;
 
-        [SerializeField] [Space]
+        [SerializeField][Space]
         private GameObject noneRecipeTextParent;
 
-        [SerializeField] [Space]
+        [SerializeField][Space]
         private ToggleGroup normalRecipeTabGroup;
 
         [SerializeField]
@@ -48,7 +49,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private Toggle premiumRecipeTab;
 
-        [SerializeField] [Space]
+        [SerializeField][Space]
         private SubRecipeView.RecipeTabGroup legendaryRecipeTabGroup;
 
         private EquipmentItemRecipeSheet.Row _recipeRow;
@@ -71,12 +72,16 @@ namespace Nekoyume.UI
                 _subRecipeIndex = b ? PremiumRecipeIndex : BasicRecipeIndex;
                 SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
             });
-            for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
+            for (var i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
             {
                 var index = i;
                 legendaryRecipeTabGroup.recipeTabs[index].toggle.onValueChanged.AddListener(b =>
                 {
-                    if (!b) return;
+                    if (!b)
+                    {
+                        return;
+                    }
+
                     _subRecipeIndex = index;
                     SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
                     superCraftButton.Interactable =
@@ -90,7 +95,7 @@ namespace Nekoyume.UI
                 var craftInfo = new Craft.CraftInfo()
                 {
                     RecipeID = _recipeRow.Id,
-                    SubrecipeId = _recipeRow.SubRecipeIds[_subRecipeIndex],
+                    SubrecipeId = _recipeRow.SubRecipeIds[_subRecipeIndex]
                 };
 
                 Find<PetSelectionPopup>().Show(craftInfo, SendAction);
@@ -134,7 +139,7 @@ namespace Nekoyume.UI
                     tabNames = tab.TabNames;
                 }
 
-                for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
+                for (var i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
                 {
                     var recipeTab = legendaryRecipeTabGroup.recipeTabs[i];
 
@@ -163,7 +168,7 @@ namespace Nekoyume.UI
                         CostCrystal = default,
                         CostAP = 0,
                         Materials = default,
-                        ReplacedMaterials = null,
+                        ReplacedMaterials = null
                     },
                     slotIndex,
                     false,
@@ -188,7 +193,7 @@ namespace Nekoyume.UI
 
         private void SetSkillInfoText(int? subRecipeId)
         {
-            if(subRecipeId is null)
+            if (subRecipeId is null)
             {
                 skillTextGroupParent.SetActive(false);
                 noneRecipeTextParent.SetActive(true);

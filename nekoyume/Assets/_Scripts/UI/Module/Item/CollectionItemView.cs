@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Animator animator;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
         private static readonly int Register = Animator.StringToHash("Register");
 
         public void Set(CollectionMaterial model, Action<CollectionMaterial> onClick)
@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module
             baseItemView.EnhancementText.enableVertexGradient = !required;
 
             baseItemView.CountText.gameObject.SetActive(model.ItemType == ItemType.Consumable ||
-                                                        model.ItemType == ItemType.Material);
+                model.ItemType == ItemType.Material);
             baseItemView.CountText.text = model.Row.Count.ToString();
             baseItemView.CountText.color = required ? requiredColor : Color.white;
 

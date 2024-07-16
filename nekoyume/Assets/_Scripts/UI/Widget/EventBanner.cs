@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                var ba= Instantiate(Banner, content);
+                var ba = Instantiate(Banner, content);
                 ba.GetComponent<EventBannerItem>().Set(data);
             }
 

@@ -45,9 +45,12 @@ namespace Nekoyume.Game.VFX.Skill
                 size = SizeType.L;
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
                 if (elemental == ElementalType.Normal)
+                {
                     elemental = ElementalType.Fire;
+                }
+
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
-                    new Vector2((float) Screen.width / 2, 0));
+                    new Vector2((float)Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
@@ -65,7 +68,7 @@ namespace Nekoyume.Game.VFX.Skill
             }
 
             var go = _pool.Get(skillName, false, position) ??
-                     _pool.Get(skillName, true, position);
+                _pool.Get(skillName, true, position);
 
             return GetEffect<T>(go, target);
         }
@@ -86,9 +89,12 @@ namespace Nekoyume.Game.VFX.Skill
                 size = SizeType.L;
                 //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
                 if (elemental == ElementalType.Normal)
+                {
                     elemental = ElementalType.Fire;
+                }
+
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
-                    new Vector2((float) Screen.width / 2, 0));
+                    new Vector2((float)Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
@@ -106,7 +112,7 @@ namespace Nekoyume.Game.VFX.Skill
             }
 
             var go = _pool.Get(skillName, false, position) ??
-                     _pool.Get(skillName, true, position);
+                _pool.Get(skillName, true, position);
 
             return GetEffect<T>(go, target);
         }
@@ -115,7 +121,7 @@ namespace Nekoyume.Game.VFX.Skill
         {
             var skillName = $"casting_{elementalType}".ToLower();
             var go = _pool.Get(skillName, false, position) ??
-                     _pool.Get(skillName, true, position);
+                _pool.Get(skillName, true, position);
 
             return GetEffect<SkillCastingVFX>(go);
         }
@@ -128,7 +134,7 @@ namespace Nekoyume.Game.VFX.Skill
             var skillName =
                 $"casting_{skillCategory}_{elementalType}".ToLower();
             var go = _pool.Get(skillName, false, position) ??
-                     _pool.Get(skillName, true, position);
+                _pool.Get(skillName, true, position);
 
             return GetEffect<SkillCastingVFX>(go);
         }
@@ -159,7 +165,7 @@ namespace Nekoyume.Game.VFX.Skill
             {
                 size = "l";
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
-                    new Vector2((float) Screen.width / 2, 0));
+                    new Vector2((float)Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
@@ -175,8 +181,9 @@ namespace Nekoyume.Game.VFX.Skill
                 position.x -= 0.2f;
                 position.y += 0.32f;
             }
+
             var go = _pool.Get(skillName, false, position) ??
-                     _pool.Get(skillName, true, position);
+                _pool.Get(skillName, true, position);
 
             return GetEffect<T>(go, target);
         }

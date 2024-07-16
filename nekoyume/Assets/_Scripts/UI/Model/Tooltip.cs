@@ -6,7 +6,7 @@ namespace Nekoyume.UI.Model
 {
     public class Tooltip : IDisposable
     {
-        public readonly ReactiveProperty<RectTransform> target = new ReactiveProperty<RectTransform>();
+        public readonly ReactiveProperty<RectTransform> target = new();
 
         public virtual void Dispose()
         {
