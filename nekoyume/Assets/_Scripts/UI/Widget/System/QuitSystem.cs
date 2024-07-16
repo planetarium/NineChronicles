@@ -45,7 +45,7 @@ namespace Nekoyume.UI
             quitEventSubject.GetEvent("Click")
                 .Subscribe(_ =>
                 {
-                    Quit();
+                    Game.Game.ApplicationQuit();
                     AudioController.PlayClick();
                 })
                 .AddTo(gameObject);
@@ -70,15 +70,6 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             AudioController.PlayPopup();
-        }
-
-        private void Quit()
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
         }
     }
 }

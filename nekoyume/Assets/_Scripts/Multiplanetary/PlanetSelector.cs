@@ -42,8 +42,7 @@ namespace Nekoyume.Multiplanetary
             SelectedPlanetAccountInfoSubject
         { get; } = new();
 
-        public static async UniTask<PlanetContext> InitializePlanetRegistryAsync(
-            PlanetContext context)
+        public static async UniTask<PlanetContext> InitializePlanetRegistryAsync(PlanetContext context)
         {
             NcDebug.Log("[PlanetSelector] Initializing planet registry...");
 #if UNITY_EDITOR
