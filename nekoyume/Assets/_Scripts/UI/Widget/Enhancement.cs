@@ -33,6 +33,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton upgradeButton;
 
         [SerializeField]
+        private ConditionalButton autoSelectButton;
+
+        [SerializeField]
         private ConditionalButton removeAllButton;
 
         [SerializeField]
@@ -132,6 +135,10 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             baseSlot.AddRemoveButtonAction(() => enhancementInventory.DeselectBaseItem());
+
+            autoSelectButton.OnSubmitSubject
+                .Subscribe(_ => enhancementInventory.AutoSelectMaterialItems(20))
+                .AddTo(gameObject);
             removeAllButton.OnSubmitSubject
                 .Subscribe(_ => enhancementInventory.DeselectAllMaterialItems())
                 .AddTo(gameObject);
@@ -185,7 +192,7 @@ namespace Nekoyume.UI
 
         private void OnSubmit()
         {
-            var (baseItem, materialItems) = enhancementInventory.GetSelectedModels();
+            var (baseItem, materialItems, hammers) = enhancementInventory.GetSelectedModels();
 
             // Equip Upgrade ToDO
             if (!IsInteractableButton(baseItem, materialItems))
@@ -203,7 +210,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            EnhancementAction(baseItem, materialItems);
+            EnhancementAction(baseItem, materialItems, hammers);
         }
 
         //Used for migrating and showing equipment before update
@@ -214,7 +221,10 @@ namespace Nekoyume.UI
                 Game.Game.instance.TableSheets.EnhancementCostSheetV3);
         }
 
-        private void EnhancementAction(Equipment baseItem, List<Equipment> materialItems)
+        private void EnhancementAction(
+            Equipment baseItem,
+            List<Equipment> materialItems,
+            Dictionary<int, int> hammers)
         {
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
@@ -222,11 +232,18 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var targetExp = GetItemExp(baseItem) + materialItems.Sum(GetItemExp);
+            var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
+            var baseModelExp = baseItem.GetRealExp(equipmentItemSheet, enhancementCostSheet);
+            var materialItemsExp = materialItems.Sum(equipment =>
+                equipment.GetRealExp(equipmentItemSheet, enhancementCostSheet));
+            var hammersExp = hammers.Sum(pair =>
+                Equipment.GetHammerExp(pair.Key, enhancementCostSheet) * pair.Value);
+            var targetExp = baseModelExp + materialItemsExp + hammersExp;
+
             int requiredBlockIndex;
             try
             {
-                var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
                 var baseItemCostRows = enhancementCostSheet.Values
                     .Where(row => row.ItemSubType == baseItem.ItemSubType &&
                                   row.Grade == baseItem.Grade).ToList();
@@ -254,7 +271,7 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItems, slotIndex, _costNcg).Subscribe();
+                .ItemEnhancement(baseItem, materialItems, slotIndex, hammers, _costNcg).Subscribe();
 
             enhancementInventory.DeselectBaseItem();
 
@@ -354,6 +371,7 @@ namespace Nekoyume.UI
 
                 enhancementExpSlider.SetEquipment(null, true);
 
+                autoSelectButton.Interactable = false;
                 removeAllButton.Interactable = false;
             }
             else
@@ -388,6 +406,7 @@ namespace Nekoyume.UI
                     noneContainer.SetActive(true);
                 }
 
+                var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
                 var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
                 var equipment = baseModel.ItemBase as Equipment;
                 var baseItemCostRows = enhancementCostSheet.Values
@@ -398,9 +417,23 @@ namespace Nekoyume.UI
                     new EnhancementCostSheetV3.Row();
 
                 // Get Target Exp
-                var baseModelExp = GetItemExp(equipment);
+                var baseModelExp = equipment.GetRealExp(
+                    equipmentItemSheet,
+                    enhancementCostSheet);
                 var targetExp = baseModelExp + materialModels.Sum(inventoryItem =>
-                    GetItemExp(inventoryItem.ItemBase as Equipment));
+                {
+                    if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id))
+                    {
+                        var hammerExp = Equipment.GetHammerExp(
+                            inventoryItem.ItemBase.Id,
+                            enhancementCostSheet);
+                        return hammerExp * inventoryItem.SelectedMaterialCount.Value;
+                    }
+
+                    return (inventoryItem.ItemBase as Equipment).GetRealExp(
+                        equipmentItemSheet,
+                        enhancementCostSheet);
+                });
 
                 // Get Target Level
                 EnhancementCostSheetV3.Row targetRow;
@@ -416,6 +449,7 @@ namespace Nekoyume.UI
                 }
 
                 // Update UI
+                autoSelectButton.Interactable = materialModels.Count < EnhancementInventory.MaxMaterialCount;
                 removeAllButton.Interactable = materialModels.Count >= 2;
 
                 _costNcg = targetRow.Cost - baseItemCostRow.Cost;

@@ -93,7 +93,7 @@ namespace Nekoyume.UI
             _expAnchorPoint = exp;
             var (progressSliderValue, nextExp) = ExpToSliderValue();
             slider.value = progressSliderValue;
-            percentText.text = $"{(int)(progressSliderValue * 100)}% {(int)exp}/{nextExp}";
+            percentText.text = $"{(int)(progressSliderValue * 100)}% {exp:N0}/{nextExp:N0}";
             return;
 
             (float progress, long nextExp) ExpToSliderValue()

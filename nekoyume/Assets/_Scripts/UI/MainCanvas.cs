@@ -461,6 +461,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<AddHammerPopup>());
+            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());

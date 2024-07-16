@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -83,9 +84,6 @@ namespace Nekoyume.UI.Module
         {
             CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
         }.Select(cost => (int)cost).ToArray();
-
-        // TODO: hammer의 id를 추가해둬야 합니다. 몰라서 인터페이스만 추가해뒀습니다
-        private readonly int[] hammerIds = { };
 
         private static readonly ItemType[] ItemTypes = Enum.GetValues(typeof(ItemType)) as ItemType[];
 
@@ -456,11 +454,12 @@ namespace Nekoyume.UI.Module
 
         private List<InventoryItem> GetOrganizedMaterials()
         {
+            // Dust -> ApStone or Hourglass (Tradable -> UnTradable) -> Hammer -> Others
             return _materials
                 .OrderByDescending(x => dustIds.Contains(x.ItemBase.Id))
                 .ThenByDescending(x =>
                     x.ItemBase.ItemSubType is ItemSubType.ApStone or ItemSubType.Hourglass)
-                .ThenByDescending(x => hammerIds.Contains(x.ItemBase.Id))
+                .ThenByDescending(x => ItemEnhancement.HammerIds.Contains(x.ItemBase.Id))
                 .ThenBy(x => x.ItemBase is ITradableItem).ToList();
         }
 

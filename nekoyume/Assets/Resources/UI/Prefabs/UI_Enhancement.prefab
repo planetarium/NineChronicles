@@ -2022,6 +2022,7 @@ MonoBehaviour:
   tutorialActions: 42420f0043420f0044420f00
   enhancementInventory: {fileID: 6241664505025257659}
   upgradeButton: {fileID: 5830942400651351240}
+  autoSelectButton: {fileID: 6805921079399881012}
   removeAllButton: {fileID: 8905278954593753675}
   closeButton: {fileID: 2124392581732449511}
   baseSlot: {fileID: 6838219919668454885}
@@ -45112,7 +45113,7 @@ PrefabInstance:
     - target: {fileID: 5020062428710556598, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: l10nKey
-      value: UI_REMOVE_ALL
+      value: UI_SELECT_AUTO
       objectReference: {fileID: 0}
     - target: {fileID: 7057353643760748405, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
@@ -45163,7 +45164,7 @@ PrefabInstance:
     - target: {fileID: 8744405165787708639, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: m_text
-      value: Auto Selection
+      value: Auto Select 20
       objectReference: {fileID: 0}
     - target: {fileID: 8744405165787708639, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
@@ -45198,6 +45199,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3030786351140215134}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6805921079399881012 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8393857624628101226, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+    type: 3}
+  m_PrefabInstance: {fileID: 3030786351140215134}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3586014247404855413
 PrefabInstance:
   m_ObjectHideFlags: 0
