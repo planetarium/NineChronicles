@@ -726,19 +726,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5903451022199997102}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Nekoyume.UI.AdventureBoss, Nekoyume
-        m_MethodName: OnClickShowRewardInfo
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!95 &6866067140576850522
 Animator:
   serializedVersion: 5
@@ -8394,6 +8382,7 @@ MonoBehaviour:
   - {fileID: 2665114963295938358}
   - {fileID: 6510738614090859098}
   loadingRewardIndicator: {fileID: 4472048786613919723}
+  prevSeasonPopupBtn: {fileID: 1811333528839048297}
 --- !u!114 &5475652107008707915
 MonoBehaviour:
   m_ObjectHideFlags: 0
