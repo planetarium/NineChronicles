@@ -13,11 +13,11 @@ namespace Nekoyume.UI.Tween
         [SerializeField] private bool snapping = false;
         [SerializeField] private int loopCount = -1;
         [SerializeField] private float loopDelay;
-        
+
         private RectTransform _rectTransform;
         private Vector2 _fromValue;
         private Sequence _sequence;
-        
+
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();

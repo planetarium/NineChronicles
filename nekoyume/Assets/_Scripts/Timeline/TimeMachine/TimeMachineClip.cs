@@ -9,7 +9,7 @@ namespace Nekoyume
     public class TimeMachineClip : PlayableAsset, ITimelineClipAsset
     {
         [HideInInspector]
-        public TimeMachineBehaviour template = new TimeMachineBehaviour();
+        public TimeMachineBehaviour template = new();
 
         public TimeMachineAction action;
         public TimeMachineCondition condition;

@@ -37,7 +37,10 @@ namespace Nekoyume.Game.Entrance
                 var endPos = stage.SelectPositionEnd(i);
                 var placeRes = Resources.Load<GameObject>("Prefab/PlayerPlace");
                 if (i % 2 == 0)
+                {
                     endPos.y = -0.45f;
+                }
+
                 if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))
                 {
                     var itemSlotState = States.Instance.ItemSlotStates[i][BattleType.Adventure];

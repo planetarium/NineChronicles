@@ -13,14 +13,14 @@ namespace Nekoyume.UI.Module.Arena.Join
 
     public class ArenaJoinSeasonInfo : MonoBehaviour
     {
-        [Flags, Serializable]
+        [Flags][Serializable]
         public enum RewardType
         {
             None = 0,
             Medal = 1,
             NCG = 2,
             Food = 4,
-            Costume = 8,
+            Costume = 8
         }
 
         [SerializeField]
@@ -50,14 +50,14 @@ namespace Nekoyume.UI.Module.Arena.Join
         [SerializeField]
         private List<Image> _currentRoundMedalImages;
 
-        private readonly List<IDisposable> _disposablesFromOnEnable = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesFromOnEnable = new();
 
         private ArenaSheet.RoundData _roundData;
 
-        private readonly Subject<Unit> _onSeasonBeginning = new Subject<Unit>();
+        private readonly Subject<Unit> _onSeasonBeginning = new();
         public IObservable<Unit> OnSeasonBeginning => _onSeasonBeginning;
 
-        private readonly Subject<Unit> _onSeasonEnded = new Subject<Unit>();
+        private readonly Subject<Unit> _onSeasonEnded = new();
         public IObservable<Unit> OnSeasonEnded => _onSeasonEnded;
 
         private void OnEnable()

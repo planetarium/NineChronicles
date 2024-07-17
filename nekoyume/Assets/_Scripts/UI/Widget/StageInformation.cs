@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.ApiClient;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
@@ -116,7 +117,7 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount(bool isEventDungeon = false)
         {
-            if(Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
@@ -125,11 +126,11 @@ namespace Nekoyume.UI
 
                 if (isEventDungeon)
                 {
-                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.EventDungeonCourageAmount}";
+                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.EventDungeonCourageAmount}";
                 }
                 else
                 {
-                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount}";
+                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureCourageAmount}";
                 }
             }
             else
@@ -243,8 +244,8 @@ namespace Nekoyume.UI
                 {
                     // NOTE: Consider expanding the world.
                     if (TableSheets.Instance.WorldSheet.TryGetByStageId(
-                            stageId,
-                            out var worldRow))
+                        stageId,
+                        out var worldRow))
                     {
                         worldInfo.UpdateWorld(worldRow);
                         if (worldInfo.TryGetWorldByStageId(stageId, out var world2))

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    static class ElementalTypeUIExtensions
+    internal static class ElementalTypeUIExtensions
     {
         private const string FireIconResourcePath = "UI/Icons/ElementalType/icon_elemental_fire";
         private const string WaterIconResourcePath = "UI/Icons/ElementalType/icon_elemental_water";
@@ -16,15 +16,16 @@ namespace Nekoyume
         private const string WindIconResourcePath = "UI/Icons/ElementalType/icon_elemental_wind";
         private const string NormalIconResourcePath = "UI/Icons/ElementalType/icon_element_normal";
 
-        private static readonly Dictionary<ElementalType, Dictionary<StatType, List<string>>> GetOptionsCache =
-            new Dictionary<ElementalType, Dictionary<StatType, List<string>>>(ElementalTypeComparer.Instance);
+        private static readonly Dictionary<ElementalType, Dictionary<StatType, List<string>>> GetOptionsCache = new(ElementalTypeComparer.Instance);
 
 
         public static IEnumerable<string> GetOptions(this ElementalType from, StatType statType)
         {
             if (statType != StatType.ATK &&
                 statType != StatType.DEF)
+            {
                 return new List<string>();
+            }
 
             if (GetOptionsCache.ContainsKey(from) &&
                 GetOptionsCache[from].ContainsKey(statType))
@@ -47,7 +48,9 @@ namespace Nekoyume
             var list = dict[statType];
 
             if (from == ElementalType.Normal)
+            {
                 return list;
+            }
 
             if (statType == StatType.ATK)
             {

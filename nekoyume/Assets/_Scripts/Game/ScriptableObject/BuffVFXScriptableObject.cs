@@ -9,17 +9,17 @@ namespace Nekoyume
     [CreateAssetMenu(fileName = "BuffVFXData", menuName = "Scriptable Object/Buff VFX Data", order = int.MaxValue)]
     public class BuffVFXScriptableObject : ScriptableObject
     {
-        [field:SerializeField] public List<BuffVFXData> DataList { get; set; }
-        [field:SerializeField] public List<BuffVFXOverrideData> OverrideDataList { get; set; }
-        [field:SerializeField] public List<ActionBuffVFXOverrideData> ActionBuffVFXOverrideDataList { get; set; }
-        
-        [field:SerializeField] public List<BuffPosOverrideData>       BuffPosOverrideDataList       { get; set; }
-        [field:SerializeField] public List<ActionBuffPosOverrideData> ActionBuffPosOverrideDataList { get; set; }
-        
-        [field:SerializeField] public Sprite     FallbackIcon       { get; set; }
-        [field:SerializeField] public GameObject FallbackCastingVFX { get; set; }
-        [field:SerializeField] public GameObject FallbackBuffVFX    { get; set; }
-        [field:SerializeField] public Vector3    FallbackPosition   { get; set; }
+        [field: SerializeField] public List<BuffVFXData> DataList { get; set; }
+        [field: SerializeField] public List<BuffVFXOverrideData> OverrideDataList { get; set; }
+        [field: SerializeField] public List<ActionBuffVFXOverrideData> ActionBuffVFXOverrideDataList { get; set; }
+
+        [field: SerializeField] public List<BuffPosOverrideData> BuffPosOverrideDataList { get; set; }
+        [field: SerializeField] public List<ActionBuffPosOverrideData> ActionBuffPosOverrideDataList { get; set; }
+
+        [field: SerializeField] public Sprite FallbackIcon { get; set; }
+        [field: SerializeField] public GameObject FallbackCastingVFX { get; set; }
+        [field: SerializeField] public GameObject FallbackBuffVFX { get; set; }
+        [field: SerializeField] public Vector3 FallbackPosition { get; set; }
 
         [Serializable]
         public class BuffVFXData
@@ -41,7 +41,7 @@ namespace Nekoyume
             public GameObject CastingVFX;
             public GameObject BuffVFX;
         }
-        
+
         [Serializable]
         public class ActionBuffVFXOverrideData
         {
@@ -58,7 +58,7 @@ namespace Nekoyume
             public bool IsCasting;
             public Vector3 Position;
         }
-        
+
         [Serializable]
         public class ActionBuffPosOverrideData
         {

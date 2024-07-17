@@ -29,11 +29,11 @@ namespace Nekoyume.UI.Module
         public IconArea iconArea;
         public StatsArea statsArea;
 
-        public Model.ItemInformation Model { get; private set; }
+        public ItemInformation Model { get; private set; }
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
-        public void SetData(Model.ItemInformation data)
+        public void SetData(ItemInformation data)
         {
             if (data == null)
             {
@@ -125,7 +125,9 @@ namespace Nekoyume.UI.Module
                 foreach (var stat in equipment.StatsMap.GetDecimalStats(true))
                 {
                     if (!stat.StatType.Equals(uniqueStatType))
+                    {
                         continue;
+                    }
 
                     AddStat(stat, true);
                     statCount++;
@@ -134,7 +136,9 @@ namespace Nekoyume.UI.Module
                 foreach (var stat in equipment.StatsMap.GetDecimalStats(true))
                 {
                     if (stat.StatType.Equals(uniqueStatType))
+                    {
                         continue;
+                    }
 
                     AddStat(stat);
                     statCount++;
@@ -163,7 +167,10 @@ namespace Nekoyume.UI.Module
         {
             var statView = GetDisabledStatView();
             if (statView is null)
+            {
                 throw new NotFoundComponentException<BulletedStatView>();
+            }
+
             statView.Show(model, isMainStat);
         }
 

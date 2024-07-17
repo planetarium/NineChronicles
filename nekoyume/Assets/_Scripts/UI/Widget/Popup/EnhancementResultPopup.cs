@@ -307,7 +307,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #region Invoke from Animation
+#region Invoke from Animation
 
         public void OnAnimatorStateBeginning(string stateName)
         {
@@ -319,9 +319,9 @@ namespace Nekoyume.UI
                 case "Fail":
                     _disposableOfSkip ??= Observable.EveryUpdate()
                         .Where(_ => Input.GetMouseButtonDown(0) ||
-                                    Input.GetKeyDown(KeyCode.Return) ||
-                                    Input.GetKeyDown(KeyCode.KeypadEnter) ||
-                                    Input.GetKeyDown(KeyCode.Escape))
+                            Input.GetKeyDown(KeyCode.Return) ||
+                            Input.GetKeyDown(KeyCode.KeypadEnter) ||
+                            Input.GetKeyDown(KeyCode.Escape))
                         .Take(1)
                         .DoOnCompleted(() => _disposableOfSkip = null)
                         .Subscribe(_ =>
@@ -354,8 +354,10 @@ namespace Nekoyume.UI
             }
         }
 
-        public void OnRequestPlaySFX(string sfxCode) =>
+        public void OnRequestPlaySFX(string sfxCode)
+        {
             AudioController.instance.PlaySfx(sfxCode);
+        }
 
         public void PlayOptionAnimation()
         {
@@ -367,7 +369,7 @@ namespace Nekoyume.UI
             _coroutineOfPlayOptionAnimation = StartCoroutine(CoPlayOptionAnimation());
         }
 
-        #endregion
+#endregion
 
         private void SkipAnimation()
         {
@@ -460,16 +462,19 @@ namespace Nekoyume.UI
             PressToContinue();
         }
 
-        private void PressToContinue() => Observable.EveryUpdate()
-            .Where(_ => Input.GetMouseButtonDown(0) ||
-                        Input.GetKeyDown(KeyCode.Return) ||
-                        Input.GetKeyDown(KeyCode.KeypadEnter) ||
-                        Input.GetKeyDown(KeyCode.Escape))
-            .First()
-            .Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                Animator.SetTrigger(AnimatorHashClose);
-            });
+        private void PressToContinue()
+        {
+            Observable.EveryUpdate()
+                .Where(_ => Input.GetMouseButtonDown(0) ||
+                    Input.GetKeyDown(KeyCode.Return) ||
+                    Input.GetKeyDown(KeyCode.KeypadEnter) ||
+                    Input.GetKeyDown(KeyCode.Escape))
+                .First()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Animator.SetTrigger(AnimatorHashClose);
+                });
+        }
     }
 }

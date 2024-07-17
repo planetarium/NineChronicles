@@ -24,6 +24,7 @@ namespace Nekoyume
             {
                 return desc;
             }
+
             return $"!{buff.BuffInfo.Id}!";
         }
 

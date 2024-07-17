@@ -8,10 +8,13 @@ namespace Nekoyume.UI.Module
     {
         [SerializeField]
         private TextMeshProUGUI descriptionText = null;
+
         [SerializeField]
         private TextMeshProUGUI firstRewardText = null;
+
         [SerializeField]
         private TextMeshProUGUI secondRewardText = null;
+
         [SerializeField]
         private TextMeshProUGUI thirdRewardText = null;
 

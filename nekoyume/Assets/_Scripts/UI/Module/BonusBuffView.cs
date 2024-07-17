@@ -56,7 +56,10 @@ namespace Nekoyume.UI.Module
             button.onClick.AddListener(OnClickButton);
         }
 
-        private void OnClickButton() => _onClick?.Invoke(_row);
+        private void OnClickButton()
+        {
+            _onClick?.Invoke(_row);
+        }
 
         public bool UpdateSelected(CrystalRandomBuffSheet.Row rowId)
         {

@@ -15,19 +15,25 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Slider slider = null;
+
         [SerializeField]
         private GameObject[] activatedObjects = null;
+
         [SerializeField]
         private RectTransform vfxClamper = null;
+
         [SerializeField]
         private RectTransform vfxOffset = null;
+
         [SerializeField]
         private float smoothenSpeed = 2.0f;
+
         [SerializeField]
         private float smoothenFinishThreshold = 0.005f;
+
         private float _xLength = 0;
 
-        private readonly ReactiveProperty<int> _currentStar = new ReactiveProperty<int>(0);
+        private readonly ReactiveProperty<int> _currentStar = new(0);
         private long _currentWaveHpSum = 0;
         private long _progress = 0;
         private bool _vfxEnabled;
@@ -70,7 +76,9 @@ namespace Nekoyume.UI
             _currentStar.Subscribe(star =>
             {
                 if (star > 0)
+                {
                     AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
+                }
 
                 PlayVFX(star);
             }).AddTo(gameObject);
@@ -86,7 +94,7 @@ namespace Nekoyume.UI
                 TerminateCurrentSmoothen(false);
             }
 
-            var sliderValue = (float) _currentStar.Value / MaxWave;
+            var sliderValue = (float)_currentStar.Value / MaxWave;
             if (isActiveAndEnabled)
             {
                 _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue, lerpSpeed));
@@ -94,7 +102,7 @@ namespace Nekoyume.UI
             else
             {
                 UpdateSliderValue(sliderValue);
-                for (int i = 0; i < star; ++i)
+                for (var i = 0; i < star; ++i)
                 {
                     activatedObjects[i].SetActive(true);
                 }
@@ -166,6 +174,7 @@ namespace Nekoyume.UI
             {
                 StopCoroutine(_smoothenCoroutine);
             }
+
             _smoothenCoroutine = null;
         }
 
@@ -188,7 +197,7 @@ namespace Nekoyume.UI
 
         private void PlayVFX(int star)
         {
-            for (int i = 0; i < star; ++i)
+            for (var i = 0; i < star; ++i)
             {
                 var starVFX = starVFXList[i];
                 var emissionVFX = starEmissionVFXList[i];
@@ -201,6 +210,7 @@ namespace Nekoyume.UI
                         starVFX.Play();
                         emissionVFX.Play();
                     }
+
                     activatedObjects[i].SetActive(true);
                 }
             }
@@ -214,14 +224,17 @@ namespace Nekoyume.UI
             {
                 activated.SetActive(false);
             }
+
             foreach (var vfx in starVFXList)
             {
                 vfx.Stop();
             }
+
             foreach (var vfx in starEmissionVFXList)
             {
                 vfx.Stop();
             }
+
             stageProgressBarVFX.Stop();
         }
     }

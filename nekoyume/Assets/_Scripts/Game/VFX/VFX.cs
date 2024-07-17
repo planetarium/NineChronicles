@@ -29,7 +29,7 @@ namespace Nekoyume.Game.VFX
 
         private Renderer _rootRenderer;
 
-        protected virtual float EmitDuration  { get; set; } = 1.0f;
+        protected virtual float EmitDuration { get; set; } = 1.0f;
 
         protected bool _isPlaying = false;
         protected bool _isFinished = false;
@@ -41,16 +41,18 @@ namespace Nekoyume.Game.VFX
         /// VFX 재생이 성공적으로 완료되었을 때 호출되는 콜백
         /// </summary>
         public System.Action OnFinished = null;
+
         /// <summary>
         /// VFX 재생이 성공적으로 완료되고 비활성화 될 때 호출되는 콜백
         /// </summary>
         public System.Action OnTerminated = null;
+
         /// <summary>
         /// VFX 재생 도중 비활성화되었을 때 호출되는 콜백
         /// </summary>
         public System.Action OnInterrupted = null;
 
-        #region Mono
+#region Mono
 
         public virtual void Awake()
         {
@@ -67,7 +69,10 @@ namespace Nekoyume.Game.VFX
                 }
 
                 if (particle.gameObject.layer == LayerMask.NameToLayer("Default"))
+                {
                     particle.gameObject.layer = LayerMask.NameToLayer(StringVFX);
+                }
+
                 var r = particle.GetComponent<Renderer>();
                 if (r && r.sortingLayerName == "Default")
                 {
@@ -97,12 +102,14 @@ namespace Nekoyume.Game.VFX
         protected virtual void OnDisable()
         {
             if (_isPlaying)
+            {
                 OnInterrupted?.Invoke();
+            }
 
             transform.FlipX(false);
         }
 
-        #endregion
+#endregion
 
         public virtual void LazyStop()
         {
@@ -153,6 +160,7 @@ namespace Nekoyume.Game.VFX
             {
                 OnTerminated?.Invoke();
             }
+
             yield return new WaitForSeconds(delay);
             Stop();
         }

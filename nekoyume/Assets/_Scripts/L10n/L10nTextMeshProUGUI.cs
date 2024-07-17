@@ -8,79 +8,75 @@ namespace Nekoyume.L10n
 {
     using UniRx;
 
-    [DisallowMultipleComponent, RequireComponent(typeof(TextMeshProUGUI))]
+    [DisallowMultipleComponent][RequireComponent(typeof(TextMeshProUGUI))]
     public class L10nTextMeshProUGUI : MonoBehaviour
     {
-        [SerializeField,
-         Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 에셋을 교체할지를 설정합니다.")]
+        [SerializeField][Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 에셋을 교체할지를 설정합니다.")]
         private bool fixedFontAsset = default;
 
-        [SerializeField,
-         Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 스타일을 교체할지를 설정합니다.")]
+        [SerializeField][Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 스타일을 교체할지를 설정합니다.")]
         private bool fixedFontStyle = default;
 
-        [SerializeField,
-         Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 사이즈 오프셋을 반영할지를 설정합니다.")]
+        [SerializeField][Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 사이즈 오프셋을 반영할지를 설정합니다.")]
         private bool fixedFontSizeOffset = default;
 
-        [SerializeField,
-         Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 스페이싱 옵션을 반영할지를 설정합니다.")]
+        [SerializeField][Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 스페이싱 옵션을 반영할지를 설정합니다.")]
         private bool fixedSpacingOption = default;
 
-        [SerializeField,
-        Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 마진 옵션을 반영할지를 설정합니다.")]
+        [SerializeField][Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 마진 옵션을 반영할지를 설정합니다.")]
         private bool fixedMarginOption = default;
 
         [SerializeField]
         private FontMaterialType fontMaterialType = default;
 
-        [SerializeField, Tooltip("L10nManager.Localize() 메소드의 인자 역할을 합니다. 값이 비어 있다면 무시합니다.")]
+        [SerializeField][Tooltip("L10nManager.Localize() 메소드의 인자 역할을 합니다. 값이 비어 있다면 무시합니다.")]
         private string l10nKey = null;
 
         private TextMeshProUGUI _textCache;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private bool fontMaterialIndexInitialized = false;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private int fontMaterialIndex;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private bool defaultFontStylesInitialized = false;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private FontStyles defaultFontStyles;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private bool defaultFontSizeInitialized = false;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private float defaultFontSize = default;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private bool defaultCharacterSpacingInitialized = false;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private float defaultCharacterSpacing;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private bool defaultWordSpacingInitialized = false;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private float defaultWordSpacing;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private bool defaultLineSpacingInitialized = false;
 
-        [SerializeField, HideInInspector]
+        [SerializeField][HideInInspector]
         private float defaultLineSpacing;
 
         private IDisposable _l10nManagerOnLanguageChangeDisposable;
         private IDisposable _l10nManagerOnLanguageTypeSettingsChangeDisposable;
 
-        private TextMeshProUGUI Text => _textCache
-            ? _textCache
-            : _textCache = GetComponent<TextMeshProUGUI>();
+        private TextMeshProUGUI Text =>
+            _textCache
+                ? _textCache
+                : _textCache = GetComponent<TextMeshProUGUI>();
 
         private void Awake()
         {
@@ -150,7 +146,7 @@ namespace Nekoyume.L10n
         private void SubscribeLanguageChange()
         {
             _l10nManagerOnLanguageChangeDisposable?.Dispose();
-            _l10nManagerOnLanguageChangeDisposable = 
+            _l10nManagerOnLanguageChangeDisposable =
                 L10nManager.OnLanguageChange.Subscribe(_ => SetLanguage());
             _l10nManagerOnLanguageTypeSettingsChangeDisposable?.Dispose();
             _l10nManagerOnLanguageTypeSettingsChangeDisposable =
@@ -164,7 +160,7 @@ namespace Nekoyume.L10n
                 Text.text = L10nManager.Localize(l10nKey);
             }
         }
-        
+
         private void SetLanguageTypeSettings(LanguageTypeSettings settings)
         {
             var data = settings.fontAssetData;

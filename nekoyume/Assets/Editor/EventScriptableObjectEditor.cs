@@ -8,6 +8,5 @@ namespace Editor
     [CustomEditor(typeof(EventScriptableObject))]
     public class EventScriptableObjectEditor : EnumGeneratorEditor<EventType>
     {
-
     }
 }

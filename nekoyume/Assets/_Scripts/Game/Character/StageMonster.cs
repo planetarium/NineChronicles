@@ -13,12 +13,12 @@ namespace Nekoyume.Game.Character
     {
         private Player _player;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
         // todo: 적의 이동속도에 따라서 인게임 연출 버그가 발생할 수 있으니 '-1f'로 값을 고정함. 이후 이 문제를 해결해서 몬스터 별 이동속도를 구현할 필요가 있음.
         protected override float RunSpeedDefault => -1f; // Model.Value.RunSpeed;
 
-        protected override Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
+        protected override Vector3 DamageTextForce => new(0.0f, 0.8f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1f, 0f);
 
         protected override bool CanRun => base.CanRun && !TargetInAttackRange(_player);
@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Character
 
         public override string TargetTag => Tag.Player;
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -45,12 +45,14 @@ namespace Nekoyume.Game.Character
             Animator?.Dispose();
         }
 
-        #endregion
+#endregion
 
         public override void Set(Model.CharacterBase model, bool updateCurrentHp = false)
         {
             if (!(model is Model.Enemy enemyModel))
+            {
                 throw new ArgumentException(nameof(model));
+            }
 
             Set(enemyModel, _player, updateCurrentHp);
         }
@@ -79,7 +81,9 @@ namespace Nekoyume.Game.Character
 
             var boss = Game.instance.Stage.Boss;
             if (!(boss is null) && !Id.Equals(boss.Id))
+            {
                 return;
+            }
 
             var battle = Widget.Find<UI.Battle>();
             battle.BossStatus.SetHp(CurrentHp, Hp);
@@ -92,7 +96,9 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
 
             if (!IsDead)
+            {
                 ShowSpeech("ENEMY_DAMAGE");
+            }
         }
 
         protected override IEnumerator Dying()
@@ -122,7 +128,7 @@ namespace Nekoyume.Game.Character
             return SpineController.BoxCollider;
         }
 
-        #region AttackPoint & HitPoint
+#region AttackPoint & HitPoint
 
         protected override void UpdateHitPoint()
         {
@@ -134,9 +140,9 @@ namespace Nekoyume.Game.Character
             attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - CharacterModel.attackRange, 0f);
         }
 
-        #endregion
+#endregion
 
-        #region Equipments & Customize
+#region Equipments & Customize
 
         private const int DefaultCharacter = 201000;
 
@@ -153,7 +159,9 @@ namespace Nekoyume.Game.Character
             if (Animator.Target != null)
             {
                 if (Animator.Target.name.Contains(key))
+                {
                     return;
+                }
 
                 Animator.DestroyTarget();
             }
@@ -169,19 +177,19 @@ namespace Nekoyume.Game.Character
             Animator.ResetTarget(go);
         }
 
-        #endregion
+#endregion
 
         protected override void ProcessAttack(Actor target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
-            ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
+            ShowSpeech("ENEMY_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("ENEMY_ATTACK");
         }
 
         protected override IEnumerator CoAnimationCast(Model.BattleStatus.Skill.SkillInfo info)
         {
-            ShowSpeech("ENEMY_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
+            ShowSpeech("ENEMY_SKILL", (int)info.ElementalType, (int)info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 

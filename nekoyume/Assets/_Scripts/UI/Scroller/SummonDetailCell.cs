@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Scroller
                 Game.Game.instance.TableSheets.RuneListSheet.TryGetValue(runeData.id, out var row))
             {
                 nameText.text = $"<color=#{LocalizationExtensions.GetColorHexByGrade(row.Grade)}>" +
-                                $"{L10nManager.Localize($"RUNE_NAME_{row.Id}")}</color>";
+                    $"{L10nManager.Localize($"RUNE_NAME_{row.Id}")}</color>";
                 iconImage.overrideSprite = runeData.icon;
             }
 

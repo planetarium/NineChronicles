@@ -15,12 +15,13 @@ namespace Nekoyume.Game.Util
             var enumName = enumType.GetType().ToString();
             enumName = enumName.Replace($"{nameSpace}.", string.Empty);
             var filePathAndName = $"{Path}{enumName}.cs";
-            using StreamWriter streamWriter = new StreamWriter(filePathAndName);
+            using var streamWriter = new StreamWriter(filePathAndName);
             streamWriter.WriteLine($"namespace {nameSpace}\n{{\n    public enum {enumName}\n    {{");
             foreach (var i in enums)
             {
-                streamWriter.WriteLine($"\t{i}," );
+                streamWriter.WriteLine($"\t{i},");
             }
+
             streamWriter.WriteLine("    }\n}");
         }
 

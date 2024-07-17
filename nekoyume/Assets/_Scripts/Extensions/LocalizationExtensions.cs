@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
+using Nekoyume.ApiClient;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -47,13 +48,13 @@ namespace Nekoyume
                             if (TableSheets.Instance.EquipmentItemSubRecipeSheetV2 is null)
                             {
                                 if (TableSheets.Instance.EquipmentItemSubRecipeSheet.TryGetValue(
-                                        result.subRecipeId.Value,
-                                        out var row))
+                                    result.subRecipeId.Value,
+                                    out var row))
                                 {
                                     formatKey = equipment.optionCountFromCombination ==
-                                                row.Options.Count
-                                        ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
-                                        : "UI_COMBINATION_NOTIFY_FORMAT";
+                                        row.Options.Count
+                                            ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
+                                            : "UI_COMBINATION_NOTIFY_FORMAT";
                                 }
                                 else
                                 {
@@ -61,13 +62,13 @@ namespace Nekoyume
                                 }
                             }
                             else if (TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                                         result.subRecipeId.Value,
-                                         out var row))
+                                result.subRecipeId.Value,
+                                out var row))
                             {
                                 formatKey = equipment.optionCountFromCombination ==
-                                            row.Options.Count
-                                    ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
-                                    : "UI_COMBINATION_NOTIFY_FORMAT";
+                                    row.Options.Count
+                                        ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
+                                        : "UI_COMBINATION_NOTIFY_FORMAT";
                             }
                             else
                             {
@@ -97,7 +98,7 @@ namespace Nekoyume
                 case ItemEnhanceMail itemEnhanceMail:
                 {
                     string formatKey;
-                    bool failAndGainCrystal = false;
+                    var failAndGainCrystal = false;
                     switch (itemEnhanceMail.attachment)
                     {
                         case ItemEnhancement13.ResultModel result:
@@ -119,7 +120,7 @@ namespace Nekoyume
                         case ItemEnhancement10.ResultModel _:
                         case ItemEnhancement11.ResultModel _:
                         case ItemEnhancement12.ResultModel _:
-                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                            formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                             break;
                         default:
                             NcDebug.LogError(
@@ -199,18 +200,18 @@ namespace Nekoyume
 
                 case ProductCancelMail productCancelMail:
                     var (productName, _, _) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(
+                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(
                             productCancelMail
                                 .ProductId);
                     return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", productName);
                 case ProductBuyerMail productBuyerMail:
                     var (buyProductName, _, _) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productBuyerMail
+                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(productBuyerMail
                             .ProductId);
                     return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", buyProductName);
                 case ProductSellerMail productSellerMail:
                     var (sellProductName, item, fav) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(
+                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(
                             productSellerMail.ProductId);
                     var price = item?.Price ?? fav?.Price ?? 0;
                     var tax = decimal.Divide(price, 100) * Buy.TaxRate;
@@ -227,8 +228,8 @@ namespace Nekoyume
                     return await claimItemsMail.GetCellContentAsync();
                 case AdventureBossRaffleWinnerMail adventureBossRaffleWinnerMail:
                     return L10nManager.Localize("UI_ADVENTURE_BOSS_WINNER_MAIL_FORMAT",
-                                               adventureBossRaffleWinnerMail.Season,
-                                                adventureBossRaffleWinnerMail.Reward);
+                        adventureBossRaffleWinnerMail.Season,
+                        adventureBossRaffleWinnerMail.Reward);
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
@@ -355,8 +356,8 @@ namespace Nekoyume
                         tradeQuest.Goal);
                 case WorldQuest worldQuest:
                     if (TableSheets.Instance.WorldSheet.TryGetByStageId(
-                            worldQuest.Goal,
-                            out var worldRow))
+                        worldQuest.Goal,
+                        out var worldRow))
                     {
                         if (worldQuest.Goal == worldRow.StageBegin)
                         {
@@ -372,8 +373,8 @@ namespace Nekoyume
                     }
 
                     if (!TableSheets.Instance.EventDungeonSheet.TryGetRowByEventDungeonStageId(
-                            worldQuest.Goal,
-                            out var eventDungeonRow))
+                        worldQuest.Goal,
+                        out var eventDungeonRow))
                     {
                         return string.Empty;
                     }
@@ -478,7 +479,7 @@ namespace Nekoyume
 
         public static string GetLocalizedFavName(string ticker)
         {
-            if(ticker.ToLower() == "crystal" || ticker.ToLower() == "fav_crystal")
+            if (ticker.ToLower() == "crystal" || ticker.ToLower() == "fav_crystal")
             {
                 return L10nManager.Localize($"ITEM_NAME_9999998");
             }
@@ -584,7 +585,7 @@ namespace Nekoyume
                 ElementalType.Land => Palette.GetColor(EnumType.ColorType.TextElement02),
                 ElementalType.Water => Palette.GetColor(EnumType.ColorType.TextElement04),
                 ElementalType.Wind => Palette.GetColor(EnumType.ColorType.TextElement05),
-                _ => Color.white,
+                _ => Color.white
             };
         }
 
@@ -603,7 +604,7 @@ namespace Nekoyume
                 4 => Palette.GetColor(EnumType.ColorType.TextGrade03),
                 5 => Palette.GetColor(EnumType.ColorType.TextGrade04),
                 6 => Palette.GetColor(EnumType.ColorType.TextGrade05),
-                _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
+                _ => Palette.GetColor(EnumType.ColorType.TextGrade00)
             };
         }
 
@@ -619,7 +620,7 @@ namespace Nekoyume
                     Palette.GetColor(EnumType.ColorType.TextGrade02),
                 CrystalRandomBuffSheet.Row.BuffRank.B =>
                     Palette.GetColor(EnumType.ColorType.TextGrade00),
-                _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
+                _ => Palette.GetColor(EnumType.ColorType.TextGrade00)
             };
         }
 
@@ -721,7 +722,7 @@ namespace Nekoyume
         {
             // NCG
             if (asset.Currency.Equals(
-                    Game.Game.instance.States.GoldBalanceState.Gold.Currency))
+                Game.Game.instance.States.GoldBalanceState.Gold.Currency))
             {
                 var ncgText = L10nManager.Localize("UI_NCG");
                 return L10nManager.Localize(

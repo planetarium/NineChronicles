@@ -46,11 +46,11 @@ namespace Nekoyume
 
         private int _viewIndex;
         private Transform _modal;
-        private StringBuilder _logString = new StringBuilder();
+        private StringBuilder _logString = new();
         private BattleLog.Result _result;
         private int[,] _stageRange;
-        private Model.Skill.Skill[] _skills;
-        private Model.Skill.Skill _selectedSkill;
+        private Skill[] _skills;
+        private Skill _selectedSkill;
         public override WidgetType WidgetType => WidgetType.Development;
 
         public class DebugRandom : IRandom
@@ -64,7 +64,7 @@ namespace Nekoyume
                 _random = new System.Random(seed);
             }
 
-            private readonly System.Random _random = new System.Random();
+            private readonly System.Random _random = new();
 
             public int Seed => throw new NotImplementedException();
 
@@ -128,7 +128,7 @@ namespace Nekoyume
             var tableName = TableSheetsDropdown.options.Count == 0 ? string.Empty : GetTableName();
             var tableCsvAssets = Game.Game.GetTableCsvAssets();
             IImmutableDictionary<string, string> tableSheets = GetCurrentTableCSV(tableCsvAssets.Keys.ToList()).ToImmutableDictionary();
-            if (tableSheets.TryGetValue(tableName, out string onChainTableCsv))
+            if (tableSheets.TryGetValue(tableName, out var onChainTableCsv))
             {
                 // Display(nameof(OnChainTableSheet), onChainTableCsv);
                 Display(nameof(OnChainTableSheet), "...");
@@ -138,7 +138,7 @@ namespace Nekoyume
                 Display(nameof(OnChainTableSheet), "No content.");
             }
 
-            if (TableAssets.TryGetValue(tableName, out string localTableCsv))
+            if (TableAssets.TryGetValue(tableName, out var localTableCsv))
             {
                 // Display(nameof(LocalTableSheet), localTableCsv);
             }
@@ -161,7 +161,7 @@ namespace Nekoyume
         {
             // 마스크에 짤려서 사이즈 조정
             var delta = target.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().preferredHeight -
-                        target.GetComponent<RectTransform>().rect.height;
+                target.GetComponent<RectTransform>().rect.height;
             target.Find("TextRect/Text").GetComponent<RectTransform>().sizeDelta =
                 new Vector2(0, delta < 0 ? 0 : delta);
 
@@ -183,7 +183,7 @@ namespace Nekoyume
         private void ScrollBarHandler(Transform target, float location)
         {
             var delta = target.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().preferredHeight -
-                        target.GetComponent<RectTransform>().rect.height;
+                target.GetComponent<RectTransform>().rect.height;
             target.Find("TextRect/Text").GetComponent<RectTransform>().anchoredPosition =
                 delta > 0 ? new Vector2(0, delta * (location - 1)) : new Vector2(0, 0);
         }
@@ -262,18 +262,18 @@ namespace Nekoyume
             BtnOpen.gameObject.SetActive(false);
             foreach (var i in Enumerable.Range(1, Game.Game.instance.TableSheets.StageWaveSheet.Count))
             {
-                Button newButton = Instantiate(buttonBase, list.content);
+                var newButton = Instantiate(buttonBase, list.content);
                 newButton.GetComponentInChildren<Text>().text = i.ToString();
                 newButton.onClick.AddListener(() => DummyBattle(i));
                 newButton.gameObject.SetActive(true);
             }
 
-            var skills = new List<Model.Skill.Skill>();
+            var skills = new List<Skill>();
             foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
                 var skill = SkillFactory.GetV1(skillRow, 50, 100);
                 skills.Add(skill);
-                Button newButton = Instantiate(buttonBase, skillList.content);
+                var newButton = Instantiate(buttonBase, skillList.content);
                 newButton.GetComponentInChildren<Text>().text =
                     $"{skillRow.GetLocalizedName()}_{skillRow.ElementalType}";
                 newButton.onClick.AddListener(() => SelectSkill(skill));
@@ -367,17 +367,17 @@ namespace Nekoyume
 
         private void LevelUp()
         {
-            GameObject enemyObj = GameObject.Find("Enemy");
+            var enemyObj = GameObject.Find("Enemy");
             if (enemyObj == null)
             {
                 Log("Need Enemy.");
                 return;
             }
 
-            GameObject playerObj = GameObject.Find("Player");
+            var playerObj = GameObject.Find("Player");
             if (playerObj != null)
             {
-                var player = playerObj.GetComponent<Game.Character.Player>();
+                var player = playerObj.GetComponent<Player>();
                 player.Level += 1;
                 Log($"Level Up to {player.Level}");
             }
@@ -411,7 +411,9 @@ namespace Nekoyume
             Find<Menu>()?.ShowWorld();
 
             if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+            {
                 throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
+            }
 
             var tableSheets = Game.Game.instance.TableSheets;
             var random = new DebugRandom();
@@ -439,7 +441,7 @@ namespace Nekoyume
                 States.Instance.CollectionState.GetEffects(tableSheets.CollectionSheet),
                 tableSheets.DeBuffLimitSheet,
                 tableSheets.BuffLinkSheet,
-                logEvent: true,
+                true,
                 States.Instance.GameConfigState.ShatterStrikeMaxDamage
             );
             simulator.Simulate();
@@ -461,7 +463,7 @@ namespace Nekoyume
             PlayerPrefs.DeleteAll();
         }
 
-        private void SelectSkill(Model.Skill.Skill skill)
+        private void SelectSkill(Skill skill)
         {
             _selectedSkill = skill;
             DummyBattle(1);
@@ -473,14 +475,17 @@ namespace Nekoyume
             {
                 Time.timeScale = 1;
             }
+
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 Time.timeScale = 2;
             }
+
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 Time.timeScale = 3;
             }
+
             if (Input.GetKeyDown(KeyCode.Alpha4))
             {
                 Time.timeScale = 4;

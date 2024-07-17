@@ -42,21 +42,18 @@ namespace Nekoyume.UI
         private static readonly int CellMaxCount =
             Mathf.CeilToInt(LifeTimeOfEachNotification);
 
-        private static readonly List<NotificationCell.ViewModel> SharedModel =
-            new List<NotificationCell.ViewModel>();
+        private static readonly List<NotificationCell.ViewModel> SharedModel = new();
 
-        private static readonly ConcurrentQueue<NotificationCell.ViewModel> AddQueue =
-            new ConcurrentQueue<NotificationCell.ViewModel>();
+        private static readonly ConcurrentQueue<NotificationCell.ViewModel> AddQueue = new();
 
-        private static readonly List<ReservationModel> ReservationList =
-            new List<ReservationModel>();
+        private static readonly List<ReservationModel> ReservationList = new();
 
         [SerializeField]
         private NotificationScroll scroll = null;
 
         private float _lastTimeToAddOrRemoveCell;
 
-        #region Control
+#region Control
 
         public static void Push(
             MailType mailType,
@@ -67,7 +64,7 @@ namespace Nekoyume.UI
             {
                 mailType = mailType,
                 message = message,
-                notificationType = notificationType,
+                notificationType = notificationType
             });
         }
 
@@ -103,9 +100,9 @@ namespace Nekoyume.UI
             ReservationList.Remove(message);
         }
 
-        #endregion
+#endregion
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -159,7 +156,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #endregion
+#endregion
 
         private bool TryAddCell()
         {
@@ -203,7 +200,7 @@ namespace Nekoyume.UI
             return true;
         }
 
-        #region Subscribe
+#region Subscribe
 
         private static void SubscribeBlockIndex(long blockIndex)
         {
@@ -218,6 +215,6 @@ namespace Nekoyume.UI
             }
         }
 
-        #endregion
+#endregion
     }
 }

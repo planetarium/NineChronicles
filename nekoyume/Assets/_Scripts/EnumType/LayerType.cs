@@ -20,7 +20,7 @@ namespace Nekoyume.EnumType
         {
             return LayerMask.NameToLayer(layerType.ToString());
         }
-        
+
         public static string ToLayerName(this LayerType layerType)
         {
             return layerType.ToString();

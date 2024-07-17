@@ -12,13 +12,14 @@ namespace Nekoyume.EventChannelComponents
             Awake,
             OnEnable,
             Start,
+
             // FixedUpdate,
             // Update,
             // LateUpdate,
             OnDisable,
-            OnDestroy,
+            OnDestroy
         }
-        
+
         [Serializable]
         public struct EventSetting
         {
@@ -29,15 +30,30 @@ namespace Nekoyume.EventChannelComponents
         [SerializeField]
         private EventSetting[] _eventSettings;
 
-        private void Awake() => On(EventType.Awake);
+        private void Awake()
+        {
+            On(EventType.Awake);
+        }
 
-        private void OnEnable() => On(EventType.OnEnable);
+        private void OnEnable()
+        {
+            On(EventType.OnEnable);
+        }
 
-        private void Start() => On(EventType.Start);
+        private void Start()
+        {
+            On(EventType.Start);
+        }
 
-        private void OnDisable() => On(EventType.OnDisable);
+        private void OnDisable()
+        {
+            On(EventType.OnDisable);
+        }
 
-        private void OnDestroy() => On(EventType.OnDestroy);
+        private void OnDestroy()
+        {
+            On(EventType.OnDestroy);
+        }
 
         private void On(EventType eventType)
         {

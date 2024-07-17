@@ -15,26 +15,21 @@ namespace Nekoyume.State
     /// </summary>
     public static class ReactiveAvatarState
     {
-        private static readonly ReactiveProperty<Address> _address
-            = new ReactiveProperty<Address>();
+        private static readonly ReactiveProperty<Address> _address = new();
 
         public static IObservable<Address> Address => _address.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<Inventory> _inventory
-            = new ReactiveProperty<Inventory>();
+        private static readonly ReactiveProperty<Inventory> _inventory = new();
 
         public static IObservable<Inventory> Inventory => _inventory.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<MailBox> _mailBox
-            = new ReactiveProperty<MailBox>();
+        private static readonly ReactiveProperty<MailBox> _mailBox = new();
 
         public static IObservable<MailBox> MailBox => _mailBox.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<WorldInformation> _worldInformation
-            = new ReactiveProperty<WorldInformation>();
+        private static readonly ReactiveProperty<WorldInformation> _worldInformation = new();
 
-        public static IObservable<WorldInformation> WorldInformation
-            => _worldInformation.ObserveOnMainThread();
+        public static IObservable<WorldInformation> WorldInformation => _worldInformation.ObserveOnMainThread();
 
         private static readonly ReactiveProperty<long> _actionPoint = new();
 
@@ -44,11 +39,9 @@ namespace Nekoyume.State
         private static readonly ReactiveProperty<long> _dailyRewardReceivedIndex = new();
 
         public static long DailyRewardReceivedIndex => _dailyRewardReceivedIndex.Value;
-        public static IObservable<long> ObservableDailyRewardReceivedIndex
-            => _dailyRewardReceivedIndex.ObserveOnMainThread();
+        public static IObservable<long> ObservableDailyRewardReceivedIndex => _dailyRewardReceivedIndex.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<QuestList> _questList
-            = new ReactiveProperty<QuestList>();
+        private static readonly ReactiveProperty<QuestList> _questList = new();
 
         public static QuestList QuestList => _questList.Value;
         public static IObservable<QuestList> ObservableQuestList => _questList.ObserveOnMainThread();

@@ -4,6 +4,6 @@
     {
         None,
         OffSeason,
-        Season,
+        Season
     }
 }

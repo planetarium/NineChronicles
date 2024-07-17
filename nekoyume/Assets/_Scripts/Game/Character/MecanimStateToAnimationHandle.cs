@@ -48,9 +48,7 @@ namespace Nekoyume.Game.Character
 
             try
             {
-                var (body, tail) = animationAsset ?
-                    _controller.PlayAnimationForState(animationAsset, layer, () => OnEnd(animator)) :
-                    _controller.PlayAnimationForState(animationClip, layer, () => OnEnd(animator));
+                var (body, tail) = animationAsset ? _controller.PlayAnimationForState(animationAsset, layer, () => OnEnd(animator)) : _controller.PlayAnimationForState(animationClip, layer, () => OnEnd(animator));
                 _trackEntry = body;
                 _trackEntry.TimeScale = timeScale;
                 if (tail != null)

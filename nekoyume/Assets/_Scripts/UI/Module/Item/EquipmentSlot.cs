@@ -94,7 +94,7 @@ namespace Nekoyume.UI.Module
                 throw new NotFoundComponentException<EventTrigger>();
             }
 
-            EventTrigger.Entry entry = new EventTrigger.Entry();
+            var entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerClick;
             entry.callback.AddListener(OnClick);
             _eventTrigger.triggers.Add(entry);
@@ -212,6 +212,7 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState != null)
             {
@@ -329,10 +330,10 @@ namespace Nekoyume.UI.Module
 
         public void SetDim(bool isDim)
         {
-            if (Item is {ItemType: ItemType.Equipment})
+            if (Item is { ItemType: ItemType.Equipment })
             {
                 isDim |= Util.GetItemRequirementLevel(Item) >
-                         States.Instance.CurrentAvatarState.level;
+                    States.Instance.CurrentAvatarState.level;
             }
 
             gradeImage.color = isDim ? DimmedColor : OriginColor;

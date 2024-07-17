@@ -10,6 +10,7 @@ namespace Nekoyume.UI
     public class BattleTutorialController
     {
         private const string BattleTutorialDataPath = "Tutorial/Data/BattleTutorial";
+
         public class BattleTutorialModel
         {
             public int Id { get; set; }
@@ -21,7 +22,7 @@ namespace Nekoyume.UI
 
         private readonly Dictionary<int, BattleTutorialModel> _modelDict = new();
 
-        #region Initializing
+#region Initializing
 
         public BattleTutorialController()
         {
@@ -72,13 +73,13 @@ namespace Nekoyume.UI
             }
 
             foreach (var id in
-                     _modelDict.Keys)
+                _modelDict.Keys)
             {
                 NcDebug.Log($"[BattleTutorialController]: contains {id}");
             }
         }
 
-        #endregion
+#endregion
 
         public BattleTutorialModel GetBattleTutorialModel(int id)
         {

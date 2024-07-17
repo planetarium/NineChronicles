@@ -8,8 +8,9 @@ namespace Nekoyume.UI
         public enum AnimationType
         {
             Type4,
-            Type5,
+            Type5
         }
+
         public const float DestroyDelay = 1.5f;
 
         private SkeletonAnimator skeletonAnimator;

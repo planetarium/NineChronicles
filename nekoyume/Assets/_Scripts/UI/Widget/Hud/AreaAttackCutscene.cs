@@ -21,7 +21,10 @@ namespace Nekoyume.UI
             Destroy(cutScene.gameObject, time);
         }
 
-        public float UpdateCutscene(int armorId) => UpdateCutscene(this, armorId);
+        public float UpdateCutscene(int armorId)
+        {
+            return UpdateCutscene(this, armorId);
+        }
 
         private static float UpdateCutscene(AreaAttackCutscene cutscene, int armorId)
         {
@@ -30,9 +33,13 @@ namespace Nekoyume.UI
             var mpb = new MaterialPropertyBlock();
             mpb.SetTexture(MainTexID, sprite.texture);
             if (cutscene.TryGetComponent<MeshRenderer>(out var meshRenderer))
+            {
                 meshRenderer.SetPropertyBlock(mpb);
+            }
             else
+            {
                 NcDebug.LogError($"[{nameof(AreaAttackCutscene)}] No MeshRenderer found.");
+            }
 
             return cutscene.SkeletonAnimation.AnimationState.Tracks.First().AnimationEnd;
         }

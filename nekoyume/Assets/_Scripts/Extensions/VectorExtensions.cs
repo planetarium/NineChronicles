@@ -7,7 +7,7 @@ namespace Nekoyume
     {
         public static float2 ToCanvasPosition(this Vector3 worldPosition, Camera camera, Canvas canvas)
         {
-            return ToCanvasPosition((float3) worldPosition, camera, canvas);
+            return ToCanvasPosition((float3)worldPosition, camera, canvas);
         }
 
         public static float2 ToCanvasPosition(this float3 worldPosition, Camera camera, Canvas canvas)

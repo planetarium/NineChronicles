@@ -39,7 +39,7 @@ namespace Nekoyume.Game.VFX.Skill
             var position = target.transform.position + BuffHelper.GetBuffPosition(buff.BuffInfo.Id);
 
             var resourceName = BuffHelper.GetBuffVFXPrefab(buff).name;
-            var go           = _pool.Get(resourceName, false, position);
+            var go = _pool.Get(resourceName, false, position);
             if (go == null)
             {
                 go = _pool.Get(resourceName, true, position);

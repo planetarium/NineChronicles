@@ -16,16 +16,17 @@ namespace Nekoyume.UI.Module.Common
 
         private Tweener _tweener;
 
-        private readonly Subject<float> _onMaxValueChange = new Subject<float>();
-        private readonly Subject<float> _onValueChange = new Subject<float>();
+        private readonly Subject<float> _onMaxValueChange = new();
+        private readonly Subject<float> _onValueChange = new();
 
         public bool IsFull => Math.Abs(Value - MaxValue) < 0.001f;
         public IObservable<float> OnMaxValueChange => _onMaxValueChange;
         public IObservable<float> OnValueChange => _onValueChange;
 
-        public IObservable<SliderAnimator> OnSliderChange => OnMaxValueChange
-            .Merge(OnValueChange)
-            .Select(x => this);
+        public IObservable<SliderAnimator> OnSliderChange =>
+            OnMaxValueChange
+                .Merge(OnValueChange)
+                .Select(x => this);
 
         public float MaxValue
         {

@@ -19,6 +19,9 @@ namespace Nekoyume.UI.Module
             _button.onClick.AddListener(OnClickButton);
         }
 
-        private void OnClickButton() => Application.OpenURL(websiteLink);
+        private void OnClickButton()
+        {
+            Application.OpenURL(websiteLink);
+        }
     }
 }

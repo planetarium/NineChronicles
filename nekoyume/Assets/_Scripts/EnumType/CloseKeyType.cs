@@ -3,6 +3,6 @@
     public enum CloseKeyType
     {
         Backspace,
-        Escape,
+        Escape
     }
 }

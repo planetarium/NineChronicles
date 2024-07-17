@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -32,11 +33,11 @@ namespace Nekoyume.IAPStore
         public IEnumerable<Product> IAPProducts => _controller.products.all;
         public bool IsInitialized { get; private set; }
 
-        private Dictionary<string, ProductSchema> _initailizedProductSchema = new Dictionary<string, ProductSchema>();
+        private Dictionary<string, ProductSchema> _initailizedProductSchema = new();
         private IReadOnlyList<CategorySchema> _initializedCategorySchema;
 
 
-        public Dictionary<string, ProductSchema> SeasonPassProduct = new Dictionary<string, ProductSchema>();
+        public Dictionary<string, ProductSchema> SeasonPassProduct = new();
 
         private async void Awake()
         {
@@ -52,7 +53,7 @@ namespace Nekoyume.IAPStore
                 NcDebug.LogException(exception);
             }
 
-            _initializedCategorySchema = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
+            _initializedCategorySchema = await ApiClients.Instance.IAPServiceManager.GetProductsAsync(
                 States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
 
             if (_initializedCategorySchema is null)
@@ -69,6 +70,7 @@ namespace Nekoyume.IAPStore
                 {
                     _initailizedProductSchema.TryAdd(product.Sku, product);
                 }
+
                 if (category.Name == "NoShow")
                 {
                     foreach (var product in category.ProductList)
@@ -94,16 +96,24 @@ namespace Nekoyume.IAPStore
             foreach (var item in _initailizedProductSchema)
             {
                 if (!item.Value.IsFree)
+                {
                     continue;
+                }
 
                 if (!item.Value.Buyable)
+                {
                     continue;
+                }
 
                 if (item.Value.RequiredLevel == null)
+                {
                     return true;
+                }
 
                 if (item.Value.RequiredLevel.Value < States.Instance.CurrentAvatarState.level)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -154,6 +164,7 @@ namespace Nekoyume.IAPStore
                     "Unity/Shop/IAP/OnPurchaseClicked/Error",
                     ("error", error.Message));
             }
+
             PurchaseLog(productId, "", $"PurchaseOnClicked");
             _controller.InitiatePurchase(productId);
         }
@@ -193,8 +204,7 @@ namespace Nekoyume.IAPStore
         }
 
 
-        [Serializable]
-        struct PurchaseReciept
+        [Serializable] private struct PurchaseReciept
         {
             public string Receipt;
             public string AgentAddressHex;
@@ -202,24 +212,26 @@ namespace Nekoyume.IAPStore
             public string PlanetId;
         }
 
-        [System.Serializable]
+        [Serializable]
         public class LocalTransactionsWrapper
         {
             public List<string> data;
         }
 
         private const string LOCAL_TRANSACTIONS = "LOCAL_TRANSACTIONS";
-        List<string> GetLocalTransactions()
+
+        private List<string> GetLocalTransactions()
         {
             var listString = PlayerPrefs.GetString(LOCAL_TRANSACTIONS, string.Empty);
             if (string.IsNullOrEmpty(listString))
             {
                 return new List<string>();
             }
+
             return JsonUtility.FromJson<LocalTransactionsWrapper>(listString).data;
         }
 
-        void AddLocalTransactions(string transaction)
+        private void AddLocalTransactions(string transaction)
         {
             var transactionList = GetLocalTransactions();
             if (transactionList.Contains(transaction))
@@ -233,7 +245,7 @@ namespace Nekoyume.IAPStore
             }
         }
 
-        void RemoveLocalTransactions(string transaction)
+        private void RemoveLocalTransactions(string transaction)
         {
             var transactionList = GetLocalTransactions();
             if (transactionList.Remove(transaction))
@@ -242,12 +254,12 @@ namespace Nekoyume.IAPStore
             }
         }
 
-        async void PurchaseLog(string productId, string orderId, string data)
+        private async void PurchaseLog(string productId, string orderId, string data)
         {
             var states = States.Instance;
             try
             {
-                var result = await Game.Game.instance.IAPServiceManager
+                var result = await ApiClients.Instance.IAPServiceManager
                     .PurchaseLogAsync(
                         states.AgentState.address.ToHex(),
                         states.CurrentAvatarState.address.ToHex(),
@@ -264,7 +276,7 @@ namespace Nekoyume.IAPStore
             }
         }
 
-        async void RePurchaseTryAsync(Product product)
+        private async void RePurchaseTryAsync(Product product)
         {
             var purchaseData = PlayerPrefs.GetString("PURCHASE_TX_" + product.transactionID, string.Empty);
             PurchaseReciept pData;
@@ -276,7 +288,7 @@ namespace Nekoyume.IAPStore
                     Receipt = product.receipt,
                     AgentAddressHex = states?.AgentState?.address.ToHex(),
                     AvatarAddressHex = states?.CurrentAvatarState?.address.ToHex(),
-                    PlanetId = Game.Game.instance?.CurrentPlanetId?.ToString(),
+                    PlanetId = Game.Game.instance?.CurrentPlanetId?.ToString()
                 };
             }
             else
@@ -288,23 +300,25 @@ namespace Nekoyume.IAPStore
             {
                 pData.AgentAddressHex = states?.AgentState?.address.ToHex();
             }
+
             if (string.IsNullOrEmpty(pData.AgentAddressHex))
             {
                 pData.AvatarAddressHex = states?.CurrentAvatarState?.address.ToHex();
             }
+
             if (string.IsNullOrEmpty(pData.PlanetId))
             {
                 pData.PlanetId = Game.Game.instance?.CurrentPlanetId?.ToString();
             }
 
-            var result = await Game.Game.instance.IAPServiceManager
-                    .PurchaseRequestAsync(
-                        product.receipt,
-                        pData.AgentAddressHex != null ? pData.AgentAddressHex : string.Empty,
-                        pData.AvatarAddressHex != null ? pData.AvatarAddressHex : string.Empty,
-                        pData.PlanetId != null ? pData.PlanetId : string.Empty,
-                        product.transactionID,
-                        product.appleOriginalTransactionID);
+            var result = await ApiClients.Instance.IAPServiceManager
+                .PurchaseRequestAsync(
+                    product.receipt,
+                    pData.AgentAddressHex != null ? pData.AgentAddressHex : string.Empty,
+                    pData.AvatarAddressHex != null ? pData.AvatarAddressHex : string.Empty,
+                    pData.PlanetId != null ? pData.PlanetId : string.Empty,
+                    product.transactionID,
+                    product.appleOriginalTransactionID);
 
             if (result is null)
             {
@@ -348,19 +362,20 @@ namespace Nekoyume.IAPStore
                 NcDebug.Log("[ProcessPurchase] PurchaseEventArgs is null");
                 return PurchaseProcessingResult.Pending;
             }
-            bool existTxInfo = false;
+
+            var existTxInfo = false;
             try
             {
                 var states = States.Instance;
                 existTxInfo = PlayerPrefs.HasKey("PURCHASE_TX_" + e.purchasedProduct.transactionID);
                 if (!existTxInfo)
                 {
-                    PurchaseReciept purchaseReciepe = new PurchaseReciept
+                    var purchaseReciepe = new PurchaseReciept
                     {
                         Receipt = e.purchasedProduct.receipt,
                         AgentAddressHex = states.AgentState.address.ToHex(),
                         AvatarAddressHex = states.CurrentAvatarState.address.ToHex(),
-                        PlanetId = Game.Game.instance.CurrentPlanetId.ToString(),
+                        PlanetId = Game.Game.instance.CurrentPlanetId.ToString()
                     };
                     PlayerPrefs.SetString("PURCHASE_TX_" + e.purchasedProduct.transactionID, JsonUtility.ToJson(purchaseReciepe));
                     AddLocalTransactions(e.purchasedProduct.transactionID);
@@ -392,6 +407,7 @@ namespace Nekoyume.IAPStore
                     OnPurchaseRequestAsync(e);
                     return PurchaseProcessingResult.Pending;
                 }
+
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
                 NcDebug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
@@ -464,14 +480,13 @@ namespace Nekoyume.IAPStore
             }
         }
 
-        public async UniTaskVoid  OnPurchaseFreeAsync(string sku)
+        public async UniTaskVoid OnPurchaseFreeAsync(string sku)
         {
             var popup = Widget.Find<IconAndButtonSystem>();
             var states = States.Instance;
             try
             {
-                var result = await Game.Game.instance.IAPServiceManager.
-                    PurchaseFreeAsync(
+                var result = await ApiClients.Instance.IAPServiceManager.PurchaseFreeAsync(
                     states.AgentState.address.ToHex(),
                     states.CurrentAvatarState.address.ToHex(),
                     Game.Game.instance.CurrentPlanetId.ToString(),
@@ -503,7 +518,7 @@ namespace Nekoyume.IAPStore
                         var cachedPassphrase = KeyManager.GetCachedPassphrase(
                             states.AgentState.address,
                             Util.AesDecrypt,
-                            defaultValue: string.Empty);
+                            string.Empty);
                         if (cachedPassphrase.Equals(string.Empty))
                         {
                             Widget.Find<LoginSystem>().ShowResetPassword();
@@ -513,7 +528,6 @@ namespace Nekoyume.IAPStore
                     Widget.Find<MobileShop>()?.RefreshGrid();
                     Widget.Find<ShopListPopup>()?.Close();
                 }
-
             }
             catch (Exception exc)
             {
@@ -533,7 +547,7 @@ namespace Nekoyume.IAPStore
 
             try
             {
-                var result = await Game.Game.instance.IAPServiceManager
+                var result = await ApiClients.Instance.IAPServiceManager
                     .PurchaseRequestAsync(
                         e.purchasedProduct.receipt,
                         states.AgentState.address.ToHex(),
@@ -556,7 +570,7 @@ namespace Nekoyume.IAPStore
                 else
                 {
                     Widget.Find<MobileShop>()?.PurchaseComplete(e.purchasedProduct.definition.id);
-                    if(_initailizedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
+                    if (_initailizedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
                     {
                         p.PurchaseCount++;
                         if (p.DailyLimit != null)
@@ -596,7 +610,7 @@ namespace Nekoyume.IAPStore
                         var cachedPassphrase = KeyManager.GetCachedPassphrase(
                             states.AgentState.address,
                             Util.AesDecrypt,
-                            defaultValue: string.Empty);
+                            string.Empty);
                         if (cachedPassphrase.Equals(string.Empty))
                         {
                             Widget.Find<LoginSystem>().ShowResetPassword();
@@ -614,7 +628,7 @@ namespace Nekoyume.IAPStore
                 Widget.Find<MobileShop>()?.RefreshGrid();
                 Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
-                Widget.Find<IconAndButtonSystem>().Show(L10nManager.Localize("UI_ERROR"), exc.Message, L10nManager.Localize("UI_OK"), localize: false);
+                Widget.Find<IconAndButtonSystem>().Show(L10nManager.Localize("UI_ERROR"), exc.Message, L10nManager.Localize("UI_OK"), false);
             }
         }
     }

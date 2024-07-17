@@ -23,7 +23,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Blockchain;
+    using Blockchain;
     using UniRx;
 
     public class LoginSystem : SystemWidget
@@ -38,7 +38,7 @@ namespace Nekoyume.UI
             Failed,
             SetPassword,
             Login_Mobile,
-            ConnectedAddress_Mobile,
+            ConnectedAddress_Mobile
         }
 
         private static class AnalyzeCache
@@ -61,6 +61,7 @@ namespace Nekoyume.UI
 
         [Space]
         public GameObject accountGroup;
+
         public Image accountImage;
         public TextMeshProUGUI accountAddressText;
         public TextMeshProUGUI accountAddressHolder;
@@ -68,10 +69,12 @@ namespace Nekoyume.UI
 
         [Space]
         public GameObject passPhraseGroup;
+
         public TMP_InputField passPhraseField;
 
         [Space]
         public GameObject retypeGroup;
+
         public TMP_InputField retypeField;
         public TextMeshProUGUI retypeText;
         public TextMeshProUGUI correctText;
@@ -79,22 +82,25 @@ namespace Nekoyume.UI
 
         [Space]
         public GameObject loginGroup;
+
         public TMP_InputField loginField;
         public GameObject loginWarning;
 
         [Space]
         public TextMeshProUGUI findPassphraseTitle;
+
         public GameObject findPassphraseGroup;
         public TMP_InputField findPassphraseField;
         public GameObject findPrivateKeyWarning;
 
         [Space]
         public ConditionalButton submitButton;
+
         public Button findPassphraseButton;
         public Button backToLoginButton;
         public Button setPasswordLaterButton;
 
-        public readonly ReactiveProperty<States> State = new ReactiveProperty<States>();
+        public readonly ReactiveProperty<States> State = new();
 
         private States _prevState;
 
@@ -228,6 +234,7 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(states), states, null);
             }
+
             UpdateSubmitButton();
         }
 
@@ -271,7 +278,7 @@ namespace Nekoyume.UI
             var passPhrase = passPhraseField.text;
             var retyped = retypeField.text;
             return !(string.IsNullOrEmpty(passPhrase) || string.IsNullOrEmpty(retyped)) &&
-                   passPhrase == retyped;
+                passPhrase == retyped;
         }
 
         private void CheckLogin(System.Action success)
@@ -306,7 +313,7 @@ namespace Nekoyume.UI
         public void Submit()
         {
             NcDebug.Log($"[LoginSystem] Submit invoked: submittable({submitButton.IsSubmittable})" +
-                      $", {State.Value}");
+                $", {State.Value}");
             if (!submitButton.IsSubmittable)
             {
                 return;
@@ -335,7 +342,7 @@ namespace Nekoyume.UI
                     KeyManager.Instance.SignInAndRegister(
                         KeyManager.Instance.SignedInPrivateKey,
                         passPhraseField.text,
-                        replaceWhenAlreadyRegistered: true);
+                        true);
                     KeyManager.Instance.CachePassphrase(
                         KeyManager.Instance.SignedInAddress,
                         passPhraseField.text);
@@ -365,12 +372,13 @@ namespace Nekoyume.UI
                         findPrivateKeyWarning.SetActive(true);
                         findPassphraseField.text = null;
                     }
+
                     break;
                 case States.ResetPassphrase:
                     KeyManager.Instance.SignInAndRegister(
                         findPassphraseField.text,
                         passPhraseField.text,
-                        replaceWhenAlreadyRegistered: true);
+                        true);
                     Close();
                     break;
                 case States.Failed:
@@ -402,7 +410,7 @@ namespace Nekoyume.UI
         {
             // WARNING: Do not log privateKeyString.
             NcDebug.Log("[LoginSystem] Show(string) invoked with " +
-                      $"privateKeyString({(privateKeyString is null ? "null" : "not null")}).");
+                $"privateKeyString({(privateKeyString is null ? "null" : "not null")}).");
             AnalyzeCache.Reset();
 
             //Auto login for miner, seed, launcher
@@ -435,19 +443,19 @@ namespace Nekoyume.UI
                 case States.CreateAccount:
                 case States.ResetPassphrase:
                 case States.SetPassword:
+                {
                     {
+                        if (passPhraseField.isFocused)
                         {
-                            if (passPhraseField.isFocused)
-                            {
-                                retypeField.Select();
-                            }
-                            else
-                            {
-                                passPhraseField.Select();
-                            }
+                            retypeField.Select();
                         }
-                        break;
+                        else
+                        {
+                            passPhraseField.Select();
+                        }
                     }
+                    break;
+                }
                 case States.Login:
                     loginField.Select();
                     break;

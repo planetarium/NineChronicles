@@ -206,6 +206,7 @@ namespace Nekoyume.UI.Module
                     var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
                     item.text = origin;
                 }
+
                 discount.gameObject.SetActive(true);
                 tagObj.SetActive(true);
             }
@@ -298,7 +299,7 @@ namespace Nekoyume.UI.Module
 
         public int GetOrder()
         {
-            if(_data == null)
+            if (_data == null)
             {
                 return 0;
             }

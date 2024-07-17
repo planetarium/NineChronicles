@@ -17,9 +17,10 @@ namespace Nekoyume.UI.Module
 
         private Image _imageCache;
 
-        public Image Image => _imageCache == null
-            ? _imageCache = GetComponent<Image>()
-            : _imageCache;
+        public Image Image =>
+            _imageCache == null
+                ? _imageCache = GetComponent<Image>()
+                : _imageCache;
 
         public bool IsSwitchedOn => Image.overrideSprite.Equals(switchedOnSprite);
 

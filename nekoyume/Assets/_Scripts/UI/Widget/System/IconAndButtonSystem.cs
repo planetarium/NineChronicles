@@ -21,7 +21,7 @@ namespace Nekoyume.UI
         {
             Error = 0,
             BlockChainError,
-            Information,
+            Information
         }
 
         [Serializable]
@@ -157,11 +157,11 @@ namespace Nekoyume.UI
             CancelCallback = () =>
             {
                 var address = KeyManager.Instance.GetList().FirstOrDefault()?.Item2.Address ??
-                              new Address();
+                    new Address();
                 var cachedPassphrase = KeyManager.GetCachedPassphrase(
                     address,
                     Util.AesDecrypt,
-                    defaultValue: string.Empty);
+                    string.Empty);
                 if (cachedPassphrase.Equals(string.Empty))
                 {
                     Find<LoginSystem>().ShowResetPassword();
@@ -239,11 +239,11 @@ namespace Nekoyume.UI
 
         private void SetUIByType(SystemType type)
         {
-            _confirmButton = uiBySystemType[(int) type].confirmButton;
-            _cancelButton = uiBySystemType[(int) type].cancelButton;
-            _contentText = uiBySystemType[(int) type].contentText;
-            _titleText = uiBySystemType[(int) type].titleText;
-            uiBySystemType[(int) type].rootGameObject.SetActive(true);
+            _confirmButton = uiBySystemType[(int)type].confirmButton;
+            _cancelButton = uiBySystemType[(int)type].cancelButton;
+            _contentText = uiBySystemType[(int)type].contentText;
+            _titleText = uiBySystemType[(int)type].titleText;
+            uiBySystemType[(int)type].rootGameObject.SetActive(true);
         }
     }
 }

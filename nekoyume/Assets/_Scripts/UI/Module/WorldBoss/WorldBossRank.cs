@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -16,7 +17,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module.WorldBoss
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.TableData;
+    using TableData;
     using UniRx;
 
     public class WorldBossRank : WorldBossDetailItem
@@ -24,7 +25,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         public enum Status
         {
             PreviousSeason,
-            Season,
+            Season
         }
 
         private const int LimitCount = 100;
@@ -83,7 +84,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         private void Awake()
         {
             refreshButton.OnClickAsObservable()
-                .Where(_=> !refreshBlocker.activeSelf)
+                .Where(_ => !refreshBlocker.activeSelf)
                 .Subscribe(_ => RefreshAsync()).AddTo(gameObject);
         }
 
@@ -99,13 +100,14 @@ namespace Nekoyume.UI.Module.WorldBoss
                 {
                     Destroy(_bossNameObject);
                 }
+
                 noSeasonInfo.SetActive(true);
                 updateContainer.SetActive(false);
                 bossImage.enabled = false;
                 return;
             }
 
-            if (!Game.Game.instance.ApiClient.IsInitialized)
+            if (!ApiClients.Instance.WorldBossClient.IsInitialized)
             {
                 apiMissing.SetActive(true);
                 updateContainer.SetActive(false);
@@ -211,11 +213,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                 .WorldBossCharacterSheet.TryGetValue(row.BossId, out var bossRow))
             {
                 var items = new WorldBossRankItems(
-                records.Select(record => new WorldBossRankItem(bossRow, record)).ToList(),
-                myRecord != null ? new WorldBossRankItem(bossRow, myRecord) : null,
-                avatarAddress,
-                blockIndex,
-                userCount);
+                    records.Select(record => new WorldBossRankItem(bossRow, record)).ToList(),
+                    myRecord != null ? new WorldBossRankItem(bossRow, myRecord) : null,
+                    avatarAddress,
+                    blockIndex,
+                    userCount);
 
                 _cachedItems[status] = items;
             }
@@ -229,11 +231,9 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfo.Set(items.MyItem, null);
             _disposables.DisposeAllAndClear();
             scroll.UpdateData(items.UserItems);
-            scroll.OnClick.Subscribe(x =>
-            {
-                ShowAsync(x.Address).Forget();
-            }).AddTo(_disposables);
-            totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : string.Empty;;
+            scroll.OnClick.Subscribe(x => { ShowAsync(x.Address).Forget(); }).AddTo(_disposables);
+            totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : string.Empty;
+            ;
             lastUpdatedText.text = $"{items.LastUpdatedBlockIndex:#,0}";
         }
 
@@ -247,6 +247,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             {
                 popup.Close(true);
             }
+
             popup.ShowAsync(avatarState, BattleType.Raid).Forget();
         }
 

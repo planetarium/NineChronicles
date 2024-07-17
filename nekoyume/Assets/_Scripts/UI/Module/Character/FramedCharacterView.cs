@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image frameImage = null;
 
-        public readonly Subject<AvatarState> OnClickCharacterIcon = new Subject<AvatarState>();
+        public readonly Subject<AvatarState> OnClickCharacterIcon = new();
 
         private AvatarState _avatarStateToDisplay;
 
@@ -60,7 +60,6 @@ namespace Nekoyume.UI.Module
             if (sprite is null)
             {
                 throw new FailedToLoadResourceException<Sprite>(dccId.ToString());
-
             }
 
             SetIcon(sprite);

@@ -15,9 +15,15 @@ namespace Nekoyume
 {
     public static class ItemExtensions
     {
-        public static Sprite GetIconSprite(this ItemBase item) => SpriteHelper.GetItemIcon(item.Id);
+        public static Sprite GetIconSprite(this ItemBase item)
+        {
+            return SpriteHelper.GetItemIcon(item.Id);
+        }
 
-        public static Sprite GetBackgroundSprite(this ItemBase item) => SpriteHelper.GetItemBackground(item.Grade);
+        public static Sprite GetBackgroundSprite(this ItemBase item)
+        {
+            return SpriteHelper.GetItemBackground(item.Grade);
+        }
 
         public static bool TryParseAsTradableId(this int rowId, ItemSheet itemSheet, out Guid tradableId)
         {
@@ -25,7 +31,7 @@ namespace Nekoyume
             if (itemRow is null ||
                 !(itemRow is MaterialItemSheet.Row materialRow))
             {
-                tradableId = default(Guid);
+                tradableId = default;
                 return false;
             }
 
@@ -39,7 +45,7 @@ namespace Nekoyume
             if (itemRow is null ||
                 !(itemRow is MaterialItemSheet.Row materialRow))
             {
-                fungibleId = default(HashDigest<SHA256>);
+                fungibleId = default;
                 return false;
             }
 
@@ -59,11 +65,16 @@ namespace Nekoyume
             return $"CP {cp}";
         }
 
-        public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo) =>
-            ItemOptionHelper.TryGet(itemUsable, out itemOptionInfo);
+        public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo)
+        {
+            return ItemOptionHelper.TryGet(itemUsable, out itemOptionInfo);
+        }
 
-        public static bool HasElementType(this ItemType type) => type == ItemType.Costume ||
-                                                                 type == ItemType.Equipment;
+        public static bool HasElementType(this ItemType type)
+        {
+            return type == ItemType.Costume ||
+                type == ItemType.Equipment;
+        }
 
         public static bool HasSkill(this Equipment equipment)
         {
@@ -95,7 +106,7 @@ namespace Nekoyume
                         e.ItemBase.HasValue &&
                         e.ItemBase.Value is IFungibleItem fi2 &&
                         fi2.FungibleId.Equals(fi.FungibleId));
-                    if (ci is { })
+                    if (ci is not null)
                     {
                         ci.Count.Value++;
                         continue;

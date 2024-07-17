@@ -18,24 +18,33 @@ namespace Nekoyume.UI
     using Nekoyume.TableData.AdventureBoss;
     using System.Linq;
     using UniRx;
+
     public class AdventureBossResultPopup : Widget
     {
         [SerializeField]
         private TextMeshProUGUI subTitle;
+
         [SerializeField]
         private TextMeshProUGUI scoreText;
+
         [SerializeField]
         private TextMeshProUGUI cumulativeScoreText;
+
         [SerializeField]
         private TextMeshProUGUI apPotionUsed;
+
         [SerializeField]
         private GameObject firstRewardGroup;
+
         [SerializeField]
         private SimpleCountableItemView[] firstRewardsItemView;
+
         [SerializeField]
         private SimpleCountableItemView[] secondRewardsItemView;
+
         [SerializeField]
         private GameObject[] clearEffect;
+
         [SerializeField]
         private GameObject retryButton;
 
@@ -57,19 +66,20 @@ namespace Nekoyume.UI
                 firstRewardGroup.SetActive(true);
                 RefreshItemView(firstRewards, firstRewardsItemView);
             }
+
             RefreshItemView(exploreRewards, secondRewardsItemView);
         }
 
         private void RefreshItemView(List<AdventureBossSheet.RewardAmountData> rewards, SimpleCountableItemView[] itemViews)
         {
             rewards = rewards.GroupBy(r => r.ItemId)
-                            .Select(g => new AdventureBossSheet.RewardAmountData(
-                                g.First().ItemType,
-                                g.Key,
-                                g.Sum(r => r.Amount)))
-                            .OrderBy(r => r.ItemId).ToList();
+                .Select(g => new AdventureBossSheet.RewardAmountData(
+                    g.First().ItemType,
+                    g.Key,
+                    g.Sum(r => r.Amount)))
+                .OrderBy(r => r.ItemId).ToList();
 
-            for (int i = 0; i < itemViews.Length; i++)
+            for (var i = 0; i < itemViews.Length; i++)
             {
                 if (i < rewards.Count)
                 {
@@ -77,13 +87,13 @@ namespace Nekoyume.UI
                     {
                         case "Material":
                             var countableItemMat = new CountableItem(
-                            ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[rewards[i].ItemId]),
-                            rewards[i].Amount);
+                                ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[rewards[i].ItemId]),
+                                rewards[i].Amount);
                             itemViews[i].SetData(countableItemMat, () => ShowTooltip(countableItemMat.ItemBase.Value));
                             itemViews[i].gameObject.SetActive(true);
                             break;
                         case "Rune":
-                            RuneSheet runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
                             runeSheet.TryGetValue(rewards[i].ItemId, out var runeRow);
                             if (runeRow != null)
                             {
@@ -94,6 +104,7 @@ namespace Nekoyume.UI
                             {
                                 itemViews[i].gameObject.SetActive(false);
                             }
+
                             break;
                         case "Crystal":
                             itemViews[i].SetData(GetFavCountableItem("CRYSTAL", rewards[i].Amount));
@@ -133,13 +144,14 @@ namespace Nekoyume.UI
             {
                 item.SetActive(score > 0);
             }
+
             scoreText.text = score.ToString("N0");
 
             var totalScore = 0;
             var start = _prevScore;
             totalScore = start + score;
 
-            if(totalScore == 0)
+            if (totalScore == 0)
             {
                 retryButton.SetActive(false);
             }
@@ -155,6 +167,7 @@ namespace Nekoyume.UI
         }
 
         private bool LoadingScreenIsShowing = false;
+
         private async UniTaskVoid ShowLoadingConstantly()
         {
             LoadingScreenIsShowing = true;
@@ -162,18 +175,20 @@ namespace Nekoyume.UI
             worldMapLoading.Show(LoadingScreen.LoadingType.AdventureBoss);
             while (LoadingScreenIsShowing)
             {
-                if(!worldMapLoading.isActiveAndEnabled)
+                if (!worldMapLoading.isActiveAndEnabled)
                 {
                     worldMapLoading.Show(LoadingScreen.LoadingType.AdventureBoss, ignoreShowAnimation: true);
                 }
+
                 await UniTask.WaitForEndOfFrame();
             }
+
             worldMapLoading.Close();
         }
 
         public void OnClickTower()
         {
-            if(LoadingScreenIsShowing)
+            if (LoadingScreenIsShowing)
             {
                 NcDebug.LogError("LoadingScreen is already showing");
                 return;
@@ -237,13 +252,12 @@ namespace Nekoyume.UI
                     }
 
                     Find<AdventureBossPreparation>().Show(
-                            L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"),
-                            _lastClearFloor * bossData.SweepAp,
-                            AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
+                        L10nManager.Localize("UI_ADVENTURE_BOSS_BREAKTHROUGH"),
+                        _lastClearFloor * bossData.SweepAp,
+                        AdventureBossPreparation.AdventureBossPreparationType.BreakThrough);
                     LoadingScreenIsShowing = false;
                 });
             });
         }
     }
 }
-

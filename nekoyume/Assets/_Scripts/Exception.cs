@@ -265,7 +265,6 @@ public class InvalidSellingPriceException : Exception
             popup.Item.Value.ItemBase.Value.GetLocalizedName(),
             popup.Price.Value))
     {
-
     }
 
     public InvalidSellingPriceException(Nekoyume.UI.Model.ItemCountableAndPricePopup popup) :
@@ -273,6 +272,5 @@ public class InvalidSellingPriceException : Exception
             popup.Item.Value.ItemBase.Value.GetLocalizedName(),
             popup.Price.Value))
     {
-
     }
 }

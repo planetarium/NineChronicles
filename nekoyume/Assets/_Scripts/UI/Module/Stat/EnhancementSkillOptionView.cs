@@ -66,11 +66,13 @@ namespace Nekoyume.UI.Model
 
             List<int> buffList = null;
             if (sheets.SkillBuffSheet.TryGetValue(skillId, out var skillBuffSheetRow))
+            {
                 buffList = skillBuffSheetRow.BuffIds;
+            }
 
             if (L10nManager.ContainsKey(key) && buffList != null && buffList.Count == 2)
             {
-                List<string> arg = new List<string>();
+                var arg = new List<string>();
                 var buff = sheets.StatBuffSheet[buffList[0]];
                 var deBuff = sheets.StatBuffSheet[buffList[1]];
                 arg.Add(chanceText);
@@ -124,6 +126,7 @@ namespace Nekoyume.UI.Model
                         break;
                 }
             }
+
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {coolDown}";
         }
     }

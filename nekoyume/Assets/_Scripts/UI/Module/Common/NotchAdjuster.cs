@@ -2,18 +2,20 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module.Common
 {
-    using Nekoyume.Game;
+    using Game;
+
     public class NotchAdjuster : MonoBehaviour
     {
         private RectTransform rectTransform;
         private Vector2 originAnchorMin;
         private Vector2 originAnchorMax;
+
         public enum NotchUIType
         {
             Normal,
             EventBanner,
             Left,
-            Right,
+            Right
         }
 
         [SerializeField]
@@ -53,10 +55,10 @@ namespace Nekoyume.UI.Module.Common
 
         private void CalculateNotchSizeAndAdjustPosition()
         {
-            Rect safeArea = Screen.safeArea;
+            var safeArea = Screen.safeArea;
 
-            Vector2 anchorMin = rectTransform.anchorMin;
-            Vector2 anchorMax = rectTransform.anchorMax;
+            var anchorMin = rectTransform.anchorMin;
+            var anchorMax = rectTransform.anchorMax;
 
             switch (NotchType)
             {

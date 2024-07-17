@@ -31,20 +31,20 @@ namespace Nekoyume.State.Modifiers
                     return _goldCache.Value;
                 }
 
-                var serialized = (Bencodex.Types.List) new Codec().Decode(ByteUtil.ParseHex(hex));
+                var serialized = (List)new Codec().Decode(ByteUtil.ParseHex(hex));
                 _goldCache = FungibleAssetValue.FromRawValue(
                     CurrencyExtensions.Deserialize(
-                        (Bencodex.Types.Dictionary) serialized.ElementAt(0)),
+                        (Dictionary)serialized.ElementAt(0)),
                     serialized.ElementAt(1).ToBigInteger());
 
                 return _goldCache.Value;
             }
             set
             {
-                var serialized = new Bencodex.Types.List(new IValue[]
+                var serialized = new List(new IValue[]
                 {
                     CurrencyExtensions.Serialize(value.Currency),
-                    (Integer) value.RawValue,
+                    (Integer)value.RawValue
                 });
 
                 hex = ByteUtil.Hex(new Codec().Encode(serialized));

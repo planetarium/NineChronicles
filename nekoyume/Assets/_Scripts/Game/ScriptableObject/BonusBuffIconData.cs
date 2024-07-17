@@ -17,7 +17,7 @@ namespace Nekoyume.Game.ScriptableObject
 
         public SkillCategory SkillCategory =>
             Enum.TryParse(typeof(SkillCategory), skillCategory, true, out var skillCategoryEnum)
-                ? (SkillCategory) skillCategoryEnum
+                ? (SkillCategory)skillCategoryEnum
                 : SkillCategory.Buff;
 
         public Sprite IconSprite => iconSprite;

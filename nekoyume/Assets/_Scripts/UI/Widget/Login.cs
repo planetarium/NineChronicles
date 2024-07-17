@@ -31,6 +31,7 @@ namespace Nekoyume.UI
             {
                 throw new Exception("Login widget's slots.Length is not equals GameConfig.SlotCount.");
             }
+
             _objectPool = Game.Game.instance.Stage.objectPool;
 
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
@@ -47,8 +48,8 @@ namespace Nekoyume.UI
 
             if (States.Instance.AvatarStates.TryGetValue(index, out var avatarState) &&
                 (avatarState.inventory == null ||
-                 avatarState.questList == null ||
-                 avatarState.worldInformation == null))
+                    avatarState.questList == null ||
+                    avatarState.worldInformation == null))
             {
                 NotificationSystem.Push(
                     MailType.System,
@@ -99,6 +100,7 @@ namespace Nekoyume.UI
                 player.DisableHUD();
                 _objectPool.Remove<Player>(player.gameObject);
             }
+
             _objectPool.ReleaseAll();
             players.Clear();
         }

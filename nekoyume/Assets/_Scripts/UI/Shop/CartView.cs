@@ -15,6 +15,7 @@ using TMPro;
 namespace Nekoyume.UI.Module
 {
     using UniRx;
+
     public class CartView : MonoBehaviour
     {
         [SerializeField]
@@ -35,16 +36,10 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             hideCartButton.Text = L10nManager.Localize("UI_CANCEL");
-            hideCartButton.OnSubmitSubject.Subscribe(_ =>
-            {
-                _onClickHideCart?.Invoke();
-            }).AddTo(gameObject);
+            hideCartButton.OnSubmitSubject.Subscribe(_ => { _onClickHideCart?.Invoke(); }).AddTo(gameObject);
 
             buyButton.Text = L10nManager.Localize("UI_BUY");
-            buyButton.OnSubmitSubject.Subscribe(_ =>
-            {
-                _onClickBuy?.Invoke();
-            }).AddTo(gameObject);
+            buyButton.OnSubmitSubject.Subscribe(_ => { _onClickBuy?.Invoke(); }).AddTo(gameObject);
 
             buyButton.OnClickDisabledSubject.Subscribe(_ =>
             {
@@ -69,7 +64,7 @@ namespace Nekoyume.UI.Module
             }
 
             var sortedItems = selectedItems.Where(x => !x.Expired.Value).ToList();
-            var price = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0 ,0);
+            var price = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
             for (var i = 0; i < cartItems.Count; i++)
             {
                 if (i < sortedItems.Count)

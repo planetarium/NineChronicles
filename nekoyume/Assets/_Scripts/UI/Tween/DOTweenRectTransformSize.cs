@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Tween
             currentTween = _rectTransform.DOSizeDelta(_endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
-                currentTween = SetEase().OnComplete(() =>PlayForward());
+                currentTween = SetEase().OnComplete(() => PlayForward());
             }
             else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {

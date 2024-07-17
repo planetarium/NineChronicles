@@ -32,6 +32,7 @@ using Nekoyume.Action;
 using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Helper;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.Module;
 using Nekoyume.Serilog;
@@ -56,10 +57,10 @@ namespace Nekoyume.Blockchain
 
         // This key is hard-coded key so should not be used personally.
         public static readonly PrivateKey ProposerKey =
-            new ("9f38eca075b9e2611a7e7a27291c081ee3fd570e88edd396bd09f292876f21c0");
+            new("9f38eca075b9e2611a7e7a27291c081ee3fd570e88edd396bd09f292876f21c0");
 
-        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
-        public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
+        public Subject<long> BlockIndexSubject { get; } = new();
+        public Subject<BlockHash> BlockTipHashSubject { get; } = new();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -70,10 +71,9 @@ namespace Nekoyume.Blockchain
         private const float TxProcessInterval = 3.0f;
         private const string QueuedActionsFileName = "queued_actions.dat";
 
-        private readonly ConcurrentQueue<ActionBase> _queuedActions =
-            new ConcurrentQueue<ActionBase>();
+        private readonly ConcurrentQueue<ActionBase> _queuedActions = new();
 
-        private readonly TransactionMap _transactions = new TransactionMap(20);
+        private readonly TransactionMap _transactions = new(20);
 
         protected BlockChain blocks;
         protected BaseStore store;
@@ -90,16 +90,15 @@ namespace Nekoyume.Blockchain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.Address;
 
-        public BlockRenderer BlockRenderer { get; } = new BlockRenderer();
+        public BlockRenderer BlockRenderer { get; } = new();
 
-        public ActionRenderer ActionRenderer { get; } = new ActionRenderer();
+        public ActionRenderer ActionRenderer { get; } = new();
         public int AppProtocolVersion { get; private set; }
         public BlockHash BlockTipHash => blocks.Tip.Hash;
 
         public HashDigest<SHA256> BlockTipStateRootHash => blocks.Tip.StateRootHash;
 
-        private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
-            new Subject<(NCTx tx, List<ActionBase> actions)>();
+        private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject = new();
 
         public IObservable<(NCTx tx, List<ActionBase> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 
@@ -158,7 +157,7 @@ namespace Nekoyume.Blockchain
 
             try
             {
-                string keyPath = path + "/states";
+                var keyPath = path + "/states";
                 IKeyValueStore stateKeyValueStore = new DefaultKeyValueStore(keyPath);
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 var actionLoader = new NCActionLoader();
@@ -178,7 +177,7 @@ namespace Nekoyume.Blockchain
                         _stateStore,
                         genesisBlock,
                         actionEvaluator,
-                        renderers: new IRenderer[]{ BlockRenderer, ActionRenderer });
+                        new IRenderer[] { BlockRenderer, ActionRenderer });
                 }
                 else
                 {
@@ -190,7 +189,7 @@ namespace Nekoyume.Blockchain
                         genesisBlock,
                         blockChainStates,
                         actionEvaluator,
-                        renderers: new IRenderer[]{ BlockRenderer, ActionRenderer });
+                        new IRenderer[] { BlockRenderer, ActionRenderer });
                 }
             }
             catch (InvalidGenesisBlockException)
@@ -219,7 +218,10 @@ namespace Nekoyume.Blockchain
 #endif
             lastTenBlocks = new ConcurrentQueue<(Block, DateTimeOffset)>();
 
-            if (!consoleSink) InitializeTelemetryClient(privateKey.Address);
+            if (!consoleSink)
+            {
+                InitializeTelemetryClient(privateKey.Address);
+            }
 
             // Init SyncSucceed
             SyncSucceed = true;
@@ -232,7 +234,8 @@ namespace Nekoyume.Blockchain
         {
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 try
                 {
                     store?.Dispose();
@@ -261,32 +264,50 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        public IValue GetState(Address accountAddress, Address address) =>
-            blocks.GetWorldState().GetAccountState(accountAddress).GetState(accountAddress);
+        public IValue GetState(Address accountAddress, Address address)
+        {
+            return blocks.GetWorldState().GetAccountState(accountAddress).GetState(accountAddress);
+        }
 
-        public IValue GetState(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address) =>
-            blocks.GetWorldState(stateRootHash).GetAccountState(accountAddress).GetState(address);
+        public IValue GetState(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address)
+        {
+            return blocks.GetWorldState(stateRootHash).GetAccountState(accountAddress).GetState(address);
+        }
 
-        public async Task<IValue> GetStateAsync(Address accountAddress, Address address) =>
-            await Task.FromResult(blocks.GetWorldState().GetAccountState(accountAddress).GetState(address));
+        public async Task<IValue> GetStateAsync(Address accountAddress, Address address)
+        {
+            return await Task.FromResult(blocks.GetWorldState().GetAccountState(accountAddress).GetState(address));
+        }
 
-        public Task<IValue> GetStateAsync(long blockIndex, Address accountAddress, Address address) =>
+        public Task<IValue> GetStateAsync(long blockIndex, Address accountAddress, Address address)
+        {
             throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+        }
 
-        public async Task<IValue> GetStateAsync(BlockHash blockHash, Address accountAddress, Address address) =>
-            await Task.FromResult(blocks.GetWorldState(blockHash).GetAccountState(accountAddress).GetState(address));
+        public async Task<IValue> GetStateAsync(BlockHash blockHash, Address accountAddress, Address address)
+        {
+            return await Task.FromResult(blocks.GetWorldState(blockHash).GetAccountState(accountAddress).GetState(address));
+        }
 
-        public async Task<IValue> GetStateAsync(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address) =>
-            await Task.FromResult(blocks.GetWorldState(stateRootHash).GetAccountState(accountAddress).GetState(address));
+        public async Task<IValue> GetStateAsync(HashDigest<SHA256> stateRootHash, Address accountAddress, Address address)
+        {
+            return await Task.FromResult(blocks.GetWorldState(stateRootHash).GetAccountState(accountAddress).GetState(address));
+        }
 
-        public async Task<AgentState> GetAgentStateAsync(Address address) =>
-            await Task.FromResult(blocks.GetWorldState().GetAgentState(address));
+        public async Task<AgentState> GetAgentStateAsync(Address address)
+        {
+            return await Task.FromResult(blocks.GetWorldState().GetAgentState(address));
+        }
 
-        public Task<AgentState> GetAgentStateAsync(long blockIndex, Address address) =>
+        public Task<AgentState> GetAgentStateAsync(long blockIndex, Address address)
+        {
             throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+        }
 
-        public async Task<AgentState> GetAgentStateAsync(HashDigest<SHA256> stateRootHash, Address address) =>
-            await Task.FromResult(blocks.GetWorldState(stateRootHash).GetAgentState(address));
+        public async Task<AgentState> GetAgentStateAsync(HashDigest<SHA256> stateRootHash, Address address)
+        {
+            return await Task.FromResult(blocks.GetWorldState(stateRootHash).GetAgentState(address));
+        }
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList)
@@ -309,8 +330,10 @@ namespace Nekoyume.Blockchain
 
         public Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             long blockIndex,
-            IEnumerable<Address> addressList) =>
+            IEnumerable<Address> addressList)
+        {
             throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+        }
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             HashDigest<SHA256> stateRootHash,
@@ -373,53 +396,73 @@ namespace Nekoyume.Blockchain
             return dict;
         }
 
-        public bool TryGetTxId(Guid actionId, out TxId txId) =>
-            _transactions.TryGetValue(actionId, out txId);
+        public bool TryGetTxId(Guid actionId, out TxId txId)
+        {
+            return _transactions.TryGetValue(actionId, out txId);
+        }
 
-        public UniTask<bool> IsTxStagedAsync(TxId txId) =>
-            UniTask.FromResult(blocks.GetStagedTransactionIds().Contains(txId));
+        public UniTask<bool> IsTxStagedAsync(TxId txId)
+        {
+            return UniTask.FromResult(blocks.GetStagedTransactionIds().Contains(txId));
+        }
 
-        public FungibleAssetValue GetBalance(Address address, Currency currency) =>
-            blocks.GetWorldState().GetBalance(address, currency);
+        public FungibleAssetValue GetBalance(Address address, Currency currency)
+        {
+            return blocks.GetWorldState().GetBalance(address, currency);
+        }
 
         public async Task<FungibleAssetValue> GetBalanceAsync(
             Address address,
-            Currency currency) =>
-            await Task.FromResult(blocks.GetWorldState().GetBalance(address, currency));
+            Currency currency)
+        {
+            return await Task.FromResult(blocks.GetWorldState().GetBalance(address, currency));
+        }
 
         public Task<FungibleAssetValue> GetBalanceAsync(
             long blockIndex,
             Address address,
-            Currency currency) =>
+            Currency currency)
+        {
             throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+        }
 
         public async Task<FungibleAssetValue> GetBalanceAsync(
             BlockHash blockHash,
             Address address,
-            Currency currency) =>
-            await Task.FromResult(blocks.GetWorldState(blockHash).GetBalance(address, currency));
+            Currency currency)
+        {
+            return await Task.FromResult(blocks.GetWorldState(blockHash).GetBalance(address, currency));
+        }
 
         public async Task<FungibleAssetValue> GetBalanceAsync(
             HashDigest<SHA256> stateRootHash,
             Address address,
-            Currency currency) =>
-            await Task.FromResult(blocks.GetWorldState(stateRootHash).GetBalance(address, currency));
+            Currency currency)
+        {
+            return await Task.FromResult(blocks.GetWorldState(stateRootHash).GetBalance(address, currency));
+        }
 
         // TODO: Below `GetInitState` codes have to be removed with Libplanet changes,
         // since using BlockChain.GetNextWorldState() is not recommended.
         // These have to be done by render from constructor of BlockChain in the future.
-        public async Task<IValue> GetInitStateAsync(Address accountAddress, Address address) =>
-            await Task.FromResult(blocks.GetNextWorldState().GetAccountState(accountAddress).GetState(address));
+        public async Task<IValue> GetInitStateAsync(Address accountAddress, Address address)
+        {
+            return await Task.FromResult(blocks.GetNextWorldState().GetAccountState(accountAddress).GetState(address));
+        }
 
-        public async Task<AgentState> GetInitAgentStateAsync(Address address) =>
-            await Task.FromResult(blocks.GetNextWorldState().GetAgentState(address));
+        public async Task<AgentState> GetInitAgentStateAsync(Address address)
+        {
+            return await Task.FromResult(blocks.GetNextWorldState().GetAgentState(address));
+        }
 
         public async Task<FungibleAssetValue> GetInitBalanceAsync(
             Address address,
-            Currency currency) =>
-            await Task.FromResult(blocks.GetNextWorldState().GetBalance(address, currency));
+            Currency currency)
+        {
+            return await Task.FromResult(blocks.GetNextWorldState().GetBalance(address, currency));
+        }
 
-        #region Mono
+#region Mono
 
         public void SendException(Exception exc)
         {
@@ -434,7 +477,7 @@ namespace Nekoyume.Blockchain
             try
             {
                 // Avoid to construct repeatly
-                if(Libplanet.Crypto.CryptoConfig.CryptoBackend is not Secp256K1CryptoBackend<SHA256>)
+                if (Libplanet.Crypto.CryptoConfig.CryptoBackend is not Secp256K1CryptoBackend<SHA256>)
                 {
                     Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
                 }
@@ -449,7 +492,7 @@ namespace Nekoyume.Blockchain
 
             ForceDotNet.Force();
 
-            string parentDir = Path.GetDirectoryName(DefaultStoragePath);
+            var parentDir = Path.GetDirectoryName(DefaultStoragePath);
             if (!Directory.Exists(parentDir))
             {
                 Directory.CreateDirectory(parentDir);
@@ -485,7 +528,7 @@ namespace Nekoyume.Blockchain
             Dispose();
         }
 
-        #endregion
+#endregion
 
         // TODO: Below initialization would be better to done by render from constructor of BlockChain,
         // after Libplanet support.
@@ -520,7 +563,7 @@ namespace Nekoyume.Blockchain
                     await GetInitAgentStateAsync(Address) ?? new AgentState(Address));
                 States.Instance.SetGoldBalanceState(
                     new GoldBalanceState(Address,
-                    await GetInitBalanceAsync(Address, goldCurrency)));
+                        await GetInitBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetInitBalanceAsync(Address, CrystalCalculator.CRYSTAL));
 
@@ -542,6 +585,7 @@ namespace Nekoyume.Blockchain
                     patronAddress = list[0].ToAddress();
                     approved = list[1].ToBoolean();
                 }
+
                 States.Instance.SetPledgeStates(patronAddress, approved);
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
@@ -693,7 +737,7 @@ namespace Nekoyume.Blockchain
             {
                 Cheat.Display("Logs", _tipInfo);
 
-                StringBuilder log = new StringBuilder($"Last 10 tips :\n");
+                var log = new StringBuilder($"Last 10 tips :\n");
                 foreach (var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
                     log.Append($"[{block.Index}] {block.Hash}\n");
@@ -752,7 +796,7 @@ namespace Nekoyume.Blockchain
                 var actions = new List<ActionBase>();
 
                 NcDebug.LogFormat("Try Dequeue Actions. Total Count: {0}", _queuedActions.Count);
-                while (_queuedActions.TryDequeue(out ActionBase action))
+                while (_queuedActions.TryDequeue(out var action))
                 {
                     actions.Add(action);
                     NcDebug.LogFormat("Remain Queued Actions Count: {0}", _queuedActions.Count);
@@ -799,10 +843,10 @@ namespace Nekoyume.Blockchain
             {
                 yield return waitForSeconds;
                 yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    new(),
-                    new(),
-                    new(),
-                    new(),
+                    new List<Guid>(),
+                    new List<Guid>(),
+                    new List<Consumable>(),
+                    new List<RuneSlotInfo>(),
                     1,
                     1).StartAsCoroutine();
                 NcDebug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
@@ -827,9 +871,9 @@ namespace Nekoyume.Blockchain
         {
             NcDebug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", actions));
-            Transaction tx = blocks.MakeTransaction(
-                privateKey: PrivateKey,
-                actions: actions
+            var tx = blocks.MakeTransaction(
+                PrivateKey,
+                actions
             );
             _onMakeTransactionSubject.OnNext((tx, actions));
 
@@ -876,7 +920,9 @@ namespace Nekoyume.Blockchain
 
                 NcDebug.LogWarning($"Save QueuedActions : {_queuedActions.Count}");
                 while (_queuedActions.TryDequeue(out var action))
+                {
                     actionsList.Add((GameAction)action);
+                }
 
                 File.WriteAllBytes(path, ByteSerializer.Serialize(actionsList));
             }
@@ -894,7 +940,7 @@ namespace Nekoyume.Blockchain
             while (true)
             {
                 // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
-                Task<List<Transaction>> getOwnTxs =
+                var getOwnTxs =
                     Task.FromResult(_stagePolicy.Iterate(blocks)
                         .Where(tx => tx.Signer.Equals(Address))
                         .ToList());
@@ -902,7 +948,7 @@ namespace Nekoyume.Blockchain
 
                 if (!getOwnTxs.IsFaulted)
                 {
-                    List<Transaction> txs = getOwnTxs.Result;
+                    var txs = getOwnTxs.Result;
                     var next = txs.Any();
                     if (next != hasOwnTx)
                     {

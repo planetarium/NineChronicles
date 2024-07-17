@@ -14,10 +14,16 @@ namespace Nekoyume.Game.Util
             var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
             var screenBoaderV = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
             if (screenBoaderH != null)
+            {
                 screenBoaderH.SetActive(false);
+            }
+
             if (screenBoaderV != null)
+            {
                 screenBoaderV.SetActive(false);
+            }
         }
+
         public static void ClearScreen(bool isHorizontal, float letterBoxSize)
         {
             var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
@@ -28,7 +34,7 @@ namespace Nekoyume.Game.Util
                 screenBoaderH.SetActive(isHorizontal);
                 if (isHorizontal)
                 {
-                    RectTransform rt = screenBoaderH.GetComponent<RectTransform>();
+                    var rt = screenBoaderH.GetComponent<RectTransform>();
                     rt.offsetMax = new Vector2(rt.offsetMax.x, -letterBoxSize);
                     rt.offsetMin = new Vector2(rt.offsetMin.x, letterBoxSize);
                 }
@@ -39,7 +45,7 @@ namespace Nekoyume.Game.Util
                 screenBoaderV.SetActive(!isHorizontal);
                 if (!isHorizontal)
                 {
-                    RectTransform rt = screenBoaderV.GetComponent<RectTransform>();
+                    var rt = screenBoaderV.GetComponent<RectTransform>();
                     rt.offsetMax = new Vector2(-letterBoxSize, rt.offsetMax.y);
                     rt.offsetMin = new Vector2(letterBoxSize, rt.offsetMin.y);
                 }
@@ -63,20 +69,20 @@ namespace Nekoyume.Game.Util
     public class IngameDebugConsoleCommands
     {
         public static GameObject IngameDebugConsoleObj;
+
         public static void Initailize()
         {
             DebugLogConsole.AddCommand("screen", "Change Screen Ratio State ", () =>
             {
                 ActionCamera.instance.ChangeRatioState();
-                var raidCam = Component.FindObjectOfType<RaidCamera>();
+                var raidCam = Object.FindObjectOfType<RaidCamera>();
                 if (raidCam != null)
+                {
                     raidCam.ChangeRatioState();
+                }
             });
 
-            DebugLogConsole.AddCommand("clo", "show current commandline option", () =>
-            {
-                Game.instance.ShowCLO();
-            });
+            DebugLogConsole.AddCommand("clo", "show current commandline option", () => { Game.instance.ShowCLO(); });
 
             DebugLogConsole.AddCommand("patrol-avatar", "Sync patrol reward avatar info", () =>
             {
@@ -102,6 +108,7 @@ namespace Nekoyume.Game.Util
                     NcDebug.Log($"[AdventureBoss] Season NextStartBlockIndex : {Game.instance.AdventureBossData.SeasonInfo.Value.NextStartBlockIndex}");
                     NcDebug.Log($"[AdventureBoss] Season UsedNcg : {Game.instance.AdventureBossData.GetCurrentBountyPrice().MajorUnit.ToString("#,0")}");
                 }
+
                 if (Game.instance.AdventureBossData.ExploreBoard.Value is null)
                 {
                     NcDebug.Log("[AdventureBoss] No ExploreBoard Info");
@@ -110,13 +117,19 @@ namespace Nekoyume.Game.Util
                 {
                     NcDebug.Log($"[AdventureBoss] Season TotalPoint : {Game.instance.AdventureBossData.ExploreBoard.Value.TotalPoint}");
                     if (Game.instance.AdventureBossData.ExploreBoard.Value is null)
+                    {
                         NcDebug.Log($"[AdventureBoss] Season ExplorerListCount : 0");
+                    }
                     else
+                    {
                         NcDebug.Log($"[AdventureBoss] Season ExplorerListCount : {Game.instance.AdventureBossData.ExploreBoard.Value.ExplorerCount}");
+                    }
+
                     NcDebug.Log($"[AdventureBoss] Season UsedApPotion : {Game.instance.AdventureBossData.ExploreBoard.Value.UsedApPotion}");
                     NcDebug.Log($"[AdventureBoss] Season UsedGoldenDust : {Game.instance.AdventureBossData.ExploreBoard.Value.UsedGoldenDust}");
                     NcDebug.Log($"[AdventureBoss] Season TotalPoint : {Game.instance.AdventureBossData.ExploreBoard.Value.TotalPoint}");
                 }
+
                 if (Game.instance.AdventureBossData.BountyBoard.Value is null)
                 {
                     NcDebug.Log("[AdventureBoss] No BountyBoard Info");

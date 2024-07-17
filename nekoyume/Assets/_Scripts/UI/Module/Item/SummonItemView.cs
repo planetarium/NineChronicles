@@ -16,6 +16,7 @@ namespace Nekoyume.UI.Module
     {
         [Space]
         [SerializeField] private Animator animator;
+
         [SerializeField] private TouchHandler touchHandler;
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private GameObject grade6Effect;

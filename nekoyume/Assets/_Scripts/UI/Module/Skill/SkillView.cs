@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.EnumType;
-    using Nekoyume.UI.Model;
+    using EnumType;
+    using Model;
     using UniRx;
 
     public class SkillView : VanillaSkillView
@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI chanceText;
         public Button skillDescriptionButton;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
         private System.Action _onClickDesc;
 
         public Model.SkillView Model { get; private set; }

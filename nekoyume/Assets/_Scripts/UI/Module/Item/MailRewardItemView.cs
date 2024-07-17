@@ -39,7 +39,7 @@ namespace Nekoyume
             baseItemView.SelectObject.SetActive(false);
             baseItemView.FocusObject.SetActive(false);
             baseItemView.NotificationObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive((false));
+            baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.LevelLimitObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
             baseItemView.RuneSelectMove.SetActive(false);
@@ -101,7 +101,7 @@ namespace Nekoyume
                 baseItemView.EnhancementText.gameObject.SetActive(false);
                 baseItemView.EnhancementImage.gameObject.SetActive(false);
                 baseItemView.OptionTag.gameObject.SetActive(false);
-                if(fav.Currency.Ticker == "NCG")
+                if (fav.Currency.Ticker == "NCG")
                 {
                     baseItemView.CountText.text = mailReward.FavFungibleAssetValue.GetQuantityString();
                 }

@@ -41,15 +41,16 @@ namespace Nekoyume.UI.Module
         private Color _originalTextColor;
         private int _originalSortingOrderOffset;
 
-        public Animator Animator => !_animatorCache
-            ? _animatorCache = GetComponent<Animator>()
-            : _animatorCache;
+        public Animator Animator =>
+            !_animatorCache
+                ? _animatorCache = GetComponent<Animator>()
+                : _animatorCache;
 
-        public readonly Subject<ToggleableButton> OnClick = new Subject<ToggleableButton>();
+        public readonly Subject<ToggleableButton> OnClick = new();
         public IObservable<PointerEventData> onPointerEnter = null;
         public IObservable<PointerEventData> onPointerExit = null;
 
-        #region Mono
+#region Mono
 
         protected virtual void Awake()
         {
@@ -101,9 +102,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        #endregion
+#endregion
 
-        #region IWidgetControllable
+#region IWidgetControllable
 
         private Widget _widget;
         private IDisposable _disposableForWidgetControllable;
@@ -158,9 +159,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        #endregion
+#endregion
 
-        #region IToggleable
+#region IToggleable
 
         public string Name => name;
 
@@ -201,7 +202,7 @@ namespace Nekoyume.UI.Module
             HideWidget();
         }
 
-        #endregion
+#endregion
 
         public void Show()
         {

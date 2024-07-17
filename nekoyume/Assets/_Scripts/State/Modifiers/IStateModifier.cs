@@ -12,10 +12,12 @@
         /// false: Do nothing.
         /// </summary>
         bool dirty { get; set; }
+
         /// <summary>
         /// 상태 변경자가 비어 있는지 확인합니다.
         /// </summary>
         bool IsEmpty { get; }
+
         /// <summary>
         /// `state`를 변경합니다.
         /// </summary>
@@ -47,6 +49,7 @@
         /// </summary>
         /// <param name="modifier"></param>
         void Add(IAccumulatableStateModifier<T> modifier);
+
         /// <summary>
         /// 상태 변경자를 제거합니다.
         /// </summary>

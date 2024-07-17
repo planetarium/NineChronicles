@@ -24,10 +24,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            L10nManager.OnLanguageChange.Subscribe(_ =>
-            {
-                RefreshLocalized();
-            }).AddTo(gameObject);
+            L10nManager.OnLanguageChange.Subscribe(_ => { RefreshLocalized(); }).AddTo(gameObject);
         }
 
         public void SetData(string nameKey, Sprite icon = null)

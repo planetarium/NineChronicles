@@ -56,6 +56,7 @@ namespace Nekoyume.UI.Module
                 _type = type;
                 _cost = cost;
             }
+
             UpdateObjects();
         }
 
@@ -79,9 +80,7 @@ namespace Nekoyume.UI.Module
             {
                 costObject.icon.sprite = costIconData.GetIcon(_type);
                 costObject.text.text = _cost.ToString();
-                costObject.text.color = costEnough ?
-                    Palette.GetColor(ColorType.ButtonEnabled) :
-                    Palette.GetColor(ColorType.TextDenial);
+                costObject.text.color = costEnough ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
             }
         }
 
@@ -147,9 +146,7 @@ namespace Nekoyume.UI.Module
             {
                 costObject.icon.sprite = costIconData.GetIcon(type);
                 costObject.text.text = cost.ToString();
-                costObject.text.color = costEnough ?
-                    Palette.GetColor(ColorType.ButtonEnabled) :
-                    Palette.GetColor(ColorType.TextDenial);
+                costObject.text.color = costEnough ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
             }
         }
     }

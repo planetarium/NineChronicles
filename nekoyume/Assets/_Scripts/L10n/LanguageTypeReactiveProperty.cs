@@ -9,7 +9,7 @@ namespace Nekoyume.L10n
         public LanguageTypeReactiveProperty() : base()
         {
         }
-        
+
         public LanguageTypeReactiveProperty(LanguageType initialValue) : base(initialValue)
         {
         }

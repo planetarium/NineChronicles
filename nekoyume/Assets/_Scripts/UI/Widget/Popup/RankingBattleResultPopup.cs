@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nekoyume.ApiClient;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -36,7 +37,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI seasonPassCourageAmount;
 
-        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
+        private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, .25f, 10f);
 
         private System.Action _onClose;
 
@@ -92,6 +93,7 @@ namespace Nekoyume.UI
             {
                 repeatCount = winDefeatCount.Value.win + winDefeatCount.Value.defeat;
             }
+
             RefreshSeasonPassCourageAmount(repeatCount);
 
             _onClose = onClose;
@@ -105,13 +107,14 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount(int count)
         {
-            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.ArenaCourageAmount * count}";
+
+                seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.ArenaCourageAmount * count}";
             }
             else
             {

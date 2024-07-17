@@ -59,7 +59,9 @@ namespace Nekoyume.JsonConvertibles
         {
             if (left is null ||
                 right is null)
+            {
                 return false;
+            }
 
             return left.Value == right.Value;
         }
@@ -67,7 +69,9 @@ namespace Nekoyume.JsonConvertibles
         public static bool operator ==(JsonConvertibleBigInteger left, BigInteger right)
         {
             if (left is null)
+            {
                 return false;
+            }
 
             return left.Value == right;
         }
@@ -76,7 +80,9 @@ namespace Nekoyume.JsonConvertibles
         {
             if (left is null ||
                 right is null)
+            {
                 return false;
+            }
 
             return left.Value != right.Value;
         }
@@ -84,7 +90,9 @@ namespace Nekoyume.JsonConvertibles
         public static bool operator !=(JsonConvertibleBigInteger left, BigInteger right)
         {
             if (left is null)
+            {
                 return false;
+            }
 
             return left.Value != right;
         }
@@ -113,10 +121,22 @@ namespace Nekoyume.JsonConvertibles
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((JsonConvertibleBigInteger) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
+            return Equals((JsonConvertibleBigInteger)obj);
         }
 
         public override int GetHashCode()

@@ -18,8 +18,8 @@ namespace Nekoyume.Blockchain
         protected ActionTimeoutException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            TxId = (TxId?) info.GetValue(nameof(TxId), typeof(TxId));
-            ActionId = (Guid?) info.GetValue(nameof(ActionId), typeof(Guid));
+            TxId = (TxId?)info.GetValue(nameof(TxId), typeof(TxId));
+            ActionId = (Guid?)info.GetValue(nameof(ActionId), typeof(Guid));
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Sprite indexDisabledImage = null;
 
-        [SerializeField, Range(0f, 1.0f)]
+        [SerializeField][Range(0f, 1.0f)]
         private float dragPercentThreshold;
 
         [SerializeField]
@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Module
 
         private RectTransform _content;
 
-        private readonly List<Image> _indexImages = new List<Image>();
+        private readonly List<Image> _indexImages = new();
 
         private Vector2 _panelPosition;
 
@@ -63,6 +63,7 @@ namespace Nekoyume.UI.Module
             {
                 StopCoroutine(_coroutine);
             }
+
             _coroutine = StartCoroutine(CoMovePage());
         }
 
@@ -91,6 +92,7 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
+
             var delta = eventData.pressPosition.x - eventData.position.x;
             var x = Mathf.Clamp(_panelPosition.x - delta, _xBorderMin, _xBorderMax);
             _content.localPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
@@ -159,7 +161,7 @@ namespace Nekoyume.UI.Module
         {
             _currentIndex = index;
 
-            for (int i = 0; i < _indexImages.Count; ++i)
+            for (var i = 0; i < _indexImages.Count; ++i)
             {
                 var enabled = i == index;
                 _indexImages[i].sprite = enabled ? indexEnabledImage : indexDisabledImage;
@@ -179,9 +181,8 @@ namespace Nekoyume.UI.Module
                     yield return waitInterval;
                 } while (_isDragging);
 
-                var idx = _currentIndex + 1 < _indexImages.Count ?
-                    _currentIndex + 1 : 0;
-                var x = _xBorderMax - (idx * contentWidth);
+                var idx = _currentIndex + 1 < _indexImages.Count ? _currentIndex + 1 : 0;
+                var x = _xBorderMax - idx * contentWidth;
                 var targetPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
 
                 StartCoroutine(CoSmoothMovePage(_content.localPosition, targetPosition, idx));

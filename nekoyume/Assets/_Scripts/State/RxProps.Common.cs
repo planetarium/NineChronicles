@@ -55,8 +55,8 @@ namespace Nekoyume.State
                 int progressedBlockRange = 0,
                 int totalBlockRange = 0)
             {
-                this.currentTickets = currentTicketCount;
-                this.maxTickets = maxTicketCount;
+                currentTickets = currentTicketCount;
+                maxTickets = maxTicketCount;
                 this.progressedBlockRange = progressedBlockRange;
                 this.totalBlockRange = totalBlockRange;
                 var remainBlock = (long)totalBlockRange - progressedBlockRange;

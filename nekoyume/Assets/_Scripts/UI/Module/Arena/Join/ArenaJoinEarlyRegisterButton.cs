@@ -42,11 +42,11 @@ namespace Nekoyume.UI.Module.Arena.Join
         private int _round;
         private long _cost;
 
-        private readonly Subject<Unit> _onGoToGrinding = new Subject<Unit>();
+        private readonly Subject<Unit> _onGoToGrinding = new();
         public IObservable<Unit> OnGoToGrinding => _onGoToGrinding;
 
 
-        private readonly Subject<Unit> _onJoinArenaAction = new Subject<Unit>();
+        private readonly Subject<Unit> _onJoinArenaAction = new();
         public IObservable<Unit> OnJoinArenaAction => _onJoinArenaAction;
 
         private void Awake()

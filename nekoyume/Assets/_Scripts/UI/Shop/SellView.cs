@@ -39,7 +39,9 @@ namespace Nekoyume
             _selectedItem = null;
         }
 
-        protected override void OnAwake() { }
+        protected override void OnAwake()
+        {
+        }
 
         protected override void InitInteractiveUI()
         {

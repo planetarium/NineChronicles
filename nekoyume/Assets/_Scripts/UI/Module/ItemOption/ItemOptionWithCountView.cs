@@ -56,7 +56,9 @@ namespace Nekoyume.UI.Module
                 count);
         }
 
-        public override void UpdateToEmpty() =>
+        public override void UpdateToEmpty()
+        {
             UpdateView(string.Empty, string.Empty, 0);
+        }
     }
 }

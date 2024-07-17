@@ -104,7 +104,7 @@ namespace Nekoyume.Blockchain
                     Addresses.GetSheetAddress(
                         stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
                     Addresses.GetSheetAddress(
-                        stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                        stakeStateV2.Contract.StakeRegularRewardSheetTableName)
                 };
             }
 
@@ -241,7 +241,7 @@ namespace Nekoyume.Blockchain
                 await UpdateCurrentAvatarStateAsync(
                     Game.Game.instance.Agent.GetAvatarStatesAsync(
                         evaluation.OutputState,
-                        new [] { avatarAddress }).Result[avatarAddress]);
+                        new[] { avatarAddress }).Result[avatarAddress]);
             }
             catch (Exception e)
             {
@@ -270,9 +270,9 @@ namespace Nekoyume.Blockchain
         protected static void UpdateGameConfigState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             if (evaluation.Action is not PatchTableSheet
-            {
-                TableName: nameof(GameConfigSheet),
-            })
+                {
+                    TableName: nameof(GameConfigSheet)
+                })
             {
                 return;
             }
@@ -286,7 +286,7 @@ namespace Nekoyume.Blockchain
         {
             var state = GetCrystalRandomSkillState(evaluation.OutputState);
 
-            if (state is { })
+            if (state is not null)
             {
                 States.Instance.SetCrystalRandomSkillState(state);
             }
@@ -301,7 +301,7 @@ namespace Nekoyume.Blockchain
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
         {
             var game = Game.Game.instance;
-            if (goldBalanceState is { } &&
+            if (goldBalanceState is not null &&
                 game.Agent.Address.Equals(goldBalanceState.address))
             {
                 var currency = goldBalanceState.Gold.Currency;
@@ -355,8 +355,10 @@ namespace Nekoyume.Blockchain
                 stakeRegularRewardSheet);
         }
 
-        private static UniTask UpdateAvatarState(AvatarState avatarState, int index) =>
-            States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
+        private static UniTask UpdateAvatarState(AvatarState avatarState, int index)
+        {
+            return States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
+        }
 
         public async UniTask UpdateCurrentAvatarStateAsync(AvatarState avatarState)
         {

@@ -61,7 +61,10 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        protected override void SetupCellTemplate() => Setup<GridCellGroup>(cellPrefab);
+        protected override void SetupCellTemplate()
+        {
+            Setup<GridCellGroup>(cellPrefab);
+        }
 
         public void SetData(
             PlanetRegistry planetRegistry,
@@ -90,7 +93,7 @@ namespace Nekoyume.UI.Scroller
                     {
                         PlanetName = "null",
                         PlanetAccountInfo = e,
-                        NeedToImportKey = needToImportKey,
+                        NeedToImportKey = needToImportKey
                     };
                 }
 
@@ -98,7 +101,7 @@ namespace Nekoyume.UI.Scroller
                 {
                     PlanetName = textInfo.ToTitleCase(planetInfo.Name),
                     PlanetAccountInfo = e,
-                    NeedToImportKey = needToImportKey,
+                    NeedToImportKey = needToImportKey
                 };
             }).ToArray();
             UpdateContents(newItemsSource);

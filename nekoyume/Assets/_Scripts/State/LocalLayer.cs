@@ -48,7 +48,7 @@ namespace Nekoyume.State
 
         private ModifierInfo<WeeklyArenaStateModifier> _weeklyArenaModifierInfo;
 
-        #region Initialization
+#region Initialization
 
         /// <summary>
         /// 인자로 받은 에이전트 상태를 바탕으로 로컬 세팅을 초기화 한다.
@@ -120,9 +120,9 @@ namespace Nekoyume.State
             _weeklyArenaModifierInfo = new ModifierInfo<WeeklyArenaStateModifier>(address);
         }
 
-        #endregion
+#endregion
 
-        #region Set & Reset
+#region Set & Reset
 
         /// <summary>
         /// 인자로 받은 워크샵 슬롯에 대한 상태 변경자를 적용합니다.
@@ -172,9 +172,9 @@ namespace Nekoyume.State
             }
         }
 
-        #endregion
+#endregion
 
-        #region Add
+#region Add
 
         /// <summary>
         /// 인자로 받은 에이전트에 대한 상태 변경자를 더한다.
@@ -329,9 +329,9 @@ namespace Nekoyume.State
             }
         }
 
-        #endregion
+#endregion
 
-        #region Remove
+#region Remove
 
         /// <summary>
         /// 인자로 받은 에이전트에 대한 상태 변경자를 뺀다.
@@ -456,9 +456,9 @@ namespace Nekoyume.State
             }
         }
 
-        #endregion
+#endregion
 
-        #region Modify
+#region Modify
 
         /// <summary>
         /// 인자로 받은 에이전트 상태에 로컬 세팅을 반영한다.
@@ -617,9 +617,9 @@ namespace Nekoyume.State
             return value;
         }
 
-        #endregion
+#endregion
 
-        #region Clear
+#region Clear
 
         /// <summary>
         /// `T`형 상태 변경자를 모두 제거한다.
@@ -648,7 +648,7 @@ namespace Nekoyume.State
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// `modifiers`가 `modifier`와 같은 타입의 객체를 포함하고 있다면, 그것을 반환한다.

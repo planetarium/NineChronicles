@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class AdventureBossNcgRandomRewardPopup : PopupWidget
     {
         [SerializeField] private ConditionalButton oKButton;
@@ -23,6 +24,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
             ShowWinner(seasonId);
         }
 
@@ -35,6 +37,7 @@ namespace Nekoyume.UI
                 NcDebug.LogWarning("RaffleWinnerName is empty");
                 return;
             }
+
             exploreWinnerName.text = explorerBoard.RaffleWinnerName;
             exploreReward.text = explorerBoard.RaffleReward.Value.MajorUnit.ToString("#,0");
             base.Show();

@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Scroller
 
         protected override float CellSize => cellSize;
 
-        #region FancyScrollRect
+#region FancyScrollRect
 
         private float ScrollLength => 1f / Mathf.Max(cellInterval, 1e-2f) - 1f;
 
@@ -44,9 +44,9 @@ namespace Nekoyume.UI.Scroller
 
         private float PaddingHeadLength => (paddingHead - spacing * 0.5f) / (CellSize + spacing);
 
-        #endregion
+#endregion
 
-        #region MonoBehaviour
+#region MonoBehaviour
 
         private void Reset()
         {
@@ -59,9 +59,9 @@ namespace Nekoyume.UI.Scroller
             Context.Dispose();
         }
 
-        #endregion
+#endregion
 
-        #region Control
+#region Control
 
         public void Show()
         {
@@ -91,7 +91,7 @@ namespace Nekoyume.UI.Scroller
 
             if (fillWithNullToEmptyViewport)
             {
-                var cellCount = (int) (Scroller.ViewportSize / CellSize);
+                var cellCount = (int)(Scroller.ViewportSize / CellSize);
                 var addCount = math.max(0, cellCount - itemsSource.Count);
                 for (var i = 0; i < addCount; i++)
                 {
@@ -185,9 +185,9 @@ namespace Nekoyume.UI.Scroller
             ScrollTo(index, duration, ease, alignment, onComplete);
         }
 
-        #endregion
+#endregion
 
-        #region Getter
+#region Getter
 
         private bool TryGetCellIndex(TItemData itemData, out int itemIndex)
         {
@@ -207,9 +207,9 @@ namespace Nekoyume.UI.Scroller
             return false;
         }
 
-        #endregion
+#endregion
 
-        #region Override
+#region Override
 
         protected override void Refresh()
         {
@@ -237,7 +237,7 @@ namespace Nekoyume.UI.Scroller
             scrollOffset = cellInterval * (1f + reuseCellMarginCount);
         }
 
-        #endregion
+#endregion
 
         private float GetAlignmentToIncludeWithinViewport(TItemData itemData)
         {

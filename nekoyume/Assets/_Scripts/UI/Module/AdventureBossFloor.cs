@@ -44,21 +44,21 @@ namespace Nekoyume.UI.Module
             if (indicatorObj.activeInHierarchy)
             {
                 OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize(
-                                "NOTIFICATION_NOT_UNLOCK_WHILE_FLOOR_LOADING"),
-                        NotificationCell.NotificationType.Information);
+                    MailType.System,
+                    L10nManager.Localize(
+                        "NOTIFICATION_NOT_UNLOCK_WHILE_FLOOR_LOADING"),
+                    NotificationCell.NotificationType.Information);
                 return;
             }
 
             var exploreInfo = Game.Game.instance.AdventureBossData.ExploreInfo.Value;
-            if(exploreInfo == null || exploreInfo.Floor != exploreInfo.MaxFloor)
+            if (exploreInfo == null || exploreInfo.Floor != exploreInfo.MaxFloor)
             {
                 OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize(
-                                "NOTIFICATION_CAN_NOT_UNLOCK_FLOOR"),
-                        NotificationCell.NotificationType.Information);
+                    MailType.System,
+                    L10nManager.Localize(
+                        "NOTIFICATION_CAN_NOT_UNLOCK_FLOOR"),
+                    NotificationCell.NotificationType.Information);
                 return;
             }
 
@@ -124,6 +124,7 @@ namespace Nekoyume.UI.Module
                         NcDebug.LogError($"Not found unlock floor cost data. floor: {_floorIndex + 1}");
                         return;
                     }
+
                     goldUnlockCount.text = unlockFloorCostRow.NcgPrice.ToString();
                     goldenDustUnlockCount.text = unlockFloorCostRow.GoldenDustPrice.ToString();
                     break;

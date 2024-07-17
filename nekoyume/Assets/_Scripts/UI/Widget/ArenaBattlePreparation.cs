@@ -48,14 +48,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private Transform buttonStarImageTransform;
 
-        [SerializeField, Range(.5f, 3.0f)]
+        [SerializeField][Range(.5f, 3.0f)]
         private float animationTime = 1f;
 
         [SerializeField]
         private bool moveToLeft = false;
 
-        [SerializeField, Range(0f, 10f),
-         Tooltip("Gap between start position X and middle position X")]
+        [SerializeField][Range(0f, 10f)][Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         [SerializeField]
@@ -98,7 +97,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #region override
+#region override
 
         protected override void Awake()
         {
@@ -161,7 +160,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        #endregion
+#endregion
 
         private void ReadyToBattle()
         {
@@ -289,7 +288,7 @@ namespace Nekoyume.UI
 
         public void OnRenderBattleArena(ActionEvaluation<BattleArena> eval)
         {
-            if (eval.Exception is { })
+            if (eval.Exception is not null)
             {
                 Find<ArenaBattleLoadingScreen>().Close();
                 return;
@@ -312,10 +311,7 @@ namespace Nekoyume.UI
             if (isEquipmentValid && !isIntervalValid)
             {
                 Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                    .Subscribe(blockIndex =>
-                    {
-                        SetStartButton(IsIntervalValid(blockIndex), true);
-                    }).AddTo(_disposables);
+                    .Subscribe(blockIndex => { SetStartButton(IsIntervalValid(blockIndex), true); }).AddTo(_disposables);
             }
 
             startButton.Interactable = true;
@@ -334,7 +330,7 @@ namespace Nekoyume.UI
             startButton.gameObject.SetActive(canBattle);
             blockStartingText.gameObject.SetActive(!canBattle);
             repeatPopupButton.gameObject.SetActive(canBattle &&
-                                                   _roundData.ArenaType == ArenaType.OffSeason);
+                _roundData.ArenaType == ArenaType.OffSeason);
 
             if (!canBattle)
             {

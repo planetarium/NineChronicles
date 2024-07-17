@@ -18,11 +18,11 @@ namespace Nekoyume.Game.Avatar
 
         private void Awake()
         {
-            var shader          = Shader.Find(DefaultPmaShader);
-            var weaponSlot      = skeletonGraphic.Skeleton.FindSlot(WeaponSlot);
+            var shader = Shader.Find(DefaultPmaShader);
+            var weaponSlot = skeletonGraphic.Skeleton.FindSlot(WeaponSlot);
             var weaponSlotIndex = weaponSlot == null ? -1 : weaponSlot.Data.Index;
-            var weaponSprite    = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
-            var newWeapon       = weaponSprite.ToRegionAttachmentPMAClone(shader);
+            var weaponSprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
+            var newWeapon = weaponSprite.ToRegionAttachmentPMAClone(shader);
             skeletonGraphic.Skeleton.Data.DefaultSkin
                 .SetAttachment(weaponSlotIndex, WeaponSlot, newWeapon);
             skeletonGraphic.Skeleton.SetSlotsToSetupPose();

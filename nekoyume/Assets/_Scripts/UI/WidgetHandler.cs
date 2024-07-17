@@ -17,10 +17,10 @@ namespace Nekoyume.UI
         public MessageCatTooltip MessageCatTooltip =>
             _messageCatTooltip
                 ? _messageCatTooltip
-                : (_messageCatTooltip = Widget.Find<MessageCatTooltip>());
+                : _messageCatTooltip = Widget.Find<MessageCatTooltip>();
 
-        public Battle Battle => _battle ? _battle : (_battle = Widget.Find<Battle>());
-        public Menu Menu => _menu ? _menu : (_menu = Widget.Find<Menu>());
+        public Battle Battle => _battle ? _battle : _battle = Widget.Find<Battle>();
+        public Menu Menu => _menu ? _menu : _menu = Widget.Find<Menu>();
 
         public void HideAllMessageCat()
         {

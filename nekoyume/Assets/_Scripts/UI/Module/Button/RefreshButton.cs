@@ -36,10 +36,10 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ => PlayAnimation(NPCAnimation.Type.Over))
                 .AddTo(gameObject);
 
-            Animator = new NPCAnimator(this) {TimeScale = AnimatorTimeScale};
+            Animator = new NPCAnimator(this) { TimeScale = AnimatorTimeScale };
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
         }
-        
+
         private void Start()
         {
             UpdateAnimatorTarget();
@@ -110,7 +110,7 @@ namespace Nekoyume.UI.Module
                     var bodyBone = SpineController.SkeletonAnimation.skeleton.FindBone("body_01");
                     var spineControllerTransform = SpineController.transform;
                     var position = bodyBone?.GetWorldPosition(spineControllerTransform)
-                                   ?? spineControllerTransform.position;
+                        ?? spineControllerTransform.position;
                     VFXController.instance.CreateAndChaseCam<EmotionHeartVFX>(
                         position,
                         new Vector3(0f, 0f, -10f));

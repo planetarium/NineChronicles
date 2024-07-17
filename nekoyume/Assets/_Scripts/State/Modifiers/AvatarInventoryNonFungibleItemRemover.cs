@@ -7,7 +7,7 @@ namespace Nekoyume.State.Modifiers
     [Serializable]
     public class AvatarInventoryNonFungibleItemRemover : AvatarStateModifier
     {
-        private List<Guid> _items = new List<Guid>();
+        private List<Guid> _items = new();
 
         public override bool IsEmpty => _items.Count == 0;
 

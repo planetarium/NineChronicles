@@ -153,7 +153,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             if (!Game.Game.instance.TableSheets.WorldBossActionPatternSheet
-                    .TryGetValue(_bossId, out var patternRow))
+                .TryGetValue(_bossId, out var patternRow))
             {
                 return;
             }

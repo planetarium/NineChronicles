@@ -23,7 +23,7 @@ namespace Nekoyume.UI
             PreviousRank,
             Rank,
             Reward,
-            Rune,
+            Rune
         }
 
         [Serializable]
@@ -55,7 +55,11 @@ namespace Nekoyume.UI
             {
                 categoryToggle.Toggle.onValueChanged.AddListener(value =>
                 {
-                    if (!value) return;
+                    if (!value)
+                    {
+                        return;
+                    }
+
                     AudioController.PlayClick();
                     _selectedItemSubType.SetValueAndForceNotify(categoryToggle.Type);
                 });
@@ -103,6 +107,7 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
             base.Close(ignoreCloseAnimation);
         }
 
@@ -128,30 +133,35 @@ namespace Nekoyume.UI
                     {
                         information.Show();
                     }
+
                     break;
                 case ToggleType.PreviousRank:
                     if (categoryToggle.Item is WorldBossRank previousRank)
                     {
                         previousRank.ShowAsync(WorldBossRank.Status.PreviousSeason);
                     }
+
                     break;
                 case ToggleType.Rank:
                     if (categoryToggle.Item is WorldBossRank rank)
                     {
                         rank.ShowAsync(WorldBossRank.Status.Season);
                     }
+
                     break;
                 case ToggleType.Reward:
                     if (categoryToggle.Item is WorldBossReward reward)
                     {
                         reward.ShowAsync();
                     }
+
                     break;
                 case ToggleType.Rune:
                     if (categoryToggle.Item is WorldBossRuneStoneInventory inventory)
                     {
                         inventory.Show();
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

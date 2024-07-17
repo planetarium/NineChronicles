@@ -41,7 +41,7 @@ namespace Nekoyume.Game
         {
             Analyzer.Instance.Track("Unity/Prologuebattle Start", new Dictionary<string, Value>()
             {
-                ["AgentAddress"] = Game.instance.States.AgentState.address.ToString(),
+                ["AgentAddress"] = Game.instance.States.AgentState.address.ToString()
             });
 
             var evt = new AirbridgeEvent("Prologue_Battle_Start");
@@ -101,7 +101,7 @@ namespace Nekoyume.Game
             {
                 202002,
                 203005,
-                205000,
+                205000
             };
             yield return StartCoroutine(
                 Game.instance.Stage.spawner.CoSpawnWave(monsterIds, player.transform.position, 0f, _fenrir, _player));
@@ -123,6 +123,7 @@ namespace Nekoyume.Game
             {
                 pos.x -= 0.2f;
             }
+
             pos.y += 0.32f;
             Vector3 position;
             Vector3 force;
@@ -137,6 +138,7 @@ namespace Nekoyume.Game
                 force = new Vector3(0f, 0.8f);
                 position = target.transform.TransformPoint(0f, 1.7f, 0f);
             }
+
             var group = !isPlayer ? DamageText.TextGroupState.Damage : DamageText.TextGroupState.Basic;
             if (critical)
             {
@@ -164,6 +166,7 @@ namespace Nekoyume.Game
             {
                 _player.Animator.Attack();
             }
+
             yield return new WaitUntil(() => _player.AttackEnd);
             if (dead)
             {
@@ -173,6 +176,7 @@ namespace Nekoyume.Game
             {
                 enemy.Animator.Hit();
             }
+
             _battle.ShowComboText(true);
             PopupDmg(damage, enemy.gameObject, true, critical, ElementalType.Normal, isFenrir);
         }
@@ -191,7 +195,7 @@ namespace Nekoyume.Game
             var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();
             yield return new WaitForSeconds(0.5f);
-            var dmgMap = new[] {1617, 4851, 8085, 12936, 38808};
+            var dmgMap = new[] { 1617, 4851, 8085, 12936, 38808 };
             for (var i = 0; i < 5; i++)
             {
                 yield return new WaitForSeconds(0.14f);
@@ -204,12 +208,14 @@ namespace Nekoyume.Game
                     yield return new WaitUntil(() => effect.last.isStopped);
                     yield return new WaitForSeconds(0.2f);
                 }
+
                 _battle.ShowComboText(true);
                 PopupDmg(dmgMap[i], _pig.gameObject, true, i == 4, ElementalType.Fire, false);
                 PopupDmg(dmgMap[i], _knight.gameObject, true, i == 4, ElementalType.Fire, false);
                 StartCoroutine(_pig.CoHit());
                 StartCoroutine(_knight.CoHit());
             }
+
             _pig.Animator.Die();
             _knight.Animator.Die();
             yield return new WaitUntil(() => _player.AttackEnd);
@@ -236,6 +242,7 @@ namespace Nekoyume.Game
             _player.Animator.Idle();
             yield return new WaitForSeconds(1f);
         }
+
         private IEnumerator CoBattle()
         {
             var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
@@ -245,7 +252,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(PlayerAttack(1524, _fox, true, false));
             yield return StartCoroutine(_pig.CoNormalAttack(12733, true));
             yield return StartCoroutine(PlayerAttack(4518, _fox, true, false));
-            yield return StartCoroutine(_fox.CoDoubleAttack(new[] {7126, 14352}, new[] {false, true}));
+            yield return StartCoroutine(_fox.CoDoubleAttack(new[] { 7126, 14352 }, new[] { false, true }));
             yield return StartCoroutine(PlayerAttack(5772, _fox, true, false));
             yield return StartCoroutine(_knight.CoBlowAttack(ElementalType.Water));
             yield return StartCoroutine(PlayerAttack(6502, _fox, true, false));
@@ -267,7 +274,7 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(1f);
             Widget.Find<PrologueDialogPopup>().Show();
             yield return new WaitWhile(() => Widget.Find<PrologueDialogPopup>().isActiveAndEnabled);
-            yield return StartCoroutine(_fenrir.CoFinisher(new[] {580214, 999999}, new[] {true, true}));
+            yield return StartCoroutine(_fenrir.CoFinisher(new[] { 580214, 999999 }, new[] { true, true }));
             yield return new WaitForSeconds(1f);
             Time.timeScale = Game.DefaultTimeScale;
             _fenrir.Animator.Idle();

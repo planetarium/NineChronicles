@@ -9,8 +9,8 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveProperty<FungibleAssetValue> Price;
         public readonly ReactiveProperty<bool> PriceInteractable = new(true);
-        public readonly ReactiveProperty<Guid> ProductId = new ();
-        public readonly ReactiveProperty<bool> ChargeAp = new (false);
+        public readonly ReactiveProperty<Guid> ProductId = new();
+        public readonly ReactiveProperty<bool> ChargeAp = new(false);
 
         public ItemCountAndPricePopup()
         {

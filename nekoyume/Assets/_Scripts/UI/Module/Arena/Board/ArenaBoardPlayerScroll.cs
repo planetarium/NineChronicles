@@ -29,15 +29,15 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         public ArenaBoardPlayerItemData SelectedItemData => _data[Context.selectedIndex];
 
-        private readonly Subject<int> _onSelectionChanged = new Subject<int>();
+        private readonly Subject<int> _onSelectionChanged = new();
 
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
 
-        private readonly Subject<int> _onClickCharacterView = new Subject<int>();
+        private readonly Subject<int> _onClickCharacterView = new();
 
         public IObservable<int> OnClickCharacterView => _onClickCharacterView;
 
-        private readonly Subject<int> _onClickChoice = new Subject<int>();
+        private readonly Subject<int> _onClickChoice = new();
 
         public IObservable<int> OnClickChoice => _onClickChoice;
 

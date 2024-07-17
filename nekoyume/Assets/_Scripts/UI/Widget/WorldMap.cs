@@ -72,7 +72,7 @@ namespace Nekoyume.UI
 
         public int StageIdToNotify { get; private set; }
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -157,7 +157,7 @@ namespace Nekoyume.UI
             });
         }
 
-        #endregion
+#endregion
 
         public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
         {
@@ -175,7 +175,7 @@ namespace Nekoyume.UI
                 ShowManyWorldUnlockPopup(worldInformation);
             }
 
-            Widget.Find<AdventureBossRewardPopup>().Show();
+            Find<AdventureBossRewardPopup>().Show();
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
@@ -183,7 +183,7 @@ namespace Nekoyume.UI
             SubscribeAtShow();
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show(true);
-            Widget.Find<AdventureBossRewardPopup>().Show();
+            Find<AdventureBossRewardPopup>().Show();
         }
 
         private void SubscribeAtShow()
@@ -261,13 +261,13 @@ namespace Nekoyume.UI
                     worldInformation.IsStageCleared(unlockRow?.StageId ?? int.MaxValue);
                 var worldIsUnlocked =
                     (worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
-                     worldModel.IsUnlocked) ||
+                        worldModel.IsUnlocked) ||
                     canTryThisWorld;
 
                 UpdateNotificationInfo();
 
                 var isIncludedInQuest = StageIdToNotify >= worldButton.StageBegin &&
-                                        StageIdToNotify <= worldButton.StageEnd;
+                    StageIdToNotify <= worldButton.StageEnd;
 
                 if (worldIsUnlocked)
                 {
@@ -313,7 +313,7 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Click Yggdrasil", new Dictionary<string, Value>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                 });
 
                 var evt = new AirbridgeEvent("Click_Yggdrasil");
@@ -425,7 +425,7 @@ namespace Nekoyume.UI
         {
             var cost = CrystalCalculator.CalculateWorldUnlockCost(
                     new[] { worldId },
-                    Game.TableSheets.Instance.WorldUnlockSheet)
+                    TableSheets.Instance.WorldUnlockSheet)
                 .MajorUnit;
             var balance = States.Instance.CrystalBalance;
             var usageMessage = L10nManager.Localize(
@@ -450,7 +450,7 @@ namespace Nekoyume.UI
         {
             if (worldInformation.TryGetLastClearedStageId(out var stageId))
             {
-                var tableSheets = Game.TableSheets.Instance;
+                var tableSheets = TableSheets.Instance;
                 var countOfCanUnlockWorld = Math.Min(stageId / 50,
                     tableSheets.WorldUnlockSheet.Count - 1);
                 var worldIdListForUnlock = Enumerable.Range(2, countOfCanUnlockWorld)
@@ -495,6 +495,5 @@ namespace Nekoyume.UI
         {
             worldMapAdventureBossButton.SetLoadingIndicator(isLoading);
         }
-
     }
 }

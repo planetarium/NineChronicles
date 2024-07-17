@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Character
         }
 
         private const string DefaultPMAShader = "Spine/Skeleton Tint";
-        private const string DefaultShader    = "Sprites/Default";
+        private const string DefaultShader = "Sprites/Default";
 
         public List<StateNameToAnimationReference> statesAndAnimations = new();
 
@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Character
         private Tweener _fadeTweener;
         private System.Action _callback;
 
-        #region Mono
+#region Mono
 
         protected virtual void Awake()
         {
@@ -53,9 +53,9 @@ namespace Nekoyume.Game.Character
             SkeletonAnimation = GetComponent<SkeletonAnimation>();
             SkeletonAnimation.AnimationState.Complete += delegate { _callback?.Invoke(); };
 
-            _applyPMA  = SkeletonAnimation.pmaVertexColors;
-            _shader    = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultShader);
-            _material  = new Material(_shader);
+            _applyPMA = SkeletonAnimation.pmaVertexColors;
+            _shader = _applyPMA ? Shader.Find(DefaultPMAShader) : Shader.Find(DefaultShader);
+            _material = new Material(_shader);
             _atlasPage = _material.ToSpineAtlasPage();
         }
 
@@ -64,9 +64,9 @@ namespace Nekoyume.Game.Character
             StopFade();
         }
 
-        #endregion
+#endregion
 
-        #region Fade
+#region Fade
 
         public void Appear(float duration = 1f, bool fromZero = true, System.Action onComplete = null)
         {
@@ -111,7 +111,7 @@ namespace Nekoyume.Game.Character
             _fadeTweener.Kill();
         }
 
-        #endregion
+#endregion
 
         /// <summary>Sets the horizontal flip state of the skeleton based on a nonzero float. If negative, the skeleton is flipped. If positive, the skeleton is not flipped.</summary>
         public void SetFlip(float horizontal)
@@ -126,7 +126,9 @@ namespace Nekoyume.Game.Character
         {
             var foundAnimation = GetAnimationForState(stateName);
             if (foundAnimation is null)
+            {
                 throw new KeyNotFoundException(nameof(stateName));
+            }
 
             return PlayNewAnimation(stateName, layerIndex, callback);
             // return PlayNewAnimation(foundAnimation, layerIndex, callback);
@@ -183,7 +185,7 @@ namespace Nekoyume.Game.Character
             return foundState?.animation;
         }
 
-        private (TrackEntry, TrackEntry) PlayNewAnimation(String name, int layerIndex, System.Action callback)
+        private (TrackEntry, TrackEntry) PlayNewAnimation(string name, int layerIndex, System.Action callback)
         {
             _callback = callback;
             var isLoop = IsLoopAnimation(name);
@@ -207,6 +209,7 @@ namespace Nekoyume.Game.Character
                         {
                             animationName = "Idle";
                         }
+
                         break;
                 }
             }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -26,7 +27,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             SeasonRanking,
             BossBattle,
-            BattleGrade,
+            BattleGrade
         }
 
         [Serializable]
@@ -51,13 +52,18 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
         private Address _cachedAvatarAddress;
+
         protected void Awake()
         {
             foreach (var categoryToggle in categoryToggles)
             {
                 categoryToggle.Toggle.onValueChanged.AddListener(value =>
                 {
-                    if (!value) return;
+                    if (!value)
+                    {
+                        return;
+                    }
+
                     AudioController.PlayClick();
                     _selectedItemSubType.SetValueAndForceNotify(categoryToggle.Type);
                 });
@@ -168,10 +174,10 @@ namespace Nekoyume.UI.Module.WorldBoss
         }
 
         private async Task<(
-            RaiderState raider,
-            int raidId,
-            WorldBossRankingRecord record,
-            int userCount)>
+                RaiderState raider,
+                int raidId,
+                WorldBossRankingRecord record,
+                int userCount)>
             GetDataAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;

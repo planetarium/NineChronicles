@@ -19,19 +19,19 @@ namespace Nekoyume.Game.Character
             MultipleClick,
             MiddleClick,
             RightClick,
-            Exit,
+            Exit
         }
 
-        private readonly Subject<PointerEventData> _onEnter = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onLeftDown = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onMiddleDown = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onRightDown = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onClick = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onDoubleClick = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onMultipleClick = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onMiddleClick = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onRightClick = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onExit = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onEnter = new();
+        private readonly Subject<PointerEventData> _onLeftDown = new();
+        private readonly Subject<PointerEventData> _onMiddleDown = new();
+        private readonly Subject<PointerEventData> _onRightDown = new();
+        private readonly Subject<PointerEventData> _onClick = new();
+        private readonly Subject<PointerEventData> _onDoubleClick = new();
+        private readonly Subject<PointerEventData> _onMultipleClick = new();
+        private readonly Subject<PointerEventData> _onMiddleClick = new();
+        private readonly Subject<PointerEventData> _onRightClick = new();
+        private readonly Subject<PointerEventData> _onExit = new();
 
         public IObservable<PointerEventData> OnEnter => _onEnter;
         public IObservable<PointerEventData> OnClick => _onClick;
@@ -44,7 +44,10 @@ namespace Nekoyume.Game.Character
         public IObservable<PointerEventData> OnRightClick => _onRightClick;
         public IObservable<PointerEventData> OnExit => _onExit;
 
-        public void OnPointerEnter(PointerEventData eventData) => _onEnter.OnNext(eventData);
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _onEnter.OnNext(eventData);
+        }
 
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -66,8 +69,8 @@ namespace Nekoyume.Game.Character
 
         private void OnEnable()
         {
-            if(currentSelectedGameObject == null)
-            {   
+            if (currentSelectedGameObject == null)
+            {
                 currentSelectedGameObject = gameObject;
             }
         }
@@ -103,7 +106,10 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void OnPointerExit(PointerEventData eventData) => _onExit.OnNext(eventData);
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _onExit.OnNext(eventData);
+        }
 
         public void SetCollider(BoxCollider boxCollider, Vector3 localPosition, Vector3 localScale)
         {
@@ -115,7 +121,7 @@ namespace Nekoyume.Game.Character
                 col2D.offset = new Vector2(
                     center.x * localScale.x + localPosition.x,
                     center.y * localScale.y + localPosition.y
-                    );
+                );
                 col2D.size = new Vector2(
                     size.x * localScale.x,
                     size.y * localScale.y);

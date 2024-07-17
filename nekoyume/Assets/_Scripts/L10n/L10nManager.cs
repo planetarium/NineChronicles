@@ -24,7 +24,7 @@ namespace Nekoyume.L10n
             None,
             InInitializing,
             Initialized,
-            InLanguageChanging,
+            InLanguageChanging
         }
 
         public const string SettingsAssetPathInResources = "L10nSettings/L10nSettings";
@@ -38,10 +38,10 @@ namespace Nekoyume.L10n
         public static State CurrentState { get; private set; } = State.None;
         public static bool IsInitialized => CurrentState == State.Initialized;
 
-        private static Dictionary<string, Dictionary<LanguageType, string>> _additionalDic = new Dictionary<string, Dictionary<LanguageType, string>>();
-        private static Dictionary<string, bool> _initializedURLs = new Dictionary<string, bool>();
+        private static Dictionary<string, Dictionary<LanguageType, string>> _additionalDic = new();
+        private static Dictionary<string, bool> _initializedURLs = new();
 
-        #region Language
+#region Language
 
         public static LanguageType CurrentLanguage { get; private set; } = SystemLanguage;
 
@@ -66,9 +66,9 @@ namespace Nekoyume.L10n
             }
         }
 
-        #endregion
+#endregion
 
-        #region Settings
+#region Settings
 
         private static L10nSettings _settings;
 
@@ -96,9 +96,9 @@ namespace Nekoyume.L10n
             }
         }
 
-        #endregion
+#endregion
 
-        #region Event
+#region Event
 
         private static readonly ISubject<LanguageType> OnInitializeSubject =
             new Subject<LanguageType>();
@@ -110,12 +110,11 @@ namespace Nekoyume.L10n
 
         public static IObservable<LanguageType> OnLanguageChange => OnLanguageChangeSubject;
 
-        public static IObservable<LanguageTypeSettings> OnLanguageTypeSettingsChange =>
-            OnLanguageChange.Select(_ => CurrentLanguageTypeSettings);
+        public static IObservable<LanguageTypeSettings> OnLanguageTypeSettingsChange => OnLanguageChange.Select(_ => CurrentLanguageTypeSettings);
 
-        #endregion
+#endregion
 
-        #region Control
+#region Control
 
         public static IObservable<LanguageType> Initialize()
         {
@@ -212,7 +211,7 @@ namespace Nekoyume.L10n
             OnLanguageChangeSubject.OnNext(CurrentLanguage);
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Get records manually using getField() with names without using Convert CSV rows into class objects that not support in IL2CPP.
@@ -240,7 +239,7 @@ namespace Nekoyume.L10n
                     ChineseSimplified = csvReader.GetField<string>("ChineseSimplified"),
                     ChineseTraditional = csvReader.GetField<string>("ChineseTraditional"),
                     Tagalog = csvReader.GetField<string>("Tagalog"),
-                    Vietnam = csvReader.GetField<string>("Vietnam"),
+                    Vietnam = csvReader.GetField<string>("Vietnam")
                 };
                 records.Add(record);
             }
@@ -354,58 +353,60 @@ namespace Nekoyume.L10n
                 var csvFileInfos = new DirectoryInfo(CsvFilesRootDirectoryPath).GetFiles("*.csv");
                 var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    PrepareHeaderForMatch = args => args.Header.ToLower(),
+                    PrepareHeaderForMatch = args => args.Header.ToLower()
                 };
                 foreach (var csvFileInfo in csvFileInfos)
                 {
                     using (var streamReader = new StreamReader(csvFileInfo.FullName))
-                    using (var csvReader = new CsvReader(streamReader, csvConfig))
                     {
-                        try
+                        using (var csvReader = new CsvReader(streamReader, csvConfig))
                         {
-                            var records = csvReader.GetRecords<L10nCsvModel>();
-                            var recordsIndex = 0;
-                            foreach (var record in records)
+                            try
                             {
+                                var records = csvReader.GetRecords<L10nCsvModel>();
+                                var recordsIndex = 0;
+                                foreach (var record in records)
+                                {
 #if TEST_LOG
                                 NcDebug.Log($"{csvFileInfo.Name}: {recordsIndex}");
 #endif
-                                var key = record.Key;
-                                if (string.IsNullOrEmpty(key))
-                                {
+                                    var key = record.Key;
+                                    if (string.IsNullOrEmpty(key))
+                                    {
+                                        recordsIndex++;
+                                        continue;
+                                    }
+
+                                    var value = (string)typeof(L10nCsvModel)
+                                        .GetProperty(languageType.ToString())?
+                                        .GetValue(record);
+
+                                    if (string.IsNullOrEmpty(value))
+                                    {
+                                        value = record.English;
+                                    }
+
+                                    if (dictionary.ContainsKey(key))
+                                    {
+                                        NcDebug.LogError("[L10nManager] L10n duplication Key." +
+                                            " Ignore duplicated key and use first value." +
+                                            $" key: {key}" +
+                                            $", recordsIndex: {recordsIndex}" +
+                                            $", csvFileInfo: {csvFileInfo.FullName}");
+                                    }
+                                    else
+                                    {
+                                        dictionary.Add(key, value);
+                                    }
+
                                     recordsIndex++;
-                                    continue;
                                 }
-
-                                var value = (string)typeof(L10nCsvModel)
-                                    .GetProperty(languageType.ToString())?
-                                    .GetValue(record);
-
-                                if (string.IsNullOrEmpty(value))
-                                {
-                                    value = record.English;
-                                }
-
-                                if (dictionary.ContainsKey(key))
-                                {
-                                    NcDebug.LogError("[L10nManager] L10n duplication Key." +
-                                                   " Ignore duplicated key and use first value." +
-                                                   $" key: {key}" +
-                                                   $", recordsIndex: {recordsIndex}" +
-                                                   $", csvFileInfo: {csvFileInfo.FullName}");
-                                }
-                                else
-                                {
-                                    dictionary.Add(key, value);
-                                }
-
-                                recordsIndex++;
                             }
-                        }
-                        catch (CsvHelper.MissingFieldException e)
-                        {
-                            NcDebug.LogError($"`{csvFileInfo.Name}` file has failed parse \n{e}");
-                            continue;
+                            catch (CsvHelper.MissingFieldException e)
+                            {
+                                NcDebug.LogError($"`{csvFileInfo.Name}` file has failed parse \n{e}");
+                                continue;
+                            }
                         }
                     }
                 }
@@ -425,7 +426,7 @@ namespace Nekoyume.L10n
 
         public static string Localize(string key, params object[] args)
         {
-            if(TryLocalize(key, out var text))
+            if (TryLocalize(key, out var text))
             {
                 try
                 {
@@ -446,7 +447,10 @@ namespace Nekoyume.L10n
             }
         }
 
-        public static bool ContainsKey(string key) => _dictionary.ContainsKey(key);
+        public static bool ContainsKey(string key)
+        {
+            return _dictionary.ContainsKey(key);
+        }
 
         // ReSharper disable Unity.PerformanceAnalysis
         private static bool TryLocalize(string key, out string text)
@@ -463,6 +467,7 @@ namespace Nekoyume.L10n
                 {
                     text = _dictionary[key];
                 }
+
                 return true;
             }
             catch (Exception e)
@@ -553,7 +558,7 @@ namespace Nekoyume.L10n
                 : Localize("NEW_COLLECTION_NAME");
         }
 
-        #endregion
+#endregion
 
         private static void ValidateStateAndKey(string key)
         {
@@ -604,16 +609,17 @@ namespace Nekoyume.L10n
                 client.timeout = 10;
                 var resp = await client.SendWebRequest();
 
-                if(resp.result != UnityWebRequest.Result.Success)
+                if (resp.result != UnityWebRequest.Result.Success)
                 {
                     NcDebug.LogError($"[AdditionalL10nTableDownload] Request Failed {resp.result}");
                     return;
                 }
+
                 var data = resp.downloadHandler.data;
                 using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
                 var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    PrepareHeaderForMatch = args => args.Header.ToLower(),
+                    PrepareHeaderForMatch = args => args.Header.ToLower()
                 };
                 using var csvReader = new CsvReader(streamReader, csvConfig);
                 var records = csvReader.GetRecords<L10nCsvModel>();
@@ -649,11 +655,13 @@ namespace Nekoyume.L10n
                 {
                     NcDebug.LogError($"Task was canceled, but no cancellation was requested explicitly. Exception: {e}");
                 }
+
                 NcDebug.LogError($"{e.InnerException} \n\n {e.Source} \n\n{e.StackTrace}");
                 if (retryCount > 0)
                 {
                     ReTryAdditionalTableDownload().Forget();
                 }
+
                 return;
             }
             catch (Exception e)
@@ -663,11 +671,13 @@ namespace Nekoyume.L10n
                 {
                     ReTryAdditionalTableDownload().Forget();
                 }
+
                 return;
             }
+
             async UniTaskVoid ReTryAdditionalTableDownload()
             {
-                await AdditionalL10nTableDownload(url, forceDownload,--retryCount);
+                await AdditionalL10nTableDownload(url, forceDownload, --retryCount);
             }
         }
 

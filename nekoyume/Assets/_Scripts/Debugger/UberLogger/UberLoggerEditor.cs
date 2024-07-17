@@ -12,11 +12,11 @@ using UberLogger;
 ///  and so that we catch errors even without the frontend active.
 /// Derived from ScriptableObject so it persists across play sessions.
 /// </summary>
-[System.Serializable]
+[Serializable]
 public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
 {
-    List<LogInfo> LogInfo = new List<LogInfo>();
-    HashSet<string> Channels = new HashSet<string>();
+    private List<LogInfo> LogInfo = new();
+    private HashSet<string> Channels = new();
 
     public bool PauseOnError = false;
     public bool ClearOnPlay = true;
@@ -25,19 +25,19 @@ public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
     public int NoWarnings;
     public int NoMessages;
 
-    static public UberLoggerEditor Create()
+    public static UberLoggerEditor Create()
     {
-        var editorDebug = ScriptableObject.FindObjectOfType<UberLoggerEditor>();
+        var editorDebug = FindObjectOfType<UberLoggerEditor>();
 
-        if(editorDebug==null)
+        if (editorDebug == null)
         {
-            editorDebug = ScriptableObject.CreateInstance<UberLoggerEditor>();
+            editorDebug = CreateInstance<UberLoggerEditor>();
         }
 
         editorDebug.NoErrors = 0;
         editorDebug.NoWarnings = 0;
         editorDebug.NoMessages = 0;
-        
+
         return editorDebug;
     }
 
@@ -54,17 +54,18 @@ public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
     /// </summary>
     public void ProcessOnStartClear()
     {
-        if(!WasPlaying && EditorApplication.isPlayingOrWillChangePlaymode)
+        if (!WasPlaying && EditorApplication.isPlayingOrWillChangePlaymode)
         {
-            if(ClearOnPlay)
+            if (ClearOnPlay)
             {
                 Clear();
             }
         }
+
         WasPlaying = EditorApplication.isPlayingOrWillChangePlaymode;
     }
-    
-    void OnPlaymodeStateChanged(PlayModeStateChange obj)
+
+    private void OnPlaymodeStateChanged(PlayModeStateChange obj)
     {
         ProcessOnStartClear();
     }
@@ -81,11 +82,12 @@ public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
         /// </summary>
         void OnLogChange(LogInfo logInfo);
     }
-    List<ILoggerWindow> Windows = new List<ILoggerWindow>();
+
+    private List<ILoggerWindow> Windows = new();
 
     public void AddWindow(ILoggerWindow window)
     {
-        if(!Windows.Contains(window))
+        if (!Windows.Contains(window))
         {
             Windows.Add(window);
         }
@@ -93,21 +95,21 @@ public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
 
     public void Log(LogInfo logInfo)
     {
-        lock(this)
+        lock (this)
         {
-            if(!String.IsNullOrEmpty(logInfo.Channel) && !Channels.Contains(logInfo.Channel))
+            if (!string.IsNullOrEmpty(logInfo.Channel) && !Channels.Contains(logInfo.Channel))
             {
                 Channels.Add(logInfo.Channel);
             }
 
             LogInfo.Add(logInfo);
         }
-        
-        if(logInfo.Severity==LogSeverity.Error)
+
+        if (logInfo.Severity == LogSeverity.Error)
         {
             NoErrors++;
         }
-        else if(logInfo.Severity==LogSeverity.Warning)
+        else if (logInfo.Severity == LogSeverity.Warning)
         {
             NoWarnings++;
         }
@@ -116,20 +118,20 @@ public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
             NoMessages++;
         }
 
-        foreach(var window in Windows)
+        foreach (var window in Windows)
         {
             window.OnLogChange(logInfo);
         }
 
-        if(logInfo.Severity==LogSeverity.Error && PauseOnError)
+        if (logInfo.Severity == LogSeverity.Error && PauseOnError)
         {
-            UnityEngine.Debug.Break();
+            Debug.Break();
         }
     }
 
     public void Clear()
     {
-        lock(this)
+        lock (this)
         {
             LogInfo.Clear();
             Channels.Clear();
@@ -137,7 +139,7 @@ public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
             NoErrors = 0;
             NoMessages = 0;
 
-            foreach(var window in Windows)
+            foreach (var window in Windows)
             {
                 window.OnLogChange(null);
             }
@@ -146,7 +148,7 @@ public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
 
     public List<LogInfo> CopyLogInfo()
     {
-        lock(this)
+        lock (this)
         {
             return new List<LogInfo>(LogInfo);
         }
@@ -154,12 +156,11 @@ public class UberLoggerEditor : ScriptableObject, UberLogger.ILogger
 
     public HashSet<string> CopyChannels()
     {
-        lock(this)
+        lock (this)
         {
             return new HashSet<string>(Channels);
         }
     }
-
 }
 
 #endif

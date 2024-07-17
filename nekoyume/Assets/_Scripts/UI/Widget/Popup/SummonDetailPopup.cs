@@ -51,7 +51,7 @@ namespace Nekoyume.UI
                 {
                     EquipmentRow = equipmentRow,
                     RuneTicker = runeTicker,
-                    Ratio = ratio / ratioSum,
+                    Ratio = ratio / ratioSum
                 };
             }).OrderBy(model => model.Ratio);
 

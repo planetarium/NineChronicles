@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Scroller
                         PlanetId = default,
                         PlanetName = "null",
                         IsSelected = false,
-                        IsNew = false,
+                        IsNew = false
                     };
                 }
 
@@ -88,7 +88,7 @@ namespace Nekoyume.UI.Scroller
                         PlanetName = textInfo.ToTitleCase(e.Name),
                         IsSelected = false,
                         IsNew = !(e.ID.Equals(PlanetId.Odin) ||
-                                  e.ID.Equals(PlanetId.OdinInternal)),
+                            e.ID.Equals(PlanetId.OdinInternal))
                     };
                 }
 
@@ -98,7 +98,7 @@ namespace Nekoyume.UI.Scroller
                     PlanetName = textInfo.ToTitleCase(e.Name),
                     IsSelected = e.ID.Equals(selectedPlanetId),
                     IsNew = !(e.ID.Equals(PlanetId.Odin) ||
-                              e.ID.Equals(PlanetId.OdinInternal)),
+                        e.ID.Equals(PlanetId.OdinInternal))
                 };
             }).ToArray();
             UpdateContents(newItemsSource);

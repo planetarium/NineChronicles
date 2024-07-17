@@ -9,6 +9,6 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         Invalid = 92,
         NotFound = 93,
         FailToCreate = 94,
-        Unknown = 99,
+        Unknown = 99
     }
 }

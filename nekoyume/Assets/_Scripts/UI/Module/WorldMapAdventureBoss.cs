@@ -8,8 +8,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.Helper;
-    using Nekoyume.UI.Model;
+    using Helper;
+    using Model;
     using UniRx;
     using UnityEngine.UI;
 
@@ -61,6 +61,7 @@ namespace Nekoyume.UI.Module
                     {
                         remainBlock = endedSeasonInfo.NextStartBlockIndex - Game.Game.instance.Agent.BlockIndex;
                     }
+
                     var NextStartTime = string.Empty;
                     try
                     {
@@ -70,6 +71,7 @@ namespace Nekoyume.UI.Module
                     {
                         NcDebug.LogError(e);
                     }
+
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_ADVENTUREBOSS_SEASON_ENDED", remainBlock, remainBlock.BlockRangeToTimeSpanString(), NextStartTime), NotificationCell.NotificationType.Alert);
                     return;
                 }
@@ -85,10 +87,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(UpdateViewAsync)
                 .AddTo(_disposables);
 
-            Game.Game.instance.AdventureBossData.IsRewardLoading.Subscribe(isLoading =>
-            {
-                loadingRewardIndicator.SetActive(isLoading);
-            }).AddTo(_disposables);
+            Game.Game.instance.AdventureBossData.IsRewardLoading.Subscribe(isLoading => { loadingRewardIndicator.SetActive(isLoading); }).AddTo(_disposables);
         }
 
         private void OnDisable()
@@ -141,6 +140,7 @@ namespace Nekoyume.UI.Module
             {
                 NcDebug.LogError($"RemainingBlockIndex is negative blockIndex: {blockIndex}, targetBlock: {targetBlock}");
             }
+
             foreach (var text in remainingBlockIndexs)
             {
                 text.text = timeText;
@@ -203,6 +203,7 @@ namespace Nekoyume.UI.Module
                 {
                     obj.SetActive(false);
                 }
+
                 return;
             }
 
@@ -217,6 +218,7 @@ namespace Nekoyume.UI.Module
                     {
                         DestroyImmediate(_bossImage);
                     }
+
                     _bossId = 0;
                     break;
                 case AdventureBossData.AdventureBossSeasonState.Progress:
@@ -229,10 +231,12 @@ namespace Nekoyume.UI.Module
                         {
                             DestroyImmediate(_bossImage);
                         }
+
                         _bossId = Game.Game.instance.AdventureBossData.SeasonInfo.Value.BossId;
                         _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageParent);
                         _bossImage.transform.localPosition = Vector3.zero;
                     }
+
                     worldButton.HasNotification.Value = true;
                     break;
                 case AdventureBossData.AdventureBossSeasonState.None:
@@ -246,6 +250,7 @@ namespace Nekoyume.UI.Module
                     {
                         DestroyImmediate(_bossImage);
                     }
+
                     _bossId = 0;
                     break;
             }

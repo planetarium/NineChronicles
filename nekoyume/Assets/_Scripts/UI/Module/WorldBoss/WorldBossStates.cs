@@ -12,7 +12,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
-    using Nekoyume.TableData;
+    using TableData;
     using UniRx;
 
     public static class WorldBossStates
@@ -58,9 +58,9 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public static RaiderState GetRaiderState(Address avatarAddress)
         {
-          return _raiderStates.ContainsKey(avatarAddress)
-              ? _raiderStates[avatarAddress]
-              : null;
+            return _raiderStates.ContainsKey(avatarAddress)
+                ? _raiderStates[avatarAddress]
+                : null;
         }
 
         public static RaiderState GetPreRaiderState(Address avatarAddress)
@@ -223,7 +223,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 var killRewardAddress = Addresses.GetWorldBossKillRewardRecordAddress(avatarAddress, raidRow.Id);
                 var killRewardState = await Game.Game.instance.Agent.GetStateAsync(
                     ReservedAddresses.LegacyAccount,
-                killRewardAddress);
+                    killRewardAddress);
                 var killReward = killRewardState is Bencodex.Types.List killRewardList
                     ? new WorldBossKillRewardRecord(killRewardList)
                     : null;

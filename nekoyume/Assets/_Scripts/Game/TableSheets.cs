@@ -20,7 +20,9 @@ namespace Nekoyume.Game
     {
         public static TableSheets Instance => Game.instance.TableSheets;
 
-        private TableSheets() { }
+        private TableSheets()
+        {
+        }
 
         public static async UniTask<TableSheets> MakeTableSheetsAsync(IDictionary<string, string> sheets)
         {
@@ -57,6 +59,7 @@ namespace Nekoyume.Game
                     sb.Append(" / failed to get property");
                     throw new Exception(sb.ToString());
                 }
+
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
                 var iSheet = (ISheet)sheetObject;
                 if (iSheet is null)
@@ -71,8 +74,10 @@ namespace Nekoyume.Game
                 {
                     iSheet.Set(pair.Value);
                 }
+
                 sheetPropertyInfo.SetValue(this, sheetObject);
             }
+
             ItemSheetInitialize();
             QuestSheetInitialize();
             sw.Stop();
@@ -90,7 +95,7 @@ namespace Nekoyume.Game
         public CharacterLevelSheet CharacterLevelSheet { get; private set; }
 
         public SkillSheet SkillSheet { get; private set; }
-        
+
         public StatBuffSheet StatBuffSheet { get; private set; }
 
         public BuffSheet BuffSheet { get; private set; }
@@ -257,7 +262,7 @@ namespace Nekoyume.Game
         public CollectionSheet CollectionSheet { get; private set; }
 
         public DeBuffLimitSheet DeBuffLimitSheet { get; private set; }
-        
+
         public BuffLinkSheet BuffLinkSheet { get; private set; }
 
         public AdventureBossFloorSheet AdventureBossFloorSheet { get; private set; }

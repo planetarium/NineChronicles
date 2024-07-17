@@ -8,7 +8,7 @@ namespace Nekoyume
     {
         Default,
         Small,
-        Bubble,
+        Bubble
     }
 
     [CreateAssetMenu(fileName = "UI_StakeIconData", menuName = "Scriptable Object/Stake Icon Data",
@@ -57,7 +57,7 @@ namespace Nekoyume
                 {
                     IconType.Small => fallbackSmallIconSprite,
                     IconType.Bubble => fallbackBubbleIconSprite,
-                    IconType.Default or _ => fallbackIconSprite,
+                    IconType.Default or _ => fallbackIconSprite
                 };
             }
 

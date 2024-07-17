@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Module.Lobby
                 currentRoundData =
                     TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 _seasonGameObject.SetActive(false);
                 _championshipGameObject.SetActive(false);

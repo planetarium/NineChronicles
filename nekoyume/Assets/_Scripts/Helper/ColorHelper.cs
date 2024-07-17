@@ -22,7 +22,9 @@ namespace Nekoyume.Helper
         public static Color32 HexToColorRGB(string hex)
         {
             if (string.IsNullOrEmpty(hex) || hex.Length < 6)
+            {
                 return Color.white;
+            }
 
             var r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
             var g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
@@ -34,7 +36,9 @@ namespace Nekoyume.Helper
         public static Color32 HexToColorRGBA(string hex)
         {
             if (string.IsNullOrEmpty(hex) || hex.Length < 8)
+            {
                 return Color.white;
+            }
 
             var r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
             var g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);

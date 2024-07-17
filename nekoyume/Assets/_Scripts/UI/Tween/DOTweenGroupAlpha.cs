@@ -4,6 +4,7 @@ using System.Collections;
 namespace Nekoyume.UI.Tween
 {
     using DG.Tweening;
+
     [RequireComponent(typeof(CanvasGroup))]
     public class DOTweenGroupAlpha : DOTweenBase
     {

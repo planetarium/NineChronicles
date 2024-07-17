@@ -20,6 +20,7 @@ using static Lib9c.SerializeKeys;
 using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -106,7 +107,7 @@ namespace Nekoyume.State
             DeselectAvatar();
         }
 
-        #region Setter
+#region Setter
 
         /// <summary>
         /// 에이전트 상태를 할당한다.
@@ -480,8 +481,10 @@ namespace Nekoyume.State
             }
 
             if (AgentState is null || !AgentState.avatarAddresses.ContainsValue(state.address))
+            {
                 throw new Exception(
                     $"`AgentState` is null or not found avatar's address({state.address}) in `AgentState`");
+            }
 
             state = LocalLayer.Instance.Modify(state);
             _avatarStates[index] = state;
@@ -490,7 +493,7 @@ namespace Nekoyume.State
             if (index == CurrentAvatarKey)
             {
                 return await UniTask.RunOnThreadPool(async () =>
-                    await SelectAvatarAsync(index, initializeReactiveState), configureAwait: false);
+                    await SelectAvatarAsync(index, initializeReactiveState), false);
             }
 
             return state;
@@ -504,7 +507,9 @@ namespace Nekoyume.State
         public void RemoveAvatarState(int index)
         {
             if (!_avatarStates.ContainsKey(index))
+            {
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
+            }
 
             _avatarStates.TryRemove(index, out _);
 
@@ -543,20 +548,17 @@ namespace Nekoyume.State
                 : new List<int>
                 {
                     1,
-                    GameConfig.MimisbrunnrWorldId,
+                    GameConfig.MimisbrunnrWorldId
                 };
             Widget.Find<WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
             if (isNewlySelected)
             {
                 _hammerPointStates = null;
-                await UniTask.RunOnThreadPool(async () =>
-                {
-                    await InitializeAvatarAndRelatedStates(agent, avatarState.address);
-                });
+                await UniTask.RunOnThreadPool(async () => { await InitializeAvatarAndRelatedStates(agent, avatarState.address); });
 
                 Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
-                Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
             }
 
             return CurrentAvatarState;
@@ -686,7 +688,7 @@ namespace Nekoyume.State
             GameConfigStateSubject.OnNext(state);
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// `CurrentAvatarKey`에 따라서 `CurrentAvatarState`를 업데이트 한다.
@@ -798,7 +800,7 @@ namespace Nekoyume.State
             return runeStates;
         }
 
-        private void SetPetStates(Dictionary<int,IValue> petRawStates)
+        private void SetPetStates(Dictionary<int, IValue> petRawStates)
         {
             foreach (var pair in petRawStates)
             {

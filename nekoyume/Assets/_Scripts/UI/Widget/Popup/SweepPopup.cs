@@ -89,10 +89,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> objectsForRepeat;
 
-        private readonly ReactiveProperty<int> _apStoneCount = new ReactiveProperty<int>();
-        private readonly ReactiveProperty<int> _ap = new ReactiveProperty<int>();
-        private readonly ReactiveProperty<int> _cp = new ReactiveProperty<int>();
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly ReactiveProperty<int> _apStoneCount = new();
+        private readonly ReactiveProperty<int> _ap = new();
+        private readonly ReactiveProperty<int> _cp = new();
+        private readonly List<IDisposable> _disposables = new();
 
         private StageSheet.Row _stageRow;
         private int _worldId;
@@ -102,9 +102,10 @@ namespace Nekoyume.UI
 
         private const int UsableApStoneCountWithRepeat = 1;
 
-        private int MaxApStoneCount => _useSweep
-            ? HackAndSlashSweep.UsableApStoneCount
-            : UsableApStoneCountWithRepeat;
+        private int MaxApStoneCount =>
+            _useSweep
+                ? HackAndSlashSweep.UsableApStoneCount
+                : UsableApStoneCountWithRepeat;
 
         protected override void Awake()
         {
@@ -308,7 +309,9 @@ namespace Nekoyume.UI
         }
 
         private static bool TryGetRequiredCP(int stageId, out SweepRequiredCPSheet.Row row)
-            => TableSheets.Instance.SweepRequiredCPSheet.TryGetValue(stageId, out row);
+        {
+            return TableSheets.Instance.SweepRequiredCPSheet.TryGetValue(stageId, out row);
+        }
 
         private static (int, int) GetPlayCount(
             StageSheet.Row row,

@@ -29,6 +29,7 @@ using Toggle = UnityEngine.UI.Toggle;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class RaidPreparation : Widget
     {
         private class PracticeRandom : System.Random, IRandom
@@ -67,14 +68,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private Transform ticketImage;
 
-        [SerializeField, Range(.5f, 3.0f)]
+        [SerializeField][Range(.5f, 3.0f)]
         private float animationTime = 1f;
 
         [SerializeField]
         private bool moveToLeft = false;
 
-        [SerializeField, Range(0f, 10f),
-         Tooltip("Gap between start position X and middle position X")]
+        [SerializeField][Range(0f, 10f)][Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         [SerializeField]
@@ -96,12 +96,11 @@ namespace Nekoyume.UI
 
         private long _txStageBlockIndex;
 
-        public override bool CanHandleInputEvent =>
-            base.CanHandleInputEvent && startButton.enabled;
+        public override bool CanHandleInputEvent => base.CanHandleInputEvent && startButton.enabled;
 
         public bool IsSkipRender => toggle.isOn;
 
-        #region override
+#region override
 
         protected override void Awake()
         {
@@ -141,9 +140,7 @@ namespace Nekoyume.UI
             if (WorldBossFrontHelper.IsItInSeason(currentBlockIndex))
             {
                 currencyContainer.SetActive(true);
-                ticketText.color = _headerMenu.WorldBossTickets.RemainTicket > 0 ?
-                    Palette.GetColor(ColorType.ButtonEnabled) :
-                    Palette.GetColor(ColorType.TextDenial);
+                ticketText.color = _headerMenu.WorldBossTickets.RemainTicket > 0 ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
                 if (raiderState is null)
                 {
                     crystalContainer.SetActive(true);
@@ -182,9 +179,7 @@ namespace Nekoyume.UI
         {
             var crystalCost = GetEntranceFee(Game.Game.instance.States.CurrentAvatarState);
             crystalText.text = $"{crystalCost:#,0}";
-            crystalText.color = States.Instance.CrystalBalance.MajorUnit >= crystalCost ?
-                Palette.GetColor(ColorType.ButtonEnabled) :
-                Palette.GetColor(ColorType.TextDenial);
+            crystalText.color = States.Instance.CrystalBalance.MajorUnit >= crystalCost ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
         }
 
         private static int GetEntranceFee(AvatarState currentAvatarState)
@@ -204,7 +199,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        #endregion
+#endregion
 
         private void OnClickStartButton()
         {
@@ -437,7 +432,7 @@ namespace Nekoyume.UI
             var isIntervalValid = blockIndex - GetUpdatedRaidBlockIndex() >= worldBossRequiredInterval;
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
-            var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
+            var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
 
             var isEquipValid = Util.CanBattle(equipments, costumes, consumables);
             var canBattle = isEquipValid && isIntervalValid;

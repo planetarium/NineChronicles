@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Types.Assets;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
@@ -141,10 +142,7 @@ namespace Nekoyume.UI
             if (_killRewards is not null && _killRewards.Any())
             {
                 Find<WorldBossRewardScreen>().Show(_killRewards,
-                    () =>
-                    {
-                        Find<WorldBoss>().ShowAsync().Forget();
-                    });
+                    () => { Find<WorldBoss>().ShowAsync().Forget(); });
             }
             else
             {
@@ -156,13 +154,14 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount()
         {
-            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.WorldBossCourageAmount}";
+
+                seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.WorldBossCourageAmount}";
             }
             else
             {

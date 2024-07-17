@@ -5,15 +5,16 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.Helper;
+    using Helper;
     using UniRx;
+
     [RequireComponent(typeof(BaseItemView))]
     public class SweepItemView : MonoBehaviour
     {
         [SerializeField]
         private BaseItemView baseItemView;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public void Set(ItemBase itemBase, int count)
         {

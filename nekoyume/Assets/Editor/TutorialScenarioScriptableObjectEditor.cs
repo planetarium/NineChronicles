@@ -15,7 +15,7 @@ namespace Editor
             base.OnInspectorGUI();
             GUILayout.Space(10);
 
-            var tutorialScenario = (TutorialScenarioScriptableObject) target;
+            var tutorialScenario = (TutorialScenarioScriptableObject)target;
 
             if (GUILayout.Button("Export to JSON"))
             {

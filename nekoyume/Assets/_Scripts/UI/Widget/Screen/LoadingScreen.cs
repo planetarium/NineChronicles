@@ -8,6 +8,7 @@ using UnityEngine.Video;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class LoadingScreen : ScreenWidget
     {
         public enum LoadingType
@@ -21,7 +22,7 @@ namespace Nekoyume.UI
             WorldBoss,
             JustModule,
             WorldUnlock,
-            AdventureBoss,
+            AdventureBoss
         }
 
         [Serializable]
@@ -33,8 +34,10 @@ namespace Nekoyume.UI
         }
 
         [SerializeField] private LoadingModule loadingModule;
+
         [Space]
         [SerializeField] private GameObject animationContainer;
+
         [SerializeField] private RawImage imageContainer;
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Texture videoTexture;

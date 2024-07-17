@@ -10,7 +10,7 @@ namespace Nekoyume.L10n
 {
     using UniRx;
 
-    [DisallowMultipleComponent, RequireComponent(typeof(Image))]
+    [DisallowMultipleComponent][RequireComponent(typeof(Image))]
     public class L10nImage : MonoBehaviour
     {
         [Serializable]
