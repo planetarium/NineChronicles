@@ -22110,7 +22110,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3572073031495219721}
         m_TargetAssemblyTypeName: Nekoyume.UI.AdventureBoss, Nekoyume
-        m_MethodName: OnClickShowRewardInfo
+        m_MethodName: OnClickShowPrevRewardInfo
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

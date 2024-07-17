@@ -482,6 +482,11 @@ namespace Nekoyume.UI
             Find<AdventureBossRewardInfoPopup>().Show();
         }
 
+        public void OnClickShowPrevRewardInfo()
+        {
+            Find<PreviousSeasonReportPopup>().Show(Math.Max(0,Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season -1)).Forget();
+        }
+
         public void OnClickBossParticipantBonusPopup()
         {
             Find<AdventureBossParticipantBonusPopup>().Show();
