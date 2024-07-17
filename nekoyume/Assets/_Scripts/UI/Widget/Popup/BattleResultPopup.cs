@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
@@ -880,28 +881,27 @@ namespace Nekoyume.UI
                 return;
             }
 
-            StartCoroutine(CoGoToNextStageClose(log));
+            CoGoToNextStageClose(log).Forget();
         }
 
-        private IEnumerator CoGoToNextStageClose(BattleLog log)
-        {
+        private async UniTask CoGoToNextStageClose(BattleLog log)
+        {   
             if (Find<Menu>().IsActive())
             {
-                yield break;
+                return;
             }
 
-            yield return StartCoroutine(CoFadeOut());
+            await CoFadeOut().ToUniTask();
 
             var stageLoadingEffect = Find<StageLoadingEffect>();
             if (!stageLoadingEffect.LoadingEnd)
             {
-                yield return new WaitUntil(() => stageLoadingEffect.LoadingEnd);
+                await UniTask.WaitUntil(() => stageLoadingEffect.LoadingEnd);
             }
+            
+            await BattleRenderer.Instance.LoadStageResources(log).ToUniTask();
+            await stageLoadingEffect.CoClose().ToUniTask();
 
-            yield return StartCoroutine(stageLoadingEffect.CoClose());
-
-            // TODO: WhenAll
-            yield return BattleRenderer.Instance.LoadStageResources(log);
             Close();
         }
 
