@@ -213,6 +213,7 @@ namespace Nekoyume.UI
                 _ => HeaderMenuStatic.AssetVisibleState.SummonAdvanced
             };
             LoadingHelper.Summon
+                .Where(_ => gameObject.activeSelf)
                 .Subscribe(_ => Find<HeaderMenuStatic>().UpdateAssets(state))
                 .AddTo(_disposables);
         }
