@@ -102,8 +102,8 @@ namespace Nekoyume.Game
         [SerializeField]
         private bool useLocalHeadless;
 
-        [SerializeField]
-        private bool useLocalMarketService;
+        [field: SerializeField]
+        public bool useLocalMarketService;
 
         [SerializeField]
         private string marketDbConnectionString =
@@ -118,7 +118,7 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject debugConsolePrefab;
 
-        public PlanetId? CurrentPlanetId { get; private set; }
+        public PlanetId? CurrentPlanetId { get; set; }
 
         public States States { get; private set; }
 
@@ -145,7 +145,7 @@ namespace Nekoyume.Game
 
         public ActionManager ActionManager { get; private set; }
 
-        public bool IsInitialized { get; private set; }
+        public bool IsInitialized { get; set; }
 
         public int? SavedPetId { get; set; }
 
@@ -217,7 +217,7 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#if RUN_ON_MOBILE
             // Load CommandLineOptions at Start() after init
 #else
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
@@ -228,338 +228,149 @@ namespace Nekoyume.Game
             CreateAgent();
             PostAwake();
         }
-
-        private IEnumerator Start()
+        
+        public void AddRequestManager()
         {
-            yield return ResourceManager.Instance.InitializeAsync().ToCoroutine();
-
-#if LIB9C_DEV_EXTENSIONS && UNITY_ANDROID
-            Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
-#endif
-            NcDebug.Log("[Game] Start() invoked");
-            var totalSw = new Stopwatch();
-            totalSw.Start();
-
-            // Initialize LiveAssetManager, Create RequestManager
             gameObject.AddComponent<RequestManager>();
+        }
+        
+        /// <summary>
+        /// Invoke On RUN_ON_MOBILE
+        /// </summary>
+        [UsedImplicitly]
+        public void SetTargetFrameRate()
+        {
+            Application.targetFrameRate = 30;
+        }
+
+        public IEnumerator InitializeLiveAssetManager()
+        {            
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-            Application.targetFrameRate = 30;
+#if RUN_ON_MOBILE
             yield return liveAssetManager.InitializeApplicationCLO();
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
 #endif
+            yield break;
+        }
 
-            // NOTE: Initialize KeyManager after load CommandLineOptions.
-            if (!KeyManager.Instance.IsInitialized)
-            {
-                KeyManager.Instance.Initialize(
-                    _commandLineOptions.KeyStorePath,
-                    Helper.Util.AesEncrypt,
-                    Helper.Util.AesDecrypt);
-            }
-
-            // NOTE: Try to sign in with the first registered key
-            //       if the CommandLineOptions.PrivateKey is empty in mobile.
-            if (Platform.IsMobilePlatform() &&
-                string.IsNullOrEmpty(_commandLineOptions.PrivateKey) &&
-                KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
-            {
-                NcDebug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty in mobile." +
-                    " Set cached private key instead.");
-                _commandLineOptions.PrivateKey =
-                    KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
-            }
-
-            yield return InitializeL10N();
-
-            // NOTE: Initialize planet registry.
-            //       It should do after load CommandLineOptions.
-            //       And it should do before initialize Agent.
-            var planetContext = new PlanetContext(_commandLineOptions);
-            yield return PlanetSelector.InitializePlanetRegistryAsync(planetContext).ToCoroutine();
-
-#if RUN_ON_MOBILE
-            if (planetContext.HasError)
-            {
-                QuitWithMessage(
-                    L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
-                    planetContext.Error);
-                yield break;
-            }
-#else
-            NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
-            if (planetContext.IsSkipped)
-            {
-                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.IsSkipped is true." +
-                    "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
-            }
-            else if (planetContext.HasError)
-            {
-                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.HasError is true." +
-                    "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
-            }
-            else if (planetContext.PlanetRegistry!.TryGetPlanetInfoByHeadlessGrpc(_commandLineOptions.RpcServerHost, out var planetInfo))
-            {
-                NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... planet id is found in planet registry.");
-                CurrentPlanetId = planetInfo.ID;
-            }
-            else if (!string.IsNullOrEmpty(_commandLineOptions.SelectedPlanetId))
-            {
-                NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
-                CurrentPlanetId = new PlanetId(_commandLineOptions.SelectedPlanetId);
-            }
-            else
-            {
-                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planet id is not found in planet registry." +
-                    "\nCheck CommandLineOptions.PlaneRegistryUrl and CommandLineOptions.RpcServerHost.");
-            }
-
-            if (CurrentPlanetId is not null)
-            {
-                planetContext = PlanetSelector.SelectPlanetById(planetContext, CurrentPlanetId.Value);
-            }
-#endif
-            // ~Initialize planet registry
-
+        public void SetPortalConnect()
+        {
             // NOTE: Portal url does not change for each planet.
             PortalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
+        }
 
-#if ENABLE_FIREBASE
-            // NOTE: Initialize Firebase.
-            yield return FirebaseManager.InitializeAsync().ToCoroutine();
-#endif
-
-            // TODO: 내부 분기 제거, 인스턴스 관리 주체 Analyzer내부에서 하도록 변경
-            // NOTE: Initialize Analyzer after load CommandLineOptions, initialize States,
-            //       initialize Firebase Manager.
-            //       The planetId is null because it is not initialized yet. It will be
-            //       updated after initialize Agent.
-            InitializeAnalyzer(
-                _commandLineOptions.PrivateKey is null
-                    ? null
-                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).Address,
-                null,
-                _commandLineOptions.RpcServerHost);
-            Analyzer.Track("Unity/Started");
-
-            InitializeMessagePackResolver();
-
-            if (CheckRequiredUpdate())
-            {
-                // NOTE: Required update is detected.
-                yield break;
-            }
-
-            // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
-
-            InitializeFirstResources();
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
-
-            // NOTE: Initialize IAgent.
-            var agentInitialized = false;
-            var agentInitializeSucceed = false;
-            yield return StartCoroutine(CoLogin(planetContext, succeed =>
-                    {
-                        NcDebug.Log($"[Game] Agent initialized. {succeed}");
-                        agentInitialized = true;
-                        agentInitializeSucceed = succeed;
-                    }
-                )
-            );
-
-            var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
-            grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
-            yield return new WaitUntil(() => agentInitialized);
-#if RUN_ON_MOBILE
-            if (planetContext?.HasError ?? false)
-            {
-                QuitWithMessage(
-                    L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
-                    planetContext.Error);
-                yield break;
-            }
-
-            if (planetContext.SelectedPlanetInfo is null)
-            {
-                QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
-                yield break;
-            }
-
-            CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
-#endif
-
-            Analyzer.SetPlanetId(CurrentPlanetId?.ToString());
-            NcDebug.Log($"[Game] Start()... CurrentPlanetId updated. {CurrentPlanetId?.ToString()}");
-
-            // TODO: 위 Login코드에서 처리하면되는거아닌가? 생각이 들지만 기존 코드 유지.. 이부분 추후 확인
-            if (agentInitializeSucceed)
-            {
-                OnAgentInitializeSucceed();
-            }
-            else
-            {
-                OnAgentInitializeFailed();
-                yield break;
-            }
-
-            // NOTE: Create ActionManager after Agent initialized.
+        public void SetActionManager()
+        {
             ActionManager = new ActionManager(Agent);
-            ApiClients.Instance.Initialize(_commandLineOptions);
+        }
 
-            StartCoroutine(InitializeIAP());
-
-            yield return StartCoroutine(InitializeWithAgent());
-
-            yield return CharacterManager.Instance.LoadCharacterAssetAsync().ToCoroutine();
-            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
-            yield return createSecondWidgetCoroutine;
-
-            var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
-
+        private void Start()
+        {
 #if RUN_ON_MOBILE
-            // Note : Social Login 과정을 거친 경우만 토큰을 확인합니다.
-            if (!IsGuestLogin && !SigninContext.HasSignedWithKeyImport)
-            {
-                var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
-                yield return checkTokensTask.AsCoroutine();
-                if (!checkTokensTask.Result)
-                {
-                    QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"), "Failed to Get Tokens.");
-                    yield break;
-                }
-
-                if (!planetContext.IsSelectedPlanetAccountPledged)
-                {
-                    yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
-                }
-            }
+            SetTargetFrameRate();
 #endif
-
-#if UNITY_EDITOR_WIN
+        }
+        
+        /// <summary>
+        /// Invoke On Window Editor
+        /// </summary>
+        [UsedImplicitly]
+        public void UseMarketService()
+        {
             // wait for headless connect.
-            if (useLocalMarketService && MarketHelper.CheckPath())
+            if (!useLocalMarketService || !MarketHelper.CheckPath())
             {
-                _marketThread = new Thread(() =>
-                    MarketHelper.RunLocalMarketService(marketDbConnectionString));
-                _marketThread.Start();
+                return;
             }
-#endif
-            // Initialize D:CC NFT data
-            StartCoroutine(CoInitDccAvatar());
-            StartCoroutine(CoInitDccConnecting());
-            yield return initializeSecondWidgetsCoroutine;
-            grayLoadingScreen.ShowProgress(GameInitProgress.ProgressCompleted);
-            Analyzer.Instance.Track("Unity/Intro/Start/SecondWidgetCompleted");
 
-            var secondWidgetCompletedEvt = new AirbridgeEvent("Intro_Start_SecondWidgetCompleted");
-            AirbridgeUnity.TrackEvent(secondWidgetCompletedEvt);
+            _marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
+            _marketThread.Start();
+        }
 
-            InitializeStage();
+        public IEnumerator InitializeIAP()
+        {
+            var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
+            grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
+            var innerSw = new Stopwatch();
+            innerSw.Reset();
+            innerSw.Start();
 
-            // Initialize Rank.SharedModel
-            RankPopup.UpdateSharedModel();
-            Helper.Util.TryGetAppProtocolVersionFromToken(
-                _commandLineOptions.AppProtocolVersion,
-                out var appProtocolVersion);
-            Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
-            Analyzer.Instance.Track("Unity/Intro/Start/ShowNext");
+            yield return ApiClients.Instance.IAPServiceManager.InitializeAsync().AsCoroutine();
 
-            var showNextEvt = new AirbridgeEvent("Intro_Start_ShowNext");
-            AirbridgeUnity.TrackEvent(showNextEvt);
-
-            StartCoroutine(CoUpdate());
-            ReservePushNotifications();
-
-            yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
-            IsInitialized = true;
-            Widget.Find<IntroScreen>().Close();
-            EnterNext();
-            totalSw.Stop();
-            NcDebug.Log($"[Game] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
-            yield break;
-
-            IEnumerator InitializeIAP()
+            Task.Run(async () =>
             {
-                grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
-                var innerSw = new Stopwatch();
-                innerSw.Reset();
-                innerSw.Start();
+                await MobileShop.LoadL10Ns();
 
-                yield return ApiClients.Instance.IAPServiceManager.InitializeAsync().AsCoroutine();
-
-                Task.Run(async () =>
+                var categorySchemas = await MobileShop.GetCategorySchemas();
+                foreach (var category in categorySchemas)
                 {
-                    await MobileShop.LoadL10Ns();
-
-                    var categorySchemas = await MobileShop.GetCategorySchemas();
-                    foreach (var category in categorySchemas)
+                    if (category.Name == "NoShow")
                     {
-                        if (category.Name == "NoShow")
-                        {
-                            continue;
-                        }
-
-                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
-
-                        foreach (var product in category.ProductList)
-                        {
-                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
-                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
-                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
-                        }
+                        continue;
                     }
-                });
 
-                innerSw.Stop();
-                NcDebug.Log("[Game] Start()... IAPServiceManager initialized in" +
-                    $" {innerSw.ElapsedMilliseconds}ms.(elapsed)");
-                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
-            }
+                    await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
 
-            IEnumerator InitializeWithAgent()
+                    foreach (var product in category.ProductList)
+                    {
+                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
+                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
+                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
+                    }
+                }
+            });
+
+            innerSw.Stop();
+            NcDebug.Log("[Game] Start()... IAPServiceManager initialized in" +
+                $" {innerSw.ElapsedMilliseconds}ms.(elapsed)");
+            IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+        }
+
+        public IEnumerator InitializeWithAgent()
+        {
+            var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
+            grayLoadingScreen.ShowProgress(GameInitProgress.InitTableSheet);
+            var innerSw = new Stopwatch();
+            innerSw.Reset();
+            innerSw.Start();
+            yield return SyncTableSheetsAsync().ToCoroutine();
+            innerSw.Stop();
+            NcDebug.Log($"[Game/SyncTableSheets] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
+            Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
+
+            var tableSheetsInitializedEvt = new AirbridgeEvent("Intro_Start_TableSheetsInitialized");
+            AirbridgeUnity.TrackEvent(tableSheetsInitializedEvt);
+
+            RxProps.Start(Agent, States, TableSheets);
+
+            AdventureBossData = new AdventureBossData();
+            AdventureBossData.Initialize();
+
+            Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
             {
-                grayLoadingScreen.ShowProgress(GameInitProgress.InitTableSheet);
-                var innerSw = new Stopwatch();
-                innerSw.Reset();
-                innerSw.Start();
-                yield return SyncTableSheetsAsync().ToCoroutine();
-                innerSw.Stop();
-                NcDebug.Log($"[Game/SyncTableSheets] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
-                Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
+                var petList = States.Instance.PetStates.GetPetStatesAll()
+                    .Where(petState => petState != null)
+                    .Select(petState => petState.PetId)
+                    .ToList();
+                SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
+            }).AddTo(gameObject);
 
-                var tableSheetsInitializedEvt = new AirbridgeEvent("Intro_Start_TableSheetsInitialized");
-                AirbridgeUnity.TrackEvent(tableSheetsInitializedEvt);
+            yield return InitializeStakeStateAsync().ToCoroutine();
+        }
 
-                RxProps.Start(Agent, States, TableSheets);
-
-                AdventureBossData = new AdventureBossData();
-                AdventureBossData.Initialize();
-
-                Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
-                {
-                    var petList = States.Instance.PetStates.GetPetStatesAll()
-                        .Where(petState => petState != null)
-                        .Select(petState => petState.PetId)
-                        .ToList();
-                    SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
-                }).AddTo(gameObject);
-
-                yield return InitializeStakeStateAsync().ToCoroutine();
-            }
-
-            IEnumerator CoInitializeSecondWidget()
-            {
-                grayLoadingScreen.ShowProgress(GameInitProgress.InitCanvas);
-                var innerSw = new Stopwatch();
-                innerSw.Reset();
-                innerSw.Start();
-                yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
-                innerSw.Stop();
-                NcDebug.Log($"[Game] Start()... SecondWidgets initialized in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
-            }
+        public IEnumerator CoInitializeSecondWidget()
+        {
+            var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
+            grayLoadingScreen.ShowProgress(GameInitProgress.InitCanvas);
+            var innerSw = new Stopwatch();
+            innerSw.Reset();
+            innerSw.Start();
+            yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
+            innerSw.Stop();
+            NcDebug.Log($"[Game] Start()... SecondWidgets initialized in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         protected override void OnDestroy()
@@ -819,7 +630,7 @@ namespace Nekoyume.Game
         /// <summary>
         /// This method must be called after <see cref="Game.Agent"/> initialized.
         /// </summary>
-        private IEnumerator CoCheckPledge(PlanetId planetId)
+        public IEnumerator CoCheckPledge(PlanetId planetId)
         {
             NcDebug.Log("[Game] CoCheckPledge() invoked.");
             if (!States.PledgeRequested || !States.PledgeApproved)
@@ -1074,7 +885,7 @@ namespace Nekoyume.Game
             return container.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
         }
 
-        private async void EnterNext()
+        public async void EnterNext()
         {
             NcDebug.Log("[Game] EnterNext() invoked");
             if (!GameConfig.IsEditor)
@@ -1162,7 +973,7 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoUpdate()
+        public IEnumerator CoUpdate()
         {
             while (enabled)
             {
@@ -1285,7 +1096,7 @@ namespace Nekoyume.Game
             vfx.Play();
         }
 
-        private IEnumerator CoLogin(PlanetContext planetContext, Action<bool> loginCallback)
+        public IEnumerator CoLogin(PlanetContext planetContext, Action<bool> loginCallback)
         {
             NcDebug.Log("[Game] CoLogin() invoked");
             if (_commandLineOptions.Maintenance)
@@ -1541,7 +1352,7 @@ namespace Nekoyume.Game
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
 
-        private IEnumerator CoInitDccAvatar()
+        public IEnumerator CoInitDccAvatar()
         {
             var dccUrl = ApiClients.Instance.DccURL;
             var sw = new Stopwatch();
@@ -1561,7 +1372,7 @@ namespace Nekoyume.Game
             NcDebug.Log($"[Game] CoInitDccAvatar()... DCC Avatar initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
-        private IEnumerator CoInitDccConnecting()
+        public IEnumerator CoInitDccConnecting()
         {
             var dccUrl = ApiClients.Instance.DccURL;
             var sw = new Stopwatch();
@@ -1589,7 +1400,7 @@ namespace Nekoyume.Game
             _activeDirector.playableGraph.GetRootPlayable(0).SetSpeed(1);
         }
 
-        private void ReservePushNotifications()
+        public void ReservePushNotifications()
         {
             var currentBlockIndex = Agent.BlockIndex;
             var tableSheets = TableSheets.Instance;
@@ -1751,7 +1562,7 @@ namespace Nekoyume.Game
             PlayerPrefs.SetString(WorldbossTicketPushIdentifierKey, identifier);
         }
 
-        private void InitializeAnalyzer(
+        public void InitializeAnalyzer(
             Address? agentAddr = null,
             PlanetId? planetId = null,
             string rpcServerHost = null)
@@ -1793,7 +1604,7 @@ namespace Nekoyume.Game
             NcDebug.Log(_commandLineOptions.ToString());
         }
 
-        private static void QuitWithMessage(string message, string debugMessage = null)
+        public static void QuitWithMessage(string message, string debugMessage = null)
         {
             message = string.IsNullOrEmpty(debugMessage)
                 ? message
@@ -1850,14 +1661,13 @@ namespace Nekoyume.Game
             States = new States();
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
-            MainCanvas.instance.InitializeIntro();
         }
 
 #endregion Initialize On Awake
 
 #region Initialize On Start
 
-        private IEnumerator InitializeL10N()
+        public IEnumerator InitializeL10N()
         {
             if (LiveAsset.GameConfig.IsKoreanBuild)
             {
@@ -1888,7 +1698,7 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] Start()... L10nManager initialized");
         }
 
-        private void InitializeMessagePackResolver()
+        public void InitializeMessagePackResolver()
         {
 #if ENABLE_IL2CPP
             // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
@@ -1909,7 +1719,7 @@ namespace Nekoyume.Game
             MessagePackSerializer.DefaultOptions = options;
         }
 
-        private bool CheckRequiredUpdate()
+        public bool CheckRequiredUpdate()
         {
             if (!_commandLineOptions.RequiredUpdate)
             {
@@ -1942,7 +1752,7 @@ namespace Nekoyume.Game
             return true;
         }
 
-        private void InitializeFirstResources()
+        public void InitializeFirstResources()
         {
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
@@ -1957,7 +1767,7 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] Start()... AudioController initialized");
         }
 
-        private void OnAgentInitializeSucceed()
+        public void OnAgentInitializeSucceed()
         {
             Analyzer.SetAgentAddress(Agent.Address.ToString());
             Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
@@ -1970,7 +1780,7 @@ namespace Nekoyume.Game
             settingPopup.UpdatePrivateKey(_commandLineOptions.PrivateKey);
         }
 
-        private void OnAgentInitializeFailed()
+        public void OnAgentInitializeFailed()
         {
             Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
 
@@ -1981,7 +1791,7 @@ namespace Nekoyume.Game
             QuitWithAgentConnectionError(null);
         }
 
-        private void InitializeStage()
+        public void InitializeStage()
         {
             var sw = new Stopwatch();
             sw.Reset();

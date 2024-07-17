@@ -135,32 +135,21 @@ namespace Nekoyume.UI
 
         private void UpdateLayers()
         {
-            if (_layers is null)
+            _layers ??= new List<CanvasLayer>
             {
-                _layers = new List<CanvasLayer>
-                {
-                    hudLayer,
-                    popupLayer,
-                    screenLayer,
-                    staticLayer,
-                    tooltipLayer,
-                    widgetLayer,
-                    animationLayer,
-                    systemLayer,
-                    developmentLayer,
-                    tutorialMaskLayer
-                };
-            }
+                hudLayer,
+                popupLayer,
+                screenLayer,
+                staticLayer,
+                tooltipLayer,
+                widgetLayer,
+                animationLayer,
+                systemLayer,
+                developmentLayer,
+                tutorialMaskLayer
+            };
 
             _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
-        }
-
-        public void InitializeIntro()
-        {
-            var intro = Widget.Create<IntroScreen>(true);
-            intro.Initialize();
-
-            UpdateLayers();
         }
 
         public void InitializeFirst()
