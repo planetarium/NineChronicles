@@ -10,11 +10,14 @@ namespace Nekoyume.Game.Scene
     public enum SceneType
     {
         Login,
+        Loading,
         Game,
     }
     
     public class NcSceneManager
     {        
+        private const float ChangeSceneDelay = 500f;
+        
         private static class Singleton
         {
             internal static readonly NcSceneManager Value = new();
@@ -42,9 +45,8 @@ namespace Nekoyume.Game.Scene
 
             ESceneType = type;
             ClearScene();
-            // TODO: 로딩 과정 별도 씬으로 분리
-            // await SceneManager.LoadSceneAsync(GetSceneName(SceneType.Loading)).ToUniTask();
-            // await UniTask.Delay(TimeSpan.FromMilliseconds(ChangeSceneDelay));
+            await SceneManager.LoadSceneAsync(GetSceneName(SceneType.Loading)).ToUniTask();
+            await UniTask.Delay(TimeSpan.FromMilliseconds(ChangeSceneDelay));
             await SceneManager.LoadSceneAsync(GetSceneName(type)).ToUniTask();
             await UniTask.NextFrame();
             _currentScene = Object.FindObjectOfType<BaseScene>();
@@ -60,6 +62,8 @@ namespace Nekoyume.Game.Scene
             {
                 case SceneType.Login:
                     return "LoginScene";
+                case SceneType.Loading:
+                    return "LoadingScene";
                 case SceneType.Game:
                     return "Game";
             }

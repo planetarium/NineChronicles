@@ -18,7 +18,8 @@ namespace Nekoyume.Game.Scene
 
         private async UniTask WaitUntilInitialized()
         {
-            await UniTask.WaitUntil(() => Game.instance.IsInitialized);
+            // TODO: 리소스매니저 초기화 등 처리 추가되면 적용
+            // await UniTask.WaitUntil(() => Game.instance.IsInitialized);
             await LoadSceneAssets();
             await WaitActionResponse();
             Initialize();
