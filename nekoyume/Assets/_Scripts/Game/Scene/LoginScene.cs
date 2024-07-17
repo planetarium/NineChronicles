@@ -308,12 +308,12 @@ namespace Nekoyume.Game.Scene
             yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
             game.IsInitialized = true;
             Widget.Find<IntroScreen>().Close();
-            EnterNext().Forget();
+            EnterGame().Forget();
             totalSw.Stop();
             NcDebug.Log($"[LoginScene] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
         }
 
-        private async UniTask EnterNext()
+        private async UniTask EnterGame()
         {
             NcDebug.Log("[LoginScene] EnterNext() invoked");
             if (!GameConfig.IsEditor)
