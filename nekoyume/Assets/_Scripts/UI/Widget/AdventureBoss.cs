@@ -19,6 +19,7 @@ namespace Nekoyume.UI
     using UniRx;
     using static Data.AdventureBossGameData;
     using static Scroller.NotificationCell;
+    using Nekoyume.State;
 
     public class AdventureBoss : Widget
     {
@@ -49,6 +50,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI bossName;
         [SerializeField] private Transform bossImageParent;
         [SerializeField] private TextMeshProUGUI randomRewardText;
+        [SerializeField] private TextMeshProUGUI rewardRemainTImeText;
 
         public AdventureBossFloor CurrentUnlockFloor;
 
@@ -393,6 +395,8 @@ namespace Nekoyume.UI
 
             _seasonStartBlock = seasonInfo.StartBlockIndex;
             _seasonEndBlock = seasonInfo.EndBlockIndex;
+            var claimInterval = States.Instance.GameConfigState.AdventureBossClaimInterval;
+            rewardRemainTImeText.text = L10n.L10nManager.Localize("UI_ADVENTURE_BOSS_REWARDS_REMAIN_TIME", claimInterval, claimInterval.BlockRangeToTimeSpanString());
             try
             {
                 SetBossData(seasonInfo.BossId);
@@ -484,7 +488,7 @@ namespace Nekoyume.UI
 
         public void OnClickShowPrevRewardInfo()
         {
-            Find<PreviousSeasonReportPopup>().Show(Math.Max(0,Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season -1)).Forget();
+            Find<PreviousSeasonReportPopup>().Show(Math.Max(0, Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season - 1)).Forget();
         }
 
         public void OnClickBossParticipantBonusPopup()
