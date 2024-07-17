@@ -79,6 +79,9 @@ namespace Nekoyume.Game.Scene
     
     public class LoginScene : MonoBehaviour
     {
+        // TODO: 기존 introScreen 활성화 여부 호환을 위해 추가. 추후 제거
+        public static bool IsOnIntroScene { get; private set; } = true;
+        
         [SerializeField] private IntroScreen introScreen;
         [SerializeField] private Synopsis synopsis;
 
@@ -313,7 +316,8 @@ namespace Nekoyume.Game.Scene
 
             yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
             game.IsInitialized = true;
-            Widget.Find<IntroScreen>().Close();
+            introScreen.Close();
+            IsOnIntroScene = false;
             EnterGame().Forget();
             totalSw.Stop();
             NcDebug.Log($"[LoginScene] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
@@ -705,7 +709,7 @@ namespace Nekoyume.Game.Scene
             var game = Game.instance;
             var commandLineOptions = game.CommandLineOptions;
             
-            var introScreen = Widget.Find<IntroScreen>();
+            var introScreen = introScreen;
             NcDebug.Log("[Game] CoLogin()... Has pledged account.");
             var pk = KeyManager.Instance.SignedInPrivateKey;
             introScreen.Show(commandLineOptions.KeyStorePath,

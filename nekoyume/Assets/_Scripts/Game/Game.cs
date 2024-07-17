@@ -42,6 +42,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.OAuth;
+using Nekoyume.Game.Scene;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.IAPStore;
@@ -518,7 +519,7 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
-            if (Widget.Find<IntroScreen>().IsActive() ||
+            if (LoginScene.IsOnIntroScene ||
                 Widget.Find<GrayLoadingScreen>().IsActive() ||
                 Widget.Find<Synopsis>().IsActive())
             {
