@@ -74,6 +74,7 @@ namespace Nekoyume.Game.Scene
     public class LoginScene : MonoBehaviour
     {
         [SerializeField] private IntroScreen introScreen;
+        [SerializeField] private Synopsis synopsis;
 
         private IEnumerator Start()
         {
@@ -106,7 +107,7 @@ namespace Nekoyume.Game.Scene
                 string.IsNullOrEmpty(commandLineOptions.PrivateKey) &&
                 KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
             {
-                NcDebug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty in mobile." +
+                NcDebug.Log("[LoginScene] Start()... CommandLineOptions.PrivateKey is empty in mobile." +
                     " Set cached private key instead.");
                 commandLineOptions.PrivateKey =
                     KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
@@ -130,30 +131,30 @@ namespace Nekoyume.Game.Scene
                 yield break;
             }
 #else
-            NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
+            NcDebug.Log("[LoginScene] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
             if (planetContext.IsSkipped)
             {
-                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.IsSkipped is true." +
+                NcDebug.LogWarning("[LoginScene] UpdateCurrentPlanetIdAsync()... planetContext.IsSkipped is true." +
                     "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
             }
             else if (planetContext.HasError)
             {
-                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planetContext.HasError is true." +
+                NcDebug.LogWarning("[LoginScene] UpdateCurrentPlanetIdAsync()... planetContext.HasError is true." +
                     "\nYou can consider to use CommandLineOptions.SelectedPlanetId instead.");
             }
             else if (planetContext.PlanetRegistry!.TryGetPlanetInfoByHeadlessGrpc(commandLineOptions.RpcServerHost, out var planetInfo))
             {
-                NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... planet id is found in planet registry.");
+                NcDebug.Log("[LoginScene] UpdateCurrentPlanetIdAsync()... planet id is found in planet registry.");
                 game.CurrentPlanetId = planetInfo.ID;
             }
             else if (!string.IsNullOrEmpty(commandLineOptions.SelectedPlanetId))
             {
-                NcDebug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
+                NcDebug.Log("[LoginScene] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
                 game.CurrentPlanetId = new PlanetId(commandLineOptions.SelectedPlanetId);
             }
             else
             {
-                NcDebug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... planet id is not found in planet registry." +
+                NcDebug.LogWarning("[LoginScene] UpdateCurrentPlanetIdAsync()... planet id is not found in planet registry." +
                     "\nCheck CommandLineOptions.PlaneRegistryUrl and CommandLineOptions.RpcServerHost.");
             }
 
@@ -201,7 +202,7 @@ namespace Nekoyume.Game.Scene
             var agentInitializeSucceed = false;
             yield return StartCoroutine(game.CoLogin(planetContext, succeed =>
                     {
-                        NcDebug.Log($"[Game] Agent initialized. {succeed}");
+                        NcDebug.Log($"[LoginScene] Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
                     }
@@ -230,7 +231,7 @@ namespace Nekoyume.Game.Scene
 #endif
 
             Analyzer.SetPlanetId(game.CurrentPlanetId?.ToString());
-            NcDebug.Log($"[Game] Start()... CurrentPlanetId updated. {game.CurrentPlanetId?.ToString()}");
+            NcDebug.Log($"[LoginScene] Start()... CurrentPlanetId updated. {game.CurrentPlanetId?.ToString()}");
 
             // TODO: 위 Login코드에서 처리하면되는거아닌가? 생각이 들지만 기존 코드 유지.. 이부분 추후 확인
             if (agentInitializeSucceed)
@@ -307,14 +308,81 @@ namespace Nekoyume.Game.Scene
             yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
             game.IsInitialized = true;
             Widget.Find<IntroScreen>().Close();
-            game.EnterNext();
+            EnterNext().Forget();
             totalSw.Stop();
-            NcDebug.Log($"[Game] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
+            NcDebug.Log($"[LoginScene] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
         }
 
-        void Update()
+        private async UniTask EnterNext()
         {
-        
+            NcDebug.Log("[LoginScene] EnterNext() invoked");
+            if (!GameConfig.IsEditor)
+            {
+                if (States.Instance.AgentState.avatarAddresses.Any() &&
+                    Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
+                    States.Instance.AvatarStates.ContainsKey(slotIndex))
+                {
+                    var loadingScreen = Widget.Find<LoadingScreen>();
+                    loadingScreen.Show(
+                        LoadingScreen.LoadingType.Entering,
+                        L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
+                    var sw = new Stopwatch();
+                    sw.Reset();
+                    sw.Start();
+                    await RxProps.SelectAvatarAsync(slotIndex, Game.instance.Agent.BlockTipStateRootHash, true);
+                    sw.Stop();
+                    NcDebug.Log("[LoginScene] EnterNext()... SelectAvatarAsync() finished in" +
+                        $" {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    loadingScreen.Close();
+                    Event.OnRoomEnter.Invoke(false);
+                    Event.OnUpdateAddresses.Invoke();
+                }
+                else
+                {
+                    Widget.Find<Synopsis>().Show();
+                }
+            }
+            else
+            {
+                PlayerFactory.Create();
+
+                if (Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
+                    States.Instance.AvatarStates.ContainsKey(slotIndex))
+                {
+                    var avatarState = States.Instance.AvatarStates[slotIndex];
+                    if (avatarState?.inventory == null ||
+                        avatarState.questList == null ||
+                        avatarState.worldInformation == null)
+                    {
+                        EnterLogin();
+                    }
+                    else
+                    {
+                        var sw = new Stopwatch();
+                        sw.Reset();
+                        sw.Start();
+                        await RxProps.SelectAvatarAsync(slotIndex, Game.instance.Agent.BlockTipStateRootHash, true);
+                        sw.Stop();
+                        NcDebug.Log("[LoginScene] EnterNext()... SelectAvatarAsync() finished in" +
+                            $" {sw.ElapsedMilliseconds}ms.(elapsed)");
+                        Event.OnRoomEnter.Invoke(false);
+                        Event.OnUpdateAddresses.Invoke();
+                    }
+                }
+                else
+                {
+                    EnterLogin();
+                }
+            }
+
+            Widget.Find<GrayLoadingScreen>().Close();
+        }
+
+        private static void EnterLogin()
+        {
+            NcDebug.Log("[LoginScene] EnterLogin() invoked");
+            Widget.Find<Login>().Show();
+            Event.OnNestEnter.Invoke();
         }
     }
 }
