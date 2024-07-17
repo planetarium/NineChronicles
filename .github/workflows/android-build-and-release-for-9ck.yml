@@ -88,10 +88,6 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_SERVICES_JSON_K }}" | base64 -d > ${{ matrix.projectPath }}/Assets/NineChronicles/GoogleServices/google-services.json
 
-      - name: Resolve AAR files
-        run: |
-          sudo \cp -R ${{ matrix.projectPath }}/ResolvedAAR/. ${{ matrix.projectPath }}/Assets/Plugins/Android/
-
       - name: Change cloudProjectId in ProjectSettings.asset
         run: |
           sed -i '/cloudProjectId/c\  cloudProjectId: fa57c419-1189-418d-951c-055e5f9738d0' ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
