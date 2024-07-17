@@ -519,6 +519,7 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
+            // TODO: 현재 씬이 LoginScene인 경우로 수정
             if (LoginScene.IsOnIntroScene ||
                 Widget.Find<GrayLoadingScreen>().IsActive() ||
                 Widget.Find<Synopsis>().IsActive())

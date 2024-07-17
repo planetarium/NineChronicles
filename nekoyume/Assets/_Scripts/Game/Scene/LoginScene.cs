@@ -85,6 +85,11 @@ namespace Nekoyume.Game.Scene
         [SerializeField] private IntroScreen introScreen;
         [SerializeField] private Synopsis synopsis;
 
+        private void Awake()
+        {
+            synopsis.LoginScene = this;
+        }
+
         private IEnumerator Start()
         {
             var game = Game.instance;
@@ -317,13 +322,12 @@ namespace Nekoyume.Game.Scene
             yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
             game.IsInitialized = true;
             introScreen.Close();
-            IsOnIntroScene = false;
-            EnterGame().Forget();
+            EnterNext().Forget();
             totalSw.Stop();
             NcDebug.Log($"[LoginScene] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
         }
 
-        private async UniTask EnterGame()
+        private async UniTask EnterNext()
         {
             NcDebug.Log("[LoginScene] EnterNext() invoked");
             if (!GameConfig.IsEditor)
@@ -336,20 +340,12 @@ namespace Nekoyume.Game.Scene
                     loadingScreen.Show(
                         LoadingScreen.LoadingType.Entering,
                         L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
-                    var sw = new Stopwatch();
-                    sw.Reset();
-                    sw.Start();
-                    await RxProps.SelectAvatarAsync(slotIndex, Game.instance.Agent.BlockTipStateRootHash, true);
-                    sw.Stop();
-                    NcDebug.Log("[LoginScene] EnterNext()... SelectAvatarAsync() finished in" +
-                        $" {sw.ElapsedMilliseconds}ms.(elapsed)");
+                    await EnterGame(slotIndex);
                     loadingScreen.Close();
-                    Event.OnRoomEnter.Invoke(false);
-                    Event.OnUpdateAddresses.Invoke();
                 }
                 else
                 {
-                    Widget.Find<Synopsis>().Show();
+                    synopsis.Show();
                 }
             }
             else
@@ -364,35 +360,45 @@ namespace Nekoyume.Game.Scene
                         avatarState.questList == null ||
                         avatarState.worldInformation == null)
                     {
-                        EnterLogin();
+                        EnterCharacterSelect();
                     }
                     else
                     {
-                        var sw = new Stopwatch();
-                        sw.Reset();
-                        sw.Start();
-                        await RxProps.SelectAvatarAsync(slotIndex, Game.instance.Agent.BlockTipStateRootHash, true);
-                        sw.Stop();
-                        NcDebug.Log("[LoginScene] EnterNext()... SelectAvatarAsync() finished in" +
-                            $" {sw.ElapsedMilliseconds}ms.(elapsed)");
-                        Event.OnRoomEnter.Invoke(false);
-                        Event.OnUpdateAddresses.Invoke();
+                        await EnterGame(slotIndex);
                     }
                 }
                 else
                 {
-                    EnterLogin();
+                    EnterCharacterSelect();
                 }
             }
 
             Widget.Find<GrayLoadingScreen>().Close();
         }
 
-        private static void EnterLogin()
+        public static void EnterCharacterSelect()
         {
-            NcDebug.Log("[LoginScene] EnterLogin() invoked");
+            NcDebug.Log("[LoginScene] EnterCharacterSelect() invoked");
+            
+            // TODO: ChangeScene
             Widget.Find<Login>().Show();
             Event.OnNestEnter.Invoke();
+        }
+        
+        /// <summary>
+        /// 로컬에 저장된 아바타 정보가 있는 경우, 특정 상황에서 바로 해당 아바타 선택 후 게임 로비 진입
+        /// </summary>
+        public async UniTask EnterGame(int slotIndex, bool forceNewSelection = true)
+        {
+            var sw = new Stopwatch();
+            sw.Reset();
+            sw.Start();
+            await RxProps.SelectAvatarAsync(slotIndex, Game.instance.Agent.BlockTipStateRootHash, forceNewSelection);
+            sw.Stop();
+            NcDebug.Log("[LoginScene] EnterNext()... SelectAvatarAsync() finished in" +
+                $" {sw.ElapsedMilliseconds}ms.(elapsed)");
+            Event.OnRoomEnter.Invoke(false);
+            Event.OnUpdateAddresses.Invoke();
         }
 
         public IEnumerator CoLogin(PlanetContext planetContext, Action<bool> loginCallback)
