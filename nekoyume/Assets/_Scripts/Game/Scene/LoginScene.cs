@@ -664,20 +664,20 @@ namespace Nekoyume.Game.Scene
             var commandLineOptions = Game.instance.CommandLineOptions;
             if (KeyManager.Instance.IsSignedIn || KeyManager.Instance.TrySigninWithTheFirstRegisteredKey())
             {
-                NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is true or" +
+                NcDebug.Log("[LoginScene] CoLogin()... KeyManager.Instance.IsSignedIn is true or" +
                     " LoginSystem.TryLoginWithLocalPpk() is true.");
                 var pk = KeyManager.Instance.SignedInPrivateKey;
 
                 // NOTE: Update CommandlineOptions.PrivateKey.
                 commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
-                NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey updated" +
+                NcDebug.Log("[LoginScene] CoLogin()... CommandLineOptions.PrivateKey updated" +
                     $" to ({pk.Address}).");
 
                 // NOTE: Check PlanetContext.CanSkipPlanetSelection.
                 //       If true, then update planet account infos for IntroScreen.
                 if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
                 {
-                    NcDebug.Log("[Game] CoLogin()... PlanetContext.CanSkipPlanetSelection is true.");
+                    NcDebug.Log("[LoginScene] CoLogin()... PlanetContext.CanSkipPlanetSelection is true.");
                     var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
                     dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                     yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
@@ -699,7 +699,7 @@ namespace Nekoyume.Game.Scene
             }
             else
             {
-                NcDebug.Log("[Game] CoLogin()... LocalSystem.Login is false.");
+                NcDebug.Log("[LoginScene] CoLogin()... LocalSystem.Login is false.");
                 // NOTE: If we need to cover the Multiplanetary context on non-mobile platform,
                 //       we need to reconsider the invoking the IntroScreen.Show(pkPath, pk, planetContext)
                 //       in here.
@@ -715,20 +715,19 @@ namespace Nekoyume.Game.Scene
             var game = Game.instance;
             var commandLineOptions = game.CommandLineOptions;
             
-            var introScreen = introScreen;
-            NcDebug.Log("[Game] CoLogin()... Has pledged account.");
+            NcDebug.Log("[LoginScene] CoLogin()... Has pledged account.");
             var pk = KeyManager.Instance.SignedInPrivateKey;
             introScreen.Show(commandLineOptions.KeyStorePath,
                 pk.ToHexWithZeroPaddings(),
                 planetContext);
 
-            NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
+            NcDebug.Log("[LoginScene] CoLogin()... WaitUntil introScreen.OnClickStart.");
             yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
-            NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
+            NcDebug.Log("[LoginScene] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
 
             // NOTE: Update CommandlineOptions.PrivateKey finally.
             commandLineOptions.PrivateKey = pk.ToHexWithZeroPaddings();
-            NcDebug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
+            NcDebug.Log("[LoginScene] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                 $" to ({pk.Address}).");
 
             yield return game.AgentInitialize(true, loginCallback);
@@ -750,13 +749,13 @@ namespace Nekoyume.Game.Scene
             var getTokensTask = game.PortalConnect.GetTokensSilentlyAsync();
             yield return new WaitUntil(() => getTokensTask.IsCompleted);
             sw.Stop();
-            NcDebug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            NcDebug.Log($"[LoginScene] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
             dimmedLoadingScreen.Close();
             outValueCallback?.Invoke(getTokensTask.Result.email, getTokensTask.Result.address);
 
-            NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
+            NcDebug.Log("[LoginScene] CoLogin()... WaitUntil introScreen.OnClickStart.");
             yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
-            NcDebug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
+            NcDebug.Log("[LoginScene] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
         }
 
         private IEnumerator PortalLoginProcess(SigninContext.SocialType socialType, string idToken, Action<Address?> callback)
@@ -767,7 +766,7 @@ namespace Nekoyume.Game.Scene
 
             // NOTE: Portal login flow.
             dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-            NcDebug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
+            NcDebug.Log("[LoginScene] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
             sw.Reset();
             sw.Start();
             var portalSigninTask = socialType == SigninContext.SocialType.Apple
@@ -775,8 +774,8 @@ namespace Nekoyume.Game.Scene
                 : game.PortalConnect.SendGoogleIdTokenAsync(idToken);
             yield return new WaitUntil(() => portalSigninTask.IsCompleted);
             sw.Stop();
-            NcDebug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            NcDebug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
+            NcDebug.Log($"[LoginScene] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            NcDebug.Log("[LoginScene] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
             dimmedLoadingScreen.Close();
 
             callback?.Invoke(portalSigninTask.Result);
@@ -784,19 +783,19 @@ namespace Nekoyume.Game.Scene
 
         private IEnumerator ShowPlanetAccountInfosPopup(PlanetContext planetContext)
         {
-            NcDebug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
+            NcDebug.Log("[LoginScene] CoLogin()... Has pledged account. Show planet account infos popup.");
             introScreen.ShowPlanetAccountInfosPopup(planetContext, !KeyManager.Instance.IsSignedIn);
 
-            NcDebug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo is not null.");
+            NcDebug.Log("[LoginScene] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo is not null.");
             yield return new WaitUntil(() => planetContext.SelectedPlanetAccountInfo is not null);
-            NcDebug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
+            NcDebug.Log("[LoginScene] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
                 $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
         }
 
         private void IsSelectedPlanetAccountPledgedProcess()
         {
             // NOTE: Player selected the planet that has agent.
-            NcDebug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
+            NcDebug.Log("[LoginScene] CoLogin()... Try to import key w/ QR code." +
                 " Player don't have to make a pledge.");
 
             // NOTE: Complex logic here...
@@ -814,7 +813,7 @@ namespace Nekoyume.Game.Scene
         private void IsNotSelectedPlanetAccountPledgedProcess()
         {
             // NOTE: Player selected the planet that has no agent.
-            NcDebug.Log("[Game] CoLogin()... Try to create a new agent." +
+            NcDebug.Log("[LoginScene] CoLogin()... Try to create a new agent." +
                 " Player may have to make a pledge.");
 
             // NOTE: Complex logic here...
@@ -832,7 +831,7 @@ namespace Nekoyume.Game.Scene
         private void HasNotPledgedAccountAndNotSignedProcess(PlanetContext planetContext, string email, Address? agentAddrInPortal)
         {
             var portalConnect = Game.instance.PortalConnect;
-            NcDebug.Log("[Game] CoLogin()... KeyManager.Instance.IsSignedIn is false");
+            NcDebug.Log("[LoginScene] CoLogin()... KeyManager.Instance.IsSignedIn is false");
 
             // FIXME: 이 분기의 상황
             //        - 포탈에는 에이전트 A의 주소가 있다.
