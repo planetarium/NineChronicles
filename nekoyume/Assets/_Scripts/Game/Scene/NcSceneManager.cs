@@ -23,7 +23,6 @@ namespace Nekoyume.Game.Scene
 
         public SceneType ESceneType { get; private set; } = SceneType.Login;
 
-        // TODO: Intro씬 추가?
         private BaseScene _currentScene;
 
         public BaseScene CurrentScene => _currentScene;
@@ -35,10 +34,11 @@ namespace Nekoyume.Game.Scene
 
         public async UniTask LoadScene(SceneType type)
         {
+            // TODO: 씬 전환시 로딩 UI효과 추가
             // TODO: 씬 타입에 따라 로딩 스크린을 다르게 보여줄 수 있도록 수정
-            var loadingScreen = Widget.Find<LoadingScreen>();
-            loadingScreen.CloseWithOtherWidgets();
-            loadingScreen.Show(LoadingScreen.LoadingType.WorldBoss);
+            // var loadingScreen = Widget.Find<LoadingScreen>();
+            // loadingScreen.CloseWithOtherWidgets();
+            // loadingScreen.Show(LoadingScreen.LoadingType.WorldBoss);
 
             ESceneType = type;
             ClearScene();
@@ -50,7 +50,7 @@ namespace Nekoyume.Game.Scene
             _currentScene = Object.FindObjectOfType<BaseScene>();
             await UniTask.WaitUntil(() => _currentScene.IsInitialized);
 
-            Widget.Find<LoadingScreen>().Close();
+            // Widget.Find<LoadingScreen>().Close();
         }
 
         // TODO: Addressable로 변경

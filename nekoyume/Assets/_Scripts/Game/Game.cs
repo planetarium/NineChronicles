@@ -273,6 +273,7 @@ namespace Nekoyume.Game
 #if RUN_ON_MOBILE
             SetTargetFrameRate();
 #endif
+            NcSceneManager.Instance.LoadScene(SceneType.Login).Forget();
         }
         
         /// <summary>

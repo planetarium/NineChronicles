@@ -89,6 +89,8 @@ namespace Nekoyume.Game.Scene
         private void Awake()
         {
             synopsis.LoginScene = this;
+            var canvas = GetComponent<Canvas>();
+            canvas.worldCamera = ActionCamera.instance.Cam;
         }
 
         protected override void Start()
@@ -433,7 +435,7 @@ namespace Nekoyume.Game.Scene
             Event.OnUpdateAddresses.Invoke();
         }
 
-        public IEnumerator CoLogin(PlanetContext planetContext, Action<bool> loginCallback)
+        private IEnumerator CoLogin(PlanetContext planetContext, Action<bool> loginCallback)
         {
             var game = Game.instance;
             var commandLineOptions = game.CommandLineOptions;
