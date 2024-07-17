@@ -403,9 +403,11 @@ namespace Nekoyume.Game.Scene
             Widget.Find<GrayLoadingScreen>().Close();
         }
 
-        public static void EnterCharacterSelect()
+        public static async UniTask EnterCharacterSelect()
         {
             NcDebug.Log("[LoginScene] EnterCharacterSelect() invoked");
+            
+            await NcSceneManager.Instance.LoadScene(SceneType.Game);
             
             // TODO: ChangeScene
             Widget.Find<Login>().Show();
@@ -424,6 +426,9 @@ namespace Nekoyume.Game.Scene
             sw.Stop();
             NcDebug.Log("[LoginScene] EnterNext()... SelectAvatarAsync() finished in" +
                 $" {sw.ElapsedMilliseconds}ms.(elapsed)");
+            
+            await NcSceneManager.Instance.LoadScene(SceneType.Game);
+            
             Event.OnRoomEnter.Invoke(false);
             Event.OnUpdateAddresses.Invoke();
         }
@@ -482,7 +487,7 @@ namespace Nekoyume.Game.Scene
             }
 
             yield return game.AgentInitialize(true, loginCallback);
-            // yield break;
+            yield break;
 #endif
 
             // NOTE: Initialize current planet info.
