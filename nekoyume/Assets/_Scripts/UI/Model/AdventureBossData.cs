@@ -393,7 +393,7 @@ namespace Nekoyume.UI.Model
 
             try
             {
-                if (ExploreBoard.Value != null && ExploreInfo.Value != null)
+                if (ExploreBoard.Value != null && ExploreInfo.Value != null && ExploreInfo.Value.Score > 0)
                 {
                     myReward = AdventureBossHelper.CalculateExploreReward(myReward,
                         BountyBoard.Value,
@@ -493,7 +493,7 @@ namespace Nekoyume.UI.Model
                 ItemReward = new Dictionary<int, int>(),
                 FavReward = new Dictionary<int, int>()
             };
-            if (ExploreBoard.Value != null && ExploreInfo.Value != null)
+            if (ExploreBoard.Value != null && ExploreInfo.Value != null && ExploreInfo.Value.Score > 0)
             {
                 myReward = AdventureBossHelper.CalculateExploreReward(myReward,
                     BountyBoard.Value,

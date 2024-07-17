@@ -275,7 +275,7 @@ namespace Nekoyume.UI
             }
 
             var itemViewIndex = 0;
-            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue)
+            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue && !_myReward.NcgReward.Value.RawValue.IsZero)
             {
                 baseItemViews[itemViewIndex].ItemViewSetCurrencyData(_myReward.NcgReward.Value);
                 itemViewIndex++;

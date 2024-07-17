@@ -106,7 +106,7 @@ namespace Nekoyume
                         TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
                         States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
                         out var wantedReward);
-                    totalBounty.text = prevExploreBoard.TotalPoint.ToString("#,0");
+                    totalBounty.text = prevBountyBoard.totalBounty().MajorUnit.ToString("#,0");
                     var investor = prevBountyBoard.Investors.FirstOrDefault(inv => inv.AvatarAddress == States.Instance.CurrentAvatarState.address);
                     if (investor != null)
                     {
@@ -121,7 +121,7 @@ namespace Nekoyume
                         operationalIndex++;
                     });
                 }
-                if (prevExploreBoard != null && prevExploreInfo != null)
+                if (prevExploreBoard != null && prevExploreInfo != null && prevExploreInfo.Score > 0)
                 {
                     myExplorerRewardsData = AdventureBossHelper.CalculateExploreReward(myExplorerRewardsData,
                     prevBountyBoard,
