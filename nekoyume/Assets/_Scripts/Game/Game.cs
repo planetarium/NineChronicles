@@ -520,9 +520,7 @@ namespace Nekoyume.Game
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
             // TODO: 현재 씬이 LoginScene인 경우로 수정
-            if (LoginScene.IsOnIntroScene ||
-                Widget.Find<GrayLoadingScreen>().IsActive() ||
-                Widget.Find<Synopsis>().IsActive())
+            if (LoginScene.IsOnIntroScene)
             {
                 // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
                 // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.

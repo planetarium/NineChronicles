@@ -77,7 +77,7 @@ namespace Nekoyume.Game.Scene
     using TableData;
     using UniRx;
     
-    public class LoginScene : MonoBehaviour
+    public class LoginScene : BaseScene
     {
         // TODO: 기존 introScreen 활성화 여부 호환을 위해 추가. 추후 제거
         public static bool IsOnIntroScene { get; private set; } = true;
@@ -85,12 +85,39 @@ namespace Nekoyume.Game.Scene
         [SerializeField] private IntroScreen introScreen;
         [SerializeField] private Synopsis synopsis;
 
+#region MonoBehaviour
         private void Awake()
         {
             synopsis.LoginScene = this;
         }
 
-        private IEnumerator Start()
+        protected override void Start()
+        {
+            base.Start();
+            StartCoroutine(LoginStart());
+        }
+#endregion MonoBehaviour
+
+#region BaseScene
+        protected override async UniTask LoadSceneAssets()
+        {
+            await UniTask.CompletedTask;
+        }
+
+        protected override async UniTask WaitActionResponse()
+        {
+            await UniTask.CompletedTask;
+        }
+
+        public override void Clear()
+        {
+            IsOnIntroScene = false;
+            introScreen.Close();
+            synopsis.Close();
+        }
+#endregion BaseScene
+
+        private IEnumerator LoginStart()
         {
             var game = Game.instance;
             var commandLineOptions = game.CommandLineOptions;
