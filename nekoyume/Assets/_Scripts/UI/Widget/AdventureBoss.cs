@@ -168,12 +168,10 @@ namespace Nekoyume.UI
                 if (board == null)
                 {
                     participantsCount.text = "0";
-                    usedApPotion.text = "0";
                     return;
                 }
 
                 participantsCount.text = $"{board.ExplorerCount:#,0}";
-                usedApPotion.text = $"{board.UsedApPotion:#,0}";
             }
             catch (Exception)
             {
@@ -184,6 +182,7 @@ namespace Nekoyume.UI
         private void RefreshExploreInfo(Explorer exploreInfo)
         {
             CurrentUnlockFloor = null;
+            var usedMyApPotion = 0;
             if (exploreInfo == null)
             {
                 clearFloor.text = $"-";
@@ -212,6 +211,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            usedMyApPotion = exploreInfo.UsedApPotion;
             clearFloor.text = $"{exploreInfo.Floor}F";
 
             for (var i = 0; i < floors.Count(); i++)
@@ -238,16 +238,20 @@ namespace Nekoyume.UI
                     floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                 }
             }
-
-
             var adventureBossData = Game.Game.instance.AdventureBossData;
-
             double contribution = 0;
             if (adventureBossData.ExploreBoard.Value != null && adventureBossData.ExploreBoard.Value.TotalPoint != 0)
             {
                 contribution = exploreInfo.Score == 0 ? 0 : (double)exploreInfo.Score / adventureBossData.ExploreBoard.Value.TotalPoint * 100;
             }
             score.text = $"{exploreInfo.Score:#,0} ({contribution.ToString("F2")}%)";
+
+            usedApPotion.text = "0";
+            if(adventureBossData.ExploreBoard.Value != null)
+            {
+                usedApPotion.text = $"{adventureBossData.ExploreBoard.Value.UsedApPotion:#,0} ({usedMyApPotion})";
+            }
+
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor + 1, false);
             RefreshMyReward();
         }
