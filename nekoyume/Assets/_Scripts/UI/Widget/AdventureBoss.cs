@@ -239,7 +239,15 @@ namespace Nekoyume.UI
                 }
             }
 
-            score.text = $"{exploreInfo.Score:#,0}";
+
+            var adventureBossData = Game.Game.instance.AdventureBossData;
+
+            double contribution = 0;
+            if (adventureBossData.ExploreBoard.Value != null && adventureBossData.ExploreBoard.Value.TotalPoint != 0)
+            {
+                contribution = exploreInfo.Score == 0 ? 0 : (double)exploreInfo.Score / adventureBossData.ExploreBoard.Value.TotalPoint * 100;
+            }
+            score.text = $"{exploreInfo.Score:#,0} ({contribution.ToString("F2")}%)";
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor + 1, false);
             RefreshMyReward();
         }
