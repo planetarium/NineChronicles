@@ -241,7 +241,7 @@ namespace Nekoyume.UI
             var materialItemsExp = materialItems.Sum(equipment =>
                 equipment.GetRealExp(equipmentItemSheet, enhancementCostSheet));
             var hammersExp = hammers.Sum(pair =>
-                Equipment.GetHammerExp(pair.Key, enhancementCostSheet) * pair.Value);
+                enhancementCostSheet.GetHammerExp(pair.Key) * pair.Value);
             var targetExp = baseModelExp + materialItemsExp + hammersExp;
 
             int requiredBlockIndex;
@@ -427,9 +427,8 @@ namespace Nekoyume.UI
                 {
                     if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id))
                     {
-                        var hammerExp = Equipment.GetHammerExp(
-                            inventoryItem.ItemBase.Id,
-                            enhancementCostSheet);
+                        var hammerExp = enhancementCostSheet.GetHammerExp(
+                            inventoryItem.ItemBase.Id);
                         return hammerExp * inventoryItem.SelectedMaterialCount.Value;
                     }
 
