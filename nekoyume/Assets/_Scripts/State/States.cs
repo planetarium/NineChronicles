@@ -691,9 +691,9 @@ namespace Nekoyume.State
 #endregion
 
         /// <summary>
-        /// `CurrentAvatarKey`에 따라서 `CurrentAvatarState`를 업데이트 한다.
+        /// AvatarState를 받아 Update하는 메소드입니다. 무조건 깨끗한 상태의 체인에서 받아온 AvatarState를 넣는걸 목적으로 합니다.
         /// </summary>
-        private void UpdateCurrentAvatarState(AvatarState state,
+        public void UpdateCurrentAvatarState(AvatarState state,
             bool initializeReactiveState = true)
         {
             CurrentAvatarState = state;
