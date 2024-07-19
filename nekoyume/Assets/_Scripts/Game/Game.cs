@@ -288,8 +288,10 @@ namespace Nekoyume.Game
                 return;
             }
 
+#if UNITY_EDITOR_WIN
             _marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
             _marketThread.Start();
+#endif
         }
 
         public IEnumerator InitializeIAP()
