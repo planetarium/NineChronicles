@@ -1,0 +1,42 @@
+name: set 9c project default fields
+on:
+  issues:
+    types:
+      - opened
+      - reopened
+  pull_request:
+    types:
+      - opened
+      - reopened
+
+jobs:
+  add-to-project:
+    name: Add To GitHub projects
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add project
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/orgs/planetarium/projects/97
+          github-token: ${{ secrets.PROJECTS_PAT }}
+      - name: Set milestone env
+        run: |
+          echo "CURRENT_MILESTONE=$(gh api graphql -f query='query($name: String!, $owner: String!) {
+          repository(name: $name, owner: $owner) {
+          name
+          milestones(last: 1, states: [OPEN], orderBy: {field: DUE_DATE, direction: DESC}) {
+          nodes {
+          number
+          state
+          title
+          dueOn
+          }
+          }
+          }}' -f name=NineChronicles -f owner=planetarium --jq '.data.repository.milestones.nodes.[0].title')" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
+      - name: Set milestone field
+        uses: zoispag/action-assign-milestone@v1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          milestone: "${{ env.CURRENT_MILESTONE }}"
