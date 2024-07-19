@@ -1972,6 +1972,7 @@ namespace Nekoyume.Blockchain
                         eval.PreviousState,
                         new[] { avatarAddress }).Result[avatarAddress];
                 
+                // prev state로 갱신
                 await UpdateCurrentAvatarStateAsync(state);
                 UpdatePrevAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdatePrevAvatarRuneSlotState(eval, BattleType.Adventure);
