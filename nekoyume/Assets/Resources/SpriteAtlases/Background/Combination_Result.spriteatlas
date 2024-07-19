@@ -50,23 +50,23 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 68186e40fcf7847cca0c04b8f942d6c1, type: 3}
   - {fileID: 21300000, guid: 70f8c231336f441a6a193d5634200b44, type: 3}
   - {fileID: 21300000, guid: 2e5e3461dc3804a5eb94f3c40026e2d2, type: 3}
   - {fileID: 21300000, guid: 904593a2f13a4694181b5e59081c29ed, type: 3}
   - {fileID: 21300000, guid: f6c408f350a534ff69041f7ed1991a15, type: 3}
   - {fileID: 21300000, guid: 7dba03a4892d84062b7913922eae095d, type: 3}
+  - {fileID: 21300000, guid: 273492e97cc06304a9c99b55beb2d80b, type: 3}
   - {fileID: 21300000, guid: 0ebc0a7d95a074cedb6cc8c4ee164471, type: 3}
   - {fileID: 21300000, guid: 184efddd52afd4009b0b78b833c52046, type: 3}
   - {fileID: 21300000, guid: 7c87653f8b952402da930200eb73ac67, type: 3}
   - {fileID: 21300000, guid: 4662f88f7180544bab0074d8ce2ca105, type: 3}
   m_PackedSpriteNamesToIndex:
-  - bg_character_main_10_1_Result
   - bg_CombinationResult2
   - bg_CombinationResult2_2
   - bg_combination_02
   - UI_Effect_option
   - bg_CombinationResult2_Tile
+  - bg_character_main_10
   - bg_character_main_10_Result
   - bg_CombinationResult
   - bg_CombinationResult2_3

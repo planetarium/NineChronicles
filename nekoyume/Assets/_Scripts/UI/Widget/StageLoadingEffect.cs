@@ -34,8 +34,14 @@ namespace Nekoyume.UI
         private GameObject loadingVideoObject;
 
         [SerializeField]
+        private CanvasGroup imagCanvasGroup;
+
+        [SerializeField]
         private GraphicAlphaTweener loadingDimTweener;
 
+        [SerializeField]
+        private float imageFadeDuration = 0.5f;
+        
         private CanvasGroup _canvasGroup;
 
         public bool LoadingEnd { get; private set; } = true;
@@ -110,6 +116,7 @@ namespace Nekoyume.UI
                 background = "chapter_08_01";
             }
 
+            imagCanvasGroup.alpha = 1f;
             _shouldClose = false;
             _rects = new List<RectTransform>();
             var position = new Vector2(MainCanvas.instance.RectTransform.rect.width, 0f);
@@ -218,6 +225,16 @@ namespace Nekoyume.UI
                 }
 
                 closeEnd = images.All(i => i.gameObject.activeSelf == false) && dialogEnd;
+
+                if (_shouldClose)
+                {
+                    imagCanvasGroup.alpha -= Time.deltaTime / imageFadeDuration;
+                    if (imagCanvasGroup.alpha <= 0f)
+                    {
+                        closeEnd = true;
+                    }
+                }
+                
                 if (closeEnd)
                 {
                     break;
