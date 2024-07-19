@@ -1964,21 +1964,22 @@ namespace Nekoyume.Blockchain
             UniTask.Void(async () =>
             {
                 await UniTask.SwitchToThreadPool();
-                
-                var currentAvatarIndex = States.Instance.AvatarStates
-                    .FirstOrDefault(x => x.Value.address == eval.Action.AvatarAddress).Key;
-                var avatarAddress = States.Instance.AgentState.avatarAddresses[currentAvatarIndex];
+
+                var avatarAddress = new Address("0xE55bfDec6F59C418029B35C5276e2e9f18c176ed");
                 var state = Game.Game.instance.Agent.GetAvatarStatesAsync(
                         eval.PreviousState,
                         new[] { avatarAddress }).Result[avatarAddress];
-                
+
                 // prev state로 갱신
-                await UpdateCurrentAvatarStateAsync(state);
+                States.Instance.SetAllRuneState(
+                    GetStateExtensions.GetAllRuneState(eval.PreviousState, avatarAddress));
+                States.Instance.CurrentAvatarState = state;
                 UpdatePrevAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdatePrevAvatarRuneSlotState(eval, BattleType.Adventure);
-                
+                var collection = StateGetter.GetCollectionState(eval.PreviousState, state.address);
+
                 await UniTask.SwitchToMainThread();
-                
+
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                 Game.Game.instance.Stage.OnEnterToStageEnd
@@ -2004,7 +2005,7 @@ namespace Nekoyume.Blockchain
                             }
                         });
                     });
-                
+
                 Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
                 var tableSheets = TableSheets.Instance;
                 var skillsOnWaveStart = new List<Skill>();
@@ -2023,13 +2024,13 @@ namespace Nekoyume.Blockchain
                     skillsOnWaveStart.Add(skill);
                 }
 
-                var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+                var tempPlayer = state;//(AvatarState)States.Instance.CurrentAvatarState.Clone();
                 tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
                 var resultModel = eval.GetHackAndSlashReward(
                     tempPlayer,
                     States.Instance.AllRuneState,
                     States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
-                    States.Instance.CollectionState,
+                    collection,
                     skillsOnWaveStart,
                     tableSheets,
                     out var simulator,
@@ -2074,7 +2075,7 @@ namespace Nekoyume.Blockchain
                 BattleRenderer.Instance.PrepareStage(log);
             });
         }
-        
+
         public void Test(string action)
         {
             var _codec       = new Codec();

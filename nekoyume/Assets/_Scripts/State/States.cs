@@ -61,7 +61,7 @@ namespace Nekoyume.State
 
         public int CurrentAvatarKey { get; private set; }
 
-        public AvatarState CurrentAvatarState { get; private set; }
+        public AvatarState CurrentAvatarState { get; set; }
 
         public ConcurrentDictionary<string, FungibleAssetValue> CurrentAvatarBalances { get; } = new();
 
