@@ -36,7 +36,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PROJECTS_PAT }}
       - name: Set milestone field
-        uses: zoispag/action-assign-milestone@v1
+        uses: Julexar/Milestone-Assigner@v1.0
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          token: "${{ secrets.GITHUB_TOKEN }}"
           milestone: "${{ env.CURRENT_MILESTONE }}"
