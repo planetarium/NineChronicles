@@ -4,3 +4,6 @@ nekoyume/Assets/Firebase/Plugins/x86_64/FirebaseCppAnalytics.so filter=lfs diff=
 nekoyume/Assets/Firebase/Plugins/x86_64/FirebaseCppApp-11_3_0.so filter=lfs diff=lfs merge=lfs -text
 nekoyume/Assets/Firebase/Plugins/x86_64/FirebaseCppAnalytics.bundle filter=lfs diff=lfs merge=lfs -text
 nekoyume/Assets/Firebase/Plugins/x86_64/FirebaseCppApp-11_3_0.bundle filter=lfs diff=lfs merge=lfs -text
+nekoyume/Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_1_0.bundle filter=lfs diff=lfs merge=lfs -text
+nekoyume/Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_1_0.so filter=lfs diff=lfs merge=lfs -text
+
