@@ -666,7 +666,7 @@ namespace Nekoyume.UI
 
         private void GoToPrepareStage(BattleLog battleLog)
         {
-            if (!IsActive() || !Find<LoadingScreen>().IsActive())
+            if (!IsActive())
             {
                 return;
             }

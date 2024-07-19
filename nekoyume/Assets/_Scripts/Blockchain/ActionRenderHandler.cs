@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using Bencodex;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Action;
@@ -27,6 +28,7 @@ using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Libplanet.Types.Tx;
 using mixpanel;
 using Nekoyume.Action.Garages;
 using Nekoyume.ApiClient;
@@ -250,8 +252,6 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<HackAndSlash>()
                 .ObserveOn(Scheduler.ThreadPool)
-                .Where(ValidateEvaluationForCurrentAgent)
-                .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareHackAndSlash)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlashAsync)
@@ -1937,8 +1937,7 @@ namespace Nekoyume.Blockchain
 
             var avatarState = StateGetter.GetAvatarState(eval.OutputState, eval.Action.AvatarAddress);
             CrystalRandomSkillState prevSkillState = null;
-            if (!States.Instance.CurrentAvatarState.worldInformation
-                .IsStageCleared(eval.Action.StageId))
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(eval.Action.StageId))
             {
                 prevSkillState = GetCrystalRandomSkillState(eval.PreviousState);
             }
@@ -1962,8 +1961,25 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            _disposableForBattleEnd?.Dispose();
-            _disposableForBattleEnd =
+            UniTask.Void(async () =>
+            {
+                await UniTask.SwitchToThreadPool();
+                
+                var currentAvatarIndex = States.Instance.AvatarStates
+                    .FirstOrDefault(x => x.Value.address == eval.Action.AvatarAddress).Key;
+                var avatarAddress = States.Instance.AgentState.avatarAddresses[currentAvatarIndex];
+                var state = Game.Game.instance.Agent.GetAvatarStatesAsync(
+                        eval.PreviousState,
+                        new[] { avatarAddress }).Result[avatarAddress];
+                
+                await UpdateCurrentAvatarStateAsync(state);
+                UpdatePrevAvatarItemSlotState(eval, BattleType.Adventure);
+                UpdatePrevAvatarRuneSlotState(eval, BattleType.Adventure);
+                
+                await UniTask.SwitchToMainThread();
+                
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd =
                 Game.Game.instance.Stage.OnEnterToStageEnd
                     .First()
                     .Subscribe(_ =>
@@ -1987,74 +2003,102 @@ namespace Nekoyume.Blockchain
                             }
                         });
                     });
-
-            Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
-            var tableSheets = TableSheets.Instance;
-            var skillsOnWaveStart = new List<Skill>();
-            if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId && prevSkillState.SkillIds.Any())
-            {
-                var actionArgsBuffId = eval.Action.StageBuffId;
-                var skillId =
-                    actionArgsBuffId.HasValue &&
-                    prevSkillState.SkillIds.Contains(actionArgsBuffId.Value)
-                        ? actionArgsBuffId.Value
-                        : prevSkillState.GetHighestRankSkill(tableSheets.CrystalRandomBuffSheet);
-                var skill = CrystalRandomSkillState.GetSkill(
-                    skillId,
-                    tableSheets.CrystalRandomBuffSheet,
-                    tableSheets.SkillSheet);
-                skillsOnWaveStart.Add(skill);
-            }
-
-            var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
-            tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
-            var resultModel = eval.GetHackAndSlashReward(
-                tempPlayer,
-                States.Instance.AllRuneState,
-                States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
-                States.Instance.CollectionState,
-                skillsOnWaveStart,
-                tableSheets,
-                out var simulator,
-                out var temporaryAvatar);
-            var log = simulator.Log;
-            Game.Game.instance.Stage.PlayCount = eval.Action.TotalPlayCount;
-            Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
-            if (eval.Action.TotalPlayCount > 1)
-            {
-                Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
-                if (log.IsClear)
+                
+                Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
+                var tableSheets = TableSheets.Instance;
+                var skillsOnWaveStart = new List<Skill>();
+                if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId && prevSkillState.SkillIds.Any())
                 {
-                    var currentAvatar = States.Instance.CurrentAvatarState;
-                    currentAvatar.exp = temporaryAvatar.exp;
-                    currentAvatar.level = temporaryAvatar.level;
-                    currentAvatar.inventory = temporaryAvatar.inventory;
-                    currentAvatar.monsterMap = temporaryAvatar.monsterMap;
-                    currentAvatar.eventMap = temporaryAvatar.eventMap;
+                    var actionArgsBuffId = eval.Action.StageBuffId;
+                    var skillId =
+                        actionArgsBuffId.HasValue &&
+                        prevSkillState.SkillIds.Contains(actionArgsBuffId.Value)
+                            ? actionArgsBuffId.Value
+                            : prevSkillState.GetHighestRankSkill(tableSheets.CrystalRandomBuffSheet);
+                    var skill = CrystalRandomSkillState.GetSkill(
+                        skillId,
+                        tableSheets.CrystalRandomBuffSheet,
+                        tableSheets.SkillSheet);
+                    skillsOnWaveStart.Add(skill);
                 }
-            }
 
-            if (eval.Action.StageBuffId.HasValue)
-            {
-                Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill",
-                    new Dictionary<string, Value>
+                var tempPlayer = (AvatarState)States.Instance.CurrentAvatarState.Clone();
+                tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
+                var resultModel = eval.GetHackAndSlashReward(
+                    tempPlayer,
+                    States.Instance.AllRuneState,
+                    States.Instance.CurrentRuneSlotStates[BattleType.Adventure],
+                    States.Instance.CollectionState,
+                    skillsOnWaveStart,
+                    tableSheets,
+                    out var simulator,
+                    out var temporaryAvatar);
+                var log = simulator.Log;
+                Game.Game.instance.Stage.PlayCount = eval.Action.TotalPlayCount;
+                Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
+                if (eval.Action.TotalPlayCount > 1)
+                {
+                    Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
+                    if (log.IsClear)
                     {
-                        ["RandomSkillId"] = eval.Action.StageBuffId.Value,
-                        ["IsCleared"] = simulator.Log.IsClear,
-                        ["AvatarAddress"] =
-                            States.Instance.CurrentAvatarState.address.ToString(),
-                        ["AgentAddress"] = States.Instance.AgentState.address.ToString()
-                    });
+                        var currentAvatar = States.Instance.CurrentAvatarState;
+                        currentAvatar.exp = temporaryAvatar.exp;
+                        currentAvatar.level = temporaryAvatar.level;
+                        currentAvatar.inventory = temporaryAvatar.inventory;
+                        currentAvatar.monsterMap = temporaryAvatar.monsterMap;
+                        currentAvatar.eventMap = temporaryAvatar.eventMap;
+                    }
+                }
 
-                var evt = new AirbridgeEvent("Use_Crystal_Bonus_Skill");
-                evt.SetValue(eval.Action.StageBuffId.Value);
-                evt.AddCustomAttribute("is-clear", simulator.Log.IsClear);
-                evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
-                evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
-                AirbridgeUnity.TrackEvent(evt);
-            }
+                if (eval.Action.StageBuffId.HasValue)
+                {
+                    Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill",
+                        new Dictionary<string, Value>
+                        {
+                            ["RandomSkillId"] = eval.Action.StageBuffId.Value,
+                            ["IsCleared"] = simulator.Log.IsClear,
+                            ["AvatarAddress"] =
+                                States.Instance.CurrentAvatarState.address.ToString(),
+                            ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                        });
 
-            BattleRenderer.Instance.PrepareStage(log);
+                    var evt = new AirbridgeEvent("Use_Crystal_Bonus_Skill");
+                    evt.SetValue(eval.Action.StageBuffId.Value);
+                    evt.AddCustomAttribute("is-clear", simulator.Log.IsClear);
+                    evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
+                    evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
+                    AirbridgeUnity.TrackEvent(evt);
+                }
+
+                BattleRenderer.Instance.PrepareStage(log);
+            });
+        }
+        
+        public void Test(string action)
+        {
+            var _codec       = new Codec();
+            var actionIValue = _codec.Decode(ByteUtil.ParseHex(action));
+            var ctx = new CommittedActionContext(
+                // Tx - Signer
+                new Address("0x3146fe0e47a1998e14cd8a33640e3648a5a90276"),
+                // Tx - Tx Hash
+                TxId.FromHex("23a69ad8ac380e0dfd9b3427f11b1fe505011a1d8ebd1d002c3c3ba073f4afac"),
+                // Block - Mined by
+                new Address("0x088d96af8e90b8b2040aef7b3bf7d375c9e421f7"),
+                // Block - Block Height
+                2657433,
+                // Block - Protocol Version
+                8,
+                HashDigest<SHA256>.FromString(
+                    // prevstate -> outputState추정
+                    "5eee8394545c4eb2c91ef3051ecb3f18507f398fa6e623f826418e35886591a9"),
+                //Random Seed
+                400765736,
+                false);
+            _actionRenderer.RenderAction(actionIValue,
+                ctx,
+                HashDigest<SHA256>.FromString(
+                    "5eee8394545c4eb2c91ef3051ecb3f18507f398fa6e623f826418e35886591a9"));
         }
 
         private void ExceptionHackAndSlash(ActionEvaluation<HackAndSlash> eval)

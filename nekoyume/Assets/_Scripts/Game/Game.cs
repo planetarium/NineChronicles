@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
+using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using GraphQL.Client.Http;
@@ -1181,8 +1182,7 @@ namespace Nekoyume.Game
             }
         }
 
-        public static async UniTaskVoid BackToMainAsync(Exception exc,
-            bool showLoadingScreen = false)
+        public static async UniTaskVoid BackToMainAsync(Exception exc, bool showLoadingScreen = false)
         {
             NcDebug.LogException(exc);
 
@@ -1907,6 +1907,18 @@ namespace Nekoyume.Game
 #endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown("["))
+            {
+                var pv = "6475373a747970655f69647531363a6861636b5f616e645f736c617368323275363a76616c756573647531323a617053746f6e65436f756e7475313a307531333a6176617461724164647265737332303ae55bfdec6f59c418029b35c5276e2e9f18c176ed75383a636f7374756d65736c31363a2e212f1ba332324bb31e2cb1367b1596657531303a65717569706d656e74736c31363a98b0fb03d6f71b42a0f6c104edda616831363a2ecd5939dad9f440985cd02a72538d8a31363ae8543345b596024084f7d5851bc75f7a31363a555cb149e85a9d47af0083e3208bf40931363ac8f14f76e7b3f245acfa75c085d0004831363affd98d761f320944a6665b8f9ff60b8431363a01d5d2d01d685f4aa14bed54cc2e46ec6575353a666f6f64736c6575323a696431363a4c2ceadc7135e842b5bfb3ba229af29975313a726c6c75313a3075353a3130303333656c75313a3375353a3130303033656c75313a3675353a3130303334656c75313a3775353a3230303031656575373a7374616765496475333a3333327531343a746f74616c506c6179436f756e7475313a3175373a776f726c64496475313a376565";
+                var action = new HackAndSlash();
+                action.LoadPlainValue(new Codec().Decode(ByteUtil.ParseHex(pv)));
+                ActionManager._lastBattleActionId = action.Id;
+                ActionRenderHandler.Instance.Test(pv);
+            }
         }
 
         private bool CheckRequiredUpdate()

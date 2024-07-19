@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Tx;
@@ -45,7 +47,7 @@ namespace Nekoyume.Blockchain
 
         private readonly IAgent _agent;
 
-        private Guid? _lastBattleActionId;
+        public Guid? _lastBattleActionId;
 
         private readonly Dictionary<Guid, (TxId txId, long updatedBlockIndex)> _actionIdToTxIdBridge = new();
 

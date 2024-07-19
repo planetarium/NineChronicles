@@ -445,6 +445,23 @@ namespace Nekoyume.Blockchain
                 battleType);
             States.Instance.UpdateItemSlotState(itemSlotState);
         }
+        
+        protected static void UpdatePrevAvatarItemSlotState<T>(
+            ActionEvaluation<T> evaluation,
+            BattleType battleType) where T : ActionBase
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            var itemSlotState = StateGetter.GetItemSlotState(
+                evaluation.PreviousState,
+                avatarState.address,
+                battleType);
+            States.Instance.UpdateItemSlotState(itemSlotState);
+        }
 
         protected static void UpdateCurrentAvatarRuneSlotState<T>(
             ActionEvaluation<T> evaluation,
@@ -458,6 +475,23 @@ namespace Nekoyume.Blockchain
 
             var runeSlotState = StateGetter.GetRuneSlotState(
                 evaluation.OutputState,
+                avatarState.address,
+                battleType);
+            States.Instance.UpdateRuneSlotState(runeSlotState);
+        }
+        
+        protected static void UpdatePrevAvatarRuneSlotState<T>(
+            ActionEvaluation<T> evaluation,
+            BattleType battleType) where T : ActionBase
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            var runeSlotState = StateGetter.GetRuneSlotState(
+                evaluation.PreviousState,
                 avatarState.address,
                 battleType);
             States.Instance.UpdateRuneSlotState(runeSlotState);
