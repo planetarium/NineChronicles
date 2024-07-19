@@ -134,7 +134,7 @@ namespace Nekoyume.UI.Model
             {
                 SeasonInfo.Value = await Game.Game.instance.Agent.GetAdventureBossLatestSeasonAsync(stateRootHash, blockIndex);
                 //알림 등록
-                if (SeasonInfo.Value != null && SeasonInfo.Value.EndBlockIndex != 0)
+                if (SeasonInfo.Value != null && SeasonInfo.Value.EndBlockIndex != 0 && !Game.LiveAsset.GameConfig.IsKoreanBuild)
                 {
                     try
                     {
