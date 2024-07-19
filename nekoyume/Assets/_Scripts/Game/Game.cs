@@ -1937,7 +1937,7 @@ namespace Nekoyume.Game
                     IconAndButtonSystem.SystemType.Information);
             }
 
-            popup.ConfirmCallback = popup.CancelCallback = OpenUpdateURL;
+            popup.ConfirmCallback = OpenUpdateURL;
             return true;
         }
 
