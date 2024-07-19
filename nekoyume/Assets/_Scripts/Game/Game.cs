@@ -1263,7 +1263,6 @@ namespace Nekoyume.Game
                 errorMsg,
                 L10nManager.Localize("UI_OK"),
                 false);
-            popup.SetConfirmCallbackToExit();
         }
 
         public static void Quit()
