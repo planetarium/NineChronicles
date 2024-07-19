@@ -412,6 +412,7 @@ namespace Nekoyume.Game.Battle
 
             if (StageType == StageType.AdventureBoss)
             {
+                SetSpeed(AcceleratedAnimationTimeScaleWeight);
                 var isBreakThroughStarted = false;
                 for (var i = 0; i < log.events.Count; i++)
                 {
@@ -461,15 +462,7 @@ namespace Nekoyume.Game.Battle
         {
             NcDebug.Log($"CoBreakThroughEnd");
             Widget.Find<UI.Battle>().LineEffect.SetActive(false);
-            if (PlayerPrefs.GetInt(UI.Battle.BattleAccelToggleValueKey, 0) != 0)
-            {
-                SetSpeed(AcceleratedAnimationTimeScaleWeight);
-            }
-            else
-            {
-                SetSpeed(DefaultAnimationTimeScaleWeight);
-            }
-
+            SetSpeed(AcceleratedAnimationTimeScaleWeight);
             _adventurebossCharacterEffect.LazyStop();
             yield return new WaitForSeconds(0.5f);
         }
