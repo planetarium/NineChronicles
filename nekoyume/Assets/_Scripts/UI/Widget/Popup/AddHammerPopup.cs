@@ -129,7 +129,7 @@ namespace Nekoyume.UI
             base.Show();
 
             _baseItem = baseModel;
-            _baseExp = GetBaseExp(baseModel, materialModels);
+            _baseExp = GetBaseExp(baseModel, materialModels, hammerItem.ItemBase);
             _hammerItem = new CountEditableItem(
                 hammerItem.ItemBase,
                 hammerItem.SelectedMaterialCount.Value,
@@ -153,7 +153,8 @@ namespace Nekoyume.UI
 
         private static long GetBaseExp(
             Equipment baseItem,
-            List<EnhancementInventoryItem> materialModels)
+            List<EnhancementInventoryItem> materialModels,
+            ItemBase ignoreItem)
         {
             var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
@@ -163,7 +164,8 @@ namespace Nekoyume.UI
                 enhancementCostSheet);
             var materialItemsExp = materialModels.Sum(inventoryItem =>
             {
-                if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id))
+                if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id) &&
+                    inventoryItem.ItemBase.Id != ignoreItem.Id)
                 {
                     var hammerExp = Equipment.GetHammerExp(
                         inventoryItem.ItemBase.Id,

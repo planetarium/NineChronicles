@@ -198,7 +198,7 @@ namespace Nekoyume.UI
             var (baseItem, materialItems, hammers) = enhancementInventory.GetSelectedModels();
 
             // Equip Upgrade ToDO
-            if (!IsInteractableButton(baseItem, materialItems))
+            if (!IsInteractableButton(baseItem, materialItems, hammers))
             {
                 NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
@@ -287,9 +287,12 @@ namespace Nekoyume.UI
             enhancementInventory.DeselectBaseItem();
         }
 
-        private bool IsInteractableButton(IItem item, List<Equipment> materials)
+        private bool IsInteractableButton(
+            IItem item,
+            List<Equipment> materials,
+            Dictionary<int, int> hammers)
         {
-            if (item is null || materials.Count == 0)
+            if (item is null || materials.Count + hammers.Count == 0)
             {
                 _errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
                 return false;
