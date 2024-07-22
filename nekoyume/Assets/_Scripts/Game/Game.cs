@@ -204,7 +204,9 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
+            NcDebug.Log("Awake1");
             PreAwake();
+            NcDebug.Log("Awake2");
 
 #if !UNITY_EDITOR && UNITY_IOS
             AppTrackingTransparency.OnAuthorizationStatusReceived += OnAuthorizationStatusReceived;
@@ -217,6 +219,7 @@ namespace Nekoyume.Game
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.ScriptOnly);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
+            NcDebug.Log("Awake3");
 
 #if RUN_ON_MOBILE
             // Load CommandLineOptions at Start() after init
@@ -225,9 +228,11 @@ namespace Nekoyume.Game
             OnLoadCommandlineOptions();
 #endif
             ApiClients.Instance.SetDccUrl();
+            NcDebug.Log("Awake4");
 
             CreateAgent();
             PostAwake();
+            NcDebug.Log("Awake5");
         }
         
         public void AddRequestManager()
@@ -270,10 +275,12 @@ namespace Nekoyume.Game
 
         private void Start()
         {
+            NcDebug.Log("Start1");
 #if RUN_ON_MOBILE
             SetTargetFrameRate();
 #endif
             NcSceneManager.Instance.LoadScene(SceneType.Login).Forget();
+            NcDebug.Log("Start2");
         }
         
         /// <summary>
