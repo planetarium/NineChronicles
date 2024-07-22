@@ -57,12 +57,9 @@ namespace Nekoyume.UI.Scroller
 
             percentText.text = itemData.Ratio.ToString("0.####%");
 
-            if (Context is not null)
-            {
-                _disposables.DisposeAllAndClear();
-                Context.OnClick.Subscribe(row =>
-                    selected.SetActive(row.Equals(itemData))).AddTo(_disposables);
-            }
+            _disposables.DisposeAllAndClear();
+            Context?.OnClick.Subscribe(row =>
+                selected.SetActive(row.Equals(itemData))).AddTo(_disposables);
         }
     }
 }
