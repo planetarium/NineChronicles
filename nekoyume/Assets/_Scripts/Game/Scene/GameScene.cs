@@ -7,6 +7,7 @@ namespace Nekoyume.Game.Scene
     {
         protected override async UniTask LoadSceneAssets()
         {
+            NcDebug.Log("zz");
             await UniTask.CompletedTask;
         }
 
