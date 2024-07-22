@@ -495,6 +495,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<AdventureBossPreparation>());
             _secondWidgets.Add(Widget.Create<AdventureBossResultPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossStageBuff>());
+            _secondWidgets.Add(Widget.Create<PreviousSeasonReportPopup>());
 #endif
         }
 
