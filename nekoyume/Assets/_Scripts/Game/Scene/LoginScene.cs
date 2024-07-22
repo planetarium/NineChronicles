@@ -8,73 +8,30 @@
 
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Amazon.CloudWatchLogs;
-using Amazon.CloudWatchLogs.Model;
-using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.Newtonsoft;
-using JetBrains.Annotations;
-using Lib9c.Formatters;
-using Libplanet.Action.State;
-using Libplanet.Common;
 using Libplanet.Crypto;
-using Libplanet.Types.Assets;
-using LruCacheNet;
-using MessagePack;
-using MessagePack.Resolvers;
-using Nekoyume.Action;
 using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
-using Nekoyume.Extensions;
-using Nekoyume.Game.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Multiplanetary;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
-using Nekoyume.Game.LiveAsset;
-using Nekoyume.Game.OAuth;
-using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
-using Nekoyume.IAPStore;
 using Nekoyume.L10n;
-using Nekoyume.Model.State;
-using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module.WorldBoss;
-using Nekoyume.UI.Scroller;
-using NineChronicles.ExternalServices.IAPService.Runtime;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
-using UnityEngine.Playables;
-using Currency = Libplanet.Types.Assets.Currency;
-using Menu = Nekoyume.UI.Menu;
-using Random = UnityEngine.Random;
 #if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
-using Nekoyume.Model.Mail;
-using Debug = UnityEngine.Debug;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
 #endif
 
 namespace Nekoyume.Game.Scene
 {
-    using GraphQL;
-    using Arena;
-    using Nekoyume.Model.EnumType;
-    using TableData;
     using UniRx;
     
     public class LoginScene : BaseScene
