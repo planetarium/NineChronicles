@@ -3885,7 +3885,7 @@ MonoBehaviour:
       m_Calls: []
 --- !u!95 &8637147185483244673
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3902,7 +3902,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &2722533426314001389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5980,7 +5981,7 @@ GameObject:
   - component: {fileID: 8987551301666928474}
   - component: {fileID: 1552668722218598128}
   m_Layer: 5
-  m_Name: UI_SummonDetailPopup_old
+  m_Name: UI_SummonDetailPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6019,7 +6020,7 @@ CanvasRenderer:
   m_CullTransparentMesh: 0
 --- !u!95 &8987551301666928474
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6036,7 +6037,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &1552668722218598128
 MonoBehaviour:
   m_ObjectHideFlags: 0
