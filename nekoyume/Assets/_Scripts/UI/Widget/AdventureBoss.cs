@@ -19,6 +19,7 @@ namespace Nekoyume.UI
     using UniRx;
     using static Data.AdventureBossGameData;
     using static Scroller.NotificationCell;
+    using Nekoyume.State;
 
     public class AdventureBoss : Widget
     {
@@ -49,6 +50,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI bossName;
         [SerializeField] private Transform bossImageParent;
         [SerializeField] private TextMeshProUGUI randomRewardText;
+        [SerializeField] private TextMeshProUGUI rewardRemainTimeText;
 
         public AdventureBossFloor CurrentUnlockFloor;
 
@@ -166,12 +168,10 @@ namespace Nekoyume.UI
                 if (board == null)
                 {
                     participantsCount.text = "0";
-                    usedApPotion.text = "0";
                     return;
                 }
 
                 participantsCount.text = $"{board.ExplorerCount:#,0}";
-                usedApPotion.text = $"{board.UsedApPotion:#,0}";
             }
             catch (Exception)
             {
@@ -182,6 +182,7 @@ namespace Nekoyume.UI
         private void RefreshExploreInfo(Explorer exploreInfo)
         {
             CurrentUnlockFloor = null;
+            var usedMyApPotion = 0;
             if (exploreInfo == null)
             {
                 clearFloor.text = $"-";
@@ -210,6 +211,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            usedMyApPotion = exploreInfo.UsedApPotion;
             clearFloor.text = $"{exploreInfo.Floor}F";
 
             for (var i = 0; i < floors.Count(); i++)
@@ -236,8 +238,20 @@ namespace Nekoyume.UI
                     floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                 }
             }
+            var adventureBossData = Game.Game.instance.AdventureBossData;
+            double contribution = 0;
+            if (adventureBossData.ExploreBoard.Value != null && adventureBossData.ExploreBoard.Value.TotalPoint != 0)
+            {
+                contribution = exploreInfo.Score == 0 ? 0 : (double)exploreInfo.Score / adventureBossData.ExploreBoard.Value.TotalPoint * 100;
+            }
+            score.text = $"{exploreInfo.Score:#,0} ({contribution.ToString("F2")}%)";
 
-            score.text = $"{exploreInfo.Score:#,0}";
+            usedApPotion.text = "0";
+            if(adventureBossData.ExploreBoard.Value != null)
+            {
+                usedApPotion.text = $"{adventureBossData.ExploreBoard.Value.UsedApPotion:#,0} ({usedMyApPotion})";
+            }
+
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor + 1, false);
             RefreshMyReward();
         }
@@ -273,7 +287,7 @@ namespace Nekoyume.UI
             }
 
             var itemViewIndex = 0;
-            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue)
+            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue && !_myReward.NcgReward.Value.RawValue.IsZero)
             {
                 baseItemViews[itemViewIndex].ItemViewSetCurrencyData(_myReward.NcgReward.Value);
                 itemViewIndex++;
@@ -393,6 +407,8 @@ namespace Nekoyume.UI
 
             _seasonStartBlock = seasonInfo.StartBlockIndex;
             _seasonEndBlock = seasonInfo.EndBlockIndex;
+            var claimInterval = States.Instance.GameConfigState.AdventureBossClaimInterval;
+            rewardRemainTimeText.text = L10n.L10nManager.Localize("UI_ADVENTURE_BOSS_REWARDS_REMAIN_TIME", claimInterval, claimInterval.BlockRangeToTimeSpanString());
             try
             {
                 SetBossData(seasonInfo.BossId);
@@ -480,6 +496,11 @@ namespace Nekoyume.UI
         public void OnClickShowRewardInfo()
         {
             Find<AdventureBossRewardInfoPopup>().Show();
+        }
+
+        public void OnClickShowPrevRewardInfo()
+        {
+            Find<PreviousSeasonReportPopup>().Show(Math.Max(0, Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season - 1)).Forget();
         }
 
         public void OnClickBossParticipantBonusPopup()

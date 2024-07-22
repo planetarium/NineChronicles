@@ -264,7 +264,7 @@ namespace Nekoyume.UI
 
             var myReward = adventureBossData.GetCurrentExploreRewards();
             var i = 0;
-            if (myReward.NcgReward != null && myReward.NcgReward.HasValue)
+            if (myReward.NcgReward != null && myReward.NcgReward.HasValue && !myReward.NcgReward.Value.RawValue.IsZero)
             {
                 baseItemViews[i].ItemViewSetCurrencyData(myReward.NcgReward.Value);
                 i++;

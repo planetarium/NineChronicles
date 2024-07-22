@@ -157,8 +157,9 @@ namespace Nekoyume.Game.Scene
             }
             
             yield return game.InitializeL10N();
+            yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
+            NcDebug.Log("[Game] Start()... L10nManager initialized");
             
-
             // NOTE: Initialize planet registry.
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
