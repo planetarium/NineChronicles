@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Transform bossImageParent;
         [SerializeField] private GameObject[] unActivateObjs;
         [SerializeField] private GameObject loadingRewardIndicator;
+        [SerializeField] private Button prevSeasonPopupBtn;
 
         private readonly List<System.IDisposable> _disposables = new();
         private long _remainingBlockIndex = 0;
@@ -32,6 +33,11 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
+            prevSeasonPopupBtn.onClick.AddListener(() =>
+            {
+                Widget.Find<PreviousSeasonReportPopup>().Show(Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season).Forget();
+            });
+
             worldButton.OnClickSubject.Subscribe(button =>
             {
                 if (Game.LiveAsset.GameConfig.IsKoreanBuild)
@@ -203,7 +209,7 @@ namespace Nekoyume.UI.Module
                 {
                     obj.SetActive(false);
                 }
-
+                prevSeasonPopupBtn.gameObject.SetActive(false);
                 return;
             }
 
@@ -218,7 +224,7 @@ namespace Nekoyume.UI.Module
                     {
                         DestroyImmediate(_bossImage);
                     }
-
+                    prevSeasonPopupBtn.gameObject.SetActive(true);
                     _bossId = 0;
                     break;
                 case AdventureBossData.AdventureBossSeasonState.Progress:
@@ -236,8 +242,8 @@ namespace Nekoyume.UI.Module
                         _bossImage = Instantiate(SpriteHelper.GetBigCharacterIconFace(_bossId), bossImageParent);
                         _bossImage.transform.localPosition = Vector3.zero;
                     }
-
                     worldButton.HasNotification.Value = true;
+                    prevSeasonPopupBtn.gameObject.SetActive(false);
                     break;
                 case AdventureBossData.AdventureBossSeasonState.None:
                 case AdventureBossData.AdventureBossSeasonState.End:
@@ -250,7 +256,7 @@ namespace Nekoyume.UI.Module
                     {
                         DestroyImmediate(_bossImage);
                     }
-
+                    prevSeasonPopupBtn.gameObject.SetActive(true);
                     _bossId = 0;
                     break;
             }

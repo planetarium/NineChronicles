@@ -231,7 +231,7 @@ namespace Nekoyume.UI
                         }
                     }
 
-                    if (exploreInfo != null && !exploreInfo.Claimed)
+                    if (exploreInfo != null && exploreInfo.Score > 0 && !exploreInfo.Claimed)
                     {
                         exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward,
                             bountyBoard,
@@ -261,7 +261,7 @@ namespace Nekoyume.UI
                 rewardItemsBounty.SetActive(true);
                 noRewardItemsBounty.SetActive(false);
                 var i = 0;
-                if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue)
+                if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue && !wantedClaimableReward.NcgReward.Value.RawValue.IsZero)
                 {
                     rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value);
                     i++;
@@ -307,7 +307,7 @@ namespace Nekoyume.UI
                 rewardItemsExplore.SetActive(true);
                 noRewardItemsExplore.SetActive(false);
                 var i = 0;
-                if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue)
+                if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue && !exprolerClaimableReward.NcgReward.Value.RawValue.IsZero)
                 {
                     rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value);
                     i++;
@@ -352,7 +352,7 @@ namespace Nekoyume.UI
             lastClaimableReward = AdventureBossData.AddClaimableReward(lastClaimableReward, exprolerClaimableReward);
 
             if (lastClaimableReward.ItemReward.Count == 0 && lastClaimableReward.FavReward.Count == 0 &&
-                (lastClaimableReward.NcgReward == null || !lastClaimableReward.NcgReward.HasValue || lastClaimableReward.NcgReward.Value.RawValue == 0))
+                (lastClaimableReward.NcgReward == null || !lastClaimableReward.NcgReward.HasValue || lastClaimableReward.NcgReward.Value.RawValue.IsZero))
             {
                 Game.instance.AdventureBossData.EndedExploreInfos.TryGetValue(_lastSeasonId, out var exploreInfo);
                 Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(_lastSeasonId, out var bountyBoard);

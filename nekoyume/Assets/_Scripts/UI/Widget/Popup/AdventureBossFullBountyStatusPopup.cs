@@ -27,6 +27,15 @@ namespace Nekoyume.UI
                     return;
                 }
 
+                // Update Default my bounty cell
+                myBountyCell.UpdateContent(new BountyItemData {
+                    Rank = -1,
+                    Name = Game.Game.instance.States.CurrentAvatarState.name,
+                    Count = 0,
+                    Ncg = 0,
+                    Bonus = 0,
+                });
+
                 scrollView.UpdateData(bountyBoard.Investors.OrderByDescending(investor => investor.Price).Select((x, i) =>
                 {
                     var data = new BountyItemData
