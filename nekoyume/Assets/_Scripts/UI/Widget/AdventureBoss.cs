@@ -50,7 +50,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI bossName;
         [SerializeField] private Transform bossImageParent;
         [SerializeField] private TextMeshProUGUI randomRewardText;
-        [SerializeField] private TextMeshProUGUI rewardRemainTImeText;
+        [SerializeField] private TextMeshProUGUI rewardRemainTimeText;
 
         public AdventureBossFloor CurrentUnlockFloor;
 
@@ -408,7 +408,7 @@ namespace Nekoyume.UI
             _seasonStartBlock = seasonInfo.StartBlockIndex;
             _seasonEndBlock = seasonInfo.EndBlockIndex;
             var claimInterval = States.Instance.GameConfigState.AdventureBossClaimInterval;
-            rewardRemainTImeText.text = L10n.L10nManager.Localize("UI_ADVENTURE_BOSS_REWARDS_REMAIN_TIME", claimInterval, claimInterval.BlockRangeToTimeSpanString());
+            rewardRemainTimeText.text = L10n.L10nManager.Localize("UI_ADVENTURE_BOSS_REWARDS_REMAIN_TIME", claimInterval, claimInterval.BlockRangeToTimeSpanString());
             try
             {
                 SetBossData(seasonInfo.BossId);
