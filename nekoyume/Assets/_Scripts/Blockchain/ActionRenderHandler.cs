@@ -1925,7 +1925,7 @@ namespace Nekoyume.Blockchain
         }
 
         private (ActionEvaluation<HackAndSlash> eval,
-            AvatarState avatarState,
+            AvatarState nextAvatarState,
             CrystalRandomSkillState prevSkillState,
             CrystalRandomSkillState updatedSkillState,
             long actionPoint) PrepareHackAndSlash(ActionEvaluation<HackAndSlash> eval)
@@ -1935,20 +1935,35 @@ namespace Nekoyume.Blockchain
                 return (eval, null, null, null, 0L);
             }
 
-            var avatarState = StateGetter.GetAvatarState(eval.OutputState, eval.Action.AvatarAddress);
-            CrystalRandomSkillState prevSkillState = null;
-            if (!States.Instance.CurrentAvatarState.worldInformation
-                .IsStageCleared(eval.Action.StageId))
-            {
-                prevSkillState = GetCrystalRandomSkillState(eval.PreviousState);
-            }
+            var prevState = eval.PreviousState;
+            var outputState = eval.OutputState;
+            var avatarAddr = eval.Action.AvatarAddress;
 
-            var updatedSkillState = GetCrystalRandomSkillState(eval.OutputState);
+            // 정확한 전투 재현을 위해 관련 상태를 모두 PreviousState로 가져와서 갱신합니다.
+            // 여기엔 AvatarState, AllRuneState, CollectionState가 해당됩니다.
+            var prevAvatarState = StateGetter.GetAvatarState(prevState, avatarAddr);
+            States.Instance.UpdateCurrentAvatarState(prevAvatarState);
+            States.Instance.SetAllRuneState(
+                GetStateExtensions.GetAllRuneState(prevState, avatarAddr));
+            States.Instance.SetCollectionState(StateGetter.GetCollectionState(prevState, avatarAddr));
+
+            // 전투에서 사용한 장비와 룬은 Action 인자로 들어가기 때문에, OutputState로 갱신시켜줍니다.
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
 
+            CrystalRandomSkillState prevSkillState = null;
+            if (!prevAvatarState.worldInformation
+                .IsStageCleared(eval.Action.StageId))
+            {
+                prevSkillState = GetCrystalRandomSkillState(prevState);
+            }
+
+            var updatedSkillState = GetCrystalRandomSkillState(outputState);
+            var nextAvatarState =
+                StateGetter.GetAvatarState(outputState, avatarAddr);
+
             return (eval,
-                avatarState,
+                nextAvatarState,
                 prevSkillState,
                 updatedSkillState,
                 GetActionPoint(eval, eval.Action.AvatarAddress));
@@ -1972,6 +1987,7 @@ namespace Nekoyume.Blockchain
                         {
                             try
                             {
+                                Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
                                 await UpdateCurrentAvatarStateAsync(newAvatarState);
                                 ReactiveAvatarState.UpdateActionPoint(actionPoint);
                                 States.Instance.SetCrystalRandomSkillState(newRandomSkillState);
@@ -1988,7 +2004,6 @@ namespace Nekoyume.Blockchain
                         });
                     });
 
-            Widget.Find<WorldMap>().SetWorldInformation(newAvatarState.worldInformation);
             var tableSheets = TableSheets.Instance;
             var skillsOnWaveStart = new List<Skill>();
             if (prevSkillState != null && prevSkillState.StageId == eval.Action.StageId && prevSkillState.SkillIds.Any())

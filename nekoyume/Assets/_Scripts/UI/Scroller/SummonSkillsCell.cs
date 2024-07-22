@@ -11,7 +11,6 @@ namespace Nekoyume.UI.Scroller
             public SummonDetailCell.Model SummonDetailCellModel;
             public SkillSheet.Row SkillRow;
             public EquipmentItemOptionSheet.Row EquipmentOptionRow;
-            public RuneOptionSheet.Row.RuneOptionInfo RuneOptionInfo;
         }
 
         [SerializeField]
@@ -29,9 +28,9 @@ namespace Nekoyume.UI.Scroller
                 skillView.Show(itemData.SkillRow, itemData.EquipmentOptionRow);
             }
 
-            if (itemData.RuneOptionInfo is not null)
+            if (itemData.SummonDetailCellModel.RuneOptionInfo is not null)
             {
-                skillView.Show(itemData.SkillRow, itemData.RuneOptionInfo);
+                skillView.Show(itemData.SkillRow, itemData.SummonDetailCellModel.RuneOptionInfo);
             }
         }
     }

@@ -563,11 +563,29 @@ namespace Nekoyume
             return $"<color=#{GetColorHexByGrade(equipment.Grade)}>{grade}  |  {subType}</color>";
         }
 
+        public static string GetLocalizedInformation(this EquipmentItemSheet.Row equipmentRow)
+        {
+            var grade = equipmentRow.Grade >= 1 ? equipmentRow.Grade : 1;
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subTypeText = GetLocalizedItemSubTypeText(equipmentRow.ItemSubType);
+
+            return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subTypeText}</color>";
+        }
+
         public static string GetLocalizedInformation(this FungibleAssetValue fav)
         {
             var grade = Util.GetTickerGrade(fav.Currency.Ticker);
             var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
             var subType = L10nManager.Localize("UI_STONES");
+            return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subType}</color>";
+        }
+
+        public static string GetLocalizedInformation(string ticker)
+        {
+            var grade = Util.GetTickerGrade(ticker);
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subType = L10nManager.Localize("UI_RUNE");
+
             return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subType}</color>";
         }
 

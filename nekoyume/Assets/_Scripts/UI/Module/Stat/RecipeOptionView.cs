@@ -125,5 +125,63 @@ namespace Nekoyume.UI.Module
                         greatSuccessRate.ToString("0.0%"));
             }
         }
+
+        public void SetOptions(RuneOptionSheet.Row.RuneOptionInfo option)
+        {
+            foreach (var optionView in optionViews)
+            {
+                optionView.parentObject.SetActive(false);
+            }
+
+            foreach (var view in skillViews)
+            {
+                view.parentObject.SetActive(false);
+            }
+
+            optionIcons?.ForEach(obj => obj.SetActive(false));
+
+            var skillSheet = TableSheets.Instance.SkillSheet;
+
+            var siblingIndex = 1; // 0 is for the main option
+
+            var skillView = skillViews.First(x => !x.parentObject.activeSelf);
+            var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
+                ? skillRow.GetLocalizedName()
+                : string.Empty;
+            skillView.optionText.text = skillName;
+            skillView.percentageSlider.value = skillView.percentageSlider.maxValue;
+            skillView.sliderFillImage.color = BaseColor;
+            skillView.parentObject.transform.SetSiblingIndex(siblingIndex);
+            skillView.parentObject.SetActive(true);
+            skillView.tooltipButton.onClick.RemoveAllListeners();
+            skillView.tooltipButton.onClick.AddListener(() =>
+            {
+                var rect = skillView.tooltipButton.GetComponent<RectTransform>();
+                skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
+                skillTooltip.Show(skillRow, option);
+            });
+            if (optionIcons != null && optionIcons.Count > 0)
+            {
+                optionIcons.Last().SetActive(true);
+            }
+            ++siblingIndex;
+
+            foreach (var (stat, _) in option.Stats)
+            {
+                var optionView = optionViews.First(x => !x.parentObject.activeSelf);
+                optionView.optionText.text = $"{stat.StatType} {stat.StatType.ValueToString(stat.TotalValue)}";
+                optionView.percentageSlider.value = optionView.percentageSlider.maxValue;
+                optionView.sliderFillImage.color = BaseColor;
+                optionView.parentObject.transform.SetSiblingIndex(siblingIndex);
+                optionView.parentObject.SetActive(true);
+
+                if (optionIcons != null && optionIcons.Count > siblingIndex - 1)
+                {
+                    optionIcons[siblingIndex - 1].SetActive(true);
+                }
+
+                ++siblingIndex;
+            }
+        }
     }
 }

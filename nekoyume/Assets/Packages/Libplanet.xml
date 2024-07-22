@@ -68,8 +68,14 @@
         </member>
         <member name="E:Libplanet.Blockchain.BlockChain.TipChanged">
             <summary>
-            An event which is invoked when <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/> is changed.
+            An event that is invoked when <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/> is changed.
             </summary>
+            <remarks>
+            This is only invoked when <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/> is changed, <em>not</em> when
+            a <see cref="T:Libplanet.Blockchain.BlockChain"/> is instantiated.  Furthermore, it is guaranteed
+            that the new tip event argument's <see cref="P:Libplanet.Types.Blocks.Block.Index"/> will always
+            be <em>increasing</em> for each invocation.
+            </remarks>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain.Renderers">
             <summary>
@@ -484,6 +490,78 @@
             contains an action that cannot be loaded with <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.</exception>
             <seealso cref="M:Libplanet.Blockchain.BlockChain.ValidateBlockPrecededStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetPendingEvidence">
+            <summary>
+            Retrieve pending <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>s from the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/>.
+            </summary>
+            <returns><see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>s that are pending waiting to be committed.
+            Returned <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>s are sorted by its <see cref="P:Libplanet.Types.Evidence.EvidenceBase.Id"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.AddEvidence(Libplanet.Types.Evidence.EvidenceBase)">
+            <summary>
+            Add given <paramref name="evidence"/> to the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/> as pending.
+            </summary>
+            <param name="evidence"><see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> to be added on the
+            pending pool.</param>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="evidence"/>
+            is already on the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.CommitEvidence(Libplanet.Types.Evidence.EvidenceBase)">
+            <summary>
+            Add given <paramref name="evidence"/> to the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/> as committed.
+            If <paramref name="evidence"/> is pending, it will be dropped from the pending pool.
+            </summary>
+            <param name="evidence"><see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> to be added on the
+            committed pool.</param>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="evidence"/>
+            is already on the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/> as committed.</exception>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.IsEvidencePending(Libplanet.Types.Evidence.EvidenceId)">
+            <summary>
+            Check if <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> is on the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/>'s pending pool.
+            </summary>
+            <param name="evidenceId"><see cref="T:Libplanet.Types.Evidence.EvidenceId"/> of the <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>
+            to be checked.</param>
+            <returns>
+            <see langword="true"/> if the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/> contains <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>
+            with the specified <paramref name="evidenceId"/> on the pending pool;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.IsEvidenceCommitted(Libplanet.Types.Evidence.EvidenceId)">
+            <summary>
+            Check if <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> is on the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/>'s committed pool.
+            </summary>
+            <param name="evidenceId"><see cref="T:Libplanet.Types.Evidence.EvidenceId"/> of the <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>
+            to be checked.</param>
+            <returns>
+            <see langword="true"/> if the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/> contains <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>
+            with the specified <paramref name="evidenceId"/> on the committed pool;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.IsEvidenceExpired(Libplanet.Types.Evidence.EvidenceBase)">
+            <summary>
+            Check if <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> is expired.
+            </summary>
+            <param name="evidence"><see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> to check its expiry.</param>
+            <returns>
+            <see langword="true"/> if the <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> is expired;
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.DeletePendingEvidence(Libplanet.Types.Evidence.EvidenceId)">
+            <summary>
+            Delete pending <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> from the <see cref="P:Libplanet.Blockchain.BlockChain.Store"/> with
+            its <see cref="P:Libplanet.Types.Evidence.EvidenceBase.Id"/>.
+            </summary>
+            <param name="evidenceId"><see cref="T:Libplanet.Types.Evidence.EvidenceId"/> of the <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>
+            to delete.</param>
+            <returns>
+            <see langword="true"/> if <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> is deleted from the pending pool.
+            </returns>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain.ProposeGenesisBlock(Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.Common.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Immutable.ImmutableList{Libplanet.Types.Tx.Transaction},System.Nullable{System.DateTimeOffset})">
             <summary>
             <para>
@@ -510,7 +588,7 @@
             <returns>A genesis <see cref="T:Libplanet.Types.Blocks.Block"/> proposed with given parameters.</returns>
             <seealso cref="M:Libplanet.Blockchain.BlockChain.Create(Libplanet.Blockchain.Policies.IBlockPolicy,Libplanet.Blockchain.Policies.IStagePolicy,Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Types.Blocks.Block,Libplanet.Action.IActionEvaluator,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer},Libplanet.Action.State.IBlockChainStates)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.ProposeBlock(Libplanet.Crypto.PrivateKey,Libplanet.Types.Blocks.BlockCommit,System.Collections.Generic.IComparer{Libplanet.Types.Tx.Transaction})">
+        <member name="M:Libplanet.Blockchain.BlockChain.ProposeBlock(Libplanet.Crypto.PrivateKey,Libplanet.Types.Blocks.BlockCommit,System.Nullable{System.Collections.Immutable.ImmutableArray{Libplanet.Types.Evidence.EvidenceBase}},System.Collections.Generic.IComparer{Libplanet.Types.Tx.Transaction})">
             <summary>
             <para>
             Proposes a next <see cref="T:Libplanet.Types.Blocks.Block"/> using staged <see cref="T:Libplanet.Types.Tx.Transaction"/>s.
@@ -524,20 +602,22 @@
             </param>
             <param name="lastCommit">The <see cref="T:Libplanet.Types.Blocks.BlockCommit"/> evidence of the previous
             <see cref="T:Libplanet.Types.Blocks.Block"/>.</param>
+            <param name="evidence">The pending <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>s to be committed on the
+            <see cref="T:Libplanet.Types.Blocks.Block"/>.</param>
             <param name="txPriority">An optional comparer for give certain transactions to
             priority to belong to the block.  No certain priority by default.</param>
             <returns>A <see cref="T:Libplanet.Types.Blocks.Block"/> that is proposed.</returns>
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/> is changed while proposing.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.ProposeBlock(Libplanet.Crypto.PrivateKey,System.Collections.Immutable.ImmutableList{Libplanet.Types.Tx.Transaction},Libplanet.Types.Blocks.BlockCommit)">
+        <member name="M:Libplanet.Blockchain.BlockChain.ProposeBlock(Libplanet.Crypto.PrivateKey,System.Collections.Immutable.ImmutableList{Libplanet.Types.Tx.Transaction},Libplanet.Types.Blocks.BlockCommit,System.Collections.Immutable.ImmutableArray{Libplanet.Types.Evidence.EvidenceBase})">
             <summary>
             <para>
             Proposes a next <see cref="T:Libplanet.Types.Blocks.Block"/> using a specified
             list of <see cref="T:Libplanet.Types.Tx.Transaction"/>s.
             </para>
             <para>
-            Unlike <see cref="M:Libplanet.Blockchain.BlockChain.ProposeBlock(Libplanet.Crypto.PrivateKey,Libplanet.Types.Blocks.BlockCommit,System.Collections.Generic.IComparer{Libplanet.Types.Tx.Transaction})"/>,
+            Unlike <see cref="M:Libplanet.Blockchain.BlockChain.ProposeBlock(Libplanet.Crypto.PrivateKey,Libplanet.Types.Blocks.BlockCommit,System.Nullable{System.Collections.Immutable.ImmutableArray{Libplanet.Types.Evidence.EvidenceBase}},System.Collections.Generic.IComparer{Libplanet.Types.Tx.Transaction})"/>,
             this may result in a <see cref="T:Libplanet.Types.Blocks.Block"/> that does not conform to the
             <see cref="P:Libplanet.Blockchain.BlockChain.Policy"/>.
             </para>
@@ -547,6 +627,7 @@
             <param name="transactions">The list of <see cref="T:Libplanet.Types.Tx.Transaction"/>s to include.</param>
             <param name="lastCommit">The <see cref="T:Libplanet.Types.Blocks.BlockCommit"/> evidence of the previous
             <see cref="T:Libplanet.Types.Blocks.Block"/>.</param>
+            <param name="evidence">The <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>s to be committed.</param>
             <returns>A <see cref="T:Libplanet.Types.Blocks.Block"/> that is proposed.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.GatherTransactionsToPropose(System.Int64,System.Collections.Generic.IComparer{Libplanet.Types.Tx.Transaction})">
@@ -616,22 +697,6 @@
             Gets the next world state in the <see cref="T:Libplanet.Blockchain.BlockChain"/>.
             </summary>
             <returns>The next world state.  If it does not exist, returns null.</returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetNextWorldState(Libplanet.Types.Blocks.BlockHash)">
-            <summary>
-            Returns the next <see cref="T:Libplanet.Action.State.IWorldState"/> in the BlockChain
-            at <paramref name="offset"/>.
-            </summary>
-            <param name="offset">The <see cref="T:Libplanet.Types.Blocks.BlockHash"/> of the <see cref="T:Libplanet.Types.Blocks.Block"/> to create
-            for which to create an <see cref="T:Libplanet.Action.State.IWorldState"/>.</param>
-            <returns>
-            The next <see cref="T:Libplanet.Action.State.IWorldState"/> at <paramref name="offset"/>.
-            Returns <see langword="null"/> if next state root hash does not exists.
-            </returns>
-            <exception cref="T:System.ArgumentException">Thrown when next state root hash exists,
-            but corresponding state root is not found in the <see cref="T:Libplanet.Store.IStateStore"/>.
-            </exception>
-            <seealso cref="T:Libplanet.Action.State.IWorldState"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.RenderActions(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation},Libplanet.Types.Blocks.Block)">
             <summary>
@@ -709,16 +774,18 @@
             <exception cref="T:Libplanet.Types.Blocks.InvalidBlockException">Thrown when given <paramref name="block"/>
             is invalid.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.ValidateBlockStateRootHash(Libplanet.Types.Blocks.Block,System.TimeSpan)">
+        <member name="M:Libplanet.Blockchain.BlockChain.ValidateBlockStateRootHash(Libplanet.Types.Blocks.Block)">
             <summary>
             Validates a result obtained from <see cref="M:Libplanet.Blockchain.BlockChain.EvaluateBlock(Libplanet.Types.Blocks.Block)"/> by
-            comparing the state root hash from <see cref="M:Libplanet.Blockchain.BlockChain.GetNextStateRootHash(Libplanet.Types.Blocks.BlockHash,System.Nullable{System.TimeSpan})"/>
+            comparing the state root hash from <see cref="M:Libplanet.Blockchain.BlockChain.GetNextStateRootHash(Libplanet.Types.Blocks.BlockHash)"/>
             which stores state root hash from <see cref="M:Libplanet.Blockchain.BlockChain.DetermineNextBlockStateRootHash(Libplanet.Types.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.ICommittedActionEvaluation}@)"/>,
             to the one in <paramref name="block"/>.
             </summary>
             <param name="block">The <see cref="T:Libplanet.Types.Blocks.Block"/> to validate against.</param>
-            <param name="validationInterval">The interval for fetching calculated state root hash
-            from <see cref="M:Libplanet.Blockchain.BlockChain.Append(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.BlockCommit)"/>.</param>
+            <exception cref="T:System.InvalidOperationException">If this method is called
+            when the result of <see cref="M:Libplanet.Blockchain.BlockChain.GetNextStateRootHash(Libplanet.Types.Blocks.BlockHash)"/>
+            is <see langword="null"/>.  This can happen if <paramref name="block"/>
+            is an index higher than the tip but its result is not ready yet.</exception>
             <exception cref="T:Libplanet.Types.Blocks.InvalidBlockStateRootHashException">If the state root hash
             calculated by committing to the <see cref="T:Libplanet.Store.IStateStore"/> does not match
             the <paramref name="block"/>'s <see cref="P:Libplanet.Types.Blocks.Block.StateRootHash"/>.</exception>
@@ -903,7 +970,7 @@
             A default implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy"/> interface.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Tx.Transaction,Libplanet.Types.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.BlockPolicyViolationException},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Tx.Transaction,Libplanet.Types.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.BlockPolicyViolationException},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int64})">
             <summary>
             <para>
             Creates a default <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy"/> instance.
@@ -944,6 +1011,10 @@
             a <see cref="T:Libplanet.Types.Blocks.Block"/> given the <see cref="T:Libplanet.Types.Blocks.Block"/>'s index.
             Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy.GetMaxTransactionsPerSignerPerBlock(System.Int64)"/>.  Set to
             <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy.GetMaxTransactionsPerBlock(System.Int64)"/> by default.</param>
+            <param name="getMaxEvidencePendingDuration">The function determining the maximum
+            pending duration of <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> to be committed.
+            Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy.GetMaxEvidencePendingDuration(System.Int64)"/>.  Set to a constant function
+            of <c>10</c> by default.</param>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy.BlockAction">
             <inheritdoc/>
@@ -969,6 +1040,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy.GetMaxTransactionsPerSignerPerBlock(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy.GetMaxEvidencePendingDuration(System.Int64)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Blockchain.Policies.IBlockPolicy">
@@ -1075,6 +1149,15 @@
             for which this constraint should apply.</param>
             <returns>The maximum number of <see cref="T:Libplanet.Types.Tx.Transaction"/>s allowed per signer for
             a valid <see cref="T:Libplanet.Types.Blocks.Block"/> can accept.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy.GetMaxEvidencePendingDuration(System.Int64)">
+            <summary>
+            Gets the maximum duration of <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> before to be committed.
+            </summary>
+            <param name="index">The <see cref="P:Libplanet.Types.Blocks.Block.Index"/> of the <see cref="T:Libplanet.Types.Blocks.Block"/>
+            for which this constraint should apply.</param>
+            <returns>The maximum duration of <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/>s before to be committed.
+            </returns>
         </member>
         <member name="T:Libplanet.Blockchain.Policies.IStagePolicy">
             <summary>

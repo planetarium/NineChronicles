@@ -76,9 +76,9 @@ namespace Nekoyume.UI
 
                 //다음 층정보 표기
                 floorText.text = $"{Mathf.Min(currentFloor + 1, _maxFloor)}";
-                textAnimator.SetTrigger("Show");
                 if (currentFloor < _maxFloor)
                 {
+                    textAnimator.SetTrigger("Show");
                     floorsCompleted[currentFloor].enabled = true;
                     floorsCompleted[currentFloor].DOFade(0, 0.5f).SetLoops(-1, LoopType.Yoyo);
                 }
