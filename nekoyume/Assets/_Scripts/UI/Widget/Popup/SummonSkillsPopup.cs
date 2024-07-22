@@ -77,13 +77,13 @@ namespace Nekoyume.UI
                     SummonDetailCellModel = new SummonDetailCell.Model
                     {
                         EquipmentRow = equipmentRow,
-                        Options = optionInfos,
+                        EquipmentOptions = optionInfos,
                         RuneTicker = runeTicker,
+                        RuneOptionInfo = runeOptionInfo,
                         Ratio = ratio
                     },
                     SkillRow = skillRow,
                     EquipmentOptionRow = equipmentOptionRow,
-                    RuneOptionInfo = runeOptionInfo
                 };
             }).Where(model => model != null).OrderBy(model => model.SummonDetailCellModel.Ratio);
             scroll.UpdateData(models, true);

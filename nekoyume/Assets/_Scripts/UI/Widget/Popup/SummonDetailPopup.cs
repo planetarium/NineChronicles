@@ -58,27 +58,39 @@ namespace Nekoyume.UI
                 var (recipeId, ratio) = pair;
 
                 EquipmentItemSheet.Row equipmentRow = null;
-                List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos = null;
+                List<EquipmentItemSubRecipeSheetV2.OptionInfo> equipmentOptions = null;
                 if (equipmentItemRecipeSheet.TryGetValue(recipeId, out var recipeRow))
                 {
                     equipmentRow = equipmentItemSheet[recipeRow.ResultEquipmentId];
-                    optionInfos = equipmentItemSubRecipeSheet[recipeRow.SubRecipeIds[0]].Options;
+                    equipmentOptions = equipmentItemSubRecipeSheet[recipeRow.SubRecipeIds[0]].Options;
                 }
 
                 string runeTicker = null;
+                RuneOptionSheet.Row.RuneOptionInfo runeOptionInfo = null;
                 if (runeSheet.TryGetValue(recipeId, out var runeRow))
                 {
                     runeTicker = runeRow.Ticker;
+
+                    var runeOptionSheet = tableSheets.RuneOptionSheet;
+                    if (runeOptionSheet.TryGetValue(runeRow.Id, out var runeOptionRow) &&
+                        runeOptionRow.LevelOptionMap.TryGetValue(1, out runeOptionInfo))
+                    {
+                        if (runeOptionInfo.SkillId == 0)
+                        {
+                            return null;
+                        }
+                    }
                 }
 
                 return new SummonDetailCell.Model
                 {
                     EquipmentRow = equipmentRow,
+                    EquipmentOptions = equipmentOptions,
                     RuneTicker = runeTicker,
-                    Options = optionInfos,
+                    RuneOptionInfo = runeOptionInfo,
                     Ratio = ratio / ratioSum
                 };
-            }).OrderBy(model => model.Ratio);
+            }).Where(model => model is not null).OrderBy(model => model.Ratio);
 
             _disposables.DisposeAllAndClear();
             scroll.OnClick.Subscribe(PreviewDetail).AddTo(_disposables);
@@ -91,17 +103,26 @@ namespace Nekoyume.UI
         private void PreviewDetail(SummonDetailCell.Model model)
         {
             // CharacterView
-            SetCharacter(model.EquipmentRow);
+            if (model.EquipmentRow is not null)
+            {
+                SetCharacter(model.EquipmentRow);
 
-            // MainStatText
-            var mainStatText = mainStatTexts[0];
-            var stat = model.EquipmentRow.GetUniqueStat();
-            var statValueText = stat.StatType.ValueToString((int)stat.TotalValue);
-            mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
-            mainStatText.gameObject.SetActive(true);
+                // MainStatText
+                var mainStatText = mainStatTexts[0];
+                var stat = model.EquipmentRow.GetUniqueStat();
+                var statValueText = stat.StatType.ValueToString((int)stat.TotalValue);
+                mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
+                mainStatText.gameObject.SetActive(true);
 
-            // OptionView
-            recipeOptionView.SetOptions(model.Options, false);
+                // OptionView
+                recipeOptionView.SetOptions(model.EquipmentOptions, false);
+            }
+
+            if (!string.IsNullOrEmpty(model.RuneTicker))
+            {
+                mainStatTexts[0].gameObject.SetActive(false);
+                recipeOptionView.SetOptions(model.RuneOptionInfo);
+            }
         }
 
         private static void SetCharacter(EquipmentItemSheet.Row equipmentRow)

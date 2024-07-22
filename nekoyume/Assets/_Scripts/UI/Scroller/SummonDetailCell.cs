@@ -18,8 +18,9 @@ namespace Nekoyume.UI.Scroller
         public class Model
         {
             public EquipmentItemSheet.Row EquipmentRow;
-            public List<EquipmentItemSubRecipeSheetV2.OptionInfo> Options;
+            public List<EquipmentItemSubRecipeSheetV2.OptionInfo> EquipmentOptions;
             public string RuneTicker;
+            public RuneOptionSheet.Row.RuneOptionInfo RuneOptionInfo;
             public float Ratio;
         }
 
@@ -56,9 +57,12 @@ namespace Nekoyume.UI.Scroller
 
             percentText.text = itemData.Ratio.ToString("0.####%");
 
-            _disposables.DisposeAllAndClear();
-            Context.OnClick.Subscribe(row =>
-                selected.SetActive(row.Equals(itemData))).AddTo(_disposables);
+            if (Context is not null)
+            {
+                _disposables.DisposeAllAndClear();
+                Context.OnClick.Subscribe(row =>
+                    selected.SetActive(row.Equals(itemData))).AddTo(_disposables);
+            }
         }
     }
 }
