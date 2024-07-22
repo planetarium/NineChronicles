@@ -100,12 +100,23 @@ namespace Nekoyume
 
                 if (prevBountyBoard != null)
                 {
-                    myBountyRewardsData = AdventureBossHelper.CalculateWantedReward(myBountyRewardsData,
-                        prevBountyBoard,
-                        Game.Game.instance.States.CurrentAvatarState.address,
-                        TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
-                        States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
-                        out var wantedReward);
+                    try
+                    {
+                        var myInvestment = prevBountyBoard.Investors.FirstOrDefault(inv => inv.AvatarAddress == Game.Game.instance.States.CurrentAvatarState.address);
+                        if(myInvestment != null)
+                        {
+                            myBountyRewardsData = AdventureBossHelper.CalculateWantedReward(myBountyRewardsData,
+                                prevBountyBoard,
+                                Game.Game.instance.States.CurrentAvatarState.address,
+                                TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                                States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
+                                out var wantedReward);
+                        }
+                    }
+                    catch(System.Exception e)
+                    {
+                        NcDebug.LogError(e);
+                    }
                     totalBounty.text = prevBountyBoard.totalBounty().MajorUnit.ToString("#,0");
                     var investor = prevBountyBoard.Investors.FirstOrDefault(inv => inv.AvatarAddress == States.Instance.CurrentAvatarState.address);
                     if (investor != null)
@@ -123,16 +134,23 @@ namespace Nekoyume
                 }
                 if (prevExploreBoard != null && prevExploreInfo != null && prevExploreInfo.Score > 0)
                 {
-                    myExplorerRewardsData = AdventureBossHelper.CalculateExploreReward(myExplorerRewardsData,
-                    prevBountyBoard,
-                    prevExploreBoard,
-                    prevExploreInfo,
-                    prevExploreInfo.AvatarAddress,
-                    TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
-                    States.Instance.GameConfigState.AdventureBossNcgApRatio,
-                    States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
-                    false,
-                    out var ncgReward);
+                    try
+                    {
+                        myExplorerRewardsData = AdventureBossHelper.CalculateExploreReward(myExplorerRewardsData,
+                        prevBountyBoard,
+                        prevExploreBoard,
+                        prevExploreInfo,
+                        prevExploreInfo.AvatarAddress,
+                        TableSheets.Instance.AdventureBossNcgRewardRatioSheet,
+                        States.Instance.GameConfigState.AdventureBossNcgApRatio,
+                        States.Instance.GameConfigState.AdventureBossNcgRuneRatio,
+                        false,
+                        out var ncgReward);
+                    }
+                    catch(System.Exception e)
+                    {
+                        NcDebug.LogError(e);
+                    }
                 }
                 if (prevExploreBoard != null)
                 {
