@@ -139,7 +139,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 200.1.2
+  bundleVersion: 200.1.5
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -168,9 +168,9 @@ PlayerSettings:
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 227
-  AndroidMinSdkVersion: 22
-  AndroidTargetSdkVersion: 33
+  AndroidBundleVersionCode: 230
+  AndroidMinSdkVersion: 24
+  AndroidTargetSdkVersion: 34
   AndroidPreferredInstallLocation: 2
   aotOptions: 
   stripEngineCode: 1
@@ -247,7 +247,7 @@ PlayerSettings:
   templateDefaultScene: Assets/Scenes/SampleScene.unity
   useCustomMainManifest: 1
   useCustomLauncherManifest: 0
-  useCustomMainGradleTemplate: 0
+  useCustomMainGradleTemplate: 1
   useCustomLauncherGradleManifest: 0
   useCustomBaseGradleTemplate: 0
   useCustomGradlePropertiesTemplate: 1

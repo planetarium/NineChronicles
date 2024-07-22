@@ -1263,7 +1263,6 @@ namespace Nekoyume.Game
                 errorMsg,
                 L10nManager.Localize("UI_OK"),
                 false);
-            popup.SetConfirmCallbackToExit();
         }
 
         public static void Quit()
@@ -1938,7 +1937,7 @@ namespace Nekoyume.Game
                     IconAndButtonSystem.SystemType.Information);
             }
 
-            popup.ConfirmCallback = popup.CancelCallback = OpenUpdateURL;
+            popup.ConfirmCallback = OpenUpdateURL;
             return true;
         }
 
