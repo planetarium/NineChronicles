@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -27,11 +28,11 @@ namespace Nekoyume.UI
         public void Show(SummonSheet.Row summonRow, bool ignoreShowAnimation = false)
         {
             var tableSheets = Game.Game.instance.TableSheets;
-            var recipeSheet = tableSheets.EquipmentItemRecipeSheet;
-            var subRecipeSheet = tableSheets.EquipmentItemSubRecipeSheetV2;
-            var equipmentSheet = tableSheets.EquipmentItemSheet;
+            var equipmentItemRecipeSheet = tableSheets.EquipmentItemRecipeSheet;
+            var equipmentItemSubRecipeSheet = tableSheets.EquipmentItemSubRecipeSheetV2;
+            var equipmentItemSheet = tableSheets.EquipmentItemSheet;
             var skillSheet = tableSheets.SkillSheet;
-            var optionSheet = tableSheets.EquipmentItemOptionSheet;
+            var equipmentItemOptionSheet = tableSheets.EquipmentItemOptionSheet;
             var runeSheet = tableSheets.RuneSheet;
             var runeOptionSheet = tableSheets.RuneOptionSheet;
 
@@ -39,14 +40,16 @@ namespace Nekoyume.UI
             {
                 var (recipeId, ratio) = pair;
 
-                SkillSheet.Row skillRow = null;
                 EquipmentItemSheet.Row equipmentRow = null;
+                List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos = null;
                 EquipmentItemOptionSheet.Row equipmentOptionRow = null;
-                if (recipeSheet.TryGetValue(recipeId, out var recipeRow))
+                SkillSheet.Row skillRow = null;
+                if (equipmentItemRecipeSheet.TryGetValue(recipeId, out var recipeRow))
                 {
-                    equipmentRow = equipmentSheet[recipeRow.ResultEquipmentId];
-                    equipmentOptionRow = subRecipeSheet[recipeRow.SubRecipeIds[0]].Options
-                        .Select(optionInfo => optionSheet[optionInfo.Id])
+                    equipmentRow = equipmentItemSheet[recipeRow.ResultEquipmentId];
+                    optionInfos = equipmentItemSubRecipeSheet[recipeRow.SubRecipeIds[0]].Options;
+                    equipmentOptionRow = optionInfos
+                        .Select(optionInfo => equipmentItemOptionSheet[optionInfo.Id])
                         .First(optionRow => optionRow.StatType == StatType.NONE);
                     skillRow = skillSheet[equipmentOptionRow.SkillId];
                 }
@@ -74,6 +77,7 @@ namespace Nekoyume.UI
                     SummonDetailCellModel = new SummonDetailCell.Model
                     {
                         EquipmentRow = equipmentRow,
+                        Options = optionInfos,
                         RuneTicker = runeTicker,
                         Ratio = ratio
                     },
