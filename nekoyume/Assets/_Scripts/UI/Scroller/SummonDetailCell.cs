@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField] private Button button;
-        [SerializeField] private SummonItemView view;
+        [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI infoText;
         [SerializeField] private TextMeshProUGUI percentText;
@@ -44,13 +44,14 @@ namespace Nekoyume.UI.Scroller
 
             if (itemData.EquipmentRow is not null)
             {
-                view.SetData(itemData.EquipmentRow);
+                iconImage.sprite = SpriteHelper.GetItemIcon(itemData.EquipmentRow.Id);
                 nameText.text = itemData.EquipmentRow.GetLocalizedName(true, false);
                 infoText.text = itemData.EquipmentRow.GetLocalizedInformation();
             }
 
             if (!string.IsNullOrEmpty(itemData.RuneTicker))
             {
+                iconImage.sprite = SpriteHelper.GetFavIcon(itemData.RuneTicker);
                 nameText.text = LocalizationExtensions.GetLocalizedFavName(itemData.RuneTicker);
                 infoText.text = LocalizationExtensions.GetLocalizedInformation(itemData.RuneTicker);
             }
