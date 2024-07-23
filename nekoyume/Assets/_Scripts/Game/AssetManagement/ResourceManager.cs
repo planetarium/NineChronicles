@@ -9,6 +9,8 @@ namespace Nekoyume
 {
     public class ResourceManager
     {
+        public static string SkillLabel => "Skills";
+        public static string BuffLabel => "Buffs";
         public static string BattleLabel => "Battle";
         public static string CharacterLabel => "Character";
 
@@ -54,6 +56,22 @@ namespace Nekoyume
             }
 
             return null;
+        }
+        
+        public T[]? LoadAll<T>(string label) where T : Object
+        {
+            var resources = Resources.LoadAll<T>($"VFX/{label}");
+            if (resources == null || resources.Length == 0)
+            {
+                return null;
+            }
+
+            foreach (var resource in resources)
+            {
+                _resources.Add(resource.name, resource);
+            }
+
+            return resources;
         }
 
         public GameObject? Instantiate(string key, Transform? parent = null)
@@ -116,7 +134,7 @@ namespace Nekoyume
             }
         }
 
-        public async UniTask LoadAllAsync<T>(string label, bool isDonDestroy = false) where T : Object
+        public async UniTask LoadAllAsync<T>(string label, bool isDonDestroy = false, System.Action<string>? loadCallback = null) where T : Object
         {
             var opHandle = Addressables.LoadResourceLocationsAsync(label, typeof(T));
             await opHandle;
@@ -126,6 +144,7 @@ namespace Nekoyume
             foreach (var result in opHandle.Result)
             {
                 await LoadAsync<T>(result.PrimaryKey, isDonDestroy);
+                loadCallback?.Invoke(result.PrimaryKey);
             }
         }
 

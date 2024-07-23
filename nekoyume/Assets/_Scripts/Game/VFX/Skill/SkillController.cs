@@ -1,5 +1,5 @@
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Battle;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Character;
@@ -22,11 +22,15 @@ namespace Nekoyume.Game.VFX.Skill
         public SkillController(IObjectPool objectPool)
         {
             _pool = objectPool;
-            var skills = Resources.LoadAll<SkillVFX>("VFX/Skills");
-            foreach (var skill in skills)
+        }
+        
+        public async UniTask InitializeAsync()
+        {
+            await ResourceManager.Instance.LoadAllAsync<SkillVFX>(ResourceManager.SkillLabel, true, assetAddress =>
             {
-                _pool.Add(skill.gameObject, InitCount);
-            }
+                var prefab = ResourceManager.Instance.Load<GameObject>(assetAddress);
+                _pool.Add(prefab, InitCount);
+            });
         }
 
         public T Get<T>(Character.Character target, Model.BattleStatus.Skill.SkillInfo skillInfo)
