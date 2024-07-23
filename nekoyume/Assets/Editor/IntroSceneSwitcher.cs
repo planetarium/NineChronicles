@@ -31,10 +31,23 @@ namespace Nekoyume.Editor
 		static void OnToolbarGUI()
 		{
 			GUILayout.FlexibleSpace();
-
-			if(GUILayout.Button(new GUIContent("1", "Start IntroScene"), ToolbarStyles.commandButtonStyle))
+			const string toolTip = "Start IntroScene";
+			const string sceneName = "IntroScene";
+			
+			var sprite = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/UI/Textures/icon_executable.png");
+			if (sprite == null)
 			{
-				SceneHelper.StartScene("IntroScene");
+				if(GUILayout.Button(new GUIContent("Intro", toolTip), ToolbarStyles.commandButtonStyle))
+				{
+					SceneHelper.StartScene(sceneName);
+				}
+			}
+			else
+			{
+				if(GUILayout.Button(new GUIContent(sprite, toolTip), ToolbarStyles.commandButtonStyle))
+				{
+					SceneHelper.StartScene(sceneName);
+				}
 			}
 		}
 	}
