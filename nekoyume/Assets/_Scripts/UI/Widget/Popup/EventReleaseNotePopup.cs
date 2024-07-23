@@ -188,6 +188,10 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
             base.Show(ignoreShowAnimation);
             OnForceToggleOnEventTab();
             PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
@@ -195,6 +199,10 @@ namespace Nekoyume.UI
 
         public void Show(EventNoticeData eventNotice, bool ignoreStartAnimation = false)
         {
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
             base.Show(ignoreStartAnimation);
             if (!eventTabButton.IsToggledOn)
             {
