@@ -79,6 +79,12 @@ namespace Nekoyume.UI
             }
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            closeButton.onClick.AddListener(() => Close());
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -108,7 +114,6 @@ namespace Nekoyume.UI
                     }
                 }).AddTo(gameObject);
                 _tabGroup.SetToggledOn(eventTabButton);
-                closeButton.onClick.AddListener(() => Close());
 
                 eventTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadEvent);
                 noticeTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadNotice);
