@@ -25,6 +25,7 @@ namespace Nekoyume.Game.VFX.Skill
         
         public async UniTask InitializeAsync()
         {
+            // TODO: BuffVfx 상속받은 프리팹만 로드하도록 에셋 구분
             await ResourceManager.Instance.LoadAllAsync<GameObject>(ResourceManager.BuffLabel, true, assetAddress =>
             {
                 var prefab = ResourceManager.Instance.Load<GameObject>(assetAddress);
