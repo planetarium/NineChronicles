@@ -72,13 +72,9 @@ namespace Nekoyume.UI
                     runeTicker = runeRow.Ticker;
 
                     var runeOptionSheet = tableSheets.RuneOptionSheet;
-                    if (runeOptionSheet.TryGetValue(runeRow.Id, out var runeOptionRow) &&
-                        runeOptionRow.LevelOptionMap.TryGetValue(1, out runeOptionInfo))
+                    if (runeOptionSheet.TryGetValue(runeRow.Id, out var runeOptionRow))
                     {
-                        if (runeOptionInfo.SkillId == 0)
-                        {
-                            return null;
-                        }
+                        runeOptionRow.LevelOptionMap.TryGetValue(1, out runeOptionInfo);
                     }
                 }
 
@@ -90,11 +86,11 @@ namespace Nekoyume.UI
                     RuneOptionInfo = runeOptionInfo,
                     Ratio = ratio / ratioSum
                 };
-            }).Where(model => model is not null).OrderBy(model => model.Ratio);
+            }).OrderBy(model => model.Ratio);
 
             _disposables.DisposeAllAndClear();
-            scroll.OnClick.Subscribe(PreviewDetail).AddTo(_disposables);
             scroll.UpdateData(models, true);
+            scroll.Selected.Subscribe(PreviewDetail).AddTo(_disposables);
 
             titleText.text = summonRow.GetLocalizedName();
             base.Show();
@@ -103,10 +99,10 @@ namespace Nekoyume.UI
         private void PreviewDetail(SummonDetailCell.Model model)
         {
             // CharacterView
+            SetCharacter(model.EquipmentRow);
+
             if (model.EquipmentRow is not null)
             {
-                SetCharacter(model.EquipmentRow);
-
                 // MainStatText
                 var mainStatText = mainStatTexts[0];
                 var stat = model.EquipmentRow.GetUniqueStat();
@@ -128,19 +124,22 @@ namespace Nekoyume.UI
         private static void SetCharacter(EquipmentItemSheet.Row equipmentRow)
         {
             var game = Game.Game.instance;
+            var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
 
-            var maxLevel = game.TableSheets.EnhancementCostSheetV3.Values
-                .Where(row =>
-                    row.ItemSubType == equipmentRow.ItemSubType &&
-                    row.Grade == equipmentRow.Grade)
-                .Max(row => row.Level);
-            var resultItem = (Equipment)ItemFactory.CreateItemUsable(
+            if (equipmentRow is not null)
+            {
+                var maxLevel = game.TableSheets.EnhancementCostSheetV3.Values
+                    .Where(row =>
+                        row.ItemSubType == equipmentRow.ItemSubType &&
+                        row.Grade == equipmentRow.Grade)
+                    .Max(row => row.Level);
+                var resultItem = (Equipment)ItemFactory.CreateItemUsable(
                     equipmentRow, Guid.NewGuid(), 0L, maxLevel);
 
-            var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
-            var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
-            equipments.Remove(sameType);
-            equipments.Add(resultItem);
+                var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
+                equipments.Remove(sameType);
+                equipments.Add(resultItem);
+            }
 
             var avatarState = game.States.CurrentAvatarState;
             game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
