@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Scroller
             button.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                Context.OnClick.OnNext(itemData);
+                Context?.OnClick.OnNext(itemData);
             });
 
             if (itemData.EquipmentRow is not null)
@@ -59,8 +59,8 @@ namespace Nekoyume.UI.Scroller
             percentText.text = itemData.Ratio.ToString("0.####%");
 
             _disposables.DisposeAllAndClear();
-            Context?.OnClick.Subscribe(row =>
-                selected.SetActive(row.Equals(itemData))).AddTo(_disposables);
+            Context?.Selected.Subscribe(model =>
+                selected.SetActive(itemData.Equals(model))).AddTo(_disposables);
         }
     }
 }

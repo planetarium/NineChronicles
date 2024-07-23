@@ -89,8 +89,8 @@ namespace Nekoyume.UI
             }).OrderBy(model => model.Ratio);
 
             _disposables.DisposeAllAndClear();
-            scroll.OnClick.Subscribe(PreviewDetail).AddTo(_disposables);
             scroll.UpdateData(models, true);
+            scroll.Selected.Subscribe(PreviewDetail).AddTo(_disposables);
 
             titleText.text = summonRow.GetLocalizedName();
             base.Show();
