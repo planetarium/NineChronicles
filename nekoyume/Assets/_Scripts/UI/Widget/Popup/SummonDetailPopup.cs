@@ -99,7 +99,7 @@ namespace Nekoyume.UI
         private void PreviewDetail(SummonDetailCell.Model model)
         {
             // CharacterView
-                SetCharacter(model.EquipmentRow);
+            SetCharacter(model.EquipmentRow);
 
             if (model.EquipmentRow is not null)
             {
@@ -124,19 +124,22 @@ namespace Nekoyume.UI
         private static void SetCharacter(EquipmentItemSheet.Row equipmentRow)
         {
             var game = Game.Game.instance;
+            var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
 
-            var maxLevel = game.TableSheets.EnhancementCostSheetV3.Values
-                .Where(row =>
-                    row.ItemSubType == equipmentRow.ItemSubType &&
-                    row.Grade == equipmentRow.Grade)
-                .Max(row => row.Level);
-            var resultItem = (Equipment)ItemFactory.CreateItemUsable(
+            if (equipmentRow is not null)
+            {
+                var maxLevel = game.TableSheets.EnhancementCostSheetV3.Values
+                    .Where(row =>
+                        row.ItemSubType == equipmentRow.ItemSubType &&
+                        row.Grade == equipmentRow.Grade)
+                    .Max(row => row.Level);
+                var resultItem = (Equipment)ItemFactory.CreateItemUsable(
                     equipmentRow, Guid.NewGuid(), 0L, maxLevel);
 
-            var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
-            var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
-            equipments.Remove(sameType);
-            equipments.Add(resultItem);
+                var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
+                equipments.Remove(sameType);
+                equipments.Add(resultItem);
+            }
 
             var avatarState = game.States.CurrentAvatarState;
             game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
