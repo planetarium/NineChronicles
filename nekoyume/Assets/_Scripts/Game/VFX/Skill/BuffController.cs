@@ -25,9 +25,14 @@ namespace Nekoyume.Game.VFX.Skill
         
         public async UniTask InitializeAsync()
         {
-            await ResourceManager.Instance.LoadAllAsync<BuffVFX>(ResourceManager.BuffLabel, true, assetAddress =>
+            await ResourceManager.Instance.LoadAllAsync<GameObject>(ResourceManager.BuffLabel, true, assetAddress =>
             {
                 var prefab = ResourceManager.Instance.Load<GameObject>(assetAddress);
+                if (prefab == null)
+                {
+                    NcDebug.LogError($"Failed to load {assetAddress}");
+                    return;
+                }
                 _pool.Add(prefab, InitCount);
             });
         }

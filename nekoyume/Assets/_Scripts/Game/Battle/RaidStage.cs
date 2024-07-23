@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
@@ -100,11 +101,13 @@ namespace Nekoyume.Game.Battle
         public RaidCamera Camera => container.Camera;
         public int TurnNumber => _waveTurn;
 
-        public void Initialize()
+        public async UniTask InitializeAsync()
         {
             objectPool.Initialize();
             SkillController = new SkillController(objectPool);
+            await SkillController.InitializeAsync();
             BuffController = new BuffController(objectPool);
+            await BuffController.InitializeAsync();
         }
 
         public void Play(RaidStartData data)

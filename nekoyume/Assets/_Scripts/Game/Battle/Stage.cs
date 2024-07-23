@@ -163,12 +163,14 @@ namespace Nekoyume.Game.Battle
             BattleRenderer.Instance.OnStageStart -= OnStartStage;
         }
 
-        public void Initialize()
+        public async UniTask InitializeAsync()
         {
             objectPool.Initialize();
             dropItemFactory.Initialize();
             SkillController = new SkillController(objectPool);
+            await SkillController.InitializeAsync();
             BuffController = new BuffController(objectPool);
+            await BuffController.InitializeAsync();
             TutorialController = new TutorialController(MainCanvas.instance.Widgets);
         }
 

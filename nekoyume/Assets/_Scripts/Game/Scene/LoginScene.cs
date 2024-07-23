@@ -290,7 +290,7 @@ namespace Nekoyume.Game.Scene
             var secondWidgetCompletedEvt = new AirbridgeEvent("Intro_Start_SecondWidgetCompleted");
             AirbridgeUnity.TrackEvent(secondWidgetCompletedEvt);
 
-            game.InitializeStage();
+            yield return game.InitializeStage().ToCoroutine();
 
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
