@@ -72,13 +72,9 @@ namespace Nekoyume.UI
                     runeTicker = runeRow.Ticker;
 
                     var runeOptionSheet = tableSheets.RuneOptionSheet;
-                    if (runeOptionSheet.TryGetValue(runeRow.Id, out var runeOptionRow) &&
-                        runeOptionRow.LevelOptionMap.TryGetValue(1, out runeOptionInfo))
+                    if (runeOptionSheet.TryGetValue(runeRow.Id, out var runeOptionRow))
                     {
-                        if (runeOptionInfo.SkillId == 0)
-                        {
-                            return null;
-                        }
+                        runeOptionRow.LevelOptionMap.TryGetValue(1, out runeOptionInfo);
                     }
                 }
 
@@ -90,7 +86,7 @@ namespace Nekoyume.UI
                     RuneOptionInfo = runeOptionInfo,
                     Ratio = ratio / ratioSum
                 };
-            }).Where(model => model is not null).OrderBy(model => model.Ratio);
+            }).OrderBy(model => model.Ratio);
 
             _disposables.DisposeAllAndClear();
             scroll.OnClick.Subscribe(PreviewDetail).AddTo(_disposables);
@@ -103,10 +99,10 @@ namespace Nekoyume.UI
         private void PreviewDetail(SummonDetailCell.Model model)
         {
             // CharacterView
-            if (model.EquipmentRow is not null)
-            {
                 SetCharacter(model.EquipmentRow);
 
+            if (model.EquipmentRow is not null)
+            {
                 // MainStatText
                 var mainStatText = mainStatTexts[0];
                 var stat = model.EquipmentRow.GetUniqueStat();
