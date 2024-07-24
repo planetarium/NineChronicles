@@ -17,16 +17,16 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: e21bd50d74c195b479d1e0eb666860ac
   m_SerializeEntries:
-  - m_GUID: 4c2360cae24034023be55a9acdd27ee3
-    m_Address: Assets/AddressableAssets/VFX/Skills
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Skills
-  - m_GUID: a7964e886071f413d8397fed2ad78571
-    m_Address: Assets/AddressableAssets/VFX/Prefabs
+  - m_GUID: 307136106d3b27744a4ca13957f37e28
+    m_Address: Assets/AddressableAssets/VFX/BuffVfx
     m_ReadOnly: 0
     m_SerializedLabels:
     - Buffs
+  - m_GUID: ae10d9d99ef38844ea44e3385efeb389
+    m_Address: Assets/AddressableAssets/VFX/SkillVfx
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Skills
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ac541e2ce40a4e441b1e4fe7bb752ac7, type: 2}
   m_SchemaSet:
