@@ -193,8 +193,10 @@ namespace Nekoyume.UI.Module
             models.Reverse();
             var count = 0;
             foreach (var model in models.Where(model =>
-                !model.Equals(_baseModel) && model.SelectedMaterialCount.Value <= 0 &&
-                !model.Disabled.Value))
+                model.SelectedMaterialCount.Value <= 0 &&
+                !ItemEnhancement.HammerIds.Contains(model.ItemBase.Id) &&
+                !model.Disabled.Value &&
+                !model.Equals(_baseModel)))
             {
                 if (_materialModels.Count >= MaxMaterialCount)
                 {
