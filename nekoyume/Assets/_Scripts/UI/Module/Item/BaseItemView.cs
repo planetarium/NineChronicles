@@ -289,10 +289,7 @@ namespace Nekoyume
             {
                 for (var i = 0; i < amount; i++)
                 {
-                    if (itemRow.ItemSubType != ItemSubType.Aura)
-                    {
-                        itemBase = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                    }
+                    itemBase = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
                 }
             }
 

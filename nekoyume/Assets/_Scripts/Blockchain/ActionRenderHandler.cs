@@ -1334,9 +1334,9 @@ namespace Nekoyume.Blockchain
                         tradableId,
                         out ItemUsable materialItem))
                     {
-                        if (itemUsable.ItemSubType == ItemSubType.Aura)
+                        if (itemUsable.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                         {
-                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                            // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                             LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId, false);
                         }
                         else

@@ -309,6 +309,7 @@ namespace Nekoyume.UI
                 {
                     for (var i = 0; i < count; i++)
                     {
+                        // the Aura item will appear in summon tutorial
                         if (itemRow.ItemSubType != ItemSubType.Aura)
                         {
                             var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
