@@ -80,17 +80,16 @@ namespace Nekoyume.UI
                 elapsedTime += Time.deltaTime;
 
                 var progressExp = sliderEffectCurve.Evaluate(elapsedTime / duration);
-                SetSliderValue((long)Mathf.Lerp(startExp, targetExp, progressExp));
+                SetSliderValue(Mathf.Lerp(startExp, targetExp, progressExp));
                 yield return new WaitForEndOfFrame();
             }
 
             SetSliderValue(targetExp);
-            yield return 0;
         }
 
-        private void SetSliderValue(long exp)
+        private void SetSliderValue(float exp)
         {
-            _expAnchorPoint = exp;
+            _expAnchorPoint = (long)exp;
             var (progressSliderValue, nextExp) = ExpToSliderValue();
             slider.value = progressSliderValue;
             percentText.text = $"{(int)(progressSliderValue * 100)}% {exp:N0}/{nextExp:N0}";
