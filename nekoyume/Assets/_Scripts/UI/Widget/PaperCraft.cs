@@ -79,7 +79,7 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            ReactiveAvatarState.ObservablePaperCraftingSkill
+            ReactiveAvatarState.ObservableProficiency
                 .Where(_ => isActiveAndEnabled)
                 .Subscribe(SetSkillView)
                 .AddTo(gameObject);
@@ -88,7 +88,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            SetSkillView(ReactiveAvatarState.PaperCraftingSkill);
+            SetSkillView(ReactiveAvatarState.Proficiency);
             OnItemSubtypeSelected(ItemSubType.Weapon);
         }
 

@@ -66,21 +66,15 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // TODO: 이걸 나중에 커스텀 제작 액션으로 바꿔야함. 지금은 동작 테스트를 위해 억지로 CombinationEquipment를 붙였다.
-            var selectedRecipeRow = TableSheets.Instance.EquipmentItemRecipeSheet.First(row =>
-                row.Value.ResultEquipmentId == _selectedItem.ItemBase.Value.Id).Value;
-            ActionManager.Instance
-                .CombinationEquipment(new SubRecipeView.RecipeInfo
-                {
-                    RecipeId = selectedRecipeRow.Id,
-                    SubRecipeId = selectedRecipeRow.SubRecipeIds[0],
-                    CostNCG = default,
-                    CostCrystal = default,
-                    CostAP = 0,
-                    Materials = new Dictionary<int, int>(),
-                    ReplacedMaterials = new Dictionary<int, int>(),
-                }, 0, true, false, null)
-                .Subscribe();
+            if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
+            {
+                // TODO: 전부 다 CustomEquipmentCraft 관련 sheet에서 가져오게 바꿔야함
+                var selectedRecipeRow = TableSheets.Instance.EquipmentItemRecipeSheet.First(row =>
+                    row.Value.ResultEquipmentId == _selectedItem.ItemBase.Value.Id).Value;
+                ActionManager.Instance.CustomEquipmentCraft(slotIndex, selectedRecipeRow.Id, 0)
+                    .Subscribe();
+            }
+
             Close();
         }
     }

@@ -46,10 +46,10 @@ namespace Nekoyume.State
         public static QuestList QuestList => _questList.Value;
         public static IObservable<QuestList> ObservableQuestList => _questList.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<long> _paperCraftingSkill = new();
-        public static long PaperCraftingSkill = _paperCraftingSkill.Value;
-        public static IObservable<long> ObservablePaperCraftingSkill =>
-            _paperCraftingSkill.ObserveOnMainThread();
+        private static readonly ReactiveProperty<long> _proficiency = new();
+        public static long Proficiency => _proficiency.Value;
+        public static IObservable<long> ObservableProficiency =>
+            _proficiency.ObserveOnMainThread();
 
         public static void Initialize(AvatarState state)
         {
@@ -105,6 +105,11 @@ namespace Nekoyume.State
             }
 
             _questList.SetValueAndForceNotify(questList);
+        }
+
+        public static void UpdateProficiency(long proficiency)
+        {
+            _proficiency.SetValueAndForceNotify(proficiency);
         }
     }
 }
