@@ -27,6 +27,7 @@ using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
+using Nekoyume.Action.CustomEquipmentCraft;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -1818,6 +1819,24 @@ namespace Nekoyume.Blockchain
                 {
                     // NOTE: Handle exception outside of this method.
                 });
+        }
+
+        public IObservable<ActionEvaluation<CustomEquipmentCraft>> CustomEquipmentCraft(int slotIndex, int recipeId, int iconId)
+        {
+            var action = new CustomEquipmentCraft()
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                IconId = iconId,
+                RecipeId = recipeId,
+                SlotIndex = slotIndex
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<CustomEquipmentCraft>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(null, e));
         }
 
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS

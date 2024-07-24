@@ -28,6 +28,7 @@ using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using mixpanel;
+using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Action.Garages;
 using Nekoyume.ApiClient;
 using Nekoyume.Arena;
@@ -166,6 +167,7 @@ namespace Nekoyume.Blockchain
             EventMaterialItemCrafts();
             AuraSummon();
             RuneSummon();
+            CustomEquipmentCraft();
 
             // Market
             RegisterProduct();
@@ -757,6 +759,18 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareMintAssets)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMintAssets)
+                .AddTo(_disposables);
+        }
+
+        private void CustomEquipmentCraft()
+        {
+            _actionRenderer.EveryRender<CustomEquipmentCraft>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Select(PrepareCustomEquipmentCraft)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCustomEquipmentCraft)
                 .AddTo(_disposables);
         }
 
@@ -4150,6 +4164,17 @@ namespace Nekoyume.Blockchain
         private void ExceptionSweepAdventureBoss(ActionEvaluation<SweepAdventureBoss> evaluation)
         {
             StageExceptionHandle(evaluation.Exception?.InnerException);
+        }
+
+        private ActionEvaluation<CustomEquipmentCraft> PrepareCustomEquipmentCraft(
+            ActionEvaluation<CustomEquipmentCraft> evaluation)
+        {
+            return evaluation;
+        }
+
+        private void ResponseCustomEquipmentCraft(ActionEvaluation<CustomEquipmentCraft> evaluation)
+        {
+
         }
     }
 }
