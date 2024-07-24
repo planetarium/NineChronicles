@@ -196,7 +196,8 @@ namespace Nekoyume.UI.Module
                 model.SelectedMaterialCount.Value <= 0 &&
                 !ItemEnhancement.HammerIds.Contains(model.ItemBase.Id) &&
                 !model.Disabled.Value &&
-                !model.Equals(_baseModel)))
+                !model.Equals(_baseModel) &&
+                model.ItemBase is not Equipment { Equipped: true }))
             {
                 if (_materialModels.Count >= MaxMaterialCount)
                 {
