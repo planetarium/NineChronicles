@@ -159,7 +159,7 @@ namespace Nekoyume.Helper
             switch (itemRow.ItemType)
             {
                 case ItemType.Equipment:
-                    var canCraft = itemRow.ItemSubType != ItemSubType.Aura;
+                    var canCraft = itemRow.ItemSubType is not (ItemSubType.Aura or ItemSubType.Grimoire);
 
                     if (required)
                     {
