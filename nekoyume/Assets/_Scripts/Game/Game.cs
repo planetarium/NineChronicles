@@ -1493,22 +1493,14 @@ namespace Nekoyume.Game
 
         public async UniTask InitializeStage()
         {
+            Stage.Initialize();
+            
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
-            await Stage.InitializeAsync();
+            await BattleRenderer.Instance.InitializeVfxAsync();
             sw.Stop();
-            NcDebug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            sw.Reset();
-            sw.Start();
-            await Arena.InitializeAsync();
-            sw.Stop();
-            NcDebug.Log($"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            sw.Reset();
-            sw.Start();
-            await RaidStage.InitializeAsync();
-            sw.Stop();
-            NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            NcDebug.Log($"[Game] Start()... BattleRenderer vfx initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
 #endregion Initialize On Start

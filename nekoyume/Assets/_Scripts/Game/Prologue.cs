@@ -188,11 +188,11 @@ namespace Nekoyume.Game
             AudioController.instance.PlaySfx(sfxCode);
             _player.Animator.Cast();
             var pos = _player.transform.position;
-            var castingEffect = Game.instance.Stage.SkillController.Get(pos, ElementalType.Fire);
+            var castingEffect = BattleRenderer.Instance.SkillController.Get(pos, ElementalType.Fire);
             castingEffect.Play();
             AreaAttackCutscene.Show(_armorId);
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
-            var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
+            var effect = BattleRenderer.Instance.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();
             yield return new WaitForSeconds(0.5f);
             var dmgMap = new[] { 1617, 4851, 8085, 12936, 38808 };
@@ -230,10 +230,10 @@ namespace Nekoyume.Game
             var buffRow = Game.instance.TableSheets.StatBuffSheet.Values.First(r =>
                 r.Value > 0 && r.StatType == StatType.HP);
             var buff = new StatBuff(buffRow);
-            var castingEffect = Game.instance.Stage.BuffController.Get(_player.transform.position, buff);
+            var castingEffect = BattleRenderer.Instance.BuffController.Get(_player.transform.position, buff);
             castingEffect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
-            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_player.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(_player.gameObject, buff);
             effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);

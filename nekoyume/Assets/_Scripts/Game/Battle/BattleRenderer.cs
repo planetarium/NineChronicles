@@ -78,8 +78,21 @@ namespace Nekoyume.Game.Battle
             _onPrepareStage?.Invoke(battleLog);
         }
 
-#region AssetLoad
+#region Vfx
+        public async UniTask  InitializeVfxAsync()
+        {
+            var objectPool = Game.instance.Stage.ObjectPool;
+            objectPool.Initialize();
+            SkillController = new SkillController(objectPool);
+            await SkillController.InitializeAsync();
+            BuffController = new BuffController(objectPool);
+            await BuffController.InitializeAsync();
+        }
+        
 
+#endregion Vfx
+
+#region AssetLoad
         // TODO: 씬 분리 후 제거
         private readonly HashSet<int> loadedMonsterIds = new();
 
@@ -113,7 +126,6 @@ namespace Nekoyume.Game.Battle
 
             loadedMonsterIds.Clear();
         }
-
 #endregion AssetLoad
     }
 }

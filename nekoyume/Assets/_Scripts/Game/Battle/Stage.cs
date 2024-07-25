@@ -102,8 +102,6 @@ namespace Nekoyume.Game.Battle
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
         public List<GameObject> ReleaseWhiteList { get; private set; } = new();
-        public SkillController SkillController { get; private set; }
-        public BuffController BuffController { get; private set; }
         public TutorialController TutorialController { get; private set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
@@ -166,14 +164,9 @@ namespace Nekoyume.Game.Battle
             BattleRenderer.Instance.OnStageStart -= OnStartStage;
         }
 
-        public async UniTask InitializeAsync()
+        public void Initialize()
         {
-            objectPool.Initialize();
             dropItemFactory.Initialize();
-            SkillController = new SkillController(objectPool);
-            await SkillController.InitializeAsync();
-            BuffController = new BuffController(objectPool);
-            await BuffController.InitializeAsync();
             TutorialController = new TutorialController(MainCanvas.instance.Widgets);
         }
 

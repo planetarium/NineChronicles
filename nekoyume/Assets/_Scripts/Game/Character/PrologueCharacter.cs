@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -131,7 +132,7 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationCastBlow(elementalType));
 
             var dmgMap = new[] { 1374, 2748, 4122, 8244, 16488 };
-            var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(_target.gameObject, elementalType, SkillCategory.BlowAttack, SkillTargetType.Enemies);
+            var effect = BattleRenderer.Instance.SkillController.Get<SkillBlowVFX>(_target.gameObject, elementalType, SkillCategory.BlowAttack, SkillTargetType.Enemies);
             effect.Play();
             for (var i = 0; i < 5; i++)
             {
@@ -148,7 +149,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Stage.SkillController.Get(pos, elementalType);
+            var effect = BattleRenderer.Instance.SkillController.Get(pos, elementalType);
             effect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
@@ -159,7 +160,7 @@ namespace Nekoyume.Game.Character
 
             var pos = transform.position;
             yield return CoAnimationCastAttack(false);
-            var effect = Game.instance.Stage.SkillController.GetBlowCasting(
+            var effect = BattleRenderer.Instance.SkillController.GetBlowCasting(
                 pos,
                 SkillCategory.BlowAttack,
                 elementalType);
@@ -198,7 +199,7 @@ namespace Nekoyume.Game.Character
         public IEnumerator CoDoubleAttack(int[] damageMap, bool[] criticalMap)
         {
             var go = _target.gameObject;
-            var effect = Game.instance.Stage.SkillController.Get<SkillDoubleVFX>(go, ElementalType.Fire, SkillCategory.DoubleAttack, SkillTargetType.Enemy);
+            var effect = BattleRenderer.Instance.SkillController.Get<SkillDoubleVFX>(go, ElementalType.Fire, SkillCategory.DoubleAttack, SkillTargetType.Enemy);
             for (var i = 0; i < 2; i++)
             {
                 var first = i == 0;
@@ -224,7 +225,7 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationBuffCast(buff));
             Animator.CastAttack();
             AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCastingAttack);
-            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_target.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(_target.gameObject, buff);
             effect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
@@ -236,7 +237,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Stage.BuffController.Get(pos, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get(pos, buff);
             effect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }

@@ -614,7 +614,7 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Target = target;
             effect.Buff = buff;
 
@@ -739,7 +739,7 @@ namespace Nekoyume.Game.Character
             yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
             if (info.ElementalType != ElementalType.Normal)
             {
-                var effect = Game.instance.Stage.SkillController.GetBlowCasting(
+                var effect = BattleRenderer.Instance.SkillController.GetBlowCasting(
                     pos,
                     info.SkillCategory,
                     info.ElementalType);
@@ -758,7 +758,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Stage.SkillController.Get(pos, info.ElementalType);
+            var effect = BattleRenderer.Instance.SkillController.Get(pos, info.ElementalType);
             effect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
 
@@ -768,7 +768,7 @@ namespace Nekoyume.Game.Character
         private IEnumerator CoAnimationBuffCast(Model.BattleStatus.Skill.SkillInfo info)
         {
             var pos = transform.position;
-            var effect = Game.instance.Stage.BuffController.Get(pos, info.Buff);
+            var effect = BattleRenderer.Instance.BuffController.Get(pos, info.Buff);
             if (effect is null)
             {
                 NcDebug.LogError($"[CoAnimationBuffCast] [Buff] {info.Buff.BuffInfo.Id}");
@@ -871,7 +871,7 @@ namespace Nekoyume.Game.Character
 
                 if (info.ElementalType != ElementalType.Normal)
                 {
-                    var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, info);
+                    var effect = BattleRenderer.Instance.SkillController.Get<SkillBlowVFX>(target, info);
                     if (effect is null)
                     {
                         continue;
@@ -1003,7 +1003,7 @@ namespace Nekoyume.Game.Character
                 }
 
                 var first = skillInfosFirst == info;
-                var effect = Game.instance.Stage.SkillController.Get<SkillDoubleVFX>(target, info);
+                var effect = BattleRenderer.Instance.SkillController.Get<SkillDoubleVFX>(target, info);
                 if (effect is null)
                 {
                     continue;
@@ -1045,7 +1045,7 @@ namespace Nekoyume.Game.Character
             }
 
             var effect =
-                Game.instance.Stage.SkillController.Get<SkillAreaVFX>(effectTarget,
+                BattleRenderer.Instance.SkillController.Get<SkillAreaVFX>(effectTarget,
                     skillInfosFirst);
             if (effect is null)
             {
