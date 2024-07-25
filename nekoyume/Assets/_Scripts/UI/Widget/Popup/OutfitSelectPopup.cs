@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
@@ -45,11 +43,19 @@ namespace Nekoyume.UI
 
             // TODO: 지금은 그냥 EquipmentItemRecipeSheet에서 해당하는 ItemSubType을 다 뿌리고있다.
             // 나중에 외형을 갖고있는 시트 데이터로 바꿔치기 해야한다.
-            outfitScroll.UpdateData(TableSheets.Instance.EquipmentItemRecipeSheet
-                .Select(pair => pair.Value)
-                .Where(r => r.ItemSubType == subType)
-                .Select(r => new Item(ItemFactory.CreateItem(r.GetResultEquipmentItemRow(),
-                    new ActionRenderHandler.LocalRandom(0)))));
+            //TableSheets.Instance.CustomEquipmentCraftIconSheet.Values.Where(row => row.ItemSubType == subType).Select(r => new Item(ItemFactory.CreateItem()))
+            outfitScroll.UpdateData(TableSheets.Instance.CustomEquipmentCraftProficiencySheet.Values.Select(r =>
+            {
+                return new Item(ItemFactory.CreateItem(Game.Game.instance.TableSheets
+                    .EquipmentItemSheet[subType switch
+                    {
+                        ItemSubType.Weapon => r.WeaponItemId,
+                        ItemSubType.Armor => r.ArmorItemId,
+                        ItemSubType.Belt => r.BeltItemId,
+                        ItemSubType.Ring => r.RingItemId,
+                        ItemSubType.Necklace => r.NecklaceItemId,
+                    }], new ActionRenderHandler.LocalRandom(0)));
+            }));
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -69,9 +75,9 @@ namespace Nekoyume.UI
             if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
             {
                 // TODO: 전부 다 CustomEquipmentCraft 관련 sheet에서 가져오게 바꿔야함
-                var selectedRecipeRow = TableSheets.Instance.EquipmentItemRecipeSheet.First(row =>
-                    row.Value.ResultEquipmentId == _selectedItem.ItemBase.Value.Id).Value;
-                ActionManager.Instance.CustomEquipmentCraft(slotIndex, selectedRecipeRow.Id, 0)
+                ActionManager.Instance.CustomEquipmentCraft(slotIndex,
+                        TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
+                            r.ItemSubType == _selectedItem.ItemBase.Value.ItemSubType).Id, 0)
                     .Subscribe();
             }
 
