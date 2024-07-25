@@ -2146,10 +2146,10 @@ namespace Nekoyume.Blockchain
                     .First()
                     .Subscribe(_ =>
                     {
-                        var task = UniTask.RunOnThreadPool(() =>
+                        var task = UniTask.RunOnThreadPool(async () =>
                         {
-                            UpdateCurrentAvatarStateAsync(eval).Forget();
-                            RxProps.EventDungeonInfo.UpdateAsync(eval.OutputState).Forget();
+                            await UpdateCurrentAvatarStateAsync(eval);
+                            await RxProps.EventDungeonInfo.UpdateAsync(eval.OutputState);
                             _disposableForBattleEnd = null;
                             Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                         }, false);
