@@ -236,16 +236,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            if (clearedStageId == 5 && checkPoint != -5)
-            {
-                var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
-                if (summonRow is not null && SimpleCostButton.CheckCostOfType(
-                    (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount))
-                {
-                    checkPoint = 50000;
-                }
-            }
-            else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
+            if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
             {
                 if (Game.LiveAsset.GameConfig.IsKoreanBuild && clearedStageId == 7)
                 {
