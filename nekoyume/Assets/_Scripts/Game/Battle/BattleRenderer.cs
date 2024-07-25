@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Game.VFX.Skill;
 using UnityEngine;
 
 namespace Nekoyume.Game.Battle
@@ -31,12 +32,15 @@ namespace Nekoyume.Game.Battle
 #endregion Fields
 
 #region Properties & Events
-
         // TODO: don't use public setter
         // TODO: UI코드에서 불리는 부분이 많은데, 다른 방식으로 체크 불가능?
         // BattlePreparation쪽에서도 set되고, battle쪽에서도 set되는데 중복처리 아닌지
         // 캐릭터 머리 위 UI도 체크해서 고치자
         public bool IsOnBattle { get; set; }
+        
+        public SkillController SkillController { get; private set; }
+
+        public BuffController BuffController { get; private set; }
 
         /// <summary>
         /// ActionRenderHandler의 응답을 받아 렌더링할 리소르를 준비할 때 호출
@@ -63,7 +67,6 @@ namespace Nekoyume.Game.Battle
             }
             remove => _onStageStart -= value;
         }
-
 #endregion Properties & Events
 
         // 나무이동, 에셋로드, 기타등등 대기..

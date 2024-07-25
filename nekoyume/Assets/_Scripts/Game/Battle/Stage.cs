@@ -59,7 +59,9 @@ namespace Nekoyume.Game.Battle
         public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
-        public ObjectPool objectPool;
+        
+        [SerializeField] private ObjectPool objectPool;
+        
         public DropItemFactory dropItemFactory;
 
         public MonsterSpawner spawner;
@@ -96,6 +98,7 @@ namespace Nekoyume.Game.Battle
 
         private const string adventureBossBackgroundKey = "AdventureBoss_0";
 
+        public ObjectPool ObjectPool => objectPool;
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
         public List<GameObject> ReleaseWhiteList { get; private set; } = new();

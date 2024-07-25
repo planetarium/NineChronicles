@@ -32,7 +32,7 @@ namespace Nekoyume.UI
                 throw new Exception("Login widget's slots.Length is not equals GameConfig.SlotCount.");
             }
 
-            _objectPool = Game.Game.instance.Stage.objectPool;
+            _objectPool = Game.Game.instance.Stage.ObjectPool;
 
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
             Game.Event.OnRoomEnter.AddListener(_ => ClearPlayers());

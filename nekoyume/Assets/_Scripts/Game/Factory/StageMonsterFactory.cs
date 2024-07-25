@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Factory
     {
         public static GameObject Create(Enemy spawnCharacter, Vector2 position, Player player)
         {
-            var objectPool = Game.instance.Stage.objectPool;
+            var objectPool = Game.instance.Stage.ObjectPool;
             var enemy = objectPool.Get<StageMonster>(position);
             if (!enemy)
             {
@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Factory
 
         public static EnemyPlayer Create(Model.EnemyPlayer spawnCharacter, Vector2 position)
         {
-            var objectPool = Game.instance.Stage.objectPool;
+            var objectPool = Game.instance.Stage.ObjectPool;
             var enemy = objectPool.Get<EnemyPlayer>(position);
             if (!enemy)
             {
@@ -41,7 +41,7 @@ namespace Nekoyume.Game.Factory
         public static GameObject Create(int characterId, Vector2 position, float offset, Player target,
             bool summonEffect = false)
         {
-            var objectPool = Game.instance.Stage.objectPool;
+            var objectPool = Game.instance.Stage.ObjectPool;
             var enemy = objectPool.Get<PrologueCharacter>(new Vector2(position.x + offset, position.y));
             if (!enemy)
             {
@@ -67,7 +67,7 @@ namespace Nekoyume.Game.Factory
         public static GameObject CreateBreakthroughCharacter(int characterId, Vector2 position, float offset, Player target,
             bool summonEffect = false)
         {
-            var objectPool = Game.instance.Stage.objectPool;
+            var objectPool = Game.instance.Stage.ObjectPool;
             var enemy = objectPool.Get<BreakthroughCharacter>(new Vector2(position.x + offset, position.y));
             if (!enemy)
             {

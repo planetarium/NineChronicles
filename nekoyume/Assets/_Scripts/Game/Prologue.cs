@@ -86,12 +86,12 @@ namespace Nekoyume.Game
             StartCoroutine(Widget.Find<Blind>().FadeIn(2f, ""));
             yield return new WaitForSeconds(2f);
             ActionCamera.instance.Idle();
-            Game.instance.Stage.objectPool.ReleaseAll();
+            Game.instance.Stage.ObjectPool.ReleaseAll();
             AudioController.instance.StopAll();
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             Game.instance.Stage.LoadBackground("nest");
             Widget.Find<Synopsis>().Show();
-            Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
+            Game.instance.Stage.ObjectPool.Remove<Player>(_player.gameObject);
             ActionCamera.instance.InPrologue = false;
         }
 

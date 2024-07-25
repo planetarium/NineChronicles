@@ -247,7 +247,7 @@ namespace Nekoyume.Game.Character
             var position = ActionCamera.instance.Cam.ScreenToWorldPoint(
                 new Vector2((float)Screen.width / 2, (float)Screen.height / 2));
             position.z = 0f;
-            var effect = Game.instance.Stage.objectPool.Get<FenrirSkillVFX>(position);
+            var effect = Game.instance.Stage.ObjectPool.Get<FenrirSkillVFX>(position);
             effect.Stop();
             AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlSkill);
             yield return new WaitForSeconds(2f);
