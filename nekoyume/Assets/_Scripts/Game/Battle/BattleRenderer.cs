@@ -37,10 +37,10 @@ namespace Nekoyume.Game.Battle
         // BattlePreparation쪽에서도 set되고, battle쪽에서도 set되는데 중복처리 아닌지
         // 캐릭터 머리 위 UI도 체크해서 고치자
         public bool IsOnBattle { get; set; }
-        
-        public SkillController SkillController { get; private set; }
 
-        public BuffController BuffController { get; private set; }
+        public SkillController SkillController { get; } = new();
+
+        public BuffController BuffController { get; } = new();
 
         /// <summary>
         /// ActionRenderHandler의 응답을 받아 렌더링할 리소르를 준비할 때 호출
@@ -83,13 +83,9 @@ namespace Nekoyume.Game.Battle
         {
             var objectPool = Game.instance.Stage.ObjectPool;
             objectPool.Initialize();
-            SkillController = new SkillController(objectPool);
-            await SkillController.InitializeAsync();
-            BuffController = new BuffController(objectPool);
-            await BuffController.InitializeAsync();
+            await SkillController.InitializeAsync(objectPool);
+            await BuffController.InitializeAsync(objectPool);
         }
-        
-
 #endregion Vfx
 
 #region AssetLoad
@@ -105,7 +101,7 @@ namespace Nekoyume.Game.Battle
             _onStageStart?.Invoke(battleLog);
         }
 
-        // TODO: 필요한 것만 로드
+        // TODO: 필요한 것만 로드, 현재 모든 리소스를 내렸다가 다시 로드하고있다.
         private IEnumerator LoadMonsterResources(HashSet<int> monsterIds)
         {
             var resourceManager = ResourceManager.Instance;
