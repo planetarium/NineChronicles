@@ -464,8 +464,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<AddHammerPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<OutfitSelectPopup>());
-            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
