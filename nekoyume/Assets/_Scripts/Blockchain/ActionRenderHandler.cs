@@ -4193,7 +4193,7 @@ namespace Nekoyume.Blockchain
             }
 
             ReactiveAvatarState.UpdateProficiency(
-                (Integer)StateGetter.GetState(eval.OutputState, Addresses.Proficiency, avatarAddress)
+                (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
             );
 
             return (eval, slot);

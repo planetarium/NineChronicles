@@ -609,7 +609,7 @@ namespace Nekoyume.State
                 agent.GetStateAsync(Addresses.Collection, avatarAddr),
                 agent.GetStateAsync(Addresses.ActionPoint, avatarAddr),
                 agent.GetStateAsync(Addresses.DailyReward, avatarAddr),
-                agent.GetStateAsync(Addresses.Proficiency, avatarAddr));
+                agent.GetStateAsync(Addresses.Relationship, avatarAddr));
             SetCrystalRandomSkillState(listStates[0] is List serialized
                 ? new CrystalRandomSkillState(skillStateAddress, serialized)
                 : null);

@@ -46,10 +46,10 @@ namespace Nekoyume.State
         public static QuestList QuestList => _questList.Value;
         public static IObservable<QuestList> ObservableQuestList => _questList.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<long> _proficiency = new();
-        public static long Proficiency => _proficiency.Value;
-        public static IObservable<long> ObservableProficiency =>
-            _proficiency.ObserveOnMainThread();
+        private static readonly ReactiveProperty<long> _relationship = new();
+        public static long Relationship => _relationship.Value;
+        public static IObservable<long> ObservableRelationship =>
+            _relationship.ObserveOnMainThread();
 
         public static void Initialize(AvatarState state)
         {
@@ -109,7 +109,7 @@ namespace Nekoyume.State
 
         public static void UpdateProficiency(long proficiency)
         {
-            _proficiency.SetValueAndForceNotify(proficiency);
+            _relationship.SetValueAndForceNotify(proficiency);
         }
     }
 }
