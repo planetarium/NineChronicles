@@ -9,6 +9,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -237,6 +238,24 @@ namespace Nekoyume.UI.Module
             var items = _equipments[itemSubType];
             var item = items.First(item =>
                 item.ItemBase is Equipment equipment && equipment.ItemId == itemId);
+
+            if (_baseModel is null)
+            {
+                SelectBaseItem(item);
+            }
+            else if (!item.Disabled.Value)
+            {
+                SelectMaterialItem(item);
+            }
+        }
+
+        public void Select(ItemSheet.Row row)
+        {
+            var toggle = categoryToggles.FirstOrDefault(x => x.Type == row.ItemSubType);
+            toggle.Toggle.isOn = true;
+
+            var items = _equipments[row.ItemSubType];
+            var item = items.First(item => item.ItemBase.Id == row.Id);
 
             if (_baseModel is null)
             {

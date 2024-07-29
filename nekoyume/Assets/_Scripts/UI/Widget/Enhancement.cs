@@ -179,11 +179,24 @@ namespace Nekoyume.UI
             StartCoroutine(CoSelect(itemSubType, itemId));
         }
 
+        public void Show(ItemSheet.Row row, bool ignoreShowAnimation = false)
+        {
+            Show(ignoreShowAnimation);
+            StartCoroutine(CoSelect(row));
+        }
+
         private IEnumerator CoSelect(ItemSubType itemSubType, Guid itemId)
         {
             yield return null;
             yield return new WaitForEndOfFrame();
             enhancementInventory.Select(itemSubType, itemId);
+        }
+
+        private IEnumerator CoSelect(ItemSheet.Row row)
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            enhancementInventory.Select(row);
         }
 
         private void Close()
