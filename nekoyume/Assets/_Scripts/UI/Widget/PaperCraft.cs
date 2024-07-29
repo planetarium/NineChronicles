@@ -50,6 +50,15 @@ namespace Nekoyume.UI
         [SerializeField]
         private CustomOutfitScroll outfitScroll;
 
+        [SerializeField]
+        private TextMeshProUGUI baseStatText;
+
+        [SerializeField]
+        private TextMeshProUGUI expText;
+
+        [SerializeField]
+        private TextMeshProUGUI cpText;
+
         private CustomOutfit _selectedOutfit;
 
         private ItemSubType _selectedSubType = ItemSubType.Weapon;
@@ -86,7 +95,7 @@ namespace Nekoyume.UI
             base.Initialize();
             ReactiveAvatarState.ObservableRelationship
                 .Where(_ => isActiveAndEnabled)
-                .Subscribe(SetSkillView)
+                .Subscribe(SetRelationshipView)
                 .AddTo(gameObject);
 
             outfitScroll.OnClick.Subscribe(item =>
@@ -98,6 +107,18 @@ namespace Nekoyume.UI
 
                 _selectedOutfit = item;
                 _selectedOutfit.Selected.Value = true;
+
+                var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
+                    .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
+                var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
+                var equipmentItemSheet = TableSheets.Instance.EquipmentItemSheet;
+                if (equipmentItemSheet.TryGetValue(equipmentItemId, out var equipmentRow))
+                {
+                    // TODO: 싹 다 시안에 맞춰서 표현 방식을 변경해야한다. 지금은 외형을 선택하면 시트에서 잘 가져오는지 보려고 했다.
+                    baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
+                    expText.SetText($"EXP: {equipmentRow.Exp}");
+                    cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
+                }
             }).AddTo(gameObject);
             craftButton.onClick.AddListener(OnClickSubmitButton);
         }
@@ -106,7 +127,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             _selectedOutfit = null;
-            SetSkillView(ReactiveAvatarState.Relationship);
+            SetRelationshipView(ReactiveAvatarState.Relationship);
             OnItemSubtypeSelected(ItemSubType.Weapon);
         }
 
@@ -114,10 +135,10 @@ namespace Nekoyume.UI
         /// 숙련도의 상태를 표시하는 View update 코드이다.
         /// State를 보여주는 기능으로, ActionRenderHandler나 ReactiveAvatarState를 반영해야 한다.
         /// </summary>
-        /// <param name="skill"></param>
-        private void SetSkillView(long skill)
+        /// <param name="relationship"></param>
+        private void SetRelationshipView(long relationship)
         {
-            skillText.SetText($"SKILL: {skill}");
+            skillText.SetText($"RELATIONSHIP: {relationship}");
         }
 
         /// <summary>
