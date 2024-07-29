@@ -15,9 +15,9 @@ namespace Nekoyume.UI
     {
         private static readonly int SizePropertyID = Shader.PropertyToID("_Size");
 
-        private static readonly List<Blur> _blurs = new List<Blur>();
-        private static readonly Subject<Unit> _onBlurAdded = new Subject<Unit>();
-        private static readonly Subject<Unit> _onBlurRemoved = new Subject<Unit>();
+        private static readonly List<Blur> _blurs = new();
+        private static readonly Subject<Unit> _onBlurAdded = new();
+        private static readonly Subject<Unit> _onBlurRemoved = new();
 
         [SerializeField]
         private TouchHandler touchHandler;
@@ -28,13 +28,13 @@ namespace Nekoyume.UI
         private float _originalBlurSize;
         private const float _time = 0.33f;
 
-        private readonly List<IDisposable> _disposablesAtEnable = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesAtEnable = new();
 
         private Coroutine _coroutine;
 
         public System.Action OnClick { get; set; }
 
-        #region override
+#region override
 
         private void Awake()
         {
@@ -97,12 +97,14 @@ namespace Nekoyume.UI
             _glass.SetFloat(SizePropertyID, _originalBlurSize);
         }
 
-        #endregion
+#endregion
 
         private void StartBlur(float size, float time)
         {
             if (!gameObject.activeSelf)
+            {
                 return;
+            }
 
             if (_coroutine != null)
             {
@@ -115,7 +117,9 @@ namespace Nekoyume.UI
         private IEnumerator CoBlur(float size, float time)
         {
             if (!_glass)
+            {
                 yield break;
+            }
 
             var from = 0f;
             var to = size;

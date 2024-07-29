@@ -18,7 +18,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
     {
         internal static readonly JsonSerializerOptions JsonSerializerOptions = new()
         {
-            WriteIndented = false,
+            WriteIndented = false
         };
 
         private readonly IAPServiceEndpoints _endpoints;
@@ -81,9 +81,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             {
                 { "store", (int)store },
                 { "agentAddress", agentAddr },
-                { "avatarAddress", avatarAddr},
-                { "planetId", planetId},
-                { "data", receiptJson },
+                { "avatarAddress", avatarAddr },
+                { "planetId", planetId },
+                { "data", receiptJson }
             };
 
             Debug.Log($"PurchaseRequestAsync : {reqJson}");
@@ -118,8 +118,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 { "sku", sku },
                 { "store", (int)store },
                 { "agentAddress", agentAddr },
-                { "avatarAddress", avatarAddr},
-                { "planetId", planetId},
+                { "avatarAddress", avatarAddr },
+                { "planetId", planetId }
             };
 
             Debug.Log($"PurchaseFreeAsync : {reqJson}");

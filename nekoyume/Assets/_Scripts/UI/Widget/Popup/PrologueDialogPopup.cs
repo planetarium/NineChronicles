@@ -86,7 +86,9 @@ namespace Nekoyume.UI
         {
             var text = L10nManager.Localize($"{_dialogKey}{_dialogIndex}");
             if (string.IsNullOrEmpty(text))
+            {
                 yield break;
+            }
 
             _npc = null;
             _text = ParseText(text);
@@ -103,6 +105,7 @@ namespace Nekoyume.UI
                     freya.DOFade(1, 0.3f);
                     fenrir.DOFade(0, 0.3f);
                 }
+
                 string localizedName;
                 try
                 {
@@ -112,6 +115,7 @@ namespace Nekoyume.UI
                 {
                     localizedName = "???";
                 }
+
                 txtName.text = localizedName;
             }
 
@@ -133,16 +137,24 @@ namespace Nekoyume.UI
                     }
 
                     if (!tagClosed && _text[textIndex] == '/')
+                    {
                         tagClosed = true;
+                    }
                 }
 
                 if (skipTag)
+                {
                     continue;
+                }
 
                 if (tagClosed)
+                {
                     txtDialog.text = $"{_text.Substring(0, textIndex)}";
+                }
                 else
+                {
                     txtDialog.text = $"{_text.Substring(0, textIndex)}</color>";
+                }
 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Typing, 0.1f);
 

@@ -12,10 +12,10 @@ namespace Nekoyume.Game.Character
             Special,
             Interaction,
             BattleStart,
-            BattleEnd,
+            BattleEnd
         }
 
-        public static readonly List<Type> List = new List<Type>();
+        public static readonly List<Type> List = new();
 
         static PetAnimation()
         {

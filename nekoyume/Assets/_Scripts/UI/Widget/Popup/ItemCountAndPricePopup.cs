@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.UI.Module;
+    using Module;
     using UniRx;
 
     public class ItemCountAndPricePopup : ItemCountPopup<Model.ItemCountAndPricePopup>
@@ -15,10 +15,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_InputField priceInputField = null;
 
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-        private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForAwake = new();
+        private readonly List<IDisposable> _disposablesForSetData = new();
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -35,8 +35,7 @@ namespace Nekoyume.UI
                     }
 
                     var isBelowMinimumPrice = price < Model.Shop.MinimumPrice;
-                    submitButton.SetState(isBelowMinimumPrice ?
-                        ConditionalButton.State.Conditional : ConditionalButton.State.Normal);
+                    submitButton.SetState(isBelowMinimumPrice ? ConditionalButton.State.Conditional : ConditionalButton.State.Normal);
 
                     _data.Price.Value =
                         new FungibleAssetValue(_data.Price.Value.Currency, price, 0);
@@ -51,7 +50,7 @@ namespace Nekoyume.UI
             Clear();
         }
 
-        #endregion
+#endregion
 
         protected override void SetData(Model.ItemCountAndPricePopup data)
         {

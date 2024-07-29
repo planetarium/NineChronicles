@@ -112,7 +112,7 @@ namespace Nekoyume.Game.Battle
             if (!_isPlaying)
             {
                 ClearBattle();
-                _isPlaying       = true;
+                _isPlaying = true;
                 _currentPlayData = data;
 
                 if (data.Log?.Count > 0)
@@ -159,10 +159,7 @@ namespace Nekoyume.Game.Battle
                             }
 
                             var playAll = skillRow.SkillType != SkillType.Attack;
-                            container.OnAttackPoint = () =>
-                            {
-                                boss.ProceedSkill(playAll);
-                            };
+                            container.OnAttackPoint = () => { boss.ProceedSkill(playAll); };
 
                             var infos = param.SkillInfos;
                             if (param.BuffInfos is not null && param.BuffInfos.Any())
@@ -233,7 +230,7 @@ namespace Nekoyume.Game.Battle
             _wave = 0;
             _currentScore = 0;
 
-            _player.Pet.DelayedPlay(Character.PetAnimation.Type.BattleStart, 2.5f);
+            _player.Pet.DelayedPlay(PetAnimation.Type.BattleStart, 2.5f);
             yield return StartCoroutine(container.CoPlayAppearCutscene());
             _boss.Animator.Idle();
             foreach (var character in GetComponentsInChildren<Actor>())
@@ -455,6 +452,7 @@ namespace Nekoyume.Game.Battle
             {
                 yield return StartCoroutine(_nextWaveCoroutine);
             }
+
             Widget.Find<WorldBossBattle>().Show();
 
             _turnLimit = 150;
@@ -481,6 +479,7 @@ namespace Nekoyume.Game.Battle
                 var message = L10nManager.Localize("UI_MESSAGE_TURNS_LEFT_FORMAT", alertTurn);
                 OneLineSystem.Push(Model.Mail.MailType.System, message, NotificationCell.NotificationType.Alert);
             }
+
             yield break;
         }
 
@@ -491,7 +490,7 @@ namespace Nekoyume.Game.Battle
             raidCharacter.Set(character);
 
             Widget.Find<WorldBossBattle>().Close();
-            if (raidCharacter is Character.RaidPlayer player)
+            if (raidCharacter is RaidPlayer player)
             {
                 yield return StartCoroutine(container.CoPlayPlayerDefeatCutscene());
             }
@@ -525,21 +524,24 @@ namespace Nekoyume.Game.Battle
                         {
                             continue;
                         }
+
                         var frostBite = kvp.Value;
+
                         IEnumerator CoFrostBite(IReadOnlyList<Skill.SkillInfo> skillInfos)
                         {
                             _player.CustomEvent(tick.SkillId);
                             yield return raidCharacter.CoBuff(skillInfos);
                         }
+
                         var tickSkillInfo = new Skill.SkillInfo(raidCharacter.Id,
-                                                                raidCharacter.IsDead,
-                                                                0,
-                                                                0,
-                                                                false,
-                                                                SkillCategory.Debuff,
-                                                                _waveTurn,
-                                                                target: character,
-                                                                buff: frostBite
+                            raidCharacter.IsDead,
+                            0,
+                            0,
+                            false,
+                            SkillCategory.Debuff,
+                            _waveTurn,
+                            target: character,
+                            buff: frostBite
                         );
                         _actionQueue.Enqueue(
                             new RaidActionParams(
@@ -550,8 +552,9 @@ namespace Nekoyume.Game.Battle
                                 CoFrostBite)
                         );
                         break;
-                    };
+                    }
 
+                    ;
                 }
                 // This Tick from 'Stun'
                 else if (tick.SkillId == 0)
@@ -582,9 +585,9 @@ namespace Nekoyume.Game.Battle
                 }
                 // This Tick from 'Vampiric'
                 else if (TableSheets.Instance.ActionBuffSheet.TryGetValue(
-                             tick.SkillId,
-                             out var row)
-                         && row.ActionBuffType == ActionBuffType.Vampiric)
+                        tick.SkillId,
+                        out var row)
+                    && row.ActionBuffType == ActionBuffType.Vampiric)
                 {
                     _actionQueue.Enqueue(
                         new RaidActionParams(
@@ -632,6 +635,7 @@ namespace Nekoyume.Game.Battle
                 NcDebug.LogWarning("Can't skip battle. No battle data found.");
                 return;
             }
+
             var value = _currentPlayData.Value;
             ClearBattle();
 
@@ -647,6 +651,7 @@ namespace Nekoyume.Game.Battle
                 _battleCoroutine = null;
                 objectPool.ReleaseAll();
             }
+
             _currentPlayData = null;
             _isPlaying = false;
 

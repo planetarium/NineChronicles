@@ -56,7 +56,7 @@ namespace Nekoyume.UI
                 itemView.gameObject.SetActive(true);
             }
 
-            FungibleAssetValue cost = 0 * CrystalCalculator.CRYSTAL;
+            var cost = 0 * CrystalCalculator.CRYSTAL;
             var hasUnreplaceableMaterial = false;
             foreach (var pair in materials)
             {

@@ -22,7 +22,7 @@ namespace Nekoyume.UI.Scroller
 
     public class RecipeCellView : MonoBehaviour
     {
-        protected static readonly Color DisabledColor = new Color(0.5f, 0.5f, 0.5f);
+        protected static readonly Color DisabledColor = new(0.5f, 0.5f, 0.5f);
 
         [SerializeField]
         protected Button button;
@@ -66,10 +66,9 @@ namespace Nekoyume.UI.Scroller
         public RectTransformShakeTweener shakeTweener = null;
         public TransformLocalScaleTweener scaleTweener = null;
 
-        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> HasNotification = new(false);
 
-        public readonly Subject<RecipeCellView> OnClick =
-            new Subject<RecipeCellView>();
+        public readonly Subject<RecipeCellView> OnClick = new();
 
         public bool IsLocked => lockParent.activeSelf;
         public ItemSubType ItemSubType { get; protected set; }
@@ -105,8 +104,10 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
 
             if (hasNotificationImage)
+            {
                 HasNotification.SubscribeTo(hasNotificationImage)
                     .AddTo(gameObject);
+            }
         }
 
         private void OnDestroy()
@@ -222,6 +223,7 @@ namespace Nekoyume.UI.Scroller
                             lockVFX.Play();
                             shakeTweener.PlayLoop();
                         }
+
                         unlockConditionText.text = string.Format(
                             L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             unlockStage.ToString());
@@ -257,7 +259,7 @@ namespace Nekoyume.UI.Scroller
 
             EquipmentRowData = recipeRow;
 
-            var equipment = (Equipment) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, Guid.Empty, default);
             Set(equipment);
 
             StatType = equipment.UniqueStatType;
@@ -355,12 +357,16 @@ namespace Nekoyume.UI.Scroller
             StopLockEffect();
             HasNotification.Value = false;
             if (recipeRow is null)
+            {
                 return;
+            }
 
             UnlockStage = Game.LiveAsset.GameConfig.RequiredStage.CraftConsumable;
             var sheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
             if (!sheet.TryGetValue(recipeRow.ResultConsumableItemId, out var row))
+            {
                 return;
+            }
 
             ConsumableRowData = recipeRow;
 
@@ -377,7 +383,9 @@ namespace Nekoyume.UI.Scroller
         public void Set(AvatarState avatarState)
         {
             if (ConsumableRowData is null)
+            {
                 return;
+            }
 
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(UnlockStage))

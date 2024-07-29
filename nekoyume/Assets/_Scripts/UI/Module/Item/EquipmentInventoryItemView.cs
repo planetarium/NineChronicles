@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -16,7 +18,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private BaseItemView baseItemView;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public void Set(EnhancementInventoryItem model, EnhancementInventoryScroll.ContextModel context)
         {
@@ -37,7 +39,6 @@ namespace Nekoyume.UI.Module
             baseItemView.LockObject.SetActive(false);
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
-            baseItemView.CountText.gameObject.SetActive(false);
             baseItemView.FocusObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
             baseItemView.NotificationObject.SetActive(false);
@@ -83,8 +84,24 @@ namespace Nekoyume.UI.Module
             model.LevelLimited.Subscribe(b => baseItemView.LevelLimitObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.SelectedBase.Subscribe(b => baseItemView.SelectBaseItemObject.SetActive(b)).AddTo(_disposables);
-            model.SelectedMaterial.Subscribe(b => baseItemView.SelectMaterialItemObject.SetActive(b)).AddTo(_disposables);
+            model.SelectedMaterialCount
+                .Subscribe(count => baseItemView.SelectMaterialItemObject.SetActive(count > 0))
+                .AddTo(_disposables);
             model.Disabled.Subscribe(b => baseItemView.DimObject.SetActive(b)).AddTo(_disposables);
+
+            if (ItemEnhancement.HammerIds.Contains(model.ItemBase.Id))
+            {
+                baseItemView.CountText.gameObject.SetActive(true);
+                model.SelectedMaterialCount.Subscribe(selected =>
+                {
+                    var count = model.Count.Value - selected;
+                    baseItemView.CountText.text = count.ToString();
+                }).AddTo(_disposables);
+            }
+            else
+            {
+                baseItemView.CountText.gameObject.SetActive(false);
+            }
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)
                 .Subscribe(context.OnClick.OnNext).AddTo(_disposables);

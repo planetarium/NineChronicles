@@ -10,8 +10,7 @@ namespace Nekoyume.Blockchain
     {
         private readonly int _size;
 
-        private readonly ConcurrentQueue<KeyValuePair<Guid, TxId>> _queue =
-            new ConcurrentQueue<KeyValuePair<Guid, TxId>>();
+        private readonly ConcurrentQueue<KeyValuePair<Guid, TxId>> _queue = new();
 
         public TransactionMap(int size)
         {

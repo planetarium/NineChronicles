@@ -54,6 +54,7 @@ public static class ResourceEditor
 
             EditorUtility.SetDirty(asset);
         }
+
         Debug.Log(sb.ToString());
     }
 }

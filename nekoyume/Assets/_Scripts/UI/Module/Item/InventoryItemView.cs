@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected BaseItemView baseItemView;
 
-        protected readonly List<IDisposable> Disposables = new List<IDisposable>();
+        protected readonly List<IDisposable> Disposables = new();
 
         public void Set(InventoryItem model, InventoryScroll.ContextModel context)
         {

@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class RewardScreen : MailRewardScreen
     {
         private IDisposable _disposable;
@@ -23,10 +24,7 @@ namespace Nekoyume.UI
             _disposable?.Dispose();
             _disposable = Observable
                 .EveryUpdate()
-                .Where(_ => _isDone.Value && Input.GetMouseButtonDown(0)).Subscribe(_ =>
-                {
-                    CloseWidget?.Invoke();
-                });
+                .Where(_ => _isDone.Value && Input.GetMouseButtonDown(0)).Subscribe(_ => { CloseWidget?.Invoke(); });
         }
 
         protected override void OnDisable()

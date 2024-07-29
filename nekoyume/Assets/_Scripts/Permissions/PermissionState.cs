@@ -4,6 +4,6 @@ namespace Nekoyume.Permissions
     {
         Denied,
         DeniedAndDontAskAgain,
-        Granted,
+        Granted
     }
 }

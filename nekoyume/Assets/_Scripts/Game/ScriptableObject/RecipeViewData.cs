@@ -16,7 +16,7 @@ namespace Nekoyume.Game.ScriptableObject
             [field: SerializeField]
             public Sprite BgSprite { get; private set; }
 
-            [field:SerializeField]
+            [field: SerializeField]
             public Material GradeEffectBgMaterial { get; private set; }
 
             [field: SerializeField]

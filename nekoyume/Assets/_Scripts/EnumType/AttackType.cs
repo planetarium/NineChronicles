@@ -4,6 +4,6 @@ namespace Nekoyume.Data.Table
     {
         Light,
         Middle,
-        Heavy,
+        Heavy
     }
 }

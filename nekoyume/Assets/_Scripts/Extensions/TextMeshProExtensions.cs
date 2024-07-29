@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Nekoyume
 {
     using UniRx;
+
     public static class TextMeshProExtensions
     {
         private static readonly Camera Camera;

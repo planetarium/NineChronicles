@@ -52,7 +52,7 @@ namespace Nekoyume.UI
         private int _worldId;
         private int _stageId;
 
-        private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
+        private static readonly Vector3 PlayerPosition = new(1999.8f, 1999.3f, 3f);
 
         protected override void Awake()
         {

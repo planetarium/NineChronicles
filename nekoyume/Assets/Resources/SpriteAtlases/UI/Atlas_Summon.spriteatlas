@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 2048
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 0
+      m_TextureCompression: 1
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -63,6 +63,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f06a9ca721279d142b07498f3b630587, type: 3}
   - {fileID: 21300000, guid: 73b94218bff0b4f43a45a7989cc81f77, type: 3}
   - {fileID: 21300000, guid: d698c8b81f81f414d98fed356e927ea6, type: 3}
+  - {fileID: 21300000, guid: f1b7d65955f4e3b438cf9768d0ccc28b, type: 3}
   - {fileID: 21300000, guid: b8ff977945029bc418e6403e29f77d7d, type: 3}
   - {fileID: 21300000, guid: 35ef34897c9238b4e95291f4c36564e6, type: 3}
   - {fileID: 21300000, guid: 68d9a4d99b981d541a964c97c13c3d08, type: 3}
@@ -77,6 +78,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9375721ceaff0524385199a6d3f37560, type: 3}
   - {fileID: 21300000, guid: 882f814c2441b7144ae81327a3d83b9a, type: 3}
   - {fileID: 21300000, guid: 510d589cedb66b049b0430d5aab76677, type: 3}
+  - {fileID: 21300000, guid: 6cd933ac7288e7547888310abc92f475, type: 3}
   - {fileID: 21300000, guid: 5cf7871d17ede394db81c3a57a3f5d04, type: 3}
   - {fileID: 21300000, guid: f2f8752d563123d40b765ad43a4ae9bc, type: 3}
   - {fileID: 21300000, guid: ea27572d42e431f4d95483bdf8ad4859, type: 3}
@@ -98,6 +100,7 @@ SpriteAtlas:
   - NormalAura
   - Aura_Pattern
   - Aura_Back2
+  - Aura_Front4
   - Summon_Character_6_2
   - Summon_Character_1
   - Aura_list_Bg
@@ -112,6 +115,7 @@ SpriteAtlas:
   - Aura_Back3
   - Summon_Character_3
   - Summon_Character_1_2
+  - Aura_Back4
   - icon_Summon_BeastAura
   - icon_Summon_GoldenRune
   - Summon_Character_4

@@ -143,7 +143,10 @@ namespace Nekoyume.UI
             accelerationToggle.gameObject.SetActive(canAccel);
             accelerationToggle.interactable = canAccel;
             accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
-            SetAccelToggle(accelerationToggle.isOn);
+            if(stageType != StageType.AdventureBoss)
+            {
+                SetAccelToggle(accelerationToggle.isOn);
+            }
 
             var canExit = States.Instance.CurrentAvatarState.worldInformation
                 .IsStageCleared(RequiredStageForExitButton);
@@ -168,6 +171,7 @@ namespace Nekoyume.UI
                 ShowForTutorial(false, stageId);
                 return;
             }
+
             lineEffect.SetActive(false);
             guidedQuest.Hide(true);
             base.Show();
@@ -219,7 +223,7 @@ namespace Nekoyume.UI
             helpButton.gameObject.SetActive(true);
         }
 
-        public void ClearStage(int stageId, System.Action<bool> onComplete)
+        public void ClearStage(int stageId, Action<bool> onComplete)
         {
             switch (_stageType)
             {
@@ -264,7 +268,8 @@ namespace Nekoyume.UI
             comboText.Show(attacked);
         }
 
-        #region tutorial
+#region tutorial
+
         public void ShowForTutorial(bool isPrologue, int stageId = 0)
         {
             if (isPrologue)
@@ -290,7 +295,8 @@ namespace Nekoyume.UI
             gameObject.SetActive(true);
             Find<HeaderMenuStatic>().Close(true);
         }
-        #endregion
+
+#endregion
 
         private void SetAccelToggle(bool value)
         {

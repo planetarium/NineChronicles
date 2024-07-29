@@ -48,6 +48,6 @@ namespace Nekoyume.Multiplanetary
         public List<string> PatrolRewardGql { get; set; }
 
         [JsonPropertyName("guild.rest")]
-        public List<string> GuildRest { get; set; } = new ();
+        public List<string> GuildRest { get; set; } = new();
     }
 }

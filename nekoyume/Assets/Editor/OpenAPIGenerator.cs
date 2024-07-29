@@ -21,11 +21,11 @@ namespace Nekoyume
         private string url = "";
         private string responseMessage;
         private string className = "";
-        private List<string> methodNames = new List<string>();
-        private List<MethodInfo> methodInfos = new List<MethodInfo>();
+        private List<string> methodNames = new();
+        private List<MethodInfo> methodInfos = new();
         private int selectedMethodIndex = 0;
-        private List<object> methodParameters = new List<object>();
-        private Dictionary<string, object> customClassValues = new Dictionary<string, object>();
+        private List<object> methodParameters = new();
+        private Dictionary<string, object> customClassValues = new();
         private Vector2 scrollPosition;
 
         public static void ShowWindow(string startURl, string className)
@@ -55,7 +55,7 @@ namespace Nekoyume
 
             if (clientInstance != null)
             {
-                int newSelectedMethodIndex = EditorGUILayout.Popup("Select Method", selectedMethodIndex, methodNames.ToArray());
+                var newSelectedMethodIndex = EditorGUILayout.Popup("Select Method", selectedMethodIndex, methodNames.ToArray());
 
                 if (newSelectedMethodIndex != selectedMethodIndex)
                 {
@@ -84,7 +84,7 @@ namespace Nekoyume
         {
             methodParameters.Clear();
 
-            ParameterInfo[] parameters = methodInfos[selectedMethodIndex].GetParameters();
+            var parameters = methodInfos[selectedMethodIndex].GetParameters();
             foreach (var param in parameters)
             {
                 if (param.ParameterType == typeof(string))
@@ -110,11 +110,11 @@ namespace Nekoyume
 
         private void DrawMethodParameters()
         {
-            ParameterInfo[] parameters = methodInfos[selectedMethodIndex].GetParameters();
-            for (int i = 0; i < parameters.Length; i++)
+            var parameters = methodInfos[selectedMethodIndex].GetParameters();
+            for (var i = 0; i < parameters.Length; i++)
             {
-                string paramName = parameters[i].Name;
-                Type paramType = parameters[i].ParameterType;
+                var paramName = parameters[i].Name;
+                var paramType = parameters[i].ParameterType;
 
                 if (paramType == typeof(string))
                 {
@@ -130,7 +130,6 @@ namespace Nekoyume
                 }
                 else if (IsCallback(paramType))
                 {
-
                 }
                 else if (IsCustomClass(paramType))
                 {
@@ -150,8 +149,8 @@ namespace Nekoyume
 
         private void DrawCustomClassFields(string paramName, Type paramType, out object classIntance)
         {
-            FieldInfo[] fields = paramType.GetFields(BindingFlags.Public | BindingFlags.Instance);
-            PropertyInfo[] properties = paramType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var fields = paramType.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var properties = paramType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             EditorGUILayout.LabelField($"Editing {paramName} ({paramType.Name}):");
             EditorGUI.indentLevel++;
@@ -162,6 +161,7 @@ namespace Nekoyume
                 customClassInstance = Activator.CreateInstance(paramType);
                 customClassValues[paramName] = customClassInstance;
             }
+
             classIntance = customClassInstance;
 
             foreach (var prop in properties)
@@ -236,7 +236,7 @@ namespace Nekoyume
             {
                 value = 0.0f;
             }
-            
+
             value = EditorGUILayout.FloatField(name + " (float?)", value.Value);
             return value;
         }
@@ -276,16 +276,17 @@ namespace Nekoyume
         private static bool HasField(Type type, string fieldName, Type fieldType = null)
         {
             var field = type.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            if(fieldType == null)
+            if (fieldType == null)
             {
                 return field != null;
             }
+
             return field != null && field.FieldType == fieldType;
         }
 
         private void CreateClientInstance()
         {
-            Type clientType = FindTypeInAllAssemblies(className);
+            var clientType = FindTypeInAllAssemblies(className);
 
             if (clientType != null)
             {
@@ -305,12 +306,13 @@ namespace Nekoyume
                 methodNames.Clear();
                 methodInfos.Clear();
                 customClassValues.Clear();
-                MethodInfo[] methods = clientInstance.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
+                var methods = clientInstance.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
                 foreach (var method in methods)
                 {
                     methodNames.Add(method.Name);
                     methodInfos.Add(method);
                 }
+
                 responseMessage = $"Loaded {methodNames.Count} methods!";
             }
             else
@@ -321,14 +323,14 @@ namespace Nekoyume
 
         private void InvokeSelectedMethod()
         {
-            MethodInfo method = methodInfos[selectedMethodIndex];
+            var method = methodInfos[selectedMethodIndex];
 
             try
             {
                 responseMessage = "Requesting~";
                 Repaint();
-                
-                object result = method.Invoke(clientInstance, methodParameters.ToArray());
+
+                var result = method.Invoke(clientInstance, methodParameters.ToArray());
                 if (result is Task task)
                 {
                     WaitForTaskCompletion(task);
@@ -344,16 +346,21 @@ namespace Nekoyume
 
         private bool IsCallback(Type type)
         {
-            if (!type.IsGenericType) return false;
+            if (!type.IsGenericType)
+            {
+                return false;
+            }
+
             return type.GetGenericTypeDefinition() == typeof(Action<>);
         }
 
         private Delegate CreateDynamicCallback(Type callbackType)
         {
-            MethodInfo method = this.GetType().GetMethod(nameof(GenericCallback), BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo generic = method.MakeGenericMethod(callbackType);
+            var method = GetType().GetMethod(nameof(GenericCallback), BindingFlags.NonPublic | BindingFlags.Instance);
+            var generic = method.MakeGenericMethod(callbackType);
             return (Delegate)generic.CreateDelegate(typeof(Action<>).MakeGenericType(callbackType), this);
         }
+
         private async void WaitForTaskCompletion(Task task)
         {
             try
@@ -369,11 +376,11 @@ namespace Nekoyume
 
         private void GenericCallback<T>(T obj)
         {
-            var options = new System.Text.Json.JsonSerializerOptions
+            var options = new JsonSerializerOptions
             {
                 WriteIndented = true
             };
-            string serializedData = System.Text.Json.JsonSerializer.Serialize(obj, options);
+            var serializedData = JsonSerializer.Serialize(obj, options);
             responseMessage = $"{serializedData}";
             Repaint();
         }
@@ -387,7 +394,7 @@ namespace Nekoyume
 
         private static string _downloadJsonUrl;
         private static string _className;
-        private static List<KeyValuePair<string, string>> _dataList = new List<KeyValuePair<string, string>>();
+        private static List<KeyValuePair<string, string>> _dataList = new();
         private Vector2 _scrollPosition;
 
         [MenuItem("Tools/Generate OpenAPI Class")]
@@ -435,12 +442,15 @@ namespace Nekoyume
                         _className = data.Key;
                         _downloadJsonUrl = data.Value;
                     }
+
                     if (GUILayout.Button("TesterWindow"))
                     {
-                        GeneratedApiTester.ShowWindow(data.Value.Replace("/openapi.json",""), data.Key);
+                        GeneratedApiTester.ShowWindow(data.Value.Replace("/openapi.json", ""), data.Key);
                     }
+
                     GUILayout.EndHorizontal();
                 }
+
                 GUILayout.EndVertical();
             }
 
@@ -450,19 +460,19 @@ namespace Nekoyume
 
         public static void GenerateOpenApiClass(string url, string className)
         {
-            string apiUrl = url;
+            var apiUrl = url;
 
-            string jsonSpec = DownloadOpenApiSpec(apiUrl);
+            var jsonSpec = DownloadOpenApiSpec(apiUrl);
             if (string.IsNullOrEmpty(jsonSpec))
             {
-                UnityEngine.Debug.LogError("Failed to download OpenAPI spec.");
+                Debug.LogError("Failed to download OpenAPI spec.");
                 return;
             }
 
-            string generatedCode = GenerateCSharpFromOpenApiSpec(jsonSpec, className, url);
+            var generatedCode = GenerateCSharpFromOpenApiSpec(jsonSpec, className, url);
             if (string.IsNullOrEmpty(generatedCode))
             {
-                UnityEngine.Debug.LogError("Failed to generate C# code from OpenAPI spec.");
+                Debug.LogError("Failed to generate C# code from OpenAPI spec.");
                 return;
             }
 
@@ -481,20 +491,24 @@ namespace Nekoyume
             using (var www = UnityWebRequest.Get(url))
             {
                 www.SendWebRequest();
-                while (!www.isDone) { }
+                while (!www.isDone)
+                {
+                }
+
                 if (www.result != UnityWebRequest.Result.Success)
                 {
-                    UnityEngine.Debug.LogError("Failed to download: " + www.error);
+                    Debug.LogError("Failed to download: " + www.error);
                     return null;
                 }
+
                 return www.downloadHandler.text;
             }
         }
 
         private static string GenerateCSharpFromOpenApiSpec(string jsonSpec, string rootClassName, string url)
         {
-            StringBuilder sb = new StringBuilder();
-            JsonNode rootNode = JsonNode.Parse(jsonSpec);
+            var sb = new StringBuilder();
+            var rootNode = JsonNode.Parse(jsonSpec);
 
             sb.AppendLine("//------------------------------------------------------------------------------");
             sb.AppendLine("// <auto-generated>");
@@ -536,7 +550,7 @@ namespace Nekoyume
             {
                 foreach (var schema in schemas)
                 {
-                    string className = schema.Key;
+                    var className = schema.Key;
 
                     if (schema.Value["enum"] is JsonArray enumValues)
                     {
@@ -544,8 +558,8 @@ namespace Nekoyume
                         sb.AppendLine($"    public enum {schema.Key}");
                         sb.AppendLine("    {");
 
-                        string description = schema.Value["description"] != null ? schema.Value["description"].ToString() : string.Empty;
-                        Dictionary<string, string> enumMapping = new Dictionary<string, string>();
+                        var description = schema.Value["description"] != null ? schema.Value["description"].ToString() : string.Empty;
+                        var enumMapping = new Dictionary<string, string>();
 
                         var enumType = schema.Value["type"]?.ToString();
 
@@ -559,31 +573,32 @@ namespace Nekoyume
                                     if (parts.Length == 2)
                                     {
                                         var name = parts[1];
-                                        string pattern = "`(.*?)`";
-                                        Match match = Regex.Match(name, pattern);
+                                        var pattern = "`(.*?)`";
+                                        var match = Regex.Match(name, pattern);
                                         if (match.Success)
                                         {
                                             name = match.Groups[0].Value.Trim('`');
                                         }
+
                                         enumMapping[parts[0].Trim('*').Trim().Replace("- **", string.Empty).TrimEnd('\"')] = name;
                                     }
                                 }
                             }
                         }
 
-                        string preText = string.Empty;
+                        var preText = string.Empty;
 
-                        bool isStringPreText = false;
-                        bool isString = false;
-                        bool isNumberPreText = false;
-                        bool isNumber = false;
+                        var isStringPreText = false;
+                        var isString = false;
+                        var isNumberPreText = false;
+                        var isNumber = false;
 
-                        for (int i = 0; i < enumValues.Count; i++)
+                        for (var i = 0; i < enumValues.Count; i++)
                         {
                             var enumVal = enumValues[i].ToString();
                             if (enumMapping.ContainsKey(enumVal))
                             {
-                                string enumName = enumMapping[enumVal];
+                                var enumName = enumMapping[enumVal];
 
                                 if (enumName == enumVal)
                                 {
@@ -633,7 +648,6 @@ namespace Nekoyume
                             }
                             else
                             {
-
                                 if (int.TryParse(enumVal[0].ToString(), out var number))
                                 {
                                     sb.AppendLine($"        _{enumVal},");
@@ -688,6 +702,7 @@ namespace Nekoyume
                         {
                             sb.AppendLine("            writer.WriteNumberValue((int)value);");
                         }
+
                         sb.AppendLine("        }");
                         sb.AppendLine("    }");
                         sb.AppendLine();
@@ -702,8 +717,8 @@ namespace Nekoyume
                     {
                         foreach (var property in properties)
                         {
-                            string propName = property.Key;
-                            string propType = ConvertToCSharpType(property.Value);
+                            var propName = property.Key;
+                            var propType = ConvertToCSharpType(property.Value);
 
                             if (property.Value["type"]?.ToString() == "array")
                             {
@@ -711,11 +726,12 @@ namespace Nekoyume
                             }
 
                             var splited = propName.Split("_");
-                            for (int i = 0; i < splited.Length; i++)
+                            for (var i = 0; i < splited.Length; i++)
                             {
                                 splited[i] = char.ToUpper(splited[i][0]) + splited[i].Substring(1);
                             }
-                            string formattedPropName = string.Concat(splited);
+
+                            var formattedPropName = string.Concat(splited);
                             sb.AppendLine($"        [JsonPropertyName(\"{propName}\")]");
                             sb.AppendLine($"        public {propType} {formattedPropName} {{ get; set; }}");
                         }
@@ -735,7 +751,7 @@ namespace Nekoyume
 
         private static string ConvertToCSharpType(JsonNode jsonNode)
         {
-            string jsonType = string.Empty;
+            var jsonType = string.Empty;
             if (jsonNode["type"] != null)
             {
                 jsonType = jsonNode["type"].ToString();
@@ -749,6 +765,7 @@ namespace Nekoyume
             {
                 return ConvertToCSharpType(jsonNode["anyOf"][0]) + "?";
             }
+
             switch (jsonType)
             {
                 case "string": return "string";
@@ -764,32 +781,34 @@ namespace Nekoyume
         {
             foreach (var pathItem in pathsNode as JsonObject)
             {
-                string path = pathItem.Key;
+                var path = pathItem.Key;
                 if (!path.Contains("api"))
+                {
                     continue;
+                }
 
                 if (pathItem.Value is JsonObject methods)
                 {
                     foreach (var method in methods)
                     {
-                        string httpMethod = method.Key.ToUpper();
+                        var httpMethod = method.Key.ToUpper();
 
-                        string methodName = GenerateMethodNameFromPathAndMethod(path, httpMethod);
-                        string returnType = "string";
+                        var methodName = GenerateMethodNameFromPathAndMethod(path, httpMethod);
+                        var returnType = "string";
 
-                        StringBuilder parameterDefinitions = new StringBuilder();
-                        StringBuilder parameterUsages = new StringBuilder();
+                        var parameterDefinitions = new StringBuilder();
+                        var parameterUsages = new StringBuilder();
 
                         var parameters = method.Value["parameters"];
                         if (parameters != null)
                         {
-                            List<string> queryParameters = new List<string>();
-                            List<string> headerParameters = new List<string>();
+                            var queryParameters = new List<string>();
+                            var headerParameters = new List<string>();
 
                             foreach (var parameter in parameters as JsonArray)
                             {
-                                string parameterName = parameter["name"].ToString();
-                                string parameterType = ConvertToCSharpType(parameter["schema"]);
+                                var parameterName = parameter["name"].ToString();
+                                var parameterType = ConvertToCSharpType(parameter["schema"]);
                                 parameterDefinitions.Append($"{parameterType} {parameterName}, ");
 
                                 switch (parameter["in"].ToString())
@@ -805,7 +824,7 @@ namespace Nekoyume
 
                             if (queryParameters.Any())
                             {
-                                string queryString = string.Join("&", queryParameters);
+                                var queryString = string.Join("&", queryParameters);
                                 parameterUsages.AppendLine($"            url += $\"?{queryString}\";");
                             }
 
@@ -820,11 +839,11 @@ namespace Nekoyume
                         var requestBody = method.Value["requestBody"];
                         if (requestBody != null)
                         {
-                            string requestBodyType = "string";
+                            var requestBodyType = "string";
                             if (requestBody["content"]["application/json"]["schema"]["$ref"] != null)
                             {
-                                string schemaRef = requestBody["content"]["application/json"]["schema"]["$ref"].ToString();
-                                string[] parts = schemaRef.Split('/');
+                                var schemaRef = requestBody["content"]["application/json"]["schema"]["$ref"].ToString();
+                                var parts = schemaRef.Split('/');
                                 requestBodyType = parts[parts.Length - 1];
                             }
 
@@ -835,14 +854,14 @@ namespace Nekoyume
                             parameterUsages.AppendLine($"            request.uploadHandler.contentType = \"application/json\";");
                         }
 
-                        bool hasReturnType = false;
+                        var hasReturnType = false;
                         var responseSchema = method.Value["responses"]?["200"]?["content"]?["application/json"]?["schema"];
                         if (responseSchema != null)
                         {
                             if (responseSchema["$ref"] != null)
                             {
-                                string schemaRef = responseSchema["$ref"].ToString();
-                                string[] parts = schemaRef.Split('/');
+                                var schemaRef = responseSchema["$ref"].ToString();
+                                var parts = schemaRef.Split('/');
                                 returnType = parts[parts.Length - 1];
                                 hasReturnType = true;
                             }
@@ -856,7 +875,7 @@ namespace Nekoyume
                                 if (responseSchema["items"]["$ref"] != null)
                                 {
                                     schemaRef = responseSchema["items"]["$ref"].ToString();
-                                    string[] parts = schemaRef.Split('/');
+                                    var parts = schemaRef.Split('/');
                                     returnType = parts[parts.Length - 1] + "[]";
                                 }
 
@@ -865,6 +884,7 @@ namespace Nekoyume
                                     schemaRef = responseSchema["items"]["type"].ToString();
                                     returnType = schemaRef + "[]";
                                 }
+
                                 hasReturnType = true;
                             }
                         }
@@ -879,6 +899,7 @@ namespace Nekoyume
                         {
                             sb.AppendLine($"            request.downloadHandler = new DownloadHandlerBuffer();");
                         }
+
                         sb.AppendLine($"            request.SetRequestHeader(\"accept\", \"application/json\");");
                         sb.AppendLine($"            request.SetRequestHeader(\"Content-Type\", \"application/json\");");
                         sb.AppendLine($"            request.timeout = {_timeOut};");
@@ -900,6 +921,7 @@ namespace Nekoyume
                         {
                             sb.AppendLine("                onSuccess?.Invoke(responseBody);");
                         }
+
                         sb.AppendLine("            }");
                         sb.AppendLine("            catch (Exception ex)");
                         sb.AppendLine("            {");
@@ -915,11 +937,11 @@ namespace Nekoyume
 
         private static string GenerateMethodNameFromPathAndMethod(string path, string httpMethod)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             var methodName = httpMethod.ToLower();
             methodName = char.ToUpper(methodName[0]) + methodName.Substring(1);
             sb.Append(methodName);
-            string[] segments = path.Split('/');
+            var segments = path.Split('/');
             foreach (var segment in segments)
             {
                 if (!string.IsNullOrEmpty(segment))
@@ -927,6 +949,7 @@ namespace Nekoyume
                     sb.Append(char.ToUpper(segment[0]) + segment.Substring(1));
                 }
             }
+
             return sb.ToString().Replace("-", "").Replace("Api", string.Empty) + "Async";
         }
 
@@ -934,15 +957,18 @@ namespace Nekoyume
         {
             if (Directory.Exists(_outputDir))
             {
-                string[] filePaths = Directory.GetFiles(_outputDir, "*.cs", SearchOption.AllDirectories);
+                var filePaths = Directory.GetFiles(_outputDir, "*.cs", SearchOption.AllDirectories);
                 if (filePaths.Length == _dataList.Count)
+                {
                     return;
+                }
+
                 _dataList.Clear();
                 foreach (var filePath in filePaths)
                 {
-                    string content = File.ReadAllText(filePath);
-                    string pattern = @"//     Source URL: \S+";
-                    Match match = Regex.Match(content, pattern);
+                    var content = File.ReadAllText(filePath);
+                    var pattern = @"//     Source URL: \S+";
+                    var match = Regex.Match(content, pattern);
                     if (match.Success)
                     {
                         var fileName = Path.GetFileNameWithoutExtension(filePath);

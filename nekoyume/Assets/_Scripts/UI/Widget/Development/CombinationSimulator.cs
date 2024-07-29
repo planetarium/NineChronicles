@@ -26,13 +26,13 @@ namespace Nekoyume.UI
 
         public override WidgetType WidgetType => WidgetType.Development;
 
-        private static readonly Cheat.DebugRandom _random = new Cheat.DebugRandom();
+        private static readonly Cheat.DebugRandom _random = new();
 
         private class Result
         {
             public readonly int subRecipeId;
-            public readonly List<int> expects = new List<int>();
-            public readonly List<int> results = new List<int>();
+            public readonly List<int> expects = new();
+            public readonly List<int> results = new();
 
             public Result(int subRecipeId, int count)
             {
@@ -125,11 +125,11 @@ namespace Nekoyume.UI
 
             var results = numbers.Select((t, i) => GetExpectRatio(result, numbers, i + 1)).ToList();
             NcDebug.Log($"[CS] [{L10nManager.Localize($"ITEM_NAME_{itemId}")}] {itemId} / " +
-                      $"[subRecipeId] {result.subRecipeId} / " +
-                      $"<color=#5FD900>[1]</color><color=#0078FF>{results[0]:P2}</color> <color=#00A4FF> --> {(result.results[0] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[2]</color><color=#FF1800>{results[1]:P2}</color> <color=#F16558> --> {(result.results[1] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[3]</color><color=#0078FF>{results[2]:P2}</color> <color=#00A4FF> --> {(result.results[2] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[4]</color><color=#FF1800>{results[3]:P2}</color> <color=#F16558> --> {(result.results[3] / (float)count):P2}</color>");
+                $"[subRecipeId] {result.subRecipeId} / " +
+                $"<color=#5FD900>[1]</color><color=#0078FF>{results[0]:P2}</color> <color=#00A4FF> --> {result.results[0] / (float)count:P2}</color> / " +
+                $"<color=#5FD900>[2]</color><color=#FF1800>{results[1]:P2}</color> <color=#F16558> --> {result.results[1] / (float)count:P2}</color> / " +
+                $"<color=#5FD900>[3]</color><color=#0078FF>{results[2]:P2}</color> <color=#00A4FF> --> {result.results[2] / (float)count:P2}</color> / " +
+                $"<color=#5FD900>[4]</color><color=#FF1800>{results[3]:P2}</color> <color=#F16558> --> {result.results[3] / (float)count:P2}</color>");
         }
 
         private static decimal GetExpectRatio(Result result, IEnumerable<int> numbers, int count)
@@ -142,9 +142,9 @@ namespace Nekoyume.UI
                 for (var i = 0; i < 4; i++)
                 {
                     decimal ratio;
-                    if (combination.ToList().Exists(x=> x == i))
+                    if (combination.ToList().Exists(x => x == i))
                     {
-                        ratio = (result.expects[i].NormalizeFromTenThousandths());
+                        ratio = result.expects[i].NormalizeFromTenThousandths();
                     }
                     else
                     {
@@ -153,6 +153,7 @@ namespace Nekoyume.UI
 
                     value *= ratio;
                 }
+
                 sum += value;
             }
 

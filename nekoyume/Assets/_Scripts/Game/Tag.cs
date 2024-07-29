@@ -1,8 +1,8 @@
 namespace Nekoyume.Game
 {
-    static public class Tag
+    public static class Tag
     {
-        static public readonly string Player = "Player";
-        static public readonly string Enemy = "Enemy";
+        public static readonly string Player = "Player";
+        public static readonly string Enemy = "Enemy";
     }
 }

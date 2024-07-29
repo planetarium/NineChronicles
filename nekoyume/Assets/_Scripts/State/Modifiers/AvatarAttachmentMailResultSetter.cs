@@ -13,6 +13,7 @@ namespace Nekoyume.State.Modifiers
         public AvatarAttachmentMailResultSetter(params Guid[] guidParams) : base(guidParams)
         {
         }
+
         public AvatarAttachmentMailResultSetter(long blockIndex, params Guid[] guidParams)
             : this(guidParams)
         {

@@ -11,6 +11,6 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         public string Category { get; set; }
 
         [JsonPropertyName("product")]
-        public string Product{ get; set; }
+        public string Product { get; set; }
     }
 }

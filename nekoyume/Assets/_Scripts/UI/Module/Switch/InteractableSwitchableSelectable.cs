@@ -15,9 +15,10 @@ namespace Nekoyume.UI.Module
 
         private Selectable _selectableCache;
 
-        public Selectable Selectable => _selectableCache == null
-            ? _selectableCache = GetComponent<Selectable>()
-            : _selectableCache;
+        public Selectable Selectable =>
+            _selectableCache == null
+                ? _selectableCache = GetComponent<Selectable>()
+                : _selectableCache;
 
         public bool IsSwitchedOn => Selectable.interactable;
 

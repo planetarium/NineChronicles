@@ -32,11 +32,11 @@ namespace Editor
         {
             listProperty.isExpanded =
                 EditorGUILayout.Foldout(listProperty.isExpanded, listProperty.name);
-            if(listProperty.isExpanded)
+            if (listProperty.isExpanded)
             {
                 EditorGUILayout.PropertyField(listProperty.FindPropertyRelative("Array.size"));
-                int count = listProperty.arraySize;
-                for (int i = 0; i < count; ++i)
+                var count = listProperty.arraySize;
+                for (var i = 0; i < count; ++i)
                 {
                     EditorGUILayout.PropertyField(listProperty.GetArrayElementAtIndex(i),
                         new GUIContent(labalName + i));

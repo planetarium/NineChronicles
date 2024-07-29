@@ -50,10 +50,7 @@ namespace Nekoyume.UI
             }
 
             SetNotification();
-            AgentStateSubject.Gold.Subscribe(_ =>
-            {
-                SetNotification();
-            }).AddTo(_disposables);
+            AgentStateSubject.Gold.Subscribe(_ => { SetNotification(); }).AddTo(_disposables);
         }
 
         protected override void OnDisable()
@@ -65,19 +62,13 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            dccConnectButton.onClick.AddListener(() =>
-            {
-                Find<ConfirmConnectPopup>().ShowConnectDcc();
-            });
+            dccConnectButton.onClick.AddListener(() => { Find<ConfirmConnectPopup>().ShowConnectDcc(); });
             collectionButton.onClick.AddListener(() =>
             {
                 Find<DccCollection>().Show(true);
                 Close(true);
             });
-            backButton.onClick.AddListener(() =>
-            {
-                CloseWidget.Invoke();
-            });
+            backButton.onClick.AddListener(() => { CloseWidget.Invoke(); });
             CloseWidget = () =>
             {
                 Close(true);

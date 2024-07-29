@@ -10,7 +10,7 @@ namespace Nekoyume.State
     {
         private readonly Dictionary<int, PetState> _petDict = new();
 
-        private readonly HashSet<int> _lockedPets = new(); 
+        private readonly HashSet<int> _lockedPets = new();
 
         public readonly Subject<PetStates> PetStatesSubject = new();
 
@@ -32,7 +32,11 @@ namespace Nekoyume.State
         public void UpdatePetState(int id, PetState petState)
         {
             _petDict[id] = petState;
-            _lockedPets.Clear();
+            if (_lockedPets.Contains(id))
+            {
+                _lockedPets.Remove(id);
+            }
+
             PetStatesSubject.OnNext(this);
         }
 

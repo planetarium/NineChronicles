@@ -9,6 +9,6 @@
         ac_face,
         hair,
         ac_eye,
-        ac_head,
+        ac_head
     }
 }

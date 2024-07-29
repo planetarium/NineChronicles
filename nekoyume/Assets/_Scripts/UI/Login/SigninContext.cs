@@ -9,13 +9,12 @@ namespace Nekoyume.UI
             Google,
             Apple,
             Twitter,
-            Discord,
+            Discord
         }
 
         private const string PlayerPrefsIntKeyLatestSignedInSocialType = "LatestSignedInSocialType";
 
-        public static bool HasLatestSignedInSocialType =>
-            PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType);
+        public static bool HasLatestSignedInSocialType => PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType);
 
         public static SocialType? LatestSignedInSocialType =>
             PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType)
@@ -24,14 +23,13 @@ namespace Nekoyume.UI
 
         public static void SetLatestSignedInSocialType(SocialType socialType)
         {
-            PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int) socialType);
+            PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)socialType);
         }
 
 
         private const string PlayerPrefsBoolKeyHasSignedWithKeyImport = "HasSignedWithKeyImport";
 
-        public static bool HasSignedWithKeyImport =>
-            PlayerPrefs.GetInt(PlayerPrefsBoolKeyHasSignedWithKeyImport, 0) == 1;
+        public static bool HasSignedWithKeyImport => PlayerPrefs.GetInt(PlayerPrefsBoolKeyHasSignedWithKeyImport, 0) == 1;
 
         public static void SetHasSignedWithKeyImport(bool keyImport)
         {

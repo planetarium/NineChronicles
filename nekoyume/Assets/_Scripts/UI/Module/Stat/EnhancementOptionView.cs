@@ -40,8 +40,7 @@ namespace Nekoyume.UI.Module
 
         private RectTransform _descriptionRect;
 
-        public float3 DescriptionPosition =>
-            _descriptionRect.GetWorldPositionOfPivot(EnumType.PivotPresetType.MiddleLeft);
+        public float3 DescriptionPosition => _descriptionRect.GetWorldPositionOfPivot(EnumType.PivotPresetType.MiddleLeft);
 
         private System.Action _onClickButton;
 
@@ -85,14 +84,14 @@ namespace Nekoyume.UI.Module
         }
 
         public void Set(
-        string type,
-        string content,
-        string currentValue,
-        string currentExValue,
-        string addValue,
-        string addExValue,
-        string etcValue,
-        string etcExValue)
+            string type,
+            string content,
+            string currentValue,
+            string currentExValue,
+            string addValue,
+            string addExValue,
+            string etcValue,
+            string etcExValue)
         {
             typeText.text = type;
             contentText.text = content;

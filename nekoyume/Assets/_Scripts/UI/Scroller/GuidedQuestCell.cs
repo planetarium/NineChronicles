@@ -64,7 +64,7 @@ namespace Nekoyume.UI.Scroller
 
         public Quest Quest { get; private set; }
 
-        #region MonoBehaviour
+#region MonoBehaviour
 
         private void Awake()
         {
@@ -76,7 +76,13 @@ namespace Nekoyume.UI.Scroller
                 })
                 .AddTo(gameObject);
             L10nManager.OnLanguageChange
-                .Subscribe(_ => { if (Quest != null) SetContent(Quest); })
+                .Subscribe(_ =>
+                {
+                    if (Quest != null)
+                    {
+                        SetContent(Quest);
+                    }
+                })
                 .AddTo(gameObject);
         }
 
@@ -85,9 +91,9 @@ namespace Nekoyume.UI.Scroller
             showingAndHidingTweener.Stop();
         }
 
-        #endregion
+#endregion
 
-        #region Control
+#region Control
 
         public void ShowAsNew(
             Quest quest,
@@ -129,7 +135,7 @@ namespace Nekoyume.UI.Scroller
                 var guidedQuestData = Quest switch
                 {
                     WorldQuest => eventInfo.EventDungeonGuidedQuest,
-                    CombinationEquipmentQuest => eventInfo.EventRecipeGuidedQuest,
+                    CombinationEquipmentQuest => eventInfo.EventRecipeGuidedQuest
                 };
                 iconImage.sprite = guidedQuestData.icon;
                 effectedIconImage.sprite = guidedQuestData.icon;
@@ -204,7 +210,7 @@ namespace Nekoyume.UI.Scroller
             onComplete?.Invoke(this);
         }
 
-        #endregion
+#endregion
 
         private IEnumerator CoShowQuestResult(System.Action onComplete)
         {
@@ -214,7 +220,7 @@ namespace Nekoyume.UI.Scroller
             onComplete?.Invoke();
         }
 
-        #region Update view objects
+#region Update view objects
 
         private void SetContent(Quest quest)
         {
@@ -231,7 +237,7 @@ namespace Nekoyume.UI.Scroller
             for (var i = 0; i < rewards.Count; i++)
             {
                 var reward = rewards[i];
-                List<Tuple<int, int>> rewardList = rewardMap.ToList();
+                var rewardList = rewardMap.ToList();
                 if (i < rewardList.Count)
                 {
                     var pair = rewardList.ElementAt(i);
@@ -271,6 +277,6 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        #endregion
+#endregion
     }
 }

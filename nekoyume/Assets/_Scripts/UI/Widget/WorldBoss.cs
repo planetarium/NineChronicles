@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
@@ -132,7 +133,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
             refreshButton
                 .OnClickAsObservable()
-                .Where(_=> !refreshBlocker.activeSelf)
+                .Where(_ => !refreshBlocker.activeSelf)
                 .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
@@ -148,7 +149,7 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject
-                .Subscribe(x => UpdateViewAsync(x))
+                .Subscribe(x => UpdateViewAsync(x).Forget())
                 .AddTo(_disposables);
         }
 
@@ -161,7 +162,7 @@ namespace Nekoyume.UI
         {
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.WorldBoss);
-            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
+            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
             loading.Close();
             AudioController.instance.PlayMusic(_bgmName);
             base.Show(ignoreShowAnimation);
@@ -175,17 +176,33 @@ namespace Nekoyume.UI
             _headerMenu.Show(assetVisibleState, showHeaderMenuAnimation);
         }
 
-        private async Task UpdateViewAsync(long currentBlockIndex,
-            bool forceUpdate = false,
+        private async UniTask UpdateViewAsync(long currentBlockIndex,
+            bool forceUpdateState = false,
             bool ignoreHeaderMenuAnimation = false,
             bool ignoreHeaderMenu = false)
         {
-            if (forceUpdate)
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            await UpdateWorldBossState(currentBlockIndex, avatarAddress, forceUpdateState, ignoreHeaderMenuAnimation, ignoreHeaderMenu);
+            
+            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
+            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
+            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            UpdateRemainTimer(_period, currentBlockIndex, secondsPerBlock);
+            SetActiveQueryLoading(false);
+        }
+
+        private async UniTask UpdateWorldBossState(long currentBlockIndex,
+            Address avatarAddress,
+            bool forceUpdateState = false,
+            bool ignoreHeaderMenuAnimation = false,
+            bool ignoreHeaderMenu = false)
+        {
+            if (forceUpdateState)
             {
                 _status = WorldBossStatus.None;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var curStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
             if (_status != curStatus)
             {
@@ -231,13 +248,6 @@ namespace Nekoyume.UI
                         throw new ArgumentOutOfRangeException();
                 }
             }
-
-            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
-            var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
-            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
-            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-            UpdateRemainTimer(_period, currentBlockIndex, secondsPerBlock);
-            SetActiveQueryLoading(false);
         }
 
         private void UpdateOffSeason(long currentBlockIndex)
@@ -290,7 +300,7 @@ namespace Nekoyume.UI
         {
             if (WorldBossFrontHelper.TryGetBossData(row.BossId, out var data))
             {
-                if(_bossId == row.BossId)
+                if (_bossId == row.BossId)
                 {
                     return;
                 }
@@ -332,7 +342,7 @@ namespace Nekoyume.UI
             var range = end - begin;
             var progress = current - begin;
             var remaining = end - current;
-            timerSlider.NormalizedValue = 1f - ((float)progress / range);
+            timerSlider.NormalizedValue = 1f - (float)progress / range;
             timeBlock.SetTimeBlock($"{remaining:#,0}", remaining.BlockRangeToTimeSpanString());
             blocksAndDatesPeriod.Show(begin, end, current, secondsPerBlock, DateTime.Now);
         }
@@ -349,12 +359,12 @@ namespace Nekoyume.UI
         }
 
         private async Task<(
-            WorldBossState worldBoss,
-            RaiderState raiderState,
-            WorldBossKillRewardRecord killReward,
-            WorldBossRankingRecord myRecord,
-            long blockIndex,
-            int userCount)>
+                WorldBossState worldBoss,
+                RaiderState raiderState,
+                WorldBossKillRewardRecord killReward,
+                WorldBossRankingRecord myRecord,
+                long blockIndex,
+                int userCount)>
             GetStatesAsync(WorldBossListSheet.Row row)
         {
             var task = Task.Run(async () =>
@@ -393,9 +403,9 @@ namespace Nekoyume.UI
         }
 
         private static async Task<(
-            WorldBossRankingRecord myRecord,
-            long blockIndex,
-            int userCount)>
+                WorldBossRankingRecord myRecord,
+                long blockIndex,
+                int userCount)>
             QueryRankingAsync(WorldBossListSheet.Row row, Address avatarAddress)
         {
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
@@ -423,8 +433,8 @@ namespace Nekoyume.UI
         {
             SetActiveQueryLoading(true);
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex,
-                forceUpdate: true,
-                ignoreHeaderMenuAnimation: true);
+                true,
+                true);
         }
 
         private void SetActiveQueryLoading(bool value)

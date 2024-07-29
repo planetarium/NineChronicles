@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Tween
             Reverse,
             Repeat,
             PingPongOnce,
-            PingPongRepeat,
+            PingPongRepeat
         }
 
         public float Duration = 0.0f;
@@ -27,7 +27,9 @@ namespace Nekoyume.Game.Tween
         {
             _sprite = GetComponent<SpriteRenderer>();
             if (_sprite)
+            {
                 Invoke($"Play{TweenType_.ToString()}", 0.0f);
+            }
         }
 
         private void PlayForward()

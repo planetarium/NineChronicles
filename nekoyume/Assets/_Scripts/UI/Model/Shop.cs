@@ -7,11 +7,9 @@ namespace Nekoyume.UI.Model
     {
         public const int MinimumPrice = 1;
 
-        public readonly ReactiveProperty<ItemCountAndPricePopup> ItemCountAndPricePopup =
-            new ReactiveProperty<ItemCountAndPricePopup>(new ItemCountAndPricePopup());
+        public readonly ReactiveProperty<ItemCountAndPricePopup> ItemCountAndPricePopup = new(new ItemCountAndPricePopup());
 
-        public readonly ReactiveProperty<ItemCountableAndPricePopup> ItemCountableAndPricePopup =
-            new ReactiveProperty<ItemCountableAndPricePopup>(new ItemCountableAndPricePopup());
+        public readonly ReactiveProperty<ItemCountableAndPricePopup> ItemCountableAndPricePopup = new(new ItemCountableAndPricePopup());
 
         public void Dispose()
         {

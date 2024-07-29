@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 1024
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 0
+      m_TextureCompression: 1
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -148,6 +148,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ee80d423b0bdb4fd78cb0969b6f5a5e3, type: 3}
   - {fileID: 21300000, guid: 95989523d40352c4b85068468a72e779, type: 3}
   - {fileID: 21300000, guid: 9bffb9239c73d420385342cab2ff1136, type: 3}
+  - {fileID: 21300000, guid: 6a67de232465d114081e746ec0f71dd3, type: 3}
   - {fileID: 21300000, guid: 6009f633cefe3414dbd7b64dacbe1f3c, type: 3}
   - {fileID: 21300000, guid: 257e6d43c022ebb4bae0bd05c02b3922, type: 3}
   - {fileID: 21300000, guid: 51e8f853eec983d42b458d6590cae320, type: 3}
@@ -569,6 +570,7 @@ SpriteAtlas:
   - UI_line_01
   - UI_miss_02
   - UI_bar_01_bg
+  - UI_Btn_bg_04_Press
   - UI_bg_lock_Active
   - UI_stage_icon_star_01
   - UI_bg_stageback_00

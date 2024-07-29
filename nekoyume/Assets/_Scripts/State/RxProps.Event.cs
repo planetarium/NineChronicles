@@ -20,7 +20,8 @@ namespace Nekoyume.State
             _eventScheduleRowForDungeon = new(null);
 
         public static IReadOnlyReactiveProperty<EventScheduleSheet.Row>
-            EventScheduleRowForDungeon => _eventScheduleRowForDungeon;
+            EventScheduleRowForDungeon =>
+            _eventScheduleRowForDungeon;
 
         public static EventDungeonSheet.Row EventDungeonRow { get; private set; }
 
@@ -36,32 +37,35 @@ namespace Nekoyume.State
         private static long _eventDungeonInfoUpdatedBlockIndex;
 
         public static IReadOnlyAsyncUpdatableRxProp<EventDungeonInfo>
-            EventDungeonInfo => _eventDungeonInfo;
+            EventDungeonInfo =>
+            _eventDungeonInfo;
 
         private static readonly ReactiveProperty<TicketProgress>
             _eventDungeonTicketProgress = new(new TicketProgress());
 
         public static IReadOnlyReactiveProperty<TicketProgress>
-            EventDungeonTicketProgress => _eventDungeonTicketProgress;
+            EventDungeonTicketProgress =>
+            _eventDungeonTicketProgress;
 
         private static ReactiveProperty<string> _eventDungeonRemainingTimeText =
             new(string.Empty);
 
-        public static IReadOnlyReactiveProperty<string> EventDungeonRemainingTimeText =>
-            _eventDungeonRemainingTimeText;
+        public static IReadOnlyReactiveProperty<string> EventDungeonRemainingTimeText => _eventDungeonRemainingTimeText;
 
         // Recipe
         private static readonly ReactiveProperty<EventScheduleSheet.Row>
             _eventScheduleRowForRecipe = new(null);
 
         public static IReadOnlyReactiveProperty<EventScheduleSheet.Row>
-            EventScheduleRowForRecipe => _eventScheduleRowForRecipe;
+            EventScheduleRowForRecipe =>
+            _eventScheduleRowForRecipe;
 
         private static readonly ReactiveProperty<List<EventConsumableItemRecipeSheet.Row>>
             _eventConsumableItemRecipeRows = new(null);
 
         public static IReadOnlyReactiveProperty<List<EventConsumableItemRecipeSheet.Row>>
-            EventConsumableItemRecipeRows => _eventConsumableItemRecipeRows;
+            EventConsumableItemRecipeRows =>
+            _eventConsumableItemRecipeRows;
 
         private static readonly ReactiveProperty<List<EventMaterialItemRecipeSheet.Row>>
             _eventMaterialItemRecipeRows = new(null);
@@ -72,8 +76,7 @@ namespace Nekoyume.State
         private static ReactiveProperty<string> _eventRecipeRemainingTimeText =
             new(string.Empty);
 
-        public static IReadOnlyReactiveProperty<string> EventRecipeRemainingTimeText =>
-            _eventRecipeRemainingTimeText;
+        public static IReadOnlyReactiveProperty<string> EventRecipeRemainingTimeText => _eventRecipeRemainingTimeText;
 
         private static void StartEvent()
         {
@@ -138,8 +141,8 @@ namespace Nekoyume.State
 
             _eventScheduleRowForDungeon.Value = scheduleRow;
             if (!_tableSheets.EventDungeonSheet.TryGetRowByEventScheduleId(
-                    _eventScheduleRowForDungeon.Value.Id,
-                    out var dungeonRow))
+                _eventScheduleRowForDungeon.Value.Id,
+                out var dungeonRow))
             {
                 EventDungeonRow = null;
                 EventDungeonStageRows = new List<EventDungeonStageSheet.Row>();

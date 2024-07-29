@@ -12,7 +12,7 @@ namespace Nekoyume.UI
         // 맨 앞에 ProgressStart, 맨 뒤에 ProgressCompleted는 필수. 이외의 enum은 순서가 중요하지 않음.
         // 해당 동작이 시작하기 전에 호출
         ProgressStart = 1, // called at after close loginSystem in Game.Start()
-        RequestPledge,  // called in mobile
+        RequestPledge, // called in mobile
         ApprovePledge,
         EndPledge,
 
@@ -20,7 +20,7 @@ namespace Nekoyume.UI
         InitTableSheet,
         InitCanvas,
 
-        ProgressCompleted, // called at last waiting point in Game.Start()
+        ProgressCompleted // called at last waiting point in Game.Start()
     }
 
     public class GrayLoadingScreen : ScreenWidget

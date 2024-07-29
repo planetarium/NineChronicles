@@ -38,7 +38,7 @@ namespace Nekoyume.Game.Character
             "hair_03",
             "hair_04",
             "hair_05",
-            "hair_06",
+            "hair_06"
         };
 
         private static readonly string[] HairType1Slots =
@@ -50,7 +50,7 @@ namespace Nekoyume.Game.Character
             "hair_05",
             "hair_06",
             "hair_07",
-            "hair_08",
+            "hair_08"
         };
 
         private const string TailSlot = "tail";
@@ -71,18 +71,19 @@ namespace Nekoyume.Game.Character
         private SlotAndAttachment _earRight;
         private SlotAndAttachment _eyeOpen;
         private SlotAndAttachment _eyeHalf;
-        private readonly List<SlotAndAttachment> _hairs = new List<SlotAndAttachment>();
+        private readonly List<SlotAndAttachment> _hairs = new();
 
         private int _weaponSlotIndex;
         private RegionAttachment _weaponAttachmentDefault;
         private GameObject _cachedWeaponVFX;
         private GameObject _currentWeaponVFXPrefab;
 
-        private readonly List<string> _attachmentNames = new List<string>();
+        private readonly List<string> _attachmentNames = new();
 
-        public int HairSlotCount => hairTypeIndex == 0
-            ? 6
-            : 8;
+        public int HairSlotCount =>
+            hairTypeIndex == 0
+                ? 6
+                : 8;
 
         protected override void Awake()
         {
@@ -136,7 +137,7 @@ namespace Nekoyume.Game.Character
                 return false;
             }
 
-            var slotIndex  = slot.Data.Index;
+            var slotIndex = slot.Data.Index;
             slotAndAttachment = new SlotAndAttachment(slotName, slot, slotIndex, slot.Attachment);
             return true;
         }

@@ -24,7 +24,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Helper;
+    using Helper;
     using UniRx;
 
     public class ArenaJoin : Widget
@@ -33,7 +33,7 @@ namespace Nekoyume.UI
         {
             Idle,
             EarlyRegistration,
-            RegistrationAndTransitionToArenaBoard,
+            RegistrationAndTransitionToArenaBoard
         }
 
         private static int _barScrollCellCount;
@@ -78,7 +78,7 @@ namespace Nekoyume.UI
         private GameObject baseArenaJoinObject;
 
         private InnerState _innerState = InnerState.Idle;
-        private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForShow = new();
 
         protected override void Awake()
         {
@@ -141,7 +141,7 @@ namespace Nekoyume.UI
 
         public void OnRenderJoinArena(ActionEvaluation<JoinArena> eval)
         {
-            if (eval.Exception is { })
+            if (eval.Exception is not null)
             {
                 _innerState = InnerState.Idle;
                 Find<LoadingScreen>().Close();
@@ -258,7 +258,7 @@ namespace Nekoyume.UI
                         ? seasonNumber
                         : (int?)null,
                     ChampionshipSeasonNumbers =
-                        arenaDataList.GetSeasonNumbersOfChampionship(),
+                        arenaDataList.GetSeasonNumbersOfChampionship()
                 }).ToList();
             }
 #endif
@@ -275,7 +275,7 @@ namespace Nekoyume.UI
                             ? seasonNumber
                             : (int?)null,
                         ChampionshipSeasonNumbers =
-                            row.GetSeasonNumbersOfChampionship(),
+                            row.GetSeasonNumbersOfChampionship()
                     }).ToList();
             }
         }
@@ -286,13 +286,15 @@ namespace Nekoyume.UI
             return Enumerable.Range(0, barScrollCellCount)
                 .Select(index => new ArenaJoinSeasonBarItemData
                 {
-                    visible = index == barIndexOffset,
+                    visible = index == barIndexOffset
                 })
                 .ToList();
         }
 
-        private static int ReverseScrollIndex(int scrollIndex) =>
-            _barScrollCellCount - scrollIndex - 1;
+        private static int ReverseScrollIndex(int scrollIndex)
+        {
+            return _barScrollCellCount - scrollIndex - 1;
+        }
 
         private void UpdateInfo()
         {
@@ -339,7 +341,7 @@ namespace Nekoyume.UI
             {
                 AudioController.PlayClick();
                 if (RxProps.ArenaInfoTuple.HasValue &&
-                    RxProps.ArenaInfoTuple.Value.current is { })
+                    RxProps.ArenaInfoTuple.Value.current is not null)
                 {
                     Close();
                     Find<ArenaBoard>().Show(
@@ -431,7 +433,7 @@ namespace Nekoyume.UI
                             next,
                             blockIndex,
                             States.Instance.CurrentAvatarState.level).MajorUnit;
-                        if (RxProps.ArenaInfoTuple.Value.next is { })
+                        if (RxProps.ArenaInfoTuple.Value.next is not null)
                         {
                             _earlyPaymentButton.Show(
                                 next.ArenaType,
@@ -443,8 +445,8 @@ namespace Nekoyume.UI
                         else if (next.ArenaType == ArenaType.Championship)
                         {
                             if (TableSheets.Instance.ArenaSheet.IsChampionshipConditionComplete(
-                                    championshipId,
-                                    States.Instance.CurrentAvatarState))
+                                championshipId,
+                                States.Instance.CurrentAvatarState))
                             {
                                 _earlyPaymentButton.Show(
                                     next.ArenaType,
@@ -586,7 +588,7 @@ namespace Nekoyume.UI
                 row,
                 States.Instance.CurrentAvatarState);
             var completeCondition = medalTotalCount >=
-                                    selectedRoundData.RequiredMedalCount;
+                selectedRoundData.RequiredMedalCount;
             if (!considerCrystal)
             {
                 return completeCondition;
@@ -639,8 +641,8 @@ namespace Nekoyume.UI
                     ArenaJoinSeasonInfo.RewardType.Food |
                     ArenaJoinSeasonInfo.RewardType.Medal |
                     ArenaJoinSeasonInfo.RewardType.NCG,
-                    // NOTE: Enable costume when championship rewards contains one.
-                    // ArenaJoinSeasonInfo.RewardType.Costume,
+                // NOTE: Enable costume when championship rewards contains one.
+                // ArenaJoinSeasonInfo.RewardType.Costume,
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
@@ -671,9 +673,10 @@ namespace Nekoyume.UI
             Find<BattlePreparation>().Close();
             Find<Grind>().Show();
         }
+
         public void TutorialActionSeasonPassGuidePopup()
         {
-            Widget.Find<SeasonPassNewPopup>().Show();
+            Find<SeasonPassNewPopup>().Show();
         }
     }
 }

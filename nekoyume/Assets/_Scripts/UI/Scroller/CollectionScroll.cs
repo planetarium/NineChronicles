@@ -13,8 +13,8 @@ namespace Nekoyume.UI.Scroller
     {
         public class ContextModel : RectScrollDefaultContext
         {
-            public readonly Subject<CollectionModel> OnClickActiveButton = new Subject<CollectionModel>();
-            public readonly Subject<CollectionMaterial> OnClickMaterial = new Subject<CollectionMaterial>();
+            public readonly Subject<CollectionModel> OnClickActiveButton = new();
+            public readonly Subject<CollectionMaterial> OnClickMaterial = new();
 
             public override void Dispose()
             {

@@ -21,11 +21,11 @@ namespace Nekoyume.L10n.Editor
 {
     public class FontAssetGenerator
     {
-        class ProxyList<T>
+        private class ProxyList<T>
         {
-            List<T> list;
-            FieldInfo fieldInfo;
-            TMPro_FontAssetCreatorWindow window;
+            private List<T> list;
+            private FieldInfo fieldInfo;
+            private TMPro_FontAssetCreatorWindow window;
 
             public T this[int index]
             {
@@ -51,9 +51,9 @@ namespace Nekoyume.L10n.Editor
                 }
             }
 
-            void RefreshValue()
+            private void RefreshValue()
             {
-                list = (List<T>) fieldInfo.GetValue(window);
+                list = (List<T>)fieldInfo.GetValue(window);
             }
 
             public void UpdateValue()
@@ -91,9 +91,9 @@ namespace Nekoyume.L10n.Editor
 
         public class ProxyDictionary<K, V>
         {
-            Dictionary<K, V> dict;
-            TMPro_FontAssetCreatorWindow window;
-            FieldInfo fieldInfo;
+            private Dictionary<K, V> dict;
+            private TMPro_FontAssetCreatorWindow window;
+            private FieldInfo fieldInfo;
 
             public V this[K key]
             {
@@ -118,9 +118,9 @@ namespace Nekoyume.L10n.Editor
                 RefreshValue();
             }
 
-            void RefreshValue()
+            private void RefreshValue()
             {
-                dict = (Dictionary<K, V>) fieldInfo.GetValue(window);
+                dict = (Dictionary<K, V>)fieldInfo.GetValue(window);
             }
 
             public void UpdateValue()
@@ -148,7 +148,7 @@ namespace Nekoyume.L10n.Editor
             }
         }
 
-        enum GlyphRasterModes
+        private enum GlyphRasterModes
         {
             RASTER_MODE_8BIT = 1,
             RASTER_MODE_MONO = 2,
@@ -165,314 +165,314 @@ namespace Nekoyume.L10n.Editor
             RASTER_MODE_32X = 32768
         }
 
-        TMPro_FontAssetCreatorWindow window;
+        private TMPro_FontAssetCreatorWindow window;
 
-        FieldInfo GetField(string name)
+        private FieldInfo GetField(string name)
         {
             return typeof(TMPro_FontAssetCreatorWindow)
                 .GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        MethodInfo GetNonStaticMethod(string name)
+        private MethodInfo GetNonStaticMethod(string name)
         {
             return typeof(TMPro_FontAssetCreatorWindow)
                 .GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        MethodInfo GetStaticMethod(string name)
+        private MethodInfo GetStaticMethod(string name)
         {
             return typeof(TMPro_FontAssetCreatorWindow)
                 .GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static);
         }
 
-        System.Object GetObject(FieldInfo field)
+        private object GetObject(FieldInfo field)
         {
             return field.GetValue(window);
         }
 
-        T GetValue<T>(FieldInfo field)
+        private T GetValue<T>(FieldInfo field)
         {
             var value = GetObject(field);
             if (value == null)
             {
-                return default(T);
+                return default;
             }
 
-            return (T) value;
+            return (T)value;
         }
 
-        void SetValue<T>(FieldInfo field, T value)
+        private void SetValue<T>(FieldInfo field, T value)
         {
             field.SetValue(window, value);
         }
 
-        #region Fields
+#region Fields
 
-        FieldInfo atlasGenerationProgress;
+        private FieldInfo atlasGenerationProgress;
 
-        float m_AtlasGenerationProgress
+        private float m_AtlasGenerationProgress
         {
-            get { return GetValue<float>(atlasGenerationProgress); }
-            set { SetValue<float>(atlasGenerationProgress, value); }
+            get => GetValue<float>(atlasGenerationProgress);
+            set => SetValue<float>(atlasGenerationProgress, value);
         }
 
-        FieldInfo isProcessing;
+        private FieldInfo isProcessing;
 
-        bool m_IsProcessing
+        private bool m_IsProcessing
         {
-            get { return GetValue<bool>(isProcessing); }
-            set { SetValue<bool>(isProcessing, value); }
+            get => GetValue<bool>(isProcessing);
+            set => SetValue<bool>(isProcessing, value);
         }
 
-        FieldInfo sourceFontFile;
+        private FieldInfo sourceFontFile;
 
-        UnityEngine.Object m_SourceFontFile
+        private Object m_SourceFontFile
         {
-            get { return GetValue<UnityEngine.Object>(sourceFontFile); }
-            set { SetValue<UnityEngine.Object>(sourceFontFile, value); }
+            get => GetValue<Object>(sourceFontFile);
+            set => SetValue<Object>(sourceFontFile, value);
         }
 
-        FieldInfo fontAtlasTexture;
+        private FieldInfo fontAtlasTexture;
 
-        Texture2D m_FontAtlasTexture
+        private Texture2D m_FontAtlasTexture
         {
             get
             {
                 var result = GetValue<Texture2D>(fontAtlasTexture);
                 return result;
             }
-            set { SetValue<Texture2D>(fontAtlasTexture, value); }
+            set => SetValue<Texture2D>(fontAtlasTexture, value);
         }
 
-        FieldInfo savedFontAtlas;
+        private FieldInfo savedFontAtlas;
 
-        Texture2D m_SavedFontAtlas
+        private Texture2D m_SavedFontAtlas
         {
-            get { return GetValue<Texture2D>(savedFontAtlas); }
-            set { SetValue<Texture2D>(savedFontAtlas, value); }
+            get => GetValue<Texture2D>(savedFontAtlas);
+            set => SetValue<Texture2D>(savedFontAtlas, value);
         }
 
-        FieldInfo outputFeedback;
+        private FieldInfo outputFeedback;
 
-        string m_OutputFeedback
+        private string m_OutputFeedback
         {
-            get { return GetValue<string>(outputFeedback); }
-            set { SetValue<string>(outputFeedback, value); }
+            get => GetValue<string>(outputFeedback);
+            set => SetValue<string>(outputFeedback, value);
         }
 
-        FieldInfo characterSetSelectionMode;
+        private FieldInfo characterSetSelectionMode;
 
-        int m_CharacterSetSelectionMode
+        private int m_CharacterSetSelectionMode
         {
-            get { return GetValue<int>(characterSetSelectionMode); }
-            set { SetValue<int>(characterSetSelectionMode, value); }
+            get => GetValue<int>(characterSetSelectionMode);
+            set => SetValue<int>(characterSetSelectionMode, value);
         }
 
-        FieldInfo characterSequence;
+        private FieldInfo characterSequence;
 
-        string m_CharacterSequence
+        private string m_CharacterSequence
         {
-            get { return GetValue<string>(characterSequence); }
-            set { SetValue<string>(characterSequence, value); }
+            get => GetValue<string>(characterSequence);
+            set => SetValue<string>(characterSequence, value);
         }
 
-        FieldInfo glyphRectPreviewTexture;
+        private FieldInfo glyphRectPreviewTexture;
 
-        Texture2D m_GlyphRectPreviewTexture
+        private Texture2D m_GlyphRectPreviewTexture
         {
-            get { return GetValue<Texture2D>(glyphRectPreviewTexture); }
-            set { SetValue<Texture2D>(glyphRectPreviewTexture, value); }
+            get => GetValue<Texture2D>(glyphRectPreviewTexture);
+            set => SetValue<Texture2D>(glyphRectPreviewTexture, value);
         }
 
-        FieldInfo characterCount;
+        private FieldInfo characterCount;
 
-        int m_CharacterCount
+        private int m_CharacterCount
         {
-            get { return GetValue<int>(characterCount); }
-            set { SetValue<int>(characterCount, value); }
+            get => GetValue<int>(characterCount);
+            set => SetValue<int>(characterCount, value);
         }
 
-        FieldInfo isGenerationCancelled;
+        private FieldInfo isGenerationCancelled;
 
-        bool m_IsGenerationCancelled
+        private bool m_IsGenerationCancelled
         {
-            get { return GetValue<bool>(isGenerationCancelled); }
-            set { SetValue<bool>(isGenerationCancelled, value); }
+            get => GetValue<bool>(isGenerationCancelled);
+            set => SetValue<bool>(isGenerationCancelled, value);
         }
 
-        FieldInfo glyphRenderMode;
+        private FieldInfo glyphRenderMode;
 
-        GlyphRenderMode m_GlyphRenderMode
+        private GlyphRenderMode m_GlyphRenderMode
         {
-            get { return GetValue<GlyphRenderMode>(glyphRenderMode); }
-            set { SetValue<GlyphRenderMode>(glyphRenderMode, value); }
+            get => GetValue<GlyphRenderMode>(glyphRenderMode);
+            set => SetValue<GlyphRenderMode>(glyphRenderMode, value);
         }
 
-        Stopwatch m_StopWatch;
+        private Stopwatch m_StopWatch;
 
-        ProxyDictionary<uint, uint> m_CharacterLookupMap;
-        ProxyDictionary<uint, List<uint>> m_GlyphLookupMap;
+        private ProxyDictionary<uint, uint> m_CharacterLookupMap;
+        private ProxyDictionary<uint, List<uint>> m_GlyphLookupMap;
 
-        ProxyList<uint> m_AvailableGlyphsToAdd;
-        ProxyList<uint> m_MissingCharacters;
-        ProxyList<Glyph> m_GlyphsToPack;
-        ProxyList<Glyph> m_GlyphsPacked;
-        ProxyList<GlyphRect> m_FreeGlyphRects;
-        ProxyList<GlyphRect> m_UsedGlyphRects;
-        ProxyList<Glyph> m_FontGlyphTable;
-        ProxyList<Glyph> m_GlyphsToRender;
-        ProxyList<TMP_Character> m_FontCharacterTable;
-        ProxyList<uint> m_ExcludedCharacters;
+        private ProxyList<uint> m_AvailableGlyphsToAdd;
+        private ProxyList<uint> m_MissingCharacters;
+        private ProxyList<Glyph> m_GlyphsToPack;
+        private ProxyList<Glyph> m_GlyphsPacked;
+        private ProxyList<GlyphRect> m_FreeGlyphRects;
+        private ProxyList<GlyphRect> m_UsedGlyphRects;
+        private ProxyList<Glyph> m_FontGlyphTable;
+        private ProxyList<Glyph> m_GlyphsToRender;
+        private ProxyList<TMP_Character> m_FontCharacterTable;
+        private ProxyList<uint> m_ExcludedCharacters;
 
-        FieldInfo pointSizeSamplingMode;
+        private FieldInfo pointSizeSamplingMode;
 
-        int m_PointSizeSamplingMode
+        private int m_PointSizeSamplingMode
         {
-            get { return GetValue<int>(pointSizeSamplingMode); }
-            set { SetValue<int>(pointSizeSamplingMode, value); }
+            get => GetValue<int>(pointSizeSamplingMode);
+            set => SetValue<int>(pointSizeSamplingMode, value);
         }
 
-        FieldInfo atlasWidth;
+        private FieldInfo atlasWidth;
 
-        int m_AtlasWidth
+        private int m_AtlasWidth
         {
-            get { return GetValue<int>(atlasWidth); }
-            set { SetValue<int>(atlasWidth, value); }
+            get => GetValue<int>(atlasWidth);
+            set => SetValue<int>(atlasWidth, value);
         }
 
-        FieldInfo atlasHeight;
+        private FieldInfo atlasHeight;
 
-        int m_AtlasHeight
+        private int m_AtlasHeight
         {
-            get { return GetValue<int>(atlasHeight); }
-            set { SetValue<int>(atlasHeight, value); }
+            get => GetValue<int>(atlasHeight);
+            set => SetValue<int>(atlasHeight, value);
         }
 
-        FieldInfo pointSize;
+        private FieldInfo pointSize;
 
-        int m_PointSize
+        private int m_PointSize
         {
-            get { return GetValue<int>(pointSize); }
-            set { SetValue<int>(pointSize, value); }
+            get => GetValue<int>(pointSize);
+            set => SetValue<int>(pointSize, value);
         }
 
-        FieldInfo atlasGenerationProgressLabel;
+        private FieldInfo atlasGenerationProgressLabel;
 
-        string m_AtlasGenerationProgressLabel
+        private string m_AtlasGenerationProgressLabel
         {
-            get { return GetValue<string>(atlasGenerationProgressLabel); }
-            set { SetValue<string>(atlasGenerationProgressLabel, value); }
+            get => GetValue<string>(atlasGenerationProgressLabel);
+            set => SetValue<string>(atlasGenerationProgressLabel, value);
         }
 
-        FieldInfo padding;
+        private FieldInfo padding;
 
-        int m_Padding
+        private int m_Padding
         {
-            get { return GetValue<int>(padding); }
-            set { SetValue<int>(padding, value); }
+            get => GetValue<int>(padding);
+            set => SetValue<int>(padding, value);
         }
 
-        FieldInfo packingMode;
+        private FieldInfo packingMode;
 
-        int m_PackingMode
+        private int m_PackingMode
         {
-            get { return GetValue<int>(packingMode); }
-            set { SetValue<int>(packingMode, value); }
+            get => GetValue<int>(packingMode);
+            set => SetValue<int>(packingMode, value);
         }
 
-        FieldInfo glyphPackingGenerationTime;
+        private FieldInfo glyphPackingGenerationTime;
 
-        double m_GlyphPackingGenerationTime
+        private double m_GlyphPackingGenerationTime
         {
-            get { return GetValue<double>(glyphPackingGenerationTime); }
-            set { SetValue<double>(glyphPackingGenerationTime, value); }
+            get => GetValue<double>(glyphPackingGenerationTime);
+            set => SetValue<double>(glyphPackingGenerationTime, value);
         }
 
-        FieldInfo isGlyphPackingDone;
+        private FieldInfo isGlyphPackingDone;
 
-        bool m_IsGlyphPackingDone
+        private bool m_IsGlyphPackingDone
         {
-            get { return GetValue<bool>(isGlyphPackingDone); }
-            set { SetValue<bool>(isGlyphPackingDone, value); }
+            get => GetValue<bool>(isGlyphPackingDone);
+            set => SetValue<bool>(isGlyphPackingDone, value);
         }
 
-        FieldInfo isRenderingDone;
+        private FieldInfo isRenderingDone;
 
-        bool m_IsRenderingDone
+        private bool m_IsRenderingDone
         {
-            get { return GetValue<bool>(isRenderingDone); }
-            set { SetValue<bool>(isRenderingDone, value); }
+            get => GetValue<bool>(isRenderingDone);
+            set => SetValue<bool>(isRenderingDone, value);
         }
 
-        FieldInfo faceInfo;
+        private FieldInfo faceInfo;
 
-        FaceInfo m_FaceInfo
+        private FaceInfo m_FaceInfo
         {
-            get { return GetValue<FaceInfo>(faceInfo); }
-            set { SetValue<FaceInfo>(faceInfo, value); }
+            get => GetValue<FaceInfo>(faceInfo);
+            set => SetValue<FaceInfo>(faceInfo, value);
         }
 
-        FieldInfo atlasTextureBuffer;
+        private FieldInfo atlasTextureBuffer;
 
-        byte[] m_AtlasTextureBuffer
+        private byte[] m_AtlasTextureBuffer
         {
-            get { return GetValue<byte[]>(atlasTextureBuffer); }
-            set { SetValue<byte[]>(atlasTextureBuffer, value); }
+            get => GetValue<byte[]>(atlasTextureBuffer);
+            set => SetValue<byte[]>(atlasTextureBuffer, value);
         }
 
-        FieldInfo glyphRenderingGenerationTime;
+        private FieldInfo glyphRenderingGenerationTime;
 
-        double m_GlyphRenderingGenerationTime
+        private double m_GlyphRenderingGenerationTime
         {
-            get { return GetValue<double>(glyphRenderingGenerationTime); }
-            set { SetValue<double>(glyphRenderingGenerationTime, value); }
+            get => GetValue<double>(glyphRenderingGenerationTime);
+            set => SetValue<double>(glyphRenderingGenerationTime, value);
         }
 
-        FieldInfo isGlyphRenderingDone;
+        private FieldInfo isGlyphRenderingDone;
 
-        bool m_IsGlyphRenderingDone
+        private bool m_IsGlyphRenderingDone
         {
-            get { return GetValue<bool>(isGlyphRenderingDone); }
-            set { SetValue<bool>(isGlyphRenderingDone, value); }
+            get => GetValue<bool>(isGlyphRenderingDone);
+            set => SetValue<bool>(isGlyphRenderingDone, value);
         }
 
         private FieldInfo referencedFontAsset;
 
-        TMP_FontAsset m_ReferencedFontAsset
+        private TMP_FontAsset m_ReferencedFontAsset
         {
-            get { return GetValue<TMP_FontAsset>(referencedFontAsset); }
-            set { SetValue<TMP_FontAsset>(referencedFontAsset, value); }
+            get => GetValue<TMP_FontAsset>(referencedFontAsset);
+            set => SetValue<TMP_FontAsset>(referencedFontAsset, value);
         }
 
-        FieldInfo includeFontFeatures;
+        private FieldInfo includeFontFeatures;
 
-        bool m_IncludeFontFeatures
+        private bool m_IncludeFontFeatures
         {
-            get { return GetValue<bool>(includeFontFeatures); }
-            set { SetValue<bool>(includeFontFeatures, value); }
+            get => GetValue<bool>(includeFontFeatures);
+            set => SetValue<bool>(includeFontFeatures, value);
         }
 
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
 
-        MethodInfo parseHexNumberSequence;
+        private MethodInfo parseHexNumberSequence;
 
-        uint[] ParseHexNumberSequence(string charList)
+        private uint[] ParseHexNumberSequence(string charList)
         {
-            return (uint[]) parseHexNumberSequence.Invoke(window, new object[] { charList });
+            return (uint[])parseHexNumberSequence.Invoke(window, new object[] { charList });
         }
 
-        MethodInfo parseNumberSequence;
+        private MethodInfo parseNumberSequence;
 
-        uint[] ParseNumberSequence(string charList)
+        private uint[] ParseNumberSequence(string charList)
         {
-            return (uint[]) parseNumberSequence.Invoke(window, new object[] {charList});
+            return (uint[])parseNumberSequence.Invoke(window, new object[] { charList });
         }
 
-        MethodInfo tryPackGlyphsInAtlas;
+        private MethodInfo tryPackGlyphsInAtlas;
 
-        void TryPackGlyphsInAtlas(List<Glyph> m_GlyphsToPack, List<Glyph> m_GlyphsPacked, int m_Padding,
+        private void TryPackGlyphsInAtlas(List<Glyph> m_GlyphsToPack, List<Glyph> m_GlyphsPacked, int m_Padding,
             GlyphPackingMode m_PackingMode, GlyphRenderMode m_GlyphRenderMode, int m_AtlasWidth, int m_AtlasHeight,
             List<GlyphRect> m_FreeGlyphRects, List<GlyphRect> m_UsedGlyphRects)
         {
@@ -484,9 +484,9 @@ namespace Nekoyume.L10n.Editor
                 });
         }
 
-        MethodInfo renderGlyphsToTexture;
+        private MethodInfo renderGlyphsToTexture;
 
-        void RenderGlyphsToTexture(List<Glyph> m_GlyphsToRender, int m_Padding, GlyphRenderMode m_GlyphRenderMode,
+        private void RenderGlyphsToTexture(List<Glyph> m_GlyphsToRender, int m_Padding, GlyphRenderMode m_GlyphRenderMode,
             byte[] m_AtlasTextureBuffer, int m_AtlasWidth, int m_AtlasHeight)
         {
             renderGlyphsToTexture.Invoke(window,
@@ -496,28 +496,28 @@ namespace Nekoyume.L10n.Editor
                 });
         }
 
-        MethodInfo saveCreationSettingsToEditorPrefs;
+        private MethodInfo saveCreationSettingsToEditorPrefs;
 
-        void SaveCreationSettingsToEditorPrefs(FontAssetCreationSettings settings)
+        private void SaveCreationSettingsToEditorPrefs(FontAssetCreationSettings settings)
         {
-            saveCreationSettingsToEditorPrefs.Invoke(window, new object[] {settings});
+            saveCreationSettingsToEditorPrefs.Invoke(window, new object[] { settings });
         }
 
-        MethodInfo saveFontCreationSettings;
+        private MethodInfo saveFontCreationSettings;
 
-        FontAssetCreationSettings SaveFontCreationSettings()
+        private FontAssetCreationSettings SaveFontCreationSettings()
         {
-            return (FontAssetCreationSettings) saveFontCreationSettings.Invoke(window, new object[0]);
+            return (FontAssetCreationSettings)saveFontCreationSettings.Invoke(window, new object[0]);
         }
 
-        MethodInfo save_SDF_FontAsset;
+        private MethodInfo save_SDF_FontAsset;
 
-        void Save_SDF_FontAsset(string filePath)
+        private void Save_SDF_FontAsset(string filePath)
         {
-            save_SDF_FontAsset.Invoke(window, new object[] {filePath});
+            save_SDF_FontAsset.Invoke(window, new object[] { filePath });
         }
 
-        #endregion
+#endregion
 
         public FontAssetGenerator(TMPro_FontAssetCreatorWindow window)
         {
@@ -580,7 +580,11 @@ namespace Nekoyume.L10n.Editor
             var methods = typeof(FontEngine).GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
             foreach (var method in methods)
             {
-                if (method.Name != "RenderGlyphsToTexture") continue;
+                if (method.Name != "RenderGlyphsToTexture")
+                {
+                    continue;
+                }
+
                 var pars = method.GetParameters();
                 if (
                     pars[0].ParameterType == typeof(List<Glyph>) &&
@@ -597,9 +601,9 @@ namespace Nekoyume.L10n.Editor
             }
         }
 
-        void DestroyImmediate(UnityEngine.Object obj)
+        private void DestroyImmediate(Object obj)
         {
-            UnityEngine.Object.DestroyImmediate(obj);
+            Object.DestroyImmediate(obj);
         }
 
         public void GenerateAtlas(FontAssetGenerationSetting settings)
@@ -628,7 +632,7 @@ namespace Nekoyume.L10n.Editor
             stringBuilder.Append($"characterSetSelectionMode : {GetValue<int>(characterSetSelectionMode)}\n");
             stringBuilder.Append($"characterSequence : {GetValue<string>(characterSequence)}\n");
             stringBuilder.Append($"glyphRenderMode : {GetValue<int>(glyphRenderMode)}\n");
-            UnityEngine.Debug.Log(stringBuilder.ToString());
+            Debug.Log(stringBuilder.ToString());
 
             if (!m_IsProcessing && m_SourceFontFile != null)
             {
@@ -637,21 +641,24 @@ namespace Nekoyume.L10n.Editor
                     DestroyImmediate(m_FontAtlasTexture);
                     DestroyImmediate(m_GlyphRectPreviewTexture);
                 }
-                catch (Exception e) { }
+                catch (Exception e)
+                {
+                }
+
                 m_FontAtlasTexture = null;
                 m_SavedFontAtlas = null;
                 m_OutputFeedback = string.Empty;
 
                 // Initialize font engine
-                FontEngineError errorCode = FontEngine.InitializeFontEngine();
+                var errorCode = FontEngine.InitializeFontEngine();
                 if (errorCode != FontEngineError.Success)
                 {
-                    UnityEngine.Debug.Log("Font Asset Creator - Error [" + errorCode +
-                                          "] has occurred while Initializing the FreeType Library.");
+                    Debug.Log("Font Asset Creator - Error [" + errorCode +
+                        "] has occurred while Initializing the FreeType Library.");
                 }
 
                 // Get file path of the source font file.
-                string fontPath = AssetDatabase.GetAssetPath(m_SourceFontFile);
+                var fontPath = AssetDatabase.GetAssetPath(m_SourceFontFile);
 
                 if (errorCode == FontEngineError.Success)
                 {
@@ -659,7 +666,7 @@ namespace Nekoyume.L10n.Editor
 
                     if (errorCode != FontEngineError.Success)
                     {
-                        UnityEngine.Debug.Log(
+                        Debug.Log(
                             "Font Asset Creator - Error Code [" + errorCode + "] has occurred trying to load the [" +
                             m_SourceFontFile.name +
                             "] font file. This typically results from the use of an incompatible or corrupted font file.",
@@ -676,24 +683,26 @@ namespace Nekoyume.L10n.Editor
                     // Get list of characters that need to be packed and rendered to the atlas texture.
                     if (m_CharacterSetSelectionMode == 7 || m_CharacterSetSelectionMode == 8)
                     {
-                        List<uint> char_List = new List<uint>();
+                        var char_List = new List<uint>();
 
-                        for (int i = 0; i < m_CharacterSequence.Length; i++)
+                        for (var i = 0; i < m_CharacterSequence.Length; i++)
                         {
                             uint unicode = m_CharacterSequence[i];
 
                             // Handle surrogate pairs
-                            if (i < m_CharacterSequence.Length - 1 && char.IsHighSurrogate((char) unicode) &&
+                            if (i < m_CharacterSequence.Length - 1 && char.IsHighSurrogate((char)unicode) &&
                                 char.IsLowSurrogate(m_CharacterSequence[i + 1]))
                             {
-                                unicode = (uint) char.ConvertToUtf32(m_CharacterSequence[i],
+                                unicode = (uint)char.ConvertToUtf32(m_CharacterSequence[i],
                                     m_CharacterSequence[i + 1]);
                                 i += 1;
                             }
 
                             // Check to make sure we don't include duplicates
                             if (char_List.FindIndex(item => item == unicode) == -1)
+                            {
                                 char_List.Add(unicode);
+                            }
                         }
 
                         characterSet = char_List.ToArray();
@@ -713,25 +722,25 @@ namespace Nekoyume.L10n.Editor
                     m_IsProcessing = true;
                     m_IsGenerationCancelled = false;
 
-                    GlyphLoadFlags glyphLoadFlags =
-                        ((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_HINTED) ==
+                    var glyphLoadFlags =
+                        ((GlyphRasterModes)m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_HINTED) ==
                         GlyphRasterModes.RASTER_MODE_HINTED
                             ? GlyphLoadFlags.LOAD_RENDER
                             : GlyphLoadFlags.LOAD_RENDER | GlyphLoadFlags.LOAD_NO_HINTING;
 
-                    glyphLoadFlags = ((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_MONO) ==
-                                     GlyphRasterModes.RASTER_MODE_MONO
-                        ? glyphLoadFlags | GlyphLoadFlags.LOAD_MONOCHROME
-                        : glyphLoadFlags;
+                    glyphLoadFlags = ((GlyphRasterModes)m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_MONO) ==
+                        GlyphRasterModes.RASTER_MODE_MONO
+                            ? glyphLoadFlags | GlyphLoadFlags.LOAD_MONOCHROME
+                            : glyphLoadFlags;
 
                     //
-                    AutoResetEvent autoEvent = new AutoResetEvent(false);
+                    var autoEvent = new AutoResetEvent(false);
 
                     // Worker thread to pack glyphs in the given texture space.
                     ThreadPool.QueueUserWorkItem(PackGlyphs =>
                     {
                         // Start Stop Watch
-                        m_StopWatch = System.Diagnostics.Stopwatch.StartNew();
+                        m_StopWatch = Stopwatch.StartNew();
 
                         // Clear the various lists used in the generation process.
                         m_AvailableGlyphsToAdd.Clear();
@@ -743,16 +752,18 @@ namespace Nekoyume.L10n.Editor
                         m_GlyphsPacked.Clear();
 
                         // Check if requested characters are available in the source font file.
-                        for (int i = 0; i < characterSet.Length; i++)
+                        for (var i = 0; i < characterSet.Length; i++)
                         {
-                            uint unicode = characterSet[i];
+                            var unicode = characterSet[i];
                             uint glyphIndex;
 
                             if (FontEngine.TryGetGlyphIndex(unicode, out glyphIndex))
                             {
                                 // Skip over potential duplicate characters.
                                 if (m_CharacterLookupMap.ContainsKey(unicode))
+                                {
                                     continue;
+                                }
 
                                 // Add character to character lookup map.
                                 m_CharacterLookupMap.Add(unicode, glyphIndex);
@@ -766,7 +777,7 @@ namespace Nekoyume.L10n.Editor
                                 }
 
                                 // Add glyph reference to glyph lookup map.
-                                m_GlyphLookupMap.Add(glyphIndex, new List<uint>() {unicode});
+                                m_GlyphLookupMap.Add(glyphIndex, new List<uint>() { unicode });
 
                                 // Add glyph index to list of glyphs to add to texture.
                                 m_AvailableGlyphsToAdd.Add(glyphIndex);
@@ -781,8 +792,8 @@ namespace Nekoyume.L10n.Editor
                         // Pack available glyphs in the provided texture space.
                         if (m_AvailableGlyphsToAdd.Count > 0)
                         {
-                            int packingModifier =
-                                ((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
+                            var packingModifier =
+                                ((GlyphRasterModes)m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
                                 GlyphRasterModes.RASTER_MODE_BITMAP
                                     ? 0
                                     : 1;
@@ -790,14 +801,14 @@ namespace Nekoyume.L10n.Editor
                             if (m_PointSizeSamplingMode == 0) // Auto-Sizing Point Size Mode
                             {
                                 // Estimate min / max range for auto sizing of point size.
-                                int minPointSize = 0;
-                                int maxPointSize =
-                                    (int) Mathf.Sqrt((m_AtlasWidth * m_AtlasHeight) / m_AvailableGlyphsToAdd.Count) * 3;
+                                var minPointSize = 0;
+                                var maxPointSize =
+                                    (int)Mathf.Sqrt(m_AtlasWidth * m_AtlasHeight / m_AvailableGlyphsToAdd.Count) * 3;
 
                                 m_PointSize = (maxPointSize + minPointSize) / 2;
 
-                                bool optimumPointSizeFound = false;
-                                for (int iteration = 0; iteration < 15 && optimumPointSizeFound == false; iteration++)
+                                var optimumPointSizeFound = false;
+                                for (var iteration = 0; iteration < 15 && optimumPointSizeFound == false; iteration++)
                                 {
                                     m_AtlasGenerationProgressLabel = "Packing glyphs - Pass (" + iteration + ")";
 
@@ -811,9 +822,9 @@ namespace Nekoyume.L10n.Editor
                                         m_AtlasHeight - packingModifier));
                                     m_UsedGlyphRects.Clear();
 
-                                    for (int i = 0; i < m_AvailableGlyphsToAdd.Count; i++)
+                                    for (var i = 0; i < m_AvailableGlyphsToAdd.Count; i++)
                                     {
-                                        uint glyphIndex = m_AvailableGlyphsToAdd[i];
+                                        var glyphIndex = m_AvailableGlyphsToAdd[i];
                                         Glyph glyph;
 
                                         if (FontEngine.TryGetGlyphWithIndexValue(glyphIndex, glyphLoadFlags, out glyph))
@@ -830,7 +841,7 @@ namespace Nekoyume.L10n.Editor
                                     }
 
                                     TryPackGlyphsInAtlas(m_GlyphsToPack.GetList(), m_GlyphsPacked.GetList(), m_Padding,
-                                        (GlyphPackingMode) m_PackingMode, m_GlyphRenderMode, m_AtlasWidth,
+                                        (GlyphPackingMode)m_PackingMode, m_GlyphRenderMode, m_AtlasWidth,
                                         m_AtlasHeight, m_FreeGlyphRects.GetList(), m_UsedGlyphRects.GetList());
                                     m_GlyphsToPack.UpdateValue();
                                     m_GlyphsPacked.UpdateValue();
@@ -889,9 +900,9 @@ namespace Nekoyume.L10n.Editor
                                     m_AtlasHeight - packingModifier));
                                 m_UsedGlyphRects.Clear();
 
-                                for (int i = 0; i < m_AvailableGlyphsToAdd.Count; i++)
+                                for (var i = 0; i < m_AvailableGlyphsToAdd.Count; i++)
                                 {
-                                    uint glyphIndex = m_AvailableGlyphsToAdd[i];
+                                    var glyphIndex = m_AvailableGlyphsToAdd[i];
                                     Glyph glyph;
 
                                     if (FontEngine.TryGetGlyphWithIndexValue(glyphIndex, glyphLoadFlags, out glyph))
@@ -908,7 +919,7 @@ namespace Nekoyume.L10n.Editor
                                 }
 
                                 TryPackGlyphsInAtlas(m_GlyphsToPack.GetList(), m_GlyphsPacked.GetList(), m_Padding,
-                                    (GlyphPackingMode) m_PackingMode, m_GlyphRenderMode, m_AtlasWidth, m_AtlasHeight,
+                                    (GlyphPackingMode)m_PackingMode, m_GlyphRenderMode, m_AtlasWidth, m_AtlasHeight,
                                     m_FreeGlyphRects.GetList(), m_UsedGlyphRects.GetList());
                                 m_GlyphsToPack.UpdateValue();
                                 m_GlyphsPacked.UpdateValue();
@@ -923,12 +934,11 @@ namespace Nekoyume.L10n.Editor
                                 }
                                 //Debug.Log("Glyphs remaining to add [" + m_GlyphsToAdd.Count + "]. Glyphs added [" + m_GlyphsAdded.Count + "].");
                             }
-
                         }
                         else
                         {
-                            int packingModifier =
-                                ((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
+                            var packingModifier =
+                                ((GlyphRasterModes)m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
                                 GlyphRasterModes.RASTER_MODE_BITMAP
                                     ? 0
                                     : 1;
@@ -955,11 +965,11 @@ namespace Nekoyume.L10n.Editor
                         m_GlyphsToRender.Clear();
 
                         // Handle Results and potential cancellation of glyph rendering
-                        if (m_GlyphRenderMode == GlyphRenderMode.SDF32 && m_PointSize > 512 ||
-                            m_GlyphRenderMode == GlyphRenderMode.SDF16 && m_PointSize > 1024 ||
-                            m_GlyphRenderMode == GlyphRenderMode.SDF8 && m_PointSize > 2048)
+                        if ((m_GlyphRenderMode == GlyphRenderMode.SDF32 && m_PointSize > 512) ||
+                            (m_GlyphRenderMode == GlyphRenderMode.SDF16 && m_PointSize > 1024) ||
+                            (m_GlyphRenderMode == GlyphRenderMode.SDF8 && m_PointSize > 2048))
                         {
-                            int upSampling = 1;
+                            var upSampling = 1;
                             switch (m_GlyphRenderMode)
                             {
                                 case GlyphRenderMode.SDF8:
@@ -973,9 +983,9 @@ namespace Nekoyume.L10n.Editor
                                     break;
                             }
 
-                            UnityEngine.Debug.Log("Glyph rendering has been aborted due to sampling point size of [" +
-                                                  m_PointSize + "] x SDF [" + upSampling +
-                                                  "] up sampling exceeds 16,384 point size. Please revise your generation settings to make sure the sampling point size x SDF up sampling mode does not exceed 16,384.");
+                            Debug.Log("Glyph rendering has been aborted due to sampling point size of [" +
+                                m_PointSize + "] x SDF [" + upSampling +
+                                "] up sampling exceeds 16,384 point size. Please revise your generation settings to make sure the sampling point size x SDF up sampling mode does not exceed 16,384.");
 
                             m_IsRenderingDone = true;
                             m_AtlasGenerationProgress = 0;
@@ -983,17 +993,19 @@ namespace Nekoyume.L10n.Editor
                         }
 
                         // Add glyphs and characters successfully added to texture to their respective font tables.
-                        foreach (Glyph glyph in m_GlyphsPacked.GetList())
+                        foreach (var glyph in m_GlyphsPacked.GetList())
                         {
-                            uint glyphIndex = glyph.index;
+                            var glyphIndex = glyph.index;
 
                             m_FontGlyphTable.Add(glyph);
 
                             // Add glyphs to list of glyphs that need to be rendered.
                             if (glyph.glyphRect.width > 0 && glyph.glyphRect.height > 0)
+                            {
                                 m_GlyphsToRender.Add(glyph);
+                            }
 
-                            foreach (uint unicode in m_GlyphLookupMap[glyphIndex])
+                            foreach (var unicode in m_GlyphLookupMap[glyphIndex])
                             {
                                 // Create new Character
                                 m_FontCharacterTable.Add(new TMP_Character(unicode, glyph));
@@ -1001,9 +1013,9 @@ namespace Nekoyume.L10n.Editor
                         }
 
                         //
-                        foreach (Glyph glyph in m_GlyphsToPack.GetList())
+                        foreach (var glyph in m_GlyphsToPack.GetList())
                         {
-                            foreach (uint unicode in m_GlyphLookupMap[glyph.index])
+                            foreach (var unicode in m_GlyphLookupMap[glyph.index])
                             {
                                 m_ExcludedCharacters.Add(unicode);
                             }
@@ -1023,7 +1035,7 @@ namespace Nekoyume.L10n.Editor
                         if (m_IsGenerationCancelled == false)
                         {
                             // Start Stop Watch
-                            m_StopWatch = System.Diagnostics.Stopwatch.StartNew();
+                            m_StopWatch = Stopwatch.StartNew();
 
                             m_IsRenderingDone = false;
 
@@ -1063,8 +1075,8 @@ namespace Nekoyume.L10n.Editor
                 return;
             }
 
-            if (!(((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
-                  GlyphRasterModes.RASTER_MODE_BITMAP))
+            if (!(((GlyphRasterModes)m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
+                GlyphRasterModes.RASTER_MODE_BITMAP))
             {
                 Save_SDF_FontAsset(filePath);
                 NcDebug.Log("Font Asset has been saved to disk.");

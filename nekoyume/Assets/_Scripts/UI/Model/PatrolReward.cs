@@ -2,11 +2,13 @@ using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Nekoyume.ApiClient;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model.Patrol
 {
     using UniRx;
+
     public class PatrolReward
     {
         private int AvatarLevel { get; set; }
@@ -23,14 +25,14 @@ namespace Nekoyume.UI.Model.Patrol
 
         public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;
             }
 
             var query =
-$@"query {{
+                $@"query {{
     avatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
         avatarAddress
         agentAddress
@@ -105,7 +107,7 @@ $@"query {{
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;
@@ -142,14 +144,14 @@ $@"query {{
 
         public async Task LoadPolicyInfo(int level, bool free = true)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;
             }
 
             var query =
-$@"query {{
+                $@"query {{
     policy(level: {level}, free: true) {{
         activate
         minimumLevel
@@ -191,14 +193,14 @@ $@"query {{
 
         public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return null;
             }
 
             var query =
-$@"mutation {{
+                $@"mutation {{
     claim(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"")
 }}";
 
@@ -214,14 +216,14 @@ $@"mutation {{
 
         private async Task PutAvatar(string avatarAddress, string agentAddress)
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;
             }
 
             var query =
-$@"mutation {{
+                $@"mutation {{
     putAvatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
         avatarAddress
         agentAddress

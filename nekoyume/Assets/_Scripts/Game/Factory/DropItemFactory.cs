@@ -32,7 +32,9 @@ namespace Nekoyume.Game.Factory
             var objectPool = GetComponent<ObjectPool>();
             var dropItem = objectPool.Get<DropItem>(position);
             if (dropItem == null)
+            {
                 yield break;
+            }
 
 
             // sprite

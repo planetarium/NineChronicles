@@ -18,8 +18,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Selected = new(false);
         public readonly ReactiveProperty<bool> ActiveSelf = new(true);
 
-        public readonly Subject<Item> OnClick = new Subject<Item>();
-        public readonly Subject<Item> OnDoubleClick = new Subject<Item>();
+        public readonly Subject<Item> OnClick = new();
+        public readonly Subject<Item> OnDoubleClick = new();
 
         public Item(ItemBase value)
         {

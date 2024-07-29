@@ -6,6 +6,7 @@ namespace Nekoyume
     {
         [SerializeField]
         private bool isRunning = false;
+
         public bool IsRunning
         {
             get => isRunning;

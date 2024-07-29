@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Scroller
         {
             public CountableItem Item { get; }
             public readonly ReactiveProperty<int> SelectedCount = new(0);
+
             public Model(CountableItem item, int selectedCount = 0)
             {
                 Item = item;

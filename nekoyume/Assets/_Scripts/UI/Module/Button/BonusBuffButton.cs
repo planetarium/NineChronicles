@@ -99,19 +99,22 @@ namespace Nekoyume.UI.Module
             if (selectedId != 0 ||
                 (skillState != null && skillState.SkillIds.Any()))
             {
-                var buffId = selectedId != 0 ? selectedId : skillState.SkillIds.Select(buffId =>
-                {
-                    var randomBuffSheet = tableSheets.CrystalRandomBuffSheet;
-                    if (!randomBuffSheet.TryGetValue(buffId, out var bonusBuffRow))
-                    {
-                        return null;
-                    }
-                    return bonusBuffRow;
-                })
-                .OrderBy(x => x.Rank)
-                .ThenBy(x => x.Id)
-                .First()
-                .Id;
+                var buffId = selectedId != 0
+                    ? selectedId
+                    : skillState.SkillIds.Select(buffId =>
+                        {
+                            var randomBuffSheet = tableSheets.CrystalRandomBuffSheet;
+                            if (!randomBuffSheet.TryGetValue(buffId, out var bonusBuffRow))
+                            {
+                                return null;
+                            }
+
+                            return bonusBuffRow;
+                        })
+                        .OrderBy(x => x.Rank)
+                        .ThenBy(x => x.Id)
+                        .First()
+                        .Id;
 
                 if (!tableSheets.CrystalRandomBuffSheet.TryGetValue(buffId, out var buffRow) ||
                     !tableSheets.SkillSheet.TryGetValue(buffRow.SkillId, out var skillRow))

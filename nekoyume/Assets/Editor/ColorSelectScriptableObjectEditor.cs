@@ -8,6 +8,5 @@ namespace Editor
     [CustomEditor(typeof(CostumeColorScriptableObject))]
     public class ColorSelectScriptableObjectEditor : EnumGeneratorEditor<ColorSelectType>
     {
-
     }
 }

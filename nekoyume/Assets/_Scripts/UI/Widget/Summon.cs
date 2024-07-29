@@ -28,6 +28,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
     using Toggle = Module.Toggle;
+
     public class Summon : Widget
     {
         [Serializable]
@@ -212,11 +213,12 @@ namespace Nekoyume.UI
                 _ => HeaderMenuStatic.AssetVisibleState.SummonAdvanced
             };
             LoadingHelper.Summon
+                .Where(_ => gameObject.activeSelf)
                 .Subscribe(_ => Find<HeaderMenuStatic>().UpdateAssets(state))
                 .AddTo(_disposables);
         }
 
-        #region Action
+#region Action
 
         public void SummonAction(int groupId, int summonCount)
         {
@@ -334,11 +336,12 @@ namespace Nekoyume.UI
                 .ToList();
         }
 
-        #endregion
+#endregion
 
         private IEnumerator CoShowAuraSummonLoadingScreen(List<int> recipes)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
+
             IEnumerator CoChangeItem()
             {
                 var equipmentRecipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
@@ -370,6 +373,7 @@ namespace Nekoyume.UI
         private IEnumerator CoShowRuneSummonLoadingScreen(List<int> recipes)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
+
             IEnumerator CoChangeItem()
             {
                 var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
@@ -407,7 +411,7 @@ namespace Nekoyume.UI
             Find<Summon>().Close(true);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            if(TryFind<MobileShop>(out var mobileShop))
+            if (TryFind<MobileShop>(out var mobileShop))
             {
                 mobileShop.Show();
             }
@@ -448,11 +452,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<SummonResultPopup>().Show(summonRow, 1, new List<Equipment> {resultEquipment},
-                () =>
-                {
-                    Game.Game.instance.Stage.TutorialController.Play(50005);
-                });
+            Find<SummonResultPopup>().Show(summonRow, 1, new List<Equipment> { resultEquipment },
+                () => { Game.Game.instance.Stage.TutorialController.Play(50005); });
 
             // UI Reset for SetCostUIForTutorial() invoking
             button.UpdateObjects();

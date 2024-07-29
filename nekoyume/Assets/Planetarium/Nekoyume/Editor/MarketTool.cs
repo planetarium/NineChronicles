@@ -13,6 +13,7 @@ namespace Planetarium.Nekoyume.Editor
     public class MarketTool : EditorWindow
     {
         private static readonly string CurrentDir = Directory.GetCurrentDirectory();
+
         private static string _marketPath = PlayerPrefs.HasKey("marketPath")
             ? PlayerPrefs.GetString("marketPath")
             : "";

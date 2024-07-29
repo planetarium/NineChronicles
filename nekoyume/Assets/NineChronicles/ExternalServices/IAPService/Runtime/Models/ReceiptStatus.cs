@@ -11,7 +11,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         ValidationRequest = 1,
         Valid = 10,
         Invalid = 91,
-        Unknown = 99,
+        Unknown = 99
     }
 
     public class ReceiptStatusConverter : JsonConverter<ReceiptStatus>

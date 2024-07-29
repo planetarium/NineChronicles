@@ -15,7 +15,10 @@ namespace Planetarium.Nekoyume.Editor
     public static class DataExporter
     {
         [MenuItem("Tools/Export Data/Shop", true)]
-        public static bool ExportShopDataValidation() => Application.isPlaying;
+        public static bool ExportShopDataValidation()
+        {
+            return Application.isPlaying;
+        }
 
         [MenuItem("Tools/Export Data/Shop")]
         public static void ExportShopData()

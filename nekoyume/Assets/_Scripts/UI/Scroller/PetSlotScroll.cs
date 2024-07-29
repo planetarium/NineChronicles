@@ -41,6 +41,7 @@ namespace Nekoyume.UI.Scroller
         }
 
         protected override FancyCell<PetSlotViewModel, ContextModel> CellTemplate => cellTemplate;
+
         protected override void Initialize()
         {
             base.Initialize();

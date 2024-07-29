@@ -112,7 +112,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
-                    out var lastClearedStageId))
+                out var lastClearedStageId))
             {
                 foreach (var lockObj in lockObjects)
                 {

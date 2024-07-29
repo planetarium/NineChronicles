@@ -1542,13 +1542,14 @@ GameObject:
   - component: {fileID: 1965424563939309076}
   - component: {fileID: 1072716518823988530}
   - component: {fileID: 2801841953968667639}
+  - component: {fileID: 114002210961279400}
   m_Layer: 5
   m_Name: EventMark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &89893729817887826
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1558,7 +1559,7 @@ RectTransform:
   m_GameObject: {fileID: 2673080793282856582}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9006072, y: 0.9006072, z: 0.99996245}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2505441311892281251}
@@ -1635,7 +1636,7 @@ MonoBehaviour:
     updateMode: 0
 --- !u!95 &2801841953968667639
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1652,7 +1653,26 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &114002210961279400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2673080793282856582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606a65fd6eca47988dc65a11d28abc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  season: 0
+  times: []
+  enableKey: UI_Menu_RankingBtn_EventMark
+  timeText: {fileID: 0}
+  bannerImage: {fileID: 0}
+  linkButton: {fileID: 0}
 --- !u!1 &2963474701431197763
 GameObject:
   m_ObjectHideFlags: 0
@@ -1734,7 +1754,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &2206376061323519399
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1751,7 +1771,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3332983043404061758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4398,9 +4419,19 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 568128342706116627, guid: 0db5817b50fef4a2189aa48d300a5970,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 885200162409516597, guid: 0db5817b50fef4a2189aa48d300a5970,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 885200162409516597, guid: 0db5817b50fef4a2189aa48d300a5970,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1658028294113867089, guid: 0db5817b50fef4a2189aa48d300a5970,
@@ -4408,9 +4439,19 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1658028294113867089, guid: 0db5817b50fef4a2189aa48d300a5970,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1658028294113955673, guid: 0db5817b50fef4a2189aa48d300a5970,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1658028294113955673, guid: 0db5817b50fef4a2189aa48d300a5970,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2949518630668331896, guid: 0db5817b50fef4a2189aa48d300a5970,
@@ -4418,14 +4459,29 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2949518630668331896, guid: 0db5817b50fef4a2189aa48d300a5970,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3655166228391469048, guid: 0db5817b50fef4a2189aa48d300a5970,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3655166228391469048, guid: 0db5817b50fef4a2189aa48d300a5970,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5596377068019802910, guid: 0db5817b50fef4a2189aa48d300a5970,
         type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5596377068019802910, guid: 0db5817b50fef4a2189aa48d300a5970,
         type: 3}
-      propertyPath: m_Enabled
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5850578695434883522, guid: 0db5817b50fef4a2189aa48d300a5970,
@@ -4441,6 +4497,11 @@ PrefabInstance:
     - target: {fileID: 8312323028259762899, guid: 0db5817b50fef4a2189aa48d300a5970,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8312323028259762899, guid: 0db5817b50fef4a2189aa48d300a5970,
+        type: 3}
+      propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -4487,6 +4548,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Scale3D.z
       value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1736384477989498062, guid: 480da0dcd6b157c45964cfefcc8fe21c,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3307725060636747937, guid: 480da0dcd6b157c45964cfefcc8fe21c,
         type: 3}
@@ -4560,8 +4626,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3620745226057974275, guid: 480da0dcd6b157c45964cfefcc8fe21c,
         type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3620745226057974275, guid: 480da0dcd6b157c45964cfefcc8fe21c,
+        type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4471832506766184000, guid: 480da0dcd6b157c45964cfefcc8fe21c,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4471832506766184000, guid: 480da0dcd6b157c45964cfefcc8fe21c,
         type: 3}

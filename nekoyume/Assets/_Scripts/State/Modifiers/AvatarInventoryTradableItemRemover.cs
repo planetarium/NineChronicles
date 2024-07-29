@@ -25,7 +25,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        private Dictionary<Guid, InnerModel> _items = new Dictionary<Guid, InnerModel>();
+        private Dictionary<Guid, InnerModel> _items = new();
 
         public override bool IsEmpty => _items.Count == 0;
 

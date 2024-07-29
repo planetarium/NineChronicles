@@ -5,15 +5,16 @@ using System;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.ActionExtensions;
-    using Nekoyume.Helper;
+    using ActionExtensions;
+    using Helper;
     using UniRx;
+
     public class AdventureBossFullBountyStatusPopup : PopupWidget
     {
         [SerializeField] private BountyViewScroll scrollView;
         [SerializeField] private BountyCell myBountyCell;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public override void Show(bool ignoreShowAnimation = false)
         {
@@ -25,6 +26,16 @@ namespace Nekoyume.UI
                     scrollView.ClearData();
                     return;
                 }
+
+                // Update Default my bounty cell
+                myBountyCell.UpdateContent(new BountyItemData {
+                    Rank = -1,
+                    Name = Game.Game.instance.States.CurrentAvatarState.name,
+                    Count = 0,
+                    Ncg = 0,
+                    Bonus = 0,
+                });
+
                 scrollView.UpdateData(bountyBoard.Investors.OrderByDescending(investor => investor.Price).Select((x, i) =>
                 {
                     var data = new BountyItemData
@@ -45,6 +56,7 @@ namespace Nekoyume.UI
                 }));
             }).AddTo(_disposables);
         }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);

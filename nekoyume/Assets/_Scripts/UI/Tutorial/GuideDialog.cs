@@ -13,10 +13,9 @@ namespace Nekoyume.UI
     public class GuideDialog : TutorialItem
     {
         [SerializeField] private float fadeDuration = 1.0f;
-        [SerializeField] private AnimationCurve fadeCurve
-            = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        [SerializeField] private AnimationCurve fadeCurve = new(new Keyframe(0, 0), new Keyframe(1, 1));
 
-        [SerializeField] private List<PrintDelay> printDelays = new List<PrintDelay>();
+        [SerializeField] private List<PrintDelay> printDelays = new();
         [SerializeField] private Transform topContainer;
         [SerializeField] private Transform bottomContainer;
         [SerializeField] private TextTyper textTyper;
@@ -72,6 +71,7 @@ namespace Nekoyume.UI
                 {
                     StopCoroutine(_coroutine);
                 }
+
                 _coroutine = StartCoroutine(LatePlay(d, callback));
             }
         }
@@ -186,7 +186,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.Typing, 0.1f);
         }
 
-        #region Skip
+#region Skip
 
         public override void Skip(System.Action callback)
         {
@@ -199,7 +199,8 @@ namespace Nekoyume.UI
                 PlayEmojiAnimation(StopHash);
             }
         }
-        #endregion
+
+#endregion
     }
 
     [Serializable]

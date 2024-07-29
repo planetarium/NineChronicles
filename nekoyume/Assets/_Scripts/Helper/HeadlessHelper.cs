@@ -58,7 +58,7 @@ namespace Nekoyume.Helper
                 {
                     FileName = "dotnet",
                     Arguments =
-                        @$"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path ""{Path.Combine(_genesisPath, "genesis-block")}"" --store-path ""{Path.Combine(_docsRoot, "planetarium", _storeName)}"" --store-type rocksdb",
+                        @$"run -c DevEx --project NineChronicles.Headless.Executable -C appsettings.local.json --genesis-block-path ""{Path.Combine(_genesisPath, "genesis-block")}"" --store-path ""{Path.Combine(_docsRoot, "planetarium", _storeName)}"" --store-type rocksdb"
                 };
                 if (!string.IsNullOrEmpty(pkHex))
                 {
@@ -81,10 +81,13 @@ namespace Nekoyume.Helper
             }
         }
 
-        private static string FixPath(string path) => path.Replace("/",
-            (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? Path.DirectorySeparatorChar
-                : Path.AltDirectorySeparatorChar).ToString());
+        private static string FixPath(string path)
+        {
+            return path.Replace("/",
+                (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? Path.DirectorySeparatorChar
+                    : Path.AltDirectorySeparatorChar).ToString());
+        }
     }
 }
 

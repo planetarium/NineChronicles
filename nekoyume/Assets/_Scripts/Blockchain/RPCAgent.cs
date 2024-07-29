@@ -53,9 +53,9 @@ namespace Nekoyume.Blockchain
     {
         private const int RpcConnectionRetryCount = 6;
         private const float TxProcessInterval = 1.0f;
-        private readonly ConcurrentQueue<ActionBase> _queuedActions = new ConcurrentQueue<ActionBase>();
+        private readonly ConcurrentQueue<ActionBase> _queuedActions = new();
 
-        private readonly TransactionMap _transactions = new TransactionMap(20);
+        private readonly TransactionMap _transactions = new(20);
 
         private GrpcChannelx _channel;
 
@@ -63,19 +63,19 @@ namespace Nekoyume.Blockchain
 
         private IBlockChainService _service;
 
-        private Codec _codec = new Codec();
+        private Codec _codec = new();
 
         private Block _genesis;
 
         private DateTimeOffset _lastTipChangedAt;
 
-        public BlockRenderer BlockRenderer { get; } = new BlockRenderer();
+        public BlockRenderer BlockRenderer { get; } = new();
 
-        public ActionRenderer ActionRenderer { get; } = new ActionRenderer();
+        public ActionRenderer ActionRenderer { get; } = new();
 
-        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
+        public Subject<long> BlockIndexSubject { get; } = new();
 
-        public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
+        public Subject<BlockHash> BlockTipHashSubject { get; } = new();
 
         public long BlockIndex { get; private set; }
 
@@ -85,33 +85,32 @@ namespace Nekoyume.Blockchain
 
         public bool Connected { get; private set; }
 
-        public readonly Subject<RPCAgent> OnDisconnected = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnDisconnected = new();
 
-        public readonly Subject<RPCAgent> OnRetryStarted = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnRetryStarted = new();
 
-        public readonly Subject<RPCAgent> OnRetryEnded = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnRetryEnded = new();
 
-        public readonly Subject<RPCAgent> OnPreloadStarted = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnPreloadStarted = new();
 
-        public readonly Subject<RPCAgent> OnPreloadEnded = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnPreloadEnded = new();
 
-        public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new Subject<(RPCAgent, int)>();
+        public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new();
 
         public BlockHash BlockTipHash { get; private set; }
 
         public HashDigest<SHA256> BlockTipStateRootHash { get; private set; }
 
-        private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
-            new Subject<(NCTx tx, List<ActionBase> actions)>();
+        private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject = new();
 
         public IObservable<(NCTx tx, List<ActionBase> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private readonly BlockHashCache _blockHashCache = new(100);
         private MessagePackSerializerOptions _lz4Options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
 
-        private readonly List<string> cachedRpcServerHosts = new List<string>();
+        private readonly List<string> cachedRpcServerHosts = new();
         private int cachedRpcServerPort;
         private CancellationTokenSource cancellationTokenSource;
 
@@ -210,8 +209,8 @@ namespace Nekoyume.Blockchain
                 sw.Reset();
                 sw.Start();
                 // Android Mono only support arm7(32bit) backend in unity engine.
-                bool architecture_is_32bit = ! Environment.Is64BitProcess;
-                bool is_Android = Application.platform == RuntimePlatform.Android;
+                var architecture_is_32bit = !Environment.Is64BitProcess;
+                var is_Android = Application.platform == RuntimePlatform.Android;
                 if (is_Android && architecture_is_32bit)
                 {
                     // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
@@ -423,7 +422,7 @@ namespace Nekoyume.Blockchain
                 BlockTipHash.ToByteArray(),
                 address.ToByteArray(),
                 _codec.Encode(currency.Serialize()));
-            var serialized = (List) _codec.Decode(raw);
+            var serialized = (List)_codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
@@ -438,7 +437,7 @@ namespace Nekoyume.Blockchain
                 stateRootHash.ToByteArray(),
                 address.ToByteArray(),
                 _codec.Encode(currency.Serialize()));
-            var serialized = (List) _codec.Decode(raw);
+            var serialized = (List)_codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
@@ -484,7 +483,7 @@ namespace Nekoyume.Blockchain
 
         private AgentState ResolveAgentState(byte[] raw)
         {
-            IValue value = _codec.Decode(raw);
+            var value = _codec.Decode(raw);
             if (value is Dictionary dict)
             {
                 return new AgentState(dict);
@@ -510,7 +509,7 @@ namespace Nekoyume.Blockchain
                 return null;
             }
 
-            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesByBlockHash(
+            var raw = await _service.GetAvatarStatesByBlockHash(
                 blockHash.Value.ToByteArray(),
                 addressList.Select(a => a.ToByteArray()));
             var result = new Dictionary<Address, AvatarState>();
@@ -518,6 +517,7 @@ namespace Nekoyume.Blockchain
             {
                 result[new Address(kv.Key)] = ResolveAvatarState(kv.Value);
             }
+
             return result;
         }
 
@@ -532,7 +532,7 @@ namespace Nekoyume.Blockchain
                 return null;
             }
 
-            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesByBlockHash(
+            var raw = await _service.GetAvatarStatesByBlockHash(
                 blockHash.Value.ToByteArray(),
                 addressList.Select(a => a.ToByteArray()));
             var result = new Dictionary<Address, AvatarState>();
@@ -540,6 +540,7 @@ namespace Nekoyume.Blockchain
             {
                 result[new Address(kv.Key)] = ResolveAvatarState(kv.Value);
             }
+
             return result;
         }
 
@@ -547,7 +548,7 @@ namespace Nekoyume.Blockchain
             HashDigest<SHA256> stateRootHash,
             IEnumerable<Address> addressList)
         {
-            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesByStateRootHash(
+            var raw = await _service.GetAvatarStatesByStateRootHash(
                 stateRootHash.ToByteArray(),
                 addressList.Select(a => a.ToByteArray()));
             var result = new Dictionary<Address, AvatarState>();
@@ -555,6 +556,7 @@ namespace Nekoyume.Blockchain
             {
                 result[new Address(kv.Key)] = ResolveAvatarState(kv.Value);
             }
+
             return result;
         }
 
@@ -634,7 +636,7 @@ namespace Nekoyume.Blockchain
 
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(Address accountAddress, IEnumerable<Address> addressList)
         {
-            Dictionary<byte[], byte[]> raw =
+            var raw =
                 await _service.GetBulkStateByBlockHash(
                     BlockTipHash.ToByteArray(),
                     accountAddress.ToByteArray(),
@@ -644,6 +646,7 @@ namespace Nekoyume.Blockchain
             {
                 result[new Address(kv.Key)] = _codec.Decode(kv.Value);
             }
+
             return result;
         }
 
@@ -652,7 +655,7 @@ namespace Nekoyume.Blockchain
             Address accountAddress,
             IEnumerable<Address> addressList)
         {
-            Dictionary<byte[], byte[]> raw =
+            var raw =
                 await _service.GetBulkStateByStateRootHash(
                     stateRootHash.ToByteArray(),
                     accountAddress.ToByteArray(),
@@ -662,6 +665,7 @@ namespace Nekoyume.Blockchain
             {
                 result[new Address(kv.Key)] = _codec.Decode(kv.Value);
             }
+
             return result;
         }
 
@@ -679,7 +683,7 @@ namespace Nekoyume.Blockchain
                 .AsParallel()
                 .ParallelForEachAsync(async list =>
                 {
-                    Dictionary<byte[], byte[]> raw =
+                    var raw =
                         await _service.GetSheets(
                             BlockTipHash.ToByteArray(),
                             list.Select(a => a.ToByteArray()));
@@ -699,6 +703,7 @@ namespace Nekoyume.Blockchain
             {
                 result[new Address(kv.Key)] = _codec.Decode(MessagePackSerializer.Deserialize<byte[]>(kv.Value, _lz4Options));
             }
+
             sw.Stop();
             NcDebug.Log($"[SyncTableSheets/GetSheets] decode values. {sw.Elapsed}");
             return result;
@@ -713,7 +718,7 @@ namespace Nekoyume.Blockchain
             _queuedActions.Enqueue(actionBase);
         }
 
-        #region Mono
+#region Mono
 
         private void Awake()
         {
@@ -739,7 +744,7 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
             OnRetryStarted
                 .ObserveOnMainThread()
-                .Subscribe(_ => Analyzer.Instance?.Track("Unity/RPC Retry Connect Started",GetPlayerAddressForLogging()))
+                .Subscribe(_ => Analyzer.Instance?.Track("Unity/RPC Retry Connect Started", GetPlayerAddressForLogging()))
                 .AddTo(_disposables);
             OnRetryEnded
                 .ObserveOnMainThread()
@@ -775,6 +780,7 @@ namespace Nekoyume.Blockchain
             {
                 await _hub.DisposeAsync();
             }
+
             if (_channel is not null)
             {
                 await _channel?.ShutdownAsync();
@@ -784,14 +790,11 @@ namespace Nekoyume.Blockchain
             cancellationTokenSource?.Dispose();
         }
 
-        #endregion
+#endregion
 
         private IEnumerator CoJoin(Action<bool> callback)
         {
-            Task t = Task.Run(async () =>
-            {
-                await Join();
-            });
+            var t = Task.Run(async () => { await Join(); });
 
             yield return new WaitUntil(() => t.IsCompleted);
 
@@ -804,7 +807,7 @@ namespace Nekoyume.Blockchain
             Connected = true;
 
             // 에이전트의 상태를 한 번 동기화 한다.
-            Task currencyTask = Task.Run(async () =>
+            var currencyTask = Task.Run(async () =>
             {
                 var goldCurrency = new GoldCurrencyState(
                     (Dictionary)await GetStateAsync(
@@ -844,6 +847,7 @@ namespace Nekoyume.Blockchain
                     patronAddress = list[0].ToAddress();
                     approved = list[1].ToBoolean();
                 }
+
                 States.Instance.SetPledgeStates(patronAddress, approved);
             });
 
@@ -865,23 +869,21 @@ namespace Nekoyume.Blockchain
 
         private IEnumerator CoTxProcessor()
         {
-            int i = 0;
+            var i = 0;
             while (true)
             {
                 yield return new WaitForSeconds(TxProcessInterval);
 
-                if (!_queuedActions.TryDequeue(out ActionBase action))
+                if (!_queuedActions.TryDequeue(out var action))
                 {
                     continue;
                 }
+
                 NcDebug.Log($"[RPCAgent] CoTxProcessor()... before MakeTransaction.({++i})");
-                Task task = Task.Run(async () =>
-                {
-                    await MakeTransaction(new List<ActionBase> { action });
-                });
+                var task = Task.Run(async () => { await MakeTransaction(new List<ActionBase> { action }); });
                 yield return new WaitUntil(() => task.IsCompleted);
                 NcDebug.Log("[RPCAgent] CoTxProcessor()... after MakeTransaction." +
-                          $" task completed({task.IsCompleted})");
+                    $" task completed({task.IsCompleted})");
                 if (task.IsFaulted)
                 {
                     NcDebug.LogException(task.Exception);
@@ -901,12 +903,12 @@ namespace Nekoyume.Blockchain
             var nonce = await GetNonceAsync();
             var gasLimit = actions.Any(a => a is ITransferAsset or ITransferAssets) ? 4L : 1L;
             var tx = NCTx.Create(
-                nonce: nonce,
-                privateKey: PrivateKey,
-                genesisHash: _genesis?.Hash,
-                actions: actions.Select(action => action.PlainValue),
-                maxGasPrice: Currencies.Mead * 1,
-                gasLimit: gasLimit
+                nonce,
+                PrivateKey,
+                _genesis?.Hash,
+                actions.Select(action => action.PlainValue),
+                Currencies.Mead * 1,
+                gasLimit
             );
 
             var actionsText = string.Join(", ", actions.Select(action =>
@@ -914,17 +916,17 @@ namespace Nekoyume.Blockchain
                 if (action is GameAction gameAction)
                 {
                     return $"{action.GetActionTypeAttribute().TypeIdentifier}" +
-                           $"({gameAction.Id.ToString()})";
+                        $"({gameAction.Id.ToString()})";
                 }
 
                 return action.GetActionTypeAttribute().TypeIdentifier.ToString();
             }));
             NcDebug.Log("[RPCAgent] MakeTransaction()... w/" +
-                      $" nonce={nonce}" +
-                      $" PrivateKeyAddr={PrivateKey.Address.ToString()}" +
-                      $" GenesisBlockHash={_genesis?.Hash}" +
-                      $" TxId={tx.Id}" +
-                      $" Actions=[{actionsText}]");
+                $" nonce={nonce}" +
+                $" PrivateKeyAddr={PrivateKey.Address.ToString()}" +
+                $" GenesisBlockHash={_genesis?.Hash}" +
+                $" TxId={tx.Id}" +
+                $" Actions=[{actionsText}]");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
             await _service.PutTransaction(tx.Serialize());
@@ -945,15 +947,19 @@ namespace Nekoyume.Blockchain
         public void OnRender(byte[] evaluation)
         {
             using (var cp = new MemoryStream(evaluation))
-            using (var decompressed = new MemoryStream())
-            using (var df = new DeflateStream(cp, CompressionMode.Decompress))
             {
-                df.CopyTo(decompressed);
-                decompressed.Seek(0, SeekOrigin.Begin);
-                var dec = decompressed.ToArray();
-                var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
-                    .ToActionEvaluation();
-                ActionRenderer.ActionRenderSubject.OnNext(ev);
+                using (var decompressed = new MemoryStream())
+                {
+                    using (var df = new DeflateStream(cp, CompressionMode.Decompress))
+                    {
+                        df.CopyTo(decompressed);
+                        decompressed.Seek(0, SeekOrigin.Begin);
+                        var dec = decompressed.ToArray();
+                        var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
+                            .ToActionEvaluation();
+                        ActionRenderer.ActionRenderSubject.OnNext(ev);
+                    }
+                }
             }
         }
 
@@ -966,7 +972,7 @@ namespace Nekoyume.Blockchain
         {
             UniTask.RunOnThreadPool<(long, BlockHash, HashDigest<SHA256>)>(() =>
             {
-                var dict = (Dictionary) _codec.Decode(newTip);
+                var dict = (Dictionary)_codec.Decode(newTip);
                 var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
                 return (
                     newTipBlock.Index,
@@ -982,7 +988,7 @@ namespace Nekoyume.Blockchain
                 BlockTipHashSubject.OnNext(BlockTipHash);
                 _lastTipChangedAt = DateTimeOffset.UtcNow;
 
-                NcDebug.Log($"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}", channel: "RenderBlock");
+                NcDebug.Log($"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}", "RenderBlock");
                 BlockRenderer.RenderBlock(null, null);
             });
         }
@@ -1107,13 +1113,14 @@ namespace Nekoyume.Blockchain
             {
                 await _hub.JoinAsync(Address.ToHex());
             }
+
             await _service.AddClient(Address.ToByteArray());
         }
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
-            Block newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
+            var dict = (Dictionary)_codec.Decode(newTip);
+            var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
             BlockIndex = newTipBlock.Index;
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
@@ -1158,7 +1165,6 @@ namespace Nekoyume.Blockchain
                         errorMsg, L10nManager.Localize("UI_OK"), false);
                     popup.SetConfirmCallbackToExit();
                 });
-
         }
 
         public void OnPreloadStart()
@@ -1181,12 +1187,12 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            var addresses = new List<(Address,Address)> {(Addresses.Agent,Address)};
+            var addresses = new List<(Address, Address)> { (Addresses.Agent, Address) };
 
             var currentAvatarState = States.Instance.CurrentAvatarState;
             if (!(currentAvatarState is null))
             {
-                addresses.Add((Addresses.Avatar,(currentAvatarState.address)));
+                addresses.Add((Addresses.Avatar, (currentAvatarState.address)));
                 addresses.AddRange(currentAvatarState.combinationSlotAddresses.Select(addr =>
                     (ReservedAddresses.LegacyAccount, addr)));
             }
@@ -1207,11 +1213,15 @@ namespace Nekoyume.Blockchain
             _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(pair => pair.Item2.ToByteArray()));
         }
 
-        public bool TryGetTxId(Guid actionId, out TxId txId) =>
-            _transactions.TryGetValue(actionId, out txId);
+        public bool TryGetTxId(Guid actionId, out TxId txId)
+        {
+            return _transactions.TryGetValue(actionId, out txId);
+        }
 
-        public async UniTask<bool> IsTxStagedAsync(TxId txId) =>
-            await _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.AsUniTask();
+        public async UniTask<bool> IsTxStagedAsync(TxId txId)
+        {
+            return await _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.AsUniTask();
+        }
 
         private async UniTask<BlockHash?> GetBlockHashAsync(long? blockIndex)
         {

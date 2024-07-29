@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -32,7 +33,7 @@ namespace Nekoyume.UI.Module
             Rune,
             Material,
             Costume,
-            FungibleAsset,
+            FungibleAsset
         }
 
         [SerializeField]
@@ -79,6 +80,7 @@ namespace Nekoyume.UI.Module
         private readonly List<ElementalType> _elementalTypes = new();
 
         private readonly Dictionary<ItemType, List<Predicate<InventoryItem>>> _dimConditionFuncsByItemType = new();
+
         private readonly int[] dustIds = new[]
         {
             CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
@@ -170,10 +172,7 @@ namespace Nekoyume.UI.Module
                 _dimConditionFuncsByItemType[tuple.type]?.Add(tuple.predicate));
 
             ReactiveAvatarState.Inventory
-                .Subscribe(e =>
-                {
-                    SetInventory(e, onUpdateInventory, battleType, reverseOrder);
-                })
+                .Subscribe(e => { SetInventory(e, onUpdateInventory, battleType, reverseOrder); })
                 .AddTo(_disposablesOnSet);
 
             if (useConsumable && _consumables.Any())
@@ -221,7 +220,7 @@ namespace Nekoyume.UI.Module
 
             _selectedModel = null;
             foreach (var item in
-                     inventory.Items.OrderByDescending(x => x.item is ITradableItem))
+                inventory.Items.OrderByDescending(x => x.item is ITradableItem))
             {
                 if (item.Locked)
                 {
@@ -284,7 +283,7 @@ namespace Nekoyume.UI.Module
                         inventoryItem = CreateInventoryItem(
                             itemBase,
                             count,
-                            levelLimited: !Util.IsUsableItem(itemBase));
+                            !Util.IsUsableItem(itemBase));
                         _consumables.Add(inventoryItem);
                     }
 
@@ -293,14 +292,14 @@ namespace Nekoyume.UI.Module
                     inventoryItem = CreateInventoryItem(
                         itemBase,
                         count,
-                        levelLimited: !Util.IsUsableItem(itemBase));
+                        !Util.IsUsableItem(itemBase));
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     inventoryItem = CreateInventoryItem(
                         itemBase,
                         count,
-                        levelLimited: !Util.IsUsableItem(itemBase));
+                        !Util.IsUsableItem(itemBase));
 
                     if (!_equipments.ContainsKey(itemBase.ItemSubType))
                     {
@@ -433,9 +432,13 @@ namespace Nekoyume.UI.Module
             result = result
                 .OrderByDescending(x => x.Equipped.Value)
                 .ThenByDescending(x => bestItems.Exists(y => y.Equals(x)))
-                .ThenBy(x => {
+                .ThenBy(x =>
+                {
                     if (x.ItemBase.ItemSubType == ItemSubType.Aura)
+                    {
                         return 0;
+                    }
+
                     return (int)x.ItemBase.ItemSubType;
                 })
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase))
@@ -453,11 +456,12 @@ namespace Nekoyume.UI.Module
 
         private List<InventoryItem> GetOrganizedMaterials()
         {
+            // Dust -> ApStone or Hourglass (Tradable -> UnTradable) -> Hammer -> Others
             return _materials
                 .OrderByDescending(x => dustIds.Contains(x.ItemBase.Id))
                 .ThenByDescending(x =>
-                    x.ItemBase.ItemSubType == ItemSubType.ApStone ||
-                    x.ItemBase.ItemSubType == ItemSubType.Hourglass)
+                    x.ItemBase.ItemSubType is ItemSubType.ApStone or ItemSubType.Hourglass)
+                .ThenByDescending(x => ItemEnhancement.HammerIds.Contains(x.ItemBase.Id))
                 .ThenBy(x => x.ItemBase is ITradableItem).ToList();
         }
 
@@ -522,6 +526,7 @@ namespace Nekoyume.UI.Module
                 {
                     item.HasNotification.Value = true;
                 }
+
                 _cachedNotificationCostumes.Add(item);
             }
 
@@ -609,8 +614,8 @@ namespace Nekoyume.UI.Module
 
             var sortedCostumes = new Dictionary<ItemSubType, List<InventoryItem>>()
             {
-                { ItemSubType.FullCostume, new List<InventoryItem>()},
-                { ItemSubType.Title, new List<InventoryItem>()},
+                { ItemSubType.FullCostume, new List<InventoryItem>() },
+                { ItemSubType.Title, new List<InventoryItem>() }
             };
             foreach (var inventoryItem in _costumes.Where(x => sortedCostumes.ContainsKey(x.ItemBase.ItemSubType)))
             {
@@ -640,13 +645,13 @@ namespace Nekoyume.UI.Module
                 if (_dimConditionFuncsByItemType[itemType].Any())
                 {
                     foreach (var inventoryItem in itemType switch
-                             {
-                                 ItemType.Consumable => _consumables,
-                                 ItemType.Costume => _costumes,
-                                 ItemType.Equipment => _equipments.SelectMany(pair => pair.Value),
-                                 ItemType.Material => _materials,
-                                 _ => throw new ArgumentOutOfRangeException()
-                             })
+                        {
+                            ItemType.Consumable => _consumables,
+                            ItemType.Costume => _costumes,
+                            ItemType.Equipment => _equipments.SelectMany(pair => pair.Value),
+                            ItemType.Material => _materials,
+                            _ => throw new ArgumentOutOfRangeException()
+                        })
                     {
                         inventoryItem.DimObjectEnabled.Value =
                             _dimConditionFuncsByItemType[itemType]
@@ -659,7 +664,9 @@ namespace Nekoyume.UI.Module
         public bool HasNotification()
         {
             var clearedStageId = States.Instance.CurrentAvatarState
-                .worldInformation.TryGetLastClearedStageId(out var id) ? id : 1;
+                .worldInformation.TryGetLastClearedStageId(out var id)
+                ? id
+                : 1;
             var equipments = GetBestEquipments();
             foreach (var guid in equipments)
             {
@@ -741,7 +748,7 @@ namespace Nekoyume.UI.Module
             var runes = new Dictionary<RuneType, List<InventoryItem>>()
             {
                 { RuneType.Stat, new List<InventoryItem>() },
-                { RuneType.Skill, new List<InventoryItem>() },
+                { RuneType.Skill, new List<InventoryItem>() }
             };
 
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
@@ -804,7 +811,7 @@ namespace Nekoyume.UI.Module
                 ? new List<(ItemType type, Predicate<InventoryItem>)>
                     { (ItemType.Equipment, predicateByElementalType) }
                 : null;
-            SetInventoryTab(predicateList, onUpdateInventory:onUpdateInventory, battleType, useConsumable:useConsumable);
+            SetInventoryTab(predicateList, onUpdateInventory, battleType, useConsumable);
             _toggleGroup.DisabledFunc = () => false;
         }
 
@@ -822,7 +829,7 @@ namespace Nekoyume.UI.Module
             bool reverseOrder)
         {
             SetAction(clickItem);
-            SetInventoryTab(predicateList, onUpdateInventory:onUpdateInventory, reverseOrder:reverseOrder);
+            SetInventoryTab(predicateList, onUpdateInventory, reverseOrder: reverseOrder);
             _toggleGroup.DisabledFunc = () => true;
             StartCoroutine(CoUpdateEquipped());
         }
@@ -877,6 +884,7 @@ namespace Nekoyume.UI.Module
             {
                 _fungibleAssets.Add(new InventoryItem(fav));
             }
+
             scroll.UpdateData(_fungibleAssets, resetScrollOnEnable);
         }
 
@@ -970,7 +978,7 @@ namespace Nekoyume.UI.Module
                     if (model.ItemBase.ItemType == ItemType.Equipment)
                     {
                         if (elementalTypes.Exists(x =>
-                                x.Equals(model.ItemBase.ElementalType)))
+                            x.Equals(model.ItemBase.ElementalType)))
                         {
                             model.Focused.Value = !model.Focused.Value;
                             if (model.Focused.Value)
@@ -1071,7 +1079,7 @@ namespace Nekoyume.UI.Module
             return result != null;
         }
 
-        #region For tutorial
+#region For tutorial
 
         public bool TryGetFirstCell(out InventoryItem cell)
         {
@@ -1084,6 +1092,7 @@ namespace Nekoyume.UI.Module
         {
             return scroll.TryGetCellByIndex(index, out cell);
         }
-        #endregion
+
+#endregion
     }
 }

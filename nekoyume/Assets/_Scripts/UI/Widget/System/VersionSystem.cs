@@ -47,14 +47,14 @@ namespace Nekoyume.UI
             var hash = _hash.ToString();
             hash = hash.Length >= 4 ? hash.Substring(0, 4) : "...";
 
-            string versionText = string.Empty;
-            string commitHashText = string.Empty;
+            var versionText = string.Empty;
+            var commitHashText = string.Empty;
             if (!string.IsNullOrEmpty(_clientCommitHash))
             {
                 commitHashText = $"({_clientCommitHash})";
             }
 
-            versionText = $"/ Ver: {UnityEngine.Application.version}{commitHashText}";
+            versionText = $"/ Ver: {Application.version}{commitHashText}";
 
             informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} {versionText}";
         }

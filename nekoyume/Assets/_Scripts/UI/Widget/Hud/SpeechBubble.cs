@@ -81,7 +81,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void UpdatePosition(Camera camera, GameObject target, Vector3 offset = new Vector3())
+        public void UpdatePosition(Camera camera, GameObject target, Vector3 offset = new())
         {
             var targetPosition = target.transform.position + offset;
             RectTransform.anchoredPosition =
@@ -101,6 +101,7 @@ namespace Nekoyume.UI
             {
                 bubbleImages[i].gameObject.SetActive(index == i);
             }
+
             SetBubbleImageInternal();
         }
 
@@ -179,7 +180,9 @@ namespace Nekoyume.UI
                     SetBubbleImage(1);
                 }
                 else
+                {
                     SetBubbleImage(0);
+                }
 
                 tempText.text = speech;
                 contentSize.DOScale(0.0f, 0.0f);

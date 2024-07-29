@@ -177,7 +177,7 @@ namespace Nekoyume.UI.Model
         public void UpdateUnlockableRecipes()
         {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
-                    out var lastClearedStageId))
+                out var lastClearedStageId))
             {
                 lastClearedStageId = 1;
             }

@@ -6,8 +6,8 @@ namespace Nekoyume.UI.Tween
 {
     public class DOTweenRectTransformMoveTo : DOTweenBase
     {
-        public Vector3 beginValue = new Vector3();
-        public Vector3 endValue = new Vector3();
+        public Vector3 beginValue = new();
+        public Vector3 endValue = new();
         private RectTransform _transform;
 
         protected override void Awake()

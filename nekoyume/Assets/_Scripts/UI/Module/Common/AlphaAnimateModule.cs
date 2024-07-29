@@ -28,11 +28,12 @@ namespace Nekoyume.UI.Module.Common
 
             if (Platform.IsMobilePlatform())
             {
-                EventTrigger eventTrigger = this.GetComponent<EventTrigger>();
-                if(eventTrigger is null)
+                var eventTrigger = GetComponent<EventTrigger>();
+                if (eventTrigger is null)
                 {
                     return;
                 }
+
                 // Disable pointer_exit event on mobile platform
                 // Because this causes wrong interaction
                 foreach (var item in eventTrigger.triggers)

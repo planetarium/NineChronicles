@@ -28,7 +28,7 @@ namespace Nekoyume.UI
             {
                 var props = new Dictionary<string, Value>()
                 {
-                    ["StageId"] = Game.Game.instance.Stage.stageId,
+                    ["StageId"] = Game.Game.instance.Stage.stageId
                 };
                 Analyzer.Instance.Track("Unity/Stage Exit Crash", props);
 
@@ -44,9 +44,7 @@ namespace Nekoyume.UI
         {
             base.Set(title, content, labelOK, localize, blurSize);
             CloseButton.gameObject.SetActive(hasCloseBtn);
-            CloseButton.onClick.AddListener(()=> {
-                Close(true);
-            });
+            CloseButton.onClick.AddListener(() => { Close(true); });
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

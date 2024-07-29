@@ -38,19 +38,29 @@ namespace Nekoyume.State.Subjects
             StakeRegularRewardSheet = _stakeRegularRewardSheet.ObserveOnMainThread();
         }
 
-        public static void OnNextStakeStateV2(StakeStateV2? stakeStateV2) =>
+        public static void OnNextStakeStateV2(StakeStateV2? stakeStateV2)
+        {
             _stakeStateV2.OnNext(stakeStateV2);
+        }
 
-        public static void OnNextStakedNCG(FungibleAssetValue stakedNCG) =>
+        public static void OnNextStakedNCG(FungibleAssetValue stakedNCG)
+        {
             _stakedNCG.OnNext(stakedNCG);
+        }
 
-        public static void OnNextLevel(int level) =>
+        public static void OnNextLevel(int level)
+        {
             _level.OnNext(level);
+        }
 
-        public static void OnNextStakeRegularFixedRewardSheet(StakeRegularFixedRewardSheet sheet) =>
+        public static void OnNextStakeRegularFixedRewardSheet(StakeRegularFixedRewardSheet sheet)
+        {
             _stakeRegularFixedRewardSheet.OnNext(sheet);
+        }
 
-        public static void OnNextStakeRegularRewardSheet(StakeRegularRewardSheet sheet) =>
+        public static void OnNextStakeRegularRewardSheet(StakeRegularRewardSheet sheet)
+        {
             _stakeRegularRewardSheet.OnNext(sheet);
+        }
     }
 }

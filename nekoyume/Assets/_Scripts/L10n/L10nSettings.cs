@@ -23,7 +23,7 @@ namespace Nekoyume.L10n
             var languageTypes = Enum
                 .GetNames(languageType)
                 .Select(languageTypeName =>
-                    (LanguageType) Enum.Parse(languageType, languageTypeName))
+                    (LanguageType)Enum.Parse(languageType, languageTypeName))
                 .ToList();
             for (var i = 0; i < languageTypes.Count; i++)
             {

@@ -10,12 +10,16 @@ namespace Nekoyume.UI
     {
         [SerializeField]
         private GameObject[] floors;
+
         [SerializeField]
         private Image[] floorsCompleted;
+
         [SerializeField]
         private VFX[] vfxs;
+
         [SerializeField]
         private TextMeshProUGUI floorText;
+
         [SerializeField]
         private Animator textAnimator;
 
@@ -32,7 +36,7 @@ namespace Nekoyume.UI
             _maxFloor = maxFloor;
             floorText.text = $"{currentFloor}";
             textAnimator.SetTrigger(AnimatorHashShow);
-            for (int i = 0; i < floors.Length; i++)
+            for (var i = 0; i < floors.Length; i++)
             {
                 if (i >= currentFloor - 1 && i < maxFloor)
                 {
@@ -49,7 +53,7 @@ namespace Nekoyume.UI
             }
 
             floorsCompleted[currentFloor - 1].enabled = true;
-            floorsCompleted[currentFloor - 1].DOFade(0,0.5f).SetLoops(-1, LoopType.Yoyo);
+            floorsCompleted[currentFloor - 1].DOFade(0, 0.5f).SetLoops(-1, LoopType.Yoyo);
         }
 
         public void SetLastFloorCompleted()
@@ -72,9 +76,9 @@ namespace Nekoyume.UI
 
                 //다음 층정보 표기
                 floorText.text = $"{Mathf.Min(currentFloor + 1, _maxFloor)}";
-                textAnimator.SetTrigger("Show");
-                if(currentFloor < _maxFloor)
+                if (currentFloor < _maxFloor)
                 {
+                    textAnimator.SetTrigger("Show");
                     floorsCompleted[currentFloor].enabled = true;
                     floorsCompleted[currentFloor].DOFade(0, 0.5f).SetLoops(-1, LoopType.Yoyo);
                 }
@@ -84,6 +88,5 @@ namespace Nekoyume.UI
                 NcDebug.LogError("currentFloor is out of range");
             }
         }
-
     }
 }

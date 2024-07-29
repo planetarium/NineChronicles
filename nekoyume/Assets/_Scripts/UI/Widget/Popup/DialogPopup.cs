@@ -22,10 +22,13 @@ namespace Nekoyume.UI
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtDialog;
         public Image imgCharacter;
+
         [SerializeField]
         private float time = default;
+
         [SerializeField]
         private TextMeshProUGUI textArrow = null;
+
         [SerializeField]
         private TextMeshProUGUI textTimer = null;
 
@@ -39,7 +42,7 @@ namespace Nekoyume.UI
         private Coroutine _timerCoroutine = null;
         private string _text;
         private string _itemTextColor;
-        private Dictionary<int, DialogEffect> _effects = new Dictionary<int, DialogEffect>();
+        private Dictionary<int, DialogEffect> _effects = new();
         private System.Action _onDialogCompleted;
 
         public static bool TryGetPlayerPrefsKeyOfCurrentAvatarState(int dialogId, out string key)
@@ -86,7 +89,7 @@ namespace Nekoyume.UI
             }
         }
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -104,7 +107,7 @@ namespace Nekoyume.UI
             base.OnDisable();
         }
 
-        #endregion
+#endregion
 
         public void Show(int dialogId, System.Action onDialogCompleted = null)
         {
@@ -164,7 +167,9 @@ namespace Nekoyume.UI
         {
             var text = L10nManager.Localize($"{_dialogKey}{_dialogIndex}");
             if (string.IsNullOrEmpty(text))
+            {
                 yield break;
+            }
 
             _characterId = 0;
             _npc = null;
@@ -202,9 +207,9 @@ namespace Nekoyume.UI
                 txtName.text = localizedName;
             }
 
-            bool skipTag = false;
-            bool tagClosed = true;
-            for (int textIndex = 1; textIndex <= _text.Length; ++textIndex)
+            var skipTag = false;
+            var tagClosed = true;
+            for (var textIndex = 1; textIndex <= _text.Length; ++textIndex)
             {
                 if (_text.Length > textIndex)
                 {
@@ -220,16 +225,24 @@ namespace Nekoyume.UI
                     }
 
                     if (!tagClosed && _text[textIndex] == '/')
+                    {
                         tagClosed = true;
+                    }
                 }
 
                 if (skipTag)
+                {
                     continue;
+                }
 
                 if (tagClosed)
+                {
                     txtDialog.text = $"{_text.Substring(0, textIndex)}";
+                }
                 else
+                {
                     txtDialog.text = $"{_text.Substring(0, textIndex)}</color>";
+                }
 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Typing, 0.1f);
 
@@ -240,6 +253,7 @@ namespace Nekoyume.UI
 
                 yield return new WaitForSeconds(textInterval);
             }
+
             _timerCoroutine = StartCoroutine(CoTimer(time));
 
             _coroutine = null;
@@ -270,13 +284,13 @@ namespace Nekoyume.UI
                         }
 
                         opened = false;
-                        string left = text.Substring(0, openIndex);
-                        string right = text.Substring(i + 1);
-                        string[] pair = text.Substring(openIndex + 1, i - openIndex - 1)
+                        var left = text.Substring(0, openIndex);
+                        var right = text.Substring(i + 1);
+                        var pair = text.Substring(openIndex + 1, i - openIndex - 1)
                             .Split(':', '：')
                             .Select(value => value.Trim())
                             .ToArray();
-                        string pairKey = pair[0].ToLower();
+                        var pairKey = pair[0].ToLower();
                         int.TryParse(pair[1], out var pairValue);
                         switch (pairKey)
                         {
@@ -303,7 +317,7 @@ namespace Nekoyume.UI
                                 {
                                     value = new Vector3(0.0f, -int.Parse(values[0])),
                                     duration = int.Parse(values[1]),
-                                    loops = int.Parse(values[2]),
+                                    loops = int.Parse(values[2])
                                 });
 
                                 break;

@@ -41,12 +41,12 @@ namespace Nekoyume.UI.Tween
         private CanvasGroup _canvasGroupCache;
         private float? _originAlphaCache;
 
-        private CanvasGroup CanvasGroup => _canvasGroupCache is null
-            ? _canvasGroupCache = GetComponent<CanvasGroup>()
-            : _canvasGroupCache;
+        private CanvasGroup CanvasGroup =>
+            _canvasGroupCache is null
+                ? _canvasGroupCache = GetComponent<CanvasGroup>()
+                : _canvasGroupCache;
 
-        private float OriginAlpha =>
-            _originAlphaCache ?? (_originAlphaCache = CanvasGroup.alpha).Value;
+        private float OriginAlpha => _originAlphaCache ?? (_originAlphaCache = CanvasGroup.alpha).Value;
 
         private void Awake()
         {

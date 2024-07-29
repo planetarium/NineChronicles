@@ -35,14 +35,16 @@ namespace Nekoyume.UI.Module
 
         private void UpdateApPotion()
         {
-            if(Game.Game.instance.States.CurrentAvatarState == null)
+            if (Game.Game.instance.States.CurrentAvatarState == null)
             {
                 return;
             }
-            if(Game.Game.instance.States.CurrentAvatarState.inventory == null)
+
+            if (Game.Game.instance.States.CurrentAvatarState.inventory == null)
             {
                 return;
             }
+
             count.text = Game.Game.instance.States.CurrentAvatarState.inventory.GetMaterialCount((int)CostType.ApPotion).ToString();
         }
 

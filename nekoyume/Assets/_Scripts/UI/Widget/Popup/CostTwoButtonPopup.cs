@@ -11,6 +11,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class CostTwoButtonPopup : PopupWidget
     {
         [SerializeField]
@@ -68,7 +69,7 @@ namespace Nekoyume.UI
                         x.item.ItemSubType == ItemSubType.ApStone &&
                         !x.Locked &&
                         !(x.item is ITradableItem tradableItem &&
-                          tradableItem.RequiredBlockIndex > blockIndex))
+                            tradableItem.RequiredBlockIndex > blockIndex))
                     .Sum(item => item.count);
                 costButton.Interactable = condition || apStoneCount > 0;
             }

@@ -11,14 +11,14 @@ namespace Nekoyume.UI
         {
             Basic,
             Damage,
-            Heal,
+            Heal
         }
 
         private const float TweenDuration = 0.3f;
         private const float DestroyDelay = 1.4f;
-        
-        private static readonly Vector3 LocalScaleBefore = new Vector3(2.4f, 2.4f, 1f);
-        private static readonly Vector3 LocalScaleAfter = new Vector3(1.2f, 1.2f, 1f);
+
+        private static readonly Vector3 LocalScaleBefore = new(2.4f, 2.4f, 1f);
+        private static readonly Vector3 LocalScaleAfter = new(1.2f, 1.2f, 1f);
         public CanvasGroup group;
         public TextMeshProUGUI[] labels;
         public TextMeshProUGUI[] shadows;
@@ -30,7 +30,7 @@ namespace Nekoyume.UI
             {
                 result.labels[i].gameObject.SetActive(false);
                 result.shadows[i].gameObject.SetActive(false);
-                if ((int) group == i)
+                if ((int)group == i)
                 {
                     result.labels[i].gameObject.SetActive(true);
                     result.shadows[i].gameObject.SetActive(true);
@@ -38,6 +38,7 @@ namespace Nekoyume.UI
                     result.shadows[i].text = text;
                 }
             }
+
             var rect = result.RectTransform;
             rect.anchoredPosition = position.ToCanvasPosition(camera, MainCanvas.instance.Canvas);
             rect.localScale = LocalScaleBefore;
@@ -46,7 +47,7 @@ namespace Nekoyume.UI
             rect.DOScale(LocalScaleAfter, TweenDuration).SetEase(Ease.OutCubic);
             rect.DOAnchorPos(tweenPos, TweenDuration * 2.0f).SetEase(Ease.InOutQuad).SetDelay(TweenDuration);
             result.group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration).SetEase(Ease.InCirc);
-            
+
             Destroy(result.gameObject, DestroyDelay);
 
             return result;

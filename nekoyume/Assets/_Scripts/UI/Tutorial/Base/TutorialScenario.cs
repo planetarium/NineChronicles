@@ -30,14 +30,19 @@ namespace Nekoyume.UI
 
         [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
         public TutorialTargetType targetType;
+
         [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
         public TutorialActionType actionType;
+
         [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
         public GuideType guideType;
+
         [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
         public DialogEmojiType emojiType;
+
         [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
         public DialogPositionType dialogPositionType;
+
         public string scriptKey;
         public float arrowAdditionalDelay;
         public bool fullScreenButton;

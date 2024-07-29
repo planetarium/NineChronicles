@@ -8,13 +8,19 @@ namespace Nekoyume
 {
     public static class FungibleAssetValueExtensions
     {
-        public static string ToCurrencyNotation(this FungibleAssetValue value) =>
-            value.MajorUnit.ToCurrencyNotation();
+        public static string ToCurrencyNotation(this FungibleAssetValue value)
+        {
+            return value.MajorUnit.ToCurrencyNotation();
+        }
 
-        public static Sprite GetIconSprite(this FungibleAssetValue value) =>
-            SpriteHelper.GetFavIcon(value.Currency.Ticker);
+        public static Sprite GetIconSprite(this FungibleAssetValue value)
+        {
+            return SpriteHelper.GetFavIcon(value.Currency.Ticker);
+        }
 
-        public static bool IsTradable(this FungibleAssetValue value) =>
-            !RegisterProduct.NonTradableTickerCurrencies.Contains(value.Currency);
+        public static bool IsTradable(this FungibleAssetValue value)
+        {
+            return !RegisterProduct.NonTradableTickerCurrencies.Contains(value.Currency);
+        }
     }
 }

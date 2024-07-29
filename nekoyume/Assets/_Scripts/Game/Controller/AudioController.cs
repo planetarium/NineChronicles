@@ -51,73 +51,107 @@ namespace Nekoyume.Game.Controller
             public const string AdventureBossLobby = "bgm_adventure_boss_lobby";
 
 #region WorldBoss
+
             [UsedImplicitly] // Used in WorldBoss SO
             public const string WorldBossBattle01 = "bgm_worldboss_battle_01";
+
             [UsedImplicitly] // Used in WorldBoss SO
             public const string WorldBossBattle02 = "bgm_worldboss_battle_02";
+
             public const string WorldBossBattleResult = "bgm_worldboss_battle_result";
+
             [UsedImplicitly] // Used in WorldBoss SO
             public const string WorldBossTitle = "bgm_worldboss_title";
+
 #endregion WorldBoss
 
 #region Stage
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Alfheim01 = "bgm_alfheim_01";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Alfheim02 = "bgm_alfheim_02";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Alfheim03 = "bgm_alfheim_03";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Asgard01 = "bgm_asgard_01";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Asgard02 = "bgm_asgard_02";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Asgard03 = "bgm_asgard_03";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Hard01 = "bgm_hard1";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Hel01 = "bgm_hel_01";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Hel02 = "bgm_hel_02";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Hel03 = "bgm_hel_03";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Jotunheim01 = "bgm_jotunheim_01";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Jotunheim02 = "bgm_jotunheim_02";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Jotunheim03 = "bgm_jotunheim_03";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Muspelheim01 = "bgm_muspelheim_01";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Muspelheim02 = "bgm_muspelheim_02";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Muspelheim03 = "bgm_muspelheim_03";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Niflheim01 = "bgm_niflheim_01";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Niflheim02 = "bgm_niflheim_02";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Niflheim03 = "bgm_niflheim_03";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Svartalfheim01 = "bgm_svartalfheim_01";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Svartalfheim02 = "bgm_svartalfheim_02";
+
             [UsedImplicitly] // Used in Stage Sheet
             public const string Svartalfheim03 = "bgm_svartalfheim_03";
+
 #endregion Stage
 
 #region Event
+
             [UsedImplicitly] // Used in Event Data SO
             public const string Christmas = "bgm_christmas";
+
             [UsedImplicitly] // Used in Event Data SO
             public const string Event22Summer01 = "bgm_event_22summer_01";
+
             [UsedImplicitly] // Used in Event Data SO
             public const string Event22Summer02 = "bgm_event_22summer_02";
+
             [UsedImplicitly] // Used in Event Data SO
             public const string Event22Summer03 = "bgm_event_22summer_03";
+
             [UsedImplicitly] // Used in Event Data SO
             public const string Event22SummerTitle = "bgm_event_22summer_title";
+
 #endregion Event
 
             // [Obsolete("Use `bgm_workshop` instead. bgm_combination has not prefab.")]
@@ -221,17 +255,14 @@ namespace Nekoyume.Game.Controller
 
         public string CurrentPlayingMusicName { get; private set; }
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
             base.Awake();
 
             CurrentState = State.None;
-            Event.OnRoomEnter.AddListener(_ =>
-            {
-                PlayMusic(EventManager.GetEventInfo().MainBGM.name);
-            });
+            Event.OnRoomEnter.AddListener(_ => { PlayMusic(EventManager.GetEventInfo().MainBGM.name); });
         }
 
         private void Update()
@@ -279,9 +310,9 @@ namespace Nekoyume.Game.Controller
             shouldRemove.Clear();
         }
 
-        #endregion
+#endregion
 
-        #region Initialize & Validate
+#region Initialize & Validate
 
         public void Initialize()
         {
@@ -331,17 +362,19 @@ namespace Nekoyume.Game.Controller
             var fields = codeType.GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var fieldInfo in fields)
             {
-                var code = (string) fieldInfo.GetRawConstantValue();
+                var code = (string)fieldInfo.GetRawConstantValue();
                 if (prefabs.ContainsKey(code))
+                {
                     continue;
+                }
 
                 NcDebug.LogError($"There is no audio prefab: {Path.Combine(containerPath, code)}");
             }
         }
 
-        #endregion
+#endregion
 
-        #region Play
+#region Play
 
         public void PlayMusic(string audioName, float fadeIn = 0.8f)
         {
@@ -393,9 +426,9 @@ namespace Nekoyume.Game.Controller
             audioInfo.source.Play();
         }
 
-        #endregion
+#endregion
 
-        #region Stop
+#region Stop
 
         public void StopAll(float musicFadeOut = 1f)
         {
@@ -465,9 +498,9 @@ namespace Nekoyume.Game.Controller
             }
         }
 
-        #endregion
+#endregion
 
-        #region Pool
+#region Pool
 
         private AudioSource Instantiate(string audioName, IDictionary<string, AudioSource> prefabs)
         {
@@ -517,7 +550,7 @@ namespace Nekoyume.Game.Controller
             }
             else
             {
-                var list = new List<AudioInfo> {audioInfo};
+                var list = new List<AudioInfo> { audioInfo };
                 pool.Add(audioName, list);
             }
         }
@@ -537,9 +570,9 @@ namespace Nekoyume.Game.Controller
             }
         }
 
-        #endregion
+#endregion
 
-        #region Fade
+#region Fade
 
         private static IEnumerator CoFadeIn(AudioInfo audioInfo, float duration)
         {
@@ -576,9 +609,9 @@ namespace Nekoyume.Game.Controller
             audioInfo.source.volume = audioInfo.volume;
         }
 
-        #endregion
+#endregion
 
-        #region Shortcut
+#region Shortcut
 
         public static void PlayClick()
         {
@@ -677,6 +710,6 @@ namespace Nekoyume.Game.Controller
             }
         }
 
-        #endregion
+#endregion
     }
 }

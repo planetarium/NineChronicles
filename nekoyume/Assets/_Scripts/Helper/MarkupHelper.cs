@@ -4,12 +4,12 @@ namespace Nekoyume.Helper
 {
     public class MarkupHelper
     {
-        private static readonly Dictionary<string, string> Markups = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> Markups = new()
         {
-            {"[comma]", ","},
-            {"[newline]", "\n"}
+            { "[comma]", "," },
+            { "[newline]", "\n" }
         };
-        
+
         public static void ReplaceMarkups(ref string value)
         {
             foreach (var markup in Markups)

@@ -11,6 +11,7 @@ using AppleAuth.Editor;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
+
 #if UNITY_STANDALONE_OSX
 using UnityEditor.OSXStandalone;
 #endif
@@ -37,7 +38,7 @@ namespace Editor
             AirbridgeSettingsWindow.UpdateAndroidManifest();
             AssetDatabase.Refresh();
             Debug.Log("Build Android");
-            BuildOptions options = BuildOptions.None;
+            var options = BuildOptions.None;
             Build(BuildTarget.Android, options, "Android", false);
         }
 
@@ -262,7 +263,7 @@ namespace Editor
                     BuildTarget.Android =>
                         $"android-build.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
                     BuildTarget.iOS => "Nine Chronicles M",
-                    _ => PlayerName,
+                    _ => PlayerName
                 }
             );
 
@@ -273,7 +274,7 @@ namespace Editor
                 target = buildTarget,
                 options = EditorUserBuildSettings.development
                     ? options | BuildOptions.Development | BuildOptions.AllowDebugging
-                    : options,
+                    : options
             };
 
             if (buildTarget == BuildTarget.Android)
@@ -314,6 +315,7 @@ namespace Editor
                             }
                         }
                     }
+
                     UpdateDefines(false);
                     break;
             }
@@ -340,6 +342,7 @@ namespace Editor
                     newDefines.Remove(qaDefine);
                 }
             }
+
             PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
                 string.Join(";", newDefines.ToArray()));
             EditorApplication.ExecuteMenuItem("File/Save Project");
@@ -372,6 +375,7 @@ namespace Editor
                     {
                         destLibPath += ".app";
                     }
+
                     destLibPath = Path.Combine(
                         destLibPath, "Contents/Resources/Data/Managed/", libDir);
                     break;
@@ -489,7 +493,11 @@ namespace Editor
 
         private static void CopyToBuildDirectory(string basePath, string targetDirName, string filename)
         {
-            if (filename == null) return;
+            if (filename == null)
+            {
+                return;
+            }
+
             var source = Path.Combine(basePath, filename);
             var destination = Path.Combine(BuildBasePath, targetDirName, filename);
             File.Copy(source, destination, true);

@@ -11,8 +11,7 @@ namespace Nekoyume
     {
         private static EventScriptableObject _so;
 
-        private static EventScriptableObject SO =>
-            _so ? _so : (_so = Resources.Load<EventScriptableObject>("ScriptableObject/EventData"));
+        private static EventScriptableObject SO => _so ? _so : _so = Resources.Load<EventScriptableObject>("ScriptableObject/EventData");
 
         /// <summary>
         /// There is several event types in `EventScriptableObject`.
@@ -28,14 +27,14 @@ namespace Nekoyume
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var currentEventDungeonId = RxProps.EventDungeonRow?.Id ?? 0;
             return SO.eventDungeonIdBasedEvents.FirstOrDefault(e =>
-                       e.TargetDungeonIds.Contains(currentEventDungeonId)) ??
-                   SO.timeBasedEvents.FirstOrDefault(e =>
-                       DateTime.UtcNow.IsInTime($"{DateTime.UtcNow.Year}-{e.BeginDateTime}",
-                           $"{DateTime.UtcNow.Year}-{e.EndDateTime}")) ??
-                   SO.blockIndexBasedEvents.FirstOrDefault(e =>
-                       e.BeginBlockIndex <= currentBlockIndex &&
-                       e.EndBlockIndex >= currentBlockIndex) ??
-                   SO.defaultSettings;
+                    e.TargetDungeonIds.Contains(currentEventDungeonId)) ??
+                SO.timeBasedEvents.FirstOrDefault(e =>
+                    DateTime.UtcNow.IsInTime($"{DateTime.UtcNow.Year}-{e.BeginDateTime}",
+                        $"{DateTime.UtcNow.Year}-{e.EndDateTime}")) ??
+                SO.blockIndexBasedEvents.FirstOrDefault(e =>
+                    e.BeginBlockIndex <= currentBlockIndex &&
+                    e.EndBlockIndex >= currentBlockIndex) ??
+                SO.defaultSettings;
         }
 
         public static void UpdateEventContainer(Transform parent)

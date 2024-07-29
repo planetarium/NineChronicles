@@ -36,17 +36,17 @@ namespace Nekoyume.Game.Character
             Disappear_02,
             Disappear_03,
             Over,
-            Click,
+            Click
         }
 
-        public static readonly List<Type> List = new List<Type>();
+        public static readonly List<Type> List = new();
 
         static NPCAnimation()
         {
             var values = Enum.GetValues(typeof(Type));
             foreach (var value in values)
             {
-                List.Add((Type) value);
+                List.Add((Type)value);
             }
         }
     }

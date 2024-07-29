@@ -66,15 +66,15 @@ namespace Nekoyume.TestScene
         [SerializeField]
         private TextButton animationButtonPrefab;
 
-        private readonly Queue<TextButton> _buttonPool = new Queue<TextButton>();
+        private readonly Queue<TextButton> _buttonPool = new();
 
-        private readonly Queue<TextButton> _activeButtons = new Queue<TextButton>();
+        private readonly Queue<TextButton> _activeButtons = new();
 
         private GameObject _background;
 
         private string _currentId;
 
-        #region Mono
+#region Mono
 
         private void Awake()
         {
@@ -103,7 +103,7 @@ namespace Nekoyume.TestScene
             }
         }
 
-        #endregion
+#endregion
 
         public void ToggleUI()
         {
@@ -199,7 +199,9 @@ namespace Nekoyume.TestScene
             if (_background)
             {
                 if (_background.name.Equals(prefabName))
+                {
                     return;
+                }
 
                 DestroyBackground();
             }
@@ -209,7 +211,10 @@ namespace Nekoyume.TestScene
                 var path = $"Prefab/Background/{prefabName}";
                 var prefab = Resources.Load<GameObject>(path);
                 if (!prefab)
+                {
                     throw new FailedToLoadResourceException<GameObject>(path);
+                }
+
                 _background = Instantiate(prefab, bgParent);
                 _background.name = prefabName;
             }
@@ -237,8 +242,7 @@ namespace Nekoyume.TestScene
                 _buttonPool.Enqueue(button);
             }
 
-            var types = Enum.GetValues(isNpc ?
-                typeof(NPCAnimation.Type) : typeof(CharacterAnimation.Type));
+            var types = Enum.GetValues(isNpc ? typeof(NPCAnimation.Type) : typeof(CharacterAnimation.Type));
 
             foreach (var type in types)
             {
@@ -263,6 +267,7 @@ namespace Nekoyume.TestScene
                             resourceWarningText.gameObject.SetActive(true);
                             return;
                         }
+
                         npcAnimator.Play(animationType);
                     };
                 }
@@ -280,6 +285,7 @@ namespace Nekoyume.TestScene
                             resourceWarningText.gameObject.SetActive(true);
                             return;
                         }
+
                         characterAnimator.Play(animationType);
 
                         if (cutsceneToggle.isOn)
@@ -295,7 +301,7 @@ namespace Nekoyume.TestScene
             }
         }
 
-        #region Check Type
+#region Check Type
 
         public static bool IsFullCostume(string prefabName)
         {
@@ -324,6 +330,6 @@ namespace Nekoyume.TestScene
             return prefabName.Length < 5 && prefabName.StartsWith("1");
         }
 
-        #endregion
+#endregion
     }
 }

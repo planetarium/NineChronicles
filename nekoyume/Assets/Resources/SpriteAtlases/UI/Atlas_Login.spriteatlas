@@ -26,7 +26,7 @@ SpriteAtlas:
       m_MaxTextureSize: 1024
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
-      m_TextureCompression: 0
+      m_TextureCompression: 1
       m_CompressionQuality: 50
       m_CrunchedCompression: 0
       m_AllowsAlphaSplitting: 0
@@ -53,6 +53,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 919124409b78d204885fe35b80a7e93a, type: 3}
   - {fileID: 21300000, guid: 31dedc50bb4714d4fad1b722aa7bfc4a, type: 3}
   - {fileID: 21300000, guid: 458045e03f73942eeb79242e8d6db1da, type: 3}
+  - {fileID: 21300000, guid: de82cee0c15d38e48a379697f8a90321, type: 3}
   - {fileID: 21300000, guid: 78ed6351595354af58e275117df8043e, type: 3}
   - {fileID: 21300000, guid: 71e6a8e1cd2476844848e8331d2d346d, type: 3}
   - {fileID: 21300000, guid: f82f3482f3162ab4f93fd0bc5c2fb95f, type: 3}
@@ -60,6 +61,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 55622513e87f4cc4ea28e807db6e82de, type: 3}
   - {fileID: 21300000, guid: 089159331fd48491ba0f05d9a284b9f1, type: 3}
   - {fileID: 21300000, guid: 5df1587441b3c2f4db3f47a850cad9b1, type: 3}
+  - {fileID: 21300000, guid: da572415be18d8d4498fffc3369f9847, type: 3}
   - {fileID: 21300000, guid: 66dd86555b3c4f34db69870ef9e97223, type: 3}
   - {fileID: 21300000, guid: 3d1d97a5f0bfa8d43b9828c6453122b1, type: 3}
   - {fileID: 21300000, guid: 901817d50b6854b4691a49a1b42099de, type: 3}
@@ -78,10 +80,12 @@ SpriteAtlas:
   - {fileID: 21300000, guid: da48fed79d24a3d48a8f2e915134b2a7, type: 3}
   - {fileID: 21300000, guid: 43fe0af779aa33a449624943a9d29307, type: 3}
   - {fileID: 21300000, guid: 76ca7c08578e94117904036584a951d7, type: 3}
+  - {fileID: 21300000, guid: a62edb6807dc2374b9df465d30c1fc5f, type: 3}
   - {fileID: 21300000, guid: c314c188804015b4c898421ae9aab970, type: 3}
   - {fileID: 21300000, guid: 3cb1e5b89e9eb2343b6d461b73bac6ae, type: 3}
   - {fileID: 21300000, guid: e368b5d8e378942f9b77267457f38b74, type: 3}
   - {fileID: 21300000, guid: 42b50f0957a2fd1469d7e41db2cf43c2, type: 3}
+  - {fileID: 21300000, guid: 7e015f497ba4db9499384f0703841645, type: 3}
   - {fileID: 21300000, guid: 42d370593facd4f2384d20d3b889b1bf, type: 3}
   - {fileID: 21300000, guid: e475af5994c36e042b7686f35071dfc8, type: 3}
   - {fileID: 21300000, guid: 2e64b5892d2fae142931f88e5d281121, type: 3}
@@ -89,6 +93,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4527e01a0616c7047a87421970ff07e4, type: 3}
   - {fileID: 21300000, guid: 658cb96a22b958a4f8756aed194709f0, type: 3}
   - {fileID: 21300000, guid: 5adace8ac60d64a3ba97de48de6307ef, type: 3}
+  - {fileID: 21300000, guid: 76048ffa2631d654b9d524cbd04824fc, type: 3}
   - {fileID: 21300000, guid: 87e8311b055baff4399c57995d08f1c9, type: 3}
   - {fileID: 21300000, guid: f32b186bf8e086b42aab423d23ce55b5, type: 3}
   - {fileID: 21300000, guid: 5efa607b687e1064a8de28d519ab0404, type: 3}
@@ -112,6 +117,7 @@ SpriteAtlas:
   - LoadingGauge_Light
   - UI_Btn_Back_bg
   - UI_icon_login_lock_Login
+  - button_orange_close
   - UI_Popup_bg_02_Login
   - Customizing_List_1
   - Button_White
@@ -119,6 +125,7 @@ SpriteAtlas:
   - Customizing_Hair
   - button_page_02_reverse
   - Customizing_List_3
+  - Icon_Backup
   - UI_box_03
   - UI_Btn_bg_03
   - UI_main_icon_quest_02_Login
@@ -137,10 +144,12 @@ SpriteAtlas:
   - Customizing_List_Bg
   - Arrow
   - UI_box_01_Login
+  - Icon_KeyImport
   - Customizing_Eyes
   - Customizing_List_4
   - UI_box_gold_01
   - Icon_Twitter
+  - Icon_QR_AnotherDeivce
   - UI_bg_Start_01
   - Common_Gradiant_bg_02
   - Guide_QRcode_2
@@ -148,6 +157,7 @@ SpriteAtlas:
   - Customizing_List_5
   - NewMark
   - UI_box_Inventory_04_Login
+  - Icon_QR_ThisDeivce
   - Customizing_Ears
   - UI_PFP_Bg_1
   - Common_TabBtn_Select

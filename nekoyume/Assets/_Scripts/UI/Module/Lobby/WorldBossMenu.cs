@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Crypto;
+using Nekoyume.ApiClient;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
@@ -127,7 +128,7 @@ namespace Nekoyume.UI.Module.Lobby
                         now,
                         currencyName,
                         reward.amount,
-                        id) {New = isNew}
+                        id) { New = isNew }
                 );
             }
         }

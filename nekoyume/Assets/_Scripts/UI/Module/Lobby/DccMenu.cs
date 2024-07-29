@@ -33,10 +33,7 @@ namespace Nekoyume.UI.Module.Lobby
             }
 
             SetNotification();
-            AgentStateSubject.Gold.Subscribe(_ =>
-            {
-                SetNotification();
-            }).AddTo(_disposables);
+            AgentStateSubject.Gold.Subscribe(_ => { SetNotification(); }).AddTo(_disposables);
         }
 
         private void OnDisable()

@@ -18,6 +18,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module
 {
     using UniRx;
+
     public class PetSlotView : MonoBehaviour
     {
         [SerializeField]

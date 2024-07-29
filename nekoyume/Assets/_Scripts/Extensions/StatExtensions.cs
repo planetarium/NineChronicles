@@ -14,8 +14,9 @@ namespace Nekoyume
         {
             var value =
                 stat.StatType == StatType.DRR ||
-                stat.StatType == StatType.CDMG ?
-                (stat.BaseValue / 100m) : stat.BaseValue;
+                stat.StatType == StatType.CDMG
+                    ? stat.BaseValue / 100m
+                    : stat.BaseValue;
 
             return $"{stat.StatType} +{(float)value}";
         }
@@ -66,7 +67,7 @@ namespace Nekoyume
                 case StatType.SPD:
                     return isSigned
                         ? value.ToString("+0.##;-0.##")
-                        : (value).ToString();
+                        : value.ToString();
                 case StatType.CRI:
                     return isSigned
                         ? value.ToString("+0.##\\%;-0.##\\%")

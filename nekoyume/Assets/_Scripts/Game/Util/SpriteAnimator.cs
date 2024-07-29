@@ -5,7 +5,7 @@ namespace Nekoyume.Game.Util
 {
     public class SpriteAnimator : MonoBehaviour
     {
-        static private int DEFAULT_LAYER = 15;
+        private static int DEFAULT_LAYER = 15;
 
         private SpriteRenderer _renderer;
         private Sprite[] _sprites = null;
@@ -20,13 +20,13 @@ namespace Nekoyume.Game.Util
             _renderer = gameObject.GetComponent<SpriteRenderer>();
             _renderer.sortingOrder = DEFAULT_LAYER;
         }
-        
+
         private void Update()
         {
             if (_playing)
             {
                 _updateTime += Time.deltaTime;
-                float t = 1.0f / _fps;
+                var t = 1.0f / _fps;
                 if (_updateTime >= t)
                 {
                     _updateTime -= t;
@@ -62,6 +62,7 @@ namespace Nekoyume.Game.Util
                     Destroy();
                 }
             }
+
             _renderer.sprite = _sprites[_currentFrame];
         }
 

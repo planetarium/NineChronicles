@@ -23,9 +23,9 @@ namespace Nekoyume.UI.Module
         {
             public readonly WorldSheet.Row RowData;
             public readonly StageType StageType;
-            public readonly ReactiveProperty<int> StageIdToShow = new ReactiveProperty<int>(0);
-            public readonly ReactiveProperty<int> PageCount = new ReactiveProperty<int>(0);
-            public readonly ReactiveProperty<int> CurrentPageNumber = new ReactiveProperty<int>(0);
+            public readonly ReactiveProperty<int> StageIdToShow = new(0);
+            public readonly ReactiveProperty<int> PageCount = new(0);
+            public readonly ReactiveProperty<int> CurrentPageNumber = new(0);
 
             public ViewModel(WorldSheet.Row rowData, StageType stageType)
             {
@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Transform content = null;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
         public IReadOnlyList<WorldMapPage> Pages => pages;
 
@@ -114,7 +114,7 @@ namespace Nekoyume.UI.Module
             SharedViewModel = new ViewModel(worldRow, stageType);
             var stageTuples = TableSheets.Instance.StageWaveSheet.OrderedList
                 .Where(row => row.StageId >= worldRow.StageBegin &&
-                              row.StageId <= worldRow.StageEnd)
+                    row.StageId <= worldRow.StageEnd)
                 .Select(row => (row.StageId, row.HasBoss))
                 .ToList();
             if (worldRow.StagesCount != stageTuples.Count)
@@ -213,7 +213,7 @@ namespace Nekoyume.UI.Module
                     {
                         StageType.Mimisbrunnr => "mimisbrunnr",
                         StageType.EventDungeon => EventManager.GetEventInfo().EventType.ToString(),
-                        _ => worldRow.Id.ToString("00"),
+                        _ => worldRow.Id.ToString("00")
                     },
                     pageIndex);
                 page.Show(stageModels, background);
@@ -268,8 +268,8 @@ namespace Nekoyume.UI.Module
         public void Set(int openedStageId = -1, int selectedStageId = -1)
         {
             foreach (var stage in pages
-                         .SelectMany(page => page.Stages)
-                         .Where(stage => stage.SharedViewModel is not null))
+                .SelectMany(page => page.Stages)
+                .Where(stage => stage.SharedViewModel is not null))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 var stageState = WorldMapStage.State.Normal;
@@ -322,7 +322,7 @@ namespace Nekoyume.UI.Module
         private void SetSelectedStageId(int value, int stageIdToNotify)
         {
             foreach (var stage in pages.Where(p => p.gameObject.activeSelf)
-                         .SelectMany(page => page.Stages))
+                .SelectMany(page => page.Stages))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 stage.SharedViewModel.Selected.Value = stageId == value;
@@ -340,7 +340,9 @@ namespace Nekoyume.UI.Module
         private void ToggleOn(int pageNumber)
         {
             if (toggles.Count < pageNumber)
+            {
                 return;
+            }
 
             var toggle = toggles[pageNumber - 1];
             toggle.isOn = false;

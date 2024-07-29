@@ -9,16 +9,17 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Nekoyume.Game.Controller;
-    using Nekoyume.Helper;
-    using Nekoyume.L10n;
+    using Game.Controller;
+    using Helper;
+    using L10n;
     using Nekoyume.Model.AdventureBoss;
     using Nekoyume.Model.Mail;
-    using Nekoyume.UI.Model;
+    using Model;
     using System.Linq;
     using UniRx;
-    using static Nekoyume.Data.AdventureBossGameData;
-    using static Nekoyume.UI.Scroller.NotificationCell;
+    using static Data.AdventureBossGameData;
+    using static Scroller.NotificationCell;
+    using Nekoyume.State;
 
     public class AdventureBoss : Widget
     {
@@ -49,6 +50,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI bossName;
         [SerializeField] private Transform bossImageParent;
         [SerializeField] private TextMeshProUGUI randomRewardText;
+        [SerializeField] private TextMeshProUGUI rewardRemainTimeText;
 
         public AdventureBossFloor CurrentUnlockFloor;
 
@@ -56,37 +58,31 @@ namespace Nekoyume.UI
         private GameObject _bossImage;
 
         private const float _floorHeight = 170;
-        private readonly List<System.IDisposable> _disposablesByEnable = new();
+        private readonly List<IDisposable> _disposablesByEnable = new();
         private long _seasonStartBlock;
         private long _seasonEndBlock;
 
-        private ClaimableReward _myReward = new ClaimableReward
+        private ClaimableReward _myReward = new()
         {
             NcgReward = null,
             ItemReward = new Dictionary<int, int>(),
-            FavReward = new Dictionary<int, int>(),
+            FavReward = new Dictionary<int, int>()
         };
 
         protected override void Awake()
         {
             base.Awake();
-            addBountyButton.OnClickSubject.ThrottleFirst(TimeSpan.FromSeconds(1)).Subscribe(_ =>
-            {
-                Widget.Find<AdventureBossEnterBountyPopup>().Show();
-            }).AddTo(gameObject);
+            addBountyButton.OnClickSubject.ThrottleFirst(TimeSpan.FromSeconds(1)).Subscribe(_ => { Find<AdventureBossEnterBountyPopup>().Show(); }).AddTo(gameObject);
 
             addBountyButton.OnClickDisabledSubject.ThrottleFirst(TimeSpan.FromSeconds(1)).Subscribe(_ =>
             {
                 OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_ADVENTURE_BOSS_CAN_NOT_BOUNTY"),
-                        NotificationType.Information);
+                    MailType.System,
+                    L10nManager.Localize("UI_ADVENTURE_BOSS_CAN_NOT_BOUNTY"),
+                    NotificationType.Information);
             }).AddTo(gameObject);
 
-            viewAllButton.OnClickSubject.Subscribe(_ =>
-            {
-                Widget.Find<AdventureBossFullBountyStatusPopup>().Show();
-            }).AddTo(gameObject);
+            viewAllButton.OnClickSubject.Subscribe(_ => { Find<AdventureBossFullBountyStatusPopup>().Show(); }).AddTo(gameObject);
             viewAllButton.SetText(L10nManager.Localize("UI_ADVENTURE_BOSS_VIEW_ALL"));
 
             enterButton.OnClickSubject.Subscribe(_ => { Find<AdventureBossBattlePopup>().Show(); })
@@ -113,17 +109,17 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (Nekoyume.Game.LiveAsset.GameConfig.IsKoreanBuild)
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
             {
                 return;
             }
 
             if (Game.Game.instance.AdventureBossData.CurrentState.Value !=
-                Model.AdventureBossData.AdventureBossSeasonState.Progress)
+                AdventureBossData.AdventureBossSeasonState.Progress)
             {
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_INVALID"),
-                    Scroller.NotificationCell.NotificationType.Alert);
+                    NotificationType.Alert);
                 NcDebug.LogError("[UI_AdventureBoss] Show: Invalid state");
                 return;
             }
@@ -149,7 +145,7 @@ namespace Nekoyume.UI
                     .Subscribe(UpdateViewAsync)
                     .AddTo(_disposablesByEnable);
 
-                Widget.Find<HeaderMenuStatic>()
+                Find<HeaderMenuStatic>()
                     .Show(HeaderMenuStatic.AssetVisibleState.AdventureBoss);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.AdventureBossLobby);
@@ -160,7 +156,7 @@ namespace Nekoyume.UI
                 NcDebug.LogException(e);
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_INVALID"),
-                    Scroller.NotificationCell.NotificationType.Alert);
+                    NotificationType.Alert);
                 throw;
             }
         }
@@ -172,12 +168,10 @@ namespace Nekoyume.UI
                 if (board == null)
                 {
                     participantsCount.text = "0";
-                    usedApPotion.text = "0";
                     return;
                 }
 
                 participantsCount.text = $"{board.ExplorerCount:#,0}";
-                usedApPotion.text = $"{board.UsedApPotion:#,0}";
             }
             catch (Exception)
             {
@@ -188,12 +182,18 @@ namespace Nekoyume.UI
         private void RefreshExploreInfo(Explorer exploreInfo)
         {
             CurrentUnlockFloor = null;
+            var usedMyApPotion = 0;
+            var adventureBossData = Game.Game.instance.AdventureBossData;
             if (exploreInfo == null)
             {
                 clearFloor.text = $"-";
                 score.text = "0";
+                if (adventureBossData.ExploreBoard.Value != null)
+                {
+                    usedApPotion.text = $"{adventureBossData.ExploreBoard.Value.UsedApPotion:#,0} (0)";
+                }
                 ChangeFloor(1);
-                for (int i = 0; i < floors.Count(); i++)
+                for (var i = 0; i < floors.Count(); i++)
                 {
                     if (i < 5)
                     {
@@ -216,9 +216,10 @@ namespace Nekoyume.UI
                 return;
             }
 
+            usedMyApPotion = exploreInfo.UsedApPotion;
             clearFloor.text = $"{exploreInfo.Floor}F";
 
-            for (int i = 0; i < floors.Count(); i++)
+            for (var i = 0; i < floors.Count(); i++)
             {
                 if (i < exploreInfo.Floor)
                 {
@@ -242,8 +243,19 @@ namespace Nekoyume.UI
                     floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                 }
             }
+            double contribution = 0;
+            if (adventureBossData.ExploreBoard.Value != null && adventureBossData.ExploreBoard.Value.TotalPoint != 0)
+            {
+                contribution = exploreInfo.Score == 0 ? 0 : (double)exploreInfo.Score / adventureBossData.ExploreBoard.Value.TotalPoint * 100;
+            }
+            score.text = $"{exploreInfo.Score:#,0} ({contribution.ToString("F2")}%)";
 
-            score.text = $"{exploreInfo.Score:#,0}";
+            usedApPotion.text = "0";
+            if(adventureBossData.ExploreBoard.Value != null)
+            {
+                usedApPotion.text = $"{adventureBossData.ExploreBoard.Value.UsedApPotion:#,0} ({usedMyApPotion})";
+            }
+
             ChangeFloor(Game.Game.instance.AdventureBossData.ExploreInfo.Value.Floor + 1, false);
             RefreshMyReward();
         }
@@ -255,13 +267,13 @@ namespace Nekoyume.UI
             {
                 NcgReward = null,
                 ItemReward = new Dictionary<int, int>(),
-                FavReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>()
             };
 
             try
             {
                 _myReward = AdventureBossData.AddClaimableReward(_myReward,
-                        adventureBossData.GetCurrentExploreRewards());
+                    adventureBossData.GetCurrentExploreRewards());
             }
             catch (Exception e)
             {
@@ -271,15 +283,15 @@ namespace Nekoyume.UI
             try
             {
                 _myReward = AdventureBossData.AddClaimableReward(_myReward,
-                        adventureBossData.GetCurrentBountyRewards());
+                    adventureBossData.GetCurrentBountyRewards());
             }
             catch (Exception e)
             {
                 NcDebug.LogError(e);
             }
 
-            int itemViewIndex = 0;
-            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue && _myReward.NcgReward.Value.RawValue > 0)
+            var itemViewIndex = 0;
+            if (_myReward.NcgReward != null && _myReward.NcgReward.HasValue && !_myReward.NcgReward.Value.RawValue.IsZero)
             {
                 baseItemViews[itemViewIndex].ItemViewSetCurrencyData(_myReward.NcgReward.Value);
                 itemViewIndex++;
@@ -350,7 +362,7 @@ namespace Nekoyume.UI
 
             if (board == null || board.Investors == null)
             {
-                for (int i = 0; i < 3; i++)
+                for (var i = 0; i < 3; i++)
                 {
                     investorUserNames[i].transform.parent.parent.gameObject.SetActive(false);
                 }
@@ -360,7 +372,7 @@ namespace Nekoyume.UI
 
             var topInvestorList = board.Investors.OrderByDescending(investor => investor.Price)
                 .Take(3).ToList();
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 if (topInvestorList.Count() > i)
                 {
@@ -379,7 +391,7 @@ namespace Nekoyume.UI
 
             var raffleReward = AdventureBossHelper.CalculateRaffleReward(board);
             randomRewardText.text = raffleReward.MajorUnit.ToString("#,0");
-            
+
             RefreshMyReward();
         }
 
@@ -389,7 +401,7 @@ namespace Nekoyume.UI
             {
                 NcgReward = null,
                 ItemReward = new Dictionary<int, int>(),
-                FavReward = new Dictionary<int, int>(),
+                FavReward = new Dictionary<int, int>()
             };
             if (seasonInfo == null)
             {
@@ -399,6 +411,8 @@ namespace Nekoyume.UI
 
             _seasonStartBlock = seasonInfo.StartBlockIndex;
             _seasonEndBlock = seasonInfo.EndBlockIndex;
+            var claimInterval = States.Instance.GameConfigState.AdventureBossClaimInterval;
+            rewardRemainTimeText.text = L10n.L10nManager.Localize("UI_ADVENTURE_BOSS_REWARDS_REMAIN_TIME", claimInterval, claimInterval.BlockRangeToTimeSpanString());
             try
             {
                 SetBossData(seasonInfo.BossId);
@@ -416,7 +430,7 @@ namespace Nekoyume.UI
             if (remainingBlockIndex < 0)
             {
                 Close();
-                Widget.Find<AdventureBossRewardPopup>().Show();
+                Find<AdventureBossRewardPopup>().Show();
                 return;
             }
 
@@ -442,7 +456,7 @@ namespace Nekoyume.UI
             else
             {
                 addBountyButton.SetState(ConditionalButton.State.Normal);
-                Investor info = Game.Game.instance.AdventureBossData.GetCurrentInvestorInfo();
+                var info = Game.Game.instance.AdventureBossData.GetCurrentInvestorInfo();
                 if (info == null)
                 {
                     addBountyButton.Interactable = false;
@@ -463,9 +477,9 @@ namespace Nekoyume.UI
         public void ChangeFloor(int targetIndex, bool isStartPointRefresh = true,
             bool isAnimation = true)
         {
-            float targetCenter = targetIndex * _floorHeight + (_floorHeight / 2);
-            float startY = -(targetCenter - (MainCanvas.instance.RectTransform.rect.height / 2) -
-                             towerCenterAdjuster);
+            var targetCenter = targetIndex * _floorHeight + _floorHeight / 2;
+            var startY = -(targetCenter - MainCanvas.instance.RectTransform.rect.height / 2 -
+                towerCenterAdjuster);
 
             if (isAnimation)
             {
@@ -486,6 +500,11 @@ namespace Nekoyume.UI
         public void OnClickShowRewardInfo()
         {
             Find<AdventureBossRewardInfoPopup>().Show();
+        }
+
+        public void OnClickShowPrevRewardInfo()
+        {
+            Find<PreviousSeasonReportPopup>().Show(Math.Max(0, Game.Game.instance.AdventureBossData.SeasonInfo.Value.Season - 1)).Forget();
         }
 
         public void OnClickBossParticipantBonusPopup()

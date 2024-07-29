@@ -11,7 +11,7 @@ namespace Nekoyume.Blockchain
         public enum Env
         {
             Production,
-            Development,
+            Development
         }
 
         private const string Postfix = ""; // E.g., "_20191211"

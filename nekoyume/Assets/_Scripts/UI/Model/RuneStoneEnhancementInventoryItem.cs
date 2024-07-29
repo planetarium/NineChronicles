@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Model
         public RuneState State;
         public RuneListSheet.Row SheetData;
         public RuneItem item;
+
         public RuneStoneEnhancementInventoryItem(RuneState runeState, RuneListSheet.Row rowData, RuneItem runeitem)
         {
             State = runeState;

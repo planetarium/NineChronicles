@@ -7,6 +7,7 @@ using UniRx;
 namespace Nekoyume.UI.Tween
 {
     using DG.Tweening;
+
     public class DOTweenBase : MonoBehaviour
     {
         public enum TweenType : int
@@ -15,7 +16,7 @@ namespace Nekoyume.UI.Tween
             Reverse,
             Repeat,
             PingPongOnce,
-            PingPongRepeat,
+            PingPongRepeat
         }
 
         public bool playAtStart = true;
@@ -23,7 +24,7 @@ namespace Nekoyume.UI.Tween
         public float duration = 1.0f;
         public TweenType tweenType = TweenType.Forward;
         public Tween currentTween;
-        public readonly Subject<Tween> onStopSubject = new Subject<Tween>();
+        public readonly Subject<Tween> onStopSubject = new();
         public System.Action onCompleted = null;
 
         public bool IsPlaying => currentTween != null && currentTween.IsActive() && currentTween.IsPlaying();
@@ -47,9 +48,9 @@ namespace Nekoyume.UI.Tween
         public bool useCustomEaseCurve = false;
 
         [HideInInspector]
-        public AnimationCurve customEaseCurve = AnimationCurve.Linear(0,0,0,0);
+        public AnimationCurve customEaseCurve = AnimationCurve.Linear(0, 0, 0, 0);
 
-        protected AnimationCurve _reverseEaseCurve = new AnimationCurve();
+        protected AnimationCurve _reverseEaseCurve = new();
 
         protected virtual void Awake()
         {
@@ -150,7 +151,7 @@ namespace Nekoyume.UI.Tween
             yield return new WaitForSeconds(completeDelay);
             var components = target.GetComponents<Component>();
             var methodInfo = components[componentIndex].GetType().GetMethod(completeMethod);
-            methodInfo.Invoke(components[componentIndex], new object[]{});
+            methodInfo.Invoke(components[componentIndex], new object[] { });
         }
 
         protected virtual IEnumerator CoPlayDelayed(float delay)
@@ -178,7 +179,7 @@ namespace Nekoyume.UI.Tween
             var easingString = ease.ToString();
             if (easingString.Contains("In") ^ easingString.Contains("Out"))
             {
-                return (int) ease % 2 == 0 ? ease + 1 : ease - 1;
+                return (int)ease % 2 == 0 ? ease + 1 : ease - 1;
             }
 
             return ease;

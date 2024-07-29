@@ -47,16 +47,18 @@ namespace Nekoyume.Blockchain
 
         private Guid? _lastBattleActionId;
 
-        private readonly Dictionary<Guid, (TxId txId, long updatedBlockIndex)> _actionIdToTxIdBridge =
-            new Dictionary<Guid, (TxId txId, long updatedBlockIndex)>();
+        private readonly Dictionary<Guid, (TxId txId, long updatedBlockIndex)> _actionIdToTxIdBridge = new();
 
-        private readonly Dictionary<Guid, DateTime> _actionEnqueuedDateTimes = new Dictionary<Guid, DateTime>();
+        private readonly Dictionary<Guid, DateTime> _actionEnqueuedDateTimes = new();
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public static ActionManager Instance => Game.Game.instance.ActionManager;
 
-        public static bool IsLastBattleActionId(Guid actionId) => actionId == Instance._lastBattleActionId;
+        public static bool IsLastBattleActionId(Guid actionId)
+        {
+            return actionId == Instance._lastBattleActionId;
+        }
 
         public Exception HandleException(Guid? actionId, Exception e)
         {
@@ -125,7 +127,7 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        #region Actions
+#region Actions
 
         public IObservable<ActionEvaluation<CreateAvatar>> CreateAvatar(
             int index,
@@ -147,7 +149,7 @@ namespace Nekoyume.Blockchain
                 lens = lens,
                 ear = ear,
                 tail = tail,
-                name = nickName,
+                name = nickName
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -180,7 +182,7 @@ namespace Nekoyume.Blockchain
             {
                 Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", new Dictionary<string, Value>()
                 {
-                    ["StageID"] = stageId,
+                    ["StageID"] = stageId
                 });
 
                 var evt = new AirbridgeEvent("Click_Guided_Quest_Enter_Dungeon");
@@ -191,13 +193,13 @@ namespace Nekoyume.Blockchain
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/HackAndSlash",
                 new Dictionary<string, Value>()
-            {
-                ["WorldId"] = worldId,
-                ["StageId"] = stageId,
-                ["PlayCount"] = playCount,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
+                {
+                    ["WorldId"] = worldId,
+                    ["StageId"] = stageId,
+                    ["PlayCount"] = playCount,
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                }, true);
 
             var hasEvt = new AirbridgeEvent("HackAndSlash");
             hasEvt.SetValue(stageId);
@@ -223,7 +225,7 @@ namespace Nekoyume.Blockchain
                 StageBuffId = stageBuffId,
                 AvatarAddress = avatarAddress,
                 TotalPlayCount = playCount,
-                ApStoneCount = apStoneCount,
+                ApStoneCount = apStoneCount
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -263,7 +265,7 @@ namespace Nekoyume.Blockchain
                 {
                     ["EventScheduleID"] = eventScheduleId,
                     ["EventDungeonID"] = eventDungeonId,
-                    ["EventDungeonStageID"] = eventDungeonStageId,
+                    ["EventDungeonStageID"] = eventDungeonStageId
                 });
 
                 var evt = new AirbridgeEvent("Click_Guided_Quest_Enter_Event_Dungeon");
@@ -289,15 +291,15 @@ namespace Nekoyume.Blockchain
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/EventDungeonBattle",
                 new Dictionary<string, Value>()
-            {
-                ["EventScheduleId"] = eventScheduleId,
-                ["EventDungeonId"] = eventDungeonId,
-                ["EventDungeonStageId"] = eventDungeonStageId,
-                ["RemainingTickets"] = remainingTickets,
-                ["NumberOfTicketPurchases"] = numberOfTicketPurchases,
-                ["BuyTicketIfNeeded"] = buyTicketIfNeeded,
-                ["TicketCostIfNeeded"] = ticketCostIfNeeded,
-            }, true);
+                {
+                    ["EventScheduleId"] = eventScheduleId,
+                    ["EventDungeonId"] = eventDungeonId,
+                    ["EventDungeonStageId"] = eventDungeonStageId,
+                    ["RemainingTickets"] = remainingTickets,
+                    ["NumberOfTicketPurchases"] = numberOfTicketPurchases,
+                    ["BuyTicketIfNeeded"] = buyTicketIfNeeded,
+                    ["TicketCostIfNeeded"] = ticketCostIfNeeded
+                }, true);
 
             var edbEvt = new AirbridgeEvent("EventDungeonBattle");
             edbEvt.SetValue(eventDungeonStageId);
@@ -324,7 +326,7 @@ namespace Nekoyume.Blockchain
                 Costumes = costumes,
                 Foods = foods.Select(f => f.ItemId).ToList(),
                 BuyTicketIfNeeded = buyTicketIfNeeded,
-                RuneInfos = runeInfos,
+                RuneInfos = runeInfos
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -380,11 +382,11 @@ namespace Nekoyume.Blockchain
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Create CombinationConsumable",
                 new Dictionary<string, Value>()
-            {
-                ["RecipeId"] = recipeInfo.RecipeId,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
+                {
+                    ["RecipeId"] = recipeInfo.RecipeId,
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                }, true);
 
             var evt = new AirbridgeEvent("CombinationConsumable");
             evt.SetValue(recipeInfo.RecipeId);
@@ -396,7 +398,7 @@ namespace Nekoyume.Blockchain
             {
                 recipeId = recipeInfo.RecipeId,
                 avatarAddress = States.Instance.CurrentAvatarState.address,
-                slotIndex = slotIndex,
+                slotIndex = slotIndex
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -422,7 +424,7 @@ namespace Nekoyume.Blockchain
             {
                 ["EventScheduleId"] = eventScheduleId,
                 ["RecipeId"] = recipeInfo.RecipeId,
-                ["SubRecipeId"] = subRecipeId,
+                ["SubRecipeId"] = subRecipeId
             };
             var num = 1;
             foreach (var pair in recipeInfo.Materials)
@@ -431,6 +433,7 @@ namespace Nekoyume.Blockchain
                 trackValue.Add($"MaterialCount_{num:00}", pair.Value);
                 num++;
             }
+
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/EventConsumableItemCrafts",
                 trackValue,
@@ -473,7 +476,7 @@ namespace Nekoyume.Blockchain
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EventScheduleId = eventScheduleId,
                 EventConsumableItemRecipeId = recipeInfo.RecipeId,
-                SlotIndex = slotIndex,
+                SlotIndex = slotIndex
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -492,7 +495,7 @@ namespace Nekoyume.Blockchain
             EventMaterialItemCrafts(
                 int eventScheduleId,
                 int recipeId,
-                Dictionary<int,int> materialsToUse)
+                Dictionary<int, int> materialsToUse)
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
@@ -512,7 +515,7 @@ namespace Nekoyume.Blockchain
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EventScheduleId = eventScheduleId,
                 EventMaterialItemRecipeId = recipeId,
-                MaterialsToUse = materialsToUse,
+                MaterialsToUse = materialsToUse
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -542,7 +545,7 @@ namespace Nekoyume.Blockchain
                 ["apStoneCount"] = apStoneCount,
                 ["playCount"] = playCount,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
 
             var evt = new AirbridgeEvent("HackAndSlashSweep");
@@ -563,7 +566,7 @@ namespace Nekoyume.Blockchain
                 apStoneCount = apStoneCount,
                 actionPoint = actionPoint,
                 worldId = worldId,
-                stageId = stageId,
+                stageId = stageId
             };
             var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
@@ -577,10 +580,7 @@ namespace Nekoyume.Blockchain
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionEvaluation<RegisterProduct>> RegisterProduct(
@@ -595,7 +595,7 @@ namespace Nekoyume.Blockchain
                 ["Price"] = registerInfo.Price.ToString(),
                 ["Count"] = registerInfos.Count,
                 ["AvatarAddress"] = registerInfo.AvatarAddress.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
 
             var evt = new AirbridgeEvent("RegisterProduct");
@@ -624,7 +624,7 @@ namespace Nekoyume.Blockchain
             {
                 AvatarAddress = avatarAddress,
                 RegisterInfos = registerInfos,
-                ChargeAp = chargeAp,
+                ChargeAp = chargeAp
             };
 
             ProcessAction(action);
@@ -646,7 +646,7 @@ namespace Nekoyume.Blockchain
             var sentryTrace = Analyzer.Instance.Track("Unity/CancelProductRegistration", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = avatarAddress.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
 
             var evt = new AirbridgeEvent("CancelProductRegistration");
@@ -673,7 +673,7 @@ namespace Nekoyume.Blockchain
             {
                 AvatarAddress = avatarAddress,
                 ProductInfos = productInfo,
-                ChargeAp = chargeAp,
+                ChargeAp = chargeAp
             };
 
             ProcessAction(action);
@@ -710,7 +710,7 @@ namespace Nekoyume.Blockchain
             {
                 AvatarAddress = avatarAddress,
                 ReRegisterInfos = reRegisterInfos,
-                ChargeAp = chargeAp,
+                ChargeAp = chargeAp
             };
 
             ProcessAction(action);
@@ -739,7 +739,7 @@ namespace Nekoyume.Blockchain
             var action = new BuyProduct
             {
                 AvatarAddress = avatarAddress,
-                ProductInfos = productInfos,
+                ProductInfos = productInfos
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<BuyProduct>()
@@ -781,7 +781,7 @@ namespace Nekoyume.Blockchain
         {
             var action = new DailyReward
             {
-                avatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -799,6 +799,7 @@ namespace Nekoyume.Blockchain
             Equipment baseEquipment,
             List<Equipment> materialEquipments,
             int slotIndex,
+            Dictionary<int, int> hammers,
             BigInteger costNCG)
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -806,9 +807,9 @@ namespace Nekoyume.Blockchain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
 
-            if (baseEquipment.ItemSubType == ItemSubType.Aura)
+            if (baseEquipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
             {
-                //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                 LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, baseEquipment.ItemId);
             }
             else
@@ -820,16 +821,17 @@ namespace Nekoyume.Blockchain
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             foreach (var materialEquip in materialEquipments)
             {
-                if (materialEquip.ItemSubType == ItemSubType.Aura)
+                if (materialEquip.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                 {
-                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                     LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, materialEquip.ItemId);
                 }
                 else
                 {
                     LocalLayerModifier.RemoveItem(avatarAddress, materialEquip.ItemId,
-                    materialEquip.RequiredBlockIndex, 1);
+                        materialEquip.RequiredBlockIndex, 1);
                 }
+
                 LocalLayerModifier.SetItemEquip(avatarAddress, materialEquip.NonFungibleId, false);
             }
 
@@ -838,10 +840,10 @@ namespace Nekoyume.Blockchain
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Item Enhancement",
                 new Dictionary<string, Value>()
-            {
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                }, true);
 
             var evt = new AirbridgeEvent("ItemEnhancement");
             evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
@@ -854,6 +856,7 @@ namespace Nekoyume.Blockchain
                 materialIds = materialEquipments.Select((matEquipment) => matEquipment.NonFungibleId).ToList(),
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
+                hammers = hammers
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -864,10 +867,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionEvaluation<RankingBattle>> RankingBattle(
@@ -884,10 +884,10 @@ namespace Nekoyume.Blockchain
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Ranking Battle",
                 new Dictionary<string, Value>()
-            {
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                }, true);
 
             var action = new RankingBattle
             {
@@ -895,7 +895,7 @@ namespace Nekoyume.Blockchain
                 enemyAddress = enemyAddress,
                 weeklyArenaAddress = weeklyArenaAddress,
                 costumeIds = costumeIds,
-                equipmentIds = equipmentIds,
+                equipmentIds = equipmentIds
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -933,7 +933,7 @@ namespace Nekoyume.Blockchain
                 equipments = equipments,
                 runeInfos = runeInfos,
                 championshipId = championshipId,
-                round = round,
+                round = round
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -944,10 +944,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
         public IObservable<ActionEvaluation<BattleArena>> BattleArena(
@@ -969,7 +966,7 @@ namespace Nekoyume.Blockchain
                 runeInfos = runeInfos,
                 championshipId = championshipId,
                 round = round,
-                ticket = ticket,
+                ticket = ticket
             };
 
             var sentryTrace = Analyzer.Instance.Track("Unity/BattleArena",
@@ -979,7 +976,7 @@ namespace Nekoyume.Blockchain
                     ["round"] = round,
                     ["enemyAvatarAddress"] = enemyAvatarAddress.ToString(),
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
                 }, true);
 
             var evt = new AirbridgeEvent("BattleArena");
@@ -1017,7 +1014,7 @@ namespace Nekoyume.Blockchain
             var action = new PatchTableSheet
             {
                 TableName = tableName,
-                TableCsv = tableCsv,
+                TableCsv = tableCsv
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1040,12 +1037,12 @@ namespace Nekoyume.Blockchain
             var sentryTx = Analyzer.Instance.Track(
                 "Unity/Create CombinationEquipment",
                 new Dictionary<string, Value>()
-            {
-                ["RecipeId"] = recipeInfo.RecipeId,
-                ["PetId"] = petId ?? default,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
+                {
+                    ["RecipeId"] = recipeInfo.RecipeId,
+                    ["PetId"] = petId ?? default,
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                }, true);
 
             var evt = new AirbridgeEvent("CombinationEquipment");
             evt.SetValue(recipeInfo.RecipeId);
@@ -1097,7 +1094,7 @@ namespace Nekoyume.Blockchain
                 subRecipeId = recipeInfo.SubRecipeId,
                 payByCrystal = payByCrystal,
                 useHammerPoint = useHammerPoint,
-                petId = petId,
+                petId = petId
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1134,15 +1131,16 @@ namespace Nekoyume.Blockchain
             {
                 cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             }
+
             LocalLayerModifier.RemoveItem(avatarAddress, hourglassDataRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
                 new Dictionary<string, Value>()
-            {
-                ["HourglassCount"] = cost,
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            }, true);
+                {
+                    ["HourglassCount"] = cost,
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                }, true);
 
             var evt = new AirbridgeEvent("RapidCombination");
             evt.SetValue(cost);
@@ -1228,9 +1226,9 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
             {
-                if (equipment.ItemSubType == ItemSubType.Aura)
+                if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                 {
-                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                     LocalLayerModifier.RemoveNonFungibleItem(
                         avatarAddress,
                         equipment.ItemId);
@@ -1260,12 +1258,13 @@ namespace Nekoyume.Blockchain
 
                 GameConfigStateSubject.ActionPointState.Add(address, true);
             }
+
             var sentryTrace = Analyzer.Instance.Track("Unity/Grinding", new Dictionary<string, Value>()
             {
                 ["EquipmentCount"] = equipmentList.Count,
                 ["GainedCrystal"] = gainedCrystal,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
 
             var evt = new AirbridgeEvent("Grinding");
@@ -1305,9 +1304,9 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var sentryTrace = Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Dictionary<string, Value>()
             {
-                ["BurntCrystal"] = (long) openCost,
+                ["BurntCrystal"] = (long)openCost,
                 ["AvatarAddress"] = avatarAddress.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
 
             var evt = new AirbridgeEvent("UnlockEquipmentRecipe");
@@ -1340,7 +1339,7 @@ namespace Nekoyume.Blockchain
             {
                 ["BurntCrystal"] = cost,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
 
             var evt = new AirbridgeEvent("UnlockWorld");
@@ -1352,7 +1351,7 @@ namespace Nekoyume.Blockchain
             var action = new UnlockWorld
             {
                 AvatarAddress = avatarAddress,
-                WorldIds = worldIdList,
+                WorldIds = worldIdList
             };
             ProcessAction(action);
 
@@ -1372,7 +1371,7 @@ namespace Nekoyume.Blockchain
                 ["BurntCrystal"] = burntCrystal,
                 ["isAdvanced"] = advanced,
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = States.Instance.AgentState.address.ToString()
             }, true);
 
             var evt = new AirbridgeEvent("HackAndSlashRandomBuff");
@@ -1414,7 +1413,7 @@ namespace Nekoyume.Blockchain
                 EquipmentIds = equipments,
                 FoodIds = foods,
                 RuneInfos = runeInfos,
-                PayNcg = payNcg,
+                PayNcg = payNcg
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1425,10 +1424,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
         public IObservable<ActionEvaluation<ClaimRaidReward>> ClaimRaidReward()
@@ -1443,10 +1439,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
         public IObservable<ActionEvaluation<RuneEnhancement>> RuneEnhancement(
@@ -1457,7 +1450,7 @@ namespace Nekoyume.Blockchain
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RuneId = runeId,
-                TryCount = tryCount > 0 ? tryCount : 1,
+                TryCount = tryCount > 0 ? tryCount : 1
             };
 
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
@@ -1468,10 +1461,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
         public IObservable<ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(
@@ -1480,7 +1470,7 @@ namespace Nekoyume.Blockchain
             var action = new UnlockRuneSlot
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                SlotIndex = slotIndex,
+                SlotIndex = slotIndex
             };
 
             LoadingHelper.UnlockRuneSlot.Add(slotIndex);
@@ -1490,10 +1480,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
         public IObservable<ActionEvaluation<PetEnhancement>> PetEnhancement(
@@ -1505,7 +1492,7 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 ["TargetLevel"] = targetLevel,
-                ["PetId"] = petId,
+                ["PetId"] = petId
             }, true);
 
             var evt = new AirbridgeEvent("PetEnhancement");
@@ -1528,10 +1515,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionEvaluation<ActivateCollection>> ActivateCollection(
@@ -1548,7 +1532,7 @@ namespace Nekoyume.Blockchain
                     ["AvatarAddress"] = avatarAddress.ToString(),
                     ["AgentAddress"] = agentAddress.ToString(),
                     ["CollectionId"] = collectionId,
-                    ["MaterialsType"] = materialsType.ToString(),
+                    ["MaterialsType"] = materialsType.ToString()
                 }, true);
 
             var evt = new AirbridgeEvent(nameof(ActivateCollection));
@@ -1564,7 +1548,7 @@ namespace Nekoyume.Blockchain
                 CollectionData = new List<(int collectionId, List<ICollectionMaterial> materials)>
                 {
                     (collectionId, materials)
-                },
+                }
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ActivateCollection>()
@@ -1572,17 +1556,14 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
         public IObservable<ActionEvaluation<ApprovePledge>> ApprovePledge(Address patronAddress)
         {
             var action = new ApprovePledge
             {
-                PatronAddress = patronAddress,
+                PatronAddress = patronAddress
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ApprovePledge>()
@@ -1609,14 +1590,14 @@ namespace Nekoyume.Blockchain
                     ["AvatarAddress"] = avatarAddress.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                     ["GroupId"] = groupId,
-                    ["SummonCount"] = summonCount,
+                    ["SummonCount"] = summonCount
                 }, true);
 
             var action = new AuraSummon
             {
                 AvatarAddress = avatarAddress,
                 GroupId = groupId,
-                SummonCount = summonCount,
+                SummonCount = summonCount
             };
             ProcessAction(action);
 
@@ -1625,10 +1606,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                })
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); })
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
@@ -1645,14 +1623,14 @@ namespace Nekoyume.Blockchain
                     ["AvatarAddress"] = avatarAddress.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                     ["GroupId"] = groupId,
-                    ["SummonCount"] = summonCount,
+                    ["SummonCount"] = summonCount
                 }, true);
 
             var action = new RuneSummon
             {
                 AvatarAddress = avatarAddress,
                 GroupId = groupId,
-                SummonCount = summonCount,
+                SummonCount = summonCount
             };
             ProcessAction(action);
 
@@ -1661,10 +1639,7 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                })
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); })
                 .Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
@@ -1859,10 +1834,7 @@ namespace Nekoyume.Blockchain
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
         public IObservable<ActionEvaluation<CreateArenaDummy>> CreateArenaDummy(
@@ -1881,7 +1853,7 @@ namespace Nekoyume.Blockchain
                 equipments = equipments,
                 championshipId = championshipId,
                 round = round,
-                accountCount = accountCount,
+                accountCount = accountCount
             };
             ProcessAction(action);
             _lastBattleActionId = action.Id;
@@ -1909,7 +1881,7 @@ namespace Nekoyume.Blockchain
             var action = new ManipulateState
             {
                 StateList = stateList ?? new List<(Address accountAddr, Address addr, IValue value)>(),
-                BalanceList = balanceList ?? new List<(Address addr, FungibleAssetValue fav)>(),
+                BalanceList = balanceList ?? new List<(Address addr, FungibleAssetValue fav)>()
             };
 
             ProcessAction(action);
@@ -1918,14 +1890,11 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
-                {
-                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
-                });
+                .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 #endif
 
-        #endregion
+#endregion
 
         public void Dispose()
         {

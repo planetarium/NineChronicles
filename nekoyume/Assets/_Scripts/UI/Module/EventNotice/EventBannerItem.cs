@@ -41,10 +41,7 @@ namespace Nekoyume.UI.Module
         {
             image.texture = sprite.texture;
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() =>
-            {
-                onClick.Invoke(this);
-            });
+            button.onClick.AddListener(() => { onClick.Invoke(this); });
         }
 
         public void Select()

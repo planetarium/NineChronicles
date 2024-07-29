@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Nekoyume;
+using Nekoyume.Arena;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace Editor
         private enum FeeType
         {
             Shop,
-            BlackSmith,
+            BlackSmith
         }
 
         private static void GetAddress(FeeType feeType)
@@ -35,7 +36,7 @@ namespace Editor
             while (!eof)
             {
                 var line = sr.ReadLine();
-                if(line == null)
+                if (line == null)
                 {
                     eof = true;
                     break;
@@ -43,12 +44,7 @@ namespace Editor
 
                 if (isFirst)
                 {
-                    var firstAddress = feeType switch
-                    {
-                        FeeType.Shop => Addresses.GetShopFeeAddress(0, 0),
-                        FeeType.BlackSmith => Addresses.GetBlacksmithFeeAddress(0, 0),
-                        _ => throw new ArgumentOutOfRangeException(nameof(feeType), feeType, null)
-                    };
+                    var firstAddress = ArenaHelper.DeriveArenaAddress(0, 0);
                     sb.Append($"{feeType.ToString()}{0}_{0} : {firstAddress}\n");
                     isFirst = false;
                     continue;
@@ -57,12 +53,7 @@ namespace Editor
                 var values = line.Split(',');
                 var championshipId = Convert.ToInt16(values[0]);
                 var round = Convert.ToInt16(values[1]);
-                var address = feeType switch
-                {
-                    FeeType.Shop => Addresses.GetShopFeeAddress(championshipId, round),
-                    FeeType.BlackSmith => Addresses.GetBlacksmithFeeAddress(championshipId, round),
-                    _ => throw new ArgumentOutOfRangeException(nameof(feeType), feeType, null)
-                };
+                var address = ArenaHelper.DeriveArenaAddress(championshipId, round);
                 sb.Append($"{feeType.ToString()}{championshipId}_{round} : {address}\n");
             }
 

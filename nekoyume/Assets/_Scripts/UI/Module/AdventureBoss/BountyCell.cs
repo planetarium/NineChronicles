@@ -24,13 +24,13 @@ namespace Nekoyume
 
         public override void UpdateContent(BountyItemData itemData)
         {
-            rankText.text = itemData.Rank.ToString();
+            rankText.text = itemData.Rank < 0 ? "-" : itemData.Rank.ToString();
             nameText.text = itemData.Name;
             countText.text = $"{itemData.Count}/{Investor.MaxInvestmentCount}";
             ncgText.text = itemData.Ncg.ToString("#,0");
             bonusObj.SetActive(itemData.Bonus > 0);
 
-            if(itemData.Bonus > 0)
+            if (itemData.Bonus > 0)
             {
                 rankText.color = bonusStateColor;
                 nameText.color = bonusStateColor;

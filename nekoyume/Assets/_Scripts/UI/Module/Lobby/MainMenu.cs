@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module.Lobby
         Dcc,
         PatrolReward,
         SeasonPass,
-        Collection,
+        Collection
     }
 
     public class MainMenu : MonoBehaviour
@@ -48,12 +48,14 @@ namespace Nekoyume.UI.Module.Lobby
 
         public bool IsUnlocked { get; private set; }
 
-        #region Mono
+#region Mono
 
         protected virtual void Awake()
         {
             if (!GetComponentInParent<Menu>())
+            {
                 throw new NotFoundComponentException<Menu>();
+            }
 
             switch (type)
             {
@@ -115,7 +117,7 @@ namespace Nekoyume.UI.Module.Lobby
             return IsUnlocked;
         }
 
-        #endregion
+#endregion
 
         private void ResetLocalizationKey()
         {

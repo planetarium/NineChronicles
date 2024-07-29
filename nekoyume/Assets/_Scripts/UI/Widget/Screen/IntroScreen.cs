@@ -29,7 +29,7 @@ using ZXing;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Blockchain;
+    using Blockchain;
     using UniRx;
 
     public class IntroScreen : ScreenWidget
@@ -37,21 +37,25 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject pcContainer;
 
         [Header("Mobile")]
-
         [SerializeField] private GameObject mobileContainer;
+
         [SerializeField] private RawImage videoImage;
 
         [Header("Mobile/Logo")]
         [SerializeField] private GameObject logoAreaGO;
+
         [SerializeField] private GameObject touchScreenButtonGO;
         [SerializeField] private Button touchScreenButton;
+
         [Space]
         [SerializeField] private Sprite logoMSprite;
+
         [SerializeField] private Sprite logoKSprite;
         [SerializeField] private Image[] logoImages;
 
         [Header("Mobile/StartButton")]
         [SerializeField] private GameObject startButtonContainer;
+
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
         [SerializeField] private Button backupButton;
@@ -59,11 +63,13 @@ namespace Nekoyume.UI
 
         [Header("Mobile/YourPlanet")]
         [SerializeField] private Button yourPlanetButton;
+
         [SerializeField] private TextMeshProUGUI yourPlanetButtonText;
         [SerializeField] private TextMeshProUGUI planetAccountInfoText;
 
         [Header("Mobile/SocialButtons")]
         [SerializeField] private GameObject startButtonGO;
+
         [SerializeField] private Button startButton;
         [SerializeField] private GameObject socialButtonsGO;
         [SerializeField] private Button appleSignInButton;
@@ -73,6 +79,7 @@ namespace Nekoyume.UI
 
         [Header("Mobile/QRCodeGuide")]
         [SerializeField] private GameObject qrCodeGuideContainer;
+
         [SerializeField] private CapturedImage qrCodeGuideBackground;
         [SerializeField] private GameObject[] qrCodeGuideImages;
         [SerializeField] private TextMeshProUGUI qrCodeGuideText;
@@ -81,19 +88,23 @@ namespace Nekoyume.UI
 
         [Header("Mobile/Video")]
         [SerializeField] private VideoPlayer videoPlayer;
+
         [SerializeField] private Button videoSkipButton;
 
         [Header("Mobile/SelectPlanetPopup")]
         [SerializeField] private GameObject selectPlanetPopup;
+
         [SerializeField] private Button selectPlanetPopupBgButton;
         [SerializeField] private SelectPlanetScroll selectPlanetScroll;
 
         [Header("Mobile/PlanetAccountInfosPopup")]
         [SerializeField] private GameObject planetAccountInfosPopup;
+
         [SerializeField] private PlanetAccountInfoScroll planetAccountInfoScroll;
 
         [Header("Mobile/KeyImportPopup")]
         [SerializeField] private GameObject keyImportPopup;
+
         [SerializeField] private Button keyImportCloseButton;
         [SerializeField] private Button keyImportWithCameraButton;
         [SerializeField] private Button keyImportWithGalleryButton;
@@ -205,7 +216,7 @@ namespace Nekoyume.UI
                 {
                     var pk = ImportPrivateKeyFromJson(result.Text);
                     startButtonContainer.SetActive(false);
-                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                    Find<LoginSystem>().Show(pk?.ToHexWithZeroPaddings() ?? string.Empty);
                 });
             });
             yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
@@ -291,7 +302,7 @@ namespace Nekoyume.UI
                     var pk = ImportPrivateKeyFromJson(result.Text);
                     SigninContext.SetHasSignedWithKeyImport(trySigninWithKeyImport);
                     startButtonContainer.SetActive(false);
-                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                    Find<LoginSystem>().Show(pk?.ToHexWithZeroPaddings() ?? string.Empty);
                 });
             });
             keyImportWithGalleryButton.onClick.AddListener(() =>
@@ -311,7 +322,7 @@ namespace Nekoyume.UI
                     SigninContext.SetHasSignedWithKeyImport(trySigninWithKeyImport);
                     keyImportPopup.SetActive(false);
                     startButtonContainer.SetActive(false);
-                    Find<LoginSystem>().Show(privateKeyString: pk?.ToHexWithZeroPaddings() ?? string.Empty);
+                    Find<LoginSystem>().Show(pk?.ToHexWithZeroPaddings() ?? string.Empty);
                 });
             });
         }
@@ -323,7 +334,7 @@ namespace Nekoyume.UI
             var km = KeyManager.Instance;
             if (km.Has(requiredAddress))
             {
-                km.BackupKey(requiredAddress, keyStorePathToBackup: null);
+                km.BackupKey(requiredAddress, null);
             }
 
             km.Register(resultPpk);
@@ -417,7 +428,7 @@ namespace Nekoyume.UI
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
-            Find<LoginSystem>().Show(privateKeyString: _privateKey);
+            Find<LoginSystem>().Show(_privateKey);
 #endif
         }
 
@@ -530,7 +541,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if(Game.Game.instance.CommandLineOptions == null || !Game.Game.instance.CommandLineOptions.EnableGuestLogin)
+            if (Game.Game.instance.CommandLineOptions == null || !Game.Game.instance.CommandLineOptions.EnableGuestLogin)
             {
                 NcDebug.LogError($"[IntroScreen] [GetGuestPrivateKey] Failed find Commandlineoptions");
                 return;
@@ -609,7 +620,7 @@ namespace Nekoyume.UI
             }
 
             if (!(planetAccountInfo.IsAgentPledged.HasValue &&
-                  planetAccountInfo.IsAgentPledged.Value))
+                planetAccountInfo.IsAgentPledged.Value))
             {
                 NcDebug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo.IsAgentPledged is false.");
                 planetAccountInfoText.text = L10nManager.Localize("SDESC_THERE_IS_NO_CHARACTER");
@@ -746,7 +757,7 @@ namespace Nekoyume.UI
                     "STS_YOU_CAN_CONNECT_0_TO_APPLE_OR_GOOGLE_ON_PORTAL_FORMAT",
                     socialType.ToString()),
                 L10nManager.Localize("BTN_OPEN_A_BROWSER"),
-                localize: false);
+                false);
         }
     }
 }

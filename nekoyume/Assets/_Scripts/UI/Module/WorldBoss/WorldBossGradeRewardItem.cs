@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             Received,
             Active,
-            Normal,
+            Normal
         }
 
         [SerializeField]

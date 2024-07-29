@@ -9,7 +9,7 @@ namespace Nekoyume.UI.Module
         public Image switchedOffImage;
 
         public bool IsSwitchedOn => switchedOnImage.enabled;
-        
+
         public void Switch()
         {
             var isSwitchedOn = IsSwitchedOn;

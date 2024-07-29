@@ -96,7 +96,7 @@ namespace Nekoyume.UI.Module
                         particle.startColor = tooltipData.GradeColor;
                         _costumeSpineObject.SetActive(true);
 
-                        if(_costumeSpineObject.TryGetComponent(out SkeletonGraphic skeletonGraphic))
+                        if (_costumeSpineObject.TryGetComponent(out SkeletonGraphic skeletonGraphic))
                         {
                             var currentAnim = skeletonGraphic.AnimationState.GetCurrent(0).Animation.Name;
                             var isLoop = skeletonGraphic.AnimationState.GetCurrent(0).Loop;
@@ -116,7 +116,7 @@ namespace Nekoyume.UI.Module
 
             baseItemView.OptionTag.Set(itemBase);
             baseItemView.CountText.gameObject.SetActive(count > 0 &&
-                                                        itemBase.ItemType == ItemType.Material);
+                itemBase.ItemType == ItemType.Material);
             baseItemView.CountText.text = count.ToString();
 
             baseItemView.LevelLimitObject.SetActive(levelLimit);

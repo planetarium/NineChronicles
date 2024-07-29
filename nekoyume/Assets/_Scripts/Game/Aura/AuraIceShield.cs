@@ -12,10 +12,10 @@ namespace Nekoyume.Game
         // TODO: action buff로 변경 후 action buff type으로 구분?
         private static int FrostBiteGroupId => 709000;
 
-        protected const string AppearAnimation    = "Appear";
-        protected const string CastingAnimation   = "Casting";
+        protected const string AppearAnimation = "Appear";
+        protected const string CastingAnimation = "Casting";
         protected const string DisappearAnimation = "Disppear";
-        protected const string IdleAnimation      = "Idle";
+        protected const string IdleAnimation = "Idle";
 
         [SerializeField]
         private SkeletonAnimation summonedSpine;
@@ -25,7 +25,7 @@ namespace Nekoyume.Game
 
         [SerializeField]
         private ParticleSystem frostBiteParticle;
-        
+
         private bool _isPlaying;
 
         protected void Awake()
@@ -46,12 +46,10 @@ namespace Nekoyume.Game
             {
                 return;
             }
+
             base.AddEventToOwner();
-            
-            ForeachAllIceShieldBuff(iceShieldId =>
-            {
-                Owner.BuffCastCoroutine.Add(iceShieldId, OnBuffCast);
-            });
+
+            ForeachAllIceShieldBuff(iceShieldId => { Owner.BuffCastCoroutine.Add(iceShieldId, OnBuffCast); });
         }
 
         protected override void RemoveEventFromOwner()
@@ -60,14 +58,12 @@ namespace Nekoyume.Game
             {
                 return;
             }
+
             base.RemoveEventFromOwner();
 
-            ForeachAllIceShieldBuff(iceShieldId =>
-            {
-                Owner.BuffCastCoroutine.Remove(iceShieldId);
-            });
+            ForeachAllIceShieldBuff(iceShieldId => { Owner.BuffCastCoroutine.Remove(iceShieldId); });
         }
-        
+
         private void ForeachAllIceShieldBuff(Action<int> action, bool invokeOnce = false)
         {
             var actionBuffSheet = TableSheets.Instance.ActionBuffSheet;
@@ -77,9 +73,9 @@ namespace Nekoyume.Game
                 {
                     continue;
                 }
-                
+
                 action(row.Id);
-                
+
                 if (invokeOnce)
                 {
                     break;
@@ -93,6 +89,7 @@ namespace Nekoyume.Game
             {
                 return;
             }
+
             base.ProcessCustomEvent(customEventId);
 
             StartCoroutine(OnFrostBite());
@@ -106,10 +103,10 @@ namespace Nekoyume.Game
                 {
                     return;
                 }
-                
+
                 base.ProcessBuffEnd(buffId);
                 StartCoroutine(OnBuffEnd());
-            }, invokeOnce: true);
+            }, true);
         }
 
         private IEnumerator AppearSummoner()
@@ -120,6 +117,7 @@ namespace Nekoyume.Game
             {
                 yield return null;
             }
+
             summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
         }
 
@@ -131,7 +129,7 @@ namespace Nekoyume.Game
             iceShieldParticle.Play();
             summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
-            
+
             _isPlaying = true;
         }
 
@@ -143,11 +141,17 @@ namespace Nekoyume.Game
             {
                 yield return null;
             }
+
             summonedSpine.gameObject.SetActive(false);
         }
 
         private IEnumerator OnFrostBite()
         {
+            if (!_isPlaying)
+            {
+                yield break;
+            }
+
             var castingTrack = summonedSpine.AnimationState.SetAnimation(0, CastingAnimation, false);
             frostBiteParticle.Play();
             while (!castingTrack.IsComplete)
@@ -155,12 +159,9 @@ namespace Nekoyume.Game
                 yield return null;
             }
 
-            if (_isPlaying)
-            {
-                summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
-            }
+            summonedSpine.AnimationState.SetAnimation(0, IdleAnimation, true);
         }
-        
+
         public static bool IsFrostBiteBuff(int buffId)
         {
             var statBuffSheet = TableSheets.Instance.StatBuffSheet;

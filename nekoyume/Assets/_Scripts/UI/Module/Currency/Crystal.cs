@@ -71,8 +71,10 @@ namespace Nekoyume.UI.Module
             text.enabled = _loadingCount <= 0;
         }
 
-        private void UpdateCrystal() =>
+        private void UpdateCrystal()
+        {
             SetCrystal(States.Instance.CrystalBalance);
+        }
 
         private void SetCrystal(FungibleAssetValue crystal)
         {

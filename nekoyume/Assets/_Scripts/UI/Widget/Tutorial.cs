@@ -68,7 +68,7 @@ namespace Nekoyume.UI
 
         public void Play(List<ITutorialData> datas, int presetId, Sprite guideSprite = null, System.Action callback = null)
         {
-            if(!(_onClickDispose is null))
+            if (!(_onClickDispose is null))
             {
                 _onClickDispose.Dispose();
                 _onClickDispose = null;
@@ -103,7 +103,7 @@ namespace Nekoyume.UI
 
             const int skippableTutorialId = 50011;
             var isSkippable = Game.Game.instance.Stage.TutorialController.LastPlayedTutorialId >
-                              skippableTutorialId;
+                skippableTutorialId;
             skipButton.gameObject.SetActive(isSkippable);
             _finishRef = 0;
             _isPlaying = true;

@@ -45,9 +45,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject receiveAllContainer;
 
-        private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
+        private readonly Module.ToggleGroup _toggleGroup = new();
 
-        #region override
+#region override
 
         protected override void Awake()
         {
@@ -74,7 +74,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        #endregion
+#endregion
 
         public void ChangeState(int state)
         {
@@ -118,7 +118,7 @@ namespace Nekoyume.UI
                     QuestType.Adventure => adventureButton,
                     QuestType.Obtain => obtainButton,
                     QuestType.Craft => craftingButton,
-                    QuestType.Exchange => exchangeButton,
+                    QuestType.Exchange => exchangeButton
                 };
                 button.HasNotification.Value = list.Any(quest =>
                     quest.QuestType == questType &&

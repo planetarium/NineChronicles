@@ -18,28 +18,37 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TextMeshProUGUI scoreText = null;
+
         [SerializeField]
         private GameObject gradeObject = null;
+
         [SerializeField]
         private Transform gradeParent = null;
 
         [SerializeField]
         private Slider slider = null;
+
         [SerializeField]
         private Slider currentWaveSlider = null;
+
         [SerializeField]
         private GameObject[] activatedObjects = null;
+
         [SerializeField]
         private RectTransform vfxClamper = null;
+
         [SerializeField]
         private RectTransform vfxOffset = null;
+
         [SerializeField]
         private float smoothenSpeed = 2.0f;
+
         [SerializeField]
         private float smoothenFinishThreshold = 0.005f;
+
         private float _xLength = 0;
 
-        private readonly ReactiveProperty<int> _currentStar = new ReactiveProperty<int>(0);
+        private readonly ReactiveProperty<int> _currentStar = new(0);
 
         [SerializeField]
         private StageProgressBarVFX stageProgressBarVFX = null;
@@ -91,7 +100,7 @@ namespace Nekoyume.UI.Module
                 TerminateCurrentSmoothen();
             }
 
-            (var prev, var current) = GetSliderValue(_currentStar.Value, MaxWave);
+            var (prev, current) = GetSliderValue(_currentStar.Value, MaxWave);
             if (isActiveAndEnabled)
             {
                 _smoothenCoroutine = StartCoroutine(LerpProgressBar(prev, current, lerpSpeed));
@@ -99,7 +108,7 @@ namespace Nekoyume.UI.Module
             else
             {
                 UpdateSliderValue(prev, current);
-                for (int i = 0; i < star; ++i)
+                for (var i = 0; i < star; ++i)
                 {
                     activatedObjects[i].SetActive(true);
                 }
@@ -114,7 +123,7 @@ namespace Nekoyume.UI.Module
         public void UpdateScore(long score)
         {
             scoreText.text = score.ToString("N0");
-            var grade = (WorldBossGrade) WorldBossHelper.CalculateRank(_currentRow, score);
+            var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(_currentRow, score);
             if (_currentGrade != grade &&
                 WorldBossFrontHelper.TryGetGrade(grade, false, out var prefab))
             {
@@ -150,6 +159,7 @@ namespace Nekoyume.UI.Module
             {
                 StopCoroutine(_smoothenCoroutine);
             }
+
             _smoothenCoroutine = null;
         }
 
@@ -173,7 +183,7 @@ namespace Nekoyume.UI.Module
                 AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
 
-            for (int i = 0; i < star; ++i)
+            for (var i = 0; i < star; ++i)
             {
                 var emissionVFX = starEmissionVFXList[i];
                 var isStarEnabled = activatedObjects[i].activeSelf;
@@ -202,6 +212,7 @@ namespace Nekoyume.UI.Module
             {
                 activated.SetActive(false);
             }
+
             foreach (var vfx in starEmissionVFXList)
             {
                 vfx.Stop();

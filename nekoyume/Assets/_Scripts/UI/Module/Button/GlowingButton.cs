@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
     {
         public class Model : IDisposable
         {
-            public readonly ReactiveProperty<bool> IsEnabled = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> IsEnabled = new();
 
             public void Dispose()
             {
@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module
         public Image glowImage;
         public TextMeshProUGUI glowText;
 
-        public readonly Model SharedModel = new Model();
+        public readonly Model SharedModel = new();
 
         protected override void Awake()
         {

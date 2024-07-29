@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module
         {
             public CostType type;
             public long cost;
+
             public CostParam(CostType type, long cost)
             {
                 this.type = type;
@@ -48,8 +49,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<GameObject> costParents = null;
 
-        private readonly Dictionary<CostType, long> _costMap =
-            new Dictionary<CostType, long>();
+        private readonly Dictionary<CostType, long> _costMap = new();
 
         public long CrystalCost =>
             _costMap.TryGetValue(CostType.Crystal, out var cost)
@@ -76,6 +76,7 @@ namespace Nekoyume.UI.Module
                     _costMap[cost.type] = cost.cost;
                 }
             }
+
             UpdateObjects();
         }
 
@@ -86,6 +87,7 @@ namespace Nekoyume.UI.Module
             {
                 _costMap[type] = cost;
             }
+
             UpdateObjects();
         }
 
@@ -116,9 +118,7 @@ namespace Nekoyume.UI.Module
                 {
                     var cost = _costMap[costObject.type];
                     costText.text.text = cost.ToString();
-                    costText.text.color = CheckCostOfType(costObject.type, cost) ?
-                        Palette.GetColor(ColorType.ButtonEnabled) :
-                        Palette.GetColor(ColorType.TextDenial);
+                    costText.text.color = CheckCostOfType(costObject.type, cost) ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
                 }
             }
         }

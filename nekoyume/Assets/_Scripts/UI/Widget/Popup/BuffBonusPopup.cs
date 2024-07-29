@@ -12,7 +12,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using mixpanel;
-    using Nekoyume.Blockchain;
+    using Blockchain;
     using System.Linq;
     using UniRx;
 
@@ -89,8 +89,8 @@ namespace Nekoyume.UI
             var sheet = Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet;
             _normalCost = CrystalCalculator.CalculateBuffGachaCost(stageId, false, sheet).MajorUnit;
             _advancedCost = CrystalCalculator.CalculateBuffGachaCost(stageId, true, sheet).MajorUnit;
-            normalButton.SetCost(CostType.Crystal, (long) _normalCost);
-            advancedButton.SetCost(CostType.Crystal, (long) _advancedCost);
+            normalButton.SetCost(CostType.Crystal, (long)_normalCost);
+            advancedButton.SetCost(CostType.Crystal, (long)_advancedCost);
             normalButton.Interactable = hasEnoughStars;
             advancedButton.Interactable = hasEnoughStars;
             base.Show();
@@ -109,6 +109,7 @@ namespace Nekoyume.UI
                     _onAttract);
                 return false;
             }
+
             return true;
         }
 

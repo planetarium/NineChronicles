@@ -14,10 +14,12 @@ namespace Nekoyume.Director
                 var runtimeAsset = ScriptableObject.CreateInstance<AnimationReferenceAssetWrapper>();
                 var spineClip = timelineClip.asset as SpineAnimationStateClip;
                 if (spineClip == null)
+                {
                     continue;
+                }
 
                 string animationName;
-                var    defaultAnimation = spineClip.template.animationReference;
+                var defaultAnimation = spineClip.template.animationReference;
                 if (defaultAnimation == null || string.IsNullOrEmpty(defaultAnimation.name))
                 {
                     NcDebug.LogWarning($"[{nameof(TimelineHelper)}] AnimationReferenceAsset is null or empty");
@@ -26,6 +28,7 @@ namespace Nekoyume.Director
                         spineClip.template.animationReference = null;
                         continue;
                     }
+
                     animationName = timelineClip.displayName == "idle" ? "Idle" : timelineClip.displayName;
                 }
                 else

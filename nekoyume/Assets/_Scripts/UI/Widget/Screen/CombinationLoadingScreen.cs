@@ -23,7 +23,7 @@ namespace Nekoyume.UI
             Equipment,
             Consumable,
             Rune,
-            Aura,
+            Aura
         }
 
         [SerializeField] private Button button = null;
@@ -43,7 +43,7 @@ namespace Nekoyume.UI
         [SerializeField] private SkeletonGraphic npcSkeletonGraphic;
 
         private Coroutine _npcAppearCoroutine = null;
-        private readonly WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
+        private readonly WaitForSeconds _waitForOneSec = new(1f);
 
         private CombinationSparkVFX _sparkVFX = null;
         private bool _itemMoveAnimation = true;

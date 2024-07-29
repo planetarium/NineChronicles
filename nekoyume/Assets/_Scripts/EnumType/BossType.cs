@@ -4,6 +4,6 @@ namespace Nekoyume.EnumType
     {
         None,
         MiddleBoss,
-        LastBoss,
+        LastBoss
     }
 }

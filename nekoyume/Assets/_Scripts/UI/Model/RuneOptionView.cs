@@ -173,6 +173,7 @@ namespace Nekoyume.UI.Model
                 {
                     nextValueString = $"<color=#FFF3D4>{currentValueString}</color>";
                 }
+
                 var skillDescription = L10nManager.Localize($"SKILL_DESCRIPTION_{option.SkillId}",
                     option.SkillChance, option.BuffDuration, currentValueString);
 

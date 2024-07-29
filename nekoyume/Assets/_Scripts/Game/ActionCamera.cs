@@ -20,7 +20,7 @@ namespace Nekoyume.Game
         {
             Idle,
             ChaseX,
-            Shake,
+            Shake
         }
 
         [Serializable]
@@ -44,17 +44,14 @@ namespace Nekoyume.Game
         public System.Action OnResolutionStatic;
 
         [Header("Screen Resolution")]
-        [SerializeField,
-         Tooltip("기준이 될 스크린 해상도를 설정한다.(`CanvasScaler`의 `ReferenceResolution`과 같은 개념)")]
-        private int2 referenceResolution = new int2(1136, 640);
+        [SerializeField][Tooltip("기준이 될 스크린 해상도를 설정한다.(`CanvasScaler`의 `ReferenceResolution`과 같은 개념)")]
+        private int2 referenceResolution = new(1136, 640);
 
-        [SerializeField,
-         Tooltip(
-             "해상도를 조절할 때 가로와 세로 중 어느 쪽을 유지시킬 것인지를 설정한다. 값이 `true`일 때는 가로를, `false`일 때는 세로를 유지한다.(`CanvasScaler`의 `ScreenMathMode`와 `Match`값을 조절하는 것과 같은 개념)")]
+        [SerializeField][Tooltip(
+            "해상도를 조절할 때 가로와 세로 중 어느 쪽을 유지시킬 것인지를 설정한다. 값이 `true`일 때는 가로를, `false`일 때는 세로를 유지한다.(`CanvasScaler`의 `ScreenMathMode`와 `Match`값을 조절하는 것과 같은 개념)")]
         private bool maintainWidth = true;
 
-        [SerializeField, Range(-1f, 1f),
-         Tooltip("카메라의 위치를 보정한다. `maintainWidth`가 `true`일 때는 Y축을, `false`일 때는 X축을 보정한다.")]
+        [SerializeField][Range(-1f, 1f)][Tooltip("카메라의 위치를 보정한다. `maintainWidth`가 `true`일 때는 Y축을, `false`일 때는 X축을 보정한다.")]
         private float adaptPosition = 0f;
 
         [Header("Direction")]
@@ -89,13 +86,15 @@ namespace Nekoyume.Game
         public event Action<Resolution> OnScreenResolutionChange;
         public event Action<Transform> OnTranslate;
 
-        private Transform Transform => _transform
-            ? _transform
-            : _transform = GetComponent<Transform>();
+        private Transform Transform =>
+            _transform
+                ? _transform
+                : _transform = GetComponent<Transform>();
 
-        public Camera Cam => _cam
-            ? _cam
-            : _cam = GetComponent<Camera>();
+        public Camera Cam =>
+            _cam
+                ? _cam
+                : _cam = GetComponent<Camera>();
 
         public bool InPrologue = false;
         private bool _isStaticRatio;
@@ -106,7 +105,7 @@ namespace Nekoyume.Game
         private int _lastScreenWidth;
         private int _lastScreenHeight;
 
-        #region Mono
+#region Mono
 
         protected override void Awake()
         {
@@ -125,14 +124,18 @@ namespace Nekoyume.Game
             _fsm.Run(State.Idle);
         }
 
-        public void RerunFSM() => _fsm.Run(State.Idle);
+        public void RerunFSM()
+        {
+            _fsm.Run(State.Idle);
+        }
 
         private void Update()
         {
-            if(_lastScreenWidth != Screen.width || _lastScreenHeight != Screen.height)
+            if (_lastScreenWidth != Screen.width || _lastScreenHeight != Screen.height)
             {
                 InitScreenResolution();
             }
+
             UpdateScreenResolution();
         }
 
@@ -146,9 +149,9 @@ namespace Nekoyume.Game
             _fsm.Kill();
         }
 
-        #endregion
+#endregion
 
-        #region Fsm
+#region Fsm
 
         public void Idle()
         {
@@ -195,13 +198,13 @@ namespace Nekoyume.Game
             }
         }
 
-        private float CalulateChaseXPos(Vector3 targetPos,ChaseData data)
+        private float CalulateChaseXPos(Vector3 targetPos, ChaseData data)
         {
             var pos = Transform.position;
             var desiredPosX = targetPos.x + data.offsetX;
 
             float speedAdjust = 1;
-            if(Game.instance.Stage.AnimationTimeScaleWeight > Stage.AcceleratedAnimationTimeScaleWeight)
+            if (Game.instance.Stage.AnimationTimeScaleWeight > Stage.AcceleratedAnimationTimeScaleWeight)
             {
                 speedAdjust = Game.instance.Stage.AnimationTimeScaleWeight;
             }
@@ -217,7 +220,7 @@ namespace Nekoyume.Game
         {
             var data = InPrologue ? prologueChaseData : chaseData;
             while (_target &&
-                   _target.gameObject.activeSelf)
+                _target.gameObject.activeSelf)
             {
                 var pos = Transform.position;
                 pos.x = CalulateChaseXPos(_target.position, data);
@@ -286,9 +289,9 @@ namespace Nekoyume.Game
             }
         }
 
-        #endregion
+#endregion
 
-        #region Position
+#region Position
 
         public void SetPosition(float x, float y)
         {
@@ -423,13 +426,13 @@ namespace Nekoyume.Game
             return position - spritePivotPosition;
         }
 
-        #endregion
+#endregion
 
-        #region Screen Resolution
+#region Screen Resolution
 
         private void InitScreenResolution()
         {
-            float currentScreenRatio = (float)Screen.width / (float)Screen.height;
+            var currentScreenRatio = (float)Screen.width / (float)Screen.height;
             _lastScreenWidth = Screen.width;
             _lastScreenHeight = Screen.height;
             if (MinScreenRatio > currentScreenRatio || MaxScreenRatio < currentScreenRatio)
@@ -464,7 +467,7 @@ namespace Nekoyume.Game
 #else
             Cam.aspect = Screen.safeArea.width / Screen.safeArea.height;
 #endif
-            Cam.rect = new Rect(0,0,1,1);
+            Cam.rect = new Rect(0, 0, 1, 1);
             _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
             UpdateScreenResolution();
             _isStaticRatio = false;
@@ -479,13 +482,13 @@ namespace Nekoyume.Game
             _defaultAspect = Mathf.Clamp((float)Screen.width / (float)Screen.height, MinScreenRatio, MaxScreenRatio);
             _defaultOrthographicSize = Cam.orthographicSize;
 
-            float fixedAspectRatio = _defaultAspect;
+            var fixedAspectRatio = _defaultAspect;
             Cam.aspect = _defaultAspect;
-            float currentAspectRatio = Screen.safeArea.width / Screen.safeArea.height;
+            var currentAspectRatio = Screen.safeArea.width / Screen.safeArea.height;
 
-            Rect rect = Cam.rect;
-            float scaleheight = currentAspectRatio / fixedAspectRatio;
-            float scalewidth = 1f / scaleheight;
+            var rect = Cam.rect;
+            var scaleheight = currentAspectRatio / fixedAspectRatio;
+            var scalewidth = 1f / scaleheight;
             float letterboxSize = 0;
             if (scaleheight < 1)
             {
@@ -499,6 +502,7 @@ namespace Nekoyume.Game
                 rect.x = (1f - scalewidth) / 2f;
                 letterboxSize = (1f - scalewidth) * Screen.width / 2;
             }
+
             Cam.rect = rect;
 
             _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
@@ -510,7 +514,10 @@ namespace Nekoyume.Game
             OnResolutionStatic?.Invoke();
         }
 
-        void OnPreCull() => GL.Clear(true, true, Color.black);
+        private void OnPreCull()
+        {
+            GL.Clear(true, true, Color.black);
+        }
 
         private float GetCameraAspect()
         {
@@ -543,7 +550,7 @@ namespace Nekoyume.Game
             {
                 var position = Transform.position;
                 var x = (_defaultOrthographicSizeTimesAspect -
-                         Cam.orthographicSize * GetCameraAspect()) * adaptPosition;
+                    Cam.orthographicSize * GetCameraAspect()) * adaptPosition;
                 Transform.position = new Vector3(
                     x,
                     position.y,
@@ -554,6 +561,6 @@ namespace Nekoyume.Game
             OnTranslate?.Invoke(Transform);
         }
 
-        #endregion
+#endregion
     }
 }

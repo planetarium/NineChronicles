@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using mixpanel;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
@@ -24,7 +26,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Helper;
+    using Helper;
     using UniRx;
     using UnityEngine.Serialization;
 
@@ -35,7 +37,7 @@ namespace Nekoyume.UI
             None,
             GoToMain,
             RepeatStage,
-            NextStage,
+            NextStage
         }
 
         public class Model
@@ -127,6 +129,7 @@ namespace Nekoyume.UI
             public TextMeshProUGUI[] WaveStarTexts;
             public TextMeshProUGUI RemainingStarText;
         }
+
         [SerializeField]
         private CanvasGroup canvasGroup;
 
@@ -196,6 +199,7 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject[] seasonPassObjs;
+
         [SerializeField]
         private TextMeshProUGUI seasonPassCourageAmount;
 
@@ -428,7 +432,7 @@ namespace Nekoyume.UI
                     IsClear = model.IsClear,
                     IsEndStage = model.IsEndStage,
                     LastClearedStageIdBeforeResponse = model.LastClearedStageIdBeforeResponse,
-                    ClearedCountForEachWaves = ModelForMultiHackAndSlash.ClearedCountForEachWaves,
+                    ClearedCountForEachWaves = ModelForMultiHackAndSlash.ClearedCountForEachWaves
                 };
                 foreach (var item in ModelForMultiHackAndSlash.Rewards)
                 {
@@ -444,7 +448,7 @@ namespace Nekoyume.UI
                 SharedModel.StageID,
                 true);
             worldStageId.text = $"{SharedModel.WorldName}" +
-                                $" {stageText}";
+                $" {stageText}";
             actionPoint.SetEventTriggerEnabled(true);
 
             base.Show();
@@ -458,12 +462,12 @@ namespace Nekoyume.UI
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
 
-            if(newRecipes != null && newRecipes.Count > 0)
+            if (newRecipes != null && newRecipes.Count > 0)
             {
                 recipeItems.gameObject.SetActive(true);
-                for (int i = 0; i < recipeItems.items.Length; i++)
+                for (var i = 0; i < recipeItems.items.Length; i++)
                 {
-                    if(i < newRecipes.Count)
+                    if (i < newRecipes.Count)
                     {
                         recipeItems.items[i].transform.parent.gameObject.SetActive(true);
                         recipeItems.items[i].Show(newRecipes[i], false);
@@ -547,7 +551,7 @@ namespace Nekoyume.UI
                 item.SetActive(false);
             }
 
-            if(SharedModel.ClearedWaveNumber == 1 && !isBoosted)
+            if (SharedModel.ClearedWaveNumber == 1 && !isBoosted)
             {
                 cpUp.SetActive(true);
                 rewardArea.SetActive(false);
@@ -562,12 +566,12 @@ namespace Nekoyume.UI
             {
                 startRewards.SetActive(true);
                 Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
-                            SharedModel.StageID, out var row);
+                    SharedModel.StageID, out var row);
                 var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
                 var maxStarCount = row?.MaxStar ?? 0;
 
                 starForMulti.StarCountText.text = $"{starCount}/{maxStarCount}";
-                for (int i = 0; i < starForMulti.WaveStarTexts.Length; i++)
+                for (var i = 0; i < starForMulti.WaveStarTexts.Length; i++)
                 {
                     starForMulti.WaveStarTexts[i].text = SharedModel.ClearedCountForEachWaves[i].ToString();
                 }
@@ -623,11 +627,11 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdateBottom(int limitSeconds)
         {
             var secondsFormat = L10nManager.Localize("UI_AFTER_N_SECONDS");
-            string fullFormat = string.Empty;
+            var fullFormat = string.Empty;
             closeButton.interactable = true;
 
-            var canExit = (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
-                           SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
+            var canExit = SharedModel.StageID >= Battle.RequiredStageForExitButton ||
+                SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton;
             if (!SharedModel.IsClear)
             {
                 closeButton.gameObject.SetActive(true);
@@ -636,7 +640,7 @@ namespace Nekoyume.UI
             }
 
             var isActionPointEnough = !SharedModel.ActionPointNotEnough ||
-                                      SharedModel.StageType == StageType.EventDungeon;
+                SharedModel.StageType == StageType.EventDungeon;
             if (isActionPointEnough)
             {
                 if (SharedModel.IsClear)
@@ -822,7 +826,7 @@ namespace Nekoyume.UI
 
             var props = new Dictionary<string, Value>()
             {
-                ["StageId"] = SharedModel.StageID,
+                ["StageId"] = SharedModel.StageID
             };
             var eventKey = SharedModel.ClearedWaveNumber == 3
                 ? "Repeat"
@@ -873,30 +877,31 @@ namespace Nekoyume.UI
         private void NextPrepareStage(BattleLog log)
         {
             if (!IsActive() || !Find<StageLoadingEffect>().IsActive())
-                return;
-
-            StartCoroutine(CoGoToNextStageClose(log));
-        }
-
-        private IEnumerator CoGoToNextStageClose(BattleLog log)
-        {
-            if (Find<Menu>().IsActive())
             {
-                yield break;
+                return;
             }
 
-            yield return StartCoroutine(CoFadeOut());
+            CoGoToNextStageClose(log).Forget();
+        }
+
+        private async UniTask CoGoToNextStageClose(BattleLog log)
+        {   
+            if (Find<Menu>().IsActive())
+            {
+                return;
+            }
+
+            await CoFadeOut().ToUniTask();
 
             var stageLoadingEffect = Find<StageLoadingEffect>();
             if (!stageLoadingEffect.LoadingEnd)
             {
-                yield return new WaitUntil(() => stageLoadingEffect.LoadingEnd);
+                await UniTask.WaitUntil(() => stageLoadingEffect.LoadingEnd);
             }
+            
+            await BattleRenderer.Instance.LoadStageResources(log).ToUniTask();
+            await stageLoadingEffect.CoClose().ToUniTask();
 
-            yield return StartCoroutine(stageLoadingEffect.CoClose());
-
-            // TODO: WhenAll
-            yield return BattleRenderer.Instance.LoadStageResources(log);
             Close();
         }
 
@@ -921,7 +926,7 @@ namespace Nekoyume.UI
         {
             var props = new Dictionary<string, Value>()
             {
-                ["StageId"] = Game.Game.instance.Stage.stageId,
+                ["StageId"] = Game.Game.instance.Stage.stageId
             };
             var eventKey = Game.Game.instance.Stage.IsExitReserved ? "Quit" : "Main";
             var eventName = $"Unity/Stage Exit {eventKey}";
@@ -976,7 +981,7 @@ namespace Nekoyume.UI
                     case StageType.Mimisbrunnr:
                         var viewModel = new WorldMap.ViewModel
                         {
-                            WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+                            WorldInformation = States.Instance.CurrentAvatarState.worldInformation
                         };
                         viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
                         viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
@@ -1055,7 +1060,7 @@ namespace Nekoyume.UI
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
-                Widget.Find<Menu>().GoToCraftEquipment();
+                Find<Menu>().GoToCraftEquipment();
             });
         }
 
@@ -1069,7 +1074,7 @@ namespace Nekoyume.UI
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
-                Widget.Find<Menu>().GoToFood();
+                Find<Menu>().GoToFood();
             });
         }
 
@@ -1096,13 +1101,14 @@ namespace Nekoyume.UI
 
         private void RefreshSeasonPassCourageAmount()
         {
-            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            if (ApiClients.Instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
                 foreach (var item in seasonPassObjs)
                 {
                     item.SetActive(true);
                 }
-                int playCount = 0;
+
+                var playCount = 0;
                 try
                 {
                     playCount = SharedModel.ClearedCountForEachWaves.Sum();
@@ -1114,11 +1120,11 @@ namespace Nekoyume.UI
 
                 if (SharedModel.StageType == StageType.EventDungeon)
                 {
-                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.EventDungeonCourageAmount * playCount}";
+                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.EventDungeonCourageAmount * playCount}";
                 }
                 else
                 {
-                    seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                    seasonPassCourageAmount.text = $"+{ApiClients.Instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
                 }
             }
             else

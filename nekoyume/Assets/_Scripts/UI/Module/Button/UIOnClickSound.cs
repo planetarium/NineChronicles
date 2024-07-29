@@ -7,15 +7,17 @@ namespace Nekoyume
 {
     public class UIOnClickSound : MonoBehaviour
     {
-        public enum SfxType {
+        public enum SfxType
+        {
             Click,
-            Cancel,
+            Cancel
         }
 
         [SerializeField]
         public SfxType type;
 
         private bool isDone = false;
+
         public void Awake()
         {
             PutSoundOnButton();

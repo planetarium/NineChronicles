@@ -22,7 +22,7 @@ namespace Nekoyume.UI.Module
 
         private static Camera _mainCamera;
 
-        private static readonly float2 DescriptionOffset = new float2(200f, 0f);
+        private static readonly float2 DescriptionOffset = new(200f, 0f);
 
         private void Awake()
         {

@@ -12,7 +12,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         Apple = 1,
         Google = 2,
         AppleTest = 91,
-        GoogleTest = 92,
+        GoogleTest = 92
     }
 
     public class StoreTypeConverter : JsonConverter<Store>

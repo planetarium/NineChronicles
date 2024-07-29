@@ -39,7 +39,10 @@ namespace Nekoyume.UI.Module.Arena.Join
         [SerializeField]
         private float _currentPosition;
 
-        private void OnEnable() => UpdatePosition(_currentPosition);
+        private void OnEnable()
+        {
+            UpdatePosition(_currentPosition);
+        }
 
         public override void UpdateContent(ArenaJoinSeasonBarItemData itemData)
         {

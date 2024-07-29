@@ -2,16 +2,16 @@ namespace Nekoyume.UI
 {
     public class UINavigator
     {
-        #region Singleton
+#region Singleton
 
         private static class Singleton
         {
-            public static readonly UINavigator Value = new UINavigator();
+            public static readonly UINavigator Value = new();
         }
 
         public static UINavigator Instance => Singleton.Value;
-        
-        #endregion
+
+#endregion
 
         public enum NavigationType
         {

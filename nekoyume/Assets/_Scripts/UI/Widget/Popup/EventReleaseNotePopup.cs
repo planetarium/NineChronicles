@@ -61,6 +61,7 @@ namespace Nekoyume.UI
 
         private const string LastReadingDayKey = "LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
         public bool HasUnread
         {
             get
@@ -76,6 +77,12 @@ namespace Nekoyume.UI
 
                 return notReadAtToday;
             }
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            closeButton.onClick.AddListener(() => Close());
         }
 
         public override void Initialize()
@@ -107,7 +114,6 @@ namespace Nekoyume.UI
                     }
                 }).AddTo(gameObject);
                 _tabGroup.SetToggledOn(eventTabButton);
-                closeButton.onClick.AddListener(() => Close());
 
                 eventTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadEvent);
                 noticeTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadNotice);
@@ -122,7 +128,7 @@ namespace Nekoyume.UI
                 {
                     var item = Instantiate(originEventNoticeItem, eventScrollViewport);
 
-                    if(item is null)
+                    if (item is null)
                     {
                         NcDebug.LogError($"item is Null");
                     }
@@ -159,7 +165,7 @@ namespace Nekoyume.UI
 
                 RenderNotice(_selectedEventBannerItem.Data);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 NcDebug.LogError(e);
             }
@@ -187,6 +193,10 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
             base.Show(ignoreShowAnimation);
             OnForceToggleOnEventTab();
             PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
@@ -194,9 +204,15 @@ namespace Nekoyume.UI
 
         public void Show(EventNoticeData eventNotice, bool ignoreStartAnimation = false)
         {
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
             base.Show(ignoreStartAnimation);
             if (!eventTabButton.IsToggledOn)
+            {
                 OnForceToggleOnEventTab();
+            }
 
             OnClickEventNoticeItem(_eventBannerItems[eventNotice.Description]);
         }

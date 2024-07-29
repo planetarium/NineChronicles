@@ -36,16 +36,22 @@ namespace Nekoyume.UI
                 FadeOut,
                 Immediately
             }
+
             [Tooltip("페이드 혹은 나타날 사진이 찍히는 Image컴포넌트")]
             public Image image;
+
             [Tooltip("페이드 혹은 나타날 CanvasGroup")]
             public CanvasGroup canvasGroup;
+
             [Tooltip("페이드 혹은 나타날 사진")]
             public Sprite sprite;
+
             [Tooltip("이미지가 나타날때 방법")]
             public ImageAnimationType imageAnmationType;
+
             [Tooltip("이미지가 나타날때 걸리는 시간")]
             public float imageAnimationTime;
+
             [Tooltip("이미지가 로딩된 후 텍스트가 로딩되기 전까지 기다리는 시간")]
             public float imageAnimationEndTerm;
 
@@ -56,20 +62,26 @@ namespace Nekoyume.UI
                 TypeAndFade,
                 ImmediatelyAndFade
             }
-            [Space]
 
+            [Space]
             [Tooltip("글씨가 나타날 TextMeshPro 컴포넌트")]
             public TextMeshProUGUI text;
+
             [Tooltip("그림자가 나타날 TextMeshPro 컴포넌트")]
             public TextMeshProUGUI shadowText;
+
             [Tooltip("대사의 LocalizationKey")]
             public string scriptsLocalizationKey;
+
             [NonSerialized]
             public string scripts;
+
             [Tooltip("대사가 나타날때 방식")]
             public TextAnimationType textAnimationTypes;
+
             [Tooltip("대사가 전부 나타다는데 걸리는 시간")]
             public float scriptsAnimationTime;
+
             [Tooltip("대사가 전부 나온 뒤 기다리는 시간")]
             public float scriptsEndTerm;
         }
@@ -78,8 +90,10 @@ namespace Nekoyume.UI
         private GameObject skipButton = null;
 
         public SynopsisScene[] scripts;
+
         [Tooltip("대사가 사라질때 걸리는 시간")]
         public float textFadeOutTime = 0.3f;
+
         public bool prolgueEnd;
 
         private int _part1EndIndex = 3;
@@ -100,7 +114,6 @@ namespace Nekoyume.UI
                 }
 
                 script.image.transform.parent.gameObject.SetActive(false);
-
             }
 
             CloseWidget = Skip;
@@ -116,6 +129,7 @@ namespace Nekoyume.UI
             {
                 startIndex = _part1EndIndex + 2;
             }
+
             for (var index = startIndex; index < scripts.Length; index++)
             {
                 if (skipAll)
@@ -303,8 +317,10 @@ namespace Nekoyume.UI
                 {
                     continue;
                 }
+
                 script.image.transform.parent.gameObject.SetActive(false);
             }
+
             yield return End();
 
             yield return null;
@@ -412,6 +428,7 @@ namespace Nekoyume.UI
             skipAll = true;
             Skip();
         }
+
         private void EnterLogin()
         {
             Find<Login>().Show();

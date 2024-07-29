@@ -11,24 +11,24 @@ namespace Nekoyume.Game
 {
     public static class Event
     {
-        public static readonly UnityEvent OnNestEnter = new UnityEvent();
-        public static readonly UnityEvent<bool> OnRoomEnter = new UnityEvent<bool>();
-        public static readonly UnityEvent OnPlayerDead = new UnityEvent();
+        public static readonly UnityEvent OnNestEnter = new();
+        public static readonly UnityEvent<bool> OnRoomEnter = new();
+        public static readonly UnityEvent OnPlayerDead = new();
 
-        public static readonly UnityEvent<StageMonster> OnEnemyDeadStart = new UnityEvent<StageMonster>();
+        public static readonly UnityEvent<StageMonster> OnEnemyDeadStart = new();
 
-        public static readonly Subject<Player> OnUpdatePlayerEquip = new Subject<Player>();
-        public static readonly Subject<Player> OnUpdatePlayerStatus = new Subject<Player>();
+        public static readonly Subject<Player> OnUpdatePlayerEquip = new();
+        public static readonly Subject<Player> OnUpdatePlayerStatus = new();
 
-        public static readonly UnityEvent<DropItem> OnGetItem = new UnityEvent<DropItem>();
+        public static readonly UnityEvent<DropItem> OnGetItem = new();
 
-        public static readonly UnityEvent<int> OnLoginDetail = new UnityEvent<int>();
+        public static readonly UnityEvent<int> OnLoginDetail = new();
 
-        public static readonly UnityEvent<long> OnWaveStart = new UnityEvent<long>();
+        public static readonly UnityEvent<long> OnWaveStart = new();
 
-        public static readonly UnityEvent<int> OnPlayerTurnEnd = new UnityEvent<int>();
+        public static readonly UnityEvent<int> OnPlayerTurnEnd = new();
 
-        public static readonly UnityEvent OnUpdateAddresses = new UnityEvent();
+        public static readonly UnityEvent OnUpdateAddresses = new();
 
         public static readonly UnityEvent OnUpdateRuneState = new();
     }

@@ -20,7 +20,7 @@ namespace Nekoyume.UI
 
         public bool IsShowing => rawImage is { enabled: true };
 
-        #region override
+#region override
 
         private void Awake()
         {
@@ -73,6 +73,6 @@ namespace Nekoyume.UI
             return captured;
         }
 
-        #endregion
+#endregion
     }
 }

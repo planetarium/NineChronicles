@@ -4,6 +4,6 @@
     {
         RuneStone,
         Crystal,
-        Ncg,
+        Ncg
     }
 }

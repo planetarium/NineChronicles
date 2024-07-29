@@ -23,7 +23,7 @@ namespace Nekoyume.Blockchain
         // 만약 이 값을 수정할 경우 entrypoint.sh도 같이 수정할 필요가 있습니다.
         public const string GenesisBlockName = "genesis-block";
 
-        private static readonly Codec _codec = new Codec();
+        private static readonly Codec _codec = new();
 
         public static string GenesisBlockPath()
         {
@@ -41,8 +41,8 @@ namespace Nekoyume.Blockchain
         /// <param name="path">블록이 저장될 파일경로.</param>
         public static void ExportBlock(Block block, string path)
         {
-            Bencodex.Types.Dictionary dict = block.MarshalBlock();
-            byte[] encoded = _codec.Encode(dict);
+            var dict = block.MarshalBlock();
+            var encoded = _codec.Encode(dict);
             File.WriteAllBytes(path, encoded);
         }
 
@@ -69,7 +69,7 @@ namespace Nekoyume.Blockchain
             if (File.Exists(path))
             {
                 var buffer = File.ReadAllBytes(path);
-                var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
+                var dict = (Dictionary)_codec.Decode(buffer);
 
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
@@ -77,8 +77,8 @@ namespace Nekoyume.Blockchain
             var uri = new Uri(path);
             using (var client = new WebClient())
             {
-                byte[] rawGenesisBlock = client.DownloadData(uri);
-                var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
+                var rawGenesisBlock = client.DownloadData(uri);
+                var dict = (Dictionary)_codec.Decode(rawGenesisBlock);
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
 #endif
@@ -144,15 +144,16 @@ namespace Nekoyume.Blockchain
             [CanBeNull] PublicKey proposer)
         {
             var tableSheets = Game.Game.GetTableCsvAssets();
-            string goldDistributionCsvPath = Platform.GetStreamingAssetsPath("GoldDistribution.csv");
-            GoldDistribution[] goldDistributions =
+            var goldDistributionCsvPath = Platform.GetStreamingAssetsPath("GoldDistribution.csv");
+            var goldDistributions =
                 GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
             var initialValidatorSet = new Dictionary<PublicKey, BigInteger>();
             if (proposer is not null)
             {
                 initialValidatorSet[proposer] = BigInteger.One;
             }
-            return Nekoyume.BlockHelper.ProposeGenesisBlock(
+
+            return BlockHelper.ProposeGenesisBlock(
                 tableSheets,
                 goldDistributions,
                 pendingActivationStates,
@@ -161,6 +162,9 @@ namespace Nekoyume.Blockchain
                 isActivateAdminAddress: false);
         }
 
-        public static string BlockPath(string filename) => Platform.GetStreamingAssetsPath(filename);
+        public static string BlockPath(string filename)
+        {
+            return Platform.GetStreamingAssetsPath(filename);
+        }
     }
 }

@@ -195,7 +195,7 @@ namespace Nekoyume.UI
             }
 
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
-            drawButton.Subscribe(data, summonCount, GoToMarket,_disposables);
+            drawButton.Subscribe(data, summonCount, GoToMarket, _disposables);
             drawButton.gameObject.SetActive(true);
         }
 

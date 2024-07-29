@@ -13,7 +13,7 @@ namespace Nekoyume.ValueControlComponents
         [SerializeField]
         private float _max;
 
-        [SerializeField, Range(0f, 1f)]
+        [SerializeField][Range(0f, 1f)]
         private float _normalizedValue;
 
         public float NormalizedValue

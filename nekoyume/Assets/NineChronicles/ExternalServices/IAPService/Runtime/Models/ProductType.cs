@@ -8,7 +8,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
     public enum ProductType
     {
         SINGLE,
-        PACKAGE,
+        PACKAGE
     }
 
     public class ProductTypeJsonConverter : JsonConverter<ProductType>

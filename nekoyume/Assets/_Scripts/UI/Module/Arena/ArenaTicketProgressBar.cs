@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module.Arena
 
         private bool _paused;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public void Show()
         {
@@ -43,9 +43,15 @@ namespace Nekoyume.UI.Module.Arena
             gameObject.SetActive(false);
         }
 
-        public void Pause() => _paused = true;
+        public void Pause()
+        {
+            _paused = true;
+        }
 
-        public void Resume() => _paused = false;
+        public void Resume()
+        {
+            _paused = false;
+        }
 
         public void ResumeOrShow()
         {

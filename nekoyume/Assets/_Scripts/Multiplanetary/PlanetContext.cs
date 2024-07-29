@@ -21,7 +21,7 @@ namespace Nekoyume.Multiplanetary
             QueryPlanetAccountInfoFailed,
             PlanetAccountInfosNotInitialized,
             PlanetNotSelected,
-            UnsupportedCase01,
+            UnsupportedCase01
         }
 
         public readonly CommandLineOptions CommandLineOptions;
@@ -38,12 +38,12 @@ namespace Nekoyume.Multiplanetary
         public string Error { get; private set; } = string.Empty;
         public bool HasError => !string.IsNullOrEmpty(Error);
 
-        public bool HasPledgedAccount => PlanetAccountInfos?.Any(e =>
-            e.IsAgentPledged.HasValue &&
-            e.IsAgentPledged.Value) ?? false;
+        public bool HasPledgedAccount =>
+            PlanetAccountInfos?.Any(e =>
+                e.IsAgentPledged.HasValue &&
+                e.IsAgentPledged.Value) ?? false;
 
-        public bool IsSelectedPlanetAccountPledged =>
-            SelectedPlanetAccountInfo is { IsAgentPledged: true };
+        public bool IsSelectedPlanetAccountPledged => SelectedPlanetAccountInfo is { IsAgentPledged: true };
 
         public PlanetContext(CommandLineOptions commandLineOptions)
         {
