@@ -48,9 +48,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI skillText;
 
         [SerializeField]
-        private SimpleItemScroll outfitScroll;
+        private CustomOutfitScroll outfitScroll;
 
-        private Item _selectedItem;
+        private CustomOutfit _selectedOutfit;
 
         private ItemSubType _selectedSubType = ItemSubType.Weapon;
 
@@ -91,13 +91,13 @@ namespace Nekoyume.UI
 
             outfitScroll.OnClick.Subscribe(item =>
             {
-                if (_selectedItem != null)
+                if (_selectedOutfit != null)
                 {
-                    _selectedItem.Selected.Value = false;
+                    _selectedOutfit.Selected.Value = false;
                 }
 
-                _selectedItem = item;
-                _selectedItem.Selected.Value = true;
+                _selectedOutfit = item;
+                _selectedOutfit.Selected.Value = true;
             }).AddTo(gameObject);
             craftButton.onClick.AddListener(OnClickSubmitButton);
         }
@@ -105,7 +105,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            _selectedItem = null;
+            _selectedOutfit = null;
             SetSkillView(ReactiveAvatarState.Relationship);
             OnItemSubtypeSelected(ItemSubType.Weapon);
         }
@@ -131,14 +131,13 @@ namespace Nekoyume.UI
             _selectedSubType = type;
             subTypePaperText.SetText($"{_selectedSubType} PAPER");
             outfitScroll.UpdateData(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
-                .Where(row => row.ItemSubType == _selectedSubType).Select(r =>
-                    new Item(ItemFactory.CreateItem(Game.Game.instance.TableSheets
-                        .EquipmentItemSheet[r.IconId], new ActionRenderHandler.LocalRandom(0)))));
+                .Where(row => row.ItemSubType == _selectedSubType)
+                .Select(r => new CustomOutfit(r)));
         }
 
         private void OnClickSubmitButton()
         {
-            if (_selectedItem is null)
+            if (_selectedOutfit is null)
             {
                 OneLineSystem.Push(MailType.System, "select outfit", NotificationCell.NotificationType.Information);
                 return;
@@ -149,7 +148,8 @@ namespace Nekoyume.UI
                 // TODO: 전부 다 CustomEquipmentCraft 관련 sheet에서 가져오게 바꿔야함
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
                         TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
-                            r.ItemSubType == _selectedItem.ItemBase.Value.ItemSubType).Id, _selectedItem.ItemBase.Value.Id)
+                            r.ItemSubType == _selectedOutfit.IconRow.Value.ItemSubType).Id,
+                        _selectedOutfit.IconRow.Value.Id)
                     .Subscribe();
             }
         }
@@ -157,7 +157,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);
-            _selectedItem = null;
+            _selectedOutfit = null;
         }
     }
 }
