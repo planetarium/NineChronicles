@@ -62,6 +62,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI requiredBlockText;
 
+        [SerializeField]
+        private TextMeshProUGUI requiredLevelText;
+
         private CustomOutfit _selectedOutfit;
 
         private ItemSubType _selectedSubType = ItemSubType.Weapon;
@@ -123,6 +126,7 @@ namespace Nekoyume.UI
                     cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
                     requiredBlockText.SetText(
                         $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
+                    requiredLevelText.SetText($"{TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
                 }
             }).AddTo(gameObject);
             craftButton.onClick.AddListener(OnClickSubmitButton);
