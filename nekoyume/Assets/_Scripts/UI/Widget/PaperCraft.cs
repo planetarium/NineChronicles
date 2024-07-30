@@ -36,7 +36,7 @@ namespace Nekoyume.UI
         private Button craftButton;
 
         [SerializeField]
-        private Button skillHelpButton;
+        private Button relationshipHelpButton;
 
         [SerializeField]
         private Button skillListButton;
@@ -77,7 +77,7 @@ namespace Nekoyume.UI
                 Close(true);
                 Find<CombinationMain>().Show();
             });
-            skillHelpButton.onClick.AddListener(() =>
+            relationshipHelpButton.onClick.AddListener(() =>
             {
                 NcDebug.Log("skillHelpButton onclick");
                 // 뭐시기팝업.Show();
