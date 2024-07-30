@@ -1,29 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
+using Nekoyume.State;
 using Nekoyume.TableData.CustomEquipmentCraft;
-using UniRx;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
     public class CustomOutfit : IDisposable
     {
         public readonly ReactiveProperty<CustomEquipmentCraftIconSheet.Row> IconRow = new();
         public readonly ReactiveProperty<bool> Dimmed = new(false);
         public readonly ReactiveProperty<bool> Selected = new(false);
-        public readonly ReactiveProperty<bool> ActiveSelf = new(true);
+        public readonly ReactiveProperty<bool> RandomOnly = new(false);
 
         public readonly Subject<CustomOutfit> OnClick = new();
+        private readonly List<IDisposable> _disposables = new();
 
         public CustomOutfit(CustomEquipmentCraftIconSheet.Row row)
         {
             IconRow.Value = row;
+            RandomOnly.Value = row.RandomOnly;
+            ReactiveAvatarState.ObservableRelationship.Subscribe(relationship =>
+            {
+                Dimmed.Value = row.RequiredRelationship > relationship;
+            }).AddTo(_disposables);
         }
 
         public virtual void Dispose()
         {
             Dimmed.Dispose();
-            ActiveSelf.Dispose();
             Selected.Dispose();
+            RandomOnly.Dispose();
             OnClick.Dispose();
+            _disposables.DisposeAllAndClear();
         }
     }
 }

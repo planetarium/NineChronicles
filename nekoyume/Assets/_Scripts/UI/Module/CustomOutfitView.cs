@@ -4,7 +4,9 @@ using Nekoyume.Editor;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -26,6 +28,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject disable;
 
+        [SerializeField]
+        private GameObject randomOnly;
+
+        [SerializeField]
+        private GameObject noRow;
+
+        [SerializeField]
+        private TextMeshProUGUI requiredRelationshipText;
+
         public readonly Subject<CustomOutfitView> OnClick = new();
 
         public List<IDisposable> DisposablesAtSetData { get; } = new();
@@ -35,8 +46,18 @@ namespace Nekoyume.UI.Module
         public void SetData(CustomOutfit model)
         {
             Model = model;
+            Model.RandomOnly.SubscribeTo(randomOnly).AddTo(DisposablesAtSetData);
             Model.Dimmed.SubscribeTo(disable).AddTo(DisposablesAtSetData);
             Model.Selected.SubscribeTo(selection).AddTo(DisposablesAtSetData);
+            Model.IconRow.Subscribe(row =>
+            {
+                var rowIsNull = row is null;
+                noRow.SetActive(rowIsNull);
+                if (!rowIsNull)
+                {
+                    requiredRelationshipText.SetText(row.RequiredRelationship.ToString());
+                }
+            });
 
             iconImage.enabled = true;
             iconImage.overrideSprite = SpriteHelper.GetItemIcon(Model.IconRow.Value.IconId);

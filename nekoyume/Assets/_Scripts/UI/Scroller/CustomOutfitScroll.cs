@@ -1,4 +1,5 @@
 ﻿using System;
+using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -32,5 +33,15 @@ namespace Nekoyume.UI.Scroller
         public IObservable<CustomOutfit> OnClick => Context.OnClick;
 
         protected override FancyCell<CustomOutfit, ContextModel> CellTemplate => cellTemplate;
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            startAxisCellCount = Util.GetGridItemCount(
+                cellSize.x,
+                spacing,
+                cellContainer.GetComponent<RectTransform>().rect.width +
+                Util.GridScrollerAdjustCellCount);
+        }
     }
 }

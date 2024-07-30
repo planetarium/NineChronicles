@@ -10,6 +10,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -20,7 +21,7 @@ namespace Nekoyume.UI
         private class SubTypeButton
         {
             public ItemSubType itemSubType;
-            public Button button;
+            public Toggle toggleButton;
         }
 
         [SerializeField]
@@ -45,7 +46,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI subTypePaperText;
 
         [SerializeField]
-        private TextMeshProUGUI skillText;
+        private TextMeshProUGUI relationshipText;
 
         [SerializeField]
         private CustomOutfitScroll outfitScroll;
@@ -89,7 +90,7 @@ namespace Nekoyume.UI
             });
             foreach (var subTypeButton in subTypeButtons)
             {
-                subTypeButton.button.onClick.AddListener(() =>
+                subTypeButton.toggleButton.onClickToggle.AddListener(() =>
                 {
                     OnItemSubtypeSelected(subTypeButton.itemSubType);
                 });
@@ -122,7 +123,7 @@ namespace Nekoyume.UI
                 {
                     // TODO: 싹 다 시안에 맞춰서 표현 방식을 변경해야한다. 지금은 외형을 선택하면 시트에서 잘 가져오는지 보려고 했다.
                     baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
-                    expText.SetText($"EXP: {equipmentRow.Exp}");
+                    expText.SetText($"EXP {equipmentRow.Exp!.Value.ToCurrencyNotation()}");
                     cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
                     requiredBlockText.SetText(
                         $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
@@ -147,7 +148,7 @@ namespace Nekoyume.UI
         /// <param name="relationship"></param>
         private void SetRelationshipView(long relationship)
         {
-            skillText.SetText($"RELATIONSHIP: {relationship}");
+            relationshipText.SetText($"RELATIONSHIP: {relationship}");
         }
 
         /// <summary>
