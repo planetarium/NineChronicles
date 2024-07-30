@@ -14,7 +14,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using UniRx;
-    public class PaperCraft : Widget
+    public class CustomCraft : Widget
     {
         [Serializable]
         private class SubTypeButton
