@@ -144,27 +144,31 @@ namespace Nekoyume.UI.Module
 
             var siblingIndex = 1; // 0 is for the main option
 
-            var skillView = skillViews.First(x => !x.parentObject.activeSelf);
-            var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
-                ? skillRow.GetLocalizedName()
-                : string.Empty;
-            skillView.optionText.text = skillName;
-            skillView.percentageSlider.value = skillView.percentageSlider.maxValue;
-            skillView.sliderFillImage.color = BaseColor;
-            skillView.parentObject.transform.SetSiblingIndex(siblingIndex);
-            skillView.parentObject.SetActive(true);
-            skillView.tooltipButton.onClick.RemoveAllListeners();
-            skillView.tooltipButton.onClick.AddListener(() =>
+            if (option.SkillId != 0)
             {
-                var rect = skillView.tooltipButton.GetComponent<RectTransform>();
-                skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
-                skillTooltip.Show(skillRow, option);
-            });
-            if (optionIcons != null && optionIcons.Count > 0)
-            {
-                optionIcons.Last().SetActive(true);
+                var skillView = skillViews.First(x => !x.parentObject.activeSelf);
+                var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
+                    ? skillRow.GetLocalizedName()
+                    : string.Empty;
+                skillView.optionText.text = skillName;
+                skillView.percentageSlider.value = skillView.percentageSlider.maxValue;
+                skillView.sliderFillImage.color = BaseColor;
+                skillView.parentObject.transform.SetSiblingIndex(siblingIndex);
+                skillView.parentObject.SetActive(true);
+                skillView.tooltipButton.onClick.RemoveAllListeners();
+                skillView.tooltipButton.onClick.AddListener(() =>
+                {
+                    var rect = skillView.tooltipButton.GetComponent<RectTransform>();
+                    skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
+                    skillTooltip.Show(skillRow, option);
+                });
+                if (optionIcons != null && optionIcons.Count > 0)
+                {
+                    optionIcons.Last().SetActive(true);
+                }
+
+                ++siblingIndex;
             }
-            ++siblingIndex;
 
             foreach (var (stat, _) in option.Stats)
             {

@@ -6,6 +6,7 @@ using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -193,8 +194,11 @@ namespace Nekoyume.UI.Module
             models.Reverse();
             var count = 0;
             foreach (var model in models.Where(model =>
-                !model.Equals(_baseModel) && model.SelectedMaterialCount.Value <= 0 &&
-                !model.Disabled.Value))
+                model.SelectedMaterialCount.Value <= 0 &&
+                !ItemEnhancement.HammerIds.Contains(model.ItemBase.Id) &&
+                !model.Disabled.Value &&
+                !model.Equals(_baseModel) &&
+                !model.Equipped.Value))
             {
                 if (_materialModels.Count >= MaxMaterialCount)
                 {
@@ -442,6 +446,8 @@ namespace Nekoyume.UI.Module
             _baseModel = null;
             _materialModels.Clear();
 
+            UpdateEquipmentEquipped();
+
             UpdateView(resetScrollOnEnable);
         }
 
@@ -478,6 +484,26 @@ namespace Nekoyume.UI.Module
             }
 
             _equipments[inventoryItem.ItemBase.ItemSubType].Add(inventoryItem);
+        }
+
+        private void UpdateEquipmentEquipped()
+        {
+            var equippedEquipments = new List<Guid>();
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                equippedEquipments.AddRange(States.Instance.CurrentItemSlotStates[(BattleType)i].Equipments);
+            }
+
+            foreach (var equipments in _equipments
+                .Where(pair => pair.Key != ItemSubType.EquipmentMaterial)
+                .Select(pair => pair.Value))
+            {
+                foreach (var equipment in equipments)
+                {
+                    var equipped = equippedEquipments.Contains(((Equipment)equipment.ItemBase).ItemId);
+                    equipment.Equipped.Value = equipped;
+                }
+            }
         }
 
 #endregion

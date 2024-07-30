@@ -141,8 +141,7 @@ namespace Nekoyume.UI
         {
             if (_killRewards is not null && _killRewards.Any())
             {
-                Find<WorldBossRewardScreen>().Show(_killRewards,
-                    () => { Find<WorldBoss>().ShowAsync().Forget(); });
+                Find<WorldBossRewardScreen>().Show(_killRewards, () => { Find<WorldBoss>().ShowAsync().Forget(); });
             }
             else
             {

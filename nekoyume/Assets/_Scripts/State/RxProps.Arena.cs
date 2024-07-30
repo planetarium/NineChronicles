@@ -347,18 +347,16 @@ namespace Nekoyume.State
             var playerIndex =
                 arenaInfoList.FindIndex(model => model.AvatarAddr == currentAvatarAddr);
             var avatarCount = arenaInfoList.Count;
-            if (playerIndex == 0)
-            {
-                playerArenaInfo.Rank = 1;
-            }
-            else if (playerIndex < avatarCount - 1) // avoid out of range exception
+
+            var defaultRank = playerIndex == 0 ? 1 : arenaInfoList[playerIndex - 1].Rank + 1;
+            if (playerIndex < avatarCount - 1) // avoid out of range exception
             {
                 // 다음 순서에 위치한 유저가 같은 점수일 경우, 같은 등수로 표기한다.
-                // 같지 않을 경우, 앞 순서에 있는 유저의 등수 - 1로 표기한다.
+                // 같지 않을 경우, 앞 순서에 있는 유저의 등수 + 1로 표기한다.
                 playerArenaInfo.Rank =
                     arenaInfoList[playerIndex + 1].Score == playerArenaInfo.Score
                         ? arenaInfoList[playerIndex + 1].Rank
-                        : arenaInfoList[playerIndex - 1].Rank + 1;
+                        : defaultRank;
             }
 
             SetArenaInfoOnMainThreadAsync(playerArenaInfo).Forget();

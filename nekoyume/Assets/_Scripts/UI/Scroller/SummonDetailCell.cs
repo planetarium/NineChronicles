@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField] private Button button;
-        [SerializeField] private SummonItemView view;
+        [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI infoText;
         [SerializeField] private TextMeshProUGUI percentText;
@@ -39,18 +39,19 @@ namespace Nekoyume.UI.Scroller
             button.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                Context.OnClick.OnNext(itemData);
+                Context?.OnClick.OnNext(itemData);
             });
 
             if (itemData.EquipmentRow is not null)
             {
-                view.SetData(itemData.EquipmentRow);
+                iconImage.sprite = SpriteHelper.GetItemIcon(itemData.EquipmentRow.Id);
                 nameText.text = itemData.EquipmentRow.GetLocalizedName(true, false);
                 infoText.text = itemData.EquipmentRow.GetLocalizedInformation();
             }
 
             if (!string.IsNullOrEmpty(itemData.RuneTicker))
             {
+                iconImage.sprite = SpriteHelper.GetFavIcon(itemData.RuneTicker);
                 nameText.text = LocalizationExtensions.GetLocalizedFavName(itemData.RuneTicker);
                 infoText.text = LocalizationExtensions.GetLocalizedInformation(itemData.RuneTicker);
             }
@@ -58,8 +59,8 @@ namespace Nekoyume.UI.Scroller
             percentText.text = itemData.Ratio.ToString("0.####%");
 
             _disposables.DisposeAllAndClear();
-            Context?.OnClick.Subscribe(row =>
-                selected.SetActive(row.Equals(itemData))).AddTo(_disposables);
+            Context?.Selected.Subscribe(model =>
+                selected.SetActive(itemData.Equals(model))).AddTo(_disposables);
         }
     }
 }
