@@ -159,7 +159,7 @@ namespace Nekoyume.Helper
             switch (itemRow.ItemType)
             {
                 case ItemType.Equipment:
-                    var canCraft = itemRow.ItemSubType != ItemSubType.Aura;
+                    var canCraft = itemRow.ItemSubType is not (ItemSubType.Aura or ItemSubType.Grimoire);
 
                     if (required)
                     {
@@ -447,6 +447,7 @@ namespace Nekoyume.Helper
             {
                 case PlaceType.EventDungeonStage:
                     var playableStageId =
+                        RxProps.EventDungeonInfo.Value is null ||
                         !RxProps.EventDungeonInfo.HasValue ||
                         RxProps.EventDungeonInfo.Value.ClearedStageId == 0
                             ? RxProps.EventDungeonRow.StageBegin

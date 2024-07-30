@@ -100,11 +100,8 @@ namespace Nekoyume.UI
                         {
                             for (var i = 0; i < itemReward.Value; i++)
                             {
-                                if (itemRow.ItemSubType != ItemSubType.Aura)
-                                {
-                                    var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                                    mailRewards.Add(new MailReward(item, 1));
-                                }
+                                var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                                mailRewards.Add(new MailReward(item, 1));
                             }
                         }
                     }

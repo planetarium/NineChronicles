@@ -807,9 +807,9 @@ namespace Nekoyume.Blockchain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
 
-            if (baseEquipment.ItemSubType == ItemSubType.Aura)
+            if (baseEquipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
             {
-                //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                 LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, baseEquipment.ItemId);
             }
             else
@@ -821,9 +821,9 @@ namespace Nekoyume.Blockchain
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             foreach (var materialEquip in materialEquipments)
             {
-                if (materialEquip.ItemSubType == ItemSubType.Aura)
+                if (materialEquip.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                 {
-                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                     LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, materialEquip.ItemId);
                 }
                 else
@@ -1226,9 +1226,9 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
             {
-                if (equipment.ItemSubType == ItemSubType.Aura)
+                if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                 {
-                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                     LocalLayerModifier.RemoveNonFungibleItem(
                         avatarAddress,
                         equipment.ItemId);

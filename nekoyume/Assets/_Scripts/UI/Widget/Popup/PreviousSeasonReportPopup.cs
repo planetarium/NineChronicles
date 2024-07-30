@@ -5,6 +5,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.AdventureBoss;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -152,6 +153,7 @@ namespace Nekoyume
                         NcDebug.LogError(e);
                     }
                 }
+                long totalScoreValue = 0;
                 if (prevExploreBoard != null)
                 {
                     if (!string.IsNullOrEmpty(prevExploreBoard.RaffleWinnerName))
@@ -160,12 +162,15 @@ namespace Nekoyume
                     }
                     randomWinnerBounty.text = prevExploreBoard.RaffleReward == null ? "-" : prevExploreBoard.RaffleReward?.MajorUnit.ToString("#,0");
                     totalScore.text = prevExploreBoard.TotalPoint.ToString("#,0");
+                    totalScoreValue = prevExploreBoard.TotalPoint;
                     totalExplorer.text = prevExploreBoard.ExplorerCount.ToString("#,0");
                     totalExplorerApUsage.text = prevExploreBoard.UsedApPotion.ToString("#,0");
                 }
                 if (prevExploreInfo != null)
                 {
-                    myScore.text = prevExploreInfo.Score.ToString("#,0");
+                    double contribution = 0;
+                    contribution = totalScoreValue == 0 || prevExploreInfo.Score == 0 ? 0 : (double)prevExploreInfo.Score / totalScoreValue * 100;
+                    myScore.text = $"{prevExploreInfo.Score.ToString("#,0")} ({contribution.ToString("F2")}%)";
                     myApUsage.text = prevExploreInfo.UsedApPotion.ToString("#,0");
                 }
                 RefreshRewardItemView(myBountyRewardsData, myBountyRewards);
@@ -183,6 +188,12 @@ namespace Nekoyume
         private void RefreshRewardItemView(ClaimableReward rewards, BaseItemView[] itemViews)
         {
             int index = 0;
+
+            if (rewards.NcgReward != null && rewards.NcgReward.HasValue && !rewards.NcgReward.Value.RawValue.IsZero)
+            {
+                itemViews[index].ItemViewSetCurrencyData(rewards.NcgReward.Value);
+                index++;
+            }
 
             foreach (var item in rewards.ItemReward)
             {
