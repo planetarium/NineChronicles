@@ -165,7 +165,7 @@ namespace Nekoyume.UI
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
                         TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                             r.ItemSubType == _selectedOutfit.IconRow.Value.ItemSubType).Id,
-                        _selectedOutfit.IconRow.Value.Id)
+                        _selectedOutfit.IconRow.Value.IconId)
                     .Subscribe();
             }
         }
