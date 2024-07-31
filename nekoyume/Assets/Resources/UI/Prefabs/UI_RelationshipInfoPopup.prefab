@@ -334,7 +334,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_RUNE_LEVEL_BONUS
+  l10nKey: UI_RELATIONSHIP
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -359,7 +359,7 @@ GameObject:
   - component: {fileID: 8901595614451263090}
   - component: {fileID: 5053675305916523668}
   - component: {fileID: 5434120226912116429}
-  - component: {fileID: 3827706547708038700}
+  - component: {fileID: 4963847439477557100}
   m_Layer: 0
   m_Name: RelationshipInfoScroll
   m_TagString: Untagged
@@ -453,7 +453,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 1155609892998341411}
---- !u!114 &3827706547708038700
+--- !u!114 &4963847439477557100
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -462,7 +462,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2939954623480762461}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8adb9308febb474a9fc3a91bef1d4d1b, type: 3}
+  m_Script: {fileID: 11500000, guid: 633888be98b54c9fb6b7fb02bb53bd26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cellInterval: 0.11057692
@@ -473,7 +473,7 @@ MonoBehaviour:
   paddingHead: 15
   paddingTail: 15
   spacing: 0
-  cellPrefab: {fileID: 2649315477427651392, guid: b0ab74715c6f71c49bb002b53d2a0e90,
+  cellPrefab: {fileID: 4279953781941882700, guid: c99b7616f3323af428ba60fdcc6e4484,
     type: 3}
   cellSize: 46
   forcedScrollSensitivity: 8
@@ -708,7 +708,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_RUNE_STAT_REWARD
+  l10nKey: UI_CP
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -913,7 +913,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_RUNE_LEVEL_BONUS_EFFECT_DESC
+  l10nKey: UI_RELATIONSHIP_DESC
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1080,7 +1080,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_RUNE_STAT_REWARD
+  l10nKey: REQUIRED_LEVEL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1248,7 +1248,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 26
-  l10nKey: UI_RUNE_LEVEL_BONUS_EFFECT
+  l10nKey: UI_RELATIONSHIP_INFO
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1766,6 +1766,7 @@ GameObject:
   - component: {fileID: 8751557682141969202}
   - component: {fileID: 8753757766533340870}
   - component: {fileID: 163582414279134370}
+  - component: {fileID: 3961619700514842057}
   m_Layer: 5
   m_Name: UI_RelationshipInfoPopup
   m_TagString: Untagged
@@ -1824,6 +1825,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3961619700514842057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8820462021129246096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e632e3287f349f8885917f4c28ff5a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  closeButton: {fileID: 3740469981372639818}
+  scroll: {fileID: 4963847439477557100}
 --- !u!1001 &5214256255908208550
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2065,6 +2082,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RelationshipInfoCell
+      objectReference: {fileID: 0}
+    - target: {fileID: 4279953781941882700, guid: c99b7616f3323af428ba60fdcc6e4484,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c99b7616f3323af428ba60fdcc6e4484, type: 3}

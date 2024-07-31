@@ -92,8 +92,7 @@ namespace Nekoyume.UI
             });
             relationshipHelpButton.onClick.AddListener(() =>
             {
-                NcDebug.Log("skillHelpButton onclick");
-                // 뭐시기팝업.Show();
+                Find<RelationshipInfoPopup>().Show();
             });
             skillListButton.onClick.AddListener(() =>
             {
