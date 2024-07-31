@@ -160,7 +160,7 @@ namespace Planetarium.Nekoyume.Editor
                 "- WorldInformation",
                 _worldInformationAddrArr[_selectedAvatarIndex]);
             CopyableLabelField("- QuestList", _questListAddrArr[_selectedAvatarIndex]);
-            for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
+            for (var i = 0; i < AvatarState.CombinationSlotMaxCapacity; i++)
             {
                 CopyableLabelField(
                     $"- WorkshopSlot[{i}]",
@@ -230,7 +230,7 @@ namespace Planetarium.Nekoyume.Editor
                 .Select(addr => addr.Derive(LegacyQuestListKey).ToString())
                 .ToArray();
             _workshopSlotAddrArr = _avatarAddresses
-                .Select(addr => Enumerable.Range(0, AvatarState.CombinationSlotCapacity)
+                .Select(addr => Enumerable.Range(0, AvatarState.CombinationSlotMaxCapacity)
                     .Select(i => addr.Derive(string.Format(
                         CultureInfo.InvariantCulture,
                         CombinationSlotState.DeriveFormat,

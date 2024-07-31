@@ -965,8 +965,7 @@ namespace Nekoyume.Blockchain
         }
 
         private (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
-            PrepareCombinationEquipment(
-                ActionEvaluation<CombinationEquipment> eval)
+            PrepareCombinationEquipment(ActionEvaluation<CombinationEquipment> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
@@ -1009,8 +1008,7 @@ namespace Nekoyume.Blockchain
             return (eval, avatarState, slot);
         }
 
-        private void ResponseCombinationEquipment(
-            (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
+        private void ResponseCombinationEquipment((ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
         {
             if (renderArgs.AvatarState is null)
             {
