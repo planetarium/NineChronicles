@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
@@ -66,6 +70,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI requiredLevelText;
 
+        [SerializeField]
+        private RequiredItemRecipeView requiredItemRecipeView;
+
         private CustomOutfit _selectedOutfit;
 
         private ItemSubType _selectedSubType = ItemSubType.Weapon;
@@ -105,31 +112,7 @@ namespace Nekoyume.UI
                 .Subscribe(SetRelationshipView)
                 .AddTo(gameObject);
 
-            outfitScroll.OnClick.Subscribe(item =>
-            {
-                if (_selectedOutfit != null)
-                {
-                    _selectedOutfit.Selected.Value = false;
-                }
-
-                _selectedOutfit = item;
-                _selectedOutfit.Selected.Value = true;
-
-                var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
-                    .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
-                var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
-                var equipmentItemSheet = TableSheets.Instance.EquipmentItemSheet;
-                if (equipmentItemSheet.TryGetValue(equipmentItemId, out var equipmentRow))
-                {
-                    // TODO: 싹 다 시안에 맞춰서 표현 방식을 변경해야한다. 지금은 외형을 선택하면 시트에서 잘 가져오는지 보려고 했다.
-                    baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
-                    expText.SetText($"EXP {equipmentRow.Exp!.Value.ToCurrencyNotation()}");
-                    cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
-                    requiredBlockText.SetText(
-                        $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
-                    requiredLevelText.SetText($"{TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
-                }
-            }).AddTo(gameObject);
+            outfitScroll.OnClick.Subscribe(OnOutfitSelected).AddTo(gameObject);
             craftButton.onClick.AddListener(OnClickSubmitButton);
         }
 
@@ -148,7 +131,7 @@ namespace Nekoyume.UI
         /// <param name="relationship"></param>
         private void SetRelationshipView(long relationship)
         {
-            relationshipText.SetText($"RELATIONSHIP: {relationship}");
+            relationshipText.SetText(relationship.ToString());
         }
 
         /// <summary>
@@ -183,6 +166,58 @@ namespace Nekoyume.UI
                         _selectedOutfit.IconRow.Value.Id)
                     .Subscribe();
             }
+        }
+
+        private void OnOutfitSelected(CustomOutfit outfit)
+        {
+            if (_selectedOutfit != null)
+            {
+                _selectedOutfit.Selected.Value = false;
+            }
+
+            _selectedOutfit = outfit;
+            _selectedOutfit.Selected.Value = true;
+
+            var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
+                .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
+            var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
+            var equipmentItemSheet = TableSheets.Instance.EquipmentItemSheet;
+            if (equipmentItemSheet.TryGetValue(equipmentItemId, out var equipmentRow))
+            {
+                // TODO: 싹 다 시안에 맞춰서 표현 방식을 변경해야한다. 지금은 외형을 선택하면 시트에서 잘 가져오는지 보려고 했다.
+                baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
+                expText.SetText($"EXP {equipmentRow.Exp!.Value.ToCurrencyNotation()}");
+                cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
+                requiredBlockText.SetText(
+                    $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
+                requiredLevelText.SetText($"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
+            }
+
+            List<EquipmentItemSubRecipeSheet.MaterialInfo> requiredMaterials = new();
+            var recipeRow = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
+                r.ItemSubType == _selectedOutfit.IconRow.Value.ItemSubType);
+            requiredMaterials.Add(new EquipmentItemSubRecipeSheet.MaterialInfo(CustomEquipmentCraft.DrawingItemId, (int)Math.Floor(recipeRow.DrawingAmount * relationshipRow.CostMultiplier)));
+            requiredMaterials.Add(new EquipmentItemSubRecipeSheet.MaterialInfo(CustomEquipmentCraft.DrawingToolItemId, (int) Math.Floor(
+                recipeRow.DrawingToolAmount * relationshipRow.CostMultiplier *
+                (_selectedOutfit.IconRow.Value != null
+                    ? States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
+                    : 1))));
+            var ncgCost = 0L;
+            var additionalCostRow = TableSheets.Instance.CustomEquipmentCraftCostSheet.OrderedList
+                .FirstOrDefault(row => row.Relationship == ReactiveAvatarState.Relationship);
+            if (additionalCostRow is not null)
+            {
+                if (additionalCostRow.GoldAmount > 0)
+                {
+                    ncgCost = (long)additionalCostRow.GoldAmount;
+                }
+
+                requiredMaterials.AddRange(additionalCostRow.MaterialCosts.Select(materialCost =>
+                    new EquipmentItemSubRecipeSheet.MaterialInfo(materialCost.ItemId,
+                        materialCost.Amount)));
+            }
+
+            requiredItemRecipeView.SetData(requiredMaterials, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
