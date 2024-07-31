@@ -4,6 +4,8 @@ using System.Linq;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -47,7 +49,7 @@ namespace Nekoyume.UI
         private Button skillListButton;
 
         [SerializeField]
-        private TextMeshProUGUI subTypePaperText;
+        private TextMeshProUGUI outfitNameText;
 
         [SerializeField]
         private TextMeshProUGUI relationshipText;
@@ -72,6 +74,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private RequiredItemRecipeView requiredItemRecipeView;
+
+        [SerializeField]
+        private Image selectedOutfitImage;
 
         private CustomOutfit _selectedOutfit;
 
@@ -140,10 +145,7 @@ namespace Nekoyume.UI
         /// <param name="type"></param>
         private void OnItemSubtypeSelected(ItemSubType type)
         {
-            // TODO: 지금은 그냥 EquipmentItemRecipeSheet에서 해당하는 ItemSubType을 다 뿌리고있다.
-            // 나중에 외형을 갖고있는 시트 데이터로 바꿔치기 해야한다.
             _selectedSubType = type;
-            subTypePaperText.SetText($"{_selectedSubType} PAPER");
             outfitScroll.UpdateData(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubType)
                 .Select(r => new CustomOutfit(r)));
@@ -178,6 +180,7 @@ namespace Nekoyume.UI
             _selectedOutfit = outfit;
             _selectedOutfit.Selected.Value = true;
 
+            outfitNameText.SetText(L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId));
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
             var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
@@ -191,6 +194,7 @@ namespace Nekoyume.UI
                 requiredBlockText.SetText(
                     $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
                 requiredLevelText.SetText($"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
+                selectedOutfitImage.overrideSprite = SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value.IconId);
             }
 
             List<EquipmentItemSubRecipeSheet.MaterialInfo> requiredMaterials = new();

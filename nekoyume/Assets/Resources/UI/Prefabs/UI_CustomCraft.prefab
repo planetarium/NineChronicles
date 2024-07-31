@@ -17274,7 +17274,7 @@ MonoBehaviour:
   craftButton: {fileID: 5559811725787859211}
   relationshipHelpButton: {fileID: 3932781385247576806}
   skillListButton: {fileID: 1616879328483722661}
-  subTypePaperText: {fileID: 248923700688696113}
+  outfitNameText: {fileID: 248923700688696113}
   relationshipText: {fileID: 9200793681328425705}
   outfitScroll: {fileID: 5083340207273886926}
   baseStatText: {fileID: 7864550637954108092}
@@ -17282,6 +17282,8 @@ MonoBehaviour:
   cpText: {fileID: 1853945927505231185}
   requiredBlockText: {fileID: 5486039909480680933}
   requiredLevelText: {fileID: 7495034972013965656}
+  requiredItemRecipeView: {fileID: 3703768392406833758}
+  selectedOutfitImage: {fileID: 8137051614430324532}
 --- !u!1 &5539023984933352719
 GameObject:
   m_ObjectHideFlags: 0
@@ -37494,6 +37496,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1c4fa5a429c14614a172512d3d2b929, type: 3}
+--- !u!114 &3703768392406833758 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7403972335094868466, guid: a1c4fa5a429c14614a172512d3d2b929,
+    type: 3}
+  m_PrefabInstance: {fileID: 6171721661387944876}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5514069314610254934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f493bd37f0e4aeea754f8fbb6a08f11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4483937166022661041 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7754205968445956125, guid: a1c4fa5a429c14614a172512d3d2b929,
