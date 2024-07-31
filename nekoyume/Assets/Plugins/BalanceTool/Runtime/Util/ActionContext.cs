@@ -36,6 +36,7 @@ namespace BalanceTool.Util
         public IWorld PreviousState { get; set; }
 
         public int RandomSeed { get; set; }
+
         public bool IsPolicyAction { get; }
 
         public HashDigest<SHA256>? PreviousStateRootHash { get; set; }
