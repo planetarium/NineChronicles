@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 2587777430267109427}
   - component: {fileID: 5421093451579484556}
   - component: {fileID: 5379819635478845362}
-  - component: {fileID: 7203250247535176675}
+  - component: {fileID: 3548996109329149935}
   m_Layer: 5
   m_Name: RelationshipInfoCell
   m_TagString: Untagged
@@ -197,7 +197,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &7203250247535176675
+--- !u!114 &3548996109329149935
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -206,12 +206,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4279953781941882700}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24b5ca6355a14f20b356b3f1c897ee7c, type: 3}
+  m_Script: {fileID: 11500000, guid: c7e95c35103e4b0ebeaa60a0076d7a4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bonusText: {fileID: 9200692470229575584}
-  rewardText: {fileID: 6186016917246461732}
-  focusObject: {fileID: 6857099738659439067}
+  relationshipSectionText: {fileID: 9200692470229575584}
+  cpText: {fileID: 6186016917246461732}
+  requiredLevelText: {fileID: 4320342775891211852}
 --- !u!1 &6857099738659439067
 GameObject:
   m_ObjectHideFlags: 0
