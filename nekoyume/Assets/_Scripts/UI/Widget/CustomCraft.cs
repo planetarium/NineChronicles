@@ -146,9 +146,11 @@ namespace Nekoyume.UI
         private void OnItemSubtypeSelected(ItemSubType type)
         {
             _selectedSubType = type;
-            outfitScroll.UpdateData(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
+            var scrollData = new List<CustomOutfit> {new(null)};
+            scrollData.AddRange(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubType)
                 .Select(r => new CustomOutfit(r)));
+            outfitScroll.UpdateData(scrollData);
         }
 
         private void OnClickSubmitButton()
@@ -164,8 +166,8 @@ namespace Nekoyume.UI
                 // TODO: 전부 다 CustomEquipmentCraft 관련 sheet에서 가져오게 바꿔야함
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
                         TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
-                            r.ItemSubType == _selectedOutfit.IconRow.Value.ItemSubType).Id,
-                        _selectedOutfit.IconRow.Value.IconId)
+                            r.ItemSubType == _selectedSubType).Id,
+                        _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
                     .Subscribe();
             }
         }
@@ -180,7 +182,7 @@ namespace Nekoyume.UI
             _selectedOutfit = outfit;
             _selectedOutfit.Selected.Value = true;
 
-            outfitNameText.SetText(L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId));
+            outfitNameText.SetText(_selectedOutfit.IconRow.Value is not null ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId) : "Random");
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
             var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
@@ -194,12 +196,13 @@ namespace Nekoyume.UI
                 requiredBlockText.SetText(
                     $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
                 requiredLevelText.SetText($"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
-                selectedOutfitImage.overrideSprite = SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value.IconId);
+                selectedOutfitImage.overrideSprite =
+                    SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value?.IconId ?? 0);
             }
 
             List<EquipmentItemSubRecipeSheet.MaterialInfo> requiredMaterials = new();
             var recipeRow = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
-                r.ItemSubType == _selectedOutfit.IconRow.Value.ItemSubType);
+                r.ItemSubType == _selectedSubType);
             requiredMaterials.Add(new EquipmentItemSubRecipeSheet.MaterialInfo(CustomEquipmentCraft.DrawingItemId, (int)Math.Floor(recipeRow.DrawingAmount * relationshipRow.CostMultiplier)));
             requiredMaterials.Add(new EquipmentItemSubRecipeSheet.MaterialInfo(CustomEquipmentCraft.DrawingToolItemId, (int) Math.Floor(
                 recipeRow.DrawingToolAmount * relationshipRow.CostMultiplier *
@@ -222,6 +225,7 @@ namespace Nekoyume.UI
             }
 
             requiredItemRecipeView.SetData(requiredMaterials, true);
+            craftButton.interactable = !_selectedOutfit.RandomOnly.Value;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

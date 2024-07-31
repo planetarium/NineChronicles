@@ -53,15 +53,14 @@ namespace Nekoyume.UI.Module
             {
                 var rowIsNull = row is null;
                 noRow.SetActive(rowIsNull);
+                iconImage.enabled = !rowIsNull;
                 if (!rowIsNull)
                 {
                     requiredRelationshipText.SetText(row.RequiredRelationship.ToString());
+                    iconImage.overrideSprite = SpriteHelper.GetItemIcon(Model.IconRow.Value.IconId);
+                    iconImage.SetNativeSize();
                 }
             });
-
-            iconImage.enabled = true;
-            iconImage.overrideSprite = SpriteHelper.GetItemIcon(Model.IconRow.Value.IconId);
-            iconImage.SetNativeSize();
         }
 
         protected virtual void Awake()

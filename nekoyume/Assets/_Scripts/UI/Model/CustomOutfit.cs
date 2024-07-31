@@ -19,11 +19,20 @@ namespace Nekoyume.UI.Model
         public CustomOutfit(CustomEquipmentCraftIconSheet.Row row)
         {
             IconRow.Value = row;
-            RandomOnly.Value = row.RandomOnly;
-            ReactiveAvatarState.ObservableRelationship.Subscribe(relationship =>
+            if (row is not null)
             {
-                Dimmed.Value = row.RequiredRelationship > relationship;
-            }).AddTo(_disposables);
+                RandomOnly.Value = row.RandomOnly;
+                ReactiveAvatarState.ObservableRelationship.Subscribe(relationship =>
+                {
+                    Dimmed.Value = row.RequiredRelationship > relationship;
+                }).AddTo(_disposables);
+            }
+            else
+            {
+                Selected.Value = false;
+                RandomOnly.Value = false;
+                Dimmed.Value = false;
+            }
         }
 
         public virtual void Dispose()
