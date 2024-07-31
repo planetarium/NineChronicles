@@ -96,8 +96,7 @@ namespace Nekoyume.UI
             });
             skillListButton.onClick.AddListener(() =>
             {
-                Find<SummonSkillsPopup>().Show(TableSheets.Instance.SummonSheet.First);
-                NcDebug.Log("skillListButton onclick");
+                Find<CustomEquipmentSkillPopup>().Show(_selectedSubType);
             });
             foreach (var subTypeButton in subTypeButtons)
             {
