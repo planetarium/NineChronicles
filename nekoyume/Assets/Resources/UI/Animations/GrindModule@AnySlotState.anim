@@ -33,7 +33,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/UI_GrindPressVFX
+    path: CenterArea/BgContainer/BaseItemBg/UI_GrindPressVFX
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -52,7 +52,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/Reward
+    path: CenterArea/BgContainer/Reward
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -71,7 +71,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_SizeDelta.x
-    path: BackCanvas/Grind/CenterArea/BgContainer/Reward/RewardGroup/Bg_ring
+    path: CenterArea/BgContainer/Reward/RewardGroup/Bg_ring
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -90,7 +90,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_SizeDelta.y
-    path: BackCanvas/Grind/CenterArea/BgContainer/Reward/RewardGroup/Bg_ring
+    path: CenterArea/BgContainer/Reward/RewardGroup/Bg_ring
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -109,7 +109,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/StakingBouns
+    path: CenterArea/StakingBouns
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -128,7 +128,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorMode
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/BaseObject_00
+    path: CenterArea/BgContainer/BaseItemBg/BaseObject_00
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -147,7 +147,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/BaseObject_00
+    path: CenterArea/BgContainer/BaseItemBg/BaseObject_00
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -166,7 +166,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Effect_Base
+    path: CenterArea/BgContainer/BaseItemBg/Effect_Base
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -185,7 +185,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Effect_Base_Start
+    path: CenterArea/BgContainer/BaseItemBg/Effect_Base_Start
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -204,7 +204,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgContainer/Reward/RewardGroup/CRYSTAL/PositionDummy/Crystal_Light
+    path: CenterArea/BgContainer/Reward/RewardGroup/CRYSTAL/PositionDummy/Crystal_Light
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -223,7 +223,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/GuideText
+    path: CenterArea/GuideText
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -242,7 +242,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_BlurMode
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -261,7 +261,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -280,7 +280,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_BlurFactor
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -299,7 +299,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Bg_Glow
+    path: CenterArea/BgContainer/BaseItemBg/Bg_Glow
     classID: 1
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -453,7 +453,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/UI_GrindPressVFX
+    path: CenterArea/BgContainer/BaseItemBg/UI_GrindPressVFX
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -472,7 +472,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/Reward
+    path: CenterArea/BgContainer/Reward
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -491,7 +491,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_SizeDelta.x
-    path: BackCanvas/Grind/CenterArea/BgContainer/Reward/RewardGroup/Bg_ring
+    path: CenterArea/BgContainer/Reward/RewardGroup/Bg_ring
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -510,7 +510,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_SizeDelta.y
-    path: BackCanvas/Grind/CenterArea/BgContainer/Reward/RewardGroup/Bg_ring
+    path: CenterArea/BgContainer/Reward/RewardGroup/Bg_ring
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -529,7 +529,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/StakingBouns
+    path: CenterArea/StakingBouns
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -548,7 +548,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorMode
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/BaseObject_00
+    path: CenterArea/BgContainer/BaseItemBg/BaseObject_00
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -567,7 +567,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/BaseObject_00
+    path: CenterArea/BgContainer/BaseItemBg/BaseObject_00
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -586,7 +586,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Effect_Base
+    path: CenterArea/BgContainer/BaseItemBg/Effect_Base
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -605,7 +605,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Effect_Base_Start
+    path: CenterArea/BgContainer/BaseItemBg/Effect_Base_Start
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -624,7 +624,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgContainer/Reward/RewardGroup/CRYSTAL/PositionDummy/Crystal_Light
+    path: CenterArea/BgContainer/Reward/RewardGroup/CRYSTAL/PositionDummy/Crystal_Light
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -643,7 +643,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/GuideText
+    path: CenterArea/GuideText
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -662,7 +662,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_BlurMode
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -681,7 +681,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -700,7 +700,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_BlurFactor
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -719,7 +719,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Bg_Glow
+    path: CenterArea/BgContainer/BaseItemBg/Bg_Glow
     classID: 1
     script: {fileID: 0}
   m_EulerEditorCurves: []

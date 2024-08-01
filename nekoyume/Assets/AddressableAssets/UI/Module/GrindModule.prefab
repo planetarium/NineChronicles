@@ -26158,6 +26158,7 @@ GameObject:
   - component: {fileID: 4958556696359475257}
   - component: {fileID: 8257705394460708354}
   - component: {fileID: 3185183671930385206}
+  - component: {fileID: 709826153028242293}
   m_Layer: 5
   m_Name: GrindModule
   m_TagString: Untagged
@@ -26219,12 +26220,33 @@ MonoBehaviour:
   crystalRewardText: {fileID: 169141288871751369}
   canvasGroup: {fileID: 8257705394460708354}
   removeAllButton: {fileID: 5682112896095911271}
-  animator: {fileID: 0}
+  animator: {fileID: 709826153028242293}
   animationData:
     maximum: 10
     middle: 5
     minimum: 1
   crystalRewardTweener: {fileID: 1689203113959681598}
+--- !u!95 &709826153028242293
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8751341184753845357}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e2758e3b992747d46bfd00eb53151ac5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8870827049566830728
 GameObject:
   m_ObjectHideFlags: 0
