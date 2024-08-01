@@ -78,6 +78,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private Image selectedOutfitImage;
 
+        [SerializeField]
+        private GameObject notSelected;
+
+        [SerializeField]
+        private GameObject selectedView;
+
         private CustomOutfit _selectedOutfit;
 
         private ItemSubType _selectedSubType = ItemSubType.Weapon;
@@ -123,6 +129,8 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             _selectedOutfit = null;
+            notSelected.SetActive(true);
+            selectedView.SetActive(false);
             SetRelationshipView(ReactiveAvatarState.Relationship);
             OnItemSubtypeSelected(ItemSubType.Weapon);
         }
@@ -179,6 +187,9 @@ namespace Nekoyume.UI
 
             _selectedOutfit = outfit;
             _selectedOutfit.Selected.Value = true;
+
+            notSelected.SetActive(false);
+            selectedView.SetActive(true);
 
             outfitNameText.SetText(_selectedOutfit.IconRow.Value is not null ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId) : "Random");
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet

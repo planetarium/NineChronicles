@@ -17284,6 +17284,8 @@ MonoBehaviour:
   requiredLevelText: {fileID: 7495034972013965656}
   requiredItemRecipeView: {fileID: 3703768392406833758}
   selectedOutfitImage: {fileID: 8137051614430324532}
+  notSelected: {fileID: 8316203186319667015}
+  selectedView: {fileID: 1284253768248414117}
 --- !u!1 &5539023984933352719
 GameObject:
   m_ObjectHideFlags: 0
@@ -22210,7 +22212,6 @@ GameObject:
   - component: {fileID: 200970600739422541}
   - component: {fileID: 8108739244540952158}
   - component: {fileID: 5388741010395845592}
-  - component: {fileID: 8731330402942345431}
   m_Layer: 5
   m_Name: RightArea
   m_TagString: Untagged
@@ -22260,27 +22261,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!95 &8731330402942345431
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8158915033491210519}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3bc663b389e030b408793220bbacfcca, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8161554867845497176
 GameObject:
   m_ObjectHideFlags: 0
