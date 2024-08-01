@@ -891,8 +891,8 @@ RectTransform:
   m_Children:
   - {fileID: 7336296572333701364}
   - {fileID: 6249515785666229802}
-  m_Father: {fileID: 2752236434775052170}
-  m_RootOrder: 8
+  m_Father: {fileID: 4958556696359475257}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -5929,7 +5929,7 @@ GameObject:
   - component: {fileID: 4965717489385072798}
   - component: {fileID: 2092093355770758115}
   m_Layer: 5
-  m_Name: Scroll View
+  m_Name: GrindSlotScroll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5944,17 +5944,17 @@ RectTransform:
   m_GameObject: {fileID: 1798461784985544407}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 432175986752076012}
   - {fileID: 583005504372585191}
-  m_Father: {fileID: 6252475807081805206}
-  m_RootOrder: 0
+  m_Father: {fileID: 2752236434775052170}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -5.0000005, y: -150.99998}
   m_SizeDelta: {x: 540, y: 220}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &907634426023941353
@@ -11617,7 +11617,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2642936433922549460}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -18463,7 +18463,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5297250888882514761}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -18778,65 +18778,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   beginValue: 0
   endValue: 0
---- !u!1 &5414767508797800487
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6252475807081805206}
-  - component: {fileID: 8452302977153754566}
-  - component: {fileID: 3172895505976286222}
-  m_Layer: 5
-  m_Name: GrindSlotScroll
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6252475807081805206
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5414767508797800487}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7371766099224163054}
-  m_Father: {fileID: 2752236434775052170}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -5, y: -151}
-  m_SizeDelta: {x: -362, y: -378}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8452302977153754566
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5414767508797800487}
-  m_CullTransparentMesh: 1
---- !u!225 &3172895505976286222
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5414767508797800487}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &5489818295981288180
 GameObject:
   m_ObjectHideFlags: 0
@@ -25453,7 +25394,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7581216058692281809}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -25965,11 +25906,10 @@ RectTransform:
   - {fileID: 7523634157966004335}
   - {fileID: 1961020151052205462}
   - {fileID: 4181481049905423138}
-  - {fileID: 6252475807081805206}
+  - {fileID: 7371766099224163054}
   - {fileID: 4185166660565687830}
   - {fileID: 1230355974612270573}
   - {fileID: 8725552083826059998}
-  - {fileID: 8751118390935516184}
   m_Father: {fileID: 4958556696359475257}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -26179,6 +26119,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2752236434775052170}
+  - {fileID: 8751118390935516184}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -26750,7 +26691,7 @@ PrefabInstance:
     - target: {fileID: 241701247471134299, guid: 6bc3f6b9639a1c74b9979cefcbe061f9,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 241701247471134299, guid: 6bc3f6b9639a1c74b9979cefcbe061f9,
         type: 3}
@@ -27820,7 +27761,7 @@ PrefabInstance:
     - target: {fileID: 1033585307852785718, guid: 774844031e339489587965ee0bbddd5f,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1033585307852785718, guid: 774844031e339489587965ee0bbddd5f,
         type: 3}

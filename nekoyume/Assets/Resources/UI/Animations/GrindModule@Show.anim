@@ -710,7 +710,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: CenterArea/ButtonArea
+    path: ButtonArea
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -2022,7 +2022,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: CenterArea/ButtonArea
+    path: ButtonArea
     classID: 225
     script: {fileID: 0}
   - curve:
