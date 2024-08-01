@@ -125,7 +125,7 @@ namespace Nekoyume.IAPStore
             {
                 NcDebug.LogError($"ProductSchema not found at first search. sku: {sku}");
                 result = _initializedProductSchema
-                                .Where(p => p.Value.AppleSku == sku || p.Value.GoogleSku == sku)
+                                .Where(p => p.Value.CheckSku(sku))
                                 .Select(p => p.Value)
                                 .FirstOrDefault();
                 if (result is null)
