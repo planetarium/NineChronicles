@@ -149,8 +149,7 @@ namespace Nekoyume.UI
             {
                 NcDebug.LogError(e.Message);
                 loading.Close();
-                base.Show(ignoreShowAnimation);
-                Close();
+                Game.Event.OnRoomEnter.Invoke(false);
                 if (Game.LiveAsset.GameConfig.IsKoreanBuild)
                 {
                     Find<IconAndButtonSystem>().Show(

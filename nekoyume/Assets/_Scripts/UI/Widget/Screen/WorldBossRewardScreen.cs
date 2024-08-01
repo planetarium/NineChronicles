@@ -124,6 +124,7 @@ namespace Nekoyume.UI
             }
 
             _closeCallback?.Invoke();
+            _closeCallback = null;
             base.Close(ignoreCloseAnimation);
         }
 

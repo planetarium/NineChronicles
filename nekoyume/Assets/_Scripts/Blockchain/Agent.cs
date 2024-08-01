@@ -164,7 +164,7 @@ namespace Nekoyume.Blockchain
                 var blockChainStates = new BlockChainStates(store, _stateStore);
                 var policy = new BlockPolicySource().GetPolicy();
                 var actionEvaluator = new ActionEvaluator(
-                    _ => policy.BlockAction,
+                    policy.PolicyActionsRegistry,
                     _stateStore,
                     actionLoader);
 

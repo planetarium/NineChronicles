@@ -114,21 +114,6 @@ namespace Nekoyume.UI.Module
             iconImage.SetNativeSize();
         }
 
-        public void SetData(EquipmentItemSheet.Row itemRow, System.Action onClick = null)
-        {
-            var data = itemViewData.GetItemViewData(itemRow.Grade);
-            gradeImage.overrideSprite = data.GradeBackground;
-
-            gradeHsv.range = data.GradeHsvRange;
-            gradeHsv.hue = data.GradeHsvHue;
-            gradeHsv.saturation = data.GradeHsvSaturation;
-            gradeHsv.value = data.GradeHsvValue;
-
-            iconImage.enabled = true;
-            iconImage.overrideSprite = SpriteHelper.GetItemIcon(itemRow.Id);
-            iconImage.SetNativeSize();
-        }
-
         protected ItemViewData GetItemViewData(ItemBase itemBase)
         {
             // if itemBase is TradableMaterial, upgrade view data.

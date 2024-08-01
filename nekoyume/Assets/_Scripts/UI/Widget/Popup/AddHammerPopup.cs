@@ -164,15 +164,21 @@ namespace Nekoyume.UI
                 enhancementCostSheet);
             var materialItemsExp = materialModels.Sum(inventoryItem =>
             {
-                if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id) &&
+                if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id) && 
                     inventoryItem.ItemBase.Id != ignoreItem.Id)
                 {
                     var hammerExp = enhancementCostSheet.GetHammerExp(
                         inventoryItem.ItemBase.Id);
                     return hammerExp * inventoryItem.SelectedMaterialCount.Value;
                 }
+                
+                var equipment = inventoryItem.ItemBase as Equipment;
+                if (equipment == null)
+                {
+                    return 0;
+                }
 
-                return (inventoryItem.ItemBase as Equipment).GetRealExp(
+                return equipment.GetRealExp(
                     equipmentItemSheet,
                     enhancementCostSheet);
             });
