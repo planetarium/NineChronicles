@@ -334,7 +334,7 @@ namespace Nekoyume.UI.Module
         {
             if (!_equipments.TryGetValue(_selectedItemSubType.Value, out var equipments))
             {
-                return new List<EnhancementInventoryItem>();
+                equipments = new List<EnhancementInventoryItem>();
             }
 
             if (_grade.Value != Grade.All)
