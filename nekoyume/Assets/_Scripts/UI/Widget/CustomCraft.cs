@@ -86,7 +86,7 @@ namespace Nekoyume.UI
 
         private CustomOutfit _selectedOutfit;
 
-        private ItemSubType _selectedSubType = ItemSubType.Weapon;
+        private ItemSubType _selectedSubType;
 
         protected override void Awake()
         {
@@ -151,12 +151,20 @@ namespace Nekoyume.UI
         /// <param name="type"></param>
         private void OnItemSubtypeSelected(ItemSubType type)
         {
+            if (_selectedSubType == type)
+            {
+                return;
+            }
+
             _selectedSubType = type;
             var scrollData = new List<CustomOutfit> {new(null)};
             scrollData.AddRange(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubType)
                 .Select(r => new CustomOutfit(r)));
             outfitScroll.UpdateData(scrollData);
+            _selectedOutfit = null;
+            notSelected.SetActive(true);
+            selectedView.SetActive(false);
         }
 
         private void OnClickSubmitButton()
@@ -240,6 +248,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);
+            _selectedOutfit?.Selected.SetValueAndForceNotify(false);
             _selectedOutfit = null;
         }
     }

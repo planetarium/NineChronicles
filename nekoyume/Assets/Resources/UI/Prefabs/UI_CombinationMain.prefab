@@ -1404,7 +1404,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8570815990760781084
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4347,7 +4347,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 19
-  l10nKey: GRIND_UI_BUTTON
+  l10nKey: UI_CUSTOM_CRAFT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -7240,7 +7240,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 35
-  l10nKey: GRIND_UI_BUTTON
+  l10nKey: UI_CUSTOM_CRAFT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
