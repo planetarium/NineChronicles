@@ -13194,11 +13194,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3185183671930385206, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
-      propertyPath: animator
-      value: 
-      objectReference: {fileID: 571921049296418333}
-    - target: {fileID: 3185183671930385206, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
-        type: 3}
       propertyPath: grindInventory
       value: 
       objectReference: {fileID: 425817800037651974}
@@ -14552,7 +14547,7 @@ PrefabInstance:
     - target: {fileID: 8751341184753845357, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_Name
-      value: Grind
+      value: GrindModule
       objectReference: {fileID: 0}
     - target: {fileID: 8833472233743213399, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
