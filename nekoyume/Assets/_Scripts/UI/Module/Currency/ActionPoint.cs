@@ -235,13 +235,8 @@ namespace Nekoyume.UI.Module
             var popup = Widget.Find<MaterialNavigationPopup>();
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var apStoneCount = Game.Game.instance.States.CurrentAvatarState.inventory.Items
-                .Where(x =>
-                    x.item.ItemSubType == ItemSubType.ApStone &&
-                    !x.Locked &&
-                    !(x.item is ITradableItem tradableItem &&
-                        tradableItem.RequiredBlockIndex > blockIndex))
-                .Sum(item => item.count);
+            var apStoneCount = Game.Game.instance.States.CurrentAvatarState.inventory
+                .GetUsableItemCount((int)CostType.ApPotion, blockIndex);
 
             var itemCountText = $"{sliderAnimator.Value}/{sliderAnimator.MaxValue}";
             var blockRange = (long)dailyBonus.sliderAnimator.Value;

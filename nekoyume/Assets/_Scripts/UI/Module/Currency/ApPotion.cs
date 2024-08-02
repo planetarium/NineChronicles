@@ -45,7 +45,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            count.text = Game.Game.instance.States.CurrentAvatarState.inventory.GetMaterialCount((int)CostType.ApPotion).ToString();
+            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+
+            count.text = inventory
+                .GetUsableItemCount((int)CostType.ApPotion, blockIndex)
+                .ToString("N0", System.Globalization.CultureInfo.CurrentCulture);
         }
 
         public void SetActiveLoading(bool value)

@@ -199,7 +199,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
             var userCount = response?.WorldBossTotalUsers ?? 0;
-            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? 0;
+            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? -1;
             var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
 
             if (records.Count > LimitCount)
