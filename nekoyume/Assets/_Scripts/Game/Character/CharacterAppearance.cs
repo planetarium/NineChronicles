@@ -237,7 +237,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateWeapon(Weapon weapon)
         {
-            var weaponId = weapon?.Id ?? GameConfig.DefaultAvatarWeaponId;
+            var weaponId = weapon?.IconId ?? GameConfig.DefaultAvatarWeaponId;
             var level = weapon?.level ?? 0;
             var vfx = ResourcesHelper.GetAuraWeaponPrefab(weaponId, level);
             SpineController.UpdateWeapon(weaponId, vfx);
