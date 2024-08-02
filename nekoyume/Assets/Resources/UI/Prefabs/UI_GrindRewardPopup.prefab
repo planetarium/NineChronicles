@@ -194,7 +194,7 @@ GameObject:
   - component: {fileID: 6455721517641621059}
   - component: {fileID: 2873355768731553442}
   m_Layer: 0
-  m_Name: GrindingRewardItemsScroll
+  m_Name: GrindRewardsScroll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -615,7 +615,7 @@ GameObject:
   - component: {fileID: 1353785707143409141}
   - component: {fileID: 1205735845074078764}
   m_Layer: 5
-  m_Name: GrindingRewardItemsPopup
+  m_Name: UI_GrindRewardPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
