@@ -45,16 +45,6 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GrindingItemSlotScroll scroll;
 
-        // TODO: It is used when NCG can be obtained through grinding later.
-        [SerializeField]
-        private GameObject ncgRewardObject;
-
-        [SerializeField]
-        private TMP_Text ncgRewardText;
-
-        [SerializeField]
-        private TMP_Text crystalRewardText;
-
         [SerializeField]
         private CanvasGroup canvasGroup;
 
@@ -66,9 +56,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private CrystalAnimationData animationData;
-
-        [SerializeField]
-        private DigitTextTweener crystalRewardTweener;
 
         private bool _isInitialized;
 
@@ -102,36 +89,8 @@ namespace Nekoyume.UI.Module
 
         private bool CanGrind => _selectedItemsForGrind.Any();
 
-        public void Show(bool reverseInventoryOrder = false)
+        private void Awake()
         {
-            gameObject.SetActive(true);
-
-            Initialize();
-            Subscribe();
-
-            _selectedItemsForGrind.Clear();
-            grindInventory.SetGrinding(OnClickItem,
-                OnUpdateInventory,
-                DimConditionPredicateList,
-                reverseInventoryOrder);
-            UpdateScroll();
-            UpdateStakingBonusObject(States.Instance.StakingLevel);
-            crystalRewardText.text = string.Empty;
-        }
-
-        private void OnDisable()
-        {
-            _disposables.DisposeAllAndClear();
-            _selectedItemsForGrind.Clear();
-        }
-
-        private void Initialize()
-        {
-            if (_isInitialized)
-            {
-                return;
-            }
-
             grindButton.SetCost(CostType.ActionPoint, 5);
             grindButton.SetCondition(() => CanGrind);
             removeAllButton.OnSubmitSubject.Subscribe(_ =>
@@ -157,11 +116,12 @@ namespace Nekoyume.UI.Module
 
             grindButton.OnClickDisabledSubject.Subscribe(_ =>
             {
-                var l10nkey = scroll.DataCount > 0
+                var message = scroll.DataCount > 0
                     ? "GRIND_UI_SLOTNOTICE"
                     : "ERROR_NOT_GRINDING_EQUIPPED";
-                OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize(l10nkey),
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize(message),
                     NotificationCell.NotificationType.Notification);
             }).AddTo(gameObject);
             grindButton.OnClickSubject.Subscribe(state =>
@@ -169,9 +129,6 @@ namespace Nekoyume.UI.Module
                 switch (state)
                 {
                     case ConditionalButton.State.Normal:
-                        Action(_selectedItemsForGrind.Select(inventoryItem =>
-                            (Equipment)inventoryItem.ItemBase).ToList());
-                        break;
                     case ConditionalButton.State.Conditional:
                         Action(_selectedItemsForGrind.Select(inventoryItem =>
                             (Equipment)inventoryItem.ItemBase).ToList());
@@ -192,12 +149,18 @@ namespace Nekoyume.UI.Module
                     animator.SetTrigger(FirstRegister);
                 }
             }).AddTo(gameObject);
-            _selectedItemsForGrind.ObserveRemove().Subscribe(item => { item.Value.GrindingCountEnabled.SetValueAndForceNotify(false); }).AddTo(gameObject);
-
+            _selectedItemsForGrind.ObserveRemove()
+                .Subscribe(item => item.Value.GrindingCountEnabled.SetValueAndForceNotify(false))
+                .AddTo(gameObject);
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(_ =>
             {
                 UpdateScroll();
-                if (_selectedItemsForGrind.Count == 0)
+
+                if (_selectedItemsForGrind.Any())
+                {
+                    UpdateCrystalReward();
+                }
+                else
                 {
                     animator.SetTrigger(EmptySlot);
                 }
@@ -206,19 +169,48 @@ namespace Nekoyume.UI.Module
             scroll.OnClick
                 .Subscribe(item => _selectedItemsForGrind.Remove(item))
                 .AddTo(gameObject);
+        }
 
-            _isInitialized = true;
+        public void Show(bool reverseInventoryOrder = false)
+        {
+            gameObject.SetActive(true);
+
+            Subscribe();
+
+            _selectedItemsForGrind.Clear();
+            grindInventory.SetGrinding(
+                OnClickItem,
+                OnUpdateInventory,
+                DimConditionPredicateList,
+                reverseInventoryOrder);
+            UpdateScroll();
+            UpdateStakingBonusObject(States.Instance.StakingLevel);
+            crystalRewardText.text = string.Empty;
         }
 
         private void Subscribe()
         {
             ReactiveAvatarState.ObservableActionPoint
-                .Subscribe(_ => grindButton.Interactable = CanGrind)
+                .Subscribe(_ => grindButton.UpdateObjects())
                 .AddTo(_disposables);
 
             StakingSubject.Level
-                .Subscribe(UpdateStakingBonusObject)
+                .Subscribe(level =>
+                {
+                    UpdateStakingBonusObject(level);
+
+                    if (_selectedItemsForGrind.Any())
+                    {
+                        UpdateCrystalReward();
+                    }
+                })
                 .AddTo(_disposables);
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+            _selectedItemsForGrind.Clear();
         }
 
         private void OnClickItem(InventoryItem model)
@@ -234,7 +226,7 @@ namespace Nekoyume.UI.Module
                 if (isEquipped && isRegister)
                 {
                     var confirm = Widget.Find<IconAndButtonSystem>();
-                    confirm.ConfirmCallback = () => RegisterToGrindingList(model, true);
+                    confirm.ConfirmCallback = RegisterForGrind;
                     confirm.ShowWithTwoButton(
                         "UI_CONFIRM",
                         "UI_CONFIRM_EQUIPPED_GRINDING",
@@ -242,7 +234,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    RegisterToGrindingList(model, isRegister);
+                    RegisterForGrind();
                 }
             }
             else
@@ -253,81 +245,51 @@ namespace Nekoyume.UI.Module
             }
 
             grindInventory.ClearSelectedItem();
+
+            void RegisterForGrind()
+            {
+                if (isRegister)
+                {
+                    _selectedItemsForGrind.Add(model);
+                }
+                else
+                {
+                    _selectedItemsForGrind.Remove(model);
+                }
+            }
         }
 
         private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)
         {
-            var selectedItemList = _selectedItemsForGrind.ToList();
+            var selectedItems = _selectedItemsForGrind.ToList();
             _selectedItemsForGrind.Clear();
-            foreach (var inventoryItem in selectedItemList)
+            foreach (var selectedItem in selectedItems)
             {
-                if (inventory.TryGetModel(inventoryItem.ItemBase, out var newItem))
+                // Check if the item is still in the inventory.
+                if (inventory.TryGetModel(selectedItem.ItemBase, out var item))
                 {
-                    _selectedItemsForGrind.Add(newItem);
+                    _selectedItemsForGrind.Add(item);
                 }
             }
 
-            grindButton.Interactable = CanGrind;
-
-            _inventoryApStoneCount = 0;
-            foreach (var item in inventoryModel.Items.Where(x => x.item.ItemSubType == ItemSubType.ApStone))
-            {
-                if (item.Locked)
-                {
-                    continue;
-                }
-
-                if (item.item is ITradableItem tradableItem)
-                {
-                    var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                    if (tradableItem.RequiredBlockIndex > blockIndex)
-                    {
-                        continue;
-                    }
-
-                    _inventoryApStoneCount += item.count;
-                }
-                else
-                {
-                    _inventoryApStoneCount += item.count;
-                }
-            }
-        }
-
-        private void RegisterToGrindingList(InventoryItem item, bool isRegister)
-        {
-            if (isRegister)
-            {
-                _selectedItemsForGrind.Add(item);
-            }
-            else
-            {
-                _selectedItemsForGrind.Remove(item);
-            }
+            grindButton.UpdateObjects();
+            _inventoryApStoneCount = inventoryModel.GetUsableItemCount(
+                (int)CostType.ApPotion,
+                Game.Game.instance.Agent?.BlockIndex ?? -1);
         }
 
         private void UpdateScroll()
         {
             var count = _selectedItemsForGrind.Count;
-            grindButton.Interactable = CanGrind;
+            grindButton.UpdateObjects();
             removeAllButton.Interactable = count > 1;
             scroll.UpdateData(_selectedItemsForGrind);
             scroll.RawJumpTo(count - 1);
-
-            if (_selectedItemsForGrind.Any())
-            {
-                UpdateCrystalReward();
-            }
         }
 
         private void UpdateStakingBonusObject(int level)
         {
             stakingBonus.OnUpdateStakingLevel(level);
-
-            if (_selectedItemsForGrind.Any())
-            {
-                UpdateCrystalReward();
-            }
         }
 
         private void UpdateCrystalReward()
@@ -351,16 +313,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        /// <summary>
-        /// Returns true if any of the selected equipment has enhanced equipment or has skills.
-        /// </summary>
-        /// <param name="equipments"></param>
-        /// <returns></returns>
-        private static bool CheckSelectedItemsAreStrong(List<Equipment> equipments)
-        {
-            return equipments.Exists(item =>
-                item.level > 0 || item.Skills.Any() || item.BuffSkills.Any());
-        }
+        #region Action
 
         private void Action(List<Equipment> equipments)
         {
@@ -370,20 +323,30 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (CheckSelectedItemsAreStrong(equipments))
+            CheckGrindStrongEquipment(equipments, () =>
+                CheckChargeAp(chargeAp =>
+                    PushAction(equipments, chargeAp)));
+        }
+
+        private void CheckGrindStrongEquipment(List<Equipment> equipments, System.Action callback)
+        {
+            if (equipments.Exists(IsStrong))
             {
                 var system = Widget.Find<IconAndButtonSystem>();
-                system.ShowWithTwoButton("UI_WARNING",
-                    "UI_GRINDING_CONFIRM");
-                system.ConfirmCallback = () => { CheckUseApPotionForAction(equipments); };
+                system.ShowWithTwoButton("UI_WARNING", "UI_GRINDING_CONFIRM");
+                system.ConfirmCallback = callback;
             }
             else
             {
-                CheckUseApPotionForAction(equipments);
+                callback();
             }
+
+            // Returns equipment is enhanced or has skills.
+            bool IsStrong(Equipment equipment) =>
+                equipment.level > 0 || equipment.Skills.Any() || equipment.BuffSkills.Any();
         }
 
-        private void CheckUseApPotionForAction(List<Equipment> equipments)
+        private void CheckChargeAp(Action<bool> chargeAp)
         {
             switch (grindButton.CurrentState.Value)
             {
@@ -392,14 +355,14 @@ namespace Nekoyume.UI.Module
                     if (_inventoryApStoneCount > 0)
                     {
                         var confirm = Widget.Find<IconAndButtonSystem>();
-                        confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT", L10nManager.Localize("GRIND_UI_BUTTON"),
-                                _inventoryApStoneCount),
+                        confirm.ShowWithTwoButton(
+                            L10nManager.Localize("UI_CONFIRM"),
+                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
+                                L10nManager.Localize("GRIND_UI_BUTTON"), _inventoryApStoneCount),
                             L10nManager.Localize("UI_OK"),
                             L10nManager.Localize("UI_CANCEL"),
                             false, IconAndButtonSystem.SystemType.Information);
-                        confirm.ConfirmCallback = () =>
-                            PushAction(equipments, true);
+                        confirm.ConfirmCallback = () => chargeAp(true);
                     }
                     else
                     {
@@ -412,7 +375,7 @@ namespace Nekoyume.UI.Module
                     break;
                 }
                 case ConditionalButton.State.Normal:
-                    PushAction(equipments, false);
+                    chargeAp(false);
                     break;
                 case ConditionalButton.State.Disabled:
                     break;
@@ -446,6 +409,10 @@ namespace Nekoyume.UI.Module
                 animator.SetTrigger(StartGrind);
             }
         }
+
+        #endregion
+
+        #region NPC Animation
 
         private IEnumerator CoCombineNPCAnimation(BigInteger rewardCrystal)
         {
@@ -484,6 +451,8 @@ namespace Nekoyume.UI.Module
 
             return animationData.minimum;
         }
+
+        #endregion
 
 #if UNITY_EDITOR
         private void Update()
