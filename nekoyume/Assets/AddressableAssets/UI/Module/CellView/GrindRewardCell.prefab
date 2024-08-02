@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 9185631538962983106}
   - component: {fileID: 1705700075923841405}
   - component: {fileID: 1601240358580657987}
+  - component: {fileID: 5727697567544087127}
   m_Layer: 5
   m_Name: GrindRewardCell
   m_TagString: Untagged
@@ -274,6 +275,21 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5727697567544087127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7490956927290509245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2f9677ea78145da936a0005338eaaab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconImage: {fileID: 808194098008392092}
+  nameText: {fileID: 1062904958220734701}
+  countText: {fileID: 669188577914195925}
 --- !u!1 &7844173048277445940
 GameObject:
   m_ObjectHideFlags: 0
