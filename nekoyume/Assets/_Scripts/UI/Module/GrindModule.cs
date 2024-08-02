@@ -13,8 +13,6 @@ using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
-using Nekoyume.UI.Tween;
-using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -44,6 +42,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private GrindingItemSlotScroll scroll;
+
+        [SerializeField]
+        private GrindReward[] grindRewards;
 
         [SerializeField]
         private CanvasGroup canvasGroup;
@@ -158,7 +159,7 @@ namespace Nekoyume.UI.Module
 
                 if (_selectedItemsForGrind.Any())
                 {
-                    UpdateCrystalReward();
+                    UpdateReward();
                 }
                 else
                 {
@@ -185,7 +186,6 @@ namespace Nekoyume.UI.Module
                 reverseInventoryOrder);
             UpdateScroll();
             UpdateStakingBonusObject(States.Instance.StakingLevel);
-            crystalRewardText.text = string.Empty;
         }
 
         private void Subscribe()
@@ -201,7 +201,7 @@ namespace Nekoyume.UI.Module
 
                     if (_selectedItemsForGrind.Any())
                     {
-                        UpdateCrystalReward();
+                        UpdateReward();
                     }
                 })
                 .AddTo(_disposables);
@@ -292,25 +292,15 @@ namespace Nekoyume.UI.Module
             stakingBonus.OnUpdateStakingLevel(level);
         }
 
-        private void UpdateCrystalReward()
+        private void UpdateReward()
         {
-            var prevCrystalReward = _cachedGrindingRewardCrystal.MajorUnit;
-            _cachedGrindingRewardCrystal = CrystalCalculator.CalculateCrystal(
+            var crystalReward = CrystalCalculator.CalculateCrystal(
                 _selectedItemsForGrind.Select(item => (Equipment)item.ItemBase),
                 false,
                 TableSheets.Instance.CrystalEquipmentGrindingSheet,
                 TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
                 States.Instance.StakingLevel);
-            if (_cachedGrindingRewardCrystal.MajorUnit > 0)
-            {
-                crystalRewardTweener.Play(
-                    (long)prevCrystalReward,
-                    (long)_cachedGrindingRewardCrystal.MajorUnit);
-            }
-            else
-            {
-                crystalRewardText.text = string.Empty;
-            }
+            grindRewards[0].SetCrystalReward(crystalReward);
         }
 
         #region Action
