@@ -3,6 +3,7 @@
 #endif
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using mixpanel;
 using Nekoyume.State;
@@ -79,6 +80,30 @@ namespace Nekoyume
             Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
 
             NcDebug.Log($"Analyzer initialized: {uniqueId}");
+
+            Application.logMessageReceivedThreaded += HandleLog;
+        }
+
+        private void HandleLog(string condition, string stackTrace, LogType type)
+        {
+            switch (type)
+            {
+                case LogType.Error:
+                    break;
+                case LogType.Assert:
+                    break;
+                case LogType.Exception:
+                    break;
+                case LogType.Warning:
+                case LogType.Log:
+                default:
+                    return;
+            }
+            var eventName = $"Unity/Debug/{type.ToString()}";
+            var mixpanelValues = new Value();
+            mixpanelValues["condition"] = condition;
+            mixpanelValues["stackTrace"] = stackTrace;
+            Mixpanel.Track(eventName, mixpanelValues);
         }
 
         public static void SetAgentAddress(string? addressString)
@@ -261,6 +286,7 @@ namespace Nekoyume
                 return;
             }
 
+            Application.logMessageReceivedThreaded -= HandleLog;
             Mixpanel.Flush();
         }
 
