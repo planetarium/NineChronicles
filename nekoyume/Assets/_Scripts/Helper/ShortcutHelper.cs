@@ -163,7 +163,7 @@ namespace Nekoyume.Helper
 
                     if (required)
                     {
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Upgrade));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Upgrade, itemRow: itemRow));
                     }
                     else if (canCraft)
                     {
@@ -301,7 +301,7 @@ namespace Nekoyume.Helper
                     {
                         caller.CloseWithOtherWidgets();
                         Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
-                        Widget.Find<Enhancement>().Show();
+                        Widget.Find<Enhancement>().Show(itemRow);
                     };
                     guideText = L10nManager.Localize("UI_UPGRADE_EQUIPMENT");
                     break;
