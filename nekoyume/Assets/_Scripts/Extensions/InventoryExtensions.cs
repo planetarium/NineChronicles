@@ -51,7 +51,7 @@ namespace Nekoyume
                 : 0;
         }
 
-        public static int GetUsableMaterialCount(this Inventory inventory, int id, long blockIndex)
+        public static int GetUsableItemCount(this Inventory inventory, int id, long blockIndex)
         {
             if (inventory is null)
             {

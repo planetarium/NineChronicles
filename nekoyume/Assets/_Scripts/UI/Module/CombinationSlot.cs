@@ -339,9 +339,9 @@ namespace Nekoyume.UI.Module
             hasNotificationImage.enabled = isEnough;
         }
 
-        private void UpdateHourglass(CombinationSlotState state, long currentBlockIndex)
+        private void UpdateHourglass(CombinationSlotState state, long blockIndex)
         {
-            var diff = state.UnlockBlockIndex - currentBlockIndex;
+            var diff = state.UnlockBlockIndex - blockIndex;
             int cost;
             if (state.PetId.HasValue &&
                 States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
@@ -358,7 +358,7 @@ namespace Nekoyume.UI.Module
             }
 
             var inventory = States.Instance.CurrentAvatarState.inventory;
-            var count = Util.GetHourglassCount(inventory, currentBlockIndex);
+            var count = inventory.GetUsableItemCount((int)CostType.Hourglass, blockIndex);
             hourglassCountText.text = cost.ToString();
             hourglassCountText.color = count >= cost
                 ? Palette.GetColor(ColorType.ButtonEnabled)

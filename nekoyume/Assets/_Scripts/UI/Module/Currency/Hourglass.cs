@@ -49,8 +49,10 @@ namespace Nekoyume.UI.Module
 
         private void UpdateHourglass(Nekoyume.Model.Item.Inventory inventory)
         {
-            var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-            countText.text = count.ToString("N0", CultureInfo.CurrentCulture);
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            countText.text = inventory
+                .GetUsableItemCount((int)CostType.Hourglass, blockIndex)
+                .ToString("N0", CultureInfo.CurrentCulture);
         }
 
         private void ShowMaterialNavigationPopup()
