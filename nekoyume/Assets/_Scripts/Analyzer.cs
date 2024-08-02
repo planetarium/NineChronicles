@@ -86,24 +86,18 @@ namespace Nekoyume
 
         private void HandleLog(string condition, string stackTrace, LogType type)
         {
-            switch (type)
+            if (type == LogType.Error || type == LogType.Assert || type == LogType.Exception)
             {
-                case LogType.Error:
-                    break;
-                case LogType.Assert:
-                    break;
-                case LogType.Exception:
-                    break;
-                case LogType.Warning:
-                case LogType.Log:
-                default:
-                    return;
+                string eventName = $"Unity/Debug/{type}";
+
+                var mixpanelValues = new Value
+                {
+                    ["condition"] = condition,
+                    ["stackTrace"] = stackTrace
+                };
+
+                Mixpanel.Track(eventName, mixpanelValues);
             }
-            var eventName = $"Unity/Debug/{type.ToString()}";
-            var mixpanelValues = new Value();
-            mixpanelValues["condition"] = condition;
-            mixpanelValues["stackTrace"] = stackTrace;
-            Mixpanel.Track(eventName, mixpanelValues);
         }
 
         public static void SetAgentAddress(string? addressString)
