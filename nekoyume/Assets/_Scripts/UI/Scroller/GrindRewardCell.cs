@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Scroller
         {
             iconImage.overrideSprite = itemData.FungibleAssetValue.GetIconSprite();
             nameText.text = itemData.FungibleAssetValue.GetLocalizedName();
-            countText.text = itemData.Count.ToString();
+            countText.text = itemData.Count.ToCurrencyNotation();
         }
     }
 }

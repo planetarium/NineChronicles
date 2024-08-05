@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Module
 
             var prevCrystalReward = _cachedGrindingReward.MajorUnit;
             _cachedGrindingReward = reward;
-            rewardTweener.Play(
+            rewardTweener.PlayWithNotation(
                 (long)prevCrystalReward,
                 (long)_cachedGrindingReward.MajorUnit);
         }
