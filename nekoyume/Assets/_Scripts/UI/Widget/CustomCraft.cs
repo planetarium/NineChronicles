@@ -280,6 +280,7 @@ namespace Nekoyume.UI
 
             var avatarState = game.States.CurrentAvatarState;
             game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
+            game.Lobby.FriendCharacter.Animator.Attack();
         }
     }
 }
