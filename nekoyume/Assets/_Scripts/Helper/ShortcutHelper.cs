@@ -159,11 +159,11 @@ namespace Nekoyume.Helper
             switch (itemRow.ItemType)
             {
                 case ItemType.Equipment:
-                    var canCraft = itemRow.ItemSubType != ItemSubType.Aura;
+                    var canCraft = itemRow.ItemSubType is not (ItemSubType.Aura or ItemSubType.Grimoire);
 
                     if (required)
                     {
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Upgrade));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Upgrade, itemRow: itemRow));
                     }
                     else if (canCraft)
                     {
@@ -301,7 +301,7 @@ namespace Nekoyume.Helper
                     {
                         caller.CloseWithOtherWidgets();
                         Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
-                        Widget.Find<Enhancement>().Show();
+                        Widget.Find<Enhancement>().Show(itemRow);
                     };
                     guideText = L10nManager.Localize("UI_UPGRADE_EQUIPMENT");
                     break;
@@ -447,6 +447,7 @@ namespace Nekoyume.Helper
             {
                 case PlaceType.EventDungeonStage:
                     var playableStageId =
+                        RxProps.EventDungeonInfo.Value is null ||
                         !RxProps.EventDungeonInfo.HasValue ||
                         RxProps.EventDungeonInfo.Value.ClearedStageId == 0
                             ? RxProps.EventDungeonRow.StageBegin

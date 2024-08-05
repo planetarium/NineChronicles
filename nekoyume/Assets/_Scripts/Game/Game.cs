@@ -274,6 +274,8 @@ namespace Nekoyume.Game
             }
 
             yield return InitializeL10N();
+            yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
+            NcDebug.Log("[Game] Start()... L10nManager initialized");
 
             // NOTE: Initialize planet registry.
             //       It should do after load CommandLineOptions.
@@ -1757,15 +1759,16 @@ namespace Nekoyume.Game
         {
             NcDebug.Log("[Game] InitializeAnalyzer() invoked." +
                 $" agentAddr: {agentAddr}, planetId: {planetId}, rpcServerHost: {rpcServerHost}");
-#if UNITY_EDITOR
-            NcDebug.Log("[Game] InitializeAnalyzer()... Analyze is disabled in editor mode.");
-            Analyzer = new Analyzer(
-                agentAddr?.ToString(),
-                planetId?.ToString(),
-                rpcServerHost,
-                false);
-            return;
-#endif
+            if (GameConfig.IsEditor)
+            {
+                NcDebug.Log("[Game] InitializeAnalyzer()... Analyze is disabled in editor mode.");
+                Analyzer = new Analyzer(
+                    agentAddr?.ToString(),
+                    planetId?.ToString(),
+                    rpcServerHost,
+                    isTrackable: false);
+                return;
+            }
 
             var isTrackable = true;
             if (Debug.isDebugBuild)
@@ -1861,30 +1864,28 @@ namespace Nekoyume.Game
             if (LiveAsset.GameConfig.IsKoreanBuild)
             {
                 yield return L10nManager.Initialize(LanguageType.Korean).ToYieldInstruction();
+                yield break;
             }
-#if UNITY_EDITOR
-            else if (useSystemLanguage)
-            {
-                yield return L10nManager.Initialize().ToYieldInstruction();
-            }
-            else
-            {
-                yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
-                languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
-            }
-#else
-            else
-            {
-                yield return L10nManager
-                    .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
-                        ? L10nManager.CurrentLanguage
-                        : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
-                    .ToYieldInstruction();
-            }
-#endif
-            yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
 
-            NcDebug.Log("[Game] Start()... L10nManager initialized");
+            if (GameConfig.IsEditor)
+            {
+                if (useSystemLanguage)
+                {
+                    yield return L10nManager.Initialize().ToYieldInstruction();
+                }
+                else
+                {
+                    yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
+                    languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
+                }
+                yield break;
+            }
+            
+            yield return L10nManager
+                .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
+                    ? L10nManager.CurrentLanguage
+                    : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                .ToYieldInstruction();
         }
 
         private void InitializeMessagePackResolver()

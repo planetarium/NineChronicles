@@ -79,6 +79,12 @@ namespace Nekoyume.UI
             }
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            closeButton.onClick.AddListener(() => Close());
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -108,7 +114,6 @@ namespace Nekoyume.UI
                     }
                 }).AddTo(gameObject);
                 _tabGroup.SetToggledOn(eventTabButton);
-                closeButton.onClick.AddListener(() => Close());
 
                 eventTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadEvent);
                 noticeTabButton.HasNotification.SetValueAndForceNotify(liveAssetManager.HasUnreadNotice);
@@ -188,6 +193,10 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
             base.Show(ignoreShowAnimation);
             OnForceToggleOnEventTab();
             PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
@@ -195,6 +204,10 @@ namespace Nekoyume.UI
 
         public void Show(EventNoticeData eventNotice, bool ignoreStartAnimation = false)
         {
+            if (!_isInitialized)
+            {
+                Initialize();
+            }
             base.Show(ignoreStartAnimation);
             if (!eventTabButton.IsToggledOn)
             {

@@ -26,6 +26,8 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         private static ReactiveDictionary<Address, bool> _hasGradeRewards { get; } = new();
         private static ReactiveDictionary<Address, bool> _receivingGradeRewards { get; } = new();
+        
+        private static long _lastUpdatedStateBlockIndex = -1;
 
         public static void SetHasGradeRewards(Address avatarAddress, bool value)
         {
@@ -94,7 +96,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 await GetDataAsync(hash, blockIndex, avatarAddress);
             if (isOnSeason)
             {
-                UpdateState(avatarAddress, raider, killReward);
+                UpdateState(avatarAddress, raider, killReward, true);
             }
             else
             {
@@ -123,11 +125,25 @@ namespace Nekoyume.UI.Module.WorldBoss
             }).AddTo(_disposables);
         }
 
+        /// <summary>
+        /// 월드보스 관련 상태를 업데이트. sloth 업데이트를 대응하기 위해
+        /// action으로 부터 받아오는 경우 값을 항상 갱신하고, 아닌 경우
+        /// 마지막으로 갱신된 blockIndex와 비교하여 업데이트한다.
+        /// </summary>
         public static void UpdateState(
             Address avatarAddress,
             RaiderState raiderState,
-            WorldBossKillRewardRecord killReward)
+            WorldBossKillRewardRecord killReward,
+            bool forceUpdate = false)
         {
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            if (!forceUpdate && _lastUpdatedStateBlockIndex >= currentBlockIndex)
+            {
+                return;
+            }
+            
+            _lastUpdatedStateBlockIndex = currentBlockIndex;
+            
             _raiderStates[avatarAddress] = raiderState;
             _killRewards[avatarAddress] = killReward;
         }

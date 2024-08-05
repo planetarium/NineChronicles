@@ -183,10 +183,15 @@ namespace Nekoyume.UI
         {
             CurrentUnlockFloor = null;
             var usedMyApPotion = 0;
+            var adventureBossData = Game.Game.instance.AdventureBossData;
             if (exploreInfo == null)
             {
                 clearFloor.text = $"-";
                 score.text = "0";
+                if (adventureBossData.ExploreBoard.Value != null)
+                {
+                    usedApPotion.text = $"{adventureBossData.ExploreBoard.Value.UsedApPotion:#,0} (0)";
+                }
                 ChangeFloor(1);
                 for (var i = 0; i < floors.Count(); i++)
                 {
@@ -238,7 +243,6 @@ namespace Nekoyume.UI
                     floors[i].SetState(AdventureBossFloor.FloorState.NotClear, i);
                 }
             }
-            var adventureBossData = Game.Game.instance.AdventureBossData;
             double contribution = 0;
             if (adventureBossData.ExploreBoard.Value != null && adventureBossData.ExploreBoard.Value.TotalPoint != 0)
             {

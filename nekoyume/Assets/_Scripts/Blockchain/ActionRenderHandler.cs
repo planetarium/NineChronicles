@@ -1348,9 +1348,9 @@ namespace Nekoyume.Blockchain
                         tradableId,
                         out ItemUsable materialItem))
                     {
-                        if (itemUsable.ItemSubType == ItemSubType.Aura)
+                        if (itemUsable.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                         {
-                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                            // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                             LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId, false);
                         }
                         else
@@ -2160,10 +2160,10 @@ namespace Nekoyume.Blockchain
                     .First()
                     .Subscribe(_ =>
                     {
-                        var task = UniTask.RunOnThreadPool(() =>
+                        var task = UniTask.RunOnThreadPool(async () =>
                         {
-                            UpdateCurrentAvatarStateAsync(eval).Forget();
-                            RxProps.EventDungeonInfo.UpdateAsync(eval.OutputState).Forget();
+                            await UpdateCurrentAvatarStateAsync(eval);
+                            await RxProps.EventDungeonInfo.UpdateAsync(eval.OutputState);
                             _disposableForBattleEnd = null;
                             Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                         }, false);

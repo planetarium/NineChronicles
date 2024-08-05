@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Libplanet.Types.Evidence;
 
 namespace BalanceTool.Util
 {
@@ -16,6 +17,7 @@ namespace BalanceTool.Util
         private long _gasUsed;
         private IRandom _random = null;
         private IReadOnlyList<ITransaction> _txs = null;
+        private IReadOnlyList<EvidenceBase> _evs = null;
 
         public BlockHash? GenesisHash { get; set; }
 
@@ -35,6 +37,8 @@ namespace BalanceTool.Util
 
         public int RandomSeed { get; set; }
 
+        public bool IsPolicyAction { get; }
+
         public HashDigest<SHA256>? PreviousStateRootHash { get; set; }
 
         public bool BlockAction { get; }
@@ -43,6 +47,12 @@ namespace BalanceTool.Util
         {
             get => _txs ?? ImmutableList<ITransaction>.Empty;
             set => _txs = value;
+        }
+
+        public IReadOnlyList<EvidenceBase> Evidence
+        {
+            get => _evs ?? ImmutableList<EvidenceBase>.Empty;
+            set => _evs = value;
         }
 
         public void UseGas(long gas)

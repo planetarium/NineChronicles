@@ -641,7 +641,7 @@ MonoBehaviour:
   - {fileID: 7966839338030871694}
   - {fileID: 4516994372918369361}
   eventDungeonObjects:
-  - eventId: 1001
+  - eventId: 1011
     button: {fileID: 7149023141089078293}
     remainingTimeObject: {fileID: 8593641996932701599}
     remainingTimeText: {fileID: 974607236082554696}
@@ -7393,6 +7393,7 @@ MonoBehaviour:
   unlockableImage: {fileID: 5976554806074400204}
   openCostText: {fileID: 6159839802866223020}
   animator: {fileID: 59848307289245488}
+  IsLockNameShow: 1
 --- !u!114 &3772604176235650587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24839,6 +24840,7 @@ MonoBehaviour:
   unlockableImage: {fileID: 880279794944820840}
   openCostText: {fileID: 7638539347650842761}
   animator: {fileID: 9034448177742567322}
+  IsLockNameShow: 1
 --- !u!114 &4491219870437989978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26484,6 +26486,7 @@ MonoBehaviour:
   unlockableImage: {fileID: 3028998957754513655}
   openCostText: {fileID: 6124799464119296079}
   animator: {fileID: 1911863996421120969}
+  IsLockNameShow: 1
 --- !u!114 &2674155011475850127
 MonoBehaviour:
   m_ObjectHideFlags: 0
