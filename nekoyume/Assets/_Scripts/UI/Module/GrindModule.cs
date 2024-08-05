@@ -172,6 +172,8 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
+        // Todo : Connect with Grind Widget Animation. but it's not used in Grind UI so it's not implemented.
+        // (e.g. Show, Close, + OnCompleteOfShowAnimation, OnCompleteOfCloseAnimation)
         public void Show(bool reverseInventoryOrder = false)
         {
             gameObject.SetActive(true);
@@ -294,12 +296,18 @@ namespace Nekoyume.UI.Module
 
         private void UpdateReward()
         {
+            foreach (var reward in grindRewards)
+            {
+                reward.gameObject.SetActive(false);
+            }
+
             var crystalReward = CrystalCalculator.CalculateCrystal(
                 _selectedItemsForGrind.Select(item => (Equipment)item.ItemBase),
                 false,
                 TableSheets.Instance.CrystalEquipmentGrindingSheet,
                 TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
                 States.Instance.StakingLevel);
+            grindRewards[0].gameObject.SetActive(true);
             grindRewards[0].SetCrystalReward(crystalReward);
         }
 
@@ -440,6 +448,19 @@ namespace Nekoyume.UI.Module
             }
 
             return animationData.minimum;
+        }
+
+        #endregion
+
+        #region WigdetAnimation
+
+        // Called from GrindModule Animator
+        public void OnCompleteOfShowAnimation()
+        {
+        }
+
+        public void OnCompleteOfCloseAnimation()
+        {
         }
 
         #endregion
