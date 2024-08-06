@@ -4171,7 +4171,7 @@ namespace Nekoyume.Blockchain
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
-            var slotIndex = eval.Action.SlotIndex;
+            var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
             var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
@@ -4193,7 +4193,7 @@ namespace Nekoyume.Blockchain
             }
 
             ReactiveAvatarState.UpdateProficiency(
-                (Integer)StateGetter.GetState(eval.OutputState, Addresses.Proficiency, avatarAddress)
+                (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
             );
 
             return (eval, slot);
@@ -4223,7 +4223,7 @@ namespace Nekoyume.Blockchain
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
-            var slotIndex = evaluation.Action.SlotIndex;
+            var slotIndex = evaluation.Action.CraftList.FirstOrDefault().SlotIndex;
             var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {

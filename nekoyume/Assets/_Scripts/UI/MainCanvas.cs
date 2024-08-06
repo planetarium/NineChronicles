@@ -349,7 +349,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Summon>());
             _secondWidgets.Add(Widget.Create<DccMain>());
             _secondWidgets.Add(Widget.Create<DccCollection>());
-            _secondWidgets.Add(Widget.Create<PaperCraft>());
+            _secondWidgets.Add(Widget.Create<CustomCraft>());
             yield return null;
 
             // header menu
@@ -464,7 +464,9 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<AddHammerPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<OutfitSelectPopup>());
+            _secondWidgets.Add(Widget.Create<RelationshipInfoPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CustomEquipmentSkillPopup>());
             yield return null;
 
             // tooltip

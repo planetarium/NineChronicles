@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
-        private SummonSkillsScroll scroll;
+        protected SummonSkillsScroll scroll;
 
         protected override void Awake()
         {

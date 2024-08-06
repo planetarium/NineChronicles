@@ -287,8 +287,9 @@ namespace Nekoyume.Game
         public CustomEquipmentCraftCostSheet CustomEquipmentCraftCostSheet { get; private set; }
         public CustomEquipmentCraftIconSheet CustomEquipmentCraftIconSheet { get; private set; }
         public CustomEquipmentCraftOptionSheet CustomEquipmentCraftOptionSheet { get; private set; }
-        public CustomEquipmentCraftProficiencySheet CustomEquipmentCraftProficiencySheet { get; private set; }
+        public CustomEquipmentCraftRelationshipSheet CustomEquipmentCraftRelationshipSheet { get; private set; }
         public CustomEquipmentCraftRecipeSheet CustomEquipmentCraftRecipeSheet { get; private set; }
+        public CustomEquipmentCraftRecipeSkillSheet CustomEquipmentCraftRecipeSkillSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
