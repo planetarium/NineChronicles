@@ -135,6 +135,7 @@ namespace Nekoyume.Blockchain
             return new Inventory((List)inventoryState);
         }
 
+        [Obsolete("Use AllCombinationSlotState instead.")]
         public static CombinationSlotState GetCombinationSlotState(
             HashDigest<SHA256> hash,
             Address avatarAddress,

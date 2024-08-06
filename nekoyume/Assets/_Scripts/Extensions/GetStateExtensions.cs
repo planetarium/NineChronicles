@@ -14,7 +14,6 @@ using Nekoyume.Model.AdventureBoss;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.Module;
-using Nekoyume.UI.Module;
 
 namespace Nekoyume
 {
@@ -60,6 +59,41 @@ namespace Nekoyume
             }
 
             return (itemSlotStates, runeSlotStates);
+        }
+        
+        public static async Task<AllCombinationSlotState> GetAllCombinationSlotStateAsync(
+            this IAgent agent, Address avatarAddress)
+        {
+            AllCombinationSlotState allCombinationSlotState;
+            
+            var value = await agent.GetStateAsync(Addresses.CombinationState, avatarAddress);
+            if (value is List list)
+            {
+                allCombinationSlotState = new AllCombinationSlotState(list);
+            }
+            else
+            {
+                allCombinationSlotState = AllCombinationSlotState.MigrationLegacyCombinationSlotState(avatarAddress);
+            }
+
+            return allCombinationSlotState;
+        }
+
+        public static AllCombinationSlotState GetAllCombinationSlotState(HashDigest<SHA256> hash, Address avatarAddress)
+        {
+            AllCombinationSlotState allCombinationSlotState;
+
+            var allCombinationSlotStateValue = StateGetter.GetState(hash, Addresses.CombinationState, avatarAddress);
+            if (allCombinationSlotStateValue is List allCombinationSlotStateSerialized)
+            {
+                allCombinationSlotState = new AllCombinationSlotState(allCombinationSlotStateSerialized);
+            }
+            else
+            {
+                allCombinationSlotState = AllCombinationSlotState.MigrationLegacyCombinationSlotState(avatarAddress);
+            }
+
+            return allCombinationSlotState;
         }
 
         public static async Task<AllRuneState> GetAllRuneStateAsync(
