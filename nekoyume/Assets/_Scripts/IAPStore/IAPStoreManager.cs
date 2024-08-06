@@ -33,7 +33,7 @@ namespace Nekoyume.IAPStore
         public IEnumerable<Product> IAPProducts => _controller.products.all;
         public bool IsInitialized { get; private set; }
 
-        private Dictionary<string, ProductSchema> _initailizedProductSchema = new();
+        private Dictionary<string, ProductSchema> _initializedProductSchema = new();
         private IReadOnlyList<CategorySchema> _initializedCategorySchema;
 
 
@@ -68,7 +68,7 @@ namespace Nekoyume.IAPStore
             {
                 foreach (var product in category.ProductList)
                 {
-                    _initailizedProductSchema.TryAdd(product.Sku, product);
+                    _initializedProductSchema.TryAdd(product.Sku, product);
                 }
 
                 if (category.Name == "NoShow")
@@ -82,7 +82,7 @@ namespace Nekoyume.IAPStore
 
 #if UNITY_EDITOR || RUN_ON_MOBILE
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-            foreach (var schema in _initailizedProductSchema.Where(s => s.Value.Active))
+            foreach (var schema in _initializedProductSchema.Where(s => s.Value.Active))
             {
                 builder.AddProduct(schema.Value.Sku, ProductType.Consumable);
             }
@@ -93,7 +93,7 @@ namespace Nekoyume.IAPStore
 
         public bool ExistAvailableFreeProduct()
         {
-            foreach (var item in _initailizedProductSchema)
+            foreach (var item in _initializedProductSchema)
             {
                 if (!item.Value.IsFree)
                 {
@@ -121,7 +121,18 @@ namespace Nekoyume.IAPStore
 
         public ProductSchema GetProductSchema(string sku)
         {
-            _initailizedProductSchema.TryGetValue(sku, out var result);
+            if (!_initializedProductSchema.TryGetValue(sku, out var result))
+            {
+                NcDebug.LogError($"ProductSchema not found at first search. sku: {sku}");
+                result = _initializedProductSchema
+                                .Where(p => p.Value.AppleSku == sku || p.Value.GoogleSku == sku)
+                                .Select(p => p.Value)
+                                .FirstOrDefault();
+                if (result is null)
+                {
+                    NcDebug.LogError($"ProductSchema not found. sku: {sku}");
+                }
+            }
             return result;
         }
 
@@ -570,7 +581,7 @@ namespace Nekoyume.IAPStore
                 else
                 {
                     Widget.Find<MobileShop>()?.PurchaseComplete(e.purchasedProduct.definition.id);
-                    if (_initailizedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
+                    if (_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
                     {
                         p.PurchaseCount++;
                         if (p.DailyLimit != null)
