@@ -55,6 +55,10 @@ To launch Nine Chronicles from the Unity editor, please follow the [step-by-step
 
 [9c-unity-guide]: https://docs.nine-chronicles.com/unity-guide
 
+ ### How to play in the editor
+
+If you want to run on the editor, please press the run button on 'IntroScene', or press 'Dongle button' at the top to go to that scene and start the game.
+
 ### Command Line Options
 
  - `--private-key`       : private key to use.
