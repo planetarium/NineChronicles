@@ -83,6 +83,7 @@ namespace Nekoyume.UI.Module
         {
             Model?.Dispose();
             OnClick.Dispose();
+            DisposablesAtSetData.DisposeAllAndClear();
         }
     }
 }
