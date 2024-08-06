@@ -80,12 +80,8 @@ namespace Nekoyume.Game.Scene
 
         private IEnumerator LoginStart()
         {
-            NcDebug.Log($"[{nameof(LoginScene)}] Start() invoked");
             var game = Game.instance;
-            NcDebug.Log($"[{nameof(LoginScene)}] Start() invoked1");
-            NcDebug.Log($"[{nameof(LoginScene)}] Start() invoked2");
             yield return ResourceManager.Instance.InitializeAsync().ToCoroutine();
-            NcDebug.Log($"[{nameof(LoginScene)}] Start() invoked3");
 
 #if LIB9C_DEV_EXTENSIONS && UNITY_ANDROID
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
