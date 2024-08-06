@@ -1826,9 +1826,15 @@ namespace Nekoyume.Blockchain
             var action = new CustomEquipmentCraft()
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                IconId = iconId,
-                RecipeId = recipeId,
-                SlotIndex = slotIndex
+                CraftList = new List<CustomCraftData>
+                {
+                    new()
+                    {
+                        IconId = iconId,
+                        RecipeId = recipeId,
+                        SlotIndex = slotIndex
+                    }
+                }
             };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<CustomEquipmentCraft>()

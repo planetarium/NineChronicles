@@ -217,31 +217,19 @@ namespace Nekoyume.UI
                     SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value?.IconId ?? 0);
             }
 
-            List<EquipmentItemSubRecipeSheet.MaterialInfo> requiredMaterials = new();
             var recipeRow = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                 r.ItemSubType == _selectedSubType);
-            requiredMaterials.Add(new EquipmentItemSubRecipeSheet.MaterialInfo(CustomEquipmentCraft.DrawingItemId, (int)Math.Floor(recipeRow.DrawingAmount * relationshipRow.CostMultiplier)));
-            requiredMaterials.Add(new EquipmentItemSubRecipeSheet.MaterialInfo(CustomEquipmentCraft.DrawingToolItemId, (int) Math.Floor(
-                recipeRow.DrawingToolAmount * relationshipRow.CostMultiplier *
-                (_selectedOutfit.IconRow.Value != null
-                    ? States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
-                    : 1))));
-            var ncgCost = 0L;
-            var additionalCostRow = TableSheets.Instance.CustomEquipmentCraftCostSheet.OrderedList
-                .FirstOrDefault(row => row.Relationship == ReactiveAvatarState.Relationship);
-            if (additionalCostRow is not null)
-            {
-                if (additionalCostRow.GoldAmount > 0)
-                {
-                    ncgCost = (long)additionalCostRow.GoldAmount;
-                }
+            var (ncgCost, materialCosts) = CustomCraftHelper.CalculateCraftCost(
+                _selectedOutfit.IconRow.Value?.IconId ?? 0,
+                TableSheets.Instance.MaterialItemSheet,
+                recipeRow,
+                relationshipRow,
+                TableSheets.Instance.CustomEquipmentCraftCostSheet.Values
+                    .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship),
+                States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
+            );
 
-                requiredMaterials.AddRange(additionalCostRow.MaterialCosts.Select(materialCost =>
-                    new EquipmentItemSubRecipeSheet.MaterialInfo(materialCost.ItemId,
-                        materialCost.Amount)));
-            }
-
-            requiredItemRecipeView.SetData(requiredMaterials, true);
+            requiredItemRecipeView.SetData(materialCosts.Select(pair => new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value)).ToList(), true);
             craftButton.interactable = !_selectedOutfit.RandomOnly.Value;
         }
 
