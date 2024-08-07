@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
 
             count.text = inventory
-                .GetUsableItemCount((int)CostType.ApPotion, blockIndex)
+                .GetUsableItemCount(CostType.ApPotion, blockIndex)
                 .ToString("N0", System.Globalization.CultureInfo.CurrentCulture);
         }
 

@@ -169,7 +169,7 @@ namespace Nekoyume.UI
         {
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
             var apStoneCount = States.Instance.CurrentAvatarState.inventory
-                .GetUsableItemCount((int)CostType.ApPotion, blockIndex);
+                .GetUsableItemCount(CostType.ApPotion, blockIndex);
 
             if (model.ItemBase is not null)
             {
@@ -199,7 +199,7 @@ namespace Nekoyume.UI
             {
                 var inventory = States.Instance.CurrentAvatarState.inventory;
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                apStoneCount = inventory.GetUsableItemCount((int)CostType.ApPotion, blockIndex);
+                apStoneCount = inventory.GetUsableItemCount(CostType.ApPotion, blockIndex);
             }
 
             switch (state)

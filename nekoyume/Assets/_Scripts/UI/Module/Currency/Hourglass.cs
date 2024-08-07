@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module
         {
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
             countText.text = inventory
-                .GetUsableItemCount((int)CostType.Hourglass, blockIndex)
+                .GetUsableItemCount(CostType.Hourglass, blockIndex)
                 .ToString("N0", CultureInfo.CurrentCulture);
         }
 

@@ -183,7 +183,7 @@ namespace Nekoyume.UI.Module
                 case CostType.ApPotion:
                     var blockIndex = Game.Game.instance.Agent.BlockIndex;
                     inventory = States.Instance.CurrentAvatarState.inventory;
-                    count = inventory.GetUsableItemCount((int)type, blockIndex);
+                    count = inventory.GetUsableItemCount(type, blockIndex);
                     return count >= cost;
                 default:
                     return true;
