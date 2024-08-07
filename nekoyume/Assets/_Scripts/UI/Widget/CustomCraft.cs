@@ -247,7 +247,7 @@ namespace Nekoyume.UI
                                 selectedOutfitImage.overrideSprite =
                                     SpriteHelper.GetItemIcon(iconId),
                         TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
-                            .Where(row => row.ItemSubType == _selectedSubType)
+                            .Where(row => row.ItemSubType == _selectedSubType && row.RequiredRelationship <= ReactiveAvatarState.Relationship)
                             .Select(row => row.IconId).ToList());
                 }
             }
