@@ -66,7 +66,7 @@ namespace Nekoyume
         {
             AllCombinationSlotState allCombinationSlotState;
             
-            var value = await agent.GetStateAsync(Addresses.CombinationState, avatarAddress);
+            var value = await agent.GetStateAsync(Addresses.CombinationSlot, avatarAddress);
             if (value is List list)
             {
                 allCombinationSlotState = new AllCombinationSlotState(list);
@@ -83,7 +83,7 @@ namespace Nekoyume
         {
             AllCombinationSlotState allCombinationSlotState;
 
-            var allCombinationSlotStateValue = StateGetter.GetState(hash, Addresses.CombinationState, avatarAddress);
+            var allCombinationSlotStateValue = StateGetter.GetState(hash, Addresses.CombinationSlot, avatarAddress);
             if (allCombinationSlotStateValue is List allCombinationSlotStateSerialized)
             {
                 allCombinationSlotState = new AllCombinationSlotState(allCombinationSlotStateSerialized);
