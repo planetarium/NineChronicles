@@ -6,6 +6,7 @@ using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -83,6 +84,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject selectedView;
+
+        [SerializeField]
+        private GameObject selectedImageView;
+
+        [SerializeField]
+        private GameObject selectedSpineView;
 
         private CustomOutfit _selectedOutfit;
 
@@ -198,7 +205,8 @@ namespace Nekoyume.UI
 
             notSelected.SetActive(false);
             selectedView.SetActive(true);
-
+            selectedImageView.SetActive(true);
+            selectedSpineView.SetActive(false);
             outfitNameText.SetText(_selectedOutfit.IconRow.Value is not null ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId) : "Random");
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
@@ -215,6 +223,12 @@ namespace Nekoyume.UI
                 requiredLevelText.SetText($"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
                 selectedOutfitImage.overrideSprite =
                     SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value?.IconId ?? 0);
+                if (equipmentRow.ItemSubType is ItemSubType.Armor or ItemSubType.Weapon)
+                {
+                    SetCharacter(equipmentRow);
+                    selectedImageView.SetActive(false);
+                    selectedSpineView.SetActive(true);
+                }
             }
 
             var recipeRow = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
@@ -238,6 +252,35 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
             _selectedOutfit?.Selected.SetValueAndForceNotify(false);
             _selectedOutfit = null;
+        }
+
+        private void SetCharacter(EquipmentItemSheet.Row equipmentRow)
+        {
+            var game = Game.Game.instance;
+            var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
+
+            if (equipmentRow is not null)
+            {
+                var maxLevel = game.TableSheets.EnhancementCostSheetV3.Values
+                    .Where(row =>
+                        row.ItemSubType == equipmentRow.ItemSubType &&
+                        row.Grade == equipmentRow.Grade)
+                    .Max(row => row.Level);
+
+                var resultItem = (Equipment)ItemFactory.CreateItemUsable(
+                    equipmentRow, Guid.NewGuid(), 0L, maxLevel);
+                resultItem.IconId = _selectedOutfit.IconRow.Value.IconId;
+
+                var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
+                var aura = equipments.FirstOrDefault(e => e.ItemSubType == ItemSubType.Aura);
+                equipments.Remove(sameType);
+                equipments.Remove(aura);
+                equipments.Add(resultItem);
+            }
+
+            var avatarState = game.States.CurrentAvatarState;
+            game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
+            game.Lobby.FriendCharacter.Animator.Attack();
         }
     }
 }
