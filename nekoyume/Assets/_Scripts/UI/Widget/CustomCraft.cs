@@ -273,6 +273,8 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
             _selectedOutfit?.Selected.SetValueAndForceNotify(false);
             _selectedOutfit = null;
+            _disposable?.Dispose();
+            _disposable = null;
         }
 
         private void SetCharacter(EquipmentItemSheet.Row equipmentRow, int iconId)
