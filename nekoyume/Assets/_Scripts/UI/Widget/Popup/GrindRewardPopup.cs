@@ -1,3 +1,6 @@
+using System.Linq;
+using Libplanet.Types.Assets;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,12 +22,15 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() => Close());
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(
+            FungibleAssetValue[] favRewards,
+            (ItemBase itemBase, int count)[] itemRewards,
+            bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
-            // Todo : Implement
-            var models = new GrindRewardCell.Model[5];
+            var models = favRewards.Select(favReward => new GrindRewardCell.Model(favReward)).ToList();
+            models.AddRange(itemRewards.Select(itemReward => new GrindRewardCell.Model(itemReward)));
 
             scroll.UpdateData(models);
         }

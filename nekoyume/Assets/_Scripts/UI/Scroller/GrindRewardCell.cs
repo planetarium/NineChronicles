@@ -1,4 +1,5 @@
 using Libplanet.Types.Assets;
+using Nekoyume.Model.Item;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,8 +10,18 @@ namespace Nekoyume.UI.Scroller
     {
         public class Model
         {
-            public FungibleAssetValue FungibleAssetValue;
-            public int Count;
+            public (ItemBase itemBase, int count)? Item;
+            public FungibleAssetValue? FungibleAssetValue;
+
+            public Model((ItemBase itemBase, int count) item)
+            {
+                Item = item;
+            }
+
+            public Model(FungibleAssetValue value)
+            {
+                FungibleAssetValue = value;
+            }
         }
 
         [SerializeField]
@@ -24,9 +35,18 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(Model itemData)
         {
-            iconImage.overrideSprite = itemData.FungibleAssetValue.GetIconSprite();
-            nameText.text = itemData.FungibleAssetValue.GetLocalizedName();
-            countText.text = itemData.Count.ToCurrencyNotation();
+            if (itemData.Item is not null)
+            {
+                iconImage.overrideSprite = itemData.Item.Value.itemBase.GetIconSprite();
+                nameText.text = itemData.Item.Value.itemBase.GetLocalizedName();
+                countText.text = itemData.Item.Value.count.ToString();
+            }
+            else if (itemData.FungibleAssetValue is not null)
+            {
+                iconImage.overrideSprite = itemData.FungibleAssetValue.Value.GetIconSprite();
+                nameText.text = itemData.FungibleAssetValue.Value.GetLocalizedName();
+                countText.text = itemData.FungibleAssetValue.Value.MajorUnit.ToCurrencyNotation();
+            }
         }
     }
 }

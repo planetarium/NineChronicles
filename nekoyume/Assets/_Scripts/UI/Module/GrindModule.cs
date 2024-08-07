@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Libplanet.Types.Assets;
+using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -301,14 +302,64 @@ namespace Nekoyume.UI.Module
                 reward.gameObject.SetActive(false);
             }
 
+            var equipmentsForGrind = _selectedItemsForGrind
+                .Select(inventoryItem => (Equipment)inventoryItem.ItemBase).ToList();
+
             var crystalReward = CrystalCalculator.CalculateCrystal(
-                _selectedItemsForGrind.Select(item => (Equipment)item.ItemBase),
+                equipmentsForGrind,
                 false,
                 TableSheets.Instance.CrystalEquipmentGrindingSheet,
                 TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
                 States.Instance.StakingLevel);
-            grindRewards[0].gameObject.SetActive(true);
-            grindRewards[0].SetCrystalReward(crystalReward);
+            var favRewards = new[] { crystalReward };
+
+            // Todo : Fix ordering conditions (refer the inventory `GetOrganizedMaterials` method)
+            var dustIds = new[]
+            {
+                CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
+            }.Select(cost => (int)cost).ToArray();
+            var usableItemIds = new[] { (int)CostType.ApPotion, 400000 };  // 400000 : Hourglass
+            var itemRewards = Grinding.CalculateMaterialReward(
+                    equipmentsForGrind,
+                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                    TableSheets.Instance.MaterialItemSheet)
+                .OrderByDescending(pair => dustIds.Contains(pair.Key.Id))
+                .ThenByDescending(pair => usableItemIds.Contains(pair.Key.Id))
+                .ThenByDescending(pair => ItemEnhancement.HammerIds.Contains(pair.Key.Id))
+                .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
+
+            var buttonEnabled = favRewards.Length + itemRewards.Length > grindRewards.Length;
+            var rewardViewCount = buttonEnabled ? grindRewards.Length - 1 : grindRewards.Length;
+
+            // Update reward view
+            var index = 0;
+            for (var i = 0; i < favRewards.Length && index < rewardViewCount; i++)
+            {
+                var reward = favRewards[i];
+                var rewardView = grindRewards[index];
+                rewardView.gameObject.SetActive(true);
+                rewardView.SetCrystalReward(reward);
+                index++;
+            }
+
+            for (var i = 0; i < itemRewards.Length && index < rewardViewCount; i++)
+            {
+                var reward = itemRewards[i];
+                var rewardView = grindRewards[index];
+                rewardView.gameObject.SetActive(true);
+                rewardView.SetItemReward(reward);
+                index++;
+            }
+
+            if (buttonEnabled)
+            {
+                var buttonRewardView = grindRewards[index];
+                buttonRewardView.gameObject.SetActive(true);
+                buttonRewardView.SetButton(() =>
+                {
+                    Widget.Find<GrindRewardPopup>().Show(favRewards, itemRewards);
+                });
+            }
         }
 
         #region Action

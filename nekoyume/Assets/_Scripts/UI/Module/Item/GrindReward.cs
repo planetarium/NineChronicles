@@ -1,4 +1,5 @@
 using Libplanet.Types.Assets;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Tween;
 using UnityEngine;
 using UnityEngine.Events;
@@ -17,7 +18,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button moreInfoButton;
 
-        private FungibleAssetValue _cachedGrindingReward;
+        private long _cachedGrindingReward;
 
         public void SetCrystalReward(FungibleAssetValue reward)
         {
@@ -27,11 +28,22 @@ namespace Nekoyume.UI.Module
 
             iconImage.sprite = reward.GetIconSprite();
 
-            var prevCrystalReward = _cachedGrindingReward.MajorUnit;
-            _cachedGrindingReward = reward;
-            rewardTweener.PlayWithNotation(
-                (long)prevCrystalReward,
-                (long)_cachedGrindingReward.MajorUnit);
+            var prevReward = _cachedGrindingReward;
+            _cachedGrindingReward = (long)reward.MajorUnit;
+            rewardTweener.PlayWithNotation(prevReward, _cachedGrindingReward);
+        }
+
+        public void SetItemReward((ItemBase itemBase, int count) reward)
+        {
+            iconImage.gameObject.SetActive(true);
+            rewardTweener.gameObject.SetActive(true);
+            moreInfoButton.gameObject.SetActive(false);
+
+            iconImage.sprite = reward.itemBase.GetIconSprite();
+
+            var prevReward = _cachedGrindingReward;
+            _cachedGrindingReward = reward.count;
+            rewardTweener.PlayWithNotation(prevReward, _cachedGrindingReward);
         }
 
         public void SetButton(UnityAction onClick)
