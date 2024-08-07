@@ -64,8 +64,7 @@ namespace Nekoyume.Pattern
 
         protected virtual void Awake()
         {
-            if (_instance &&
-                _instance != this)
+            if (_instance && _instance != this)
             {
                 NcDebug.LogWarning($"{typeof(T)} already exist!");
                 Destroy(gameObject);
@@ -95,6 +94,7 @@ namespace Nekoyume.Pattern
         /// </summary>
         protected virtual void OnDestroy()
         {
+            Debug.Log($"OnDestroy MonoSingleton: {typeof(T)}");
         }
 
         protected virtual void OnApplicationQuit()

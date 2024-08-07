@@ -437,7 +437,8 @@
         <member name="M:Libplanet.Blockchain.BlockChain.EvaluateAndSign(Libplanet.Types.Blocks.PreEvaluationBlock,Libplanet.Crypto.PrivateKey)">
             <summary>
             Evaluates all actions in the <see cref="P:Libplanet.Types.Blocks.PreEvaluationBlock.Transactions"/> and
-            an optional <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy.BlockAction"/>, and returns
+            optional <see cref="T:Libplanet.Action.IAction"/>s in
+            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy.PolicyActionsRegistry"/> and returns
             a <see cref="T:Libplanet.Types.Blocks.Block"/> instance combined with the <see cref="P:Libplanet.Types.Blocks.Block.StateRootHash"/>
             The returned <see cref="T:Libplanet.Types.Blocks.Block"/> is signed by the given <paramref name="privateKey"/>.
             </summary>
@@ -970,7 +971,7 @@
             A default implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy"/> interface.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Tx.Transaction,Libplanet.Types.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.BlockPolicyViolationException},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int64})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy.#ctor(Libplanet.Action.PolicyActionsRegistry,System.Nullable{System.TimeSpan},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Tx.Transaction,Libplanet.Types.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.BlockPolicyViolationException},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int64})">
             <summary>
             <para>
             Creates a default <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy"/> instance.
@@ -980,9 +981,8 @@
             description for more detail.
             </para>
             </summary>
-            <param name="blockAction">A <see cref="T:Libplanet.Action.IAction"/> to executed for
-            every <see cref="T:Libplanet.Types.Blocks.Block"/>.  Set to <see langword="null"/> by default, which results
-            in no additional execution other than those included in <see cref="T:Libplanet.Types.Tx.Transaction"/>s.
+            <param name="policyActionsRegistry">
+            A class containing policy actions to evaluate at each situation.
             </param>
             <param name="blockInterval">Goes to <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy.BlockInterval"/>.
             Set to <see cref="F:Libplanet.Blockchain.Policies.BlockPolicy.DefaultTargetBlockInterval"/> by default.
@@ -1015,9 +1015,6 @@
             pending duration of <see cref="T:Libplanet.Types.Evidence.EvidenceBase"/> to be committed.
             Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy.GetMaxEvidencePendingDuration(System.Int64)"/>.  Set to a constant function
             of <c>10</c> by default.</param>
-        </member>
-        <member name="P:Libplanet.Blockchain.Policies.BlockPolicy.BlockAction">
-            <inheritdoc/>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy.BlockInterval">
             <summary>
@@ -1060,9 +1057,9 @@
             </para>
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy.BlockAction">
+        <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy.PolicyActionsRegistry">
             <summary>
-            An <see cref="T:Libplanet.Action.IAction"/> to execute and be rendered for every block, if any.
+            A set of policy <see cref="T:Libplanet.Action.IAction"/>s to evaluate at each situation.
             </summary>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy.ValidateNextBlockTx(Libplanet.Blockchain.BlockChain,Libplanet.Types.Tx.Transaction)">

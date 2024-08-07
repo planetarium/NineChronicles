@@ -37,6 +37,8 @@ namespace BalanceTool.Util
 
         public int RandomSeed { get; set; }
 
+        public bool IsPolicyAction { get; }
+
         public HashDigest<SHA256>? PreviousStateRootHash { get; set; }
 
         public bool BlockAction { get; }

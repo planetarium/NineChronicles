@@ -137,9 +137,12 @@ namespace Nekoyume.UI
 
             cancelButton.onClick.AddListener(() => Close());
 
-            CloseWidget = () => { Close(); };
-
             base.Awake();
+
+            CloseWidget = () =>
+            {
+                Close(); 
+            };
         }
 
         public void Show(
@@ -413,8 +416,7 @@ namespace Nekoyume.UI
 
             var earnedExp = GetEarnedExp(avatarState, stageRow, apPlayCount, apStonePlayCount);
 
-            Find<SweepResultPopup>()
-                .Show(stageRow, worldId, apPlayCount, apStonePlayCount, earnedExp);
+            Find<SweepResultPopup>().Show(stageRow, worldId, apPlayCount, apStonePlayCount, earnedExp);
         }
     }
 }
