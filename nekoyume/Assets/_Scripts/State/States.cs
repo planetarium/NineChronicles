@@ -604,7 +604,8 @@ namespace Nekoyume.State
                 agent.GetStateAsync(ReservedAddresses.LegacyAccount, skillStateAddress),
                 agent.GetStateAsync(Addresses.Collection, avatarAddr),
                 agent.GetStateAsync(Addresses.ActionPoint, avatarAddr),
-                agent.GetStateAsync(Addresses.DailyReward, avatarAddr));
+                agent.GetStateAsync(Addresses.DailyReward, avatarAddr),
+                agent.GetStateAsync(Addresses.Relationship, avatarAddr));
             SetCrystalRandomSkillState(listStates[0] is List serialized
                 ? new CrystalRandomSkillState(skillStateAddress, serialized)
                 : null);
@@ -617,6 +618,9 @@ namespace Nekoyume.State
             ReactiveAvatarState.UpdateDailyRewardReceivedIndex(listStates[3] is Integer index
                 ? index
                 : curAvatarState.dailyRewardReceivedIndex);
+            ReactiveAvatarState.UpdateProficiency(listStates[4] is Integer proficiency
+                ? proficiency
+                : 0);
 
             var allCombinationSlotState = await agent.GetAllCombinationSlotStateAsync(curAvatarState.address);
             SetAllCombinationSlotState(avatarAddr, allCombinationSlotState);

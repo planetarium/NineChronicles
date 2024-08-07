@@ -28,6 +28,7 @@ using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using mixpanel;
+using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Action.Garages;
 using Nekoyume.ApiClient;
 using Nekoyume.Arena;
@@ -166,6 +167,7 @@ namespace Nekoyume.Blockchain
             EventMaterialItemCrafts();
             AuraSummon();
             RuneSummon();
+            CustomEquipmentCraft();
 
             // Market
             RegisterProduct();
@@ -757,6 +759,18 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareMintAssets)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMintAssets)
+                .AddTo(_disposables);
+        }
+
+        private void CustomEquipmentCraft()
+        {
+            _actionRenderer.EveryRender<CustomEquipmentCraft>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Select(PrepareCustomEquipmentCraft)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCustomEquipmentCraft)
                 .AddTo(_disposables);
         }
 
@@ -4151,6 +4165,87 @@ namespace Nekoyume.Blockchain
         private void ExceptionSweepAdventureBoss(ActionEvaluation<SweepAdventureBoss> evaluation)
         {
             StageExceptionHandle(evaluation.Exception?.InnerException);
+        }
+
+        private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
+            ActionEvaluation<CustomEquipmentCraft> eval)
+        {
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.AvatarAddress;
+            var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
+            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
+
+            if (StateGetter.TryGetAvatarState(
+                eval.OutputState,
+                agentAddress,
+                avatarAddress,
+                out var avatarState))
+            {
+                // TODO: resultModel 날아오기 시작하면 추가해야됨
+                // foreach (var pair in result.materials)
+                // {
+                //     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
+                // }
+
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
+            }
+
+            ReactiveAvatarState.UpdateProficiency(
+                (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
+            );
+
+            return (eval, slot);
+        }
+
+        private void ResponseCustomEquipmentCraft((ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) prepared)
+        {
+            var (evaluation, slot) = prepared;
+            var agentAddress = evaluation.Signer;
+            var avatarAddress = evaluation.Action.AvatarAddress;
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
+
+            UniTask.RunOnThreadPool(() =>
+            {
+                LocalLayerModifier.ModifyAgentGold(evaluation, agentAddress,
+                    result.gold);
+            });
+
+            // TODO: 장비 메일 날아오기 시작하면 추가해야됨
+            // LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+
+            // Notify
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            NotificationSystem.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId);
+
+            var slotIndex = evaluation.Action.CraftList.FirstOrDefault().SlotIndex;
+            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            if (blockCount >= WorkshopNotifiedBlockCount)
+            {
+                var expectedNotifiedTime =
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount));
+                var notificationText = L10nManager.Localize(
+                    "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
+                    result.itemUsable.GetLocalizedNonColoredName(false));
+                var identifier = PushNotifier.Push(
+                    notificationText,
+                    expectedNotifiedTime,
+                    PushNotifier.PushType.Workshop);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                PlayerPrefs.SetString(pushIdentifierKey, identifier);
+            }
+
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
+            // ~Notify
+
+            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
     }
 }

@@ -17,6 +17,11 @@ namespace Nekoyume
     {
         public static Sprite GetIconSprite(this ItemBase item)
         {
+            if (item is Equipment equipment)
+            {
+                return SpriteHelper.GetItemIcon(equipment.IconId);
+            }
+
             return SpriteHelper.GetItemIcon(item.Id);
         }
 
