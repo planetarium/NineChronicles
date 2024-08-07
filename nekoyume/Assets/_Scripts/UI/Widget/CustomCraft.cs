@@ -169,7 +169,9 @@ namespace Nekoyume.UI
             var scrollData = new List<CustomOutfit> {new(null)};
             scrollData.AddRange(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubType)
-                .Select(r => new CustomOutfit(r)));
+                .Select(r => new CustomOutfit(r))
+                .OrderBy(r => r.IconRow.Value.RequiredRelationship)
+                .ThenBy(r => r.IconRow.Value.RandomOnly));
             outfitScroll.UpdateData(scrollData);
             _selectedOutfit = null;
             notSelected.SetActive(true);
