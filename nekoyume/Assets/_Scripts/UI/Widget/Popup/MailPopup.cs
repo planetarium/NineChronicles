@@ -746,7 +746,7 @@ namespace Nekoyume.UI
                     var sku = MailExtensions.GetSkuFromMemo(unloadFromMyGaragesRecipientMail.Memo);
                     if (!string.IsNullOrEmpty(sku))
                     {
-                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == sku || _.Value.AppleSku == sku);
+                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.CheckSku(sku));
                         if (findKey.Value != null)
                         {
                             iapProductFindComplete = true;

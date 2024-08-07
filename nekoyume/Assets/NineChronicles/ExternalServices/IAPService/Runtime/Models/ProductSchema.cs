@@ -16,6 +16,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("apple_sku")]
         public string AppleSku { get; set; }
 
+        [JsonPropertyName("apple_sku_k")]
+        public string AppleSkuK { get; set; }
+
+        public bool CheckSku(string sku)
+        {
+            return GoogleSku == sku || AppleSku == sku || AppleSkuK == sku;
+        }
+
         public string Sku
         {
             get
