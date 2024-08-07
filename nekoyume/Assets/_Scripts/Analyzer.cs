@@ -86,18 +86,30 @@ namespace Nekoyume
 
         private void HandleLog(string condition, string stackTrace, LogType type)
         {
-            if (type == LogType.Error || type == LogType.Assert || type == LogType.Exception)
+            var options = Game.Game.instance.CommandLineOptions;
+            if (options == null)
+                return;
+
+            bool shouldTrack = type switch
             {
-                string eventName = $"Unity/Debug/{type}";
+                LogType.Error => options.MixpanelDebugError,
+                LogType.Assert => options.MixpanelDebugAssert,
+                LogType.Warning => options.MixpanelDebugWarning,
+                LogType.Exception => options.MixpanelDebugException,
+                LogType.Log => false,
+                _ => false
+            };
 
-                var mixpanelValues = new Value
-                {
-                    ["condition"] = condition,
-                    ["stackTrace"] = stackTrace
-                };
+            if (!shouldTrack)
+                return;
 
-                Mixpanel.Track(eventName, mixpanelValues);
-            }
+            string eventName = $"Unity/Debug/{type}";
+            var mixpanelValues = new Value
+            {
+                ["condition"] = condition,
+                ["stackTrace"] = stackTrace
+            };
+            Mixpanel.Track(eventName, mixpanelValues);
         }
 
         public static void SetAgentAddress(string? addressString)
