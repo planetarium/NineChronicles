@@ -92,7 +92,8 @@ namespace Nekoyume.UI
 
         private ItemSubType _selectedSubType;
 
-        private IDisposable _disposable;
+        private List<IDisposable> _disposables = new();
+        private IDisposable _outfitAnimationDisposable;
 
         protected override void Awake()
         {
@@ -140,6 +141,12 @@ namespace Nekoyume.UI
             selectedView.SetActive(false);
             SetRelationshipView(ReactiveAvatarState.Relationship);
             OnItemSubtypeSelected(ItemSubType.Weapon);
+            ReactiveAvatarState.Inventory
+                .Where(_ => _selectedOutfit != null)
+                .Subscribe(_ =>
+                {
+                    OnOutfitSelected(_selectedOutfit);
+                }).AddTo(_disposables);
         }
 
         /// <summary>
@@ -202,7 +209,7 @@ namespace Nekoyume.UI
 
         private void OnOutfitSelected(CustomOutfit outfit)
         {
-            _disposable?.Dispose();
+            _outfitAnimationDisposable?.Dispose();
             if (_selectedOutfit != null)
             {
                 _selectedOutfit.Selected.Value = false;
@@ -255,7 +262,7 @@ namespace Nekoyume.UI
                             row.ItemSubType == _selectedSubType && row.RequiredRelationship <=
                             ReactiveAvatarState.Relationship)
                         .Select(row => row.IconId).ToList();
-                    _disposable = outfitIconIds.ObservableIntervalLoopingList(.5f)
+                    _outfitAnimationDisposable = outfitIconIds.ObservableIntervalLoopingList(.5f)
                         .Subscribe(index => routine(index));
                 }
             }
@@ -285,8 +292,9 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
             _selectedOutfit?.Selected.SetValueAndForceNotify(false);
             _selectedOutfit = null;
-            _disposable?.Dispose();
-            _disposable = null;
+            _outfitAnimationDisposable?.Dispose();
+            _outfitAnimationDisposable = null;
+            _disposables.DisposeAllAndClear();
         }
 
         private void SetCharacter(EquipmentItemSheet.Row equipmentRow, int iconId)
