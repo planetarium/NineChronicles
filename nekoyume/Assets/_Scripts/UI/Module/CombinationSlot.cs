@@ -358,7 +358,7 @@ namespace Nekoyume.UI.Module
             }
 
             var inventory = States.Instance.CurrentAvatarState.inventory;
-            var count = inventory.GetUsableItemCount((int)CostType.Hourglass, blockIndex);
+            var count = inventory.GetUsableItemCount(CostType.Hourglass, blockIndex);
             hourglassCountText.text = cost.ToString();
             hourglassCountText.color = count >= cost
                 ? Palette.GetColor(ColorType.ButtonEnabled)

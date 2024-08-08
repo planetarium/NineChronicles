@@ -80,6 +80,21 @@ namespace Nekoyume
             }).Sum(item => item.count);
         }
 
+        public static int GetUsableItemCount(this Inventory inventory, CostType type, long blockIndex)
+        {
+            if ((int)type > 100000)
+            {
+                return GetUsableItemCount(inventory, (int)type, blockIndex);
+            }
+
+            if (type == CostType.Hourglass)
+            {
+                return GetUsableItemCount(inventory, 400000, blockIndex);
+            }
+
+            return 0;
+        }
+
         public static bool HasNotification(
             this Inventory inventory,
             int level,

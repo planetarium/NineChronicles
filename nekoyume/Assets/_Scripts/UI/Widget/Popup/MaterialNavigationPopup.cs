@@ -258,7 +258,7 @@ namespace Nekoyume.UI
                 case CostType.Hourglass:
                     itemId = 9999997;
                     var hourglassCount = States.Instance.CurrentAvatarState.inventory
-                        .GetUsableItemCount((int)costType, Game.Game.instance.Agent.BlockIndex);
+                        .GetUsableItemCount(costType, Game.Game.instance.Agent.BlockIndex);
                     count = hourglassCount.ToString();
                     buttonText = L10nManager.Localize("UI_COMBINATION");
                     callback = () => { Find<CombinationSlotsPopup>().Show(); };

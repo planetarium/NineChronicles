@@ -236,7 +236,7 @@ namespace Nekoyume.UI.Module
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var apStoneCount = Game.Game.instance.States.CurrentAvatarState.inventory
-                .GetUsableItemCount((int)CostType.ApPotion, blockIndex);
+                .GetUsableItemCount(CostType.ApPotion, blockIndex);
 
             var itemCountText = $"{sliderAnimator.Value}/{sliderAnimator.MaxValue}";
             var blockRange = (long)dailyBonus.sliderAnimator.Value;
