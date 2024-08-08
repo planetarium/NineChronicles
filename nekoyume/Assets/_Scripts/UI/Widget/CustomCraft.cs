@@ -37,11 +37,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private SubTypeButton[] subTypeButtons;
 
-        // [SerializeField]
-        // private ConditionalCostButton conditionalCostButton;
-
         [SerializeField]
-        private Button craftButton;
+        private ConditionalCostButton conditionalCostButton;
 
         [SerializeField]
         private Button relationshipHelpButton;
@@ -131,7 +128,8 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             outfitScroll.OnClick.Subscribe(OnOutfitSelected).AddTo(gameObject);
-            craftButton.onClick.AddListener(OnClickSubmitButton);
+            conditionalCostButton.OnSubmitSubject.Subscribe(_ => OnClickSubmitButton())
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -267,7 +265,11 @@ namespace Nekoyume.UI
             );
 
             requiredItemRecipeView.SetData(materialCosts.Select(pair => new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value)).ToList(), true);
-            craftButton.interactable = !_selectedOutfit.RandomOnly.Value;
+            conditionalCostButton.SetCondition(() => !_selectedOutfit.RandomOnly.Value);
+            conditionalCostButton.Interactable =
+                (_selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0) <=
+                ReactiveAvatarState.Relationship;
+            conditionalCostButton.UpdateObjects();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -310,7 +312,7 @@ namespace Nekoyume.UI
 
         private IDisposable OnSelectRandomOutfit(Action<int> routine, IReadOnlyList<int> ids)
         {
-            return Observable.Interval(TimeSpan.FromSeconds(1))
+            return Observable.Interval(TimeSpan.FromSeconds(.5))
                 .Subscribe(second => routine(ids[(int) (second % ids.Count)]));
         }
     }
