@@ -186,10 +186,15 @@ namespace Nekoyume.UI
 
             if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
             {
-                // TODO: 전부 다 CustomEquipmentCraft 관련 sheet에서 가져오게 바꿔야함
+                var recipe = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
+                    r.ItemSubType == _selectedSubType);
+                Find<CombinationSlotsPopup>().SetCaching(
+                    States.Instance.CurrentAvatarState.address,
+                    slotIndex,
+                    true,
+                    recipe.RequiredBlock);
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
-                        TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
-                            r.ItemSubType == _selectedSubType).Id,
+                        recipe.Id,
                         _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
                     .Subscribe();
             }
@@ -297,15 +302,15 @@ namespace Nekoyume.UI
                         row.Grade == equipmentRow.Grade)
                     .Max(row => row.Level);
 
-                var resultItem = (Equipment)ItemFactory.CreateItemUsable(
+                var previewItem = (Equipment)ItemFactory.CreateItemUsable(
                     equipmentRow, Guid.NewGuid(), 0L, maxLevel);
-                resultItem.IconId = iconId;
+                previewItem.IconId = iconId;
 
                 equipments.RemoveAll(e =>
                     e.ItemSubType == equipmentRow.ItemSubType ||
                     e.ItemSubType == ItemSubType.Aura ||
                     e.ItemSubType == ItemSubType.FullCostume);
-                equipments.Add(resultItem);
+                equipments.Add(previewItem);
             }
 
             var avatarState = game.States.CurrentAvatarState;
