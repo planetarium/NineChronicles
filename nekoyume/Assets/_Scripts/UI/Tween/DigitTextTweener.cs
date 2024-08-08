@@ -46,5 +46,30 @@ namespace Nekoyume.UI.Tween
 
             Play();
         }
+
+        #region With Notation
+
+        private void PlayWithNotation()
+        {
+            Stop();
+
+            currentTween = DOTween.To(
+                () => beginValue,
+                value => _text.text = value.ToCurrencyNotation(),
+                endValue,
+                duration);
+
+            SetEase().OnComplete(onComplete);
+        }
+
+        public void PlayWithNotation(long beginValue, long endValue)
+        {
+            this.beginValue = beginValue;
+            this.endValue = endValue;
+
+            PlayWithNotation();
+        }
+
+        #endregion
     }
 }

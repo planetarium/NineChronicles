@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UICombinationController_Grind@Close
+  m_Name: GrindModule@Close
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -42,7 +42,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: BackCanvas/Grind
+    path: 
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -61,7 +61,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_BlurMode
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -80,7 +80,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   m_PPtrCurves: []
@@ -92,21 +92,21 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 3614394709
+      path: 0
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 744269212
+      path: 169920591
       attribute: 2207748676
       script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 744269212
+      path: 169920591
       attribute: 4097790204
       script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
       typeID: 114
@@ -159,7 +159,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: BackCanvas/Grind
+    path: 
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -178,7 +178,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_BlurMode
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -197,7 +197,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgGroup
+    path: CenterArea/BgGroup
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   m_EulerEditorCurves: []
@@ -205,7 +205,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.25
-    functionName: OnCompleteOfShowAnimation
+    functionName: OnCompleteOfCloseAnimation
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

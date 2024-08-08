@@ -103,7 +103,8 @@ AnimatorState:
   m_Name: Show
   m_Speed: 1
   m_CycleOffset: 0
-  m_Transitions: []
+  m_Transitions:
+  - {fileID: -2617451285582820231}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
@@ -113,7 +114,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 646bf2cf3a7b1432a9960016ccc6ff66, type: 2}
+  m_Motion: {fileID: 7400000, guid: ac44b29635e82dd49bc5a5b4d18d5fd4, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -446,7 +447,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UICombinationController_Grind_Crystal
+  m_Name: GrindModule
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Show
@@ -563,7 +564,7 @@ AnimatorStateTransition:
   m_TransitionDuration: 0
   m_TransitionOffset: 0
   m_ExitTime: 0
-  m_HasExitTime: 1
+  m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
@@ -616,7 +617,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: EmptySlot
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8557234013457071224}
   m_Solo: 0
@@ -625,9 +629,9 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0
   m_TransitionOffset: 0
-  m_ExitTime: 1
+  m_ExitTime: 0
   m_HasExitTime: 1
-  m_HasFixedDuration: 1
+  m_HasFixedDuration: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
@@ -682,6 +686,21 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: -7464239818030618749}
     m_Position: {x: 70, y: -320, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -7708328720645422366}
+    m_Position: {x: -190, y: -90, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -8557234013457071224}
+    m_Position: {x: 70, y: -250, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -5446087834298433442}
+    m_Position: {x: 200, y: -90, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 6539249050901058447}
+    m_Position: {x: 460, y: -90, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -5638137191225546869}
+    m_Position: {x: 60, y: 20, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
