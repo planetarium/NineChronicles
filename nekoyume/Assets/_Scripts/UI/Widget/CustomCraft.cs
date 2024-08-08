@@ -95,6 +95,8 @@ namespace Nekoyume.UI
 
         private ItemSubType _selectedSubType;
 
+        private IDisposable _disposable;
+
         protected override void Awake()
         {
             base.Awake();
@@ -167,7 +169,9 @@ namespace Nekoyume.UI
             var scrollData = new List<CustomOutfit> {new(null)};
             scrollData.AddRange(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubType)
-                .Select(r => new CustomOutfit(r)));
+                .Select(r => new CustomOutfit(r))
+                .OrderBy(r => r.IconRow.Value.RequiredRelationship)
+                .ThenBy(r => r.IconRow.Value.RandomOnly));
             outfitScroll.UpdateData(scrollData);
             _selectedOutfit = null;
             notSelected.SetActive(true);
@@ -195,6 +199,7 @@ namespace Nekoyume.UI
 
         private void OnOutfitSelected(CustomOutfit outfit)
         {
+            _disposable?.Dispose();
             if (_selectedOutfit != null)
             {
                 _selectedOutfit.Selected.Value = false;
@@ -207,27 +212,48 @@ namespace Nekoyume.UI
             selectedView.SetActive(true);
             selectedImageView.SetActive(true);
             selectedSpineView.SetActive(false);
-            outfitNameText.SetText(_selectedOutfit.IconRow.Value is not null ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId) : "Random");
+            // 외형 랜덤 선택
+            var selectRandomOutfit = _selectedOutfit.IconRow.Value == null;
+            outfitNameText.SetText(!selectRandomOutfit ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId) : "Random");
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
             var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
             var equipmentItemSheet = TableSheets.Instance.EquipmentItemSheet;
             if (equipmentItemSheet.TryGetValue(equipmentItemId, out var equipmentRow))
             {
-                // TODO: 싹 다 시안에 맞춰서 표현 방식을 변경해야한다. 지금은 외형을 선택하면 시트에서 잘 가져오는지 보려고 했다.
                 baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
                 expText.SetText($"EXP {equipmentRow.Exp!.Value.ToCurrencyNotation()}");
                 cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
                 requiredBlockText.SetText(
                     $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
                 requiredLevelText.SetText($"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
-                selectedOutfitImage.overrideSprite =
-                    SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value?.IconId ?? 0);
-                if (equipmentRow.ItemSubType is ItemSubType.Armor or ItemSubType.Weapon)
+
+                var viewSpinePreview =
+                    equipmentRow.ItemSubType is ItemSubType.Armor or ItemSubType.Weapon;
+                selectedImageView.SetActive(!viewSpinePreview);
+                selectedSpineView.SetActive(viewSpinePreview);
+                if (!selectRandomOutfit)
                 {
-                    SetCharacter(equipmentRow);
-                    selectedImageView.SetActive(false);
-                    selectedSpineView.SetActive(true);
+                    selectedOutfitImage.overrideSprite = SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value.IconId);
+                    if (viewSpinePreview)
+                    {
+                        SetCharacter(equipmentRow, _selectedOutfit.IconRow.Value.IconId);
+                    }
+                }
+                else
+                {
+                    Action<int> routine = viewSpinePreview
+                        ? iconId => SetCharacter(equipmentRow, iconId)
+                        : iconId =>
+                            selectedOutfitImage.overrideSprite =
+                                SpriteHelper.GetItemIcon(iconId);
+                    var outfitIconIds = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
+                        .Where(row =>
+                            row.ItemSubType == _selectedSubType && row.RequiredRelationship <=
+                            ReactiveAvatarState.Relationship)
+                        .Select(row => row.IconId).ToList();
+                    _disposable = outfitIconIds.ObservableIntervalLoopingList(.5f)
+                        .Subscribe(index => routine(index));
                 }
             }
 
@@ -252,9 +278,11 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
             _selectedOutfit?.Selected.SetValueAndForceNotify(false);
             _selectedOutfit = null;
+            _disposable?.Dispose();
+            _disposable = null;
         }
 
-        private void SetCharacter(EquipmentItemSheet.Row equipmentRow)
+        private void SetCharacter(EquipmentItemSheet.Row equipmentRow, int iconId)
         {
             var game = Game.Game.instance;
             var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
@@ -269,12 +297,12 @@ namespace Nekoyume.UI
 
                 var resultItem = (Equipment)ItemFactory.CreateItemUsable(
                     equipmentRow, Guid.NewGuid(), 0L, maxLevel);
-                resultItem.IconId = _selectedOutfit.IconRow.Value.IconId;
+                resultItem.IconId = iconId;
 
-                var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
-                var aura = equipments.FirstOrDefault(e => e.ItemSubType == ItemSubType.Aura);
-                equipments.Remove(sameType);
-                equipments.Remove(aura);
+                equipments.RemoveAll(e =>
+                    e.ItemSubType == equipmentRow.ItemSubType ||
+                    e.ItemSubType == ItemSubType.Aura ||
+                    e.ItemSubType == ItemSubType.FullCostume);
                 equipments.Add(resultItem);
             }
 
