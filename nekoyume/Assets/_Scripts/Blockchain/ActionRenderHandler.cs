@@ -181,9 +181,10 @@ namespace Nekoyume.Blockchain
             ChargeActionPoint();
             ClaimStakeReward();
 
-            // Crystal Unlocks
+            // Unlocks
             UnlockEquipmentRecipe();
             UnlockWorld();
+            UnlockCombinationSlot();
 
             // Arena
             InitializeArenaActions();
@@ -634,6 +635,17 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareUnlockRuneSlot)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockRuneSlot)
+                .AddTo(_disposables);
+        }
+
+        private void UnlockCombinationSlot()
+        {
+            _actionRenderer.EveryRender<UnlockCombinationSlot>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockCombinationSlot)
                 .AddTo(_disposables);
         }
 
@@ -3123,6 +3135,18 @@ namespace Nekoyume.Blockchain
                 MailType.Workshop,
                 L10nManager.Localize("UI_MESSAGE_RUNE_SLOT_OPEN"),
                 NotificationCell.NotificationType.Notification);
+        }
+
+        private void ResponseUnlockCombinationSlot(ActionEvaluation<UnlockCombinationSlot> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                // TODO: UI 업데이트
+            });
         }
 
         private ActionEvaluation<PetEnhancement> PreparePetEnhancement(ActionEvaluation<PetEnhancement> eval)
