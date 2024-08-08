@@ -195,7 +195,7 @@ namespace Nekoyume.Blockchain
                 Log.Error(
                     e,
                     "Unexpected error occurred during {CombinationSlotStateName}()",
-                    nameof(GetCombinationSlotState));
+                    nameof(GetRedeemCodeState));
                 throw;
             }
         }
