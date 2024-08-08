@@ -240,15 +240,18 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    _disposable = OnSelectRandomOutfit(
-                        viewSpinePreview
-                            ? iconId => SetCharacter(equipmentRow, iconId)
-                            : iconId =>
-                                selectedOutfitImage.overrideSprite =
-                                    SpriteHelper.GetItemIcon(iconId),
-                        TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
-                            .Where(row => row.ItemSubType == _selectedSubType && row.RequiredRelationship <= ReactiveAvatarState.Relationship)
-                            .Select(row => row.IconId).ToList());
+                    Action<int> routine = viewSpinePreview
+                        ? iconId => SetCharacter(equipmentRow, iconId)
+                        : iconId =>
+                            selectedOutfitImage.overrideSprite =
+                                SpriteHelper.GetItemIcon(iconId);
+                    var outfitIconIds = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
+                        .Where(row =>
+                            row.ItemSubType == _selectedSubType && row.RequiredRelationship <=
+                            ReactiveAvatarState.Relationship)
+                        .Select(row => row.IconId).ToList();
+                    _disposable = outfitIconIds.ObservableIntervalLoopingList(.5f)
+                        .Subscribe(index => routine(index));
                 }
             }
 
@@ -298,22 +301,16 @@ namespace Nekoyume.UI
                     equipmentRow, Guid.NewGuid(), 0L, maxLevel);
                 resultItem.IconId = iconId;
 
-                var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
-                var aura = equipments.FirstOrDefault(e => e.ItemSubType == ItemSubType.Aura);
-                equipments.Remove(sameType);
-                equipments.Remove(aura);
+                equipments.RemoveAll(e =>
+                    e.ItemSubType == equipmentRow.ItemSubType ||
+                    e.ItemSubType == ItemSubType.Aura ||
+                    e.ItemSubType == ItemSubType.FullCostume);
                 equipments.Add(resultItem);
             }
 
             var avatarState = game.States.CurrentAvatarState;
             game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
             game.Lobby.FriendCharacter.Animator.Attack();
-        }
-
-        private IDisposable OnSelectRandomOutfit(Action<int> routine, IReadOnlyList<int> ids)
-        {
-            return Observable.Interval(TimeSpan.FromSeconds(.5))
-                .Subscribe(second => routine(ids[(int) (second % ids.Count)]));
         }
     }
 }

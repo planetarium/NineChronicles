@@ -86,8 +86,6 @@ namespace Nekoyume.UI.Module
 
         public static bool CheckCostOfType(CostType type, long cost)
         {
-            Nekoyume.Model.Item.Inventory inventory;
-
             switch (type)
             {
                 case CostType.NCG:
@@ -96,10 +94,6 @@ namespace Nekoyume.UI.Module
                     return States.Instance.CrystalBalance.MajorUnit >= cost;
                 case CostType.ActionPoint:
                     return ReactiveAvatarState.ActionPoint >= cost;
-                case CostType.Hourglass:
-                    inventory = States.Instance.CurrentAvatarState.inventory;
-                    var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-                    return count >= cost;
                 case CostType.ArenaTicket:
                     return RxProps.ArenaTicketsProgress.Value.currentTickets >= cost;
                 case CostType.EventDungeonTicket:
@@ -109,10 +103,15 @@ namespace Nekoyume.UI.Module
                 case CostType.GoldDust:
                 case CostType.RubyDust:
                 case CostType.EmeraldDust:
+                    var inventory = States.Instance.CurrentAvatarState.inventory;
+                    var count = inventory.GetMaterialCount((int)type);
+                    return count >= cost;
+                case CostType.Hourglass:
                 case CostType.ApPotion:
+                    var blockIndex = Game.Game.instance.Agent.BlockIndex;
                     inventory = States.Instance.CurrentAvatarState.inventory;
-                    var materialCount = inventory.GetMaterialCount((int)type);
-                    return materialCount >= cost;
+                    count = inventory.GetUsableItemCount(type, blockIndex);
+                    return count >= cost;
                 default:
                     return true;
             }
