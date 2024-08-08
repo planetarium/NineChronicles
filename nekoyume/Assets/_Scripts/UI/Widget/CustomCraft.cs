@@ -296,10 +296,10 @@ namespace Nekoyume.UI
                     equipmentRow, Guid.NewGuid(), 0L, maxLevel);
                 resultItem.IconId = iconId;
 
-                var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
-                var aura = equipments.FirstOrDefault(e => e.ItemSubType == ItemSubType.Aura);
-                equipments.Remove(sameType);
-                equipments.Remove(aura);
+                equipments.RemoveAll(e =>
+                    e.ItemSubType == equipmentRow.ItemSubType ||
+                    e.ItemSubType == ItemSubType.Aura ||
+                    e.ItemSubType == ItemSubType.FullCostume);
                 equipments.Add(resultItem);
             }
 
