@@ -808,8 +808,7 @@ namespace Nekoyume.Blockchain
         }
 
         private (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState)
-            PrepareRapidCombination(
-                ActionEvaluation<RapidCombination> eval)
+            PrepareRapidCombination(ActionEvaluation<RapidCombination> eval)
         {
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
@@ -985,7 +984,8 @@ namespace Nekoyume.Blockchain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
-            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
+            var slot = allSlot.GetCombinationSlotState(slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             if (StateGetter.TryGetAvatarState(
@@ -1237,7 +1237,8 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.SlotIndex;
-            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
+            var slot = allSlot.GetCombinationSlotState(slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
             foreach (var pair in result.materials)
@@ -1331,7 +1332,8 @@ namespace Nekoyume.Blockchain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
-            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
+            var slot = allSlot.GetCombinationSlotState(slotIndex);
             var result = (ItemEnhancement13.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
 
@@ -4173,7 +4175,8 @@ namespace Nekoyume.Blockchain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
-            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
+            var slot = allSlot.GetCombinationSlotState(slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             if (StateGetter.TryGetAvatarState(
