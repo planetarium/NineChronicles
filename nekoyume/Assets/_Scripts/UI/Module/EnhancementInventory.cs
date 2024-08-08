@@ -9,6 +9,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -248,6 +249,24 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void Select(ItemSheet.Row row)
+        {
+            var toggle = categoryToggles.FirstOrDefault(x => x.Type == row.ItemSubType);
+            toggle.Toggle.isOn = true;
+
+            var items = _equipments[row.ItemSubType];
+            var item = items.First(item => item.ItemBase.Id == row.Id);
+
+            if (_baseModel is null)
+            {
+                SelectBaseItem(item);
+            }
+            else if (!item.Disabled.Value)
+            {
+                SelectMaterialItem(item);
+            }
+        }
+
         public EnhancementInventoryItem GetEnabledItem(int index)
         {
             return GetModels().ElementAt(index);
@@ -334,7 +353,7 @@ namespace Nekoyume.UI.Module
         {
             if (!_equipments.TryGetValue(_selectedItemSubType.Value, out var equipments))
             {
-                return new List<EnhancementInventoryItem>();
+                equipments = new List<EnhancementInventoryItem>();
             }
 
             if (_grade.Value != Grade.All)

@@ -97,20 +97,24 @@ namespace Nekoyume.State
             _avatarModifierInfo = new ModifierInfo<AvatarStateModifier>(address);
         }
 
-        public void InitializeCombinationSlotsByCurrentAvatarState(AvatarState avatarState)
+        public void InitializeCombinationSlots(AllCombinationSlotState allCombinationSlotState)
         {
-            if (avatarState is null)
+            if (allCombinationSlotState is null)
             {
                 _combinationSlotModifierInfos.Clear();
                 return;
             }
 
-            foreach (var address in avatarState.combinationSlotAddresses.Where(address =>
-                !_combinationSlotModifierInfos.ContainsKey(address)))
+            foreach (var slotState in allCombinationSlotState)
             {
+                if (_combinationSlotModifierInfos.ContainsKey(slotState.address))
+                {
+                    continue;
+                }
+                
                 _combinationSlotModifierInfos.Add(
-                    address,
-                    new ModifierInfo<CombinationSlotStateModifier>(address));
+                    slotState.address,
+                    new ModifierInfo<CombinationSlotStateModifier>(slotState.address));
             }
         }
 
