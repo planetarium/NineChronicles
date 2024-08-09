@@ -326,6 +326,8 @@ namespace Nekoyume.UI.Module
                 .OrderByDescending(pair => dustIds.Contains(pair.Key.Id))
                 .ThenByDescending(pair => usableItemIds.Contains(pair.Key.Id))
                 .ThenByDescending(pair => ItemEnhancement.HammerIds.Contains(pair.Key.Id))
+                .ThenByDescending(pair => pair.Key.Grade)
+                .ThenBy(pair => pair.Key.Id)
                 .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
 
             var buttonEnabled = favRewards.Length + itemRewards.Length > grindRewards.Length;
