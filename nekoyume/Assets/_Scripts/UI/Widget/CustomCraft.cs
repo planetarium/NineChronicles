@@ -199,7 +199,15 @@ namespace Nekoyume.UI
                     States.Instance.CurrentAvatarState.address,
                     slotIndex,
                     true,
-                    recipe.RequiredBlock);
+                    recipe.RequiredBlock,
+                    itemUsable: ItemFactory.CreateItemUsable(
+                        TableSheets.Instance.EquipmentItemSheet[TableSheets.Instance
+                            .CustomEquipmentCraftRelationshipSheet
+                            .OrderedList
+                            .First(row => row.Relationship >= ReactiveAvatarState.Relationship)
+                            .GetItemId(_selectedSubType)]
+                        , Guid.NewGuid(),
+                        recipe.RequiredBlock));
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
                         recipe.Id,
                         _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
@@ -291,7 +299,8 @@ namespace Nekoyume.UI
             conditionalCostButton.SetCondition(() => !_selectedOutfit.RandomOnly.Value);
             conditionalCostButton.Interactable =
                 (_selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0) <=
-                ReactiveAvatarState.Relationship;
+                ReactiveAvatarState.Relationship &&
+                Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _);
             conditionalCostButton.UpdateObjects();
         }
 
