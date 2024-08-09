@@ -166,7 +166,7 @@ namespace Nekoyume
 
         private static string GetProgressText(int eventIndex, int eventCount)
         {
-            return $"Event Count: {eventIndex}/{eventCount}";
+            return $"(Event Count: {eventIndex}/{eventCount})";
         }
     }
 }
