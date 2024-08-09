@@ -17299,7 +17299,7 @@ MonoBehaviour:
     toggleButton: {fileID: 8313784116657497707}
   - itemSubType: 10
     toggleButton: {fileID: 8052904135572130633}
-  craftButton: {fileID: 5559811725787859211}
+  conditionalCostButton: {fileID: 4421434138830438840}
   relationshipHelpButton: {fileID: 3932781385247576806}
   skillListButton: {fileID: 1616879328483722661}
   outfitNameText: {fileID: 248923700688696113}
@@ -38804,24 +38804,24 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
---- !u!224 &5504348286467008365 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2747417932831004198, guid: 9067b4811aa0241b7a96a2cc09536ced,
-    type: 3}
-  m_PrefabInstance: {fileID: 7657128270471328075}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5559811725787859211 stripped
+--- !u!114 &4421434138830438840 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2840644199905785920, guid: 9067b4811aa0241b7a96a2cc09536ced,
+  m_CorrespondingSourceObject: {fileID: 6277880972764344563, guid: 9067b4811aa0241b7a96a2cc09536ced,
     type: 3}
   m_PrefabInstance: {fileID: 7657128270471328075}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &5504348286467008365 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2747417932831004198, guid: 9067b4811aa0241b7a96a2cc09536ced,
+    type: 3}
+  m_PrefabInstance: {fileID: 7657128270471328075}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6630073019928127076 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3909500369725347631, guid: 9067b4811aa0241b7a96a2cc09536ced,

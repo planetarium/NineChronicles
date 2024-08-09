@@ -1151,14 +1151,14 @@ namespace Nekoyume.Blockchain
             var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
             var slot = allSlot.GetCombinationSlotState(slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
-            
+
             if (StateGetter.TryGetAvatarState(
                 eval.OutputState,
                 agentAddress,
                 avatarAddress,
                 out var avatarState))
             {
-                
+
                 // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
                 foreach (var pair in result.materials)
                 {
@@ -4194,29 +4194,14 @@ namespace Nekoyume.Blockchain
         private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
             ActionEvaluation<CustomEquipmentCraft> eval)
         {
-            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
             var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
             var slot = allSlot.GetCombinationSlotState(slotIndex);
-            var result = (CombinationConsumable5.ResultModel)slot.Result;
 
-            if (StateGetter.TryGetAvatarState(
-                eval.OutputState,
-                agentAddress,
-                avatarAddress,
-                out var avatarState))
-            {
-                // TODO: resultModel 날아오기 시작하면 추가해야됨
-                // foreach (var pair in result.materials)
-                // {
-                //     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
-                // }
-
-                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
-                UpdateAgentStateAsync(eval).Forget();
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-            }
+            UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
 
             ReactiveAvatarState.UpdateProficiency(
                 (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
@@ -4238,8 +4223,7 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            // TODO: 장비 메일 날아오기 시작하면 추가해야됨
-            // LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             // Notify
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");

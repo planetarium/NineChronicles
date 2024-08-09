@@ -51,7 +51,7 @@ namespace Nekoyume
                 : 0;
         }
 
-        public static int GetUsableMaterialCount(this Inventory inventory, int id, long blockIndex)
+        public static int GetUsableItemCount(this Inventory inventory, int id, long blockIndex)
         {
             if (inventory is null)
             {
@@ -78,6 +78,21 @@ namespace Nekoyume
 
                 return true;
             }).Sum(item => item.count);
+        }
+
+        public static int GetUsableItemCount(this Inventory inventory, CostType type, long blockIndex)
+        {
+            if ((int)type > 100000)
+            {
+                return GetUsableItemCount(inventory, (int)type, blockIndex);
+            }
+
+            if (type == CostType.Hourglass)
+            {
+                return GetUsableItemCount(inventory, 400000, blockIndex);
+            }
+
+            return 0;
         }
 
         public static bool HasNotification(

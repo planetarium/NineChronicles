@@ -314,25 +314,13 @@ namespace Nekoyume.UI
             reregisterButton.gameObject.SetActive(!isSell);
             notificationButton.gameObject.SetActive(!isSell);
 
-            if (isSell)
-            {
-                var condition = ConditionalCostButton.CheckCostOfType(CostType.ActionPoint, 5);
-                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
-                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                var apStoneCount = inventoryItems.Where(x =>
-                        x.item.ItemSubType == ItemSubType.ApStone &&
-                        !x.Locked &&
-                        !(x.item is ITradableItem tradableItem &&
-                            tradableItem.RequiredBlockIndex > blockIndex))
-                    .Sum(item => item.count);
-
-                submitButton.SetCost(CostType.ActionPoint, 5);
-                submitButton.Interactable = condition || apStoneCount > 0;
-            }
-            else
-            {
-                reregisterButton.SetCost(CostType.ActionPoint, 5);
-            }
+            var costButton = isSell
+                ? submitButton
+                : reregisterButton;
+            var apCondition = ConditionalCostButton.CheckCostOfType(CostType.ActionPoint, 5);
+            var apPotionCondition = ConditionalCostButton.CheckCostOfType(CostType.ApPotion, 1);
+            costButton.SetCost(CostType.ActionPoint, 5);
+            costButton.Interactable = apCondition || apPotionCondition;
 
             Pop(data);
         }

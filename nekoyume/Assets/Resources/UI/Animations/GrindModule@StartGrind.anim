@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UICombinationController_Grind@StartGrind
+  m_Name: GrindModule@StartGrind
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -33,7 +33,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer
+    path: CenterArea/BgContainer
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -52,7 +52,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Bg_Glow
+    path: CenterArea/BgContainer/BaseItemBg/Bg_Glow
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -71,7 +71,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Bg_Glow
+    path: CenterArea/BgContainer/BaseItemBg/Bg_Glow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -90,7 +90,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/UI_GrindPressVFX
+    path: CenterArea/BgContainer/BaseItemBg/UI_GrindPressVFX
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -109,7 +109,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorMode
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/BaseObject_00
+    path: CenterArea/BgContainer/BaseItemBg/BaseObject_00
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -128,7 +128,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/BaseObject_00
+    path: CenterArea/BgContainer/BaseItemBg/BaseObject_00
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   m_PPtrCurves: []
@@ -219,7 +219,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer
+    path: CenterArea/BgContainer
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -238,7 +238,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Bg_Glow
+    path: CenterArea/BgContainer/BaseItemBg/Bg_Glow
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -257,7 +257,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/Bg_Glow
+    path: CenterArea/BgContainer/BaseItemBg/Bg_Glow
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -276,7 +276,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/UI_GrindPressVFX
+    path: CenterArea/BgContainer/BaseItemBg/UI_GrindPressVFX
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -295,7 +295,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorMode
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/BaseObject_00
+    path: CenterArea/BgContainer/BaseItemBg/BaseObject_00
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -314,7 +314,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Grind/CenterArea/BgContainer/BaseItemBg/BaseObject_00
+    path: CenterArea/BgContainer/BaseItemBg/BaseObject_00
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   m_EulerEditorCurves: []
