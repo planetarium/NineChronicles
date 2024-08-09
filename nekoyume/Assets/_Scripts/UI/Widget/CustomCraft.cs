@@ -224,7 +224,9 @@ namespace Nekoyume.UI
             selectedSpineView.SetActive(false);
             // 외형 랜덤 선택
             var selectRandomOutfit = _selectedOutfit.IconRow.Value == null;
-            outfitNameText.SetText(!selectRandomOutfit ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId) : "Random");
+            outfitNameText.SetText(!selectRandomOutfit
+                ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId)
+                : "Random");
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
             var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
@@ -236,7 +238,8 @@ namespace Nekoyume.UI
                 cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
                 requiredBlockText.SetText(
                     $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
-                requiredLevelText.SetText($"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
+                requiredLevelText.SetText(
+                    $"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
 
                 var viewSpinePreview =
                     equipmentRow.ItemSubType is ItemSubType.Armor or ItemSubType.Weapon;
@@ -244,7 +247,8 @@ namespace Nekoyume.UI
                 selectedSpineView.SetActive(viewSpinePreview);
                 if (!selectRandomOutfit)
                 {
-                    selectedOutfitImage.overrideSprite = SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value.IconId);
+                    selectedOutfitImage.overrideSprite =
+                        SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value.IconId);
                     if (viewSpinePreview)
                     {
                         SetCharacter(equipmentRow, _selectedOutfit.IconRow.Value.IconId);
@@ -279,7 +283,11 @@ namespace Nekoyume.UI
                 States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
             );
 
-            requiredItemRecipeView.SetData(materialCosts.Select(pair => new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value)).ToList(), true);
+            requiredItemRecipeView.SetData(
+                materialCosts.Select(pair =>
+                        new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value))
+                    .ToList(),
+                true);
             conditionalCostButton.SetCondition(() => !_selectedOutfit.RandomOnly.Value);
             conditionalCostButton.Interactable =
                 (_selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0) <=
