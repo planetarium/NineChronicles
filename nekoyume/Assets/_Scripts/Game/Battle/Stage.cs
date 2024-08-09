@@ -410,13 +410,13 @@ namespace Nekoyume.Game.Battle
             BattleRenderer.Instance.IsOnBattle = true;
 
             yield return StartCoroutine(CoStageEnter(log));
-
-
+            
+            var eventCount = log.events.Count;
             if (StageType == StageType.AdventureBoss)
             {
                 SetSpeed(AcceleratedAnimationTimeScaleWeight);
                 var isBreakThroughStarted = false;
-                for (var i = 0; i < log.events.Count; i++)
+                for (var i = 0; i < eventCount; i++)
                 {
                     var e = log.events[i];
                     if (!isBreakThroughStarted && e is Breakthrough)
@@ -431,15 +431,16 @@ namespace Nekoyume.Game.Battle
                         yield return StartCoroutine(CoBreakThroughEnd());
                     }
 
-                    e.LogEvent();
+                    e.LogEvent(i + 1, eventCount);
                     yield return StartCoroutine(e.CoExecute(this));
                 }
             }
             else
             {
-                foreach (var e in log)
+                for (var i = 0; i < eventCount; i++)
                 {
-                    e.LogEvent();
+                    var e = log.events[i];
+                    e.LogEvent(i + 1, eventCount);
                     yield return StartCoroutine(e.CoExecute(this));
                 }
             }
