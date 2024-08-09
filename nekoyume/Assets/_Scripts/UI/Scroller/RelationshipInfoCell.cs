@@ -23,11 +23,15 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI requiredLevelText;
 
+        [SerializeField]
+        private GameObject focusObject;
+
         public override void UpdateContent(Model itemData)
         {
             relationshipSectionText.SetText($"{itemData.MinRelationship}~{itemData.MaxRelationship}");
             cpText.SetText($"{itemData.MinCp}~{itemData.MaxCp}");
             requiredLevelText.SetText(itemData.RequiredLevel.ToString());
+            focusObject.SetActive(Context.CurrentModel.MaxRelationship == itemData.MaxRelationship);
         }
     }
 }
