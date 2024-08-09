@@ -296,6 +296,7 @@ namespace Nekoyume.UI
                         new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value))
                     .ToList(),
                 true);
+            conditionalCostButton.SetCost(CostType.NCG, (long)ncgCost);
             conditionalCostButton.SetCondition(() => !_selectedOutfit.RandomOnly.Value);
             conditionalCostButton.Interactable =
                 (_selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0) <=
