@@ -4169,28 +4169,13 @@ namespace Nekoyume.Blockchain
         private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
             ActionEvaluation<CustomEquipmentCraft> eval)
         {
-            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
             var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
-            var result = (CombinationConsumable5.ResultModel)slot.Result;
 
-            if (StateGetter.TryGetAvatarState(
-                eval.OutputState,
-                agentAddress,
-                avatarAddress,
-                out var avatarState))
-            {
-                // TODO: resultModel 날아오기 시작하면 추가해야됨
-                // foreach (var pair in result.materials)
-                // {
-                //     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
-                // }
-
-                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
-                UpdateAgentStateAsync(eval).Forget();
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-            }
+            UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
 
             ReactiveAvatarState.UpdateProficiency(
                 (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
@@ -4212,8 +4197,7 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            // TODO: 장비 메일 날아오기 시작하면 추가해야됨
-            // LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             // Notify
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
