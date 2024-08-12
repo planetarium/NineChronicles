@@ -185,12 +185,6 @@ namespace Nekoyume.UI
 
         private void OnClickSubmitButton()
         {
-            if (_selectedOutfit is null)
-            {
-                OneLineSystem.Push(MailType.System, "select outfit", NotificationCell.NotificationType.Information);
-                return;
-            }
-
             if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
             {
                 var recipe = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
@@ -212,6 +206,12 @@ namespace Nekoyume.UI
                         recipe.Id,
                         _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
                     .Subscribe();
+            }
+            else
+            {
+                // todo: 뭔진 몰라도 not interactable한데 interact를 한게 문제니까 일단...
+                OneLineSystem.Push(MailType.System, "somethings wrong",
+                    NotificationCell.NotificationType.Information);
             }
         }
 
