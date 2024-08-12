@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module
             SetView(requiredItemViews[0], baseMaterialInfo.Id, baseMaterialInfo.Count, checkInventory, hideEnoughObject);
             plusImage.SetActive(materials.Any());
 
-            if (materials != null)
+            if (materials.Any())
             {
                 for (var i = 1; i < requiredItemViews.Length; ++i)
                 {
