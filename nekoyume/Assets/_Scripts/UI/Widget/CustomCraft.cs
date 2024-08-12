@@ -206,6 +206,7 @@ namespace Nekoyume.UI
                         recipe.Id,
                         _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
                     .Subscribe();
+                OnOutfitSelected(_selectedOutfit);
             }
             else
             {
@@ -320,6 +321,7 @@ namespace Nekoyume.UI
             var game = Game.Game.instance;
             var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
 
+            costumes.Clear();
             if (equipmentRow is not null)
             {
                 var maxLevel = game.TableSheets.EnhancementCostSheetV3.Values
