@@ -134,6 +134,40 @@ namespace Nekoyume.Blockchain
 
             return new Inventory((List)inventoryState);
         }
+        
+        [Obsolete("Use AllCombinationSlotState instead.")]
+        public static CombinationSlotState GetCombinationSlotState(
+            Address avatarAddress,
+            int index)
+        {
+            var address = avatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    index
+                )
+            );
+            var value = Game.Game.instance.Agent.GetState(
+                ReservedAddresses.LegacyAccount,
+                address);
+            if (value is null or Null)
+            {
+                throw new StateNullException(ReservedAddresses.LegacyAccount, address);
+            }
+
+            try
+            {
+                return new CombinationSlotState((Dictionary)value);
+            }
+            catch (Exception e)
+            {
+                Log.Error(
+                    e,
+                    "Unexpected error occurred during {CombinationSlotStateName}()",
+                    nameof(GetCombinationSlotState));
+                throw;
+            }
+        }
 
         [Obsolete("Use AllCombinationSlotState instead.")]
         public static CombinationSlotState GetCombinationSlotState(
@@ -170,7 +204,6 @@ namespace Nekoyume.Blockchain
                 throw;
             }
         }
-
 
         public static RedeemCodeState GetRedeemCodeState(HashDigest<SHA256> hash)
         {

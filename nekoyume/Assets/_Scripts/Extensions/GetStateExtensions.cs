@@ -73,7 +73,12 @@ namespace Nekoyume
             }
             else
             {
-                allCombinationSlotState = AllCombinationSlotState.MigrationLegacyCombinationSlotState(avatarAddress);
+                allCombinationSlotState = AllCombinationSlotState.MigrationLegacyCombinationSlotState(slotIndex =>
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    return StateGetter.GetCombinationSlotState(avatarAddress, slotIndex);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }, avatarAddress);
             }
 
             return allCombinationSlotState;
@@ -90,7 +95,12 @@ namespace Nekoyume
             }
             else
             {
-                allCombinationSlotState = AllCombinationSlotState.MigrationLegacyCombinationSlotState(avatarAddress);
+                allCombinationSlotState = AllCombinationSlotState.MigrationLegacyCombinationSlotState(slotIndex =>
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    return StateGetter.GetCombinationSlotState(hash, avatarAddress, slotIndex);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }, avatarAddress);
             }
 
             return allCombinationSlotState;
