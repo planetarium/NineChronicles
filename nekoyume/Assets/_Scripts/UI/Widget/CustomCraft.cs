@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
@@ -299,10 +300,10 @@ namespace Nekoyume.UI
                 true);
             conditionalCostButton.SetCost(CostType.NCG, (long)ncgCost);
             conditionalCostButton.SetCondition(() => !_selectedOutfit.RandomOnly.Value);
-            conditionalCostButton.Interactable =
-                (_selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0) <=
-                ReactiveAvatarState.Relationship &&
-                Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _);
+            conditionalCostButton.Interactable = CheckSubmittable(
+                ncgCost,
+                materialCosts,
+                _selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0);
             conditionalCostButton.UpdateObjects();
         }
 
@@ -316,6 +317,43 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
         }
 
+        private bool CheckSubmittable(BigInteger ncgAmount, IDictionary<int,int> materials, int requiredRelationship)
+        {
+            if (ReactiveAvatarState.Relationship < requiredRelationship)
+            {
+                return false;
+            }
+
+            if (!Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _))
+            {
+                return false;
+            }
+
+            if (States.Instance.GoldBalanceState.Gold.MajorUnit < ncgAmount)
+            {
+                return false;
+            }
+
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            foreach (var material in materials)
+            {
+                if (!TableSheets.Instance.MaterialItemSheet.TryGetValue(material.Key, out var row))
+                {
+                    continue;
+                }
+
+                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                    ? outFungibleItems.Sum(e => e.count)
+                    : 0;
+
+                if (material.Value > itemCount)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
         private void SetCharacter(EquipmentItemSheet.Row equipmentRow, int iconId)
         {
             var game = Game.Game.instance;
