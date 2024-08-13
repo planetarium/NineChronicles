@@ -165,6 +165,10 @@ namespace Nekoyume.UI.Module
                 else
                 {
                     animator.SetTrigger(EmptySlot);
+                    foreach (var reward in grindRewards)
+                    {
+                        reward.HideAndReset();
+                    }
                 }
             }).AddTo(gameObject);
 
@@ -178,6 +182,10 @@ namespace Nekoyume.UI.Module
         public void Show(bool reverseInventoryOrder = false)
         {
             gameObject.SetActive(true);
+            foreach (var reward in grindRewards)
+            {
+                reward.HideAndReset();
+            }
 
             Subscribe();
 
@@ -297,11 +305,6 @@ namespace Nekoyume.UI.Module
 
         private void UpdateReward()
         {
-            foreach (var reward in grindRewards)
-            {
-                reward.gameObject.SetActive(false);
-            }
-
             var equipmentsForGrind = _selectedItemsForGrind
                 .Select(inventoryItem => (Equipment)inventoryItem.ItemBase).ToList();
 
@@ -326,36 +329,36 @@ namespace Nekoyume.UI.Module
                 .OrderByDescending(pair => dustIds.Contains(pair.Key.Id))
                 .ThenByDescending(pair => usableItemIds.Contains(pair.Key.Id))
                 .ThenByDescending(pair => ItemEnhancement.HammerIds.Contains(pair.Key.Id))
+                .ThenByDescending(pair => pair.Key.Grade)
+                .ThenBy(pair => pair.Key.Id)
                 .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
 
+            // Update reward view
             var buttonEnabled = favRewards.Length + itemRewards.Length > grindRewards.Length;
             var rewardViewCount = buttonEnabled ? grindRewards.Length - 1 : grindRewards.Length;
 
-            // Update reward view
             var index = 0;
             for (var i = 0; i < favRewards.Length && index < rewardViewCount; i++)
             {
-                var reward = favRewards[i];
-                var rewardView = grindRewards[index];
-                rewardView.gameObject.SetActive(true);
-                rewardView.SetCrystalReward(reward);
+                grindRewards[index].ShowWithFavReward(favRewards[i]);
                 index++;
             }
 
             for (var i = 0; i < itemRewards.Length && index < rewardViewCount; i++)
             {
-                var reward = itemRewards[i];
-                var rewardView = grindRewards[index];
-                rewardView.gameObject.SetActive(true);
-                rewardView.SetItemReward(reward);
+                grindRewards[index].ShowWithItemReward(itemRewards[i]);
                 index++;
+            }
+
+            for (; index < rewardViewCount; index++)
+            {
+                grindRewards[index].HideAndReset();
             }
 
             if (buttonEnabled)
             {
                 var buttonRewardView = grindRewards[index];
-                buttonRewardView.gameObject.SetActive(true);
-                buttonRewardView.SetButton(() =>
+                buttonRewardView.ShowWithButton(() =>
                 {
                     Widget.Find<GrindRewardPopup>().Show(favRewards, itemRewards);
                 });
