@@ -634,8 +634,7 @@ namespace Nekoyume.UI
                         evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
                         AirbridgeUnity.TrackEvent(evt);
 
-                        ActionManager.Instance
-                            .CombinationEquipment(
+                        ActionManager.Instance.CombinationEquipment(
                                 recipeInfo,
                                 slotIndex,
                                 true,

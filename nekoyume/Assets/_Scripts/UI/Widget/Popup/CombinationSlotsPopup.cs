@@ -111,10 +111,14 @@ namespace Nekoyume.UI
         private void UpdateSlots(long blockIndex)
         {
             var avatarState = States.Instance.CurrentAvatarState;
-            var states = States.Instance.GetCombinationSlotState(avatarState, blockIndex);
+            var states = States.Instance.GetAvailableCombinationSlotState(avatarState, blockIndex);
             for (var i = 0; i < slots.Count; i++)
             {
-                if (states.ContainsKey(i))
+                if (states == null)
+                {
+                    slots[i].SetSlot(avatarState.address, blockIndex, i);
+                }
+                else if (states.ContainsKey(i))
                 {
                     if (states.TryGetValue(i, out var state))
                     {
