@@ -271,14 +271,7 @@ namespace Nekoyume.Blockchain
                 return value;
             }
 
-            var blockHash = await GetBlockHashAsync(null);
-            if (!blockHash.HasValue)
-            {
-                NcDebug.LogError("Failed to get tip block hash.");
-                return null;
-            }
-
-            return await GetStateAsync(blockHash.Value, accountAddress, address);
+            return await GetStateAsync(BlockTipStateRootHash, accountAddress, address);
         }
 
         public async Task<IValue> GetStateAsync(long blockIndex, Address accountAddress, Address address)
