@@ -3437,7 +3437,7 @@ namespace Nekoyume.Blockchain
                             if (Currencies.IsWrappedCurrency(tokenCurrency))
                             {
                                 var currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
-                                var recipientAddress = Currencies.SelectRecipientAddress(currency, agentAddr,
+                                var recipientAddress = Currencies.PickAddress(currency, agentAddr,
                                     avatarAddr);
                                 var isCrystal = currency.Equals(Currencies.Crystal);
                                 var balance = StateGetter.GetBalance(
@@ -3553,7 +3553,7 @@ namespace Nekoyume.Blockchain
                         var fav = spec.Assets.Value;
                         {
                             var tokenCurrency = fav.Currency;
-                            var recipientAddress = Currencies.SelectRecipientAddress(tokenCurrency, agentAddr,
+                            var recipientAddress = Currencies.PickAddress(tokenCurrency, agentAddr,
                                 avatarAddr);
                             var isCrystal = tokenCurrency.Equals(Currencies.Crystal);
                             var balance = StateGetter.GetBalance(
