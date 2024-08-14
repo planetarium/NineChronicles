@@ -30,7 +30,8 @@ namespace Nekoyume.UI.Module
             Empty,
             Appraise,
             Working,
-            WaitingReceive
+            WaitingReceive,
+            Locked
         }
 
         public enum CacheType
@@ -223,7 +224,6 @@ namespace Nekoyume.UI.Module
                             state.StartBlockIndex,
                             currentBlockIndex);
                     }
-
                     hasNotificationImage.enabled = false;
                     break;
 
@@ -231,13 +231,16 @@ namespace Nekoyume.UI.Module
                     SetContainer(false, true, false, false);
                     preparingContainer.gameObject.SetActive(false);
                     workingContainer.gameObject.SetActive(true);
-                    UpdateItemInformation(state.Result.itemUsable, type);
-                    UpdateHourglass(state, currentBlockIndex);
-                    UpdateRequiredBlockInformation(
-                        state.UnlockBlockIndex,
-                        state.StartBlockIndex,
-                        currentBlockIndex);
-                    UpdateNotification(state, currentBlockIndex, isCached);
+                    if (state != null)
+                    {
+                        UpdateItemInformation(state.Result.itemUsable, type);
+                        UpdateHourglass(state, currentBlockIndex);
+                        UpdateRequiredBlockInformation(
+                            state.UnlockBlockIndex,
+                            state.StartBlockIndex,
+                            currentBlockIndex);
+                        UpdateNotification(state, currentBlockIndex, isCached);
+                    }
                     break;
 
                 case SlotType.WaitingReceive:
@@ -251,7 +254,11 @@ namespace Nekoyume.UI.Module
                                 false,
                                 true));
                     }
-
+                    break;
+                
+                case SlotType.Locked:
+                    SetContainer(true, false, false, false);
+                    itemView.Clear();
                     break;
             }
         }
@@ -280,7 +287,12 @@ namespace Nekoyume.UI.Module
                     : SlotType.WaitingReceive;
             }
 
-            if (state?.Result is null)
+            if (state is not { IsUnlocked: true })
+            {
+                return SlotType.Locked;
+            }
+
+            if (state.Result is null)
             {
                 return SlotType.Empty;
             }

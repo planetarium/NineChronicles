@@ -673,6 +673,12 @@ namespace Nekoyume.State
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
+        [CanBeNull]
+        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(AvatarState avatarState)
+        {
+            return !_slotStates.ContainsKey(avatarState.address) ? null : _slotStates[avatarState.address].States;
+        }
+        
         public void SetGameConfigState(GameConfigState state)
         {
             GameConfigState = state;
