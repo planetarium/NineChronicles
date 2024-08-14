@@ -181,10 +181,9 @@ namespace Nekoyume.UI
                     equipmentRow.GetResultEquipmentItemRow(),
                     Guid.Empty,
                     SuperCraftIndex);
-                Find<CombinationSlotsPopup>().SetCaching(
+                Find<CombinationSlotsPopup>().SetCachingTrue(
                     States.Instance.CurrentAvatarState.address,
                     slotIndex,
-                    true,
                     SuperCraftIndex,
                     itemUsable: equipment);
                 StartCoroutine(CoCombineNpcAnimation(equipment));

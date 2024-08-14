@@ -607,10 +607,9 @@ namespace Nekoyume.UI
                     () =>
                     {
                         var slots = Find<CombinationSlotsPopup>();
-                        slots.SetCaching(
+                        slots.SetCachingTrue(
                             avatarAddress,
                             slotIndex,
-                            true,
                             requiredBlockIndex,
                             itemUsable: equipment);
                         Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
@@ -649,10 +648,9 @@ namespace Nekoyume.UI
             else
             {
                 var slots = Find<CombinationSlotsPopup>();
-                slots.SetCaching(
+                slots.SetCachingTrue(
                     avatarAddress,
                     slotIndex,
-                    true,
                     requiredBlockIndex,
                     itemUsable: equipment);
                 ActionManager.Instance
@@ -690,7 +688,7 @@ namespace Nekoyume.UI
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex, itemUsable: consumable);
+            slots.SetCachingTrue(avatarAddress, slotIndex, requiredBlockIndex, itemUsable: consumable);
 
             consumableSubRecipeView.UpdateView();
             ActionManager.Instance.CombinationConsumable(recipeInfo, slotIndex).Subscribe();
@@ -720,10 +718,9 @@ namespace Nekoyume.UI
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(
+            slots.SetCachingTrue(
                 avatarAddress,
                 slotIndex,
-                true,
                 requiredBlockIndex,
                 itemUsable: consumable);
 

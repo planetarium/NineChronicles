@@ -278,7 +278,7 @@ namespace Nekoyume.UI
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex,
+            slots.SetCachingTrue(avatarAddress, slotIndex, requiredBlockIndex,
                 itemUsable: baseItem);
 
             NotificationSystem.Push(

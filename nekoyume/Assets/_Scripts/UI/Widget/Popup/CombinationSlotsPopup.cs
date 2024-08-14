@@ -5,10 +5,12 @@ using Libplanet.Crypto;
 using Nekoyume.Game.Battle;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -26,6 +28,7 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
+            base.Initialize();
             petInventory.Initialize(false);
         }
 
@@ -72,22 +75,38 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
             petInventory.Hide();
         }
-
-        public void SetCaching(
+        
+        public void SetCachingTrue(
             Address avatarAddress,
             int slotIndex,
-            bool value,
             long requiredBlockIndex = 0,
             CombinationSlot.SlotType slotType = CombinationSlot.SlotType.Appraise,
             ItemUsable itemUsable = null)
         {
-            slots[slotIndex].SetCached(avatarAddress, value, requiredBlockIndex, slotType, itemUsable);
-            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+            slots[slotIndex].SetCached(avatarAddress, true, requiredBlockIndex, slotType, itemUsable);
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var states = States.Instance.GetAvailableCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
+            UpdateSlots(blockIndex, states);
+        }
+        
+        public void SetCachingFalse(
+            Address avatarAddress,
+            int slotIndex,
+            long requiredBlockIndex = 0,
+            CombinationSlot.SlotType slotType = CombinationSlot.SlotType.Appraise,
+            ItemUsable itemUsable = null)
+        {
+            slots[slotIndex].SetCached(avatarAddress, false, requiredBlockIndex, slotType, itemUsable);
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var states = States.Instance.GetAvailableCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
+            UpdateSlots(blockIndex, states);
         }
 
         public bool TryGetEmptyCombinationSlot(out int slotIndex)
         {
-            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var states = States.Instance.GetAvailableCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
+            UpdateSlots(blockIndex, states);
             for (var i = 0; i < slots.Count; i++)
             {
                 if (slots[i].Type != CombinationSlot.SlotType.Empty)
@@ -107,11 +126,17 @@ namespace Nekoyume.UI
         {
             petInventory.Toggle(slotIndex);
         }
-
+        
         private void UpdateSlots(long blockIndex)
         {
+            UpdateSlots(blockIndex, null);
+        }
+
+        private void UpdateSlots(long blockIndex, Dictionary<int, CombinationSlotState> states)
+        {
             var avatarState = States.Instance.CurrentAvatarState;
-            var states = States.Instance.GetAvailableCombinationSlotState(avatarState, blockIndex);
+            states ??= States.Instance.GetCombinationSlotState(avatarState);
+            
             for (var i = 0; i < slots.Count; i++)
             {
                 if (states == null)

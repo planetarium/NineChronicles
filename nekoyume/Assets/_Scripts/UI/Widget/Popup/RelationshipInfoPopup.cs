@@ -29,6 +29,7 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
+            return;
             var scrollModels = new List<RelationshipInfoCell.Model>();
             var prevRelationship = 0;
             foreach (var row in TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values)
