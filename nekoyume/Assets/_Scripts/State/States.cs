@@ -204,7 +204,7 @@ namespace Nekoyume.State
             AllRuneState = allRuneState;
         }
         
-        public void SetAllCombinationSlotState(Address avatarAddress, AllCombinationSlotState allCombinationSlotState)
+        private void SetAllCombinationSlotState(Address avatarAddress, AllCombinationSlotState allCombinationSlotState)
         {
             LocalLayer.Instance.InitializeCombinationSlots(allCombinationSlotState);
             AllCombinationSlotState = allCombinationSlotState;
@@ -571,6 +571,7 @@ namespace Nekoyume.State
 
                 Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
                 ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                Widget.Find<CombinationSlotsPopup>().ClearSlots();
             }
 
             return CurrentAvatarState;

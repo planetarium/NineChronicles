@@ -973,8 +973,7 @@ namespace Nekoyume.Blockchain
                 PlayerPrefs.DeleteKey(pushIdentifierKey);
             }
 
-            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(
-                renderArgs.Evaluation.Action.slotIndex);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(renderArgs.Evaluation.Action.slotIndex);
         }
 
         private ActionEvaluation<CombinationEquipment> PreResponseCombinationEquipment(ActionEvaluation<CombinationEquipment> eval)
@@ -3133,11 +3132,15 @@ namespace Nekoyume.Blockchain
         {
             UniTask.RunOnThreadPool(async () =>
             {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var slotIndex = eval.Action.SlotIndex;
+                var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                // TODO: UI 업데이트
+                Widget.Find<CombinationSlotsPopup>().UpdateSlots();
             });
         }
 

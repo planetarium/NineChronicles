@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Game.Battle;
@@ -67,7 +68,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+            UpdateSlots();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -90,18 +91,38 @@ namespace Nekoyume.UI
         }
         
         public void OnCraftActionRender(int slotIndex)
-        {
+        {            
+            // Prepare Render 단계에서 갱신된 State를 반영하기 위해 UpdateSlots를 호출합니다. 
+            UpdateSlots();
             slots[slotIndex].OnCraftActionRender();
         }
 
         public bool TryGetEmptyCombinationSlot(out int slotIndex)
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var states = States.Instance.GetUsedCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
-            UpdateSlots(blockIndex, states);
-            for (var i = 0; i < slots.Count; i++)
+            var slotDict = States.Instance.GetCombinationSlotState(States.Instance.CurrentAvatarState);
+            var states = slotDict?.Values.ToList();
+            if (states == null)
             {
-                if (slots[i].UIState != CombinationSlot.SlotUIState.Empty)
+                slotIndex = -1;
+                return false;
+            }
+            
+            for (var i = 0; i < states.Count; i++)
+            {
+                if (!states[i].ValidateV2(blockIndex))
+                {
+                    continue;
+                }
+
+                if (slots[i] == null)
+                {
+                    continue;
+                }
+
+                var uiSlotState = slots[i].UIState;
+                if (uiSlotState == CombinationSlot.SlotUIState.Appraise ||
+                    uiSlotState == CombinationSlot.SlotUIState.WaitingReceive)
                 {
                     continue;
                 }
@@ -119,9 +140,24 @@ namespace Nekoyume.UI
             petInventory.Toggle(slotIndex);
         }
         
-        private void UpdateSlots(long blockIndex)
+        public void UpdateSlots()
+        {
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex, null);
+        }
+        
+        public void UpdateSlots(long blockIndex)
         {
             UpdateSlots(blockIndex, null);
+        }
+        
+        public void ClearSlots()
+        {
+            foreach (var slot in slots)
+            {
+                slot.Clear();
+            }
+
+            UpdateSlots();
         }
 
         private void UpdateSlots(long blockIndex, Dictionary<int, CombinationSlotState> states)

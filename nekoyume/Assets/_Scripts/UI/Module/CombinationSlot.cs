@@ -107,10 +107,9 @@ namespace Nekoyume.UI.Module
 
         public void OnCraftActionRender()
         {
-            var prevState = UIState;
             UIState = UIState switch
             {
-                SlotUIState.Empty => SlotUIState.Appraise,
+                SlotUIState.Appraise => SlotUIState.Working,
                 SlotUIState.WaitingReceive => SlotUIState.Empty,
                 _ => UIState
             };
@@ -186,6 +185,13 @@ namespace Nekoyume.UI.Module
             {
                 _lockObject.SetData(data);
             }
+        }
+
+        public void Clear()
+        {
+            UIState = SlotUIState.Locked;
+            _state = null;
+            UpdateInformation(Game.instance.Agent.BlockIndex);
         }
 
         public void SetSlot(
@@ -328,7 +334,7 @@ namespace Nekoyume.UI.Module
                     SetContainer(false, true, false, false);
                     preparingContainer.gameObject.SetActive(true);
                     workingContainer.gameObject.SetActive(false);
-                    if (state != null)
+                    if (state is { Result: not null })
                     {
                         UpdateItemInformation(state.Result.itemUsable, uiState);
                         UpdateHourglass(state, currentBlockIndex);
@@ -344,7 +350,7 @@ namespace Nekoyume.UI.Module
                     SetContainer(false, true, false, false);
                     preparingContainer.gameObject.SetActive(false);
                     workingContainer.gameObject.SetActive(true);
-                    if (state != null)
+                    if (state is { Result: not null })
                     {
                         UpdateItemInformation(state.Result.itemUsable, uiState);
                         UpdateHourglass(state, currentBlockIndex);
