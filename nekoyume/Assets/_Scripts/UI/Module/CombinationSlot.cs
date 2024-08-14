@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
 
     public class CombinationSlot : MonoBehaviour
     {
-        public enum SlotType
+        public enum SlotUIState
         {
             Empty,
             Appraise,
@@ -54,9 +54,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image hasNotificationImage;
-
-        [SerializeField]
-        private TextMeshProUGUI lockText;
 
         [SerializeField]
         private TextMeshProUGUI requiredBlockIndexText;
@@ -106,37 +103,37 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
         private readonly Dictionary<Address, bool> cached = new();
 
-        public SlotType Type { get; private set; } = SlotType.Empty;
+        public SlotUIState UIState { get; private set; } = SlotUIState.Locked;
 
         public void SetCached(
             Address avatarAddress,
             bool value,
             long requiredBlockIndex,
-            SlotType slotType,
+            SlotUIState slotUIState,
             ItemUsable itemUsable = null)
         {
             cached[avatarAddress] = value;
 
             var currentBlockIndex = Game.instance.Agent.BlockIndex;
-            switch (slotType)
+            switch (slotUIState)
             {
-                case SlotType.Appraise:
+                case SlotUIState.Appraise:
                     if (itemUsable == null)
                     {
                         break;
                     }
 
                     _cachedType = CacheType.Appraise;
-                    UpdateItemInformation(itemUsable, slotType);
+                    UpdateItemInformation(itemUsable, slotUIState);
                     UpdateRequiredBlockInformation(
                         requiredBlockIndex + currentBlockIndex,
                         currentBlockIndex,
                         currentBlockIndex);
                     break;
 
-                case SlotType.WaitingReceive:
+                case SlotUIState.WaitingReceive:
                     _cachedType = CacheType.WaitingReceive;
-                    UpdateInformation(Type, currentBlockIndex, _state, IsCached(avatarAddress));
+                    UpdateInformation(UIState, currentBlockIndex, _state, IsCached(avatarAddress));
                     break;
             }
         }
@@ -151,7 +148,7 @@ namespace Nekoyume.UI.Module
             touchHandler.OnClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                OnClickSlot(Type, _state, _slotIndex, Game.instance.Agent.BlockIndex);
+                OnClickSlot(UIState, _state, _slotIndex, Game.instance.Agent.BlockIndex);
             }).AddTo(gameObject);
             
             _lockObject = lockContainer.GetComponent<CombinationSlotLockObject>();
@@ -196,8 +193,8 @@ namespace Nekoyume.UI.Module
         {
             _slotIndex = slotIndex;
             _state = state;
-            Type = GetSlotType(state, currentBlockIndex, IsCached(avatarAddress));
-            UpdateInformation(Type, currentBlockIndex, state, IsCached(avatarAddress));
+            UIState = GetSlotType(state, currentBlockIndex, IsCached(avatarAddress));
+            UpdateInformation(UIState, currentBlockIndex, state, IsCached(avatarAddress));
             SetLockObject();
         }
 
@@ -216,20 +213,20 @@ namespace Nekoyume.UI.Module
         {
             petSelectButton.SetData(state?.PetId ?? null);
 
-            switch (type)
+            switch (uiState)
             {
-                case SlotType.Empty:
+                case SlotUIState.Empty:
                     SetContainer(false, false, true, false);
                     itemView.Clear();
                     break;
 
-                case SlotType.Appraise:
+                case SlotUIState.Appraise:
                     SetContainer(false, true, false, false);
                     preparingContainer.gameObject.SetActive(true);
                     workingContainer.gameObject.SetActive(false);
                     if (state != null)
                     {
-                        UpdateItemInformation(state.Result.itemUsable, type);
+                        UpdateItemInformation(state.Result.itemUsable, uiState);
                         UpdateHourglass(state, currentBlockIndex);
                         UpdateRequiredBlockInformation(
                             state.UnlockBlockIndex,
@@ -239,13 +236,13 @@ namespace Nekoyume.UI.Module
                     hasNotificationImage.enabled = false;
                     break;
 
-                case SlotType.Working:
+                case SlotUIState.Working:
                     SetContainer(false, true, false, false);
                     preparingContainer.gameObject.SetActive(false);
                     workingContainer.gameObject.SetActive(true);
                     if (state != null)
                     {
-                        UpdateItemInformation(state.Result.itemUsable, type);
+                        UpdateItemInformation(state.Result.itemUsable, uiState);
                         UpdateHourglass(state, currentBlockIndex);
                         UpdateRequiredBlockInformation(
                             state.UnlockBlockIndex,
@@ -255,7 +252,7 @@ namespace Nekoyume.UI.Module
                     }
                     break;
 
-                case SlotType.WaitingReceive:
+                case SlotUIState.WaitingReceive:
                     SetContainer(false, false, false, true);
                     if (state != null)
                     {
@@ -268,7 +265,7 @@ namespace Nekoyume.UI.Module
                     }
                     break;
                 
-                case SlotType.Locked:
+                case SlotUIState.Locked:
                     SetContainer(true, false, false, false);
                     itemView.Clear();
                     break;
@@ -287,7 +284,7 @@ namespace Nekoyume.UI.Module
             waitReceiveContainer.gameObject.SetActive(isWaitingReceive);
         }
 
-        private SlotType GetSlotType(
+        private SlotUIState GetSlotType(
             CombinationSlotState state,
             long currentBlockIndex,
             bool isCached)
@@ -295,24 +292,29 @@ namespace Nekoyume.UI.Module
             if (isCached)
             {
                 return _cachedType == CacheType.Appraise
-                    ? SlotType.Appraise
-                    : SlotType.WaitingReceive;
+                    ? SlotUIState.Appraise
+                    : SlotUIState.WaitingReceive;
+            }
+
+            if (state == null)
+            {
+                return SlotUIState.Empty;
             }
 
             if (state is not { IsUnlocked: true })
             {
-                return SlotType.Locked;
+                return SlotUIState.Locked;
             }
 
             if (state.Result is null)
             {
-                return SlotType.Empty;
+                return SlotUIState.Empty;
             }
 
             return currentBlockIndex < state.StartBlockIndex +
                 States.Instance.GameConfigState.RequiredAppraiseBlock
-                    ? SlotType.Appraise
-                    : SlotType.Working;
+                    ? SlotUIState.Appraise
+                    : SlotUIState.Working;
         }
 
         private void UpdateRequiredBlockInformation(
@@ -332,7 +334,7 @@ namespace Nekoyume.UI.Module
             long currentBlockIndex,
             bool isCached)
         {
-            if (GetSlotType(state, currentBlockIndex, isCached) != SlotType.Working)
+            if (GetSlotType(state, currentBlockIndex, isCached) != SlotUIState.Working)
             {
                 hasNotificationImage.enabled = false;
                 return;
@@ -389,9 +391,9 @@ namespace Nekoyume.UI.Module
                 : Palette.GetColor(ColorType.TextDenial);
         }
 
-        private void UpdateItemInformation(ItemUsable item, SlotType slotType)
+        private void UpdateItemInformation(ItemUsable item, SlotUIState slotUIState)
         {
-            if (slotType == SlotType.Working)
+            if (slotUIState == SlotUIState.Working)
             {
                 itemView.SetData(new Item(item));
             }
@@ -407,14 +409,14 @@ namespace Nekoyume.UI.Module
         }
 
         private static void OnClickSlot(
-            SlotType type,
+            SlotUIState uiState,
             CombinationSlotState state,
             int slotIndex,
             long currentBlockIndex)
         {
-            switch (type)
+            switch (uiState)
             {
-                case SlotType.Empty:
+                case SlotUIState.Empty:
                     if (BattleRenderer.Instance.IsOnBattle)
                     {
                         NotificationSystem.Push(
@@ -444,11 +446,11 @@ namespace Nekoyume.UI.Module
                     Widget.Find<CombinationSlotsPopup>().Close();
                     break;
 
-                case SlotType.Working:
+                case SlotUIState.Working:
                     Widget.Find<CombinationSlotPopup>().Show(state, slotIndex, currentBlockIndex);
                     break;
 
-                case SlotType.Appraise:
+                case SlotUIState.Appraise:
                     NotificationSystem.Push(
                         Nekoyume.Model.Mail.MailType.System,
                         L10nManager.Localize("UI_COMBINATION_NOTIFY_IDENTIFYING"),

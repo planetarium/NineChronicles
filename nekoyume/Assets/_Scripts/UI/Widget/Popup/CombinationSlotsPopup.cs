@@ -80,12 +80,12 @@ namespace Nekoyume.UI
             Address avatarAddress,
             int slotIndex,
             long requiredBlockIndex = 0,
-            CombinationSlot.SlotType slotType = CombinationSlot.SlotType.Appraise,
+            CombinationSlot.SlotUIState slotUIState = CombinationSlot.SlotUIState.Appraise,
             ItemUsable itemUsable = null)
         {
-            slots[slotIndex].SetCached(avatarAddress, true, requiredBlockIndex, slotType, itemUsable);
+            slots[slotIndex].SetCached(avatarAddress, true, requiredBlockIndex, slotUIState, itemUsable);
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var states = States.Instance.GetAvailableCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
+            var states = States.Instance.GetUsedCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
             UpdateSlots(blockIndex, states);
         }
         
@@ -93,23 +93,22 @@ namespace Nekoyume.UI
             Address avatarAddress,
             int slotIndex,
             long requiredBlockIndex = 0,
-            CombinationSlot.SlotType slotType = CombinationSlot.SlotType.Appraise,
             ItemUsable itemUsable = null)
         {
-            slots[slotIndex].SetCached(avatarAddress, false, requiredBlockIndex, slotType, itemUsable);
+            slots[slotIndex].SetCached(avatarAddress, false, requiredBlockIndex, CombinationSlot.SlotUIState.Appraise, itemUsable);
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var states = States.Instance.GetAvailableCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
+            var states = States.Instance.GetUsedCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
             UpdateSlots(blockIndex, states);
         }
 
         public bool TryGetEmptyCombinationSlot(out int slotIndex)
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var states = States.Instance.GetAvailableCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
+            var states = States.Instance.GetUsedCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
             UpdateSlots(blockIndex, states);
             for (var i = 0; i < slots.Count; i++)
             {
-                if (slots[i].Type != CombinationSlot.SlotType.Empty)
+                if (slots[i].UIState != CombinationSlot.SlotUIState.Empty)
                 {
                     continue;
                 }

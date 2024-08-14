@@ -650,11 +650,26 @@ namespace Nekoyume.State
             slots.States[index] = state;
         }
 
-        public Dictionary<int, CombinationSlotState> GetAvailableCombinationSlotState()
+        public Dictionary<int, CombinationSlotState> GetUsedCombinationSlotState()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var states = _slotStates[CurrentAvatarState.address].States;
             return states.Where(x => !x.Value.ValidateV2(blockIndex))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+        [CanBeNull]
+        public Dictionary<int, CombinationSlotState> GetUsedCombinationSlotState(
+            AvatarState avatarState,
+            long currentBlockIndex)
+        {
+            if (!_slotStates.ContainsKey(avatarState.address))
+            {
+                return null;
+            }
+
+            var states = _slotStates[avatarState.address].States;
+            return states.Where(x => !x.Value.ValidateV2(currentBlockIndex))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
@@ -669,7 +684,7 @@ namespace Nekoyume.State
             }
 
             var states = _slotStates[avatarState.address].States;
-            return states.Where(x => !x.Value.ValidateV2(currentBlockIndex))
+            return states.Where(x => x.Value.ValidateV2(currentBlockIndex))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 

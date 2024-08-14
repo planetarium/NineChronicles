@@ -827,7 +827,7 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.AvatarStates.Values
                 .FirstOrDefault(x => x.address == avatarAddress);
             var combinationSlotState = avatarState is not null
-                ? States.Instance.GetAvailableCombinationSlotState(
+                ? States.Instance.GetUsedCombinationSlotState(
                     avatarState,
                     Game.Game.instance.Agent.BlockIndex)
                 : null;

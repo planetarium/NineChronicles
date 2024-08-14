@@ -87,7 +87,7 @@ namespace Nekoyume.UI
                     Find<CombinationSlotsPopup>().SetCachingTrue(
                         avatarAddress,
                         _slotIndex,
-                        slotType: CombinationSlot.SlotType.WaitingReceive);
+                        slotUIState: CombinationSlot.SlotUIState.WaitingReceive);
                     Close();
                 })
                 .AddTo(gameObject);
