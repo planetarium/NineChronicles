@@ -743,15 +743,10 @@ namespace Nekoyume.UI
                 var iapProductFindComplete = false;
                 if (unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
                 {
-#if UNITY_IOS
-                    Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
-#else
-                    var gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
-#endif
-                    var gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
-                    if (gSkuMatch.Success)
+                    var sku = MailExtensions.GetSkuFromMemo(unloadFromMyGaragesRecipientMail.Memo);
+                    if (!string.IsNullOrEmpty(sku))
                     {
-                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == gSkuMatch.Groups[1].Value);
+                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.CheckSku(sku));
                         if (findKey.Value != null)
                         {
                             iapProductFindComplete = true;

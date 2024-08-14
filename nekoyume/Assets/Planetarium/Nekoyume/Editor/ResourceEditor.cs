@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class ResourceEditor
 {
-    private const string VFXPrefabPath = "Assets/Resources/VFX/";
+    private const string VFXPrefabPath = "Assets/AddressableAssets/VFX/";
 
     [MenuItem("Tools/Resource/Set All Character VFX Prefab Rendering Layer")]
     public static void SetAllCharacterVFXPrefabRenderingLayer()
