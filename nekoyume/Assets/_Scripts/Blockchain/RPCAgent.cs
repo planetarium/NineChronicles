@@ -346,14 +346,7 @@ namespace Nekoyume.Blockchain
                 return fav;
             }
 
-            var blockHash = await GetBlockHashAsync(null);
-            if (blockHash is null)
-            {
-                NcDebug.LogError($"Failed to get tup block hash.");
-                return 0 * currency;
-            }
-
-            var balance = await GetBalanceAsync(blockHash.Value, addr, currency)
+            var balance = await GetBalanceAsync(BlockTipStateRootHash, addr, currency)
                 .ConfigureAwait(false);
             if (addr.Equals(Address))
             {
@@ -438,15 +431,8 @@ namespace Nekoyume.Blockchain
 
         public async Task<AgentState> GetAgentStateAsync(Address address)
         {
-            var blockHash = await GetBlockHashAsync(null);
-            if (blockHash is not { } blockHashNotNull)
-            {
-                NcDebug.LogError($"Failed to get tip block hash.");
-                return null;
-            }
-
-            var raw = await _service.GetAgentStatesByBlockHash(
-                blockHashNotNull.ToByteArray(),
+            var raw = await _service.GetAgentStatesByStateRootHash(
+                BlockTipStateRootHash.ToByteArray(),
                 new[] { address.ToByteArray() });
             return ResolveAgentState(raw.Values.First());
         }
@@ -495,15 +481,8 @@ namespace Nekoyume.Blockchain
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList)
         {
-            var blockHash = await GetBlockHashAsync(null);
-            if (!blockHash.HasValue)
-            {
-                NcDebug.LogError($"Failed to get tip block hash.");
-                return null;
-            }
-
-            var raw = await _service.GetAvatarStatesByBlockHash(
-                blockHash.Value.ToByteArray(),
+            var raw = await _service.GetAvatarStatesByStateRootHash(
+                BlockTipStateRootHash.ToByteArray(),
                 addressList.Select(a => a.ToByteArray()));
             var result = new Dictionary<Address, AvatarState>();
             foreach (var kv in raw)
