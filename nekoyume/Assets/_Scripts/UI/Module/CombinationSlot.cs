@@ -239,7 +239,13 @@ namespace Nekoyume.UI.Module
         }
         
         private void OnBlockRenderWorking(long currentBlockIndex)
-        {
+        { 
+            if (_state.Result == null || !_state.ValidateV2(currentBlockIndex))
+            {
+                return;
+            }
+            // 제작 완료(BlockIndex체크)나 제작 아이템 정보가 없는 경우 Empty로 변경
+            UIState = SlotUIState.Empty;
             UpdateInformation(currentBlockIndex);
         }
         
