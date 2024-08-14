@@ -207,7 +207,7 @@ namespace Nekoyume.UI.Module.Lobby
                     timeContainer.SetActive(false);
                     ticketContainer.SetActive(false);
                     // Set tutorial target to off-season object
-                    Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                    Game.Game.instance.Stage?.TutorialController?.SetTutorialTarget(new TutorialTarget
                     {
                         type = TutorialTargetType.WorldBossButton,
                         rectTransform = offSeasonOutlineRect

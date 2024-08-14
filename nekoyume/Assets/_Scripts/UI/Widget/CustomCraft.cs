@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
@@ -37,11 +38,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private SubTypeButton[] subTypeButtons;
 
-        // [SerializeField]
-        // private ConditionalCostButton conditionalCostButton;
-
         [SerializeField]
-        private Button craftButton;
+        private ConditionalCostButton conditionalCostButton;
 
         [SerializeField]
         private Button relationshipHelpButton;
@@ -95,6 +93,9 @@ namespace Nekoyume.UI
 
         private ItemSubType _selectedSubType;
 
+        private List<IDisposable> _disposables = new();
+        private IDisposable _outfitAnimationDisposable;
+
         protected override void Awake()
         {
             base.Awake();
@@ -129,7 +130,8 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             outfitScroll.OnClick.Subscribe(OnOutfitSelected).AddTo(gameObject);
-            craftButton.onClick.AddListener(OnClickSubmitButton);
+            conditionalCostButton.OnSubmitSubject.Subscribe(_ => OnClickSubmitButton())
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -140,6 +142,12 @@ namespace Nekoyume.UI
             selectedView.SetActive(false);
             SetRelationshipView(ReactiveAvatarState.Relationship);
             OnItemSubtypeSelected(ItemSubType.Weapon);
+            ReactiveAvatarState.Inventory
+                .Where(_ => _selectedOutfit != null)
+                .Subscribe(_ =>
+                {
+                    OnOutfitSelected(_selectedOutfit);
+                }).AddTo(_disposables);
         }
 
         /// <summary>
@@ -167,7 +175,9 @@ namespace Nekoyume.UI
             var scrollData = new List<CustomOutfit> {new(null)};
             scrollData.AddRange(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubType)
-                .Select(r => new CustomOutfit(r)));
+                .Select(r => new CustomOutfit(r))
+                .OrderBy(r => r.IconRow.Value.RequiredRelationship)
+                .ThenBy(r => r.IconRow.Value.RandomOnly));
             outfitScroll.UpdateData(scrollData);
             _selectedOutfit = null;
             notSelected.SetActive(true);
@@ -176,25 +186,40 @@ namespace Nekoyume.UI
 
         private void OnClickSubmitButton()
         {
-            if (_selectedOutfit is null)
-            {
-                OneLineSystem.Push(MailType.System, "select outfit", NotificationCell.NotificationType.Information);
-                return;
-            }
-
             if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
             {
-                // TODO: 전부 다 CustomEquipmentCraft 관련 sheet에서 가져오게 바꿔야함
+                var recipe = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
+                    r.ItemSubType == _selectedSubType);
+                Find<CombinationSlotsPopup>().SetCaching(
+                    States.Instance.CurrentAvatarState.address,
+                    slotIndex,
+                    true,
+                    recipe.RequiredBlock,
+                    itemUsable: ItemFactory.CreateItemUsable(
+                        TableSheets.Instance.EquipmentItemSheet[TableSheets.Instance
+                            .CustomEquipmentCraftRelationshipSheet
+                            .OrderedList
+                            .First(row => row.Relationship >= ReactiveAvatarState.Relationship)
+                            .GetItemId(_selectedSubType)]
+                        , Guid.NewGuid(),
+                        recipe.RequiredBlock));
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
-                        TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
-                            r.ItemSubType == _selectedSubType).Id,
+                        recipe.Id,
                         _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
                     .Subscribe();
+                OnOutfitSelected(_selectedOutfit);
+            }
+            else
+            {
+                // todo: 뭔진 몰라도 not interactable한데 interact를 한게 문제니까 일단...
+                OneLineSystem.Push(MailType.System, "somethings wrong",
+                    NotificationCell.NotificationType.Information);
             }
         }
 
         private void OnOutfitSelected(CustomOutfit outfit)
         {
+            _outfitAnimationDisposable?.Dispose();
             if (_selectedOutfit != null)
             {
                 _selectedOutfit.Selected.Value = false;
@@ -207,27 +232,52 @@ namespace Nekoyume.UI
             selectedView.SetActive(true);
             selectedImageView.SetActive(true);
             selectedSpineView.SetActive(false);
-            outfitNameText.SetText(_selectedOutfit.IconRow.Value is not null ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId) : "Random");
+            // 외형 랜덤 선택
+            var selectRandomOutfit = _selectedOutfit.IconRow.Value == null;
+            outfitNameText.SetText(!selectRandomOutfit
+                ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId)
+                : "Random");
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
             var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
             var equipmentItemSheet = TableSheets.Instance.EquipmentItemSheet;
             if (equipmentItemSheet.TryGetValue(equipmentItemId, out var equipmentRow))
             {
-                // TODO: 싹 다 시안에 맞춰서 표현 방식을 변경해야한다. 지금은 외형을 선택하면 시트에서 잘 가져오는지 보려고 했다.
                 baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
                 expText.SetText($"EXP {equipmentRow.Exp!.Value.ToCurrencyNotation()}");
                 cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
                 requiredBlockText.SetText(
                     $"{TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r => r.ItemSubType == _selectedSubType).RequiredBlock}");
-                requiredLevelText.SetText($"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
-                selectedOutfitImage.overrideSprite =
-                    SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value?.IconId ?? 0);
-                if (equipmentRow.ItemSubType is ItemSubType.Armor or ItemSubType.Weapon)
+                requiredLevelText.SetText(
+                    $"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
+
+                var viewSpinePreview =
+                    equipmentRow.ItemSubType is ItemSubType.Armor or ItemSubType.Weapon;
+                selectedImageView.SetActive(!viewSpinePreview);
+                selectedSpineView.SetActive(viewSpinePreview);
+                if (!selectRandomOutfit)
                 {
-                    SetCharacter(equipmentRow);
-                    selectedImageView.SetActive(false);
-                    selectedSpineView.SetActive(true);
+                    selectedOutfitImage.overrideSprite =
+                        SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value.IconId);
+                    if (viewSpinePreview)
+                    {
+                        SetCharacter(equipmentRow, _selectedOutfit.IconRow.Value.IconId);
+                    }
+                }
+                else
+                {
+                    Action<int> routine = viewSpinePreview
+                        ? iconId => SetCharacter(equipmentRow, iconId)
+                        : iconId =>
+                            selectedOutfitImage.overrideSprite =
+                                SpriteHelper.GetItemIcon(iconId);
+                    var outfitIconIds = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
+                        .Where(row =>
+                            row.ItemSubType == _selectedSubType && row.RequiredRelationship <=
+                            ReactiveAvatarState.Relationship)
+                        .Select(row => row.IconId).ToList();
+                    _outfitAnimationDisposable = outfitIconIds.ObservableIntervalLoopingList(.5f)
+                        .Subscribe(index => routine(index));
                 }
             }
 
@@ -243,8 +293,18 @@ namespace Nekoyume.UI
                 States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
             );
 
-            requiredItemRecipeView.SetData(materialCosts.Select(pair => new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value)).ToList(), true);
-            craftButton.interactable = !_selectedOutfit.RandomOnly.Value;
+            requiredItemRecipeView.SetData(
+                materialCosts.Select(pair =>
+                        new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value))
+                    .ToList(),
+                true);
+            conditionalCostButton.SetCost(CostType.NCG, (long)ncgCost);
+            conditionalCostButton.SetCondition(() => !_selectedOutfit.RandomOnly.Value);
+            conditionalCostButton.Interactable = CheckSubmittable(
+                ncgCost,
+                materialCosts,
+                _selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0);
+            conditionalCostButton.UpdateObjects();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -252,13 +312,54 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
             _selectedOutfit?.Selected.SetValueAndForceNotify(false);
             _selectedOutfit = null;
+            _outfitAnimationDisposable?.Dispose();
+            _outfitAnimationDisposable = null;
+            _disposables.DisposeAllAndClear();
         }
 
-        private void SetCharacter(EquipmentItemSheet.Row equipmentRow)
+        private bool CheckSubmittable(BigInteger ncgAmount, IDictionary<int,int> materials, int requiredRelationship)
+        {
+            if (ReactiveAvatarState.Relationship < requiredRelationship)
+            {
+                return false;
+            }
+
+            if (!Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _))
+            {
+                return false;
+            }
+
+            if (States.Instance.GoldBalanceState.Gold.MajorUnit < ncgAmount)
+            {
+                return false;
+            }
+
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            foreach (var material in materials)
+            {
+                if (!TableSheets.Instance.MaterialItemSheet.TryGetValue(material.Key, out var row))
+                {
+                    continue;
+                }
+
+                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                    ? outFungibleItems.Sum(e => e.count)
+                    : 0;
+
+                if (material.Value > itemCount)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        private void SetCharacter(EquipmentItemSheet.Row equipmentRow, int iconId)
         {
             var game = Game.Game.instance;
             var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
 
+            costumes.Clear();
             if (equipmentRow is not null)
             {
                 var maxLevel = game.TableSheets.EnhancementCostSheetV3.Values
@@ -267,15 +368,15 @@ namespace Nekoyume.UI
                         row.Grade == equipmentRow.Grade)
                     .Max(row => row.Level);
 
-                var resultItem = (Equipment)ItemFactory.CreateItemUsable(
+                var previewItem = (Equipment)ItemFactory.CreateItemUsable(
                     equipmentRow, Guid.NewGuid(), 0L, maxLevel);
-                resultItem.IconId = _selectedOutfit.IconRow.Value.IconId;
+                previewItem.IconId = iconId;
 
-                var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
-                var aura = equipments.FirstOrDefault(e => e.ItemSubType == ItemSubType.Aura);
-                equipments.Remove(sameType);
-                equipments.Remove(aura);
-                equipments.Add(resultItem);
+                equipments.RemoveAll(e =>
+                    e.ItemSubType == equipmentRow.ItemSubType ||
+                    e.ItemSubType == ItemSubType.Aura ||
+                    e.ItemSubType == ItemSubType.FullCostume);
+                equipments.Add(previewItem);
             }
 
             var avatarState = game.States.CurrentAvatarState;

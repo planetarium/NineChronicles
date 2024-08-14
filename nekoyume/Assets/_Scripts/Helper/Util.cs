@@ -104,33 +104,6 @@ namespace Nekoyume.Helper
             }, false);
         }
 
-        public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
-        {
-            if (inventory is null)
-            {
-                return 0;
-            }
-
-            var count = 0;
-            var materials =
-                inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
-            var hourglass = materials.Where(x => x.item.ItemSubType == ItemSubType.Hourglass);
-            foreach (var item in hourglass)
-            {
-                if (item.item is TradableMaterial tradableItem)
-                {
-                    if (tradableItem.RequiredBlockIndex > currentBlockIndex)
-                    {
-                        continue;
-                    }
-                }
-
-                count += item.count;
-            }
-
-            return count;
-        }
-
         public static bool TryGetStoredAvatarSlotIndex(out int slotIndex)
         {
             if (Game.Game.instance.Agent is null)
@@ -600,12 +573,12 @@ namespace Nekoyume.Helper
                 Format = BarcodeFormat.QR_CODE,
                 Options = new QrCodeEncodingOptions
                 {
-                    Width = 400,
-                    Height = 400
+                    Width = 800,
+                    Height = 800
                 }
             };
 
-            var encoded = new Texture2D(400, 400);
+            var encoded = new Texture2D(800, 800);
             var res = writer.Write(json);
             encoded.SetPixels32(res);
 

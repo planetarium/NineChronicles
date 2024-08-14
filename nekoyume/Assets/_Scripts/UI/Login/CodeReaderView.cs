@@ -91,7 +91,7 @@ namespace Nekoyume.UI
                 }
 
                 var bytes = File.ReadAllBytes(path);
-                var texture = new Texture2D(400, 400);
+                var texture = new Texture2D(800, 800);
                 texture.LoadImage(bytes);
 
                 var barcodeReader = new BarcodeReader { Options = { PureBarcode = false } };

@@ -1956,13 +1956,7 @@ namespace Nekoyume.Blockchain
             var outputState = eval.OutputState;
             var avatarAddr = eval.Action.AvatarAddress;
 
-            // 정확한 전투 재현을 위해 관련 상태를 모두 PreviousState로 가져와서 갱신합니다.
-            // 여기엔 AvatarState, AllRuneState, CollectionState가 해당됩니다.
-            var prevAvatarState = StateGetter.GetAvatarState(prevState, avatarAddr);
-            States.Instance.UpdateCurrentAvatarState(prevAvatarState);
-            States.Instance.SetAllRuneState(
-                GetStateExtensions.GetAllRuneState(prevState, avatarAddr));
-            States.Instance.SetCollectionState(StateGetter.GetCollectionState(prevState, avatarAddr));
+            var prevAvatarState = UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
 
             // 전투에서 사용한 장비와 룬은 Action 인자로 들어가기 때문에, OutputState로 갱신시켜줍니다.
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
@@ -2153,6 +2147,8 @@ namespace Nekoyume.Blockchain
             {
                 UpdateAgentStateAsync(eval).Forget();
             }
+
+            UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
 
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
@@ -2675,6 +2671,7 @@ namespace Nekoyume.Blockchain
         private static ActionEvaluation<BattleArena> PrepareBattleArena(
             ActionEvaluation<BattleArena> eval)
         {
+            UpdatePreviousAvatarState(eval.PreviousState, eval.Action.myAvatarAddress);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Arena);
             return eval;
@@ -2919,6 +2916,7 @@ namespace Nekoyume.Blockchain
             }
 
             UpdateCrystalBalance(eval);
+            UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneStoneBalance(eval);
@@ -3440,7 +3438,7 @@ namespace Nekoyume.Blockchain
                             if (Currencies.IsWrappedCurrency(tokenCurrency))
                             {
                                 var currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
-                                var recipientAddress = Currencies.SelectRecipientAddress(currency, agentAddr,
+                                var recipientAddress = Currencies.PickAddress(currency, agentAddr,
                                     avatarAddr);
                                 var isCrystal = currency.Equals(Currencies.Crystal);
                                 var balance = StateGetter.GetBalance(
@@ -3556,7 +3554,7 @@ namespace Nekoyume.Blockchain
                         var fav = spec.Assets.Value;
                         {
                             var tokenCurrency = fav.Currency;
-                            var recipientAddress = Currencies.SelectRecipientAddress(tokenCurrency, agentAddr,
+                            var recipientAddress = Currencies.PickAddress(tokenCurrency, agentAddr,
                                 avatarAddr);
                             var isCrystal = tokenCurrency.Equals(Currencies.Crystal);
                             var balance = StateGetter.GetBalance(
@@ -3815,10 +3813,10 @@ namespace Nekoyume.Blockchain
                 lastFloor = firstFloor;
                 prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
-                UpdateAgentStateAsync(eval).Forget();
+                UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
+
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
-                UpdateCurrentAvatarRuneStoneBalance(eval);
                 UpdateCurrentAvatarInventory(eval);
 
                 _disposableForBattleEnd?.Dispose();
@@ -4172,29 +4170,14 @@ namespace Nekoyume.Blockchain
         private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
             ActionEvaluation<CustomEquipmentCraft> eval)
         {
-            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
             var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
             var slot = allSlot.GetCombinationSlotState(slotIndex);
-            var result = (CombinationConsumable5.ResultModel)slot.Result;
 
-            if (StateGetter.TryGetAvatarState(
-                eval.OutputState,
-                agentAddress,
-                avatarAddress,
-                out var avatarState))
-            {
-                // TODO: resultModel 날아오기 시작하면 추가해야됨
-                // foreach (var pair in result.materials)
-                // {
-                //     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
-                // }
-
-                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
-                UpdateAgentStateAsync(eval).Forget();
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-            }
+            UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
 
             ReactiveAvatarState.UpdateProficiency(
                 (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
@@ -4216,8 +4199,7 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            // TODO: 장비 메일 날아오기 시작하면 추가해야됨
-            // LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             // Notify
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -4249,6 +4231,25 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
+        }
+
+        /// <summary>
+        /// 정확한 전투 재현을 위해 관련 상태를 모두 PreviousState로 가져와서 갱신합니다.
+        /// 여기엔 AvatarState, AllRuneState, CollectionState가 해당됩니다.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="prevState"></param>
+        /// <param name="avatarAddr"></param>
+        private static AvatarState UpdatePreviousAvatarState(HashDigest<SHA256> prevState,
+            Address avatarAddr)
+        {
+            var prevAvatarState = StateGetter.GetAvatarState(prevState, avatarAddr);
+            States.Instance.UpdateCurrentAvatarState(prevAvatarState);
+            States.Instance.SetAllRuneState(
+                GetStateExtensions.GetAllRuneState(prevState, avatarAddr));
+            States.Instance.SetCollectionState(
+                StateGetter.GetCollectionState(prevState, avatarAddr));
+            return prevAvatarState;
         }
     }
 }

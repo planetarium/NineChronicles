@@ -1491,22 +1491,22 @@ namespace Nekoyume.Game
             QuitWithAgentConnectionError(null);
         }
 
-        public void InitializeStage()
+        public async UniTask InitializeStage()
         {
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
-            Stage.Initialize();
+            await Stage.InitializeAsync();
             sw.Stop();
             NcDebug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             sw.Reset();
             sw.Start();
-            Arena.Initialize();
+            await Arena.InitializeAsync();
             sw.Stop();
             NcDebug.Log($"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             sw.Reset();
             sw.Start();
-            RaidStage.Initialize();
+            await RaidStage.InitializeAsync();
             sw.Stop();
             NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
