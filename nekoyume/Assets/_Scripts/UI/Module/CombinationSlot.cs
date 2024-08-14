@@ -201,12 +201,82 @@ namespace Nekoyume.UI.Module
         private void SubscribeOnBlockIndex(long currentBlockIndex)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            Type = GetSlotType(_state, currentBlockIndex, IsCached(avatarAddress));
-            UpdateInformation(Type, currentBlockIndex, _state, IsCached(avatarAddress));
+            UIState = GetSlotType(_state, currentBlockIndex, IsCached(avatarAddress));
+            UpdateInformation(UIState, currentBlockIndex, _state, IsCached(avatarAddress));
         }
 
+#region OnBlockRender
+        private void OnUpdateBlock(long currentBlockIndex)
+        {
+            switch (UIState)
+            {
+                case SlotUIState.Empty:
+                    OnBlockRenderEmpty(currentBlockIndex);
+                    break;
+                case SlotUIState.Appraise:
+                    OnBlockRenderAppraise(currentBlockIndex);
+                    break;
+                case SlotUIState.Working:
+                    OnBlockRenderWorking(currentBlockIndex);
+                    break;
+                case SlotUIState.WaitingReceive:
+                    OnBlockRenderWaitingReceive(currentBlockIndex);
+                    break;
+                case SlotUIState.Locked:
+                    OnBlockRenderLocked(currentBlockIndex);
+                    break;
+            }
+        }
+        
+        private void OnBlockRenderEmpty(long currentBlockIndex)
+        {
+            // Do nothing.
+        }
+        
+        private void OnBlockRenderAppraise(long currentBlockIndex)
+        {
+            var workingBlockIndex = _state.StartBlockIndex + States.Instance.GameConfigState.RequiredAppraiseBlock;
+            if (currentBlockIndex <= workingBlockIndex)
+            {
+                return;
+            }
+
+            UIState = SlotUIState.Working;
+            UpdateInformation(currentBlockIndex);
+        }
+        
+        private void OnBlockRenderWorking(long currentBlockIndex)
+        {
+            UpdateInformation(currentBlockIndex);
+        }
+        
+        private void OnBlockRenderWaitingReceive(long currentBlockIndex)
+        {
+            // Not Cached && slot null
+            if (_state.Result != null)
+            {
+                return;
+            }
+
+            UIState = SlotUIState.Empty;
+            UpdateInformation(currentBlockIndex);
+        }
+        
+        private void OnBlockRenderLocked(long currentBlockIndex)
+        {
+            // Do nothing.
+        }
+#endregion OnBlockRender
+
+        private void UpdateInformation(long blockIndex)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            UpdateInformation(UIState, blockIndex, _state, IsCached(avatarAddress));
+        }
+        
+
         private void UpdateInformation(
-            SlotType type,
+            SlotUIState uiState,
             long currentBlockIndex,
             CombinationSlotState state,
             bool isCached)
