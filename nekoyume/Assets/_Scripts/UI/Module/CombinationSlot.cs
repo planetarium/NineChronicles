@@ -158,11 +158,11 @@ namespace Nekoyume.UI.Module
         {
             Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
-                .Subscribe(SubscribeOnBlockIndex)
+                .Subscribe(OnUpdateBlock)
                 .AddTo(_disposablesOfOnEnable);
             ReactiveAvatarState.Inventory
                 .Select(_ => Game.instance.Agent.BlockIndex)
-                .Subscribe(SubscribeOnBlockIndex)
+                .Subscribe(OnUpdateBlock)
                 .AddTo(_disposablesOfOnEnable);
         }
 
@@ -196,13 +196,6 @@ namespace Nekoyume.UI.Module
             UIState = GetSlotType(state, currentBlockIndex, IsCached(avatarAddress));
             UpdateInformation(UIState, currentBlockIndex, state, IsCached(avatarAddress));
             SetLockObject();
-        }
-
-        private void SubscribeOnBlockIndex(long currentBlockIndex)
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            UIState = GetSlotType(_state, currentBlockIndex, IsCached(avatarAddress));
-            UpdateInformation(UIState, currentBlockIndex, _state, IsCached(avatarAddress));
         }
 
 #region OnBlockRender
