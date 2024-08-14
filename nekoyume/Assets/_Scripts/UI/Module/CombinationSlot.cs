@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,62 +43,61 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
-        private SimpleItemView itemView;
+        private SimpleItemView itemView = null!;
 
         [SerializeField]
-        private SimpleItemView waitingReceiveItemView;
+        private SimpleItemView waitingReceiveItemView = null!;
 
         [SerializeField]
-        private TouchHandler touchHandler;
+        private TouchHandler touchHandler = null!;
 
         [SerializeField]
-        private Slider progressBar;
+        private Slider progressBar = null!;
 
         [SerializeField]
-        private Image hasNotificationImage;
+        private Image hasNotificationImage = null!;
 
         [SerializeField]
-        private TextMeshProUGUI requiredBlockIndexText;
+        private TextMeshProUGUI requiredBlockIndexText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI requiredTimeText;
+        private TextMeshProUGUI requiredTimeText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI itemNameText;
+        private TextMeshProUGUI itemNameText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI hourglassCountText;
+        private TextMeshProUGUI hourglassCountText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI preparingText;
+        private TextMeshProUGUI preparingText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI waitingReceiveText;
+        private TextMeshProUGUI waitingReceiveText = null!;
 
         [SerializeField]
-        private GameObject lockContainer;
+        private GameObject lockContainer = null!;
 
         [SerializeField]
-        private GameObject baseContainer;
+        private GameObject baseContainer = null!;
 
         [SerializeField]
-        private GameObject noneContainer;
+        private GameObject noneContainer = null!;
 
         [SerializeField]
-        private GameObject preparingContainer;
+        private GameObject preparingContainer = null!;
 
         [SerializeField]
-        private GameObject workingContainer;
+        private GameObject workingContainer = null!;
 
         [SerializeField]
-        private GameObject waitReceiveContainer;
+        private GameObject waitReceiveContainer = null!;
 
         [SerializeField]
-        private PetSelectButton petSelectButton;
+        private PetSelectButton petSelectButton = null!;
 
-        private CombinationSlotLockObject _lockObject;
-        
-        private CombinationSlotState _state;
+        private CombinationSlotLockObject _lockObject = null!;
+        private CombinationSlotState? _state;
         private CacheType _cachedType;
         private int _slotIndex;
 
@@ -110,7 +111,7 @@ namespace Nekoyume.UI.Module
             bool value,
             long requiredBlockIndex,
             SlotUIState slotUIState,
-            ItemUsable itemUsable = null)
+            ItemUsable? itemUsable = null)
         {
             cached[avatarAddress] = value;
 
@@ -189,7 +190,7 @@ namespace Nekoyume.UI.Module
             Address avatarAddress,
             long currentBlockIndex,
             int slotIndex,
-            CombinationSlotState state = null)
+            CombinationSlotState? state = null)
         {
             _slotIndex = slotIndex;
             _state = state;
@@ -228,6 +229,13 @@ namespace Nekoyume.UI.Module
         
         private void OnBlockRenderAppraise(long currentBlockIndex)
         {
+            if (_state == null)
+            {
+                UIState = SlotUIState.Empty;
+                UpdateInformation(currentBlockIndex);
+                return;
+            }
+            
             var workingBlockIndex = _state.StartBlockIndex + States.Instance.GameConfigState.RequiredAppraiseBlock;
             if (currentBlockIndex <= workingBlockIndex)
             {
@@ -240,7 +248,7 @@ namespace Nekoyume.UI.Module
         
         private void OnBlockRenderWorking(long currentBlockIndex)
         { 
-            if (_state.Result == null || !_state.ValidateV2(currentBlockIndex))
+            if (_state?.Result == null || !_state.ValidateV2(currentBlockIndex))
             {
                 return;
             }
@@ -252,7 +260,7 @@ namespace Nekoyume.UI.Module
         private void OnBlockRenderWaitingReceive(long currentBlockIndex)
         {
             // Not Cached && slot null
-            if (_state.Result != null)
+            if (_state?.Result != null)
             {
                 return;
             }
@@ -277,7 +285,7 @@ namespace Nekoyume.UI.Module
         private void UpdateInformation(
             SlotUIState uiState,
             long currentBlockIndex,
-            CombinationSlotState state,
+            CombinationSlotState? state,
             bool isCached)
         {
             petSelectButton.SetData(state?.PetId ?? null);
@@ -354,7 +362,7 @@ namespace Nekoyume.UI.Module
         }
 
         private SlotUIState GetSlotType(
-            CombinationSlotState state,
+            CombinationSlotState? state,
             long currentBlockIndex,
             bool isCached)
         {
@@ -427,8 +435,15 @@ namespace Nekoyume.UI.Module
             }
 
             var row = Game.instance.TableSheets.MaterialItemSheet
-                .OrderedList
+                .OrderedList?
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
+            
+            if (row == null)
+            {
+                hasNotificationImage.enabled = false;
+                return;
+            }
+            
             var isEnough = States.Instance.CurrentAvatarState.inventory
                 .HasFungibleItem(row.ItemId, currentBlockIndex, cost);
             hasNotificationImage.enabled = isEnough;
@@ -479,7 +494,7 @@ namespace Nekoyume.UI.Module
 
         private static void OnClickSlot(
             SlotUIState uiState,
-            CombinationSlotState state,
+            CombinationSlotState? state,
             int slotIndex,
             long currentBlockIndex)
         {
