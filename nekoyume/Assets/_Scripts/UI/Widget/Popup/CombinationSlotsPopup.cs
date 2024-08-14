@@ -76,29 +76,22 @@ namespace Nekoyume.UI
             petInventory.Hide();
         }
         
-        public void SetCachingTrue(
-            Address avatarAddress,
+        public void OnSendCombinationAction(
             int slotIndex,
-            long requiredBlockIndex = 0,
-            CombinationSlot.SlotUIState slotUIState = CombinationSlot.SlotUIState.Appraise,
-            ItemUsable itemUsable = null)
+            long requiredBlockIndex,
+            ItemUsable itemUsable)
         {
-            slots[slotIndex].SetCached(avatarAddress, true, requiredBlockIndex, slotUIState, itemUsable);
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var states = States.Instance.GetUsedCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
-            UpdateSlots(blockIndex, states);
+            slots[slotIndex].OnSendCombinationAction(requiredBlockIndex, itemUsable);
+        }
+
+        public void OnSendRapidCombination(int slotIndex)
+        {
+            slots[slotIndex].OnSendRapidCombinationAction();
         }
         
-        public void SetCachingFalse(
-            Address avatarAddress,
-            int slotIndex,
-            long requiredBlockIndex = 0,
-            ItemUsable itemUsable = null)
+        public void OnCraftActionRender(int slotIndex)
         {
-            slots[slotIndex].SetCached(avatarAddress, false, requiredBlockIndex, CombinationSlot.SlotUIState.Appraise, itemUsable);
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var states = States.Instance.GetUsedCombinationSlotState(States.Instance.CurrentAvatarState, blockIndex);
-            UpdateSlots(blockIndex, states);
+            slots[slotIndex].OnCraftActionRender();
         }
 
         public bool TryGetEmptyCombinationSlot(out int slotIndex)
@@ -140,22 +133,22 @@ namespace Nekoyume.UI
             {
                 if (states == null)
                 {
-                    slots[i].SetSlot(avatarState.address, blockIndex, i);
+                    slots[i].SetSlot(blockIndex, i);
                 }
                 else if (states.ContainsKey(i))
                 {
                     if (states.TryGetValue(i, out var state))
                     {
-                        slots[i].SetSlot(avatarState.address, blockIndex, i, state);
+                        slots[i].SetSlot(blockIndex, i, state);
                     }
                     else
                     {
-                        slots[i].SetSlot(avatarState.address, blockIndex, i);
+                        slots[i].SetSlot(blockIndex, i);
                     }
                 }
                 else
                 {
-                    slots[i].SetSlot(avatarState.address, blockIndex, i);
+                    slots[i].SetSlot(blockIndex, i);
                 }
             }
         }

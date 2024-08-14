@@ -83,11 +83,7 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex).Subscribe();
-                    var avatarAddress = States.Instance.CurrentAvatarState.address;
-                    Find<CombinationSlotsPopup>().SetCachingTrue(
-                        avatarAddress,
-                        _slotIndex,
-                        slotUIState: CombinationSlot.SlotUIState.WaitingReceive);
+                    Find<CombinationSlotsPopup>().OnSendRapidCombination(_slotIndex);
                     Close();
                 })
                 .AddTo(gameObject);

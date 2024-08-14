@@ -973,8 +973,7 @@ namespace Nekoyume.Blockchain
                 PlayerPrefs.DeleteKey(pushIdentifierKey);
             }
 
-            Widget.Find<CombinationSlotsPopup>().SetCachingFalse(
-                avatarAddress,
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(
                 renderArgs.Evaluation.Action.slotIndex);
         }
 
@@ -1137,7 +1136,7 @@ namespace Nekoyume.Blockchain
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>().SetCachingFalse(avatarAddress, slotIndex);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
         private (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
@@ -1236,7 +1235,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
-                .SetCachingFalse(avatarAddress, renderArgs.Evaluation.Action.slotIndex);
+                .OnCraftActionRender(renderArgs.Evaluation.Action.slotIndex);
         }
 
         private (ActionEvaluation<EventConsumableItemCrafts> Evaluation, CombinationSlotState CombinationSlotState) PrepareEventConsumableItemCrafts(
@@ -1287,7 +1286,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
-                .SetCachingFalse(avatarAddress, renderArgs.Evaluation.Action.SlotIndex);
+                .OnCraftActionRender(renderArgs.Evaluation.Action.SlotIndex);
         }
 
         private ActionEvaluation<EventMaterialItemCrafts> PrepareEventMaterialItemCrafts(ActionEvaluation<EventMaterialItemCrafts> eval)
@@ -1476,7 +1475,7 @@ namespace Nekoyume.Blockchain
                 itemSlotState.Equipments.Remove(renderArgs.Evaluation.Action.itemId);
             }
 
-            Widget.Find<CombinationSlotsPopup>().SetCachingFalse(avatarAddress, slotIndex);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
@@ -4246,7 +4245,7 @@ namespace Nekoyume.Blockchain
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>().SetCachingFalse(avatarAddress, slotIndex);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
         /// <summary>

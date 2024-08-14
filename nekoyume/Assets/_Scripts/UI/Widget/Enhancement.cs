@@ -277,9 +277,7 @@ namespace Nekoyume.UI
                 requiredBlockIndex = 0;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            slots.SetCachingTrue(avatarAddress, slotIndex, requiredBlockIndex,
-                itemUsable: baseItem);
+            slots.OnSendCombinationAction(slotIndex, requiredBlockIndex, baseItem);
 
             NotificationSystem.Push(
                 MailType.Workshop,
