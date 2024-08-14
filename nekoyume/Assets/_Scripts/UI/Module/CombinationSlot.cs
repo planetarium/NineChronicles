@@ -97,6 +97,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private PetSelectButton petSelectButton;
 
+        private CombinationSlotLockObject _lockObject;
+        
         private CombinationSlotState _state;
         private CacheType _cachedType;
         private int _slotIndex;
@@ -113,14 +115,7 @@ namespace Nekoyume.UI.Module
             SlotType slotType,
             ItemUsable itemUsable = null)
         {
-            if (cached.ContainsKey(avatarAddress))
-            {
-                cached[avatarAddress] = value;
-            }
-            else
-            {
-                cached.Add(avatarAddress, value);
-            }
+            cached[avatarAddress] = value;
 
             var currentBlockIndex = Game.instance.Agent.BlockIndex;
             switch (slotType)
@@ -158,6 +153,8 @@ namespace Nekoyume.UI.Module
                 AudioController.PlayClick();
                 OnClickSlot(Type, _state, _slotIndex, Game.instance.Agent.BlockIndex);
             }).AddTo(gameObject);
+            
+            _lockObject = lockContainer.GetComponent<CombinationSlotLockObject>();
         }
 
         private void OnEnable()
@@ -177,6 +174,20 @@ namespace Nekoyume.UI.Module
             _disposablesOfOnEnable.DisposeAllAndClear();
         }
 
+        private void SetLockObject()
+        {
+            if (_lockObject == null)
+            {
+                NcDebug.LogError("Can't find CombinationSlotLockObject component.");
+                return;
+            }
+
+            if (TableSheets.Instance.UnlockCombinationSlotCostSheet.TryGetValue(_slotIndex, out var data))
+            {
+                _lockObject.SetData(data);
+            }
+        }
+
         public void SetSlot(
             Address avatarAddress,
             long currentBlockIndex,
@@ -187,6 +198,7 @@ namespace Nekoyume.UI.Module
             _state = state;
             Type = GetSlotType(state, currentBlockIndex, IsCached(avatarAddress));
             UpdateInformation(Type, currentBlockIndex, state, IsCached(avatarAddress));
+            SetLockObject();
         }
 
         private void SubscribeOnBlockIndex(long currentBlockIndex)
