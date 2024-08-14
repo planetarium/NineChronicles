@@ -788,9 +788,11 @@ namespace Nekoyume.UI.Module
             var state = _state.Value;
             if (eventDungeonQuest is null)
             {
+                NcDebug.Log($"[SubscribeEventDungeonQuest] eventDungeonQuest is null");
                 if (state == ViewState.ClearExistGuidedQuest &&
                     _eventDungeonQuestCell.Quest is WorldQuest quest)
                 {
+                    NcDebug.Log($"[SubscribeEventDungeonQuest] HideAsClear");
                     _eventDungeonQuestCell.HideAsClear(
                         ignoreQuestResult: true,
                         onComplete: _ =>

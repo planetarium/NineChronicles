@@ -266,7 +266,6 @@ namespace Nekoyume.Game
 
             if (_targetTemp)
             {
-                pos = Transform.position;
                 pos.x = CalulateChaseXPos(_targetTemp.position, chase);
             }
 

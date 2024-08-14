@@ -455,6 +455,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CustomEquipmentSkillPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<GrindRewardPopup>());
+            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());

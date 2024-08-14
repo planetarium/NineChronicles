@@ -994,8 +994,7 @@ namespace Nekoyume.Blockchain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
-            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
-            var slot = allSlot.GetCombinationSlotState(slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             if (StateGetter.TryGetAvatarState(
@@ -1147,8 +1146,7 @@ namespace Nekoyume.Blockchain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
-            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
-            var slot = allSlot.GetCombinationSlotState(slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             if (StateGetter.TryGetAvatarState(
@@ -1246,8 +1244,7 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.SlotIndex;
-            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
-            var slot = allSlot.GetCombinationSlotState(slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
             foreach (var pair in result.materials)
@@ -1341,8 +1338,7 @@ namespace Nekoyume.Blockchain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
-            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
-            var slot = allSlot.GetCombinationSlotState(slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (ItemEnhancement13.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
 
@@ -1965,13 +1961,7 @@ namespace Nekoyume.Blockchain
             var outputState = eval.OutputState;
             var avatarAddr = eval.Action.AvatarAddress;
 
-            // 정확한 전투 재현을 위해 관련 상태를 모두 PreviousState로 가져와서 갱신합니다.
-            // 여기엔 AvatarState, AllRuneState, CollectionState가 해당됩니다.
-            var prevAvatarState = StateGetter.GetAvatarState(prevState, avatarAddr);
-            States.Instance.UpdateCurrentAvatarState(prevAvatarState);
-            States.Instance.SetAllRuneState(
-                GetStateExtensions.GetAllRuneState(prevState, avatarAddr));
-            States.Instance.SetCollectionState(StateGetter.GetCollectionState(prevState, avatarAddr));
+            var prevAvatarState = UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
 
             // 전투에서 사용한 장비와 룬은 Action 인자로 들어가기 때문에, OutputState로 갱신시켜줍니다.
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
@@ -2162,6 +2152,8 @@ namespace Nekoyume.Blockchain
             {
                 UpdateAgentStateAsync(eval).Forget();
             }
+
+            UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
 
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
@@ -2684,6 +2676,7 @@ namespace Nekoyume.Blockchain
         private static ActionEvaluation<BattleArena> PrepareBattleArena(
             ActionEvaluation<BattleArena> eval)
         {
+            UpdatePreviousAvatarState(eval.PreviousState, eval.Action.myAvatarAddress);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Arena);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Arena);
             return eval;
@@ -2928,6 +2921,7 @@ namespace Nekoyume.Blockchain
             }
 
             UpdateCrystalBalance(eval);
+            UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
             UpdateCurrentAvatarItemSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneSlotState(eval, BattleType.Raid);
             UpdateCurrentAvatarRuneStoneBalance(eval);
@@ -3461,7 +3455,7 @@ namespace Nekoyume.Blockchain
                             if (Currencies.IsWrappedCurrency(tokenCurrency))
                             {
                                 var currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
-                                var recipientAddress = Currencies.SelectRecipientAddress(currency, agentAddr,
+                                var recipientAddress = Currencies.PickAddress(currency, agentAddr,
                                     avatarAddr);
                                 var isCrystal = currency.Equals(Currencies.Crystal);
                                 var balance = StateGetter.GetBalance(
@@ -3577,7 +3571,7 @@ namespace Nekoyume.Blockchain
                         var fav = spec.Assets.Value;
                         {
                             var tokenCurrency = fav.Currency;
-                            var recipientAddress = Currencies.SelectRecipientAddress(tokenCurrency, agentAddr,
+                            var recipientAddress = Currencies.PickAddress(tokenCurrency, agentAddr,
                                 avatarAddr);
                             var isCrystal = tokenCurrency.Equals(Currencies.Crystal);
                             var balance = StateGetter.GetBalance(
@@ -3836,10 +3830,10 @@ namespace Nekoyume.Blockchain
                 lastFloor = firstFloor;
                 prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
-                UpdateAgentStateAsync(eval).Forget();
+                UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
+
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
-                UpdateCurrentAvatarRuneStoneBalance(eval);
                 UpdateCurrentAvatarInventory(eval);
 
                 _disposableForBattleEnd?.Dispose();
@@ -4195,8 +4189,7 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
-            var allSlot = GetStateExtensions.GetAllCombinationSlotState(eval.OutputState, avatarAddress);
-            var slot = allSlot.GetCombinationSlotState(slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
 
             UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
             UpdateAgentStateAsync(eval).Forget();
@@ -4254,6 +4247,25 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>().SetCachingFalse(avatarAddress, slotIndex);
+        }
+
+        /// <summary>
+        /// 정확한 전투 재현을 위해 관련 상태를 모두 PreviousState로 가져와서 갱신합니다.
+        /// 여기엔 AvatarState, AllRuneState, CollectionState가 해당됩니다.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="prevState"></param>
+        /// <param name="avatarAddr"></param>
+        private static AvatarState UpdatePreviousAvatarState(HashDigest<SHA256> prevState,
+            Address avatarAddr)
+        {
+            var prevAvatarState = StateGetter.GetAvatarState(prevState, avatarAddr);
+            States.Instance.UpdateCurrentAvatarState(prevAvatarState);
+            States.Instance.SetAllRuneState(
+                GetStateExtensions.GetAllRuneState(prevState, avatarAddr));
+            States.Instance.SetCollectionState(
+                StateGetter.GetCollectionState(prevState, avatarAddr));
+            return prevAvatarState;
         }
     }
 }
