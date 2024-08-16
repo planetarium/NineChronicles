@@ -4188,6 +4188,8 @@ namespace Nekoyume.Blockchain
             var avatarAddress = evaluation.Action.AvatarAddress;
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
+            Widget.Find<CustomCraft>().RequiredUpdateCraftCount = true;
+
             UniTask.RunOnThreadPool(() =>
             {
                 LocalLayerModifier.ModifyAgentGold(evaluation, agentAddress,

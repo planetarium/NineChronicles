@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -96,7 +95,7 @@ namespace Nekoyume.UI
             blueprintButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Find<CustomCraft>().Show(true);
+                Find<CustomCraft>().Show();
                 AudioController.PlayClick();
             });
 
