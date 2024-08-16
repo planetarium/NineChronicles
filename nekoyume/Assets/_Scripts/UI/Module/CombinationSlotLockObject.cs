@@ -30,7 +30,6 @@ namespace Nekoyume.UI.Model
         [SerializeField]
         private GameObject loadingIndicator = null!;
         
-        // TODO: 별도 enum만들기 싫은데 다른 방법이 잘 안보임
         private CostType _costType;
         private UnlockCombinationSlotCostSheet.Row? _data;
 
