@@ -106,6 +106,12 @@ namespace Nekoyume
             return allCombinationSlotState;
         }
 
+        public static CombinationSlotState GetCombinationSlotState(HashDigest<SHA256> hash, Address avatarAddress, int slotIndex)
+        {
+            var allSlot = GetAllCombinationSlotState(hash, avatarAddress);
+            return allSlot.GetCombinationSlotState(slotIndex);
+        }
+
         public static async Task<AllRuneState> GetAllRuneStateAsync(
             this IAgent agent, Address avatarAddress)
         {

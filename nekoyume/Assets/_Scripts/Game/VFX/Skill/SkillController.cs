@@ -1,5 +1,5 @@
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Battle;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Character;
@@ -22,11 +22,22 @@ namespace Nekoyume.Game.VFX.Skill
         public SkillController(IObjectPool objectPool)
         {
             _pool = objectPool;
-            var skills = Resources.LoadAll<SkillVFX>("VFX/Skills");
-            foreach (var skill in skills)
+        }
+        
+        // TODO: 불필요하게 여러번 초기화하지 않도록 BattleRender~에서 한번만 초기화
+        public async UniTask InitializeAsync()
+        {
+            // TODO: SkillVfx 상속받은 프리팹만 로드하도록 에셋 구분
+            await ResourceManager.Instance.LoadAllAsync<GameObject>(ResourceManager.SkillLabel, true, assetAddress =>
             {
-                _pool.Add(skill.gameObject, InitCount);
-            }
+                var prefab = ResourceManager.Instance.Load<GameObject>(assetAddress);
+                if (prefab == null)
+                {
+                    NcDebug.LogError($"Failed to load {assetAddress}");
+                    return;
+                }
+                _pool.Add(prefab, InitCount);
+            });
         }
 
         public T Get<T>(Character.Character target, Model.BattleStatus.Skill.SkillInfo skillInfo)

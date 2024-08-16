@@ -739,8 +739,7 @@ namespace Nekoyume
             BigInteger cost)
         {
             // NCG
-            if (asset.Currency.Equals(
-                Game.Game.instance.States.GoldBalanceState.Gold.Currency))
+            if (asset.Currency.Equals(Game.Game.instance.States.GoldBalanceState.Gold.Currency))
             {
                 var ncgText = L10nManager.Localize("UI_NCG");
                 return L10nManager.Localize(
