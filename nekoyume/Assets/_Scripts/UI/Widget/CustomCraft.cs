@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -228,24 +229,26 @@ namespace Nekoyume.UI
             {
                 var recipe = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                     r.ItemSubType == _selectedSubType);
+                var item = ItemFactory.CreateItemUsable(
+                    TableSheets.Instance.EquipmentItemSheet[TableSheets.Instance
+                        .CustomEquipmentCraftRelationshipSheet
+                        .OrderedList
+                        .First(row => row.Relationship >= ReactiveAvatarState.Relationship)
+                        .GetItemId(_selectedSubType)]
+                    , Guid.NewGuid(),
+                    recipe.RequiredBlock);
                 Find<CombinationSlotsPopup>().SetCaching(
                     States.Instance.CurrentAvatarState.address,
                     slotIndex,
                     true,
                     recipe.RequiredBlock,
-                    itemUsable: ItemFactory.CreateItemUsable(
-                        TableSheets.Instance.EquipmentItemSheet[TableSheets.Instance
-                            .CustomEquipmentCraftRelationshipSheet
-                            .OrderedList
-                            .First(row => row.Relationship >= ReactiveAvatarState.Relationship)
-                            .GetItemId(_selectedSubType)]
-                        , Guid.NewGuid(),
-                        recipe.RequiredBlock));
+                    itemUsable: item);
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
                         recipe.Id,
                         _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
                     .Subscribe();
                 OnOutfitSelected(_selectedOutfit);
+                StartCoroutine(CoCombineNPCAnimation(item, recipe.RequiredBlock));
             }
             else
             {
@@ -431,6 +434,21 @@ namespace Nekoyume.UI
             var avatarState = game.States.CurrentAvatarState;
             game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
             game.Lobby.FriendCharacter.Animator.Attack();
+        }
+
+        private IEnumerator CoCombineNPCAnimation(
+            ItemBase itemBase,
+            long blockIndex)
+        {
+            var loadingScreen = Find<CombinationLoadingScreen>();
+            loadingScreen.Show();
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
+            Push();
+            yield return new WaitForSeconds(.5f);
+
+            var format = L10nManager.Localize("UI_COST_BLOCK");
+            var quote = string.Format(format, blockIndex);
+            loadingScreen.AnimateNPC(CombinationLoadingScreen.SpeechBubbleItemType.Equipment, quote);
         }
     }
 }
