@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Model;

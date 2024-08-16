@@ -274,7 +274,7 @@ namespace Nekoyume.UI
             var selectRandomOutfit = _selectedOutfit.IconRow.Value == null;
             outfitNameText.SetText(!selectRandomOutfit
                 ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId)
-                : "Random");
+                : L10nManager.Localize("UI_RANDOM_OUTFIT"));
             craftedCountObject.SetActive(!selectRandomOutfit && !_selectedOutfit.RandomOnly.Value);
             if (!selectRandomOutfit &&
                 _craftCountDict.TryGetValue(_selectedOutfit.IconRow.Value.IconId, out var count))
