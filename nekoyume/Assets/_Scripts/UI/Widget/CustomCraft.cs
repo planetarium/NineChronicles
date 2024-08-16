@@ -140,7 +140,7 @@ namespace Nekoyume.UI
             base.Initialize();
             ReactiveAvatarState.ObservableRelationship
                 .Where(_ => isActiveAndEnabled)
-                .Subscribe(SetRelationshipView)
+                .Subscribe(relationship => relationshipText.SetText(relationship.ToString()))
                 .AddTo(gameObject);
 
             outfitScroll.OnClick.Subscribe(OnOutfitSelected).AddTo(gameObject);
@@ -154,7 +154,7 @@ namespace Nekoyume.UI
             _selectedOutfit = null;
             notSelected.SetActive(true);
             selectedView.SetActive(false);
-            SetRelationshipView(ReactiveAvatarState.Relationship);
+            relationshipText.SetText(ReactiveAvatarState.Relationship.ToString());
             OnItemSubtypeSelected(ItemSubType.Weapon);
             ReactiveAvatarState.Inventory
                 .Where(_ => _selectedOutfit != null)
@@ -188,16 +188,6 @@ namespace Nekoyume.UI
                     }
                 }
             }).Forget();
-        }
-
-        /// <summary>
-        /// 숙련도의 상태를 표시하는 View update 코드이다.
-        /// State를 보여주는 기능으로, ActionRenderHandler나 ReactiveAvatarState를 반영해야 한다.
-        /// </summary>
-        /// <param name="relationship"></param>
-        private void SetRelationshipView(long relationship)
-        {
-            relationshipText.SetText(relationship.ToString());
         }
 
         /// <summary>
