@@ -435,7 +435,7 @@ namespace Nekoyume.UI.Module
 
             var row = Game.instance.TableSheets.MaterialItemSheet
                 .OrderedList?
-                .First(r => r.ItemSubType == ItemSubType.Hourglass);
+                .FirstOrDefault(r => r.ItemSubType == ItemSubType.Hourglass);
             
             if (row == null)
             {
