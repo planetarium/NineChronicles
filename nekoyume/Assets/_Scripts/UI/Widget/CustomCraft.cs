@@ -22,6 +22,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -323,11 +324,14 @@ namespace Nekoyume.UI
                         : iconId =>
                             selectedOutfitImage.overrideSprite =
                                 SpriteHelper.GetItemIcon(iconId);
+                    // 얻을 수 있는 외형 리스트를 가져온 뒤 랜덤으로 섞어서 번갈아가며 보여줍니다.
                     var outfitIconIds = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
                         .Where(row =>
                             row.ItemSubType == _selectedSubType && row.RequiredRelationship <=
                             ReactiveAvatarState.Relationship)
-                        .Select(row => row.IconId).ToList();
+                        .Select(row => row.IconId)
+                        .OrderBy(_ => Random.value)
+                        .ToList();
                     _outfitAnimationDisposable = outfitIconIds.ObservableIntervalLoopingList(.5f)
                         .Subscribe(index => routine(index));
                 }
