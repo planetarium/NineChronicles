@@ -1491,7 +1491,6 @@ namespace Nekoyume.Blockchain
                 SlotIndex = slotIndex
             };
             
-            // TODO: Add loading helper for unlock combination slot
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<UnlockCombinationSlot>()
                 .Timeout(ActionTimeout)

@@ -173,6 +173,7 @@ namespace Nekoyume.UI.Module
             _disposablesOfOnEnable.DisposeAllAndClear();
         }
 
+#region Lock
         private void SetLockObject()
         {
             if (_lockObject == null)
@@ -186,11 +187,18 @@ namespace Nekoyume.UI.Module
                 _lockObject.SetData(data);
             }
         }
+        
+        public void SetLockLoading(bool isLoading)
+        {
+            _lockObject.SetLoading(isLoading);
+        }
+#endregion Lock
 
         public void Clear()
         {
             UIState = SlotUIState.Locked;
             _state = null;
+            _lockObject.SetLoading(false);
             UpdateInformation(Game.instance.Agent.BlockIndex);
         }
 

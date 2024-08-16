@@ -159,6 +159,11 @@ namespace Nekoyume.UI
 
             UpdateSlots();
         }
+        
+        public void SetLockLoading(int slotIndex, bool isLoading)
+        {
+            slots[slotIndex].SetLockLoading(isLoading);
+        }
 
         private void UpdateSlots(long blockIndex, Dictionary<int, CombinationSlotState> states)
         {

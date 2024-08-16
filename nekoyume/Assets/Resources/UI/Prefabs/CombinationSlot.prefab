@@ -9980,6 +9980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   costText: {fileID: 3172165208916715075}
+  loadingIndicator: {fileID: 6150848573912631196}
 --- !u!1 &7569502436395871041
 GameObject:
   m_ObjectHideFlags: 0
@@ -12210,6 +12211,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79ca869aa9be842b09fd026333ae8bf7, type: 3}
+--- !u!1 &6150848573912631196 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3453229590426712094, guid: 79ca869aa9be842b09fd026333ae8bf7,
+    type: 3}
+  m_PrefabInstance: {fileID: 8840674045113909122}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7642177012689651110 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1206425615335586340, guid: 79ca869aa9be842b09fd026333ae8bf7,
