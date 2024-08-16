@@ -228,10 +228,8 @@ namespace Nekoyume.UI
             {
                 var recipe = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                     r.ItemSubType == _selectedSubType);
-                Find<CombinationSlotsPopup>().SetCaching(
-                    States.Instance.CurrentAvatarState.address,
+                Find<CombinationSlotsPopup>().OnSendCombinationAction(
                     slotIndex,
-                    true,
                     recipe.RequiredBlock,
                     itemUsable: ItemFactory.CreateItemUsable(
                         TableSheets.Instance.EquipmentItemSheet[TableSheets.Instance

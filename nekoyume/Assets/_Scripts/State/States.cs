@@ -204,7 +204,7 @@ namespace Nekoyume.State
             AllRuneState = allRuneState;
         }
         
-        public void SetAllCombinationSlotState(Address avatarAddress, AllCombinationSlotState allCombinationSlotState)
+        private void SetAllCombinationSlotState(Address avatarAddress, AllCombinationSlotState allCombinationSlotState)
         {
             LocalLayer.Instance.InitializeCombinationSlots(allCombinationSlotState);
             AllCombinationSlotState = allCombinationSlotState;
@@ -571,6 +571,7 @@ namespace Nekoyume.State
 
                 Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
                 ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                Widget.Find<CombinationSlotsPopup>().ClearSlots();
             }
 
             return CurrentAvatarState;
@@ -650,25 +651,50 @@ namespace Nekoyume.State
             slots.States[index] = state;
         }
 
-        public Dictionary<int, CombinationSlotState> GetCombinationSlotState()
+        public Dictionary<int, CombinationSlotState> GetUsedCombinationSlotState()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var states = _slotStates[CurrentAvatarState.address].States;
-            return states.Where(x => !x.Value.ValidateV2(CurrentAvatarState, blockIndex))
+            return states.Where(x => !x.Value.ValidateV2(blockIndex))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
-        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(
+        [CanBeNull]
+        public Dictionary<int, CombinationSlotState> GetUsedCombinationSlotState(
             AvatarState avatarState,
             long currentBlockIndex)
         {
-            _slotStates.TryAdd(avatarState.address, new Workshop());
+            if (!_slotStates.ContainsKey(avatarState.address))
+            {
+                return null;
+            }
 
             var states = _slotStates[avatarState.address].States;
-            return states.Where(x => !x.Value.ValidateV2(avatarState, currentBlockIndex))
+            return states.Where(x => !x.Value.ValidateV2(currentBlockIndex))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
+        [CanBeNull]
+        public Dictionary<int, CombinationSlotState> GetAvailableCombinationSlotState(
+            AvatarState avatarState,
+            long currentBlockIndex)
+        {
+            if (!_slotStates.ContainsKey(avatarState.address))
+            {
+                return null;
+            }
+
+            var states = _slotStates[avatarState.address].States;
+            return states.Where(x => x.Value.ValidateV2(currentBlockIndex))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+        [CanBeNull]
+        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(AvatarState avatarState)
+        {
+            return !_slotStates.ContainsKey(avatarState.address) ? null : _slotStates[avatarState.address].States;
+        }
+        
         public void SetGameConfigState(GameConfigState state)
         {
             GameConfigState = state;

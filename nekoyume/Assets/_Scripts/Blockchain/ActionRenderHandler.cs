@@ -181,9 +181,10 @@ namespace Nekoyume.Blockchain
             ChargeActionPoint();
             ClaimStakeReward();
 
-            // Crystal Unlocks
+            // Unlocks
             UnlockEquipmentRecipe();
             UnlockWorld();
+            UnlockCombinationSlot();
 
             // Arena
             InitializeArenaActions();
@@ -637,6 +638,25 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void UnlockCombinationSlot()
+        {
+            _actionRenderer.EveryRender<UnlockCombinationSlot>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockCombinationSlot)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<UnlockCombinationSlot>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionUnlockCombinationSlot)
+                .AddTo(_disposables);
+        }
+
         private void PetEnhancement()
         {
             _actionRenderer.EveryRender<PetEnhancement>()
@@ -815,7 +835,7 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.AvatarStates.Values
                 .FirstOrDefault(x => x.address == avatarAddress);
             var combinationSlotState = avatarState is not null
-                ? States.Instance.GetCombinationSlotState(
+                ? States.Instance.GetUsedCombinationSlotState(
                     avatarState,
                     Game.Game.instance.Agent.BlockIndex)
                 : null;
@@ -961,10 +981,7 @@ namespace Nekoyume.Blockchain
                 PlayerPrefs.DeleteKey(pushIdentifierKey);
             }
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(
-                avatarAddress,
-                renderArgs.Evaluation.Action.slotIndex,
-                false);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(renderArgs.Evaluation.Action.slotIndex);
         }
 
         private ActionEvaluation<CombinationEquipment> PreResponseCombinationEquipment(ActionEvaluation<CombinationEquipment> eval)
@@ -978,8 +995,7 @@ namespace Nekoyume.Blockchain
         }
 
         private (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
-            PrepareCombinationEquipment(
-                ActionEvaluation<CombinationEquipment> eval)
+            PrepareCombinationEquipment(ActionEvaluation<CombinationEquipment> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
@@ -1022,8 +1038,7 @@ namespace Nekoyume.Blockchain
             return (eval, avatarState, slot);
         }
 
-        private void ResponseCombinationEquipment(
-            (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
+        private void ResponseCombinationEquipment((ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
         {
             if (renderArgs.AvatarState is null)
             {
@@ -1128,7 +1143,7 @@ namespace Nekoyume.Blockchain
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
         private (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
@@ -1139,14 +1154,14 @@ namespace Nekoyume.Blockchain
             var slotIndex = eval.Action.slotIndex;
             var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
-            
+
             if (StateGetter.TryGetAvatarState(
                 eval.OutputState,
                 agentAddress,
                 avatarAddress,
                 out var avatarState))
             {
-                
+
                 // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
                 foreach (var pair in result.materials)
                 {
@@ -1227,7 +1242,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
+                .OnCraftActionRender(renderArgs.Evaluation.Action.slotIndex);
         }
 
         private (ActionEvaluation<EventConsumableItemCrafts> Evaluation, CombinationSlotState CombinationSlotState) PrepareEventConsumableItemCrafts(
@@ -1278,7 +1293,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.SlotIndex, false);
+                .OnCraftActionRender(renderArgs.Evaluation.Action.SlotIndex);
         }
 
         private ActionEvaluation<EventMaterialItemCrafts> PrepareEventMaterialItemCrafts(ActionEvaluation<EventMaterialItemCrafts> eval)
@@ -1467,7 +1482,7 @@ namespace Nekoyume.Blockchain
                 itemSlotState.Equipments.Remove(renderArgs.Evaluation.Action.itemId);
             }
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
@@ -3121,6 +3136,30 @@ namespace Nekoyume.Blockchain
                 NotificationCell.NotificationType.Notification);
         }
 
+        private void ResponseUnlockCombinationSlot(ActionEvaluation<UnlockCombinationSlot> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
+            {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var slotIndex = eval.Action.SlotIndex;
+                var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+                combinationSlotsPopup.UpdateSlots();
+                combinationSlotsPopup.SetLockLoading(eval.Action.SlotIndex, false);
+            });
+        }
+
+        private void ExceptionUnlockCombinationSlot(ActionEvaluation<UnlockCombinationSlot> eval)
+        {
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            combinationSlotsPopup.SetLockLoading(eval.Action.SlotIndex, false);
+        }
+
         private ActionEvaluation<PetEnhancement> PreparePetEnhancement(ActionEvaluation<PetEnhancement> eval)
         {
             UpdateAgentStateAsync(eval).Forget();
@@ -4227,7 +4266,7 @@ namespace Nekoyume.Blockchain
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
         /// <summary>

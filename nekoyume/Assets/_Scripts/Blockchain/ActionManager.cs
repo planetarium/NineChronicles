@@ -1465,8 +1465,7 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
-        public IObservable<ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(
-            int slotIndex)
+        public IObservable<ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(int slotIndex)
         {
             var action = new UnlockRuneSlot
             {
@@ -1482,6 +1481,23 @@ namespace Nekoyume.Blockchain
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
+        }
+
+        public IObservable<ActionEvaluation<UnlockCombinationSlot>> UnlockCombinationSlot(int slotIndex)
+        {
+            var action = new UnlockCombinationSlot
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                SlotIndex = slotIndex
+            };
+            
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<UnlockCombinationSlot>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionEvaluation<PetEnhancement>> PetEnhancement(
