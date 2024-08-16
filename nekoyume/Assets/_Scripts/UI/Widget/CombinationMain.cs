@@ -96,7 +96,7 @@ namespace Nekoyume.UI
             blueprintButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Find<CustomCraft>().Show(true);
+                Find<CustomCraft>().Show();
                 AudioController.PlayClick();
             });
 
