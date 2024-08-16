@@ -272,7 +272,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
             
-            var workingBlockIndex = _state.StartBlockIndex + States.Instance.GameConfigState.RequiredAppraiseBlock;
+            var workingBlockIndex = _state.StartBlockIndex;
             if (currentBlockIndex <= workingBlockIndex)
             {
                 return;
