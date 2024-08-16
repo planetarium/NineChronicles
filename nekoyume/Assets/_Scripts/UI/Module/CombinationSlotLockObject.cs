@@ -26,9 +26,11 @@ namespace Nekoyume.UI.Model
         [SerializeField]
         private TMP_Text costText = null!;
         
-        [FormerlySerializedAs("indicator")]
         [SerializeField]
         private GameObject loadingIndicator = null!;
+        
+        [SerializeField]
+        private GameObject lockPriceObject = null!;
         
         private CostType _costType;
         private UnlockCombinationSlotCostSheet.Row? _data;
@@ -53,6 +55,7 @@ namespace Nekoyume.UI.Model
         public void SetLoading(bool isLoading)
         {
             loadingIndicator.SetActive(isLoading);
+            lockPriceObject.SetActive(!isLoading);
         }
 
         private void ShowPaymentPopup()
