@@ -70,6 +70,8 @@ namespace Nekoyume.State
         public FungibleAssetValue CrystalBalance { get; private set; }
 
         public AllRuneState AllRuneState { get; private set; }
+        
+        public AllCombinationSlotState AllCombinationSlotState { get; private set; }
 
         public readonly ConcurrentDictionary<int, Dictionary<BattleType, RuneSlotState>>
             RuneSlotStates = new();
@@ -200,6 +202,16 @@ namespace Nekoyume.State
         public void SetAllRuneState(AllRuneState allRuneState)
         {
             AllRuneState = allRuneState;
+        }
+        
+        public void SetAllCombinationSlotState(Address avatarAddress, AllCombinationSlotState allCombinationSlotState)
+        {
+            LocalLayer.Instance.InitializeCombinationSlots(allCombinationSlotState);
+            AllCombinationSlotState = allCombinationSlotState;
+            foreach (var slotState in allCombinationSlotState)
+            {
+                UpdateCombinationSlotState(avatarAddress, slotState.Index, slotState);
+            }
         }
 
         public async UniTask InitRuneSlotStates()
@@ -575,30 +587,14 @@ namespace Nekoyume.State
             }
 
             var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddr);
-            var combinationSlotAddresses = new List<Address>();
-            for (var i = 0; i < 4; i++)
-            {
-                combinationSlotAddresses.Add(CombinationSlotState.DeriveAddress(curAvatarState.address, i));
-            }
 
             var petIds = TableSheets.Instance.PetSheet.Values
                 .Select(row => (row.Id, PetState.DeriveAddress(avatarAddr, row.Id)))
                 .ToList();
-
-            // [0]: combinationSlots
-            // [1]: pet states
-            var bulkStates = await Task.WhenAll(
-                agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, combinationSlotAddresses),
-                agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, petIds.Select(pair => pair.Item2))
-            );
-            LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(curAvatarState);
-            SetCombinationSlotStatesAsync(curAvatarState.address,
-                combinationSlotAddresses.Select((address, i) =>
-                    (i, new CombinationSlotState((Dictionary)bulkStates[0][address]))
-                )
-            );
+            var petBulkState = await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, petIds.Select(pair => pair.Item2));
+            
             await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
-            SetPetStates(petIds.ToDictionary(pair => pair.Id, pair => bulkStates[1][pair.Item2]));
+            SetPetStates(petIds.ToDictionary(pair => pair.Id, pair => petBulkState[pair.Item2]));
 
             // [0]: crystalRandomSkillState
             // [1]: CollectionState
@@ -626,6 +622,8 @@ namespace Nekoyume.State
                 ? proficiency
                 : 0);
 
+            var allCombinationSlotState = await agent.GetAllCombinationSlotStateAsync(curAvatarState.address);
+            SetAllCombinationSlotState(avatarAddr, allCombinationSlotState);
             SetAllRuneState(await agent.GetAllRuneStateAsync(curAvatarState.address));
 
             await InitRuneSlotStates();
@@ -641,24 +639,12 @@ namespace Nekoyume.State
             UpdateCurrentAvatarState(null);
         }
 
-        private void SetCombinationSlotStatesAsync(Address avatarAddr,
-            IEnumerable<(int, CombinationSlotState)> slotStates)
-        {
-            foreach (var slotState in slotStates)
-            {
-                UpdateCombinationSlotState(avatarAddr, slotState.Item1, slotState.Item2);
-            }
-        }
-
         public void UpdateCombinationSlotState(
             Address avatarAddress,
             int index,
             CombinationSlotState state)
         {
-            if (!_slotStates.ContainsKey(avatarAddress))
-            {
-                _slotStates.Add(avatarAddress, new Workshop());
-            }
+            _slotStates.TryAdd(avatarAddress, new Workshop());
 
             var slots = _slotStates[avatarAddress];
             slots.States[index] = state;
@@ -676,10 +662,7 @@ namespace Nekoyume.State
             AvatarState avatarState,
             long currentBlockIndex)
         {
-            if (!_slotStates.ContainsKey(avatarState.address))
-            {
-                _slotStates.Add(avatarState.address, new Workshop());
-            }
+            _slotStates.TryAdd(avatarState.address, new Workshop());
 
             var states = _slotStates[avatarState.address].States;
             return states.Where(x => !x.Value.ValidateV2(avatarState, currentBlockIndex))
