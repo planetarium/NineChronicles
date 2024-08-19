@@ -73,12 +73,23 @@ namespace Nekoyume
             }
             else
             {
-                allCombinationSlotState = AllCombinationSlotState.MigrationLegacySlotState(slotIndex =>
+                var combinationSlotAddresses = new List<Address>();
+                for (var i = 0; i < AvatarState.DefaultCombinationSlotCount; i++)
                 {
-#pragma warning disable CS0618 // Type or member is obsolete
-                    return StateGetter.GetCombinationSlotState(avatarAddress, slotIndex);
-#pragma warning restore CS0618 // Type or member is obsolete
-                }, avatarAddress);
+                    combinationSlotAddresses.Add(CombinationSlotState.DeriveAddress(avatarAddress, i));
+                }
+                var bulkStates = await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, combinationSlotAddresses);
+                allCombinationSlotState = new AllCombinationSlotState();
+                
+                for (var i = 0; i < AvatarState.DefaultCombinationSlotCount; i++)
+                {
+                    var bulkState = bulkStates[combinationSlotAddresses[i]];
+                    var slotState = new CombinationSlotState((Dictionary)bulkState)
+                    {
+                        Index = i
+                    };
+                    allCombinationSlotState.AddSlot(slotState);
+                }
             }
 
             return allCombinationSlotState;
