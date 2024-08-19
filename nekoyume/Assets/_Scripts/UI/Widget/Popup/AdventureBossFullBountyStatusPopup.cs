@@ -5,7 +5,6 @@ using System;
 
 namespace Nekoyume.UI
 {
-    using ActionExtensions;
     using Helper;
     using UniRx;
 
@@ -13,12 +12,14 @@ namespace Nekoyume.UI
     {
         [SerializeField] private BountyViewScroll scrollView;
         [SerializeField] private BountyCell myBountyCell;
+        [SerializeField] private UnityEngine.UI.Extensions.Scroller scroller;
 
         private readonly List<IDisposable> _disposables = new();
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            scroller.Position = 0;
             Game.Game.instance.AdventureBossData.BountyBoard.Subscribe(bountyBoard =>
             {
                 if (bountyBoard == null)
