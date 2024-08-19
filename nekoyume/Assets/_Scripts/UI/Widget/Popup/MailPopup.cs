@@ -939,7 +939,19 @@ namespace Nekoyume.UI
 
         public void Read(CustomCraftMail customCraftMail)
         {
+            var itemUsable = customCraftMail?.Equipment;
+            if (itemUsable is null)
+            {
+                NcDebug.LogError("CombinationMail.itemUsable is null");
+                return;
+            }
 
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, customCraftMail.id);
+            customCraftMail.New = false;
+            NcDebug.Log("CombinationMail LocalLayer task completed");
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
+            Find<CombinationResultPopup>().Show(itemUsable);
         }
 
         [Obsolete]
