@@ -11,6 +11,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Model
@@ -25,10 +26,16 @@ namespace Nekoyume.UI.Model
         [SerializeField]
         private TMP_Text costText = null!;
         
-        // TODO: 별도 enum만들기 싫은데 다른 방법이 잘 안보임
+        [SerializeField]
+        private GameObject loadingIndicator = null!;
+        
+        [SerializeField]
+        private GameObject lockPriceObject = null!;
+        
         private CostType _costType;
         private UnlockCombinationSlotCostSheet.Row? _data;
-        
+
+#region MonoBehavior
         private void Awake()
         {
             _button = GetComponent<Button>();
@@ -37,6 +44,18 @@ namespace Nekoyume.UI.Model
                 AudioController.PlayClick();
                 ShowPaymentPopup();
             });
+        }
+#endregion MonoBehavior
+        
+        /// <summary>
+        /// Lock오브젝트가 활성화 되면 항상 초기화, 액션 요청시 활성화
+        /// 액션 실패시 비활성화
+        /// </summary>
+        /// <param name="isLoading"></param>
+        public void SetLoading(bool isLoading)
+        {
+            loadingIndicator.SetActive(isLoading);
+            lockPriceObject.SetActive(!isLoading);
         }
 
         private void ShowPaymentPopup()
@@ -56,6 +75,7 @@ namespace Nekoyume.UI.Model
                 () =>
                 {
                     ActionManager.Instance.UnlockCombinationSlot(_data.SlotId);
+                    SetLoading(true);
                 },
                 OnAttractInPaymentPopup);
         }

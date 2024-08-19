@@ -2874,7 +2874,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 15, y: 214}
+  m_AnchoredPosition: {x: 15.000015, y: 214}
   m_SizeDelta: {x: -30, y: 43}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1355968227564867427
@@ -17137,7 +17137,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10, y: -55}
+  m_AnchoredPosition: {x: 10.000015, y: -55}
   m_SizeDelta: {x: -20, y: -150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6349630073941548452
@@ -17316,6 +17316,8 @@ MonoBehaviour:
   selectedView: {fileID: 1284253768248414117}
   selectedImageView: {fileID: 949741013940300645}
   selectedSpineView: {fileID: 1784276097459207839}
+  craftedCountObject: {fileID: 5756333621691309837}
+  craftedCountText: {fileID: 3011621742617305177}
 --- !u!1 &5539023984933352719
 GameObject:
   m_ObjectHideFlags: 0

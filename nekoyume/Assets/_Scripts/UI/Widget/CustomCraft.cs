@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Action.CustomEquipmentCraft;
+using Nekoyume.ApiClient;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -89,12 +92,21 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject selectedSpineView;
 
+        [SerializeField]
+        private GameObject craftedCountObject;
+
+        [SerializeField]
+        private TextMeshProUGUI craftedCountText;
+
         private CustomOutfit _selectedOutfit;
 
         private ItemSubType _selectedSubType;
 
         private List<IDisposable> _disposables = new();
         private IDisposable _outfitAnimationDisposable;
+        private ConcurrentDictionary<int, long> _craftCountDict = new();
+
+        public bool RequiredUpdateCraftCount { get; set; } = false;
 
         protected override void Awake()
         {
@@ -132,11 +144,11 @@ namespace Nekoyume.UI
             outfitScroll.OnClick.Subscribe(OnOutfitSelected).AddTo(gameObject);
             conditionalCostButton.OnSubmitSubject.Subscribe(_ => OnClickSubmitButton())
                 .AddTo(gameObject);
+            UpdateCraftCount();
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show()
         {
-            base.Show(ignoreShowAnimation);
             _selectedOutfit = null;
             notSelected.SetActive(true);
             selectedView.SetActive(false);
@@ -148,6 +160,32 @@ namespace Nekoyume.UI
                 {
                     OnOutfitSelected(_selectedOutfit);
                 }).AddTo(_disposables);
+
+            if (RequiredUpdateCraftCount)
+            {
+                UpdateCraftCount();
+                RequiredUpdateCraftCount = false;
+            }
+
+            base.Show();
+        }
+
+        private void UpdateCraftCount()
+        {
+            UniTask.Run(async () =>
+            {
+                if (ApiClients.Instance.WorldBossClient.IsInitialized)
+                {
+                    foreach (var customEquipmentCraftIconCountResponse in
+                        (await CustomCraftQuery.GetCustomEquipmentCraftIconCountAsync(
+                            ApiClients.Instance.WorldBossClient))
+                        .customEquipmentCraftIconCount)
+                    {
+                        _craftCountDict[customEquipmentCraftIconCountResponse.iconId] =
+                            customEquipmentCraftIconCountResponse.count;
+                    }
+                }
+            }).Forget();
         }
 
         /// <summary>
@@ -234,7 +272,18 @@ namespace Nekoyume.UI
             var selectRandomOutfit = _selectedOutfit.IconRow.Value == null;
             outfitNameText.SetText(!selectRandomOutfit
                 ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId)
-                : "Random");
+                : L10nManager.Localize("UI_RANDOM_OUTFIT"));
+            craftedCountObject.SetActive(!selectRandomOutfit && !_selectedOutfit.RandomOnly.Value);
+            if (!selectRandomOutfit &&
+                _craftCountDict.TryGetValue(_selectedOutfit.IconRow.Value.IconId, out var count))
+            {
+                craftedCountText.SetText(L10nManager.Localize("UI_TOTAL_CRAFT_COUNT_FORMAT", count));
+            }
+            else
+            {
+                craftedCountText.SetText(L10nManager.Localize("UI_TOTAL_CRAFT_COUNT_FORMAT", 0));
+            }
+
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
             var equipmentItemId = relationshipRow.GetItemId(_selectedSubType);
