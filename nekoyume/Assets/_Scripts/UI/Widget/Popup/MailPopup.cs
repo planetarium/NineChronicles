@@ -937,6 +937,11 @@ namespace Nekoyume.UI
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
+        public void Read(CustomCraftMail customCraftMail)
+        {
+
+        }
+
         [Obsolete]
         public void Read(SellCancelMail mail)
         {
