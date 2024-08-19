@@ -133,6 +133,7 @@ namespace Nekoyume.UI
                     case ProductCancelMail:
                     case UnloadFromMyGaragesRecipientMail:
                     case ClaimItemsMail:
+                    case CustomCraftMail:
                         LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id);
                         break;
                     case ItemEnhanceMail:
@@ -339,6 +340,14 @@ namespace Nekoyume.UI
                     }
 
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
+                    break;
+                case CustomCraftMail customCraftMail:
+                    var equipment = customCraftMail.Equipment;
+                    if (equipment is not null)
+                    {
+                        mailRewards.Add(new MailReward(equipment, 1));
+                    }
+
                     break;
             }
         }
