@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -138,7 +140,7 @@ namespace Nekoyume.UI
             base.Initialize();
             ReactiveAvatarState.ObservableRelationship
                 .Where(_ => isActiveAndEnabled)
-                .Subscribe(SetRelationshipView)
+                .Subscribe(relationship => relationshipText.SetText(relationship.ToString()))
                 .AddTo(gameObject);
 
             outfitScroll.OnClick.Subscribe(OnOutfitSelected).AddTo(gameObject);
@@ -152,7 +154,7 @@ namespace Nekoyume.UI
             _selectedOutfit = null;
             notSelected.SetActive(true);
             selectedView.SetActive(false);
-            SetRelationshipView(ReactiveAvatarState.Relationship);
+            relationshipText.SetText(ReactiveAvatarState.Relationship.ToString());
             OnItemSubtypeSelected(ItemSubType.Weapon);
             ReactiveAvatarState.Inventory
                 .Where(_ => _selectedOutfit != null)
@@ -189,16 +191,6 @@ namespace Nekoyume.UI
         }
 
         /// <summary>
-        /// 숙련도의 상태를 표시하는 View update 코드이다.
-        /// State를 보여주는 기능으로, ActionRenderHandler나 ReactiveAvatarState를 반영해야 한다.
-        /// </summary>
-        /// <param name="relationship"></param>
-        private void SetRelationshipView(long relationship)
-        {
-            relationshipText.SetText(relationship.ToString());
-        }
-
-        /// <summary>
         /// 어떤 종류의 장비를 만들지 ItemSubType을 선택하면 실행될 콜백, View 업데이트를 한다
         /// </summary>
         /// <param name="type"></param>
@@ -228,22 +220,24 @@ namespace Nekoyume.UI
             {
                 var recipe = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                     r.ItemSubType == _selectedSubType);
+                var item = ItemFactory.CreateItemUsable(
+                    TableSheets.Instance.EquipmentItemSheet[TableSheets.Instance
+                        .CustomEquipmentCraftRelationshipSheet
+                        .OrderedList
+                        .First(row => row.Relationship >= ReactiveAvatarState.Relationship)
+                        .GetItemId(_selectedSubType)]
+                    , Guid.NewGuid(),
+                    recipe.RequiredBlock);
                 Find<CombinationSlotsPopup>().OnSendCombinationAction(
                     slotIndex,
                     recipe.RequiredBlock,
-                    itemUsable: ItemFactory.CreateItemUsable(
-                        TableSheets.Instance.EquipmentItemSheet[TableSheets.Instance
-                            .CustomEquipmentCraftRelationshipSheet
-                            .OrderedList
-                            .First(row => row.Relationship >= ReactiveAvatarState.Relationship)
-                            .GetItemId(_selectedSubType)]
-                        , Guid.NewGuid(),
-                        recipe.RequiredBlock));
+                    itemUsable: item);
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
                         recipe.Id,
                         _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
                     .Subscribe();
                 OnOutfitSelected(_selectedOutfit);
+                StartCoroutine(CoCombineNPCAnimation(item, recipe.RequiredBlock));
             }
             else
             {
@@ -318,11 +312,14 @@ namespace Nekoyume.UI
                         : iconId =>
                             selectedOutfitImage.overrideSprite =
                                 SpriteHelper.GetItemIcon(iconId);
+                    // 얻을 수 있는 외형 리스트를 가져온 뒤 랜덤으로 섞어서 번갈아가며 보여줍니다.
                     var outfitIconIds = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
                         .Where(row =>
                             row.ItemSubType == _selectedSubType && row.RequiredRelationship <=
                             ReactiveAvatarState.Relationship)
-                        .Select(row => row.IconId).ToList();
+                        .Select(row => row.IconId)
+                        .OrderBy(_ => Random.value)
+                        .ToList();
                     _outfitAnimationDisposable = outfitIconIds.ObservableIntervalLoopingList(.5f)
                         .Subscribe(index => routine(index));
                 }
@@ -429,6 +426,21 @@ namespace Nekoyume.UI
             var avatarState = game.States.CurrentAvatarState;
             game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
             game.Lobby.FriendCharacter.Animator.Attack();
+        }
+
+        private IEnumerator CoCombineNPCAnimation(
+            ItemBase itemBase,
+            long blockIndex)
+        {
+            var loadingScreen = Find<CombinationLoadingScreen>();
+            loadingScreen.Show();
+            loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
+            Push();
+            yield return new WaitForSeconds(.5f);
+
+            var format = L10nManager.Localize("UI_COST_BLOCK");
+            var quote = string.Format(format, blockIndex);
+            loadingScreen.AnimateNPC(CombinationLoadingScreen.SpeechBubbleItemType.Equipment, quote);
         }
     }
 }

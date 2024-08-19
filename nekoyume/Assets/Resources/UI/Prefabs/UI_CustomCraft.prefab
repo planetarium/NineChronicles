@@ -2874,7 +2874,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 15.000015, y: 214}
+  m_AnchoredPosition: {x: 15, y: 214}
   m_SizeDelta: {x: -30, y: 43}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1355968227564867427
@@ -17137,7 +17137,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10.000015, y: -55}
+  m_AnchoredPosition: {x: 10, y: -55}
   m_SizeDelta: {x: -20, y: -150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6349630073941548452
@@ -34085,7 +34085,8 @@ PrefabInstance:
       propertyPath: m_text
       value: Select an item to craft.
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4214294061450366436, guid: 53746e77bf093f04ab7301d07111ce65, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 53746e77bf093f04ab7301d07111ce65, type: 3}
 --- !u!224 &3384226738955866439 stripped
 RectTransform:
