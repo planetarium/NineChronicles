@@ -135,32 +135,21 @@ namespace Nekoyume.UI
 
         private void UpdateLayers()
         {
-            if (_layers is null)
+            _layers ??= new List<CanvasLayer>
             {
-                _layers = new List<CanvasLayer>
-                {
-                    hudLayer,
-                    popupLayer,
-                    screenLayer,
-                    staticLayer,
-                    tooltipLayer,
-                    widgetLayer,
-                    animationLayer,
-                    systemLayer,
-                    developmentLayer,
-                    tutorialMaskLayer
-                };
-            }
+                hudLayer,
+                popupLayer,
+                screenLayer,
+                staticLayer,
+                tooltipLayer,
+                widgetLayer,
+                animationLayer,
+                systemLayer,
+                developmentLayer,
+                tutorialMaskLayer
+            };
 
             _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
-        }
-
-        public void InitializeIntro()
-        {
-            var intro = Widget.Create<IntroScreen>(true);
-            intro.Initialize();
-
-            UpdateLayers();
         }
 
         public void InitializeFirst()
@@ -274,8 +263,6 @@ namespace Nekoyume.UI
             yield return null;
 
             // 일반.
-            _secondWidgets.Add(Widget.Create<Synopsis>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<Login>());
             yield return null;
             _secondWidgets.Add(Widget.Create<LoginDetail>());
@@ -349,6 +336,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Summon>());
             _secondWidgets.Add(Widget.Create<DccMain>());
             _secondWidgets.Add(Widget.Create<DccCollection>());
+            _secondWidgets.Add(Widget.Create<CustomCraft>());
             yield return null;
 
             // header menu
@@ -462,6 +450,12 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<AddHammerPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RelationshipInfoPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CustomEquipmentSkillPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<GrindRewardPopup>());
             yield return null;
 
             // tooltip

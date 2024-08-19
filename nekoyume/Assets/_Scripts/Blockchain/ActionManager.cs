@@ -27,6 +27,7 @@ using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
+using Nekoyume.Action.CustomEquipmentCraft;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -1464,8 +1465,7 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
-        public IObservable<ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(
-            int slotIndex)
+        public IObservable<ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(int slotIndex)
         {
             var action = new UnlockRuneSlot
             {
@@ -1481,6 +1481,23 @@ namespace Nekoyume.Blockchain
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
+        }
+
+        public IObservable<ActionEvaluation<UnlockCombinationSlot>> UnlockCombinationSlot(int slotIndex)
+        {
+            var action = new UnlockCombinationSlot
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                SlotIndex = slotIndex
+            };
+            
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<UnlockCombinationSlot>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionEvaluation<PetEnhancement>> PetEnhancement(
@@ -1818,6 +1835,30 @@ namespace Nekoyume.Blockchain
                 {
                     // NOTE: Handle exception outside of this method.
                 });
+        }
+
+        public IObservable<ActionEvaluation<CustomEquipmentCraft>> CustomEquipmentCraft(int slotIndex, int recipeId, int iconId)
+        {
+            var action = new CustomEquipmentCraft()
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                CraftList = new List<CustomCraftData>
+                {
+                    new()
+                    {
+                        IconId = iconId,
+                        RecipeId = recipeId,
+                        SlotIndex = slotIndex
+                    }
+                }
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<CustomEquipmentCraft>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(null, e));
         }
 
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS

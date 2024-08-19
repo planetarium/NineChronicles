@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
@@ -52,11 +53,13 @@ namespace Nekoyume.Game.Battle
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int TurnNumber => _turnNumber;
 
-        public void Initialize()
+        public async UniTask InitializeAsync()
         {
             objectPool.Initialize();
             SkillController = new SkillController(objectPool);
+            await SkillController.InitializeAsync();
             BuffController = new BuffController(objectPool);
+            await BuffController.InitializeAsync();
         }
 
         public IEnumerator CoSkill(ArenaActionParams param)

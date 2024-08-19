@@ -179,11 +179,24 @@ namespace Nekoyume.UI
             StartCoroutine(CoSelect(itemSubType, itemId));
         }
 
+        public void Show(ItemSheet.Row row, bool ignoreShowAnimation = false)
+        {
+            Show(ignoreShowAnimation);
+            StartCoroutine(CoSelect(row));
+        }
+
         private IEnumerator CoSelect(ItemSubType itemSubType, Guid itemId)
         {
             yield return null;
             yield return new WaitForEndOfFrame();
             enhancementInventory.Select(itemSubType, itemId);
+        }
+
+        private IEnumerator CoSelect(ItemSheet.Row row)
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            enhancementInventory.Select(row);
         }
 
         private void Close()
@@ -264,9 +277,7 @@ namespace Nekoyume.UI
                 requiredBlockIndex = 0;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex,
-                itemUsable: baseItem);
+            slots.OnSendCombinationAction(slotIndex, requiredBlockIndex, baseItem);
 
             NotificationSystem.Push(
                 MailType.Workshop,

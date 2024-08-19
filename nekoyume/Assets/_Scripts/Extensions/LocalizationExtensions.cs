@@ -193,7 +193,7 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_MONSTER_COLLECTION_MAIL_FORMAT");
                 case GrindingMail grindingMail:
                     return L10nManager.Localize("UI_GRINDING_CRYSTALMAIL_FORMAT",
-                        grindingMail.Asset.ToString());
+                        grindingMail.Asset.ToString(), grindingMail.RewardMaterialCount);
                 case RaidRewardMail rewardMail:
                     return L10nManager.Localize("UI_RAID_SEASON_REWARD_MAIL_FORMAT",
                         rewardMail.RaidId, rewardMail.CurrencyName, rewardMail.Amount);
@@ -739,8 +739,7 @@ namespace Nekoyume
             BigInteger cost)
         {
             // NCG
-            if (asset.Currency.Equals(
-                Game.Game.instance.States.GoldBalanceState.Gold.Currency))
+            if (asset.Currency.Equals(Game.Game.instance.States.GoldBalanceState.Gold.Currency))
             {
                 var ncgText = L10nManager.Localize("UI_NCG");
                 return L10nManager.Localize(

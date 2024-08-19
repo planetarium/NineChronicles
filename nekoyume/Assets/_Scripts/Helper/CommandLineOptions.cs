@@ -112,6 +112,14 @@ namespace Nekoyume.Helper
 
         private bool _enableGuestLogin;
 
+        private bool _mixpanelDebugError;
+
+        private bool _mixpanelDebugAssert;
+        
+        private bool _mixpanelDebugException;
+
+        private bool _mixpanelDebugWarning;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -603,6 +611,51 @@ namespace Nekoyume.Helper
                 Empty = false;
             }
         }
+
+        [Option("mixpanel-debug-error", Required = false, HelpText = "mixpanel debug error")]
+        public bool MixpanelDebugError
+        {
+            get => _mixpanelDebugError;
+            set
+            {
+                _mixpanelDebugError = value;
+                Empty = false;
+            }
+        }
+
+        [Option("mixpanel-debug-assert", Required = false, HelpText = "mixpanel debug assert")]
+        public bool MixpanelDebugAssert
+        {
+            get => _mixpanelDebugAssert;
+            set
+            {
+                _mixpanelDebugAssert = value;
+                Empty = false;
+            }
+        }
+
+        [Option("mixpanel-debug-exception", Required = false, HelpText = "mixpanel debug exception")]
+        public bool MixpanelDebugException
+        {
+            get => _mixpanelDebugException;
+            set
+            {
+                _mixpanelDebugException = value;
+                Empty = false;
+            }
+        }
+
+        [Option("mixpanel-debug-warning", Required = false, HelpText = "mixpanel debug warning")]
+        public bool MixpanelDebugWarning
+        {
+            get => _mixpanelDebugWarning;
+            set
+            {
+                _mixpanelDebugWarning = value;
+                Empty = false;
+            }
+        }
+
 
         public override string ToString()
         {

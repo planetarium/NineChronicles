@@ -83,7 +83,7 @@ namespace Nekoyume.UI
                     var tableSheets = Game.instance.TableSheets;
                     var mailRewards = new List<MailReward>();
 
-                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null)
+                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.HasValue && !lastClaimableReward.NcgReward.Value.RawValue.IsZero)
                     {
                         mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
                     }
