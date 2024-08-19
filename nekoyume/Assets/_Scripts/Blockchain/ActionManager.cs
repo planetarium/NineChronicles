@@ -1152,7 +1152,7 @@ namespace Nekoyume.Blockchain
             var action = new RapidCombination
             {
                 avatarAddress = avatarAddress,
-                slotIndex = slotIndex
+                slotIndexList = new List<int> {slotIndex}
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
