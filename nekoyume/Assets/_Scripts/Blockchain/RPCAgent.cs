@@ -1162,7 +1162,7 @@ namespace Nekoyume.Blockchain
             var addresses = new List<(Address, Address)> { (Addresses.Agent, Address) };
 
             var currentAvatarState = States.Instance.CurrentAvatarState;
-            if (!(currentAvatarState is null))
+            if (currentAvatarState is not null)
             {
                 addresses.Add((Addresses.Avatar, (currentAvatarState.address)));
                 addresses.AddRange(currentAvatarState.combinationSlotAddresses.Select(addr =>

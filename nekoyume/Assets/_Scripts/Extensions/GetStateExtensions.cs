@@ -73,7 +73,12 @@ namespace Nekoyume
             }
             else
             {
-                allCombinationSlotState = AllCombinationSlotState.MigrationLegacyCombinationSlotState(avatarAddress);
+                allCombinationSlotState = AllCombinationSlotState.MigrationLegacySlotState(slotIndex =>
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    return StateGetter.GetCombinationSlotState(avatarAddress, slotIndex);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }, avatarAddress);
             }
 
             return allCombinationSlotState;
@@ -90,7 +95,12 @@ namespace Nekoyume
             }
             else
             {
-                allCombinationSlotState = AllCombinationSlotState.MigrationLegacyCombinationSlotState(avatarAddress);
+                allCombinationSlotState = AllCombinationSlotState.MigrationLegacySlotState(slotIndex =>
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    return StateGetter.GetCombinationSlotState(hash, avatarAddress, slotIndex);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }, avatarAddress);
             }
 
             return allCombinationSlotState;
@@ -99,7 +109,7 @@ namespace Nekoyume
         public static CombinationSlotState GetCombinationSlotState(HashDigest<SHA256> hash, Address avatarAddress, int slotIndex)
         {
             var allSlot = GetAllCombinationSlotState(hash, avatarAddress);
-            return allSlot.GetCombinationSlotState(slotIndex);
+            return allSlot.GetSlot(slotIndex);
         }
 
         public static async Task<AllRuneState> GetAllRuneStateAsync(
