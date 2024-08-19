@@ -230,6 +230,11 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_ADVENTURE_BOSS_WINNER_MAIL_FORMAT",
                         adventureBossRaffleWinnerMail.Season,
                         adventureBossRaffleWinnerMail.Reward);
+                case CustomCraftMail customCraftMail:
+                    return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT",
+                        GetLocalizedNonColoredName(
+                            customCraftMail.Equipment,
+                            customCraftMail.Equipment.ItemType.HasElementType()));
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
