@@ -1114,6 +1114,13 @@ namespace Nekoyume.Blockchain
             CombinationSlotState state,
             int slotIndex)
         {
+            return RapidCombination(state, new List<int> { slotIndex });
+        }
+
+        public IObservable<ActionEvaluation<RapidCombination>> RapidCombination(
+            CombinationSlotState state,
+            List<int> slotIndexList)
+        {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var hourglassDataRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
@@ -1152,7 +1159,7 @@ namespace Nekoyume.Blockchain
             var action = new RapidCombination
             {
                 avatarAddress = avatarAddress,
-                slotIndexList = new List<int> {slotIndex}
+                slotIndexList = slotIndexList
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
