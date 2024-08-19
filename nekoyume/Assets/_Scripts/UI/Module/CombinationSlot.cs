@@ -95,6 +95,8 @@ namespace Nekoyume.UI.Module
         private int _slotIndex;
 
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
+        
+        public CombinationSlotState? State => _state;
 
         public SlotUIState UIState { get; private set; } = SlotUIState.Locked;
 
