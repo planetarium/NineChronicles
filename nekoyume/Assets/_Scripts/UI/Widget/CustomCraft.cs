@@ -228,10 +228,8 @@ namespace Nekoyume.UI
                         .GetItemId(_selectedSubType)]
                     , Guid.NewGuid(),
                     recipe.RequiredBlock);
-                Find<CombinationSlotsPopup>().SetCaching(
-                    States.Instance.CurrentAvatarState.address,
+                Find<CombinationSlotsPopup>().OnSendCombinationAction(
                     slotIndex,
-                    true,
                     recipe.RequiredBlock,
                     itemUsable: item);
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,

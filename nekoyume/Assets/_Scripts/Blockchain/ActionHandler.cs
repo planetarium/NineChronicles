@@ -21,8 +21,6 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
-using UnityEngine;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Blockchain
 {

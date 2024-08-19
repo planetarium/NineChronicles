@@ -112,6 +112,8 @@ namespace Nekoyume.Game
         public EquipmentItemSheet EquipmentItemSheet { get; private set; }
 
         public MaterialItemSheet MaterialItemSheet { get; private set; }
+        
+        public UnlockCombinationSlotCostSheet UnlockCombinationSlotCostSheet { get; private set; }
 
         public QuestSheet QuestSheet { get; private set; }
 
