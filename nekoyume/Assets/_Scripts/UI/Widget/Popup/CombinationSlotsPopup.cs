@@ -168,12 +168,13 @@ namespace Nekoyume.UI
         
         public void UpdateSlots()
         {
-            UpdateSlots(Game.instance.Agent.BlockIndex, null);
+            UpdateSlots(Game.instance.Agent.BlockIndex);
         }
         
-        public void UpdateSlots(long blockIndex)
+        private void UpdateSlots(long blockIndex)
         {
             UpdateSlots(blockIndex, null);
+            UpdateAllOpenCost(blockIndex);
         }
         
         public void ClearSlots()
@@ -189,6 +190,13 @@ namespace Nekoyume.UI
         public void SetLockLoading(int slotIndex, bool isLoading)
         {
             slots[slotIndex].SetLockLoading(isLoading);
+        }
+        
+        private void UpdateAllOpenCost(long currentBlockIndex)
+        {
+            var stateList = GetWorkingSlotStateList();
+            var cost = GetWorkingSlotsOpenCost(stateList, currentBlockIndex);
+            rapidCombinationButton.SetCost(CostType.Hourglass, cost);
         }
 
         private void UpdateSlots(long blockIndex, Dictionary<int, CombinationSlotState> states)
