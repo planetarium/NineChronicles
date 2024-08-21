@@ -199,7 +199,7 @@ namespace Nekoyume.UI
             rapidCombinationButton.SetCost(CostType.Hourglass, cost);
         }
 
-        private void UpdateSlots(long blockIndex, Dictionary<int, CombinationSlotState> states)
+        private void UpdateSlots(long blockIndex, IDictionary<int, CombinationSlotState> states)
         {
             var avatarState = States.Instance.CurrentAvatarState;
             states ??= States.Instance.GetCombinationSlotState(avatarState);
