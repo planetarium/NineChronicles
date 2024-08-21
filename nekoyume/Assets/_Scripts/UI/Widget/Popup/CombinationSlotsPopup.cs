@@ -11,6 +11,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -27,7 +28,10 @@ namespace Nekoyume.UI
         private PetInventory petInventory;
         
         [SerializeField]
-        private ConditionalCostButton rapidCombinationButton;
+        private ConditionalButton rapidCombinationButton;
+        
+        [SerializeField]
+        private TMP_Text openCostText;
         
         private readonly List<IDisposable> _disposablesOnEnable = new();
 
@@ -109,6 +113,8 @@ namespace Nekoyume.UI
             {
                 OnSendRapidCombination(index);
             }
+            
+            UpdateSlots();
         }
 
         public void OnSendRapidCombination(int slotIndex)
@@ -196,7 +202,20 @@ namespace Nekoyume.UI
         {
             var stateList = GetWorkingSlotStateList();
             var cost = GetWorkingSlotsOpenCost(stateList, currentBlockIndex);
-            rapidCombinationButton.SetCost(CostType.Hourglass, cost);
+            openCostText.text = cost.ToString();
+            rapidCombinationButton.SetState(SetRapidCombinationButtonCondition(cost));
+        }
+
+        private ConditionalButton.State SetRapidCombinationButtonCondition(int cost)
+        {
+            if (cost > 0)
+            {
+                rapidCombinationButton.Interactable = true;
+                return ConditionalButton.State.Normal;
+            }
+            
+            rapidCombinationButton.Interactable = false;
+            return ConditionalButton.State.Disabled;
         }
 
         private void UpdateSlots(long blockIndex, IDictionary<int, CombinationSlotState> states)
