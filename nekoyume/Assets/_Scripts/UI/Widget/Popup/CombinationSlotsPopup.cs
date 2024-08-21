@@ -165,7 +165,7 @@ namespace Nekoyume.UI
             slots[slotIndex].SetLockLoading(isLoading);
         }
 
-        private void UpdateSlots(long blockIndex, Dictionary<int, CombinationSlotState> states)
+        private void UpdateSlots(long blockIndex, IDictionary<int, CombinationSlotState> states)
         {
             var avatarState = States.Instance.CurrentAvatarState;
             states ??= States.Instance.GetCombinationSlotState(avatarState);
