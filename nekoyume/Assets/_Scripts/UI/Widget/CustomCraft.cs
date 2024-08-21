@@ -271,7 +271,7 @@ namespace Nekoyume.UI
             if (!selectRandomOutfit &&
                 _craftCountDict.TryGetValue(_selectedOutfit.IconRow.Value.IconId, out var count))
             {
-                craftedCountText.SetText(L10nManager.Localize("UI_TOTAL_CRAFT_COUNT_FORMAT", count));
+                craftedCountText.SetText(L10nManager.Localize("UI_TOTAL_CRAFT_COUNT_FORMAT", count.ToCurrencyNotation()));
             }
             else
             {
