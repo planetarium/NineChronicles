@@ -84,7 +84,7 @@ namespace Nekoyume.State
 
         private class Workshop
         {
-            public Dictionary<int, CombinationSlotState> States { get; } = new();
+            public SortedDictionary<int, CombinationSlotState> States { get; } = new();
         }
 
         public PetStates PetStates { get; } = new();
@@ -690,7 +690,7 @@ namespace Nekoyume.State
         }
 
         [CanBeNull]
-        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(AvatarState avatarState)
+        public IDictionary<int, CombinationSlotState> GetCombinationSlotState(AvatarState avatarState)
         {
             return !_slotStates.ContainsKey(avatarState.address) ? null : _slotStates[avatarState.address].States;
         }
