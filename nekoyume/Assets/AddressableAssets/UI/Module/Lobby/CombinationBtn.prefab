@@ -15325,12 +15325,12 @@ PrefabInstance:
     - target: {fileID: 7008014765004142275, guid: 982e54e454e59e241a200f11f136fb4e,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7008014765004142275, guid: 982e54e454e59e241a200f11f136fb4e,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7008014765004142275, guid: 982e54e454e59e241a200f11f136fb4e,
         type: 3}
@@ -15381,7 +15381,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8122710336155268975}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &8041350204648287257
+--- !u!95 &5248662226898079002
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
