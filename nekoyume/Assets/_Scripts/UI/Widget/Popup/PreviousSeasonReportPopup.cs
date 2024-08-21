@@ -87,7 +87,7 @@ namespace Nekoyume
                     prevBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(seasonIndex);
                 }
 
-                if(!Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(seasonIndex, out var prevExploreBoard) && string.IsNullOrEmpty(prevExploreBoard.RaffleWinnerName))
+                if(!Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(seasonIndex, out var prevExploreBoard) || string.IsNullOrEmpty(prevExploreBoard.RaffleWinnerName))
                 {
                     prevExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonIndex);
                 }
