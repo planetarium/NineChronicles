@@ -223,6 +223,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 65866923d1dab49c3885fc5424951250, type: 3}
   - {fileID: 21300000, guid: 61ca0d2311928174bb8619ee913d52a1, type: 3}
   - {fileID: 21300000, guid: 9c3dcd231e3784598b8ec16dd9c3bd89, type: 3}
+  - {fileID: 21300000, guid: 174ccf230c8f74c4f9ad6efcc94f9c62, type: 3}
   - {fileID: 21300000, guid: 39de2e33983d2461db426b0d983f2b15, type: 3}
   - {fileID: 21300000, guid: ed902f33e83019149bb11a897aac34b9, type: 3}
   - {fileID: 21300000, guid: 12f49a53a8fd8bc4ea16bdebe25ee8e5, type: 3}
@@ -246,6 +247,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7c5052a3d71cf7241966ab3b0824d7ce, type: 3}
   - {fileID: 21300000, guid: 7cd145a31e7041647af8c4ed7897a7a5, type: 3}
   - {fileID: 21300000, guid: 5d4b37a330cd98749a69247dc8f1938c, type: 3}
+  - {fileID: 21300000, guid: f64467a3b97845245b78cdd05f1218ba, type: 3}
   - {fileID: 21300000, guid: c18f4ea3716054594935b8f1e369e655, type: 3}
   - {fileID: 21300000, guid: 024580b387c19814fab2e570e49f7360, type: 3}
   - {fileID: 21300000, guid: 84ac80b35cfa04827b5bcd0f70e009b5, type: 3}
@@ -321,6 +323,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ee556fe45fcce488d933b298e2e18c16, type: 3}
   - {fileID: 21300000, guid: 709703f49bf954945a91d602aa4aae79, type: 3}
   - {fileID: 21300000, guid: 5f2625f4cab109f4992fd4582d224cc4, type: 3}
+  - {fileID: 21300000, guid: 9fd729f4b0e3a7947a5eff6be59b6764, type: 3}
   - {fileID: 21300000, guid: f4727ef412348409fbb1ac4f825e3b00, type: 3}
   - {fileID: 21300000, guid: 11c5c605033c04c80a70c1b9765efe31, type: 3}
   - {fileID: 21300000, guid: af71cb05bb367459190116188b5ba567, type: 3}
@@ -586,6 +589,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ab98b5c99490688449686740e2b97053, type: 3}
   - {fileID: 21300000, guid: ec5289c99b60c23449001e49e9e1741c, type: 3}
   - {fileID: 21300000, guid: 3f261fc9c039f924f918cc3ab8463f06, type: 3}
+  - {fileID: 21300000, guid: c6a820d9a3962584fada671e6a9cb638, type: 3}
   - {fileID: 21300000, guid: 726861d9e10e44b4eb715c702298c562, type: 3}
   - {fileID: 21300000, guid: acd4d1d9c931d4f36a0598296e6559ab, type: 3}
   - {fileID: 21300000, guid: b59e03d99979f8d498967676a4b575af, type: 3}
@@ -693,6 +697,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 80581c9b631326d4cbfffbc2211f6d45, type: 3}
   - {fileID: 21300000, guid: 804b86abdedeaf542a93f3660caca8da, type: 3}
   - {fileID: 21300000, guid: ea3be9abee7014efdae4cc92608d4cb2, type: 3}
+  - {fileID: 21300000, guid: d9355aab72d8d7c42ab8647e6ac08c2e, type: 3}
   - {fileID: 21300000, guid: 39d617bb47968bc40af8452364ab6af0, type: 3}
   - {fileID: 21300000, guid: 954d7ebb6f7884b99af29bd443a6596f, type: 3}
   - {fileID: 21300000, guid: 2555febbce18341c3a0fdae8ca03091e, type: 3}
@@ -1095,6 +1100,7 @@ SpriteAtlas:
   - 49900002
   - 306077
   - 201010
+  - icon_Navigation_013
   - 201001
   - 207003
   - 302009
@@ -1118,6 +1124,7 @@ SpriteAtlas:
   - 900108
   - 301000
   - 10750008
+  - icon_mail_custom_craft
   - 306041
   - 10740006
   - 800108
@@ -1193,6 +1200,7 @@ SpriteAtlas:
   - 303004
   - 40300004
   - 10130000
+  - 600402
   - 10230000
   - 40300007
   - 700000
@@ -1458,6 +1466,7 @@ SpriteAtlas:
   - 303100
   - 10620003
   - RUNESTONE_SAEHRIMNIR3
+  - icon_mail_customcraft
   - 10551000
   - 10432000
   - 306096
@@ -1565,6 +1574,7 @@ SpriteAtlas:
   - 306092
   - SOULSTONE_1004
   - 10321000
+  - 600401
   - RUNESTONE_FENRIR1
   - icon_Reward_Costume
   - 10523000
