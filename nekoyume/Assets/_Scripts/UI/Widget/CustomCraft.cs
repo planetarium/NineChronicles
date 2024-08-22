@@ -161,6 +161,10 @@ namespace Nekoyume.UI
             conditionalCostButton.OnSubmitSubject
                 .Subscribe(_ => OnSubmitCraftButton())
                 .AddTo(gameObject);
+            conditionalCostButton.OnClickSubject
+                .Select(_ => Unit.Default)
+                .Merge(conditionalCostButton.OnClickDisabledSubject)
+                .Subscribe(_ => OnClickCraftButton())
                 .AddTo(gameObject);
             UpdateCraftCount();
         }
@@ -255,12 +259,25 @@ namespace Nekoyume.UI
                 OnOutfitSelected(_selectedOutfit);
                 StartCoroutine(CoCombineNPCAnimation(item, recipe.RequiredBlock));
             }
-            else
+        }
+
+        private void OnClickCraftButton()
+        {
+            if (_submittableState == SubmittableState.Able)
             {
-                // todo: 뭔진 몰라도 not interactable한데 interact를 한게 문제니까 일단...
-                OneLineSystem.Push(MailType.System, "somethings wrong",
-                    NotificationCell.NotificationType.Information);
+                return;
             }
+
+            var l10N = _submittableState switch
+            {
+                SubmittableState.RandomOnly => "RANDOM_ONLY_OUTFIT",
+                SubmittableState.InsufficientRelationship => "INSUFFICIENT_RELATIONSHIP",
+                SubmittableState.InsufficientMaterial => "NOTIFICATION_NOT_ENOUGH_MATERIALS",
+                SubmittableState.InsufficientBalance => "UI_NOT_ENOUGH_NCG",
+                SubmittableState.FullSlot => "NOTIFICATION_NOT_ENOUGH_SLOTS"
+            };
+
+            OneLineSystem.Push(MailType.System, L10nManager.Localize(l10N), NotificationCell.NotificationType.Alert);
         }
 
         private void OnOutfitSelected(CustomOutfit outfit)
