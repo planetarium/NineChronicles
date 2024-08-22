@@ -2777,10 +2777,12 @@ MonoBehaviour:
   costText: {fileID: 2392000209274826356}
   addCostText: {fileID: 340454937229980491}
   addCostContainer: {fileID: 1810409367963080683}
-  title: {fileID: 5968462093368198312}
-  content: {fileID: 80732125048866605}
+  attractArrowObject: {fileID: 7345777783755986797}
+  titleText: {fileID: 5968462093368198312}
+  contentText: {fileID: 80732125048866605}
   buttonYes: {fileID: 4489836064358545039}
   buttonNo: {fileID: 1361672825991667205}
+  buttonClose: {fileID: 4671755338428608458}
   titleBorder: {fileID: 5755573070622404356}
 --- !u!1 &6567834254936144056
 GameObject:

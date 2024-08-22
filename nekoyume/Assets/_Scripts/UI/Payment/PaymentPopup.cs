@@ -3,12 +3,21 @@ using System.Numerics;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class PaymentPopup : PopupWidget
     {
+        private enum PopupType
+        {
+            HasAttractAction,
+            NoAttractAction,
+            NoneAction,
+        }
+
+#region SerializeField
         [SerializeField]
         private CostIconDataScriptableObject costIconData;
 
@@ -26,13 +35,30 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject addCostContainer;
+
+        [SerializeField]
+        private GameObject attractArrowObject;
         
-        public TextMeshProUGUI title;
-        public TextMeshProUGUI content;
-        public TextButton buttonYes;
-        public TextButton buttonNo;
-        public GameObject titleBorder;
-        public ConfirmDelegate CloseCallback { get; set; }
+        [SerializeField]
+        private TextMeshProUGUI titleText;
+        
+        [SerializeField]
+        private TextMeshProUGUI contentText;
+        
+        [SerializeField]
+        private TextButton buttonYes;
+        
+        [SerializeField]
+        private TextButton buttonNo;
+        
+        [SerializeField]
+        private Button buttonClose;
+        
+        [SerializeField]
+        private GameObject titleBorder;
+#endregion SerializeField
+
+        private ConfirmDelegate CloseCallback { get; set; }
         
         protected override void Awake()
         {
@@ -43,8 +69,60 @@ namespace Nekoyume.UI
             CloseWidget = NoWithoutCallback;
             SubmitWidget = Yes;
         }
+        
+        private void SetPopupType(PopupType popupType)
+        {
+            switch (popupType)
+            {
+                case PopupType.HasAttractAction:
+                    buttonYes.gameObject.SetActive(true);
+                    buttonNo.gameObject.SetActive(false);
+                    buttonClose.gameObject.SetActive(true);
+                    attractArrowObject.SetActive(true);
+                    break;
+                case PopupType.NoAttractAction:
+                    buttonYes.gameObject.SetActive(true);
+                    buttonNo.gameObject.SetActive(true);
+                    buttonClose.gameObject.SetActive(false);
+                    attractArrowObject.SetActive(false);
+                    break;
+                case PopupType.NoneAction:
+                    buttonYes.gameObject.SetActive(false);
+                    buttonNo.gameObject.SetActive(false);
+                    buttonClose.gameObject.SetActive(true);
+                    attractArrowObject.SetActive(false);
+                    break;
+            }
+        }
 
-        public void Show(
+#region HasAttractAction
+        public void ShowAttract(
+            CostType costType,
+            string cost,
+            string content,
+            string attractMessage,
+            System.Action onAttract)
+        {
+            SetPopupType(PopupType.NoAttractAction);
+            
+            addCostContainer.SetActive(false);
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
+            var title = L10nManager.Localize("UI_TOTAL_COST");
+            costText.text = cost;
+            var no = L10nManager.Localize("UI_NO");
+            CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    onAttract();
+                }
+            };
+            Show(title, content, attractMessage, no, false);
+        }
+#endregion HasAttractAction
+        
+#region NoAttractAction
+        public void ShowNoShortCutActionWithCheck(
             CostType costType,
             BigInteger balance,
             BigInteger cost,
@@ -53,6 +131,8 @@ namespace Nekoyume.UI
             System.Action onPaymentSucceed,
             System.Action onAttract)
         {
+            SetPopupType(PopupType.NoAttractAction);
+            
             addCostContainer.SetActive(false);
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
@@ -79,63 +159,21 @@ namespace Nekoyume.UI
                     }
                 }
             };
+            
+            SetNoAttractAction(popupTitle, enoughMessage, yes, no, false);
             Show(popupTitle, enoughMessage, yes, no, false);
         }
         
 
-        public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
+        private void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
-            Set(title, content, labelYes, labelNo, localize);
+            SetNoAttractAction(title, content, labelYes, labelNo, localize);
 
             if (!gameObject.activeSelf)
             {
                 Show();
             }
-        }
-
-        public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true)
-        {
-            var titleExists = !string.IsNullOrEmpty(title);
-            if (localize)
-            {
-                if (titleExists)
-                {
-                    this.title.text = L10nManager.Localize(title);
-                }
-
-                this.content.text = L10nManager.Localize(content);
-                buttonYes.Text = L10nManager.Localize(labelYes);
-                buttonNo.Text = L10nManager.Localize(labelNo);
-            }
-            else
-            {
-                this.title.text = title;
-                this.content.text = content;
-                buttonYes.Text = labelYes;
-                buttonNo.Text = labelNo;
-            }
-
-            this.title.gameObject.SetActive(titleExists);
-            titleBorder.SetActive(titleExists);
-        }
-
-        public void Yes()
-        {
-            base.Close();
-            CloseCallback?.Invoke(ConfirmResult.Yes);
-        }
-
-        public void No()
-        {
-            base.Close();
-            CloseCallback?.Invoke(ConfirmResult.No);
-        }
-
-        public void NoWithoutCallback()
-        {
-            base.Close();
         }
 
         public void ShowWithAddCost(
@@ -174,26 +212,49 @@ namespace Nekoyume.UI
             ShowAttract(costType, cost.ToString(), content, attractMessage, onAttract);
         }
 
-        public void ShowAttract(
-            CostType costType,
-            string cost,
-            string content,
-            string attractMessage,
-            System.Action onAttract)
+        private void SetNoAttractAction(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
+            bool localize = true)
         {
-            addCostContainer.SetActive(false);
-            costIcon.overrideSprite = costIconData.GetIcon(costType);
-            var title = L10nManager.Localize("UI_TOTAL_COST");
-            costText.text = cost;
-            var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
+            var titleExists = !string.IsNullOrEmpty(title);
+            if (localize)
             {
-                if (result == ConfirmResult.Yes)
+                if (titleExists)
                 {
-                    onAttract();
+                    this.titleText.text = L10nManager.Localize(title);
                 }
-            };
-            Show(title, content, attractMessage, no, false);
+
+                this.contentText.text = L10nManager.Localize(content);
+                buttonYes.Text = L10nManager.Localize(labelYes);
+                buttonNo.Text = L10nManager.Localize(labelNo);
+            }
+            else
+            {
+                this.titleText.text = title;
+                this.contentText.text = content;
+                buttonYes.Text = labelYes;
+                buttonNo.Text = labelNo;
+            }
+
+            this.titleText.gameObject.SetActive(titleExists);
+            titleBorder.SetActive(titleExists);
+        }
+#endregion NoAttractAction
+
+        private void Yes()
+        {
+            base.Close();
+            CloseCallback?.Invoke(ConfirmResult.Yes);
+        }
+
+        private void No()
+        {
+            base.Close();
+            CloseCallback?.Invoke(ConfirmResult.No);
+        }
+
+        public void NoWithoutCallback()
+        {
+            base.Close();
         }
     }
 }

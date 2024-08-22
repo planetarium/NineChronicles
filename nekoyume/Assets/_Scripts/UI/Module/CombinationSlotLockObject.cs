@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Model
                 return;
             }
             
-            Widget.Find<PaymentPopup>().Show(
+            Widget.Find<PaymentPopup>().ShowNoShortCutActionWithCheck(
                 _costType,
                 GetBalance(),
                 GetCost(),
