@@ -792,6 +792,13 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCustomEquipmentCraft)
                 .AddTo(_disposables);
+            _actionRenderer.EveryRender<CustomEquipmentCraft>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionCustomEquipmentCraft)
+                .AddTo(_disposables);
         }
 
         private void ResponseCreateAvatar(
@@ -4202,6 +4209,16 @@ namespace Nekoyume.Blockchain
             StageExceptionHandle(evaluation.Exception?.InnerException);
         }
 
+        private void ExceptionCustomEquipmentCraft(
+            ActionEvaluation<CustomEquipmentCraft> eval)
+        {
+            LoadingHelper.CustomEquipmentCraft.Value = false;
+            if (States.Instance.CurrentAvatarState.address == eval.Action.AvatarAddress && eval.Action.CraftList.Count > 0)
+            {
+                Widget.Find<CombinationSlotsPopup>()
+                    .SetLockLoading(eval.Action.CraftList.First().SlotIndex, false);
+            }
+        }
         private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
             ActionEvaluation<CustomEquipmentCraft> eval)
         {
