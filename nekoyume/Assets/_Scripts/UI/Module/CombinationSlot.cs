@@ -36,12 +36,6 @@ namespace Nekoyume.UI.Module
             Locked
         }
 
-        public enum CacheType
-        {
-            Appraise,
-            WaitingReceive
-        }
-
         [SerializeField]
         private SimpleItemView itemView = null!;
 
@@ -98,8 +92,9 @@ namespace Nekoyume.UI.Module
 
         private CombinationSlotLockObject _lockObject = null!;
         private CombinationSlotState? _state;
-        private CacheType _cachedType;
         private int _slotIndex;
+        
+        private long _sendActionBlockIndex;
 
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
 
