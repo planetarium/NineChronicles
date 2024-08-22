@@ -44,7 +44,8 @@ namespace Nekoyume.UI
             InsufficientRelationship,
             InsufficientMaterial,
             InsufficientBalance,
-            FullSlot
+            FullSlot,
+            WaitRenderingAction,
         }
 
 #region SerializeField
@@ -256,6 +257,7 @@ namespace Nekoyume.UI
                         recipe.Id,
                         _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
                     .Subscribe();
+                LoadingHelper.CustomEquipmentCraft.Value = true;
                 OnOutfitSelected(_selectedOutfit);
                 StartCoroutine(CoCombineNPCAnimation(item, recipe.RequiredBlock));
             }
@@ -403,6 +405,11 @@ namespace Nekoyume.UI
             int requiredRelationship,
             bool randomOnly)
         {
+            if (LoadingHelper.CustomEquipmentCraft.Value)
+            {
+                return SubmittableState.WaitRenderingAction;
+            }
+
             if (randomOnly)
             {
                 return SubmittableState.RandomOnly;
