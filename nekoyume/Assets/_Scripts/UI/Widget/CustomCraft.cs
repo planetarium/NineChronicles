@@ -151,10 +151,6 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            ReactiveAvatarState.ObservableRelationship
-                .Where(_ => isActiveAndEnabled)
-                .Subscribe(relationship => relationshipText.SetText(relationship.ToString()))
-                .AddTo(gameObject);
 
             outfitScroll.OnClick
                 .Subscribe(OnOutfitSelected)
@@ -183,6 +179,10 @@ namespace Nekoyume.UI
                 {
                     OnOutfitSelected(_selectedOutfit);
                 }).AddTo(_disposables);
+            ReactiveAvatarState.ObservableRelationship
+                .Where(_ => isActiveAndEnabled)
+                .Subscribe(relationship => relationshipText.SetText(relationship.ToString()))
+                .AddTo(_disposables);
 
             if (RequiredUpdateCraftCount)
             {
@@ -276,7 +276,8 @@ namespace Nekoyume.UI
                 SubmittableState.InsufficientRelationship => "INSUFFICIENT_RELATIONSHIP",
                 SubmittableState.InsufficientMaterial => "NOTIFICATION_NOT_ENOUGH_MATERIALS",
                 SubmittableState.InsufficientBalance => "UI_NOT_ENOUGH_NCG",
-                SubmittableState.FullSlot => "NOTIFICATION_NOT_ENOUGH_SLOTS"
+                SubmittableState.FullSlot => "NOTIFICATION_NOT_ENOUGH_SLOTS",
+                SubmittableState.WaitRenderingAction => "CUSTOM_CRAFT_WAITING_NOTI",
             };
 
             OneLineSystem.Push(MailType.System, L10nManager.Localize(l10N), NotificationCell.NotificationType.Alert);
