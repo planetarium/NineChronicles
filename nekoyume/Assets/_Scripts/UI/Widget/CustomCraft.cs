@@ -37,6 +37,17 @@ namespace Nekoyume.UI
             public Toggle toggleButton;
         }
 
+        private enum SubmittableState
+        {
+            Able,
+            RandomOnly,
+            InsufficientRelationship,
+            InsufficientMaterial,
+            InsufficientBalance,
+            FullSlot
+        }
+
+#region SerializeField
         [SerializeField]
         private Button closeButton;
 
@@ -99,16 +110,17 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI craftedCountText;
+#endregion
 
         private CustomOutfit _selectedOutfit;
-
         private ItemSubType _selectedSubType;
+        private SubmittableState _submittableState;
 
-        private List<IDisposable> _disposables = new();
+        private readonly List<IDisposable> _disposables = new();
         private IDisposable _outfitAnimationDisposable;
-        private ConcurrentDictionary<int, long> _craftCountDict = new();
+        private readonly ConcurrentDictionary<int, long> _craftCountDict = new();
 
-        public bool RequiredUpdateCraftCount { get; set; } = false;
+        public bool RequiredUpdateCraftCount { get; set; }
 
         protected override void Awake()
         {
@@ -143,13 +155,21 @@ namespace Nekoyume.UI
                 .Subscribe(relationship => relationshipText.SetText(relationship.ToString()))
                 .AddTo(gameObject);
 
-            outfitScroll.OnClick.Subscribe(OnOutfitSelected).AddTo(gameObject);
-            conditionalCostButton.OnSubmitSubject.Subscribe(_ => OnClickSubmitButton())
+            outfitScroll.OnClick
+                .Subscribe(OnOutfitSelected)
+                .AddTo(gameObject);
+            conditionalCostButton.OnSubmitSubject
+                .Subscribe(_ => OnSubmitCraftButton())
+                .AddTo(gameObject);
+            conditionalCostButton.OnClickSubject
+                .Select(_ => Unit.Default)
+                .Merge(conditionalCostButton.OnClickDisabledSubject)
+                .Subscribe(_ => OnClickCraftButton())
                 .AddTo(gameObject);
             UpdateCraftCount();
         }
 
-        public void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
             _selectedOutfit = null;
             notSelected.SetActive(true);
@@ -169,7 +189,7 @@ namespace Nekoyume.UI
                 RequiredUpdateCraftCount = false;
             }
 
-            base.Show();
+            base.Show(ignoreShowAnimation);
         }
 
         private void UpdateCraftCount()
@@ -214,7 +234,7 @@ namespace Nekoyume.UI
             selectedView.SetActive(false);
         }
 
-        private void OnClickSubmitButton()
+        private void OnSubmitCraftButton()
         {
             if (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out var slotIndex))
             {
@@ -239,12 +259,25 @@ namespace Nekoyume.UI
                 OnOutfitSelected(_selectedOutfit);
                 StartCoroutine(CoCombineNPCAnimation(item, recipe.RequiredBlock));
             }
-            else
+        }
+
+        private void OnClickCraftButton()
+        {
+            if (_submittableState == SubmittableState.Able)
             {
-                // todo: 뭔진 몰라도 not interactable한데 interact를 한게 문제니까 일단...
-                OneLineSystem.Push(MailType.System, "somethings wrong",
-                    NotificationCell.NotificationType.Information);
+                return;
             }
+
+            var l10N = _submittableState switch
+            {
+                SubmittableState.RandomOnly => "RANDOM_ONLY_OUTFIT",
+                SubmittableState.InsufficientRelationship => "INSUFFICIENT_RELATIONSHIP",
+                SubmittableState.InsufficientMaterial => "NOTIFICATION_NOT_ENOUGH_MATERIALS",
+                SubmittableState.InsufficientBalance => "UI_NOT_ENOUGH_NCG",
+                SubmittableState.FullSlot => "NOTIFICATION_NOT_ENOUGH_SLOTS"
+            };
+
+            OneLineSystem.Push(MailType.System, L10nManager.Localize(l10N), NotificationCell.NotificationType.Alert);
         }
 
         private void OnOutfitSelected(CustomOutfit outfit)
@@ -264,12 +297,14 @@ namespace Nekoyume.UI
             selectedSpineView.SetActive(false);
             // 외형 랜덤 선택
             var selectRandomOutfit = _selectedOutfit.IconRow.Value == null;
+            var randomOnly = _selectedOutfit.RandomOnly.Value;
+            var iconId = _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId;
             outfitNameText.SetText(!selectRandomOutfit
-                ? L10nManager.LocalizeItemName(_selectedOutfit.IconRow.Value.IconId)
+                ? L10nManager.LocalizeItemName(iconId)
                 : L10nManager.Localize("UI_RANDOM_OUTFIT"));
-            craftedCountObject.SetActive(!selectRandomOutfit && !_selectedOutfit.RandomOnly.Value);
+            craftedCountObject.SetActive(!selectRandomOutfit && !randomOnly);
             if (!selectRandomOutfit &&
-                _craftCountDict.TryGetValue(_selectedOutfit.IconRow.Value.IconId, out var count))
+                _craftCountDict.TryGetValue(iconId, out var count))
             {
                 craftedCountText.SetText(L10nManager.Localize("UI_TOTAL_CRAFT_COUNT_FORMAT", count.ToCurrencyNotation()));
             }
@@ -299,28 +334,26 @@ namespace Nekoyume.UI
                 if (!selectRandomOutfit)
                 {
                     selectedOutfitImage.overrideSprite =
-                        SpriteHelper.GetItemIcon(_selectedOutfit.IconRow.Value.IconId);
+                        SpriteHelper.GetItemIcon(iconId);
                     if (viewSpinePreview)
                     {
-                        SetCharacter(equipmentRow, _selectedOutfit.IconRow.Value.IconId);
+                        SetCharacter(equipmentRow, iconId);
                     }
                 }
                 else
                 {
                     Action<int> routine = viewSpinePreview
-                        ? iconId => SetCharacter(equipmentRow, iconId)
-                        : iconId =>
-                            selectedOutfitImage.overrideSprite =
-                                SpriteHelper.GetItemIcon(iconId);
+                        ? id => SetCharacter(equipmentRow, id)
+                        : id => selectedOutfitImage.overrideSprite = SpriteHelper.GetItemIcon(id);
                     // 얻을 수 있는 외형 리스트를 가져온 뒤 랜덤으로 섞어서 번갈아가며 보여줍니다.
                     var outfitIconIds = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
-                        .Where(row =>
-                            row.ItemSubType == _selectedSubType && row.RequiredRelationship <=
-                            ReactiveAvatarState.Relationship)
+                        .Where(row => row.ItemSubType == _selectedSubType
+                            && row.RequiredRelationship <= ReactiveAvatarState.Relationship)
                         .Select(row => row.IconId)
                         .OrderBy(_ => Random.value)
                         .ToList();
-                    _outfitAnimationDisposable = outfitIconIds.ObservableIntervalLoopingList(.5f)
+                    _outfitAnimationDisposable = outfitIconIds
+                        .ObservableIntervalLoopingList(.5f)
                         .Subscribe(index => routine(index));
                 }
             }
@@ -328,7 +361,7 @@ namespace Nekoyume.UI
             var recipeRow = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                 r.ItemSubType == _selectedSubType);
             var (ncgCost, materialCosts) = CustomCraftHelper.CalculateCraftCost(
-                _selectedOutfit.IconRow.Value?.IconId ?? 0,
+                iconId,
                 TableSheets.Instance.MaterialItemSheet,
                 recipeRow,
                 relationshipRow,
@@ -343,11 +376,14 @@ namespace Nekoyume.UI
                     .ToList(),
                 true);
             conditionalCostButton.SetCost(CostType.NCG, (long)ncgCost);
-            conditionalCostButton.SetCondition(() => !_selectedOutfit.RandomOnly.Value);
-            conditionalCostButton.Interactable = CheckSubmittable(
+
+            conditionalCostButton.SetCondition(() => !randomOnly);
+            _submittableState = CheckSubmittableState(
                 ncgCost,
                 materialCosts,
-                _selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0);
+                _selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0,
+                randomOnly);
+            conditionalCostButton.Interactable = _submittableState is SubmittableState.Able or SubmittableState.RandomOnly;
             conditionalCostButton.UpdateObjects();
         }
 
@@ -361,21 +397,30 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
         }
 
-        private bool CheckSubmittable(BigInteger ncgAmount, IDictionary<int,int> materials, int requiredRelationship)
+        private static SubmittableState CheckSubmittableState(
+            BigInteger ncgAmount,
+            IDictionary<int, int> materials,
+            int requiredRelationship,
+            bool randomOnly)
         {
+            if (randomOnly)
+            {
+                return SubmittableState.RandomOnly;
+            }
+
             if (ReactiveAvatarState.Relationship < requiredRelationship)
             {
-                return false;
+                return SubmittableState.InsufficientRelationship;
             }
 
             if (!Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _))
             {
-                return false;
+                return SubmittableState.FullSlot;
             }
 
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < ncgAmount)
             {
-                return false;
+                return SubmittableState.InsufficientBalance;
             }
 
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -392,12 +437,13 @@ namespace Nekoyume.UI
 
                 if (material.Value > itemCount)
                 {
-                    return false;
+                    return SubmittableState.InsufficientMaterial;
                 }
             }
 
-            return true;
+            return SubmittableState.Able;
         }
+
         private void SetCharacter(EquipmentItemSheet.Row equipmentRow, int iconId)
         {
             var game = Game.Game.instance;
