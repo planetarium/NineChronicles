@@ -2771,17 +2771,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  title: {fileID: 5968462093368198312}
-  content: {fileID: 80732125048866605}
-  buttonYes: {fileID: 4489836064358545039}
-  buttonNo: {fileID: 1361672825991667205}
-  titleBorder: {fileID: 5755573070622404356}
   costIconData: {fileID: 11400000, guid: 4ed06bb1bfe2f9b4aabebaebcb463201, type: 2}
   costIcon: {fileID: 6745424694767422384}
   addCostIcon: {fileID: 865525057391705026}
   costText: {fileID: 2392000209274826356}
   addCostText: {fileID: 340454937229980491}
   addCostContainer: {fileID: 1810409367963080683}
+  title: {fileID: 5968462093368198312}
+  content: {fileID: 80732125048866605}
+  buttonYes: {fileID: 4489836064358545039}
+  buttonNo: {fileID: 1361672825991667205}
+  titleBorder: {fileID: 5755573070622404356}
 --- !u!1 &6567834254936144056
 GameObject:
   m_ObjectHideFlags: 0
