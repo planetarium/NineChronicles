@@ -138,6 +138,7 @@ namespace Nekoyume.UI.Module
                 requiredBlockIndex + currentBlockIndex,
                 currentBlockIndex,
                 currentBlockIndex);
+            _sendActionBlockIndex = currentBlockIndex;
         }
 
         private void Awake()
@@ -194,6 +195,7 @@ namespace Nekoyume.UI.Module
             UIState = SlotUIState.Locked;
             _state = null;
             _lockObject.SetLoading(false);
+            _sendActionBlockIndex = 0;
             UpdateInformation(Game.instance.Agent.BlockIndex);
         }
 
@@ -275,7 +277,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
             
-            var workingBlockIndex = _state.StartBlockIndex + States.Instance.GameConfigState.RequiredAppraiseBlock;
+            var startBlockIndex = Math.Max(_sendActionBlockIndex, _state.StartBlockIndex);
+            var workingBlockIndex = startBlockIndex + States.Instance.GameConfigState.RequiredAppraiseBlock;
             if (currentBlockIndex <= workingBlockIndex)
             {
                 return;
@@ -287,7 +290,7 @@ namespace Nekoyume.UI.Module
         
         private void OnBlockRenderWorking(long currentBlockIndex)
         { 
-            if (_state?.Result == null || !_state.ValidateV2(currentBlockIndex))
+            if (_state?.Result == null || _sendActionBlockIndex >= currentBlockIndex || !_state.ValidateV2(currentBlockIndex))
             {
                 return;
             }
