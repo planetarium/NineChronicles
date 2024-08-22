@@ -66,6 +66,7 @@ namespace Nekoyume.UI
 
             buttonNo.OnClick = No;
             buttonYes.OnClick = Yes;
+            buttonClose.onClick.AddListener(NoWithoutCallback);
             CloseWidget = NoWithoutCallback;
             SubmitWidget = Yes;
         }
@@ -103,9 +104,9 @@ namespace Nekoyume.UI
             string attractMessage,
             System.Action onAttract)
         {
-            SetPopupType(PopupType.NoAttractAction);
-            
+            SetPopupType(PopupType.HasAttractAction);
             addCostContainer.SetActive(false);
+            
             costIcon.overrideSprite = costIconData.GetIcon(costType);
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost;
@@ -118,6 +119,34 @@ namespace Nekoyume.UI
                 }
             };
             Show(title, content, attractMessage, no, false);
+        }
+
+        public void ShowAttractWithAddCost(
+            string title,
+            string content,
+            CostType costType,
+            int cost,
+            CostType addCostType,
+            int addCost,
+            System.Action onConfirm)
+        {
+            SetPopupType(PopupType.HasAttractAction);
+            addCostContainer.SetActive(true);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
+            costText.text = $"{cost:#,0}";
+
+            addCostIcon.overrideSprite = costIconData.GetIcon(addCostType);
+            addCostText.text = $"{addCost:#,0}";
+
+            CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    onConfirm?.Invoke();
+                }
+            };
+            Show(title, content);
         }
 #endregion HasAttractAction
         
@@ -132,8 +161,8 @@ namespace Nekoyume.UI
             System.Action onAttract)
         {
             SetPopupType(PopupType.NoAttractAction);
-            
             addCostContainer.SetActive(false);
+            
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
             costText.text = cost.ToString();
@@ -160,46 +189,8 @@ namespace Nekoyume.UI
                 }
             };
             
-            SetNoAttractAction(popupTitle, enoughMessage, yes, no, false);
+            SetContent(popupTitle, enoughMessage, yes, no, false);
             Show(popupTitle, enoughMessage, yes, no, false);
-        }
-        
-
-        private void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true)
-        {
-            SetNoAttractAction(title, content, labelYes, labelNo, localize);
-
-            if (!gameObject.activeSelf)
-            {
-                Show();
-            }
-        }
-
-        public void ShowWithAddCost(
-            string title,
-            string content,
-            CostType costType,
-            int cost,
-            CostType addCostType,
-            int addCost,
-            System.Action onConfirm)
-        {
-            addCostContainer.SetActive(true);
-            costIcon.overrideSprite = costIconData.GetIcon(costType);
-            costText.text = $"{cost:#,0}";
-
-            addCostIcon.overrideSprite = costIconData.GetIcon(addCostType);
-            addCostText.text = $"{addCost:#,0}";
-
-            CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-                    onConfirm?.Invoke();
-                }
-            };
-            Show(title, content);
         }
 
         public void ShowAttract(
@@ -211,8 +202,21 @@ namespace Nekoyume.UI
         {
             ShowAttract(costType, cost.ToString(), content, attractMessage, onAttract);
         }
+#endregion NoAttractAction
 
-        private void SetNoAttractAction(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
+#region General
+        private void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
+            bool localize = true)
+        {
+            SetContent(title, content, labelYes, labelNo, localize);
+
+            if (!gameObject.activeSelf)
+            {
+                Show();
+            }
+        }
+        
+        private void SetContent(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
             var titleExists = !string.IsNullOrEmpty(title);
@@ -220,25 +224,26 @@ namespace Nekoyume.UI
             {
                 if (titleExists)
                 {
-                    this.titleText.text = L10nManager.Localize(title);
+                    titleText.text = L10nManager.Localize(title);
                 }
 
-                this.contentText.text = L10nManager.Localize(content);
+                contentText.text = L10nManager.Localize(content);
                 buttonYes.Text = L10nManager.Localize(labelYes);
                 buttonNo.Text = L10nManager.Localize(labelNo);
             }
             else
             {
-                this.titleText.text = title;
-                this.contentText.text = content;
+                titleText.text = title;
+                contentText.text = content;
                 buttonYes.Text = labelYes;
                 buttonNo.Text = labelNo;
             }
 
-            this.titleText.gameObject.SetActive(titleExists);
+            titleText.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
         }
-#endregion NoAttractAction
+#endregion General
+        
 
         private void Yes()
         {

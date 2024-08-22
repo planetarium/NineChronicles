@@ -235,7 +235,7 @@ namespace Nekoyume.UI
                         else
                         {
                             Find<PaymentPopup>()
-                                .ShowWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
+                                .ShowAttractWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
                                     CostType.Crystal, cost,
                                     CostType.WorldBossTicket, 1,
                                     () => StartCoroutine(CoRaid()));
