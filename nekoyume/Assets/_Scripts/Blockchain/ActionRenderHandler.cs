@@ -4218,7 +4218,10 @@ namespace Nekoyume.Blockchain
                 Widget.Find<CombinationSlotsPopup>()
                     .SetLockLoading(eval.Action.CraftList.First().SlotIndex, false);
             }
+
+            NcDebug.LogException(eval.Exception?.InnerException ?? eval.Exception);
         }
+
         private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
             ActionEvaluation<CustomEquipmentCraft> eval)
         {
