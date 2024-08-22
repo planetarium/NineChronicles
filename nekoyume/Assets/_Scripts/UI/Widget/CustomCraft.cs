@@ -37,6 +37,16 @@ namespace Nekoyume.UI
             public Toggle toggleButton;
         }
 
+        private enum SubmittableState
+        {
+            Able,
+            RandomOnly,
+            InsufficientRelationship,
+            InsufficientMaterial,
+            InsufficientBalance,
+            FullSlot
+        }
+
 #region SerializeField
         [SerializeField]
         private Button closeButton;
@@ -103,8 +113,8 @@ namespace Nekoyume.UI
 #endregion
 
         private CustomOutfit _selectedOutfit;
-
         private ItemSubType _selectedSubType;
+        private SubmittableState _submittableState;
 
         private readonly List<IDisposable> _disposables = new();
         private IDisposable _outfitAnimationDisposable;
@@ -349,11 +359,14 @@ namespace Nekoyume.UI
                     .ToList(),
                 true);
             conditionalCostButton.SetCost(CostType.NCG, (long)ncgCost);
-            conditionalCostButton.SetCondition(() => !_selectedOutfit.RandomOnly.Value);
-            conditionalCostButton.Interactable = CheckSubmittable(
+
+            conditionalCostButton.SetCondition(() => !randomOnly);
+            _submittableState = CheckSubmittableState(
                 ncgCost,
                 materialCosts,
-                _selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0);
+                _selectedOutfit.IconRow.Value?.RequiredRelationship ?? 0,
+                randomOnly);
+            conditionalCostButton.Interactable = _submittableState is SubmittableState.Able or SubmittableState.RandomOnly;
             conditionalCostButton.UpdateObjects();
         }
 
@@ -367,21 +380,30 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
         }
 
-        private bool CheckSubmittable(BigInteger ncgAmount, IDictionary<int,int> materials, int requiredRelationship)
+        private static SubmittableState CheckSubmittableState(
+            BigInteger ncgAmount,
+            IDictionary<int, int> materials,
+            int requiredRelationship,
+            bool randomOnly)
         {
+            if (randomOnly)
+            {
+                return SubmittableState.RandomOnly;
+            }
+
             if (ReactiveAvatarState.Relationship < requiredRelationship)
             {
-                return false;
+                return SubmittableState.InsufficientRelationship;
             }
 
             if (!Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _))
             {
-                return false;
+                return SubmittableState.FullSlot;
             }
 
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < ncgAmount)
             {
-                return false;
+                return SubmittableState.InsufficientBalance;
             }
 
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -398,12 +420,13 @@ namespace Nekoyume.UI
 
                 if (material.Value > itemCount)
                 {
-                    return false;
+                    return SubmittableState.InsufficientMaterial;
                 }
             }
 
-            return true;
+            return SubmittableState.Able;
         }
+
         private void SetCharacter(EquipmentItemSheet.Row equipmentRow, int iconId)
         {
             var game = Game.Game.instance;
