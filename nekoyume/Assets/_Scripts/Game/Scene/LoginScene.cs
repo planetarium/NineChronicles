@@ -45,7 +45,6 @@ namespace Nekoyume.Game.Scene
 #region MonoBehaviour
         private void Awake()
         {
-            synopsis.LoginScene = this;
             var canvas = GetComponent<Canvas>();
             canvas.worldCamera = ActionCamera.instance.Cam;
         }
@@ -310,6 +309,7 @@ namespace Nekoyume.Game.Scene
             yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
             game.IsInitialized = true;
             introScreen.Close();
+            Widget.Find<GrayLoadingScreen>().Close();
             EnterNext().Forget();
             totalSw.Stop();
             NcDebug.Log($"[LoginScene] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
@@ -324,12 +324,7 @@ namespace Nekoyume.Game.Scene
                     Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
                     States.Instance.AvatarStates.ContainsKey(slotIndex))
                 {
-                    var loadingScreen = Widget.Find<LoadingScreen>();
-                    loadingScreen.Show(
-                        LoadingScreen.LoadingType.Entering,
-                        L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                     await EnterGame(slotIndex);
-                    loadingScreen.Close();
                 }
                 else
                 {
@@ -348,7 +343,7 @@ namespace Nekoyume.Game.Scene
                         avatarState.questList == null ||
                         avatarState.worldInformation == null)
                     {
-                        EnterCharacterSelect();
+                        await EnterCharacterSelect();
                     }
                     else
                     {
@@ -357,18 +352,21 @@ namespace Nekoyume.Game.Scene
                 }
                 else
                 {
-                    EnterCharacterSelect();
+                    await EnterCharacterSelect();
                 }
             }
-
-            Widget.Find<GrayLoadingScreen>().Close();
         }
 
         public static async UniTask EnterCharacterSelect()
         {
             NcDebug.Log("[LoginScene] EnterCharacterSelect() invoked");
 
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            loadingScreen.Show(
+                LoadingScreen.LoadingType.Entering,
+                L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
             await NcSceneManager.Instance.LoadScene(SceneType.Game);
+            loadingScreen.Close();
 
             // TODO: ChangeScene
             Widget.Find<Login>().Show();
@@ -378,16 +376,21 @@ namespace Nekoyume.Game.Scene
         /// <summary>
         /// 로컬에 저장된 아바타 정보가 있는 경우, 특정 상황에서 바로 해당 아바타 선택 후 게임 로비 진입
         /// </summary>
-        public async UniTask EnterGame(int slotIndex, bool forceNewSelection = true)
+        public static async UniTask EnterGame(int slotIndex, bool forceNewSelection = true)
         {
             var sw = new Stopwatch();
             sw.Reset();
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            loadingScreen.Show(
+                LoadingScreen.LoadingType.Entering,
+                L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
             sw.Start();
             await RxProps.SelectAvatarAsync(slotIndex, Game.instance.Agent.BlockTipStateRootHash, forceNewSelection);
             sw.Stop();
             NcDebug.Log($"[LoginScene] EnterNext()... SelectAvatarAsync() finished in {sw.ElapsedMilliseconds}ms.(elapsed)");
 
             await NcSceneManager.Instance.LoadScene(SceneType.Game);
+            loadingScreen.Close();
 
             Event.OnRoomEnter.Invoke(false);
             Event.OnUpdateAddresses.Invoke();
