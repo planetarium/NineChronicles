@@ -60,6 +60,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a25f86723ec880641bce5d424539df2b, type: 3}
   - {fileID: 21300000, guid: 34afd1b218d2b40acb1467ed4f97575c, type: 3}
   - {fileID: 21300000, guid: 63e987c260665414a8e918783da8e99b, type: 3}
+  - {fileID: 21300000, guid: a5f8aff26763583439236a9bd710f897, type: 3}
   - {fileID: 21300000, guid: 09147c53e8273bd46b29e874238835fb, type: 3}
   - {fileID: 21300000, guid: 50beafe3a8a704c1d97a9adadf60ac44, type: 3}
   - {fileID: 21300000, guid: f5b2ed64a57f24985b84eec8ebb25567, type: 3}
@@ -71,6 +72,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2ccc5e57f9ec549508dbc27349d3bfed, type: 3}
   - {fileID: 21300000, guid: 82bdb2d7c8a734063bde448c9e202f0e, type: 3}
   - {fileID: 21300000, guid: dd04a198e5d6d46e482b6ab0a54afeb5, type: 3}
+  - {fileID: 21300000, guid: 5fc9b92970574174885d71615928d44b, type: 3}
   - {fileID: 21300000, guid: 2ba4e849ae6d94b889c7f2a97601e303, type: 3}
   - {fileID: 21300000, guid: 9f2f159a849654418b15408258c81548, type: 3}
   - {fileID: 21300000, guid: 72e2db8bdbbded44ea19faadb24c9100, type: 3}
@@ -98,6 +100,7 @@ SpriteAtlas:
   - Item_Recipebg_06
   - bg_combination_Main_02
   - bg_combination_Main_06
+  - icon_Combination_mainmenu_05
   - Item_Level_Dim
   - bg_combination_Main_05
   - icon_Combination_mainmenu_01
@@ -109,6 +112,7 @@ SpriteAtlas:
   - Item_Recipebg_04
   - UI_Tooltip_Close
   - Item_Recipebg_Tag
+  - UI_Combination_mainmenu_bg_03
   - bg_combination_Main_01
   - UI_Tooltip_Grind
   - UI_bg_frame_18
