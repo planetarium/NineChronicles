@@ -2436,7 +2436,8 @@ namespace Nekoyume.Blockchain
             return mail is not null;
         }
 
-        private ActionEvaluation<Grinding> PrepareGrinding(ActionEvaluation<Grinding> eval)
+        private (ActionEvaluation<Grinding> eval, List<Equipment> equipmentList)
+            PrepareGrinding(ActionEvaluation<Grinding> eval)
         {
             var avatarAddress = eval.Action.AvatarAddress;
             if (eval.Action.ChargeAp)
@@ -2455,15 +2456,50 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
             ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
-            return eval;
+
+            var inventory = StateGetter.GetInventory(eval.PreviousState, eval.Action.AvatarAddress);
+            var equipmentList = new List<Equipment>();
+            foreach (var equipmentId in eval.Action.EquipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(equipmentId, out Equipment equipment) ||
+                    equipment.RequiredBlockIndex > eval.BlockIndex ||
+                    !inventory.RemoveNonFungibleItem(equipmentId))
+                {
+                    Debug.LogError($"Grinding action failed to remove equipment {equipmentId}");
+                    OneLineSystem.Push(
+                        MailType.Grinding,
+                        L10nManager.Localize("ERROR_UNKNOWN"),
+                        NotificationCell.NotificationType.Alert);
+                    return (eval, new List<Equipment>());
+                }
+
+                equipmentList.Add(equipment);
+            }
+
+            return (eval, equipmentList);
         }
 
-        private void ResponseGrinding(ActionEvaluation<Grinding> eval)
+        private void ResponseGrinding((ActionEvaluation<Grinding> eval, List<Equipment> equipmentList) prepared)
         {
-            OneLineSystem.Push(
-                MailType.Grinding,
-                L10nManager.Localize("UI_GRINDING_NOTIFY"),
-                NotificationCell.NotificationType.Information);
+            var crystalReward = CrystalCalculator.CalculateCrystal(
+                prepared.equipmentList,
+                false,
+                TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
+                States.Instance.StakingLevel);
+            var itemRewards = Action.Grinding.CalculateMaterialReward(
+                    prepared.equipmentList,
+                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                    TableSheets.Instance.MaterialItemSheet)
+                .OrderBy(pair => pair.Key.GetMaterialPriority())
+                .ThenByDescending(pair => pair.Key.Grade)
+                .ThenBy(pair => pair.Key.Id)
+                .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
+
+            var mailRewards = new List<MailReward> { new(crystalReward, (int)crystalReward.MajorUnit) };
+            mailRewards.AddRange(itemRewards.Select(pair => new MailReward(pair.Item1, pair.Item2)));
+
+            Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_GRINDING_REWARD");
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
