@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
@@ -12,27 +14,6 @@ namespace Nekoyume
 {
     public static class InventoryExtensions
     {
-        public static int GetEquippedFullCostumeOrArmorId(this Inventory inventory)
-        {
-            foreach (var costume in inventory.Costumes
-                .Where(e =>
-                    e.ItemSubType == ItemSubType.FullCostume &&
-                    e.Equipped))
-            {
-                return costume.Id;
-            }
-
-            foreach (var armor in inventory.Equipments
-                .Where(e =>
-                    e.ItemSubType == ItemSubType.Armor &&
-                    e.Equipped))
-            {
-                return armor.Id;
-            }
-
-            return GameConfig.DefaultAvatarArmorId;
-        }
-
         public static int GetMaterialCount(this Inventory inventory, int id)
         {
             if (inventory is null)
@@ -147,6 +128,38 @@ namespace Nekoyume
             }
 
             return false;
+        }
+
+        private static readonly int[] DustIds = new[]
+        {
+            CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
+        }.Select(cost => (int)cost).ToArray();
+
+        // Get the priority by Id or ItemSubType of the material group about Inventory sorting.
+        // Dust -> ApStone or Hourglass (Tradable -> UnTradable) -> CustomCraft(Drawing) -> Hammer -> Others
+        public static int GetMaterialPriority(this Material material)
+        {
+            if (DustIds.Contains(material.Id))
+            {
+                return 0;
+            }
+
+            if (material.ItemSubType is ItemSubType.ApStone or ItemSubType.Hourglass)
+            {
+                return 1;
+            }
+
+            if (material.ItemSubType is ItemSubType.Drawing or ItemSubType.DrawingTool)
+            {
+                return 2;
+            }
+
+            if (ItemEnhancement.HammerIds.Contains(material.Id))
+            {
+                return 3;
+            }
+
+            return int.MaxValue;
         }
     }
 }

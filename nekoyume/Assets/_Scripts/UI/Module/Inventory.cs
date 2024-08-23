@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -13,7 +12,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.TableData.Rune;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -80,11 +78,6 @@ namespace Nekoyume.UI.Module
         private readonly List<ElementalType> _elementalTypes = new();
 
         private readonly Dictionary<ItemType, List<Predicate<InventoryItem>>> _dimConditionFuncsByItemType = new();
-
-        private readonly int[] dustIds = new[]
-        {
-            CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
-        }.Select(cost => (int)cost).ToArray();
 
         private static readonly ItemType[] ItemTypes = Enum.GetValues(typeof(ItemType)) as ItemType[];
 
@@ -456,12 +449,8 @@ namespace Nekoyume.UI.Module
 
         private List<InventoryItem> GetOrganizedMaterials()
         {
-            // Dust -> ApStone or Hourglass (Tradable -> UnTradable) -> Hammer -> Others
             return _materials
-                .OrderByDescending(x => dustIds.Contains(x.ItemBase.Id))
-                .ThenByDescending(x =>
-                    x.ItemBase.ItemSubType is ItemSubType.ApStone or ItemSubType.Hourglass)
-                .ThenByDescending(x => ItemEnhancement.HammerIds.Contains(x.ItemBase.Id))
+                .OrderBy(x => (x.ItemBase as Material).GetMaterialPriority())
                 .ThenBy(x => x.ItemBase is ITradableItem).ToList();
         }
 

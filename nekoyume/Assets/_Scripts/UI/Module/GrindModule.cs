@@ -315,20 +315,11 @@ namespace Nekoyume.UI.Module
                 TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
                 States.Instance.StakingLevel);
             var favRewards = new[] { crystalReward };
-
-            // Todo : Fix ordering conditions (refer the inventory `GetOrganizedMaterials` method)
-            var dustIds = new[]
-            {
-                CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
-            }.Select(cost => (int)cost).ToArray();
-            var usableItemIds = new[] { (int)CostType.ApPotion, 400000 };  // 400000 : Hourglass
             var itemRewards = Grinding.CalculateMaterialReward(
                     equipmentsForGrind,
                     TableSheets.Instance.CrystalEquipmentGrindingSheet,
                     TableSheets.Instance.MaterialItemSheet)
-                .OrderByDescending(pair => dustIds.Contains(pair.Key.Id))
-                .ThenByDescending(pair => usableItemIds.Contains(pair.Key.Id))
-                .ThenByDescending(pair => ItemEnhancement.HammerIds.Contains(pair.Key.Id))
+                .OrderBy(pair => pair.Key.GetMaterialPriority())
                 .ThenByDescending(pair => pair.Key.Grade)
                 .ThenBy(pair => pair.Key.Id)
                 .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
