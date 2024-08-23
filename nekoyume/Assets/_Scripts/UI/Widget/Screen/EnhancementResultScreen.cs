@@ -5,7 +5,6 @@ using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
@@ -20,7 +19,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class EnhancementResultPopup : PopupWidget
+    public class EnhancementResultScreen : ScreenWidget
     {
         [Serializable]
         public class ResultItem

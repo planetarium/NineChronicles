@@ -263,7 +263,7 @@ namespace Nekoyume.UI
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
-            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
+            Find<SummonResultScreen>().Show(summonRow, summonCount, resultList);
         }
 
         public void OnActionRender(ActionEvaluation<RuneSummon> eval)
@@ -274,7 +274,7 @@ namespace Nekoyume.UI
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateRune(summonRow, summonCount, random);
-            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
+            Find<SummonResultScreen>().Show(summonRow, summonCount, resultList);
         }
 
         private static List<Equipment> SimulateEquipment(
@@ -452,7 +452,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<SummonResultPopup>().Show(summonRow, 1, new List<Equipment> { resultEquipment },
+            Find<SummonResultScreen>().Show(summonRow, 1, new List<Equipment> { resultEquipment },
                 () => { Game.Game.instance.Stage.TutorialController.Play(50005); });
 
             // UI Reset for SetCostUIForTutorial() invoking
