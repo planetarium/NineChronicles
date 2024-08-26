@@ -244,7 +244,7 @@ namespace Nekoyume.UI
                     .Subscribe();
                 LoadingHelper.CustomEquipmentCraft.Value = true;
                 OnOutfitSelected(_selectedOutfit);
-                StartCoroutine(CoCombineNPCAnimation(item, recipe.RequiredBlock));
+                StartCoroutine(CoCombineNPCAnimation(item));
             }
         }
 
@@ -466,18 +466,14 @@ namespace Nekoyume.UI
         }
 
         private IEnumerator CoCombineNPCAnimation(
-            ItemBase itemBase,
-            long blockIndex)
+            ItemBase itemBase)
         {
-            var loadingScreen = Find<CombinationLoadingScreen>();
+            var loadingScreen = Find<CustomCraftLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
             Push();
             yield return new WaitForSeconds(.5f);
-
-            var format = L10nManager.Localize("UI_COST_BLOCK");
-            var quote = string.Format(format, blockIndex);
-            loadingScreen.AnimateNPC(CombinationLoadingScreen.SpeechBubbleItemType.Equipment, quote);
+            loadingScreen.AnimateNPC();
         }
     }
 }
