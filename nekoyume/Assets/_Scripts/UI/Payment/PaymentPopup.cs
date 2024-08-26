@@ -121,6 +121,7 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
+        // TODO: Remove after add world boss exception
         public void ShowAttractWithAddCost(
             string title,
             string content,
