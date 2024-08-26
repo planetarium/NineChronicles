@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                     L10nManager.Localize("UI_ARENA_EARLY_REGISTRATION_Q");
                 var notEnoughMessage =
                     L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Widget.Find<PaymentPopup>().ShowNoShortCutActionWithCheck(
+                Widget.Find<PaymentPopup>().ShowNoAttractActionWithCheck(
                     CostType.Crystal,
                     balance.MajorUnit,
                     _cost,

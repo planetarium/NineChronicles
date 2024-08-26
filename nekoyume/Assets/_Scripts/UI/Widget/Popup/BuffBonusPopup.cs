@@ -121,7 +121,7 @@ namespace Nekoyume.UI
                 var balance = States.Instance.CrystalBalance;
                 var content = balance.GetPaymentFormatText(usageMessage, _normalCost);
 
-                Find<PaymentPopup>().ShowNoShortCutActionWithCheck(
+                Find<PaymentPopup>().ShowNoAttractActionWithCheck(
                     CostType.Crystal,
                     balance.MajorUnit,
                     _normalCost,
@@ -140,7 +140,7 @@ namespace Nekoyume.UI
                 var balance = States.Instance.CrystalBalance;
                 var content = balance.GetPaymentFormatText(usageMessage, _advancedCost);
 
-                Find<PaymentPopup>().ShowNoShortCutActionWithCheck(
+                Find<PaymentPopup>().ShowNoAttractActionWithCheck(
                     CostType.Crystal,
                     balance.MajorUnit,
                     _advancedCost,

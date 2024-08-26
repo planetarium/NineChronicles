@@ -149,10 +149,20 @@ namespace Nekoyume.UI
             };
             Show(title, content);
         }
+
+        public void ShowAttract(
+            CostType costType,
+            BigInteger cost,
+            string content,
+            string attractMessage,
+            System.Action onAttract)
+        {
+            ShowAttract(costType, cost.ToString(), content, attractMessage, onAttract);
+        }
 #endregion HasAttractAction
         
 #region NoAttractAction
-        public void ShowNoShortCutActionWithCheck(
+        public void ShowNoAttractActionWithCheck(
             CostType costType,
             BigInteger balance,
             BigInteger cost,
@@ -173,35 +183,27 @@ namespace Nekoyume.UI
             var no = L10nManager.Localize("UI_NO");
             CloseCallback = result =>
             {
-                if (result == ConfirmResult.Yes)
+                if (result != ConfirmResult.Yes)
                 {
-                    if (enoughBalance)
-                    {
-                        onPaymentSucceed.Invoke();
-                    }
-                    else
-                    {
-                        Close(true);
-                        var attractMessage = costType == CostType.Crystal
-                            ? L10nManager.Localize("UI_GO_GRINDING")
-                            : L10nManager.Localize("UI_YES");
-                        ShowAttract(costType, cost, insufficientMessage, attractMessage, onAttract);
-                    }
+                    return;
+                }
+
+                if (enoughBalance)
+                {
+                    onPaymentSucceed.Invoke();
+                }
+                else
+                {
+                    Close(true);
+                    var attractMessage = costType == CostType.Crystal
+                        ? L10nManager.Localize("UI_GO_GRINDING")
+                        : L10nManager.Localize("UI_YES");
+                    ShowAttract(costType, cost, insufficientMessage, attractMessage, onAttract);
                 }
             };
             
             SetContent(popupTitle, enoughMessage, yes, no, false);
             Show(popupTitle, enoughMessage, yes, no, false);
-        }
-
-        public void ShowAttract(
-            CostType costType,
-            BigInteger cost,
-            string content,
-            string attractMessage,
-            System.Action onAttract)
-        {
-            ShowAttract(costType, cost.ToString(), content, attractMessage, onAttract);
         }
 #endregion NoAttractAction
 
