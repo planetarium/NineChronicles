@@ -14,7 +14,7 @@ using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
-    public class SummonResultScreen : ScreenWidget
+    public class SummonResultPopup : PopupWidget
     {
         [Serializable]
         private class ResultVideoClip
@@ -300,7 +300,7 @@ namespace Nekoyume.UI
 
         private static void GoToMarket()
         {
-            Find<SummonResultScreen>().Close(true);
+            Find<SummonResultPopup>().Close(true);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             if (TryFind<MobileShop>(out var mobileShop))

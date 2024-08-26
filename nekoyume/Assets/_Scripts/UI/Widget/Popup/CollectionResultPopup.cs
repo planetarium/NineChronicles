@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Text;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class CollectionResultScreen : ScreenWidget
+    public class CollectionResultPopup : PopupWidget
     {
         [Serializable]
         private class CollectionEffectStat

@@ -19,7 +19,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class CombinationResultScreen : ScreenWidget
+    public class CombinationResultPopup : PopupWidget
     {
         [Serializable]
         public struct ResultItem
