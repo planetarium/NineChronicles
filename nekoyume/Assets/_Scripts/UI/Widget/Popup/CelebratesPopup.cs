@@ -336,17 +336,6 @@ namespace Nekoyume.UI
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            foreach (var reward in rewards)
-            {
-                var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
-                    .First(pair => pair.Key == reward.Item1);
-
-                LocalLayerModifier.AddItem(
-                    avatarAddress,
-                    materialRow.Value.ItemId,
-                    reward.Item2,
-                    false);
-            }
 
             LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId, false);
         }
