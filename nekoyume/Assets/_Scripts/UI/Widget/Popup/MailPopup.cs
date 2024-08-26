@@ -498,11 +498,11 @@ namespace Nekoyume.UI
                         resultModel.subRecipeId.Value,
                         out var row))
                 {
-                    Find<CombinationResultScreen>().Show(itemUsable, row.Options.Count);
+                    Find<CombinationResultPopup>().Show(itemUsable, row.Options.Count);
                 }
                 else
                 {
-                    Find<CombinationResultScreen>().Show(itemUsable);
+                    Find<CombinationResultPopup>().Show(itemUsable);
                 }
             }
         }
@@ -684,7 +684,7 @@ namespace Nekoyume.UI
             }).ToObservable().SubscribeOnMainThread().Subscribe(_ => { NcDebug.Log("ItemEnhanceMail LocalLayer task completed"); });
             // ~LocalLayer
 
-            Find<EnhancementResultScreen>().Show(itemEnhanceMail);
+            Find<EnhancementResultPopup>().Show(itemEnhanceMail);
         }
 
         public void Read(DailyRewardMail dailyRewardMail)

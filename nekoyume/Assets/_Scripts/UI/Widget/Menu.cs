@@ -895,14 +895,14 @@ namespace Nekoyume.UI
             if (Input.GetKey(KeyCode.LeftControl))
             {
                 if (Input.GetKeyDown(KeyCode.C) &&
-                    !Find<CombinationResultScreen>().gameObject.activeSelf)
+                    !Find<CombinationResultPopup>().gameObject.activeSelf)
                 {
-                    Find<CombinationResultScreen>().ShowWithEditorProperty();
+                    Find<CombinationResultPopup>().ShowWithEditorProperty();
                 }
                 else if (Input.GetKeyDown(KeyCode.E) &&
-                    !Find<EnhancementResultScreen>().gameObject.activeSelf)
+                    !Find<EnhancementResultPopup>().gameObject.activeSelf)
                 {
-                    Find<EnhancementResultScreen>().ShowWithEditorProperty();
+                    Find<EnhancementResultPopup>().ShowWithEditorProperty();
                 }
                 else if (Input.GetKeyDown(KeyCode.U) &&
                     !Find<OneButtonSystem>().gameObject.activeSelf)
