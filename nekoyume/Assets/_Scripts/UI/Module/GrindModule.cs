@@ -63,8 +63,6 @@ namespace Nekoyume.UI.Module
 
         private int _inventoryApStoneCount;
 
-        private FungibleAssetValue _cachedGrindingRewardNCG;
-
         private FungibleAssetValue _cachedGrindingRewardCrystal;
 
         private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind = new();
@@ -314,6 +312,7 @@ namespace Nekoyume.UI.Module
                 TableSheets.Instance.CrystalEquipmentGrindingSheet,
                 TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
                 States.Instance.StakingLevel);
+            _cachedGrindingRewardCrystal = crystalReward;
             var favRewards = new[] { crystalReward };
             var itemRewards = Grinding.CalculateMaterialReward(
                     equipmentsForGrind,
@@ -461,9 +460,7 @@ namespace Nekoyume.UI.Module
         {
             var loadingScreen = Widget.Find<GrindingLoadingScreen>();
             loadingScreen.OnDisappear = OnNPCDisappear;
-            loadingScreen.SetCurrency(
-                (long)_cachedGrindingRewardNCG.MajorUnit,
-                (long)_cachedGrindingRewardCrystal.MajorUnit);
+            loadingScreen.SetCrystal((long)rewardCrystal);
             loadingScreen.CrystalAnimationCount = GetCrystalMoveAnimationCount(rewardCrystal);
             canvasGroup.interactable = false;
 
