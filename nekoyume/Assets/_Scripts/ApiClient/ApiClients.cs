@@ -1,3 +1,5 @@
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using NineChronicles.ExternalServices.IAPService.Runtime;
@@ -20,6 +22,8 @@ namespace Nekoyume.ApiClient
 
         private static readonly string DccUrlJsonPath =
             Platform.GetStreamingAssetsPath("dccUrl.json");
+
+        public GraphQLHttpClient Mimir { get; private set; }
 
         public NineChroniclesAPIClient WorldBossClient { get; private set; }
 
@@ -56,6 +60,13 @@ namespace Nekoyume.ApiClient
 
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
+            Mimir = string.IsNullOrEmpty(clo.MimirUrl)
+                ? new GraphQLHttpClient(
+                    "https://mimir.nine-chronicles.dev/odin/graphql/",
+                    new NewtonsoftJsonSerializer()) // Temporary
+                : new GraphQLHttpClient(
+                    clo.MimirUrl,
+                    new NewtonsoftJsonSerializer());
             WorldBossClient = new NineChroniclesAPIClient(clo.ApiServerHost);
             RpcGraphQlClient = string.IsNullOrEmpty(clo.RpcServerHost) ?
                 new NineChroniclesAPIClient(string.Empty) :
