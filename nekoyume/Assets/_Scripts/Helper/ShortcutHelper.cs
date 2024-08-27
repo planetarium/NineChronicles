@@ -106,6 +106,14 @@ namespace Nekoyume.Helper
                         }
 
                         break;
+                    case ItemSubType.Drawing:
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
+                        break;
+                    case ItemSubType.DrawingTool:
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
+                        break;
                 }
             }
 
