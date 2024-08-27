@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
@@ -15,6 +16,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.State
 {
@@ -260,21 +262,32 @@ namespace Nekoyume.State
                 NcDebug.Log($"[Arena]mimirArenaBlockIndex: {mimirArenaBlockIndex}");
 
                 const long confirmedBlockGap = 5;
-                if (_agent.BlockIndex <= mimirArenaBlockIndex + confirmedBlockGap)
+                if (new System.Random().Next(0, 2) == 0 &&
+                    _agent.BlockIndex <= mimirArenaBlockIndex + confirmedBlockGap)
                 {
+                    var sw = new Stopwatch();
+                    sw.Start();
                     // get leaderboard from mimir
                     arenaInfo = await MimirQuery.GetArenaParticipantsAsync(
                         mimirClient,
                         currentAvatarAddr);
-                    NcDebug.Log($"[Arena]get participants from Mimir: block gap({_agent.BlockIndex - mimirArenaBlockIndex})");
+                    sw.Stop();
+                    NcDebug.Log("[Arena]get participants from Mimir:" +
+                        $" block gap({_agent.BlockIndex - mimirArenaBlockIndex})," +
+                        $" elapsed({sw.Elapsed})");
                 }
                 else
                 {
+                    var sw = new Stopwatch();
+                    sw.Start();
                     // fallback to Headless
                     var response = await ApiClients.Instance.ArenaServiceClient.QueryArenaInfoAsync(currentAvatarAddr);
                     // Arrange my information so that it comes first when it's the same score.
                     arenaInfo = response.StateQuery.ArenaParticipants.ToList();
-                    NcDebug.Log($"[Arena]get participants from Headless: block gap({_agent.BlockIndex - mimirArenaBlockIndex})");
+                    sw.Stop();
+                    NcDebug.Log("[Arena]get participants from Headless:" +
+                        $" block gap({_agent.BlockIndex - mimirArenaBlockIndex})," +
+                        $" elapsed({sw.Elapsed})");
                 }
             }
             catch (Exception e)
