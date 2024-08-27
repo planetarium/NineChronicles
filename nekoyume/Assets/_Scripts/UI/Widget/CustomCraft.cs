@@ -140,7 +140,7 @@ namespace Nekoyume.UI
             });
             skillListButton.onClick.AddListener(() =>
             {
-                Find<CustomEquipmentSkillPopup>().Show(_selectedSubType ?? ItemSubType.Weapon);
+                Find<CustomCraftInfoPopup>().Show(_selectedSubType ?? ItemSubType.Weapon);
             });
             foreach (var subTypeButton in subTypeButtons)
             {
