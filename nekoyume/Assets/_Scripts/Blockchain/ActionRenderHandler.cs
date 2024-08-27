@@ -884,26 +884,26 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
             var slotIndexList = renderArgs.Evaluation.Action.slotIndexList;
-            for (var i = 0; i < slotIndexList.Count; ++i)
-            {            
-                var slotIndex = slotIndexList[i];
-                if (renderArgs.CombinationSlotStates is null)
-                {
-                    NcDebug.LogError("CombinationSlotState is null.");
-                    continue;
-                }
+            
+            if (renderArgs.CombinationSlotStates is null)
+            {
+                NcDebug.LogError("CombinationSlotState is null.");
+                return;
+            }
 
-                RapidCombination5.ResultModel result = null;
-                foreach (var slotState in renderArgs.CombinationSlotStates)
-                {
-                    if (slotState.Index != slotIndex)
-                    {
-                        continue;
-                    }
-
-                    result = (RapidCombination5.ResultModel)slotState.Result;
-                    break;
-                }
+            if (renderArgs.AvatarState is null)
+            {
+                NcDebug.LogError("AvatarState is null.");
+                return;
+            }
+            
+            foreach (var slotIndex in slotIndexList)
+            {
+                var index = slotIndex;
+                var result = renderArgs.CombinationSlotStates
+                    .Where(state => state.Index == index)
+                    .Select(state => (RapidCombination5.ResultModel)state.Result)
+                    .FirstOrDefault();
                 
                 if (result is null)
                 {
@@ -913,12 +913,6 @@ namespace Nekoyume.Blockchain
                 
                 string formatKey;
                 var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-
-                if (renderArgs.AvatarState is null)
-                {
-                    NcDebug.LogError("AvatarState is null.");
-                    continue;
-                }
 
                 var stateResult = renderArgs.CurrentCombinationSlotState[slotIndex]?.Result;
                 switch (stateResult)
