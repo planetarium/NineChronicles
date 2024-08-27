@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 70245011496030466}
   - component: {fileID: 7506297086681913533}
   - component: {fileID: 7618080524779497091}
-  - component: {fileID: 1319765264214023902}
+  - component: {fileID: 5104903491919142152}
   m_Layer: 5
   m_Name: StatOptionCell
   m_TagString: Untagged
@@ -60,7 +60,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &1319765264214023902
+--- !u!114 &5104903491919142152
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -69,13 +69,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1762418056007695997}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7e95c35103e4b0ebeaa60a0076d7a4f, type: 3}
+  m_Script: {fileID: 11500000, guid: 470868842d7648c6bcfbea0eece4e1d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  relationshipSectionText: {fileID: 6683134753929680529}
-  cpText: {fileID: 8559384901850674709}
-  requiredLevelText: {fileID: 0}
-  focusObject: {fileID: 0}
+  compositionText: {fileID: 6683134753929680529}
+  subStatTotalText: {fileID: 8559384901850674709}
 --- !u!1 &1952233590330245171
 GameObject:
   m_ObjectHideFlags: 0
