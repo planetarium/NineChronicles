@@ -834,7 +834,7 @@ namespace Nekoyume.Blockchain
             }).Forget();
         }
 
-        private (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, List<CombinationSlotState> CombinationSlotState, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState)
+        private (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, List<CombinationSlotState> CombinationSlotStates, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState)
             PrepareRapidCombination(ActionEvaluation<RapidCombination> eval)
         {
             var avatarAddress = eval.Action.avatarAddress;
@@ -880,21 +880,21 @@ namespace Nekoyume.Blockchain
         }
 
         private void ResponseRapidCombination(
-            (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, List<CombinationSlotState> CombinationSlotState, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState) renderArgs)
+            (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, List<CombinationSlotState> CombinationSlotStates, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState) renderArgs)
         {
             var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
             var slotIndexList = renderArgs.Evaluation.Action.slotIndexList;
             for (var i = 0; i < slotIndexList.Count; ++i)
             {            
                 var slotIndex = slotIndexList[i];
-                if (renderArgs.CombinationSlotState is null)
+                if (renderArgs.CombinationSlotStates is null)
                 {
                     NcDebug.LogError("CombinationSlotState is null.");
                     continue;
                 }
 
                 RapidCombination5.ResultModel result = null;
-                foreach (var slotState in renderArgs.CombinationSlotState)
+                foreach (var slotState in renderArgs.CombinationSlotStates)
                 {
                     if (slotState.Index != slotIndex)
                     {
