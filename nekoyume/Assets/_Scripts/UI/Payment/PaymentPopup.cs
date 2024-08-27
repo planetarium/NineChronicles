@@ -1,5 +1,7 @@
 using Nekoyume.L10n;
 using System.Numerics;
+using JetBrains.Annotations;
+using Nekoyume.Helper;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -18,11 +20,11 @@ namespace Nekoyume.UI
         }
 
         // TODO: CostType과 동일하게 쓸 수 있을지는 확인
-        private enum PaymentType
+        public enum PaymentType
         {
             Crystal,
             SilverDust,
-            GoldenDust,
+            GoldenDust, // TODO: GoldDust로 쓰는곳도 있고, GoldenDust로 쓰는 곳도 있어 정리가 안된듯함
             RubyDust,
             EmeraldDust,
             NCG,
