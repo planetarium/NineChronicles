@@ -647,6 +647,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockCombinationSlot)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<UnlockCombinationSlot>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionUnlockCombinationSlot)
+                .AddTo(_disposables);
         }
 
         private void PetEnhancement()
@@ -783,6 +791,13 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareCustomEquipmentCraft)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCustomEquipmentCraft)
+                .AddTo(_disposables);
+            _actionRenderer.EveryRender<CustomEquipmentCraft>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionCustomEquipmentCraft)
                 .AddTo(_disposables);
         }
 
@@ -3140,8 +3155,16 @@ namespace Nekoyume.Blockchain
                 await UpdateCurrentAvatarStateAsync(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                Widget.Find<CombinationSlotsPopup>().UpdateSlots();
+                var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+                combinationSlotsPopup.UpdateSlots();
+                combinationSlotsPopup.SetLockLoading(eval.Action.SlotIndex, false);
             });
+        }
+
+        private void ExceptionUnlockCombinationSlot(ActionEvaluation<UnlockCombinationSlot> eval)
+        {
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            combinationSlotsPopup.SetLockLoading(eval.Action.SlotIndex, false);
         }
 
         private ActionEvaluation<PetEnhancement> PreparePetEnhancement(ActionEvaluation<PetEnhancement> eval)
@@ -4186,13 +4209,26 @@ namespace Nekoyume.Blockchain
             StageExceptionHandle(evaluation.Exception?.InnerException);
         }
 
+        private void ExceptionCustomEquipmentCraft(
+            ActionEvaluation<CustomEquipmentCraft> eval)
+        {
+            LoadingHelper.CustomEquipmentCraft.Value = false;
+            if (States.Instance.CurrentAvatarState.address == eval.Action.AvatarAddress && eval.Action.CraftList.Count > 0)
+            {
+                Widget.Find<CombinationSlotsPopup>()
+                    .SetLockLoading(eval.Action.CraftList.First().SlotIndex, false);
+            }
+
+            NcDebug.LogException(eval.Exception?.InnerException ?? eval.Exception);
+        }
+
         private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
             ActionEvaluation<CustomEquipmentCraft> eval)
         {
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
             var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
-
+            LoadingHelper.CustomEquipmentCraft.Value = false;
             UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -4210,6 +4246,8 @@ namespace Nekoyume.Blockchain
             var agentAddress = evaluation.Signer;
             var avatarAddress = evaluation.Action.AvatarAddress;
             var result = (CombinationConsumable5.ResultModel)slot.Result;
+
+            Widget.Find<CustomCraft>().RequiredUpdateCraftCount = true;
 
             UniTask.RunOnThreadPool(() =>
             {

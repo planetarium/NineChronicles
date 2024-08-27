@@ -36,12 +36,6 @@ namespace Nekoyume.UI.Module
             Locked
         }
 
-        public enum CacheType
-        {
-            Appraise,
-            WaitingReceive
-        }
-
         [SerializeField]
         private SimpleItemView itemView = null!;
 
@@ -98,9 +92,14 @@ namespace Nekoyume.UI.Module
 
         private CombinationSlotLockObject _lockObject = null!;
         private CombinationSlotState? _state;
-        private CacheType _cachedType;
         private int _slotIndex;
-
+        
+        // TODO: 클라이언트 액션 에러처리 추가
+        private long _sendActionBlockIndex;
+        // 액션 렌더보다 block 업데이트가 더 빠른 경우, _state가 갱신이 안됬는데
+        // BlockIndex가 갱신되어 UI가 잘못 갱신될 수 있음
+        private bool _isWaitingCombinationActionRender;
+        
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
 
         public SlotUIState UIState { get; private set; } = SlotUIState.Locked;
@@ -115,6 +114,7 @@ namespace Nekoyume.UI.Module
             };
 
             UpdateInformation(Game.instance.Agent.BlockIndex);
+            _isWaitingCombinationActionRender = false;
         }
 
         public void OnSendRapidCombinationAction()
@@ -126,6 +126,7 @@ namespace Nekoyume.UI.Module
             
             UIState = SlotUIState.WaitingReceive;
             UpdateInformation(Game.instance.Agent.BlockIndex);
+            _isWaitingCombinationActionRender = false;
         }
         
         public void OnSendCombinationAction(long requiredBlockIndex, ItemUsable itemUsable)
@@ -134,6 +135,7 @@ namespace Nekoyume.UI.Module
             {
                 NcDebug.LogWarning("Invalid UIState.");
             }
+            _isWaitingCombinationActionRender = true;
             
             UIState = SlotUIState.Appraise;
             
@@ -143,6 +145,7 @@ namespace Nekoyume.UI.Module
                 requiredBlockIndex + currentBlockIndex,
                 currentBlockIndex,
                 currentBlockIndex);
+            _sendActionBlockIndex = currentBlockIndex;
         }
 
         private void Awake()
@@ -173,6 +176,7 @@ namespace Nekoyume.UI.Module
             _disposablesOfOnEnable.DisposeAllAndClear();
         }
 
+#region Lock
         private void SetLockObject()
         {
             if (_lockObject == null)
@@ -186,11 +190,20 @@ namespace Nekoyume.UI.Module
                 _lockObject.SetData(data);
             }
         }
+        
+        public void SetLockLoading(bool isLoading)
+        {
+            _lockObject.SetLoading(isLoading);
+        }
+#endregion Lock
 
         public void Clear()
         {
             UIState = SlotUIState.Locked;
             _state = null;
+            _lockObject.SetLoading(false);
+            _sendActionBlockIndex = 0;
+            _isWaitingCombinationActionRender = false;
             UpdateInformation(Game.instance.Agent.BlockIndex);
         }
 
@@ -272,8 +285,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
             
-            var workingBlockIndex = _state.StartBlockIndex;
-            if (currentBlockIndex <= workingBlockIndex)
+            var startBlockIndex = Math.Max(_sendActionBlockIndex, _state.StartBlockIndex);
+            if (currentBlockIndex <= startBlockIndex || _isWaitingCombinationActionRender)
             {
                 return;
             }
@@ -284,7 +297,7 @@ namespace Nekoyume.UI.Module
         
         private void OnBlockRenderWorking(long currentBlockIndex)
         { 
-            if (_state?.Result == null || !_state.ValidateV2(currentBlockIndex))
+            if (_state?.Result == null || _sendActionBlockIndex >= currentBlockIndex || !_state.ValidateV2(currentBlockIndex))
             {
                 return;
             }

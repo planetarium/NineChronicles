@@ -110,6 +110,7 @@ namespace Nekoyume.UI
             
             for (var i = 0; i < states.Count; i++)
             {
+                var stateIdx = states[i].Index;
                 if (!states[i].ValidateV2(blockIndex))
                 {
                     continue;
@@ -120,14 +121,13 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var uiSlotState = slots[i].UIState;
-                if (uiSlotState == CombinationSlot.SlotUIState.Appraise ||
-                    uiSlotState == CombinationSlot.SlotUIState.WaitingReceive)
+                var uiSlotState = slots[stateIdx].UIState;
+                if (uiSlotState != CombinationSlot.SlotUIState.Empty)
                 {
                     continue;
                 }
 
-                slotIndex = i;
+                slotIndex = stateIdx;
                 return true;
             }
 
@@ -159,8 +159,13 @@ namespace Nekoyume.UI
 
             UpdateSlots();
         }
+        
+        public void SetLockLoading(int slotIndex, bool isLoading)
+        {
+            slots[slotIndex].SetLockLoading(isLoading);
+        }
 
-        private void UpdateSlots(long blockIndex, Dictionary<int, CombinationSlotState> states)
+        private void UpdateSlots(long blockIndex, IDictionary<int, CombinationSlotState> states)
         {
             var avatarState = States.Instance.CurrentAvatarState;
             states ??= States.Instance.GetCombinationSlotState(avatarState);
