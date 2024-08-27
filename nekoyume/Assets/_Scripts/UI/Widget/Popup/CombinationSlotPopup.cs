@@ -14,7 +14,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -35,7 +34,6 @@ namespace Nekoyume.UI
         public class Information
         {
             public CraftType Type;
-            public GameObject Icon;
             public GameObject OptionContainer;
             public List<ItemOptionView> MainStatViews;
             public List<ItemOptionWithCountView> StatOptions;
@@ -141,7 +139,6 @@ namespace Nekoyume.UI
         {
             foreach (var information in _informations)
             {
-                information.Icon.SetActive(information.Type.Equals(type));
                 information.OptionContainer.SetActive(information.Type.Equals(type));
             }
 

@@ -367,6 +367,8 @@ namespace Nekoyume.UI
             // popup
             _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CombinationSlotAllPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<BuyFungibleAssetInformationPopup>());

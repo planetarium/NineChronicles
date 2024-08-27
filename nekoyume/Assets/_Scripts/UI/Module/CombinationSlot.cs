@@ -101,6 +101,8 @@ namespace Nekoyume.UI.Module
         private bool _isWaitingCombinationActionRender;
         
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
+        
+        public CombinationSlotState? State => _state;
 
         public SlotUIState UIState { get; private set; } = SlotUIState.Locked;
 
