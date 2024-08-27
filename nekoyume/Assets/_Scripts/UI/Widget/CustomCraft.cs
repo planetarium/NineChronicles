@@ -110,6 +110,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI craftedCountText;
+
+        [SerializeField]
+        private TextMeshProUGUI maxMainStatText;
 #endregion
 
         private CustomOutfit _selectedOutfit;
@@ -310,7 +313,8 @@ namespace Nekoyume.UI
 
             baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
             expText.SetText($"EXP {equipmentRow.Exp?.ToCurrencyNotation()}");
-            cpText.SetText($"CP: {relationshipRow.MinCp}~{relationshipRow.MaxCp}");
+            cpText.SetText($"CP: {relationshipRow.MinCp}-{relationshipRow.MaxCp}");
+            maxMainStatText.SetText($"{equipmentRow.Stat.StatType} : MAX 100%");
             requiredBlockText.SetText($"{customEquipmentCraftRecipeRow.RequiredBlock}");
             requiredLevelText.SetText(
                 $"Lv {tableSheets.ItemRequirementSheet[_selectedItemId].Level}");
