@@ -155,16 +155,7 @@ namespace Nekoyume.UI
             runeLevelBonus.infoButton.onClick.AddListener(() =>
                 Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus));
             levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
-            levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                var message = _selectedRuneItem.Level > 0
-                    ? L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2") // Level Up
-                    : L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1"); // Combine
-
-                NotificationSystem.Push(MailType.System,
-                    message,
-                    NotificationCell.NotificationType.Alert);
-            }).AddTo(gameObject);
+            levelUpButton.OnClickDisabledSubject.Subscribe(ShowLackMaterialPopup).AddTo(gameObject);
 
             tryCountSlider.plusButton.onClick.AddListener(() =>
             {
@@ -470,6 +461,27 @@ namespace Nekoyume.UI
             Enhancement();
             // Rune Level Bonus (for new user)
             PlayerPrefs.SetInt(TutorialCheckKey, 1);
+        }
+
+        private void ShowLackMaterialPopup(Unit _)
+        {
+            var paymentPopup = Find<PaymentPopup>();
+            
+            paymentPopup.ShowLackRuneStone(_selectedRuneItem, "444");
+            
+            // TODO: 우선순위 별로 재화 팝업, 현재는 테스트를 위해 룬스톤 부족 팝업만 띄움
+            if (!_selectedRuneItem.EnoughRuneStone)
+            {
+                // paymentPopup.ShowLackRuneStone(_selectedRuneItem, "444");
+            }
+            else if (!_selectedRuneItem.EnoughNcg)
+            {
+                // paymentPopup.ShowLackCurrency(CostType.Crystal);
+            }
+            else if (!_selectedRuneItem.EnoughCrystal)
+            {
+                // paymentPopup.ShowLackCurrency(CostType.NCG);
+            }
         }
     }
 }

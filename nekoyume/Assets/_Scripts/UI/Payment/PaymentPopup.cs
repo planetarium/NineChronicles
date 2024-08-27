@@ -1,7 +1,9 @@
 using Nekoyume.L10n;
 using System.Numerics;
 using JetBrains.Annotations;
+using Libplanet.Types.Assets;
 using Nekoyume.Helper;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -30,7 +32,7 @@ namespace Nekoyume.UI
             NCG,
             NCGStaking,
             MonsterCollection,
-            RuneStoneSummonOnly, // 룬조각?
+            RuneStoneSummonOnly,
             RuneStone,
             ActionPoint,
             APPortion,
@@ -140,6 +142,27 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
+        public void ShowLackRuneStone(
+            RuneItem runeItem,
+            string requiredCost)
+        {
+            var runeStone = runeItem.RuneStone;
+            var hasAttract = HasAttractActionRuneStone(runeStone);
+            SetPopupType(hasAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            
+            costIcon.overrideSprite = GetRuneStoneSprite(runeStone);
+            costText.text = requiredCost;
+            
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
+            var content = GetRuneStoneContent(runeStone);
+            var attractMessage = L10nManager.Localize("UI_SUMMON");
+            
+            CloseCallback = result =>
+            {
+            };
+            Show(title, content, attractMessage);
+        }
+
         public void ShowLackPayment(
             CostType costType,
             BigInteger cost,
@@ -235,6 +258,79 @@ namespace Nekoyume.UI
             titleBorder.SetActive(titleExists);
         }
 #endregion General
+
+#region Helper
+        private CostType GetCostType(PaymentType paymentType)
+        {
+            switch (paymentType)
+            {
+                case PaymentType.Crystal:
+                    return CostType.Crystal;
+                case PaymentType.SilverDust:
+                    return CostType.SilverDust;
+                case PaymentType.GoldenDust:
+                    return CostType.GoldDust;
+                case PaymentType.RubyDust:
+                    return CostType.RubyDust;
+                case PaymentType.EmeraldDust:
+                    return CostType.EmeraldDust;
+                case PaymentType.NCG:
+                    return CostType.NCG;
+                case PaymentType.NCGStaking:
+                    return CostType.NCG;
+                case PaymentType.ActionPoint:
+                    return CostType.ActionPoint;
+                case PaymentType.APPortion:
+                    return CostType.ApPotion;
+                default:
+                    return CostType.None;
+            }
+        }
+        
+        [CanBeNull]
+        private Sprite GetCostIcon(PaymentType paymentType)
+        {
+            var costType = GetCostType(paymentType);
+            return costType != CostType.None ? costIconData.GetIcon(costType) : null;
+        }
+
+#region RuneStoneHelper
+        /// <summary>
+        /// 해당 runeStone을 획득할 AttractAction이 있는지 확인합니다.
+        /// </summary>
+        /// <param name="runeStone">NoneAction인지 확인할 runeStone의 fav 값</param>
+        /// <returns>PC Shop에서 거래 가능하지만, 모바일인 경우 false</returns>
+        private bool HasAttractActionRuneStone(FungibleAssetValue runeStone)
+        {
+            if (runeStone.IsTradable())
+            {
+                // 에디터 안드로이드, IOS 테스트를 위해 RUN_ON_MOBILE을 사용하지 않음
+#if UNITY_ANDROID || UNITY_IOS
+                return false;
+#endif
+            }
+
+            return true;
+        }
+
+        private string GetRuneStoneContent(FungibleAssetValue runeStone)
+        {
+            var hasAttract = HasAttractActionRuneStone(runeStone);
+            if (runeStone.IsTradable())
+            {
+                return L10nManager.Localize(hasAttract ?
+                    "UI_MESSAGE_NOT_ENOUGH_TRADEABLE_RUNESTONE_PC" :
+                    "UI_MESSAGE_NOT_ENOUGH_TRADEABLE_RUNESTONE_MOBILE");
+            }
+            return L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_UNTRADEABLE_RUNESTONE");
+        }
+        
+        private Sprite GetRuneStoneSprite(FungibleAssetValue runeStone)
+        {
+            return RuneFrontHelper.TryGetRuneStoneIcon(runeStone.Currency.Ticker, out var icon) ? icon : null;
+        }
+#endregion RuneStoneHelper
+#endregion Helper
 
         private void Yes()
         {
