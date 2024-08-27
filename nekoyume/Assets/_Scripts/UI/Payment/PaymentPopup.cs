@@ -17,6 +17,23 @@ namespace Nekoyume.UI
             NoneAction,
         }
 
+        // TODO: CostType과 동일하게 쓸 수 있을지는 확인
+        private enum PaymentType
+        {
+            Crystal,
+            SilverDust,
+            GoldenDust,
+            RubyDust,
+            EmeraldDust,
+            NCG,
+            NCGStaking,
+            MonsterCollection,
+            RuneStoneSummonOnly, // 룬조각?
+            RuneStone,
+            ActionPoint,
+            APPortion,
+        }
+
 #region SerializeField
         [SerializeField]
         private CostIconDataScriptableObject costIconData;
