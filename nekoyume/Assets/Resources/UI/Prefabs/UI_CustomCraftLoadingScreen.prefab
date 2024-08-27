@@ -472,8 +472,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4314801644418193332}
   - component: {fileID: 4317733064334961900}
-  - component: {fileID: 8675932753498984843}
   - component: {fileID: 3043311331960885106}
+  - component: {fileID: 6640153038552121357}
   m_Layer: 5
   m_Name: UI_CustomCraftLoadingScreen
   m_TagString: Untagged
@@ -514,28 +514,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4105579321456875898}
   m_CullTransparentMesh: 0
---- !u!114 &8675932753498984843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4105579321456875898}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d6c502e0080f0e49b947d2bb60b0a12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
-  button: {fileID: 1335817919255089756}
-  _buttonCanvasGroup: {fileID: 7349797891303677842}
-  _bgCanvasGroup: {fileID: 2394583417228710370}
-  _buttonAlphaTweener: {fileID: 4268262706421177492}
-  _bgAlphaTweener: {fileID: 26287291514926542}
-  continueText: {fileID: 488839442735435986}
-  speechBubble: {fileID: 566711961898794337}
-  npcSkeletonGraphic: {fileID: 6122160652297986083}
 --- !u!114 &3043311331960885106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -566,6 +544,28 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6640153038552121357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4105579321456875898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d9beaece0ac4978bd4456a43d266afd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  button: {fileID: 1335817919255089756}
+  buttonCanvasGroup: {fileID: 7349797891303677842}
+  bgCanvasGroup: {fileID: 2394583417228710370}
+  buttonAlphaTweener: {fileID: 4268262706421177492}
+  bgAlphaTweener: {fileID: 26287291514926542}
+  continueText: {fileID: 488839442735435986}
+  speechBubble: {fileID: 566711961898794337}
+  npcSkeletonGraphic: {fileID: 6122160652297986083}
 --- !u!1 &4370363452485870864
 GameObject:
   m_ObjectHideFlags: 0
