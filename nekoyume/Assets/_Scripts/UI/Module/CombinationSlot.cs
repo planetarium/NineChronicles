@@ -288,8 +288,7 @@ namespace Nekoyume.UI.Module
             }
             
             var startBlockIndex = Math.Max(_sendActionBlockIndex, _state.StartBlockIndex);
-            var workingBlockIndex = startBlockIndex + States.Instance.GameConfigState.RequiredAppraiseBlock;
-            if (currentBlockIndex <= workingBlockIndex || _isWaitingCombinationActionRender)
+            if (currentBlockIndex <= startBlockIndex || _isWaitingCombinationActionRender)
             {
                 return;
             }
