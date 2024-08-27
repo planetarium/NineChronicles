@@ -8,16 +8,13 @@ using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
-using Nekoyume.Arena;
-using Nekoyume.Game.LiveAsset;
 using Nekoyume.GraphQL;
+using Nekoyume.GraphQL.Queries;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
-using UnityEngine;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.State
 {
@@ -255,6 +252,14 @@ namespace Nekoyume.State
             var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
+                // check arena metadata from mimir
+                var mimirClient = ApiClients.Instance.Mimir;
+                var mimirArenaBlockIndex = await MimirQuery.GetMetadataBlockIndexAsync(mimirClient, "arena");
+                NcDebug.LogWarning($"mimirArenaBlockIndex: {mimirArenaBlockIndex}");
+
+                // get leaderboard from mimir
+
+                // fallback to Headless
                 var response = await ApiClients.Instance.ArenaServiceClient.QueryArenaInfoAsync(currentAvatarAddr);
                 // Arrange my information so that it comes first when it's the same score.
                 arenaInfo = response.StateQuery.ArenaParticipants.ToList();
