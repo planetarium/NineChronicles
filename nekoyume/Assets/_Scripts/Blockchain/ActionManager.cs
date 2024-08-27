@@ -1114,45 +1114,40 @@ namespace Nekoyume.Blockchain
             CombinationSlotState state,
             int slotIndex)
         {
+            return RapidCombination(new List<CombinationSlotState> { state }, new List<int> { slotIndex });
+        }
+
+        public IObservable<ActionEvaluation<RapidCombination>> RapidCombination(
+            List<CombinationSlotState> stateList,
+            List<int> slotIndexList)
+        {
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var agentAddress = States.Instance.AgentState.address;
             var hourglassDataRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
-            var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-            int cost;
-            if (state.PetId.HasValue &&
-                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
-            {
-                cost = PetHelper.CalculateDiscountedHourglass(
-                    diff,
-                    States.Instance.GameConfigState.HourglassPerBlock,
-                    petState,
-                    TableSheets.Instance.PetOptionSheet);
-            }
-            else
-            {
-                cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-            }
-
+            
+            var cost = CombinationSlotsPopup.GetWorkingSlotsOpenCost(stateList, currentBlockIndex);
             LocalLayerModifier.RemoveItem(avatarAddress, hourglassDataRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
                 new Dictionary<string, Value>()
                 {
                     ["HourglassCount"] = cost,
-                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                    ["AvatarAddress"] = avatarAddress.ToString(),
+                    ["AgentAddress"] = agentAddress.ToString()
                 }, true);
 
             var evt = new AirbridgeEvent("RapidCombination");
             evt.SetValue(cost);
-            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            evt.AddCustomAttribute("agent-address", avatarAddress.ToString());
+            evt.AddCustomAttribute("avatar-address", agentAddress.ToString());
             AirbridgeUnity.TrackEvent(evt);
 
             var action = new RapidCombination
             {
                 avatarAddress = avatarAddress,
-                slotIndex = slotIndex
+                slotIndexList = slotIndexList
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
