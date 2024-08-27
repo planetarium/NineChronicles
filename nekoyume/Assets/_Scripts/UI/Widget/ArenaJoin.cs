@@ -379,7 +379,7 @@ namespace Nekoyume.UI
                 var cost = _paymentButton.CrystalCost;
                 var enoughMessageFormat = L10nManager.Localize("UI_ARENA_JOIN_WITH_CRYSTAL_Q");
                 var notEnoughMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Find<PaymentPopup>().ShowNoAttractActionWithCheck(
+                Find<PaymentPopup>().ShowCheckPayment(
                     CostType.Crystal,
                     balance.MajorUnit,
                     cost,

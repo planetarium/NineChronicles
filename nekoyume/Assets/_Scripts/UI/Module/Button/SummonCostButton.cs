@@ -64,7 +64,7 @@ namespace Nekoyume.UI.Module
                         break;
                     case State.Conditional:
 #if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
-                        Widget.Find<PaymentPopup>().ShowAttract(
+                        Widget.Find<PaymentPopup>().ShowLackPayment(
                             costType,
                             cost.ToString(),
                             L10nManager.Localize("UI_SUMMON_MATERIAL_NOT_ENOUGH"),

@@ -12,9 +12,9 @@ namespace Nekoyume.UI
     {
         private enum PopupType
         {
-            HasAttractAction,
-            NoAttractAction,
-            NoneAction,
+            AttractAction, // 재화부족 팝업에서 재화를 얻을 수 있는 경우
+            PaymentCheck, // 재화 소모 확인을 요청하는 경우
+            NoneAction, // 재화부족 팝업에서 재화를 얻을 수 없는 경우
         }
 
         // TODO: CostType과 동일하게 쓸 수 있을지는 확인
@@ -92,13 +92,13 @@ namespace Nekoyume.UI
         {
             switch (popupType)
             {
-                case PopupType.HasAttractAction:
+                case PopupType.AttractAction:
                     buttonYes.gameObject.SetActive(true);
                     buttonNo.gameObject.SetActive(false);
                     buttonClose.gameObject.SetActive(true);
                     attractArrowObject.SetActive(true);
                     break;
-                case PopupType.NoAttractAction:
+                case PopupType.PaymentCheck:
                     buttonYes.gameObject.SetActive(true);
                     buttonNo.gameObject.SetActive(true);
                     buttonClose.gameObject.SetActive(false);
@@ -113,15 +113,15 @@ namespace Nekoyume.UI
             }
         }
 
-#region HasAttractAction
-        public void ShowAttract(
+#region LackPaymentAction
+        public void ShowLackPayment(
             CostType costType,
             string cost,
             string content,
             string attractMessage,
             System.Action onAttract)
         {
-            SetPopupType(PopupType.HasAttractAction);
+            SetPopupType(PopupType.AttractAction);
             addCostContainer.SetActive(false);
             
             costIcon.overrideSprite = costIconData.GetIcon(costType);
@@ -138,48 +138,19 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
-        // TODO: Remove after add world boss exception
-        public void ShowAttractWithAddCost(
-            string title,
-            string content,
-            CostType costType,
-            int cost,
-            CostType addCostType,
-            int addCost,
-            System.Action onConfirm)
-        {
-            SetPopupType(PopupType.HasAttractAction);
-            addCostContainer.SetActive(true);
-            
-            costIcon.overrideSprite = costIconData.GetIcon(costType);
-            costText.text = $"{cost:#,0}";
-
-            addCostIcon.overrideSprite = costIconData.GetIcon(addCostType);
-            addCostText.text = $"{addCost:#,0}";
-
-            CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-                    onConfirm?.Invoke();
-                }
-            };
-            Show(title, content);
-        }
-
-        public void ShowAttract(
+        public void ShowLackPayment(
             CostType costType,
             BigInteger cost,
             string content,
             string attractMessage,
             System.Action onAttract)
         {
-            ShowAttract(costType, cost.ToString(), content, attractMessage, onAttract);
+            ShowLackPayment(costType, cost.ToString(), content, attractMessage, onAttract);
         }
-#endregion HasAttractAction
+#endregion LackPaymentAction
         
-#region NoAttractAction
-        public void ShowNoAttractActionWithCheck(
+#region PaymentCheckAction
+        public void ShowCheckPayment(
             CostType costType,
             BigInteger balance,
             BigInteger cost,
@@ -188,7 +159,7 @@ namespace Nekoyume.UI
             System.Action onPaymentSucceed,
             System.Action onAttract)
         {
-            SetPopupType(PopupType.NoAttractAction);
+            SetPopupType(PopupType.PaymentCheck);
             addCostContainer.SetActive(false);
             
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
@@ -215,18 +186,17 @@ namespace Nekoyume.UI
                     var attractMessage = costType == CostType.Crystal
                         ? L10nManager.Localize("UI_GO_GRINDING")
                         : L10nManager.Localize("UI_YES");
-                    ShowAttract(costType, cost, insufficientMessage, attractMessage, onAttract);
+                    ShowLackPayment(costType, cost, insufficientMessage, attractMessage, onAttract);
                 }
             };
             
             SetContent(popupTitle, enoughMessage, yes, no, false);
             Show(popupTitle, enoughMessage, yes, no, false);
         }
-#endregion NoAttractAction
+#endregion PaymentCheckAction
 
 #region General
-        private void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true)
+        private void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL", bool localize = true)
         {
             SetContent(title, content, labelYes, labelNo, localize);
 
@@ -263,7 +233,6 @@ namespace Nekoyume.UI
             titleBorder.SetActive(titleExists);
         }
 #endregion General
-        
 
         private void Yes()
         {
@@ -280,6 +249,35 @@ namespace Nekoyume.UI
         public void NoWithoutCallback()
         {
             base.Close();
+        }
+
+        // TODO: Remove after add world boss exception
+        public void ShowAttractWithAddCost(
+            string title,
+            string content,
+            CostType costType,
+            int cost,
+            CostType addCostType,
+            int addCost,
+            System.Action onConfirm)
+        {
+            SetPopupType(PopupType.AttractAction);
+            addCostContainer.SetActive(true);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
+            costText.text = $"{cost:#,0}";
+
+            addCostIcon.overrideSprite = costIconData.GetIcon(addCostType);
+            addCostText.text = $"{addCost:#,0}";
+
+            CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    onConfirm?.Invoke();
+                }
+            };
+            Show(title, content);
         }
     }
 }

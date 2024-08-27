@@ -220,7 +220,7 @@ namespace Nekoyume.UI
                         var cost = GetEntranceFee(avatarState);
                         if (States.Instance.CrystalBalance.MajorUnit < cost)
                         {
-                            Find<PaymentPopup>().ShowAttract(
+                            Find<PaymentPopup>().ShowLackPayment(
                                 CostType.Crystal,
                                 cost,
                                 L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
