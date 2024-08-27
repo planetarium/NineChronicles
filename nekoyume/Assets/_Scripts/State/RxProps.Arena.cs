@@ -254,15 +254,28 @@ namespace Nekoyume.State
             {
                 // check arena metadata from mimir
                 var mimirClient = ApiClients.Instance.Mimir;
-                var mimirArenaBlockIndex = await MimirQuery.GetMetadataBlockIndexAsync(mimirClient, "arena");
-                NcDebug.LogWarning($"mimirArenaBlockIndex: {mimirArenaBlockIndex}");
+                var mimirArenaBlockIndex = await MimirQuery.GetMetadataBlockIndexAsync(
+                    mimirClient,
+                    "arena");
+                NcDebug.Log($"[Arena]mimirArenaBlockIndex: {mimirArenaBlockIndex}");
 
-                // get leaderboard from mimir
-
-                // fallback to Headless
-                var response = await ApiClients.Instance.ArenaServiceClient.QueryArenaInfoAsync(currentAvatarAddr);
-                // Arrange my information so that it comes first when it's the same score.
-                arenaInfo = response.StateQuery.ArenaParticipants.ToList();
+                const long confirmedBlockGap = 5;
+                if (_agent.BlockIndex <= mimirArenaBlockIndex + confirmedBlockGap)
+                {
+                    // get leaderboard from mimir
+                    arenaInfo = await MimirQuery.GetArenaParticipantsAsync(
+                        mimirClient,
+                        currentAvatarAddr);
+                    NcDebug.Log($"[Arena]get participants from Mimir: block gap({_agent.BlockIndex - mimirArenaBlockIndex})");
+                }
+                else
+                {
+                    // fallback to Headless
+                    var response = await ApiClients.Instance.ArenaServiceClient.QueryArenaInfoAsync(currentAvatarAddr);
+                    // Arrange my information so that it comes first when it's the same score.
+                    arenaInfo = response.StateQuery.ArenaParticipants.ToList();
+                    NcDebug.Log($"[Arena]get participants from Headless: block gap({_agent.BlockIndex - mimirArenaBlockIndex})");
+                }
             }
             catch (Exception e)
             {
