@@ -143,6 +143,7 @@ namespace Nekoyume.UI.Module
                     case CostType.ActionPoint:
                     case CostType.Hourglass:
                     case CostType.ApPotion:
+                    case CostType.GoldDust:
                         break;
                     default:
                         return CostType.None;
@@ -233,6 +234,12 @@ namespace Nekoyume.UI.Module
                         OneLineSystem.Push(
                             MailType.System,
                             L10nManager.Localize("UI_NOT_ENOUGH_AP_POTION"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                    case CostType.GoldDust:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_GOLD_DUST"),
                             NotificationCell.NotificationType.Alert);
                         break;
                 }

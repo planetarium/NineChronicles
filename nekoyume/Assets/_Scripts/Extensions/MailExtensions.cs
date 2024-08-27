@@ -65,9 +65,9 @@ namespace Nekoyume
             return string.Format(format, productName);
         }
 
-        public static ProductSchema GetProductFromMemo(string memo)
+        public static string GetSkuFromMemo(string memo)
         {
-            ProductSchema product = null;
+            string sku = string.Empty;
 #if UNITY_IOS
                 Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
 #else
@@ -76,7 +76,19 @@ namespace Nekoyume
             var gSkuMatch = gSkuRegex.Match(memo);
             if (gSkuMatch.Success)
             {
-                product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
+                sku = gSkuMatch.Groups[1].Value;
+            }
+            return sku;
+        }
+
+        public static ProductSchema GetProductFromMemo(string memo)
+        {
+            ProductSchema product = null;
+            var sku = GetSkuFromMemo(memo);
+    
+            if (!string.IsNullOrEmpty(sku))
+            {
+                product = Game.Game.instance.IAPStoreManager.GetProductSchema(sku);
             }
 
             return product;
@@ -184,16 +196,7 @@ namespace Nekoyume
             ProductSchema product = null;
             if (mail.Memo.Contains("iap"))
             {
-#if UNITY_IOS
-                Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
-#else
-                var gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
-#endif
-                var gSkuMatch = gSkuRegex.Match(mail.Memo);
-                if (gSkuMatch.Success)
-                {
-                    product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
-                }
+                product = GetProductFromMemo(mail.Memo);
             }
 
             if (product is null)

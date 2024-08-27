@@ -82,9 +82,20 @@ namespace Nekoyume
                 myScore.text = "-";
                 myApUsage.text = "-";
 
-                var prevBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(seasonIndex);
-                var prevExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonIndex);
-                var prevExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, seasonIndex);
+                if(!Game.Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(seasonIndex, out var prevBountyBoard))
+                {
+                    prevBountyBoard = await Game.Game.instance.Agent.GetBountyBoardAsync(seasonIndex);
+                }
+
+                if(!Game.Game.instance.AdventureBossData.EndedExploreBoards.TryGetValue(seasonIndex, out var prevExploreBoard) || string.IsNullOrEmpty(prevExploreBoard.RaffleWinnerName))
+                {
+                    prevExploreBoard = await Game.Game.instance.Agent.GetExploreBoardAsync(seasonIndex);
+                }
+
+                if(!Game.Game.instance.AdventureBossData.EndedExploreInfos.TryGetValue(seasonIndex, out var prevExploreInfo))
+                {
+                    prevExploreInfo = await Game.Game.instance.Agent.GetExploreInfoAsync(States.Instance.CurrentAvatarState.address, seasonIndex);
+                }
 
                 var myBountyRewardsData = new ClaimableReward
                 {

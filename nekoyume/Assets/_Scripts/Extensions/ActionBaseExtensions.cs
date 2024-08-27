@@ -18,7 +18,7 @@ namespace Nekoyume
                 typeof(ActionTypeAttribute));
         }
 
-        public static void LogEvent(this EventBase e)
+        public static void LogEvent(this EventBase e, int eventIndex, int eventCount)
         {
 #if !DEBUG_USE
             return;
@@ -29,16 +29,16 @@ namespace Nekoyume
             switch (e)
             {
                 case Dead dead:
-                    sb.AppendLine($"OnDead: {dead.Character.Id}");
+                    sb.AppendLine($"OnDead: {dead.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {dead.Character.RowData.Id}");
                     break;
                 case BlowAttack blowAttack:
-                    sb.AppendLine($"OnBlowAttack: {blowAttack.Character.Id}");
+                    sb.AppendLine($"OnBlowAttack: {blowAttack.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {blowAttack.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {blowAttack.SkillId}");
                     break;
                 case Buff buff:
-                    sb.AppendLine($"OnBuff: {buff.Character.Id}");
+                    sb.AppendLine($"OnBuff: {buff.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {buff.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {buff.SkillId}");
                     sb.AppendLine("Character Stat: ");
@@ -67,7 +67,7 @@ namespace Nekoyume
 
                     break;
                 case AreaAttack areaAttack:
-                    sb.AppendLine($"OnAreaAttack: {areaAttack.Character.Id}");
+                    sb.AppendLine($"OnAreaAttack: {areaAttack.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {areaAttack.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {areaAttack.SkillId}");
                     foreach (var skill in areaAttack.SkillInfos)
@@ -79,7 +79,7 @@ namespace Nekoyume
 
                     break;
                 case DoubleAttack doubleAttack:
-                    sb.AppendLine($"OnDoubleAttack: {doubleAttack.Character.Id}");
+                    sb.AppendLine($"OnDoubleAttack: {doubleAttack.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {doubleAttack.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {doubleAttack.SkillId}");
                     foreach (var skill in doubleAttack.SkillInfos)
@@ -91,7 +91,7 @@ namespace Nekoyume
 
                     break;
                 case DoubleAttackWithCombo doubleAttackWithCombo:
-                    sb.AppendLine($"OnDoubleAttackWithCombo: {doubleAttackWithCombo.Character.Id}");
+                    sb.AppendLine($"OnDoubleAttackWithCombo: {doubleAttackWithCombo.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {doubleAttackWithCombo.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {doubleAttackWithCombo.SkillId}");
                     foreach (var skill in doubleAttackWithCombo.SkillInfos)
@@ -103,12 +103,12 @@ namespace Nekoyume
 
                     break;
                 case HealSkill healSkill:
-                    sb.AppendLine($"OnHealSkill: {healSkill.Character.Id}");
+                    sb.AppendLine($"OnHealSkill: {healSkill.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {healSkill.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {healSkill.SkillId}");
                     break;
                 case NormalAttack normalAttack:
-                    sb.AppendLine($"OnNormalAttack: {normalAttack.Character.Id}");
+                    sb.AppendLine($"OnNormalAttack: {normalAttack.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {normalAttack.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {normalAttack.SkillId}");
                     foreach (var skill in normalAttack.SkillInfos)
@@ -120,10 +120,10 @@ namespace Nekoyume
 
                     break;
                 case RemoveBuffs removeBuffs:
-                    sb.AppendLine($"OnRemoveBuffs: {removeBuffs.Character.Id}");
+                    sb.AppendLine($"OnRemoveBuffs: {removeBuffs.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     break;
                 case Tick tick:
-                    sb.AppendLine($"OnTick: {tick.Character.Id}");
+                    sb.AppendLine($"OnTick: {tick.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {tick.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {tick.SkillId}");
                     if (AuraIceShield.IsFrostBiteBuff(tick.SkillId))
@@ -151,17 +151,22 @@ namespace Nekoyume
 
                     break;
                 case TickDamage tickDamage:
-                    sb.AppendLine($"OnTickDamage: {tickDamage.Character.Id}");
+                    sb.AppendLine($"OnTickDamage: {tickDamage.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {tickDamage.Character.RowData.Id}");
                     sb.AppendLine($"- SkillId: {tickDamage.SkillId}");
                     break;
                 case WaveTurnEnd waveTurnEnd:
-                    sb.AppendLine($"OnWaveTurnEnd: {waveTurnEnd.Character.Id}");
+                    sb.AppendLine($"OnWaveTurnEnd: {waveTurnEnd.Character.Id} {GetProgressText(eventIndex, eventCount)}");
                     sb.AppendLine($"- Id: {waveTurnEnd.Character.RowData.Id}");
                     break;
             }
 
             NcDebug.Log(sb.ToString(), "EventLog");
+        }
+
+        private static string GetProgressText(int eventIndex, int eventCount)
+        {
+            return $"(Event Count: {eventIndex}/{eventCount})";
         }
     }
 }

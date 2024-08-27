@@ -600,12 +600,12 @@ namespace Nekoyume.Helper
                 Format = BarcodeFormat.QR_CODE,
                 Options = new QrCodeEncodingOptions
                 {
-                    Width = 400,
-                    Height = 400
+                    Width = 800,
+                    Height = 800
                 }
             };
 
-            var encoded = new Texture2D(400, 400);
+            var encoded = new Texture2D(800, 800);
             var res = writer.Write(json);
             encoded.SetPixels32(res);
 
