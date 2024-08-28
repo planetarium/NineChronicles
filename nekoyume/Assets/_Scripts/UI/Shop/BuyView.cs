@@ -28,11 +28,22 @@ namespace Nekoyume.UI.Module
             Multiple
         }
 
+        [Serializable]
+        public class ItemTypeFilter
+        {
+            public ItemSubTypeFilter typeFilter;  // for identifying
+            public ToggleDropdown toggleDropdown;
+            public ItemSubTypeFilter[] subTypeFilters;
+            public ShopSortFilter[] sortFilters;
+            [HideInInspector]
+            public int sortFilterIndex;
+        }
+
         [SerializeField]
         private CartView cartView;
 
         [SerializeField]
-        private List<ToggleDropdown> toggleDropdowns = new();
+        private List<ItemTypeFilter> itemTypeFilters;
 
         [SerializeField]
         private Button sortButton;
@@ -68,126 +79,6 @@ namespace Nekoyume.UI.Module
         private GameObject loading;
 
         private int _loadingCount;
-
-        private readonly List<ItemSubTypeFilter> _toggleTypes = new()
-        {
-            ItemSubTypeFilter.Equipment,
-            ItemSubTypeFilter.Food,
-            ItemSubTypeFilter.Materials,
-            ItemSubTypeFilter.Costume,
-            ItemSubTypeFilter.Stones
-        };
-
-        private readonly Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>> _toggleSubTypes =
-            new()
-            {
-                {
-                    ItemSubTypeFilter.Equipment, new List<ItemSubTypeFilter>()
-                    {
-                        ItemSubTypeFilter.Weapon,
-                        ItemSubTypeFilter.Armor,
-                        ItemSubTypeFilter.Belt,
-                        ItemSubTypeFilter.Necklace,
-                        ItemSubTypeFilter.Ring
-                    }
-                },
-                {
-                    ItemSubTypeFilter.Food, new List<ItemSubTypeFilter>()
-                    {
-                        ItemSubTypeFilter.Food_HP,
-                        ItemSubTypeFilter.Food_ATK,
-                        ItemSubTypeFilter.Food_CRI,
-                        ItemSubTypeFilter.Food_DEF,
-                        ItemSubTypeFilter.Food_SPD,
-                        ItemSubTypeFilter.Food_HIT
-                    }
-                },
-                {
-                    ItemSubTypeFilter.Materials, new List<ItemSubTypeFilter>()
-                    {
-                        ItemSubTypeFilter.Hourglass,
-                        ItemSubTypeFilter.ApStone
-                    }
-                },
-                {
-                    ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
-                    {
-                        ItemSubTypeFilter.FullCostume,
-                        ItemSubTypeFilter.Title
-                    }
-                },
-                {
-                    ItemSubTypeFilter.Stones, new List<ItemSubTypeFilter>()
-                    {
-                        ItemSubTypeFilter.RuneStone,
-                        ItemSubTypeFilter.PetSoulStone
-                    }
-                }
-            };
-
-        private readonly Dictionary<ItemSubTypeFilter, List<ShopSortFilter>> _toggleSortFilters =
-            new()
-            {
-                {
-                    ItemSubTypeFilter.Equipment, new List<ShopSortFilter>()
-                    {
-                        ShopSortFilter.CP,
-                        ShopSortFilter.Price,
-                        ShopSortFilter.Class,
-                        ShopSortFilter.Crystal,
-                        ShopSortFilter.CrystalPerPrice,
-                        ShopSortFilter.EquipmentLevel,
-                        ShopSortFilter.OptionCount
-                    }
-                },
-                {
-                    ItemSubTypeFilter.Food, new List<ShopSortFilter>()
-                    {
-                        ShopSortFilter.CP,
-                        ShopSortFilter.Price,
-                        ShopSortFilter.Class,
-                        ShopSortFilter.Crystal,
-                        ShopSortFilter.CrystalPerPrice,
-                        ShopSortFilter.EquipmentLevel,
-                        ShopSortFilter.OptionCount
-                    }
-                },
-                {
-                    ItemSubTypeFilter.Materials, new List<ShopSortFilter>()
-                    {
-                        ShopSortFilter.Price,
-                        ShopSortFilter.UnitPrice
-                    }
-                },
-                {
-                    ItemSubTypeFilter.Costume, new List<ShopSortFilter>()
-                    {
-                        ShopSortFilter.CP,
-                        ShopSortFilter.Price,
-                        ShopSortFilter.Class,
-                        ShopSortFilter.Crystal,
-                        ShopSortFilter.CrystalPerPrice,
-                        ShopSortFilter.EquipmentLevel,
-                        ShopSortFilter.OptionCount
-                    }
-                },
-                {
-                    ItemSubTypeFilter.Stones, new List<ShopSortFilter>()
-                    {
-                        ShopSortFilter.Price,
-                        ShopSortFilter.UnitPrice
-                    }
-                }
-            };
-
-        private readonly Dictionary<ItemSubTypeFilter, int> _toggleSortFilterIndex = new()
-        {
-            { ItemSubTypeFilter.Equipment, 0 },
-            { ItemSubTypeFilter.Food, 0 },
-            { ItemSubTypeFilter.Materials, 0 },
-            { ItemSubTypeFilter.Costume, 0 },
-            { ItemSubTypeFilter.Stones, 0 }
-        };
 
         private readonly List<ShopItem> _selectedItems = new();
         private readonly List<int> _itemIds = new();
@@ -291,52 +182,45 @@ namespace Nekoyume.UI.Module
         {
             inputPlaceholder.SetAsLastSibling();
 
-            foreach (var toggleDropdown in toggleDropdowns)
+            foreach (var filter in itemTypeFilters)
             {
-                var index = toggleDropdowns.IndexOf(toggleDropdown);
-                var toggleType = _toggleTypes[index];
+                var toggleDropdown = filter.toggleDropdown;
+                var toggles = toggleDropdown.items;
                 toggleDropdown.onClickToggle.AddListener(() =>
                 {
-                    _selectedSubTypeFilter.Value = _toggleSubTypes[toggleType].First();
+                    _selectedSubTypeFilter.Value = filter.subTypeFilters.First();
+                    _selectedSortFilter.Value = filter.sortFilters.First();
+                    filter.sortFilterIndex = 0;
 
-                    var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
-                    _selectedSortFilter.Value = _toggleSortFilters[itemTypeFilter].First();
-                    _toggleSortFilterIndex[itemTypeFilter] = 0;
-
-                    toggleDropdown.items.First().isOn = true;
+                    toggles.First().isOn = true;
                     ResetPage();
                 });
                 toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
 
-                var subItems = toggleDropdown.items;
-
-                foreach (var item in subItems)
+                foreach (var toggle in toggles)
                 {
-                    var subIndex = subItems.IndexOf(item);
-                    var subTypes = _toggleSubTypes[toggleType];
-                    var subToggleType = subTypes[subIndex];
-                    item.onClickToggle.AddListener(() =>
+                    toggle.onClickToggle.AddListener(() =>
                     {
-                        _selectedSubTypeFilter.Value = subToggleType;
-
-                        var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
-                        _selectedSortFilter.Value = _toggleSortFilters[itemTypeFilter].First();
-                        _toggleSortFilterIndex[itemTypeFilter] = 0;
+                        var toggleIndex = toggles.IndexOf(toggle);
+                        _selectedSubTypeFilter.Value = filter.subTypeFilters[toggleIndex];
+                        _selectedSortFilter.Value = filter.sortFilters.First();
+                        filter.sortFilterIndex = 0;
 
                         ResetPage();
                     });
-                    item.onClickToggle.AddListener(AudioController.PlayClick);
+                    toggle.onClickToggle.AddListener(AudioController.PlayClick);
                 }
             }
 
             sortButton.onClick.AddListener(() =>
             {
-                var itemTypeFilter = _selectedSubTypeFilter.Value.ToItemTypeFilter();
-                var sortFilters = _toggleSortFilters[itemTypeFilter];
-                var index = _toggleSortFilterIndex[itemTypeFilter];
+                var filter = itemTypeFilters.First(filter =>
+                    filter.subTypeFilters.Contains(_selectedSubTypeFilter.Value));
+                var sortFilters = filter.sortFilters;
+                var index = filter.sortFilterIndex;
 
-                var nextIndex = (index + 1) % sortFilters.Count;
-                _toggleSortFilterIndex[itemTypeFilter] = nextIndex;
+                var nextIndex = (index + 1) % sortFilters.Length;
+                filter.sortFilterIndex = nextIndex;
                 _selectedSortFilter.Value = sortFilters[nextIndex];
 
                 ResetPage();
@@ -598,8 +482,8 @@ namespace Nekoyume.UI.Module
             loading.SetActive(_loadingCount > 0);
 
             cartView.gameObject.SetActive(false);
-            toggleDropdowns.First().isOn = true;
-            toggleDropdowns.First().items.First().isOn = true;
+            itemTypeFilters.First().toggleDropdown.isOn = true;
+            itemTypeFilters.First().toggleDropdown.items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
             levelLimitToggle.isOn = false;
@@ -608,9 +492,9 @@ namespace Nekoyume.UI.Module
                 _resetAnimator.Play(_hashDisabled);
             }
 
-            foreach (var key in _toggleTypes)
+            foreach (var filter in itemTypeFilters)
             {
-                _toggleSortFilterIndex[key] = 0;
+                filter.sortFilterIndex = 0;
             }
 
             _page.SetValueAndForceNotify(0);

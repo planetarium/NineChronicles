@@ -1582,12 +1582,32 @@ MonoBehaviour:
   shopPrefab: {fileID: 3628611484192185876, guid: 62adbf55f135eb3459d8b900227c1ccd,
     type: 3}
   cartView: {fileID: 2018747726614759254}
-  toggleDropdowns:
-  - {fileID: 3156320699035856895}
-  - {fileID: 8211447087340793094}
-  - {fileID: 6671109815369582817}
-  - {fileID: 5276668013396155074}
-  - {fileID: 2448718840400655212}
+  itemTypeFilters:
+  - typeFilter: 23
+    toggleDropdown: {fileID: 3156320699035856895}
+    subTypeFilters: 0100000002000000030000000400000005000000
+    sortFilters: 00000000010000000200000003000000040000000500000006000000
+    sortFilterIndex: 0
+  - typeFilter: 24
+    toggleDropdown: {fileID: 8211447087340793094}
+    subTypeFilters: 060000000700000008000000090000000a0000000b000000
+    sortFilters: 00000000010000000200000003000000040000000500000006000000
+    sortFilterIndex: 0
+  - typeFilter: 22
+    toggleDropdown: {fileID: 6671109815369582817}
+    subTypeFilters: 1200000013000000
+    sortFilters: 0100000007000000
+    sortFilterIndex: 0
+  - typeFilter: 25
+    toggleDropdown: {fileID: 5276668013396155074}
+    subTypeFilters: 0c00000011000000
+    sortFilters: 00000000010000000200000003000000040000000500000006000000
+    sortFilterIndex: 0
+  - typeFilter: 26
+    toggleDropdown: {fileID: 2448718840400655212}
+    subTypeFilters: 1400000015000000
+    sortFilters: 0100000007000000
+    sortFilterIndex: 0
   sortButton: {fileID: 820995754220979907}
   sortOrderButton: {fileID: 7144434130118635500}
   searchButton: {fileID: 9097854314485950692}
