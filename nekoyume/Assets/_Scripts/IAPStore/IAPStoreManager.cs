@@ -272,9 +272,9 @@ namespace Nekoyume.IAPStore
             {
                 var result = await ApiClients.Instance.IAPServiceManager
                     .PurchaseLogAsync(
-                        states.AgentState.address.ToHex(),
-                        states.CurrentAvatarState.address.ToHex(),
-                        Game.Game.instance.CurrentPlanetId.ToString(),
+                        states?.AgentState?.address.ToHex(),
+                        states?.CurrentAvatarState?.address.ToHex(),
+                        Game.Game.instance?.CurrentPlanetId?.ToString(),
                         productId,
                         orderId,
                         data);
@@ -354,9 +354,9 @@ namespace Nekoyume.IAPStore
                     "Unity/Shop/IAP/ProcessPurchase",
                     ("product-id", e.purchasedProduct.definition.id),
                     ("transaction-id", e.purchasedProduct.transactionID),
-                    ("agent-address", States.Instance.AgentState.address.ToHex()),
-                    ("avatar-address", States.Instance.CurrentAvatarState.address.ToHex()),
-                    ("planet-id", Game.Game.instance.CurrentPlanetId.ToString()));
+                    ("agent-address", States.Instance?.AgentState?.address.ToHex()),
+                    ("avatar-address", States.Instance?.CurrentAvatarState?.address.ToHex()),
+                    ("planet-id", Game.Game.instance?.CurrentPlanetId?.ToString()));
             }
             catch (Exception error)
             {
@@ -381,6 +381,17 @@ namespace Nekoyume.IAPStore
                 existTxInfo = PlayerPrefs.HasKey("PURCHASE_TX_" + e.purchasedProduct.transactionID);
                 if (!existTxInfo)
                 {
+                    if (states?.AgentState?.address == null
+                        || states?.CurrentAvatarState?.address == null
+                        || Game.Game.instance?.CurrentPlanetId == null)
+                    {
+                        NcDebug.Log($"[ProcessPurchase] AgentState{states?.AgentState?.address.ToHex()}, AvatarState{states?.CurrentAvatarState?.address.ToHex()} or PlanetId{Game.Game.instance?.CurrentPlanetId.ToString()} is null");
+                        // Todo : TX 정보만 가지고 구매처리 시도해야함.
+
+
+                        return PurchaseProcessingResult.Pending;
+                    }
+
                     var purchaseReciepe = new PurchaseReciept
                     {
                         Receipt = e.purchasedProduct.receipt,
