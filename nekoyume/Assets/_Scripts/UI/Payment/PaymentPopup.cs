@@ -209,7 +209,7 @@ namespace Nekoyume.UI
             CostType costType,
             BigInteger balance,
             BigInteger cost,
-            string enoughMessage,
+            string checkCostMessage,
             string insufficientMessage,
             System.Action onPaymentSucceed,
             System.Action onAttract)
@@ -245,8 +245,8 @@ namespace Nekoyume.UI
                 }
             };
 
-            SetContent(popupTitle, enoughMessage, yes, no, false);
-            Show(popupTitle, enoughMessage, yes, no, false);
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
         }
 
         // TODO: 재화 관리 팝업관련 작업을 진행하며 정리되면 제거
@@ -254,7 +254,7 @@ namespace Nekoyume.UI
             CostType costType,
             BigInteger balance,
             BigInteger cost,
-            string enoughMessage,
+            string checkCostMessage,
             System.Action onPaymentSucceed)
         {
             SetPopupType(PopupType.PaymentCheck);
@@ -285,8 +285,46 @@ namespace Nekoyume.UI
                 }
             };
 
-            SetContent(popupTitle, enoughMessage, yes, no, false);
-            Show(popupTitle, enoughMessage, yes, no, false);
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
+        }
+
+        public void ShowCheckPaymentCrystal(
+            BigInteger balance,
+            BigInteger cost,
+            string checkCostMessage,
+            System.Action onPaymentSucceed)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+            addCostContainer.SetActive(false);
+
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            var enoughBalance = balance >= cost;
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.Crystal);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            CloseCallback = result =>
+            {
+                if (result != ConfirmResult.Yes)
+                {
+                    return;
+                }
+
+                if (enoughBalance)
+                {
+                    onPaymentSucceed.Invoke();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackPaymentCrystal(cost);
+                }
+            };
+
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
         }
 #endregion PaymentCheckAction
 
