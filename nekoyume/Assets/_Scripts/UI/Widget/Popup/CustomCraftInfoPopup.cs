@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
@@ -39,6 +40,16 @@ namespace Nekoyume.UI
                 }).ToList();
 
             statScroll.UpdateData(models);
+            var skillRows = TableSheets.Instance.CustomEquipmentCraftRecipeSkillSheet.Values
+                .Where(row => row.ItemSubType == subType)
+                .Select(row => (TableSheets.Instance.EquipmentItemOptionSheet[row.ItemOptionId], row.Ratio));
+            skillScroll.UpdateData(skillRows.Select(tuple => new CustomCraftSkillCell.Model
+            {
+                SkillName = L10nManager.Localize($"SKILL_NAME_{tuple.Item1.SkillId}"),
+                SkillRatio = $"{tuple.Ratio}%",
+                OptionRow = tuple.Item1,
+                SkillRow = TableSheets.Instance.SkillSheet[tuple.Item1.SkillId]
+            }));
             base.Show(ignoreShowAnimation);
         }
     }

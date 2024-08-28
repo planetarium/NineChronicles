@@ -475,7 +475,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1024,7 +1024,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1102642677634583812
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1830,14 +1830,14 @@ GameObject:
   - component: {fileID: 4009100814315705933}
   - component: {fileID: 2311668199535372653}
   - component: {fileID: 7038312382768848788}
-  - component: {fileID: 6067878302898839744}
+  - component: {fileID: 8838713190715733722}
   m_Layer: 0
   m_Name: SkillInformationScroll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7501667879350669421
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1927,7 +1927,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 2268562761077756227}
---- !u!114 &6067878302898839744
+--- !u!114 &8838713190715733722
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1936,7 +1936,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2993131441214936359}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 633888be98b54c9fb6b7fb02bb53bd26, type: 3}
+  m_Script: {fileID: 11500000, guid: 96723997e51640d9bd9adba2fe81b2a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cellInterval: 0.09583332
@@ -1947,10 +1947,10 @@ MonoBehaviour:
   paddingHead: 15
   paddingTail: 15
   spacing: 0
-  cellPrefab: {fileID: 4279953781941882700, guid: c99b7616f3323af428ba60fdcc6e4484,
+  cellPrefab: {fileID: 5461914355506504387, guid: 89d032b37298cc64aa23f27793375d65,
     type: 3}
   cellSize: 46
-  forcedScrollSensitivity: 8
+  forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 0
 --- !u!1 &3016743735640366460
 GameObject:
@@ -3406,7 +3406,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3813,6 +3813,7 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   statScroll: {fileID: 3858717014320934908}
+  skillScroll: {fileID: 8838713190715733722}
 --- !u!1 &7942281865644105343
 GameObject:
   m_ObjectHideFlags: 0
