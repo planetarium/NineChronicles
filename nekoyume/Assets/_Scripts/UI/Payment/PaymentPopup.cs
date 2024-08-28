@@ -289,13 +289,16 @@ namespace Nekoyume.UI
         private void AttractToAdventureBoss()
         {
             CloseWithOtherWidgets();
-            Game.Event.OnRoomEnter.Invoke(true);
 
             if (Game.LiveAsset.GameConfig.IsKoreanBuild)
             {
-                // TODO: k빌드 대응?
+                // K빌드인 경우 로비로 이동
+                NcDebug.LogWarning("Korean build is not supported.");
+                Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
+
+            Find<WorldMap>().Show();
 
             var currState = Game.Game.instance.AdventureBossData.CurrentState.Value;
             if (currState == AdventureBossData.AdventureBossSeasonState.Progress)
