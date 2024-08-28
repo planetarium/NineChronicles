@@ -226,6 +226,46 @@ namespace Nekoyume.UI
             SetContent(popupTitle, enoughMessage, yes, no, false);
             Show(popupTitle, enoughMessage, yes, no, false);
         }
+
+        // TODO: 재화 관리 팝업관련 작업을 진행하며 정리되면 제거
+        public void ShowCheckPaymentDust(
+            CostType costType,
+            BigInteger balance,
+            BigInteger cost,
+            string enoughMessage,
+            System.Action onPaymentSucceed)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+            addCostContainer.SetActive(false);
+
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            var enoughBalance = balance >= cost;
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            CloseCallback = result =>
+            {
+                if (result != ConfirmResult.Yes)
+                {
+                    return;
+                }
+
+                if (enoughBalance)
+                {
+                    onPaymentSucceed.Invoke();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackPaymentDust(costType, cost);
+                }
+            };
+
+            SetContent(popupTitle, enoughMessage, yes, no, false);
+            Show(popupTitle, enoughMessage, yes, no, false);
+        }
 #endregion PaymentCheckAction
 
 // TODO: RuneHelper등과 통합? 혹은 별도 파일(PaymentHelper등)으로 분리

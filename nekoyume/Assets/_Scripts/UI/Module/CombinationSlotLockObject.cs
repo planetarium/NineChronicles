@@ -19,19 +19,19 @@ namespace Nekoyume.UI.Model
     public class CombinationSlotLockObject : MonoBehaviour
     {
         private Button _button = null!;
-        
+
         // TODO: 동적으로 이미지 변경?
         // private Image _costImage;
-        
+
         [SerializeField]
         private TMP_Text costText = null!;
-        
+
         [SerializeField]
         private GameObject loadingIndicator = null!;
-        
+
         [SerializeField]
         private GameObject lockPriceObject = null!;
-        
+
         private CostType _costType;
         private UnlockCombinationSlotCostSheet.Row? _data;
 
@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Model
             });
         }
 #endregion MonoBehavior
-        
+
         /// <summary>
         /// Lock오브젝트가 활성화 되면 항상 초기화, 액션 요청시 활성화
         /// 액션 실패시 비활성화
@@ -65,24 +65,42 @@ namespace Nekoyume.UI.Model
                 NcDebug.LogError("TableData is null");
                 return;
             }
-            
-            Widget.Find<PaymentPopup>().ShowCheckPayment(
-                _costType,
-                GetBalance(),
-                GetCost(),
-                GetEnoughCostMessageString(),
-                L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
-                () =>
-                {
-                    ActionManager.Instance.UnlockCombinationSlot(_data.SlotId);
-                    SetLoading(true);
-                },
-                OnAttractInPaymentPopup);
+
+            var paymentPopup = Widget.Find<PaymentPopup>();
+            switch (_costType)
+            {
+                case CostType.Crystal:
+                case CostType.NCG:
+                    paymentPopup.ShowCheckPayment(
+                        _costType,
+                        GetBalance(),
+                        GetCost(),
+                        GetCheckCostMessageString(),
+                        L10nManager.Localize(_costType == CostType.Crystal
+                            ? "UI_NOT_ENOUGH_CRYSTAL"
+                            : "UI_NOT_ENOUGH_NCG"),
+                        OnPaymentSucceed,
+                        () =>
+                        {
+                            // TODO
+                        });
+                    break;
+                case CostType.GoldDust:
+                case CostType.RubyDust:
+                    paymentPopup.ShowCheckPaymentDust(
+                        _costType,
+                        GetBalance(),
+                        GetCost(),
+                        GetCheckCostMessageString(),
+                        OnPaymentSucceed);
+                    break;
+            }
         }
 
-        private void OnAttractInPaymentPopup()
+        private void OnPaymentSucceed()
         {
-            // TODO: 이후 재화 관련 팝업에서 처리
+            ActionManager.Instance.UnlockCombinationSlot(_data.SlotId);
+            SetLoading(true);
         }
 
 #region GetBalance
@@ -98,7 +116,7 @@ namespace Nekoyume.UI.Model
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
-        
+
         private BigInteger GetCost()
         {
             if (_data != null)
@@ -118,66 +136,26 @@ namespace Nekoyume.UI.Model
         }
 #endregion GetBalance
 
-#region EnoughCostMessage
-        private string GetEnoughCostMessageString()
+        private string GetCheckCostMessageString()
         {
-            if (_data != null)
-            {
-                return _costType switch
-                {
-                    CostType.Crystal => GetEnoughFavCostMessageString(_data.CrystalPrice),
-                    CostType.NCG => GetEnoughFavCostMessageString(_data.NcgPrice),
-                    CostType.GoldDust => GetEnoughMaterialCostMessageString(),
-                    CostType.RubyDust => GetEnoughMaterialCostMessageString(),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
-
-            NcDebug.LogError("TableData is null");
-            return string.Empty;
-        }
-        
-        private string GetEnoughFavCostMessageString(BigInteger cost)
-        {
-            // TODO: 신규 키 추가
-            var usageMessage = L10nManager.Localize("UI_DRAW_ADVANCED_BUFF");
-            var favText = _costType switch
+            var cost = GetCost();
+            var usageMessage = L10nManager.Localize("UI_UNLOCK");
+            var costTypeKey = _costType switch
             {
                 CostType.Crystal => "UI_CRYSTAL",
                 CostType.NCG => "UI_NCG",
+                CostType.GoldDust => "ITEM_NAME_600201",
+                CostType.RubyDust => "ITEM_NAME_600202",
                 _ => throw new ArgumentOutOfRangeException()
             };
-            
+            var costTypeText = L10nManager.Localize(costTypeKey);
+
             return L10nManager.Localize(
                 "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
                 cost,
-                favText,
+                costTypeText,
                 usageMessage);
         }
-        
-        private string GetEnoughMaterialCostMessageString()
-        {
-            // TODO: 
-            return _costType switch
-            {
-                CostType.GoldDust => "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                CostType.RubyDust => "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-        
-        private string GetNotEnoughCostMessageString()
-        {
-            return _costType switch
-            {
-                CostType.Crystal => L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
-                CostType.NCG => L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                CostType.GoldDust => L10nManager.Localize("UI_NOT_ENOUGH_GOLD_DUST"),
-                CostType.RubyDust => L10nManager.Localize(""), // TODO: 신규 키 추가
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-#endregion EnoughCostMessage
 
         public void SetData(UnlockCombinationSlotCostSheet.Row data)
         {
@@ -198,7 +176,7 @@ namespace Nekoyume.UI.Model
             {
                 _costType = CostType.NCG;
             }
-            
+
             costText.text = GetCost().ToString();
         }
     }
