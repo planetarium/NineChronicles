@@ -180,6 +180,28 @@ namespace Nekoyume.UI
             };
             Show(title, content, GetDustAttractString(costType), string.Empty, false);
         }
+        
+        public void ShowLackPaymentCrystal(BigInteger cost)
+        {
+            // TODO: remove
+            addCostContainer.SetActive(false);
+            SetPopupType(PopupType.AttractAction);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.Crystal);
+            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            costText.text = cost.ToString();
+            var content = L10nManager.Localize("UI_LACK_CRYSTAL");
+            var labelYesText = L10nManager.Localize("GRIND_UI_BUTTON");
+            
+            CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    AttractDust(CostType.Crystal);
+                }
+            };
+            Show(title, content, labelYesText, string.Empty, false);
+        }
 #endregion LackPaymentAction
 
 #region PaymentCheckAction
