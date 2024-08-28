@@ -6161,7 +6161,7 @@ GameObject:
   - component: {fileID: 3338016348186742454}
   - component: {fileID: 1938380871693389806}
   - component: {fileID: 3786611527604296245}
-  - component: {fileID: 1342362100712815399}
+  - component: {fileID: 1331155121529262598}
   - component: {fileID: 1076581703598655059}
   m_Layer: 5
   m_Name: UI_CollectionResultScreen
@@ -6227,7 +6227,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1342362100712815399
+--- !u!114 &1331155121529262598
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
