@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class CustomCraftStatCell : RectCell<CustomCraftStatCell.Model,CustomCraftStatScroll.ContextModel>
+    public class CustomCraftStatCell : RectCell<CustomCraftStatCell.Model, RectScrollDefaultContext>
     {
         public class Model
         {

@@ -1,10 +1,6 @@
 ﻿namespace Nekoyume.UI.Scroller
 {
-    public class CustomCraftStatScroll : RectScroll<CustomCraftStatCell.Model, CustomCraftStatScroll.ContextModel>
+    public class CustomCraftStatScroll : RectScroll<CustomCraftStatCell.Model, RectScrollDefaultContext>
     {
-        public class ContextModel : RectScrollDefaultContext
-        {
-            public CustomCraftStatCell.Model CurrentModel;
-        }
     }
 }
