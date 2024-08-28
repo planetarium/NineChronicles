@@ -122,8 +122,6 @@ namespace Nekoyume.Helper
 
         private bool _mixpanelDebugWarning;
 
-        private string _mimirUrl;
-
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -623,17 +621,6 @@ namespace Nekoyume.Helper
             set
             {
                 _enableGuestLogin = value;
-                Empty = false;
-            }
-        }
-        
-        [Option("mimir-url", Required = false, HelpText = "mimir url")]
-        public string MimirUrl
-        {
-            get => _mimirUrl;
-            set
-            {
-                _mimirUrl = value;
                 Empty = false;
             }
         }
