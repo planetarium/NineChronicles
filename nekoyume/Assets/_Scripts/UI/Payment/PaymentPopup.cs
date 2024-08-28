@@ -281,6 +281,7 @@ namespace Nekoyume.UI
 #region Attract
         private void AttractToMonsterCollection()
         {
+            // 기능 충돌 방지를 위해 StakingPopup실행 전 다른 UI를 닫음
             CloseWithOtherWidgets();
             Game.Event.OnRoomEnter.Invoke(true);
             Find<StakingPopup>().Show();
