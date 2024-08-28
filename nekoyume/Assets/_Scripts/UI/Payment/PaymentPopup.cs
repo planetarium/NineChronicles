@@ -19,22 +19,23 @@ namespace Nekoyume.UI
             NoneAction, // 재화부족 팝업에서 재화를 얻을 수 없는 경우
         }
 
-        // TODO: CostType과 동일하게 쓸 수 있을지는 확인
-        public enum PaymentType
-        {
-            Crystal,
-            SilverDust,
-            GoldenDust, // TODO: GoldDust로 쓰는곳도 있고, GoldenDust로 쓰는 곳도 있어 정리가 안된듯함
-            RubyDust,
-            EmeraldDust,
-            NCG,
-            NCGStaking,
-            MonsterCollection,
-            RuneStoneSummonOnly, // 룬조각?
-            RuneStone,
-            ActionPoint,
-            APPortion,
-        }
+        // TODO: 현재 추가해야하는 재화 타입을 확인하기 위해 메모용으로 임시 추가
+        // TODO: 가능하면 CostType을 사용할 것이지만, 대체 불가능하다 판단되면 이 타입을 사용할 것
+        // public enum PaymentType
+        // {
+        //     Crystal,
+        //     SilverDust,
+        //     GoldenDust, // TODO: GoldDust로 쓰는곳도 있고, GoldenDust로 쓰는 곳도 있어 정리가 안된듯함
+        //     RubyDust,
+        //     EmeraldDust,
+        //     NCG,
+        //     NCGStaking,
+        //     MonsterCollection,
+        //     RuneStoneSummonOnly, // 룬조각?
+        //     RuneStone,
+        //     ActionPoint,
+        //     APPortion,
+        // }
 
 #region SerializeField
         [SerializeField]
