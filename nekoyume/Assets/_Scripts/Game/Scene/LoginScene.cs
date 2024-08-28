@@ -33,19 +33,18 @@ using NineChronicles.GoogleServices.Firebase.Runtime;
 namespace Nekoyume.Game.Scene
 {
     using UniRx;
-    
+
     public class LoginScene : BaseScene
     {
         // TODO: 기존 introScreen 활성화 여부 호환을 위해 추가. 추후 제거
         public static bool IsOnIntroScene { get; private set; } = true;
-        
+
         [SerializeField] private IntroScreen introScreen;
         [SerializeField] private Synopsis synopsis;
 
 #region MonoBehaviour
         private void Awake()
         {
-            synopsis.LoginScene = this;
             var canvas = GetComponent<Canvas>();
             canvas.worldCamera = ActionCamera.instance.Cam;
         }
@@ -75,7 +74,7 @@ namespace Nekoyume.Game.Scene
             synopsis.Close();
         }
 #endregion BaseScene
-        
+
         private CommandLineOptions CommandLineOptions => Game.instance.CommandLineOptions;
 
         private IEnumerator LoginStart()
@@ -88,7 +87,7 @@ namespace Nekoyume.Game.Scene
 #endif
             var totalSw = new Stopwatch();
             totalSw.Start();
-            
+
             game.AddRequestManager();
             yield return game.InitializeLiveAssetManager();
             // if Mobile Build, need refresh commandLineOptions
@@ -113,11 +112,11 @@ namespace Nekoyume.Game.Scene
                 CommandLineOptions.PrivateKey =
                     KeyManager.Instance.SignedInPrivateKey.ToHexWithZeroPaddings();
             }
-            
+
             yield return game.InitializeL10N();
             yield return L10nManager.AdditionalL10nTableDownload("https://assets.nine-chronicles.com/live-assets/Csv/RemoteCsv.csv").ToCoroutine();
             NcDebug.Log("[Game] Start()... L10nManager initialized");
-            
+
             // NOTE: Initialize planet registry.
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
@@ -168,7 +167,7 @@ namespace Nekoyume.Game.Scene
             // ~Initialize planet registry
 
             game.SetPortalConnect();
-            
+
 #if ENABLE_FIREBASE
             // NOTE: Initialize Firebase.
             yield return FirebaseManager.InitializeAsync().ToCoroutine();
@@ -186,15 +185,15 @@ namespace Nekoyume.Game.Scene
                 null,
                 CommandLineOptions.RpcServerHost);
             game.Analyzer.Track("Unity/Started");
-            
+
             game.InitializeMessagePackResolver();
-            
+
             if (game.CheckRequiredUpdate())
             {
                 // NOTE: Required update is detected.
                 yield break;
             }
-            
+
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             game.InitializeFirstResources();
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
@@ -310,6 +309,7 @@ namespace Nekoyume.Game.Scene
             yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
             game.IsInitialized = true;
             introScreen.Close();
+            Widget.Find<GrayLoadingScreen>().Close();
             EnterNext().Forget();
             totalSw.Stop();
             NcDebug.Log($"[LoginScene] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
@@ -324,12 +324,7 @@ namespace Nekoyume.Game.Scene
                     Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
                     States.Instance.AvatarStates.ContainsKey(slotIndex))
                 {
-                    var loadingScreen = Widget.Find<LoadingScreen>();
-                    loadingScreen.Show(
-                        LoadingScreen.LoadingType.Entering,
-                        L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                     await EnterGame(slotIndex);
-                    loadingScreen.Close();
                 }
                 else
                 {
@@ -348,7 +343,7 @@ namespace Nekoyume.Game.Scene
                         avatarState.questList == null ||
                         avatarState.worldInformation == null)
                     {
-                        EnterCharacterSelect();
+                        await EnterCharacterSelect();
                     }
                     else
                     {
@@ -357,39 +352,46 @@ namespace Nekoyume.Game.Scene
                 }
                 else
                 {
-                    EnterCharacterSelect();
+                    await EnterCharacterSelect();
                 }
             }
-
-            Widget.Find<GrayLoadingScreen>().Close();
         }
 
         public static async UniTask EnterCharacterSelect()
         {
             NcDebug.Log("[LoginScene] EnterCharacterSelect() invoked");
-            
+
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            loadingScreen.Show(
+                LoadingScreen.LoadingType.Entering,
+                L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
             await NcSceneManager.Instance.LoadScene(SceneType.Game);
-            
+            loadingScreen.Close();
+
             // TODO: ChangeScene
             Widget.Find<Login>().Show();
             Event.OnNestEnter.Invoke();
         }
-        
+
         /// <summary>
         /// 로컬에 저장된 아바타 정보가 있는 경우, 특정 상황에서 바로 해당 아바타 선택 후 게임 로비 진입
         /// </summary>
-        public async UniTask EnterGame(int slotIndex, bool forceNewSelection = true)
+        public static async UniTask EnterGame(int slotIndex, bool forceNewSelection = true)
         {
             var sw = new Stopwatch();
             sw.Reset();
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            loadingScreen.Show(
+                LoadingScreen.LoadingType.Entering,
+                L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
             sw.Start();
             await RxProps.SelectAvatarAsync(slotIndex, Game.instance.Agent.BlockTipStateRootHash, forceNewSelection);
             sw.Stop();
-            NcDebug.Log("[LoginScene] EnterNext()... SelectAvatarAsync() finished in" +
-                $" {sw.ElapsedMilliseconds}ms.(elapsed)");
-            
+            NcDebug.Log($"[LoginScene] EnterNext()... SelectAvatarAsync() finished in {sw.ElapsedMilliseconds}ms.(elapsed)");
+
             await NcSceneManager.Instance.LoadScene(SceneType.Game);
-            
+            loadingScreen.Close();
+
             Event.OnRoomEnter.Invoke(false);
             Event.OnUpdateAddresses.Invoke();
         }
@@ -397,7 +399,7 @@ namespace Nekoyume.Game.Scene
         private IEnumerator CoLogin(PlanetContext planetContext, Action<bool> loginCallback)
         {
             var game = Game.instance;
-            
+
             NcDebug.Log("[LoginScene] CoLogin() invoked");
             if (CommandLineOptions.Maintenance)
             {
@@ -704,7 +706,7 @@ namespace Nekoyume.Game.Scene
         private IEnumerator HasPledgedAccountProcess(PlanetContext planetContext, Action<bool> loginCallback)
         {
             var game = Game.instance;
-            
+
             NcDebug.Log("[LoginScene] CoLogin()... Has pledged account.");
             var pk = KeyManager.Instance.SignedInPrivateKey;
             introScreen.Show(CommandLineOptions.KeyStorePath,
