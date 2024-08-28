@@ -63,19 +63,7 @@ namespace Nekoyume.UI.Module
                         Widget.Find<Summon>().SummonAction(summonRow.GroupId, summonCount);
                         break;
                     case State.Conditional:
-#if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
-                        Widget.Find<PaymentPopup>().ShowLackPayment(
-                            costType,
-                            cost.ToString(),
-                            L10nManager.Localize("UI_SUMMON_MATERIAL_NOT_ENOUGH"),
-                            L10nManager.Localize("UI_SHOP"),
-                            goToMarget);
-#else
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("NOTIFICATION_MATERIAL_NOT_ENOUGH"),
-                            NotificationCell.NotificationType.Information);
-#endif
+                        Widget.Find<PaymentPopup>().ShowLackPaymentDust(costType, cost);
                         break;
                 }
             }).AddTo(disposables);
