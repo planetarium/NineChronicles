@@ -252,54 +252,7 @@ namespace Nekoyume.State
                 ? new ArenaAvatarState(iValue2)
                 : null;
             var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
-            try
-            {
-                // check arena metadata from mimir
-                var mimirClient = ApiClients.Instance.Mimir;
-                var mimirArenaBlockIndex = await MimirQuery.GetMetadataBlockIndexAsync(
-                    mimirClient,
-                    "arena");
-                NcDebug.Log($"[Arena]mimirArenaBlockIndex: {mimirArenaBlockIndex}");
-
-                const long confirmedBlockGap = 5;
-                if (new System.Random().Next(0, 2) == 0 &&
-                    _agent.BlockIndex <= mimirArenaBlockIndex + confirmedBlockGap)
-                {
-                    var sw = new Stopwatch();
-                    sw.Start();
-                    // get leaderboard from mimir
-                    arenaInfo = await MimirQuery.GetArenaParticipantsAsync(
-                        mimirClient,
-                        currentAvatarAddr);
-                    sw.Stop();
-                    NcDebug.Log("[Arena]get participants from Mimir:" +
-                        $" block gap({_agent.BlockIndex - mimirArenaBlockIndex})," +
-                        $" elapsed({sw.Elapsed})");
-                }
-                else
-                {
-                    var sw = new Stopwatch();
-                    sw.Start();
-                    // fallback to Headless
-                    var response = await ApiClients.Instance.ArenaServiceClient.QueryArenaInfoAsync(currentAvatarAddr);
-                    // Arrange my information so that it comes first when it's the same score.
-                    arenaInfo = response.StateQuery.ArenaParticipants.ToList();
-                    sw.Stop();
-                    NcDebug.Log("[Arena]get participants from Headless:" +
-                        $" block gap({_agent.BlockIndex - mimirArenaBlockIndex})," +
-                        $" elapsed({sw.Elapsed})");
-                }
-            }
-            catch (Exception e)
-            {
-                NcDebug.LogException(e);
-                // TODO: this is temporary code for local testing.
-                arenaInfo.AddRange(_states.AvatarStates.Values.Select(avatar => new ArenaParticipantModel
-                {
-                    AvatarAddr = avatar.address,
-                    NameWithHash = avatar.NameWithHash
-                }));
-            }
+            arenaInfo = await GetArenaParticipantsAsync(currentAvatarAddr);
 
             string playerGuildName = null;
             if (Game.Game.instance.GuildModels.Any())
@@ -397,6 +350,69 @@ namespace Nekoyume.State
         {
             await UniTask.SwitchToMainThread();
             _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
+        }
+
+        private static async Task<List<ArenaParticipantModel>> GetArenaParticipantsAsync(Address avatarAddr)
+        {
+            var mimirClient = ApiClients.Instance.Mimir;
+            if (mimirClient is null)
+            {
+                return await GetFromHeadlessAsync();
+            }
+
+            try
+            {
+                const long confirmedBlockGap = 2;
+                var mimirArenaBlockIndex = await MimirQuery.GetMetadataBlockIndexAsync(
+                    mimirClient,
+                    "arena");
+                if (_agent.BlockIndex > mimirArenaBlockIndex + confirmedBlockGap)
+                {
+                    return await GetFromHeadlessAsync();
+                }
+
+                try
+                {
+                    return await MimirQuery.GetArenaParticipantsAsync(
+                        mimirClient,
+                        avatarAddr);
+                }
+                catch (Exception e)
+                {
+                    NcDebug.Log("Failed to get arena participants from Mimir. Falling back to headless." +
+                        $" Exception: {e.Message}");
+                    return await GetFromHeadlessAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogException(e);
+                // TODO: this is temporary code for local testing.
+                var result = new List<ArenaParticipantModel>();
+                result.AddRange(_states.AvatarStates.Values.Select(avatar => new ArenaParticipantModel
+                {
+                    AvatarAddr = avatar.address,
+                    NameWithHash = avatar.NameWithHash
+                }));
+
+                return result;
+            }
+
+            async Task<List<ArenaParticipantModel>> GetFromHeadlessAsync()
+            {
+                try
+                {
+                    // fallback to Headless
+                    var response = await ApiClients.Instance.ArenaServiceClient.QueryArenaInfoAsync(avatarAddr);
+                    // Arrange my information so that it comes first when it's the same score.
+                    return response.StateQuery.ArenaParticipants.ToList();
+                }
+                catch (Exception e)
+                {
+                    NcDebug.LogError($"[Arena]failed to get participants from Headless. {e.Message}");
+                    return new List<ArenaParticipantModel>();
+                }
+            }
         }
     }
 }
