@@ -246,7 +246,7 @@ namespace Nekoyume.Game.Scene
             }
 
             game.SetActionManager();
-            ApiClients.Instance.Initialize(CommandLineOptions);
+            ApiClients.Instance.Initialize(CommandLineOptions, game.CurrentPlanetId);
 
             StartCoroutine(game.InitializeIAP());
 
