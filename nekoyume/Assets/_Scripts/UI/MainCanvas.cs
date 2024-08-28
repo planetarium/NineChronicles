@@ -261,6 +261,12 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<PetSummonResultScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CombinationResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<EnhancementResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CollectionResultScreen>());
+            yield return null;
 
             // 일반.
             _secondWidgets.Add(Widget.Create<Login>());
@@ -356,8 +362,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             _secondWidgets.Add(Widget.Create<InputBoxPopup>());
             _secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
-            _secondWidgets.Add(Widget.Create<CombinationResultPopup>());
-            _secondWidgets.Add(Widget.Create<EnhancementResultPopup>());
             _secondWidgets.Add(Widget.Create<BattleResultPopup>());
             _secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             _secondWidgets.Add(Widget.Create<WorldBossResultPopup>());
@@ -443,8 +447,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<StatsBonusPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionRegistrationPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CollectionResultPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;
