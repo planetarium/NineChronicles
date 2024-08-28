@@ -9,17 +9,14 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI;
-using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
-using Toggle = UnityEngine.UI.Toggle;
 using Vector3 = UnityEngine.Vector3;
 
-namespace Nekoyume
+namespace Nekoyume.UI.Module
 {
     using UniRx;
 
@@ -56,16 +53,16 @@ namespace Nekoyume
         private Button showCartButton;
 
         [SerializeField]
-        private Toggle levelLimitToggle;
+        private UnityEngine.UI.Toggle levelLimitToggle;
 
         [SerializeField]
-        private RectTransform sortOrderIcon = null;
+        private RectTransform sortOrderIcon;
 
         [SerializeField]
-        private TMP_InputField inputField = null;
+        private TMP_InputField inputField;
 
         [SerializeField]
-        private Transform inputPlaceholder = null;
+        private Transform inputPlaceholder;
 
         [SerializeField]
         private GameObject loading;
@@ -214,9 +211,6 @@ namespace Nekoyume
 
         private Action<List<ShopItem>> _onBuyMultiple;
 
-        private Animator _sortAnimator;
-        private Animator _sortOrderAnimator;
-        private Animator _levelLimitAnimator;
         private Animator _resetAnimator;
         private TextMeshProUGUI _sortText;
 
@@ -241,9 +235,6 @@ namespace Nekoyume
 
         protected override void OnAwake()
         {
-            _sortAnimator = sortButton.GetComponent<Animator>();
-            _sortOrderAnimator = sortOrderButton.GetComponent<Animator>();
-            _levelLimitAnimator = levelLimitToggle.GetComponent<Animator>();
             _resetAnimator = resetButton.GetComponent<Animator>();
 
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -525,19 +516,13 @@ namespace Nekoyume
                 case BuyMode.Single:
                     if (_selectedItems.Any())
                     {
+                        ClearSelectedItems();
                         if (item.ItemBase is not null)
                         {
                             if (_selectedItems.Exists(x =>
                                 x.Product.ProductId.Equals(item.Product.ProductId)))
                             {
-                                ClearSelectedItems();
-                            }
-                            else
-                            {
-                                ClearSelectedItems();
-                                item.Selected.SetValueAndForceNotify(true);
-                                _selectedItems.Add(item);
-                                ClickItemAction?.Invoke(item); // Show tooltip popup
+                                break;
                             }
                         }
                         else
@@ -545,51 +530,29 @@ namespace Nekoyume
                             if (_selectedItems.Exists(x =>
                                 x.FungibleAssetProduct.ProductId.Equals(item.FungibleAssetProduct.ProductId)))
                             {
-                                ClearSelectedItems();
-                            }
-                            else
-                            {
-                                ClearSelectedItems();
-                                item.Selected.SetValueAndForceNotify(true);
-                                _selectedItems.Add(item);
-                                ClickItemAction?.Invoke(item); // Show tooltip popup
+                                break;
                             }
                         }
                     }
-                    else
-                    {
-                        item.Selected.SetValueAndForceNotify(true);
-                        _selectedItems.Add(item);
-                        ClickItemAction?.Invoke(item); // Show tooltip popup
-                    }
+
+                    item.Selected.SetValueAndForceNotify(true);
+                    _selectedItems.Add(item);
+                    ClickItemAction?.Invoke(item); // Show tooltip popup
 
                     break;
-
                 case BuyMode.Multiple:
                     cartView.gameObject.SetActive(true);
 
-                    ShopItem selectedItem = null;
+                    ShopItem selectedItem;
                     if (item.ItemBase is not null)
                     {
-                        foreach (var shopItem in _selectedItems.Where(x => x.Product is not null))
-                        {
-                            if (item.Product.ProductId == shopItem.Product.ProductId)
-                            {
-                                selectedItem = shopItem;
-                                break;
-                            }
-                        }
+                        selectedItem = _selectedItems.FirstOrDefault(x =>
+                            x.Product.ProductId.Equals(item.Product.ProductId));
                     }
                     else
                     {
-                        foreach (var shopItem in _selectedItems.Where(x => x.FungibleAssetProduct is not null))
-                        {
-                            if (item.FungibleAssetProduct.ProductId == shopItem.FungibleAssetProduct.ProductId)
-                            {
-                                selectedItem = shopItem;
-                                break;
-                            }
-                        }
+                        selectedItem = _selectedItems.FirstOrDefault(x =>
+                            item.FungibleAssetProduct.ProductId.Equals(x.FungibleAssetProduct.ProductId));
                     }
 
                     if (selectedItem == null)
@@ -602,7 +565,7 @@ namespace Nekoyume
                             return;
                         }
 
-                        if (_selectedItems.Count() < CartMaxCount)
+                        if (_selectedItems.Count < CartMaxCount)
                         {
                             item.Selected.SetValueAndForceNotify(true);
                             _selectedItems.Add(item);
