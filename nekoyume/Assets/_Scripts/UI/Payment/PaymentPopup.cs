@@ -160,8 +160,11 @@ namespace Nekoyume.UI
         // TODO: 위의 ShowLackPayment를 Obsolete 처리 후 아래의 메서드를 사용하도록 변경
         public void ShowLackPaymentDust(CostType costType, BigInteger cost)
         {
-            SetPopupType(PopupType.AttractAction);
+            // TODO: remove
             addCostContainer.SetActive(false);
+
+            var canAttract = CanAttractDust(costType);
+            SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
 
             costIcon.overrideSprite = costIconData.GetIcon(costType);
             var title = L10nManager.Localize("UI_REQUIRED_COUNT");
@@ -170,7 +173,7 @@ namespace Nekoyume.UI
 
             CloseCallback = result =>
             {
-                if (result == ConfirmResult.Yes)
+                if (canAttract && result == ConfirmResult.Yes)
                 {
                     AttractDust(costType);
                 }
@@ -238,7 +241,9 @@ namespace Nekoyume.UI
                 case CostType.RubyDust:
                     return L10nManager.Localize("UI_LACK_RUBY_DUST");
                 case CostType.EmeraldDust:
-                    return L10nManager.Localize("UI_LACK_EMERALD_DUST");
+                    return L10nManager.Localize(CanAttractDust(costType) ?
+                        "UI_LACK_EMERALD_DUST" :
+                        "UI_LACK_EMERALD_DUST_KR");
             }
 
             return string.Empty;
@@ -258,6 +263,21 @@ namespace Nekoyume.UI
             }
 
             return string.Empty;
+        }
+
+        private static bool CanAttractDust(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                case CostType.RubyDust:
+                    return true;
+                case CostType.EmeraldDust:
+                    return !Game.LiveAsset.GameConfig.IsKoreanBuild;
+            }
+
+            return false;
         }
 
         private void AttractDust(CostType costType)
