@@ -1,7 +1,9 @@
+using System;
 using Nekoyume.L10n;
 using System.Numerics;
 using JetBrains.Annotations;
 using Nekoyume.Helper;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -12,6 +14,9 @@ namespace Nekoyume.UI
 {
     public class PaymentPopup : PopupWidget
     {
+        private const string MonsterCollectionString = "MONSTER COLLECTION";
+        private const string AdventureBossString = "ADVENTURE BOSS";
+
         private enum PopupType
         {
             AttractAction, // 재화부족 팝업에서 재화를 얻을 수 있는 경우
@@ -58,28 +63,28 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject attractArrowObject;
-        
+
         [SerializeField]
         private TextMeshProUGUI titleText;
-        
+
         [SerializeField]
         private TextMeshProUGUI contentText;
-        
+
         [SerializeField]
         private TextButton buttonYes;
-        
+
         [SerializeField]
         private TextButton buttonNo;
-        
+
         [SerializeField]
         private Button buttonClose;
-        
+
         [SerializeField]
         private GameObject titleBorder;
 #endregion SerializeField
 
         private ConfirmDelegate CloseCallback { get; set; }
-        
+
         protected override void Awake()
         {
             base.Awake();
@@ -90,7 +95,7 @@ namespace Nekoyume.UI
             CloseWidget = NoWithoutCallback;
             SubmitWidget = Yes;
         }
-        
+
         private void SetPopupType(PopupType popupType)
         {
             switch (popupType)
@@ -126,7 +131,7 @@ namespace Nekoyume.UI
         {
             SetPopupType(PopupType.AttractAction);
             addCostContainer.SetActive(false);
-            
+
             costIcon.overrideSprite = costIconData.GetIcon(costType);
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost;
@@ -150,8 +155,30 @@ namespace Nekoyume.UI
         {
             ShowLackPayment(costType, cost.ToString(), content, attractMessage, onAttract);
         }
+
+        // TODO: 해당 메서드 기반으로 위의 ShowLackPayment을 대체할 수 있을 것으로 보인다면,
+        // TODO: 위의 ShowLackPayment를 Obsolete 처리 후 아래의 메서드를 사용하도록 변경
+        public void ShowLackPaymentDust(CostType costType, BigInteger cost)
+        {
+            SetPopupType(PopupType.AttractAction);
+            addCostContainer.SetActive(false);
+
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
+            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            costText.text = cost.ToString();
+            var content = GetLackDustContentString(costType);
+
+            CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    AttractDust(costType);
+                }
+            };
+            Show(title, content, GetDustAttractString(costType), string.Empty, false);
+        }
 #endregion LackPaymentAction
-        
+
 #region PaymentCheckAction
         public void ShowCheckPayment(
             CostType costType,
@@ -164,7 +191,7 @@ namespace Nekoyume.UI
         {
             SetPopupType(PopupType.PaymentCheck);
             addCostContainer.SetActive(false);
-            
+
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
             costText.text = cost.ToString();
@@ -192,11 +219,91 @@ namespace Nekoyume.UI
                     ShowLackPayment(costType, cost, insufficientMessage, attractMessage, onAttract);
                 }
             };
-            
+
             SetContent(popupTitle, enoughMessage, yes, no, false);
             Show(popupTitle, enoughMessage, yes, no, false);
         }
 #endregion PaymentCheckAction
+
+// TODO: RuneHelper등과 통합? 혹은 별도 파일(PaymentHelper등)으로 분리
+#region DustHelper
+        public static string GetLackDustContentString(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                    return L10nManager.Localize("UI_LACK_SILVER_DUST");
+                case CostType.GoldDust:
+                    return L10nManager.Localize("UI_LACK_GOLD_DUST");
+                case CostType.RubyDust:
+                    return L10nManager.Localize("UI_LACK_RUBY_DUST");
+                case CostType.EmeraldDust:
+                    return L10nManager.Localize("UI_LACK_EMERALD_DUST");
+            }
+
+            return string.Empty;
+        }
+
+        // TODO: 모든 CostType에 대해 처리 가능하면 메서드명 일반적이게 변경하고 수정
+        private string GetDustAttractString(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                case CostType.RubyDust:
+                    return MonsterCollectionString;
+                case CostType.EmeraldDust:
+                    return AdventureBossString;
+            }
+
+            return string.Empty;
+        }
+
+        private void AttractDust(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                case CostType.RubyDust:
+                    AttractToMonsterCollection();
+                    return;
+                case CostType.EmeraldDust:
+                    AttractToAdventureBoss();
+                    return;
+            }
+
+            NcDebug.LogWarning($"[{nameof(PaymentPopup)}] AttractDust: Invalid costType.");
+        }
+#endregion DustHelper
+
+#region Attract
+        private void AttractToMonsterCollection()
+        {
+            CloseWithOtherWidgets();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Find<StakingPopup>().Show();
+        }
+
+        private void AttractToAdventureBoss()
+        {
+            CloseWithOtherWidgets();
+            Game.Event.OnRoomEnter.Invoke(true);
+
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                // TODO: k빌드 대응?
+                return;
+            }
+
+            var currState = Game.Game.instance.AdventureBossData.CurrentState.Value;
+            if (currState == AdventureBossData.AdventureBossSeasonState.Progress)
+            {
+                WorldMapAdventureBoss.OnClickOpenAdventureBoss();
+            }
+        }
+#endregion Attract
 
 #region General
         private void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL", bool localize = true)
@@ -208,7 +315,7 @@ namespace Nekoyume.UI
                 Show();
             }
         }
-        
+
         private void SetContent(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
@@ -236,6 +343,7 @@ namespace Nekoyume.UI
             titleBorder.SetActive(titleExists);
         }
 #endregion General
+
 
         private void Yes()
         {
@@ -266,7 +374,7 @@ namespace Nekoyume.UI
         {
             SetPopupType(PopupType.AttractAction);
             addCostContainer.SetActive(true);
-            
+
             costIcon.overrideSprite = costIconData.GetIcon(costType);
             costText.text = $"{cost:#,0}";
 
