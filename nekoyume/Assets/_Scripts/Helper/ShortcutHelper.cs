@@ -14,6 +14,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.Helper
@@ -35,6 +36,7 @@ namespace Nekoyume.Helper
             EventDungeonStage = 8,
             Summon = 12,
             AdventureBoss = 13,
+            WorldBoss = 14,
 
             MobileShop, // Shop icon is same as ShopPC.
             Upgrade // Upgrade icon is same as Craft.
@@ -330,6 +332,10 @@ namespace Nekoyume.Helper
                     shortcutAction = () => ShortcutActionForAdventureBoss(caller);
                     guideText = L10nManager.Localize("UI_ADVENTURE_BODD_BACK_BUTTON");
                     break;
+                case PlaceType.WorldBoss:
+                    shortcutAction = () => ShortcutActionForWorldBoss(caller);
+                    guideText = L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS");
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -494,6 +500,41 @@ namespace Nekoyume.Helper
             }
         }
 
+        public static void ShortcutActionForWorldBoss(Widget caller)
+        {
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var worldBossStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
+            switch (worldBossStatus)
+            {
+                case WorldBossStatus.Season:
+                    caller.CloseWithOtherWidgets();
+                        Widget.Find<WorldBoss>().ShowAsync().Forget();
+                    break;
+                case WorldBossStatus.OffSeason:
+                    if (WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var next))
+                    {
+                        var remainBlock = next.StartedBlockIndex - currentBlockIndex;
+                        var secondPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+                        var nextStartTime = next.StartedBlockIndex
+                            .BlockIndexToDateTimeString(currentBlockIndex, secondPerBlock, DateTime.Now, "yyyy/MM/dd HH:mm");
+                        var message = L10nManager.Localize("UI_ADVENTUREBOSS_SEASON_ENDED",
+                            remainBlock, remainBlock.BlockRangeToTimeSpanString(), nextStartTime);
+                        OneLineSystem.Push(
+                            MailType.System,
+                            message,
+                            NotificationCell.NotificationType.Alert);
+                    }
+                    else
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            "There is no world boss schedule.",
+                            NotificationCell.NotificationType.Alert);
+                    }
+                    break;
+            }
+        }
+
         /// <summary>
         /// Check the shortcut of model is available.
         /// </summary>
@@ -550,6 +591,9 @@ namespace Nekoyume.Helper
                     return true;
                 case PlaceType.AdventureBoss:
                     return Game.LiveAsset.GameConfig.IsKoreanBuild;
+                case PlaceType.WorldBoss:
+                    return States.Instance.CurrentAvatarState.worldInformation
+                        .IsStageCleared(Game.LiveAsset.GameConfig.RequiredStage.WorldBoss);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -574,6 +618,7 @@ namespace Nekoyume.Helper
                 PlaceType.Upgrade => true,
                 PlaceType.Summon => true,
                 PlaceType.AdventureBoss => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.WorldBoss => !BattleRenderer.Instance.IsOnBattle,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
