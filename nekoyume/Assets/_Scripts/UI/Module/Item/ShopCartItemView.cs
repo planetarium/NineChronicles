@@ -18,9 +18,13 @@ namespace Nekoyume.UI.Module
         private BaseItemView baseItemView;
 
         private readonly List<IDisposable> _disposables = new();
+        
+        public ShopItem ShopItem { get; private set; }
 
         public void Set(ShopItem model, Action<ShopItem> onClick)
         {
+            ShopItem = model;
+            
             if (model == null)
             {
                 baseItemView.Container.SetActive(false);

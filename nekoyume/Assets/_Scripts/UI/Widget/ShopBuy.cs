@@ -167,25 +167,10 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sumPrice =
-                new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
-            foreach (var model in models)
-            {
-                if (model.ItemBase is not null)
-                {
-                    sumPrice += (BigInteger)model.Product.Price * States.Instance.GoldBalanceState.Gold.Currency;
-                }
-                else
-                {
-                    sumPrice += (BigInteger)model.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency;
-                }
-            }
-
+            var sumPrice = GetSumPrice(models);
             if (States.Instance.GoldBalanceState.Gold < sumPrice)
             {
-                OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                    NotificationCell.NotificationType.Information);
+                Find<PaymentPopup>().ShowLackPaymentNCG(sumPrice.ToString());
                 return;
             }
 
@@ -307,6 +292,24 @@ namespace Nekoyume.UI
             var order = await Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
+        }
+
+        public static FungibleAssetValue GetSumPrice(List<ShopItem> models)
+        {
+            var sumPrice = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
+            foreach (var model in models)
+            {
+                if (model.ItemBase is not null)
+                {
+                    sumPrice += (BigInteger)model.Product.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                }
+                else
+                {
+                    sumPrice += (BigInteger)model.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                }
+            }
+
+            return sumPrice;
         }
     }
 }
