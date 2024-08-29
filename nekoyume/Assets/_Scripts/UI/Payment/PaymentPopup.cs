@@ -169,8 +169,6 @@ namespace Nekoyume.UI
         
         public void ShowLackPaymentCrystal(BigInteger cost)
         {
-            // TODO: remove
-            addCostContainer.SetActive(false);
             SetPopupType(PopupType.AttractAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.Crystal);
@@ -191,8 +189,6 @@ namespace Nekoyume.UI
 
         public void ShowLackPaymentNCG(string cost, bool isStaking = false)
         {
-            addCostContainer.SetActive(false);
-            
             var canAttract = CanAttractNCG();
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
@@ -310,7 +306,6 @@ namespace Nekoyume.UI
             System.Action onPaymentSucceed)
         {
             SetPopupType(PopupType.PaymentCheck);
-            addCostContainer.SetActive(false);
 
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
