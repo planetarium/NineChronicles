@@ -166,7 +166,7 @@ namespace Nekoyume.UI.Module
             Widget.Find<AdventureBossEnterBountyPopup>().Show();
         }
 
-        public void OnClickOpenAdventureBoss()
+        public static void OnClickOpenAdventureBoss()
         {
             Widget.Find<LoadingScreen>().Show(LoadingScreen.LoadingType.AdventureBoss);
             try
