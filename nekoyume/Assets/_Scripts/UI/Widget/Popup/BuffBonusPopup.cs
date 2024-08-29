@@ -101,7 +101,7 @@ namespace Nekoyume.UI
             if (States.Instance.CrystalBalance.MajorUnit < cost)
             {
                 var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Find<PaymentPopup>().ShowAttract(
+                Find<PaymentPopup>().ShowLackPayment(
                     CostType.Crystal,
                     _normalCost,
                     message,
@@ -121,7 +121,7 @@ namespace Nekoyume.UI
                 var balance = States.Instance.CrystalBalance;
                 var content = balance.GetPaymentFormatText(usageMessage, _normalCost);
 
-                Find<PaymentPopup>().Show(
+                Find<PaymentPopup>().ShowCheckPayment(
                     CostType.Crystal,
                     balance.MajorUnit,
                     _normalCost,
@@ -140,7 +140,7 @@ namespace Nekoyume.UI
                 var balance = States.Instance.CrystalBalance;
                 var content = balance.GetPaymentFormatText(usageMessage, _advancedCost);
 
-                Find<PaymentPopup>().Show(
+                Find<PaymentPopup>().ShowCheckPayment(
                     CostType.Crystal,
                     balance.MajorUnit,
                     _advancedCost,
