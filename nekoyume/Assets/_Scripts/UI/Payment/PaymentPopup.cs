@@ -203,7 +203,7 @@ namespace Nekoyume.UI
             Show(title, content, labelYesText, string.Empty, false);
         }
 
-        public void ShowLackPaymentNCG(BigInteger cost, bool isStaking = false)
+        public void ShowLackPaymentNCG(string cost, bool isStaking = false)
         {
             addCostContainer.SetActive(false);
             
@@ -212,7 +212,7 @@ namespace Nekoyume.UI
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
             var title = L10nManager.Localize("UI_REQUIRED_COUNT");
-            costText.text = cost.ToString();
+            costText.text = cost;
             var content = GetLackNCGContentString(isStaking);
             
             CloseCallback = result =>
@@ -263,7 +263,7 @@ namespace Nekoyume.UI
                     Close(true);
                     if (costType == CostType.NCG)
                     {
-                        ShowLackPaymentNCG(cost);
+                        ShowLackPaymentNCG(cost.ToString());
                         return;
                     }
                     
@@ -495,7 +495,8 @@ namespace Nekoyume.UI
                 return;
             }
             
-            CloseWithOtherWidgets();
+            CloseWithOtherWidgets();            
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             Find<ShopSell>().Show();
         }
 #endregion Attract
