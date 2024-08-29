@@ -225,7 +225,6 @@ namespace Nekoyume.UI
             
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
         }
-
 #endregion LackPaymentAction
 
 #region PaymentCheckAction
@@ -262,10 +261,19 @@ namespace Nekoyume.UI
                 else
                 {
                     Close(true);
-                    var attractMessage = costType == CostType.Crystal
-                        ? L10nManager.Localize("UI_GO_GRINDING")
-                        : L10nManager.Localize("UI_YES");
-                    ShowLackPayment(costType, cost, insufficientMessage, attractMessage, onAttract);
+                    if (costType == CostType.NCG)
+                    {
+                        ShowLackPaymentNCG(cost);
+                        return;
+                    }
+                    
+                    if (costType == CostType.Crystal)
+                    {
+                        ShowLackPaymentCrystal(cost);
+                        return;
+                    }
+                    
+                    ShowLackPayment(costType, cost, insufficientMessage, L10nManager.Localize("UI_YES"), onAttract);
                 }
             };
 
