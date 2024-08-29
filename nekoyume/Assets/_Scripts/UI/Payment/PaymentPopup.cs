@@ -197,7 +197,7 @@ namespace Nekoyume.UI
             {
                 if (result == ConfirmResult.Yes)
                 {
-                    AttractCrystal();
+                    AttractGrind();
                 }
             };
             Show(title, content, labelYesText, string.Empty, false);
@@ -396,16 +396,6 @@ namespace Nekoyume.UI
 
             NcDebug.LogWarning($"[{nameof(PaymentPopup)}] AttractDust: Invalid costType.");
         }
-        
-        private void AttractCrystal()
-        {
-            Find<Menu>().Close();
-            Find<WorldMap>().Close();
-            Find<StageInformation>().Close();
-            Find<BattlePreparation>().Close();
-            Find<Craft>().Close(true);
-            Find<Grind>().Show();
-        }
 #endregion DustHelper
 
 #region Attract
@@ -436,6 +426,16 @@ namespace Nekoyume.UI
             {
                 WorldMapAdventureBoss.OnClickOpenAdventureBoss();
             }
+        }
+        
+        private void AttractGrind()
+        {
+            Find<Menu>().Close();
+            Find<WorldMap>().Close();
+            Find<StageInformation>().Close();
+            Find<BattlePreparation>().Close();
+            Find<Craft>().Close(true);
+            Find<Grind>().Show();
         }
 #endregion Attract
 
