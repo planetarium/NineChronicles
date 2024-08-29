@@ -149,7 +149,7 @@ namespace Nekoyume
                 return 1;
             }
 
-            if (material.ItemSubType is ItemSubType.Drawing or ItemSubType.DrawingTool)
+            if (material.ItemSubType is ItemSubType.Circle or ItemSubType.Scroll)
             {
                 return 2;
             }
