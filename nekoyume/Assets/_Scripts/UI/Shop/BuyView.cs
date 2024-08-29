@@ -34,9 +34,7 @@ namespace Nekoyume.UI.Module
             public ItemSubTypeFilter typeFilter;  // for identifying
             public ToggleDropdown toggleDropdown;
             public ItemSubTypeFilter[] subTypeFilters;
-            public ShopSortFilter[] sortFilters;
-            [HideInInspector]
-            public int sortFilterIndex;
+            public List<ShopSortFilter> sortFilters;
         }
 
         [SerializeField]
@@ -190,7 +188,6 @@ namespace Nekoyume.UI.Module
                 {
                     _selectedSubTypeFilter.Value = filter.subTypeFilters.First();
                     _selectedSortFilter.Value = filter.sortFilters.First();
-                    filter.sortFilterIndex = 0;
 
                     toggles.First().isOn = true;
                     ResetPage();
@@ -204,7 +201,6 @@ namespace Nekoyume.UI.Module
                         var toggleIndex = toggles.IndexOf(toggle);
                         _selectedSubTypeFilter.Value = filter.subTypeFilters[toggleIndex];
                         _selectedSortFilter.Value = filter.sortFilters.First();
-                        filter.sortFilterIndex = 0;
 
                         ResetPage();
                     });
@@ -217,10 +213,9 @@ namespace Nekoyume.UI.Module
                 var filter = itemTypeFilters.First(filter =>
                     filter.subTypeFilters.Contains(_selectedSubTypeFilter.Value));
                 var sortFilters = filter.sortFilters;
-                var index = filter.sortFilterIndex;
+                var index = sortFilters.IndexOf(_selectedSortFilter.Value);
 
-                var nextIndex = (index + 1) % sortFilters.Length;
-                filter.sortFilterIndex = nextIndex;
+                var nextIndex = (index + 1) % sortFilters.Count;
                 _selectedSortFilter.Value = sortFilters[nextIndex];
 
                 ResetPage();
@@ -481,20 +476,16 @@ namespace Nekoyume.UI.Module
             _loadingCount = 0;
             loading.SetActive(_loadingCount > 0);
 
+            var firstFilter = itemTypeFilters.First();
             cartView.gameObject.SetActive(false);
-            itemTypeFilters.First().toggleDropdown.isOn = true;
-            itemTypeFilters.First().toggleDropdown.items.First().isOn = true;
+            firstFilter.toggleDropdown.isOn = true;
+            firstFilter.toggleDropdown.items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
             levelLimitToggle.isOn = false;
             if (_resetAnimator.isActiveAndEnabled)
             {
                 _resetAnimator.Play(_hashDisabled);
-            }
-
-            foreach (var filter in itemTypeFilters)
-            {
-                filter.sortFilterIndex = 0;
             }
 
             _page.SetValueAndForceNotify(0);
