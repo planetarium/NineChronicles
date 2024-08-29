@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 
 namespace Nekoyume
 {
@@ -78,6 +79,12 @@ namespace Nekoyume
                 : elements.SelectMany((e, i) =>
                     elements.Skip(i + 1).DifferentCombinations(k - 1).Select(c =>
                         new[] { e }.Concat(c)));
+        }
+
+        public static IObservable<int> ObservableIntervalLoopingList(this List<int> elements, double interval)
+        {
+            return Observable.Interval(TimeSpan.FromSeconds(interval))
+                .Select(second => elements[(int)(second % elements.Count)]);
         }
     }
 }

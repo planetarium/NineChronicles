@@ -336,6 +336,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Summon>());
             _secondWidgets.Add(Widget.Create<DccMain>());
             _secondWidgets.Add(Widget.Create<DccCollection>());
+            _secondWidgets.Add(Widget.Create<CustomCraft>());
             yield return null;
 
             // header menu
@@ -366,6 +367,8 @@ namespace Nekoyume.UI
             // popup
             _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CombinationSlotAllPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<BuyFungibleAssetInformationPopup>());
@@ -379,6 +382,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
             _secondWidgets.Add(Widget.Create<GrindingLoadingScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CustomCraftLoadingScreen>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
@@ -449,6 +454,12 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<AddHammerPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RelationshipInfoPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CustomCraftInfoPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<GrindRewardPopup>());
             yield return null;
 
             // tooltip

@@ -21,14 +21,17 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(Model itemData)
         {
-            summonDetailCell.UpdateContent(itemData.SummonDetailCellModel);
+            if (itemData.SummonDetailCellModel is not null)
+            {
+                summonDetailCell.UpdateContent(itemData.SummonDetailCellModel);
+            }
 
             if (itemData.EquipmentOptionRow is not null)
             {
                 skillView.Show(itemData.SkillRow, itemData.EquipmentOptionRow);
             }
 
-            if (itemData.SummonDetailCellModel.RuneOptionInfo is not null)
+            if (itemData.SummonDetailCellModel?.RuneOptionInfo is not null)
             {
                 skillView.Show(itemData.SkillRow, itemData.SummonDetailCellModel.RuneOptionInfo);
             }

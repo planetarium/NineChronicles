@@ -206,7 +206,7 @@ namespace Nekoyume.UI.Scroller
                 var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipeIds.Count);
                 var balance = States.Instance.CrystalBalance;
 
-                Widget.Find<PaymentPopup>().Show(
+                Widget.Find<PaymentPopup>().ShowCheckPayment(
                     CostType.Crystal,
                     balance.MajorUnit,
                     _openCost,
@@ -218,7 +218,7 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Widget.Find<PaymentPopup>().ShowAttract(
+                Widget.Find<PaymentPopup>().ShowLackPayment(
                     CostType.Crystal,
                     _openCost,
                     message,

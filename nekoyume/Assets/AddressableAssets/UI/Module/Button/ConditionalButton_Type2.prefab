@@ -33,7 +33,7 @@ RectTransform:
   m_Children:
   - {fileID: 2747417932831004198}
   m_Father: {fileID: 3909500369725347631}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -917,9 +917,9 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1903650326878043605}
+  - {fileID: 2592202645588241054}
   - {fileID: 2384478660833484915}
   - {fileID: 6292396429046445827}
-  - {fileID: 2592202645588241054}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3376,7 +3376,7 @@ RectTransform:
   m_Children:
   - {fileID: 8298936364406232423}
   m_Father: {fileID: 3909500369725347631}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -5579,7 +5579,7 @@ RectTransform:
   m_Children:
   - {fileID: 5860754876538908341}
   m_Father: {fileID: 3909500369725347631}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -14046,7 +14046,7 @@ ParticleSystemRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7607186536900021532}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

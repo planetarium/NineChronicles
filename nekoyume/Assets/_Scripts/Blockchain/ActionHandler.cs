@@ -21,8 +21,6 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
-using UnityEngine;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Blockchain
 {
@@ -402,16 +400,18 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            if (Game.Game.instance.CachedStates.ContainsKey(accountAddress.Derive(state.address.ToByteArray())))
+            if (!Game.Game.instance.CachedStates.ContainsKey(accountAddress.Derive(state.address.ToByteArray())))
             {
-                try
-                {
-                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
-                }
-                catch (NotSupportedException)
-                {
-                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.SerializeList();
-                }
+                return;
+            }
+
+            try
+            {
+                Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
+            }
+            catch (NotSupportedException)
+            {
+                Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.SerializeList();
             }
         }
 
