@@ -109,9 +109,21 @@ namespace Nekoyume.Helper
 
                         break;
                     case ItemSubType.Circle:
+                    {
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.WorldBoss));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
+
+                        var stageRow = TableSheets.Instance.StageSheet
+                            .GetStagesContainsReward(itemId).OrderStagesByPriority(itemId)
+                            .FirstOrDefault();
+                        if (stageRow is not null && TableSheets.Instance.WorldSheet.TryGetByStageId(stageRow.Id, out var worldRow))
+                        {
+                            acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Stage, (worldRow.Id, stageRow.Id)));
+                        }
+
                         break;
+                    }
                     case ItemSubType.Scroll:
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
@@ -359,6 +371,9 @@ namespace Nekoyume.Helper
             int itemId,
             bool isEventStageRows = false)
         {
+            States.Instance.CurrentAvatarState.worldInformation
+                .TryGetLastClearedStageId(out var lastClearedStageId);
+
             var result = new List<StageSheet.Row>();
             var rowList = stageRows.Where(stageRow =>
             {
@@ -372,12 +387,10 @@ namespace Nekoyume.Helper
                     return stageRow.Id.ToEventDungeonStageNumber() <= 1;
                 }
 
-                States.Instance.CurrentAvatarState.worldInformation
-                    .TryGetLastClearedStageId(out var lastClearedStageId);
                 return stageRow.Id <= lastClearedStageId + 1;
             }).ToList();
 
-            // If 'stageRows' contains cleared stage
+            // If 'rowList' contains cleared stage
             if (rowList.Any())
             {
                 // First recommended stage is the highest level in rowList.
@@ -590,7 +603,7 @@ namespace Nekoyume.Helper
                 case PlaceType.Summon:
                     return true;
                 case PlaceType.AdventureBoss:
-                    return Game.LiveAsset.GameConfig.IsKoreanBuild;
+                    return !Game.LiveAsset.GameConfig.IsKoreanBuild;
                 case PlaceType.WorldBoss:
                     return States.Instance.CurrentAvatarState.worldInformation
                         .IsStageCleared(Game.LiveAsset.GameConfig.RequiredStage.WorldBoss);
