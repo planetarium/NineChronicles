@@ -78,6 +78,18 @@ namespace Nekoyume.UI.Module
 
         private int _loadingCount;
 
+        private static readonly Dictionary<ShopSortFilter, bool> SortFilterAscending = new()
+        {
+            { ShopSortFilter.CP, true },
+            { ShopSortFilter.Price, true },
+            { ShopSortFilter.Class, true },
+            { ShopSortFilter.Crystal, true },
+            { ShopSortFilter.CrystalPerPrice, true },
+            { ShopSortFilter.EquipmentLevel, true },
+            { ShopSortFilter.OptionCount, true },
+            { ShopSortFilter.UnitPrice, true }
+        };
+
         private readonly List<ShopItem> _selectedItems = new();
         private readonly List<int> _itemIds = new();
         private readonly List<int> _runeIds = new();
@@ -188,6 +200,7 @@ namespace Nekoyume.UI.Module
                 {
                     _selectedSubTypeFilter.Value = filter.subTypeFilters.First();
                     _selectedSortFilter.Value = filter.sortFilters.First();
+                    _isAscending.Value = SortFilterAscending[_selectedSortFilter.Value];
 
                     toggles.First().isOn = true;
                     ResetPage();
@@ -201,6 +214,7 @@ namespace Nekoyume.UI.Module
                         var toggleIndex = toggles.IndexOf(toggle);
                         _selectedSubTypeFilter.Value = filter.subTypeFilters[toggleIndex];
                         _selectedSortFilter.Value = filter.sortFilters.First();
+                        _isAscending.Value = SortFilterAscending[_selectedSortFilter.Value];
 
                         ResetPage();
                     });
@@ -217,6 +231,7 @@ namespace Nekoyume.UI.Module
 
                 var nextIndex = (index + 1) % sortFilters.Count;
                 _selectedSortFilter.Value = sortFilters[nextIndex];
+                _isAscending.Value = SortFilterAscending[_selectedSortFilter.Value];
 
                 ResetPage();
             });
@@ -489,10 +504,10 @@ namespace Nekoyume.UI.Module
             }
 
             _page.SetValueAndForceNotify(0);
-            _selectedSubTypeFilter.SetValueAndForceNotify(ItemSubTypeFilter.Weapon);
-            _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.CP);
+            _selectedSubTypeFilter.SetValueAndForceNotify(firstFilter.subTypeFilters.First());
+            _selectedSortFilter.SetValueAndForceNotify(firstFilter.sortFilters.First());
+            _isAscending.SetValueAndForceNotify(SortFilterAscending[_selectedSortFilter.Value]);
             _useSearch.SetValueAndForceNotify(false);
-            _isAscending.SetValueAndForceNotify(false);
             _levelLimit.SetValueAndForceNotify(false);
             _mode.SetValueAndForceNotify(BuyMode.Single);
 
