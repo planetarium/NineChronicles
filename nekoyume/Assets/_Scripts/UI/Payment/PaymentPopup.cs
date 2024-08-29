@@ -202,6 +202,30 @@ namespace Nekoyume.UI
             };
             Show(title, content, labelYesText, string.Empty, false);
         }
+
+        public void ShowLackPaymentNCG(BigInteger cost, bool isStaking = false)
+        {
+            addCostContainer.SetActive(false);
+            
+            var canAttract = CanAttractNCG();
+            SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
+            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            costText.text = cost.ToString();
+            var content = GetLackNCGContentString(isStaking);
+            
+            CloseCallback = result =>
+            {
+                if (canAttract && result == ConfirmResult.Yes)
+                {
+                    AttractShop();
+                }
+            };
+            
+            Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
+        }
+
 #endregion LackPaymentAction
 
 #region PaymentCheckAction
@@ -398,6 +422,23 @@ namespace Nekoyume.UI
         }
 #endregion DustHelper
 
+#region NCGHelper
+        public static string GetLackNCGContentString(bool isStaking = false)
+        {
+            return isStaking ?
+                L10nManager.Localize("UI_LACK_NCG_STAKING") :
+                L10nManager.Localize("UI_LACK_NCG");
+        }
+        
+        private static bool CanAttractNCG()
+        {
+#if UNITY_ANDROID || UNITY_IOS
+            return false;
+#endif
+            return !Game.LiveAsset.GameConfig.IsKoreanBuild;
+        }
+#endregion NCGHelper
+        
 #region Attract
         private void AttractToMonsterCollection()
         {
@@ -409,16 +450,14 @@ namespace Nekoyume.UI
 
         private void AttractToAdventureBoss()
         {
-            CloseWithOtherWidgets();
-
             if (Game.LiveAsset.GameConfig.IsKoreanBuild)
             {
-                // K빌드인 경우 로비로 이동
+                // K빌드인 경우 이동하지 않음
                 NcDebug.LogWarning("Korean build is not supported.");
-                Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
 
+            CloseWithOtherWidgets();
             Find<WorldMap>().Show();
 
             var currState = Game.Game.instance.AdventureBossData.CurrentState.Value;
@@ -436,6 +475,20 @@ namespace Nekoyume.UI
             Find<BattlePreparation>().Close();
             Find<Craft>().Close(true);
             Find<Grind>().Show();
+        }
+
+        private void AttractShop()
+        {
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                // K빌드인 경우 이동하지 않음
+                NcDebug.LogWarning("Korean build is not supported.");
+                Game.Event.OnRoomEnter.Invoke(true);
+                return;
+            }
+            
+            CloseWithOtherWidgets();
+            Find<ShopSell>().Show();
         }
 #endregion Attract
 
@@ -477,7 +530,6 @@ namespace Nekoyume.UI
             titleBorder.SetActive(titleExists);
         }
 #endregion General
-
 
         private void Yes()
         {
