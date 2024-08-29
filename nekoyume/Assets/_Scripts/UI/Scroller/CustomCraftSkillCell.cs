@@ -1,6 +1,5 @@
 ﻿using System;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +7,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Scroller
 {
     using UniRx;
-    public class CustomCraftSkillCell : RectCell<CustomCraftSkillCell.Model, RectScrollDefaultContext>
+    public class CustomCraftSkillCell : RectCell<CustomCraftSkillCell.Model, CustomCraftSkillScroll.ContextModel>
     {
         public class Model
         {
@@ -26,9 +25,6 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         private Button detailButton;
-
-        [SerializeField]
-        private SkillPositionTooltip skillPositionTooltip;
 
         private SkillSheet.Row _skillRow;
         private EquipmentItemOptionSheet.Row _optionRow;
@@ -51,7 +47,7 @@ namespace Nekoyume.UI.Scroller
 
         private void OnClickDetailButton(Unit _)
         {
-            skillPositionTooltip.Show(_skillRow, _optionRow);
+            Context.OnClickDetailButton.OnNext((new Model {OptionRow = _optionRow, SkillRow = _skillRow}, detailButton.transform));
         }
     }
 }

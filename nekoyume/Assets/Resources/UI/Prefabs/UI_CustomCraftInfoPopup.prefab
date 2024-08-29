@@ -3828,6 +3828,7 @@ MonoBehaviour:
   skillScroll: {fileID: 8838713190715733722}
   statTabButton: {fileID: 2057212479280774712}
   skillTabButton: {fileID: 1392091202532472646}
+  skillPositionTooltip: {fileID: 7466996672094782120}
 --- !u!1 &7942281865644105343
 GameObject:
   m_ObjectHideFlags: 0
@@ -5251,17 +5252,17 @@ PrefabInstance:
     - target: {fileID: 7195574900311794010, guid: 9e4148b8f5dd0492c86585ef520e7c8a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.0000376
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7195574900311794010, guid: 9e4148b8f5dd0492c86585ef520e7c8a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.0000376
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7195574900311794010, guid: 9e4148b8f5dd0492c86585ef520e7c8a,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.0000376
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7195574900311794010, guid: 9e4148b8f5dd0492c86585ef520e7c8a,
         type: 3}
@@ -5436,6 +5437,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2395154355844325856}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7466996672094782120 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5088317553108804424, guid: 9e4148b8f5dd0492c86585ef520e7c8a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2395154355844325856}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b889cf95a54e84a95f42574e587173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6881157474906184701
 PrefabInstance:
   m_ObjectHideFlags: 0

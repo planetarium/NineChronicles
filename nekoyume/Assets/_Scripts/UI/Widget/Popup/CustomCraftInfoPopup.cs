@@ -5,6 +5,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Common;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 
@@ -25,6 +26,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private CategoryTabButton skillTabButton;
 
+        [SerializeField]
+        private SkillPositionTooltip skillPositionTooltip;
+
         private ItemSubType _selectedSubtype;
         private CategoryTabButton _selectedTabButton;
 
@@ -33,6 +37,7 @@ namespace Nekoyume.UI
             base.Initialize();
             statTabButton.OnClick.Subscribe(ShowStatView).AddTo(gameObject);
             skillTabButton.OnClick.Subscribe(ShowSkillView).AddTo(gameObject);
+            skillScroll.OnClickDetailButton.Subscribe(OnClickSkillDetailButton).AddTo(gameObject);
         }
 
         public void Show(ItemSubType subType, bool ignoreShowAnimation = false)
@@ -100,6 +105,14 @@ namespace Nekoyume.UI
             }));
             skillScroll.gameObject.SetActive(true);
             statScroll.gameObject.SetActive(false);
+        }
+
+        private void OnClickSkillDetailButton((CustomCraftSkillCell.Model, Transform) model)
+        {
+            skillPositionTooltip.transform.SetParent(model.Item2);
+            skillPositionTooltip.transform.localPosition = Vector3.zero;
+            skillPositionTooltip.transform.SetParent(skillScroll.transform);
+            skillPositionTooltip.Show(model.Item1.SkillRow, model.Item1.OptionRow);
         }
     }
 }
