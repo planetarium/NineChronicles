@@ -124,6 +124,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1455c052005334ab6aa8ab41881519d1, type: 3}
   - {fileID: 21300000, guid: 26ba8252e549c624092542959d6b9419, type: 3}
   - {fileID: 21300000, guid: 8a64af5246a66451fb5873024699fc80, type: 3}
+  - {fileID: 21300000, guid: c41f2a624a2bc8b4385d837032d2dad6, type: 3}
   - {fileID: 21300000, guid: 1dd52c625e931c8419bd680c998ec26b, type: 3}
   - {fileID: 21300000, guid: 2f183c62cc23f56488cada258bdc5ac0, type: 3}
   - {fileID: 21300000, guid: b82e967278150dc43ad7f00072f47fff, type: 3}
@@ -201,6 +202,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d309b675d7e184bee91db6933ab7f077, type: 3}
   - {fileID: 21300000, guid: 3c96818566f295b4c9c5c68d0ce6da1d, type: 3}
   - {fileID: 21300000, guid: b53dd685a2b6c46f28710d1b5e4e59c7, type: 3}
+  - {fileID: 21300000, guid: 862541a5bb5f47e43b6565afcc8fe096, type: 3}
   - {fileID: 21300000, guid: 070e16a528d8a4677ab39476e5be0dce, type: 3}
   - {fileID: 21300000, guid: 1a9e4fa58d6c21049bb913ef2ca612e6, type: 3}
   - {fileID: 21300000, guid: 372372b53d991a045934329a3a59f902, type: 3}
@@ -552,6 +554,7 @@ SpriteAtlas:
   - UI_bg_frame_07
   - Button_Plus
   - UI_bg_frame_deco_01
+  - UI_main_icon_crystal
   - icon_combination_01_black
   - DailyBonusGauge_Bg
   - ui_dialog_name_bg
@@ -629,6 +632,7 @@ SpriteAtlas:
   - UI_main_icon_gold
   - PatrolGauge_01
   - UI_QuestType_bg_normal
+  - UI_Combination_Slot_Question2
   - UI_bg_frame_10
   - UI_icon_login_id
   - UI_stage_bar_bg

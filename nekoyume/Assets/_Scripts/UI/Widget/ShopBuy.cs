@@ -66,8 +66,7 @@ namespace Nekoyume.UI
 
                 if (view.IsCartEmpty)
                 {
-                    Close();
-                    Game.Event.OnRoomEnter.Invoke(false);
+                    CloseAndGoToMain();
                 }
                 else
                 {
@@ -75,7 +74,13 @@ namespace Nekoyume.UI
                         L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
                         L10nManager.Localize("UI_YES"),
                         L10nManager.Localize("UI_NO"),
-                        () => Close());
+                        CloseAndGoToMain);
+                }
+
+                void CloseAndGoToMain()
+                {
+                    Close();
+                    Game.Event.OnRoomEnter.Invoke(false);
                 }
             };
 

@@ -174,20 +174,6 @@ namespace Nekoyume.Blockchain
                     continue;
                 }
 
-                var rewardMap = quest.Reward.ItemMap;
-
-                foreach (var reward in rewardMap)
-                {
-                    var materialRow = TableSheets.Instance
-                        .MaterialItemSheet
-                        .First(pair => pair.Key == reward.Item1);
-
-                    LocalLayerModifier.RemoveItem(
-                        avatarAddress,
-                        materialRow.Value.ItemId,
-                        reward.Item2);
-                }
-
                 LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
             }
         }

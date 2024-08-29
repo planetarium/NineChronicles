@@ -352,6 +352,11 @@ namespace Nekoyume.UI
 
         private void RefreshGridByCategory(string categoryName)
         {
+            if(string.IsNullOrEmpty(categoryName))
+            {
+                return;
+            }
+
             Analyzer.Instance.Track("Unity/Shop/IAP/Tab/Click", ("category-name", categoryName));
 
             var evt = new AirbridgeEvent("IAP_Tab_Click");

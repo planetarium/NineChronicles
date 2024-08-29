@@ -36,7 +36,8 @@ namespace Nekoyume.Game.Character
             Disappear_02,
             Disappear_03,
             Over,
-            Click
+            Click,
+            Motion_01,
         }
 
         public static readonly List<Type> List = new();
