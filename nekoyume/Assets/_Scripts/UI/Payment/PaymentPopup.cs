@@ -415,7 +415,8 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_LACK_NCG");
         }
         
-        private static bool CanAttractNCG()
+        // TODO: CanUseNCG같은 용도로 공용으로 뺄 수 없을지 확인.
+        public static bool CanAttractNCG()
         {
 #if UNITY_ANDROID || UNITY_IOS
             return false;
