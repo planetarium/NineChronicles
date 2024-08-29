@@ -919,7 +919,7 @@ GameObject:
   - component: {fileID: 7276823086579935172}
   - component: {fileID: 8611433210833484679}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1184,7 +1184,7 @@ GameObject:
   - component: {fileID: 2011907296435781328}
   - component: {fileID: 7613724535637229166}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Pattern_LT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1274,7 +1274,7 @@ GameObject:
   - component: {fileID: 5330313618341515234}
   - component: {fileID: 5122740787621848040}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: Bg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1351,7 +1351,7 @@ GameObject:
   - component: {fileID: 7206683878586830192}
   - component: {fileID: 7327375834303101362}
   m_Layer: 5
-  m_Name: Image (3)
+  m_Name: Pattern_RB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1441,7 +1441,7 @@ GameObject:
   - component: {fileID: 2174395896393859200}
   - component: {fileID: 7789470923793950077}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Gradiant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1518,7 +1518,7 @@ GameObject:
   - component: {fileID: 648352593522986251}
   - component: {fileID: 1640412779154982529}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: Pattern_LB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1685,7 +1685,7 @@ GameObject:
   - component: {fileID: 2017109228631778647}
   - component: {fileID: 5403796912005713440}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: Pattern_RT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
