@@ -440,7 +440,7 @@ GameObject:
   - component: {fileID: 5998879089479781820}
   - component: {fileID: 4292628250397066243}
   - component: {fileID: 4179648417754872381}
-  - component: {fileID: 4749463945077621344}
+  - component: {fileID: 7716842115978672533}
   m_Layer: 5
   m_Name: SkillInformationCell
   m_TagString: Untagged
@@ -489,7 +489,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &4749463945077621344
+--- !u!114 &7716842115978672533
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -498,13 +498,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5461914355506504387}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7e95c35103e4b0ebeaa60a0076d7a4f, type: 3}
+  m_Script: {fileID: 11500000, guid: 0dcabc4c779a4ab089d15be19c6064c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  relationshipSectionText: {fileID: 1082693973678164527}
-  cpText: {fileID: 2697877175899941547}
-  requiredLevelText: {fileID: 0}
-  focusObject: {fileID: 0}
+  nameText: {fileID: 1082693973678164527}
+  ratioText: {fileID: 2697877175899941547}
+  detailButton: {fileID: 4792810231778887530}
 --- !u!1001 &4717889354422268257
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -834,6 +833,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a812d18fa892c4179af699940de59fec, type: 3}
+--- !u!114 &4792810231778887530 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2786512169164400058, guid: a812d18fa892c4179af699940de59fec,
+    type: 3}
+  m_PrefabInstance: {fileID: 7217253212084052688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8632387133786003862 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1433468297690921798, guid: a812d18fa892c4179af699940de59fec,

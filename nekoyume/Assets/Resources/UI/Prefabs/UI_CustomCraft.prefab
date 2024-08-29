@@ -245,8 +245,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -20}
-  m_SizeDelta: {x: 120, y: 120}
+  m_AnchoredPosition: {x: 0, y: -30}
+  m_SizeDelta: {x: 90, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &24637166604130269
 CanvasRenderer:
@@ -31618,6 +31618,7 @@ MonoBehaviour:
   selectedSpineView: {fileID: 1784276097459207839}
   craftedCountObject: {fileID: 5756333621691309837}
   craftedCountText: {fileID: 3011621742617305177}
+  maxMainStatText: {fileID: 2450121384887211001}
 --- !u!1 &5424563364131905743
 GameObject:
   m_ObjectHideFlags: 0
