@@ -580,58 +580,67 @@ namespace Nekoyume.IAPStore
                 }
                 else
                 {
-                    Widget.Find<MobileShop>()?.PurchaseComplete(e.purchasedProduct.definition.id);
-                    if (_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
+                    try
                     {
-                        p.PurchaseCount++;
-                        if (p.DailyLimit != null)
+                        Widget.Find<MobileShop>()?.PurchaseComplete(e.purchasedProduct.definition.id);
+                        if (_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
                         {
-                            p.Buyable = p.PurchaseCount < p.DailyLimit.Value;
+                            p.PurchaseCount++;
+                            if (p.DailyLimit != null)
+                            {
+                                p.Buyable = p.PurchaseCount < p.DailyLimit.Value;
+                            }
+                            else if (p.WeeklyLimit != null)
+                            {
+                                p.Buyable = p.PurchaseCount < p.WeeklyLimit.Value;
+                            }
                         }
-                        else if (p.WeeklyLimit != null)
+
+                        Analyzer.Instance.Track(
+                            "Unity/Shop/IAP/PurchaseResult",
+                            ("product-id", e.purchasedProduct.definition.id),
+                            ("result", "Complete"),
+                            ("transaction-id", e.purchasedProduct.transactionID));
+
+                        var evt = new AirbridgeEvent("IAP");
+                        evt.SetAction(e.purchasedProduct.definition.id);
+                        evt.SetLabel("iap");
+                        evt.SetCurrency(e.purchasedProduct.metadata.isoCurrencyCode);
+                        evt.SetValue((double)e.purchasedProduct.metadata.localizedPrice);
+                        evt.AddCustomAttribute("product-id", e.purchasedProduct.definition.id);
+                        evt.SetTransactionId(e.purchasedProduct.transactionID);
+                        AirbridgeUnity.TrackEvent(evt);
+
+                        popup.Show(
+                            "UI_COMPLETED",
+                            "UI_IAP_PURCHASE_COMPLETE",
+                            "UI_OK",
+                            true,
+                            IconAndButtonSystem.SystemType.Information);
+
+                        popup.ConfirmCallback = () =>
                         {
-                            p.Buyable = p.PurchaseCount < p.WeeklyLimit.Value;
-                        }
+                            var cachedPassphrase = KeyManager.GetCachedPassphrase(
+                                states.AgentState.address,
+                                Util.AesDecrypt,
+                                string.Empty);
+                            if (cachedPassphrase.Equals(string.Empty))
+                            {
+                                Widget.Find<LoginSystem>().ShowResetPassword();
+                            }
+                        };
+
+                        Widget.Find<MobileShop>()?.RefreshGrid();
+                        Widget.Find<ShopListPopup>()?.Close();
+                        _controller.ConfirmPendingPurchase(e.purchasedProduct);
+                        RemoveLocalTransactions(e.purchasedProduct.transactionID);
                     }
-
-                    Analyzer.Instance.Track(
-                        "Unity/Shop/IAP/PurchaseResult",
-                        ("product-id", e.purchasedProduct.definition.id),
-                        ("result", "Complete"),
-                        ("transaction-id", e.purchasedProduct.transactionID));
-
-                    var evt = new AirbridgeEvent("IAP");
-                    evt.SetAction(e.purchasedProduct.definition.id);
-                    evt.SetLabel("iap");
-                    evt.SetCurrency(e.purchasedProduct.metadata.isoCurrencyCode);
-                    evt.SetValue((double)e.purchasedProduct.metadata.localizedPrice);
-                    evt.AddCustomAttribute("product-id", e.purchasedProduct.definition.id);
-                    evt.SetTransactionId(e.purchasedProduct.transactionID);
-                    AirbridgeUnity.TrackEvent(evt);
-
-                    popup.Show(
-                        "UI_COMPLETED",
-                        "UI_IAP_PURCHASE_COMPLETE",
-                        "UI_OK",
-                        true,
-                        IconAndButtonSystem.SystemType.Information);
-
-                    popup.ConfirmCallback = () =>
+                    catch (Exception error)
                     {
-                        var cachedPassphrase = KeyManager.GetCachedPassphrase(
-                            states.AgentState.address,
-                            Util.AesDecrypt,
-                            string.Empty);
-                        if (cachedPassphrase.Equals(string.Empty))
-                        {
-                            Widget.Find<LoginSystem>().ShowResetPassword();
-                        }
-                    };
-
-                    Widget.Find<MobileShop>()?.RefreshGrid();
-                    Widget.Find<ShopListPopup>()?.Close();
-                    _controller.ConfirmPendingPurchase(e.purchasedProduct);
-                    RemoveLocalTransactions(e.purchasedProduct.transactionID);
+                        NcDebug.LogError("[OnPurchaseRequestAsync] Log Error " + error);
+                        _controller.ConfirmPendingPurchase(e.purchasedProduct);
+                        RemoveLocalTransactions(e.purchasedProduct.transactionID);
+                    }
                 }
             }
             catch (Exception exc)

@@ -274,3 +274,10 @@ public class InvalidSellingPriceException : Exception
     {
     }
 }
+
+public class WorldBossStateNotFoundException : Exception
+{
+    public WorldBossStateNotFoundException() : base("RaiderState is null, you need to enter the world boss season in lobby.")
+    {
+    }
+}

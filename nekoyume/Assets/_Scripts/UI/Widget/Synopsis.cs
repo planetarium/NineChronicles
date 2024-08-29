@@ -376,8 +376,6 @@ namespace Nekoyume.UI
             skipButton.SetActive(true);
             StartCoroutine(StartSynopsis(true));
         }
-        
-        public LoginScene LoginScene { get; set; }
 
         private async Task End()
         {
@@ -387,23 +385,18 @@ namespace Nekoyume.UI
             {
                 try
                 {
-                    var loadingScreen = Find<LoadingScreen>();
-                    loadingScreen.Show(
-                        LoadingScreen.LoadingType.Entering,
-                        L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                     await LoginScene.EnterGame(slotIndex, false);
-                    loadingScreen.Close();
                 }
                 catch (KeyNotFoundException e)
                 {
                     NcDebug.LogWarning(e.Message);
                     Find<LoadingScreen>().Close();
-                    LoginScene.EnterCharacterSelect();
+                    await LoginScene.EnterCharacterSelect();
                 }
             }
             else
             {
-                LoginScene.EnterCharacterSelect();
+                await LoginScene.EnterCharacterSelect();
             }
 
             Analyzer.Instance.Track("Unity/Synopsis End");
