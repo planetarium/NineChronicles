@@ -4274,7 +4274,6 @@ namespace Nekoyume.Blockchain
             UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            LoadingHelper.CustomEquipmentCraft.Value = false;
 
             return (eval, slot);
         }
@@ -4326,6 +4325,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
+            LoadingHelper.CustomEquipmentCraft.Value = false;
         }
 
         /// <summary>
