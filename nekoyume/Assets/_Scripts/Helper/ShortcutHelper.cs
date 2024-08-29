@@ -111,8 +111,8 @@ namespace Nekoyume.Helper
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
                         break;
                     case ItemSubType.Scroll:
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                         break;
                 }
             }
@@ -457,15 +457,6 @@ namespace Nekoyume.Helper
 
         public static void ShortcutActionForAdventureBoss(Widget caller)
         {
-            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-            {
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_ADVENTUREBOSS_ENTER_KOREAN_BUILD"),
-                    NotificationCell.NotificationType.Alert);
-                return;
-            }
-
             var adventureBossData = Game.Game.instance.AdventureBossData;
             var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
             switch (adventureBossData.CurrentState.Value)
@@ -556,8 +547,9 @@ namespace Nekoyume.Helper
                 case PlaceType.Craft:
                 case PlaceType.Upgrade:
                 case PlaceType.Summon:
-                case PlaceType.AdventureBoss:
                     return true;
+                case PlaceType.AdventureBoss:
+                    return Game.LiveAsset.GameConfig.IsKoreanBuild;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
