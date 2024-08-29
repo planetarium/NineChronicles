@@ -4,11 +4,13 @@ using Nekoyume.Game;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class CustomCraftInfoPopup : PopupWidget
     {
         [SerializeField]
@@ -17,15 +19,47 @@ namespace Nekoyume.UI
         [SerializeField]
         private CustomCraftSkillScroll skillScroll;
 
+        [SerializeField]
+        private CategoryTabButton statTabButton;
+
+        [SerializeField]
+        private CategoryTabButton skillTabButton;
+
+        private ItemSubType _selectedSubtype;
+        private CategoryTabButton _selectedTabButton;
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            statTabButton.OnClick.Subscribe(ShowStatView).AddTo(gameObject);
+            skillTabButton.OnClick.Subscribe(ShowSkillView).AddTo(gameObject);
+        }
+
         public void Show(ItemSubType subType, bool ignoreShowAnimation = false)
         {
+            _selectedSubtype = subType;
+            _selectedTabButton = statTabButton;
+            ShowStatView(_selectedTabButton);
+            base.Show(ignoreShowAnimation);
+        }
+
+        private void ShowStatView(CategoryTabButton tabButton)
+        {
+            if (tabButton != _selectedTabButton && _selectedTabButton != null)
+            {
+                _selectedTabButton.SetToggledOff();
+            }
+
+            tabButton.SetToggledOn();
+            _selectedTabButton = tabButton;
+
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList
                 .First(row => row.Relationship >= ReactiveAvatarState.Relationship);
             var maxCp = relationshipRow.MaxCp;
 
             var models = TableSheets.Instance.CustomEquipmentCraftOptionSheet.Values
-                .Where(row => row.ItemSubType == subType)
+                .Where(row => row.ItemSubType == _selectedSubtype)
                 .Select(row =>
                 {
                     var compositionString = row.SubStatData
@@ -40,8 +74,22 @@ namespace Nekoyume.UI
                 }).ToList();
 
             statScroll.UpdateData(models);
+            statScroll.gameObject.SetActive(true);
+            skillScroll.gameObject.SetActive(false);
+        }
+
+        private void ShowSkillView(CategoryTabButton tabButton)
+        {
+            if (tabButton != _selectedTabButton && _selectedTabButton != null)
+            {
+                _selectedTabButton.SetToggledOff();
+            }
+
+            tabButton.SetToggledOn();
+            _selectedTabButton = tabButton;
+
             var skillRows = TableSheets.Instance.CustomEquipmentCraftRecipeSkillSheet.Values
-                .Where(row => row.ItemSubType == subType)
+                .Where(row => row.ItemSubType == _selectedSubtype)
                 .Select(row => (TableSheets.Instance.EquipmentItemOptionSheet[row.ItemOptionId], row.Ratio));
             skillScroll.UpdateData(skillRows.Select(tuple => new CustomCraftSkillCell.Model
             {
@@ -50,7 +98,8 @@ namespace Nekoyume.UI
                 OptionRow = tuple.Item1,
                 SkillRow = TableSheets.Instance.SkillSheet[tuple.Item1.SkillId]
             }));
-            base.Show(ignoreShowAnimation);
+            skillScroll.gameObject.SetActive(true);
+            statScroll.gameObject.SetActive(false);
         }
     }
 }

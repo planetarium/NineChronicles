@@ -816,7 +816,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8780091034476921605}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7049025560381120688}
+        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
+        m_MethodName: Close
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &6830732694046154644
 Animator:
   serializedVersion: 5
@@ -1047,8 +1059,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 7.499996}
-  m_SizeDelta: {x: -49.999992, y: -215}
+  m_AnchoredPosition: {x: 0, y: -17.000002}
+  m_SizeDelta: {x: -49.999992, y: -166}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6272132287182889976
 CanvasRenderer:
@@ -1126,8 +1138,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1533da7d7d340c490e631ae71415cc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: 0.10672854
-  scrollOffset: 0.10672854
+  cellInterval: 0.09583333
+  scrollOffset: 0.09583333
   loop: 0
   cellContainer: {fileID: 5240674189203256206}
   reuseCellMarginCount: 0
@@ -1137,7 +1149,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 1762418056007695997, guid: 60c3f682d61e9c7458bdf6fe60f158e3,
     type: 3}
   cellSize: 46
-  forcedScrollSensitivity: 8
+  forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 0
 --- !u!1 &2475512830637660896
 GameObject:
@@ -1536,7 +1548,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_CP
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1860,8 +1872,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -16.999954}
-  m_SizeDelta: {x: -49.999992, y: -165.99991}
+  m_AnchoredPosition: {x: 0, y: -17}
+  m_SizeDelta: {x: -49.999992, y: -166}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4009100814315705933
 CanvasRenderer:
@@ -1939,8 +1951,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96723997e51640d9bd9adba2fe81b2a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: 0.09583332
-  scrollOffset: 0.09583332
+  cellInterval: 0.09583333
+  scrollOffset: 0.09583333
   loop: 0
   cellContainer: {fileID: 5038777522411427105}
   reuseCellMarginCount: 0
@@ -3639,7 +3651,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_RELATIONSHIP
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -3814,6 +3826,8 @@ MonoBehaviour:
   tutorialActions: 
   statScroll: {fileID: 3858717014320934908}
   skillScroll: {fileID: 8838713190715733722}
+  statTabButton: {fileID: 2057212479280774712}
+  skillTabButton: {fileID: 1392091202532472646}
 --- !u!1 &7942281865644105343
 GameObject:
   m_ObjectHideFlags: 0
