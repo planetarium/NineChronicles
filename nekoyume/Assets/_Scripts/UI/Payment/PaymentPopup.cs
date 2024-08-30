@@ -188,8 +188,7 @@ namespace Nekoyume.UI
 
         public void ShowLackMonsterCollection(int stakeLevel)
         {
-            var canAttract = CanAttractNCG();
-            SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            SetPopupType(PopupType.AttractAction);
             
             costIcon.overrideSprite = stakeIconData.GetIcon(stakeLevel, IconType.Small);
             var title = L10nManager.Localize("UI_REQUIRED_MONSTER_COLLECTION_LEVEL");
