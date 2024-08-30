@@ -45,6 +45,9 @@ namespace Nekoyume.UI
 #region SerializeField
         [SerializeField]
         private CostIconDataScriptableObject costIconData;
+        
+        [SerializeField] 
+        private StakeIconDataScriptableObject stakeIconData;
 
         [SerializeField]
         private Image costIcon;
@@ -181,6 +184,20 @@ namespace Nekoyume.UI
 
             YesCallback = AttractShop;
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
+        }
+
+        public void ShowLackMonsterCollection(int stakeLevel)
+        {
+            var canAttract = CanAttractNCG();
+            SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            
+            costIcon.overrideSprite = stakeIconData.GetIcon(stakeLevel, IconType.Small);
+            var title = L10nManager.Localize("UI_REQUIRED_MONSTER_COLLECTION_LEVEL");
+            costText.text = L10nManager.Localize("UI_MONSTER_COLLECTION_LEVEL_FORMAT", stakeLevel);
+            var content = L10nManager.Localize("UI_LACK_MONSTER_COLLECTION");
+
+            YesCallback = AttractToMonsterCollection;
+            Show(title, content, MonsterCollectionString, string.Empty, false);
         }
 #endregion LackPaymentAction
 
