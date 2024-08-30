@@ -61,6 +61,11 @@ namespace Nekoyume.Helper
             }
             else
             {
+                if (Action.ItemEnhancement.HammerIds.Contains(itemId))
+                {
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
+                }
+
                 switch (itemSubType)
                 {
                     case ItemSubType.EquipmentMaterial
