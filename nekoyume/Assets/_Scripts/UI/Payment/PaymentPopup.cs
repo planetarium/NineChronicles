@@ -174,7 +174,7 @@ namespace Nekoyume.UI
 
         public void ShowLackPaymentNCG(string cost, bool isStaking = false)
         {
-            var canAttract = CanAttractNCG();
+            var canAttract = CanAttractShop();
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
@@ -383,22 +383,28 @@ namespace Nekoyume.UI
         }
 #endregion DustHelper
 
-#region NCGHelper
+#region ShopHelper
         public static string GetLackNCGContentString(bool isStaking = false)
         {
+            var canAttract = CanAttractShop();
+            if (!canAttract)
+            {
+                return L10nManager.Localize("UI_LACK_NCG_PC");
+            }
+            
             return isStaking ?
                 L10nManager.Localize("UI_LACK_NCG_STAKING") :
                 L10nManager.Localize("UI_LACK_NCG");
         }
         
-        private static bool CanAttractNCG()
+        private static bool CanAttractShop()
         {
 #if UNITY_ANDROID || UNITY_IOS
             return false;
 #endif
             return !Game.LiveAsset.GameConfig.IsKoreanBuild;
         }
-#endregion NCGHelper
+#endregion ShopHelper
         
 #region Attract
         private void AttractToMonsterCollection()
