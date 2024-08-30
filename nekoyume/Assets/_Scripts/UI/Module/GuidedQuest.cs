@@ -332,12 +332,12 @@ namespace Nekoyume.UI.Module
                 eventDungeonStageId != SharedViewModel.eventDungeonQuest.Value.Id)
             {
                 string questId = SharedViewModel.eventDungeonQuest.Value?.Id.ToString() ?? "null";
-                NcDebug.Log($"[ClearEventDungeonStage] {eventDungeonStageId} {questId}");
+                NcDebug.LogWarning($"[ClearEventDungeonStage] {eventDungeonStageId} {questId}");
                 onComplete?.Invoke(false);
                 return;
             }
 
-            NcDebug.Log($"[ClearEventDungeonStage] wait _onClearEventDungeonStageComplete {eventDungeonStageId}");
+            NcDebug.LogWarning($"[ClearEventDungeonStage] wait _onClearEventDungeonStageComplete {eventDungeonStageId}");
             // NOTE: 이 라인까지 로직이 흐르면 `EnterToClearExistGuidedQuest()` 호출을 통해서
             // `_onClearWorldQuestComplete`가 반드시 호출되는 것을 기대합니다.
             _onClearEventDungeonStageComplete
@@ -345,7 +345,7 @@ namespace Nekoyume.UI.Module
                 .First()
                 .Subscribe(_ =>
                 {
-                    NcDebug.Log($"[ClearEventDungeonStage] [_onClearEventDungeonStageComplete] {eventDungeonStageId}");
+                    NcDebug.LogWarning($"[ClearEventDungeonStage] [_onClearEventDungeonStageComplete] {eventDungeonStageId}");
                     onComplete?.Invoke(true);
                 });
 
@@ -788,11 +788,11 @@ namespace Nekoyume.UI.Module
             var state = _state.Value;
             if (eventDungeonQuest is null)
             {
-                NcDebug.Log($"[SubscribeEventDungeonQuest] eventDungeonQuest is null");
+                NcDebug.LogWarning($"[SubscribeEventDungeonQuest] eventDungeonQuest is null");
                 if (state == ViewState.ClearExistGuidedQuest &&
                     _eventDungeonQuestCell.Quest is WorldQuest quest)
                 {
-                    NcDebug.Log($"[SubscribeEventDungeonQuest] HideAsClear");
+                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear");
                     _eventDungeonQuestCell.HideAsClear(
                         ignoreQuestResult: true,
                         onComplete: _ =>
