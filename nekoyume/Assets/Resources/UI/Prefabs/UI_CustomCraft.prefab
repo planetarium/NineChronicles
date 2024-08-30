@@ -21150,7 +21150,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 134.5, y: -30.5}
-  m_SizeDelta: {x: 0, y: 26}
+  m_SizeDelta: {x: 90, y: 26}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3608364749563383036
 CanvasRenderer:
@@ -29538,7 +29538,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Can be obtained at random
+  m_text: GET_FROM_ONLY_RANDOM_OUTFIT
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -29626,7 +29626,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: GET_FROM_ONLY_RANDOM_OUTFIT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
