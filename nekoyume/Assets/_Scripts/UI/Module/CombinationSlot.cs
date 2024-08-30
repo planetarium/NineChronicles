@@ -410,8 +410,6 @@ namespace Nekoyume.UI.Module
                 case SlotUIState.WaitingReceive:
                     petSelectButton.SetData(state?.PetId ?? null);
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(uiState), uiState, null);
             }
         }
 
