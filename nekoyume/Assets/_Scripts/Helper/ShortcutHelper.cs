@@ -14,6 +14,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.Helper
@@ -35,6 +36,7 @@ namespace Nekoyume.Helper
             EventDungeonStage = 8,
             Summon = 12,
             AdventureBoss = 13,
+            WorldBoss = 14,
 
             MobileShop, // Shop icon is same as ShopPC.
             Upgrade // Upgrade icon is same as Craft.
@@ -59,6 +61,11 @@ namespace Nekoyume.Helper
             }
             else
             {
+                if (Action.ItemEnhancement.HammerIds.Contains(itemId))
+                {
+                    acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
+                }
+
                 switch (itemSubType)
                 {
                     case ItemSubType.EquipmentMaterial
@@ -107,12 +114,24 @@ namespace Nekoyume.Helper
 
                         break;
                     case ItemSubType.Circle:
+                    {
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.WorldBoss));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
+
+                        var stageRow = TableSheets.Instance.StageSheet
+                            .GetStagesContainsReward(itemId).OrderStagesByPriority(itemId)
+                            .FirstOrDefault();
+                        if (stageRow is not null && TableSheets.Instance.WorldSheet.TryGetByStageId(stageRow.Id, out var worldRow))
+                        {
+                            acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Stage, (worldRow.Id, stageRow.Id)));
+                        }
+
                         break;
+                    }
                     case ItemSubType.Scroll:
-                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                         break;
                 }
             }
@@ -330,6 +349,10 @@ namespace Nekoyume.Helper
                     shortcutAction = () => ShortcutActionForAdventureBoss(caller);
                     guideText = L10nManager.Localize("UI_ADVENTURE_BODD_BACK_BUTTON");
                     break;
+                case PlaceType.WorldBoss:
+                    shortcutAction = () => ShortcutActionForWorldBoss(caller);
+                    guideText = L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS");
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -353,6 +376,9 @@ namespace Nekoyume.Helper
             int itemId,
             bool isEventStageRows = false)
         {
+            States.Instance.CurrentAvatarState.worldInformation
+                .TryGetLastClearedStageId(out var lastClearedStageId);
+
             var result = new List<StageSheet.Row>();
             var rowList = stageRows.Where(stageRow =>
             {
@@ -366,12 +392,10 @@ namespace Nekoyume.Helper
                     return stageRow.Id.ToEventDungeonStageNumber() <= 1;
                 }
 
-                States.Instance.CurrentAvatarState.worldInformation
-                    .TryGetLastClearedStageId(out var lastClearedStageId);
                 return stageRow.Id <= lastClearedStageId + 1;
             }).ToList();
 
-            // If 'stageRows' contains cleared stage
+            // If 'rowList' contains cleared stage
             if (rowList.Any())
             {
                 // First recommended stage is the highest level in rowList.
@@ -457,15 +481,6 @@ namespace Nekoyume.Helper
 
         public static void ShortcutActionForAdventureBoss(Widget caller)
         {
-            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-            {
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_ADVENTUREBOSS_ENTER_KOREAN_BUILD"),
-                    NotificationCell.NotificationType.Alert);
-                return;
-            }
-
             var adventureBossData = Game.Game.instance.AdventureBossData;
             var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
             switch (adventureBossData.CurrentState.Value)
@@ -499,6 +514,41 @@ namespace Nekoyume.Helper
                             NotificationCell.NotificationType.Alert);
                     }
 
+                    break;
+            }
+        }
+
+        public static void ShortcutActionForWorldBoss(Widget caller)
+        {
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var worldBossStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
+            switch (worldBossStatus)
+            {
+                case WorldBossStatus.Season:
+                    caller.CloseWithOtherWidgets();
+                        Widget.Find<WorldBoss>().ShowAsync().Forget();
+                    break;
+                case WorldBossStatus.OffSeason:
+                    if (WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var next))
+                    {
+                        var remainBlock = next.StartedBlockIndex - currentBlockIndex;
+                        var secondPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+                        var nextStartTime = next.StartedBlockIndex
+                            .BlockIndexToDateTimeString(currentBlockIndex, secondPerBlock, DateTime.Now, "yyyy/MM/dd HH:mm");
+                        var message = L10nManager.Localize("UI_ADVENTUREBOSS_SEASON_ENDED",
+                            remainBlock, remainBlock.BlockRangeToTimeSpanString(), nextStartTime);
+                        OneLineSystem.Push(
+                            MailType.System,
+                            message,
+                            NotificationCell.NotificationType.Alert);
+                    }
+                    else
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            "There is no world boss schedule.",
+                            NotificationCell.NotificationType.Alert);
+                    }
                     break;
             }
         }
@@ -556,8 +606,12 @@ namespace Nekoyume.Helper
                 case PlaceType.Craft:
                 case PlaceType.Upgrade:
                 case PlaceType.Summon:
-                case PlaceType.AdventureBoss:
                     return true;
+                case PlaceType.AdventureBoss:
+                    return !Game.LiveAsset.GameConfig.IsKoreanBuild;
+                case PlaceType.WorldBoss:
+                    return States.Instance.CurrentAvatarState.worldInformation
+                        .IsStageCleared(Game.LiveAsset.GameConfig.RequiredStage.WorldBoss);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -582,6 +636,7 @@ namespace Nekoyume.Helper
                 PlaceType.Upgrade => true,
                 PlaceType.Summon => true,
                 PlaceType.AdventureBoss => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.WorldBoss => !BattleRenderer.Instance.IsOnBattle,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
