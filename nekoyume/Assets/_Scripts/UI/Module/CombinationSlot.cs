@@ -403,9 +403,9 @@ namespace Nekoyume.UI.Module
             {
                 case SlotUIState.Locked:
                 case SlotUIState.Empty:
+                case SlotUIState.Appraise:
                     petSelectButton.SetData(null);
                     break;
-                case SlotUIState.Appraise:
                 case SlotUIState.Working:
                 case SlotUIState.WaitingReceive:
                     petSelectButton.SetData(state?.PetId ?? null);
