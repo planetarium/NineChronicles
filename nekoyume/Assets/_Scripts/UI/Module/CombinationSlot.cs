@@ -336,7 +336,7 @@ namespace Nekoyume.UI.Module
             long currentBlockIndex,
             CombinationSlotState? state)
         {
-            petSelectButton.SetData(state?.PetId ?? null);
+            UpdatePetButton(uiState, state);
 
             switch (uiState)
             {
@@ -393,6 +393,22 @@ namespace Nekoyume.UI.Module
                 case SlotUIState.Locked:
                     SetContainer(true, false, false, false);
                     itemView.Clear();
+                    break;
+            }
+        }
+        
+        private void UpdatePetButton(SlotUIState uiState, CombinationSlotState? state)
+        {
+            switch (uiState)
+            {
+                case SlotUIState.Locked:
+                case SlotUIState.Empty:
+                case SlotUIState.Appraise:
+                    petSelectButton.SetData(null);
+                    break;
+                case SlotUIState.Working:
+                case SlotUIState.WaitingReceive:
+                    petSelectButton.SetData(state?.PetId ?? null);
                     break;
             }
         }
