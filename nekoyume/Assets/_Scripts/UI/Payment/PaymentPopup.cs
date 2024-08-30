@@ -74,7 +74,7 @@ namespace Nekoyume.UI
         private GameObject titleBorder;
 #endregion SerializeField
 
-        private ConfirmDelegate CloseCallback { get; set; }
+        private System.Action YesCallback { get; set; }
 
         protected override void Awake()
         {
@@ -125,13 +125,7 @@ namespace Nekoyume.UI
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost;
             var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-                    onAttract();
-                }
-            };
+            YesCallback = onAttract;
             Show(title, content, attractMessage, no, false);
         }
 
@@ -157,13 +151,7 @@ namespace Nekoyume.UI
             costText.text = cost.ToString();
             var content = GetLackDustContentString(costType);
 
-            CloseCallback = result =>
-            {
-                if (canAttract && result == ConfirmResult.Yes)
-                {
-                    AttractDust(costType);
-                }
-            };
+            YesCallback = () => AttractDust(costType);
             Show(title, content, GetDustAttractString(costType), string.Empty, false);
         }
         
@@ -176,14 +164,8 @@ namespace Nekoyume.UI
             costText.text = cost.ToString();
             var content = L10nManager.Localize("UI_LACK_CRYSTAL");
             var labelYesText = L10nManager.Localize("GRIND_UI_BUTTON");
-            
-            CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-                    AttractGrind();
-                }
-            };
+
+            YesCallback = AttractGrind;
             Show(title, content, labelYesText, string.Empty, false);
         }
 
@@ -196,15 +178,8 @@ namespace Nekoyume.UI
             var title = L10nManager.Localize("UI_REQUIRED_COUNT");
             costText.text = cost;
             var content = GetLackNCGContentString(isStaking);
-            
-            CloseCallback = result =>
-            {
-                if (canAttract && result == ConfirmResult.Yes)
-                {
-                    AttractShop();
-                }
-            };
-            
+
+            YesCallback = AttractShop;
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
         }
 #endregion LackPaymentAction
@@ -227,13 +202,8 @@ namespace Nekoyume.UI
 
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
+            YesCallback = () =>
             {
-                if (result != ConfirmResult.Yes)
-                {
-                    return;
-                }
-
                 if (enoughBalance)
                 {
                     onPaymentSucceed.Invoke();
@@ -277,13 +247,8 @@ namespace Nekoyume.UI
 
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
+            YesCallback = () =>
             {
-                if (result != ConfirmResult.Yes)
-                {
-                    return;
-                }
-
                 if (enoughBalance)
                 {
                     onPaymentSucceed.Invoke();
@@ -314,13 +279,8 @@ namespace Nekoyume.UI
 
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
+            YesCallback = () =>
             {
-                if (result != ConfirmResult.Yes)
-                {
-                    return;
-                }
-
                 if (enoughBalance)
                 {
                     onPaymentSucceed.Invoke();
@@ -520,13 +480,12 @@ namespace Nekoyume.UI
         private void Yes()
         {
             base.Close();
-            CloseCallback?.Invoke(ConfirmResult.Yes);
+            YesCallback?.Invoke();
         }
 
         private void No()
         {
             base.Close();
-            CloseCallback?.Invoke(ConfirmResult.No);
         }
 
         public void NoWithoutCallback()
