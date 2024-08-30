@@ -43,6 +43,7 @@ namespace Nekoyume.UI
         public void Show(ItemSubType subType, bool ignoreShowAnimation = false)
         {
             _selectedSubtype = subType;
+            skillTabButton.SetToggledOff();
             _selectedTabButton = statTabButton;
             ShowStatView(_selectedTabButton);
             base.Show(ignoreShowAnimation);
