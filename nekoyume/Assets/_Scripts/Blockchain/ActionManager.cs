@@ -225,7 +225,7 @@ namespace Nekoyume.Blockchain
                 StageBuffId = stageBuffId,
                 AvatarAddress = avatarAddress,
                 TotalPlayCount = playCount,
-                ApStoneCount = apStoneCount
+                ApStoneCount = -1
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1277,7 +1277,7 @@ namespace Nekoyume.Blockchain
             var action = new Grinding
             {
                 AvatarAddress = avatarAddress,
-                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList(),
+                EquipmentIds = new List<Guid>(),
                 ChargeAp = chargeAp
             };
             ProcessAction(action);
