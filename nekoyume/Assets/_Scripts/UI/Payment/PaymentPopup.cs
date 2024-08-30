@@ -3,6 +3,7 @@ using Nekoyume.L10n;
 using System.Numerics;
 using JetBrains.Annotations;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -301,7 +302,6 @@ namespace Nekoyume.UI
             System.Action onPaymentSucceed)
         {
             SetPopupType(PopupType.PaymentCheck);
-
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
             costText.text = cost.ToString();
@@ -324,6 +324,38 @@ namespace Nekoyume.UI
 
             SetContent(popupTitle, checkCostMessage, yes, no, false);
             Show(popupTitle, checkCostMessage, yes, no, false);
+        }
+
+        public void ShowCheckPaymentApPortion(BigInteger cost)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.ActionPoint);
+
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            var apPortionCount = inventory.GetUsableItemCount(CostType.ApPotion, Game.Game.instance.Agent.BlockIndex);
+            var enoughBalance = apPortionCount >= 1;
+            var content = L10nManager.Localize("UI_CHECK_ACTION_POINT", apPortionCount);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            YesCallback = () =>
+            {
+                if (enoughBalance)
+                {
+                    Close(true);
+                    ActionPoint.ChargeAP();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackApPortion(1);
+                }
+            };
+            
+            SetContent(popupTitle, content, yes, no, false);
+            Show(popupTitle, content, yes, no, false);
         }
 #endregion PaymentCheckAction
 
