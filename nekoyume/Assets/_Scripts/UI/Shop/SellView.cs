@@ -7,12 +7,11 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
-namespace Nekoyume
+namespace Nekoyume.UI.Module
 {
     using UniRx;
 

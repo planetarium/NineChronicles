@@ -15,6 +15,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Market;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
