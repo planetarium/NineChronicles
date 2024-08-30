@@ -198,6 +198,20 @@ namespace Nekoyume.UI
             YesCallback = AttractToMonsterCollection;
             Show(title, content, MonsterCollectionString, string.Empty, false);
         }
+
+        public void ShowLackApPortion(int cost)
+        {
+            var canAttract = CanAttractShop();
+            SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.ApPotion);
+            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            costText.text = cost.ToString();
+            var content = GetLackApPortionContentString();
+            
+            YesCallback = AttractShop;
+            Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
+        }
 #endregion LackPaymentAction
 
 #region PaymentCheckAction
@@ -395,6 +409,12 @@ namespace Nekoyume.UI
             return isStaking ?
                 L10nManager.Localize("UI_LACK_NCG_STAKING") :
                 L10nManager.Localize("UI_LACK_NCG");
+        }
+        
+        public static string GetLackApPortionContentString()
+        {
+            var canAttract = CanAttractShop();
+            return L10nManager.Localize(!canAttract ? "UI_LACK_AP_PORTION_PC" : "UI_LACK_AP_PORTION");
         }
         
         private static bool CanAttractShop()
