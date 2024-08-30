@@ -107,9 +107,9 @@ namespace Nekoyume.State
             _questList.SetValueAndForceNotify(questList);
         }
 
-        public static void UpdateProficiency(long proficiency)
+        public static void UpdateRelationship(long relationship)
         {
-            _relationship.SetValueAndForceNotify(proficiency);
+            _relationship.SetValueAndForceNotify(relationship);
         }
     }
 }
