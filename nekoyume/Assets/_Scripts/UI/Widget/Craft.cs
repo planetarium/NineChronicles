@@ -597,7 +597,6 @@ namespace Nekoyume.UI
 
             subRecipeView.UpdateView();
             var insufficientMaterials = recipeInfo.ReplacedMaterials;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (insufficientMaterials.Any())
             {
                 var petState = States.Instance.PetStates
@@ -607,12 +606,7 @@ namespace Nekoyume.UI
                     () =>
                     {
                         var slots = Find<CombinationSlotsPopup>();
-                        slots.SetCaching(
-                            avatarAddress,
-                            slotIndex,
-                            true,
-                            requiredBlockIndex,
-                            itemUsable: equipment);
+                        slots.OnSendCombinationAction(slotIndex, requiredBlockIndex, equipment);
                         Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
                         var materialCount = insufficientMaterials.Sum(x => x.Value);
@@ -634,8 +628,7 @@ namespace Nekoyume.UI
                         evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
                         AirbridgeUnity.TrackEvent(evt);
 
-                        ActionManager.Instance
-                            .CombinationEquipment(
+                        ActionManager.Instance.CombinationEquipment(
                                 recipeInfo,
                                 slotIndex,
                                 true,
@@ -650,12 +643,7 @@ namespace Nekoyume.UI
             else
             {
                 var slots = Find<CombinationSlotsPopup>();
-                slots.SetCaching(
-                    avatarAddress,
-                    slotIndex,
-                    true,
-                    requiredBlockIndex,
-                    itemUsable: equipment);
+                slots.OnSendCombinationAction(slotIndex, requiredBlockIndex, equipment);
                 ActionManager.Instance
                     .CombinationEquipment(
                         recipeInfo,
@@ -689,9 +677,8 @@ namespace Nekoyume.UI
                 Guid.Empty,
                 default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex, itemUsable: consumable);
+            slots.OnSendCombinationAction(slotIndex, requiredBlockIndex, consumable);
 
             consumableSubRecipeView.UpdateView();
             ActionManager.Instance.CombinationConsumable(recipeInfo, slotIndex).Subscribe();
@@ -719,15 +706,8 @@ namespace Nekoyume.UI
                 Guid.Empty,
                 default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(
-                avatarAddress,
-                slotIndex,
-                true,
-                requiredBlockIndex,
-                itemUsable: consumable);
-
+            slots.OnSendCombinationAction(slotIndex, requiredBlockIndex, consumable);
             eventConsumableSubRecipeView.UpdateView();
             ActionManager.Instance
                 .EventConsumableItemCrafts(

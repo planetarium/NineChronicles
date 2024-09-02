@@ -179,11 +179,24 @@ namespace Nekoyume.UI
             StartCoroutine(CoSelect(itemSubType, itemId));
         }
 
+        public void Show(ItemSheet.Row row, bool ignoreShowAnimation = false)
+        {
+            Show(ignoreShowAnimation);
+            StartCoroutine(CoSelect(row));
+        }
+
         private IEnumerator CoSelect(ItemSubType itemSubType, Guid itemId)
         {
             yield return null;
             yield return new WaitForEndOfFrame();
             enhancementInventory.Select(itemSubType, itemId);
+        }
+
+        private IEnumerator CoSelect(ItemSheet.Row row)
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            enhancementInventory.Select(row);
         }
 
         private void Close()
@@ -198,7 +211,7 @@ namespace Nekoyume.UI
             var (baseItem, materialItems, hammers) = enhancementInventory.GetSelectedModels();
 
             // Equip Upgrade ToDO
-            if (!IsInteractableButton(baseItem, materialItems))
+            if (!IsInteractableButton(baseItem, materialItems, hammers))
             {
                 NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
@@ -241,7 +254,7 @@ namespace Nekoyume.UI
             var materialItemsExp = materialItems.Sum(equipment =>
                 equipment.GetRealExp(equipmentItemSheet, enhancementCostSheet));
             var hammersExp = hammers.Sum(pair =>
-                Equipment.GetHammerExp(pair.Key, enhancementCostSheet) * pair.Value);
+                enhancementCostSheet.GetHammerExp(pair.Key) * pair.Value);
             var targetExp = baseModelExp + materialItemsExp + hammersExp;
 
             int requiredBlockIndex;
@@ -264,9 +277,7 @@ namespace Nekoyume.UI
                 requiredBlockIndex = 0;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex,
-                itemUsable: baseItem);
+            slots.OnSendCombinationAction(slotIndex, requiredBlockIndex, baseItem);
 
             NotificationSystem.Push(
                 MailType.Workshop,
@@ -287,9 +298,12 @@ namespace Nekoyume.UI
             enhancementInventory.DeselectBaseItem();
         }
 
-        private bool IsInteractableButton(IItem item, List<Equipment> materials)
+        private bool IsInteractableButton(
+            IItem item,
+            List<Equipment> materials,
+            Dictionary<int, int> hammers)
         {
-            if (item is null || materials.Count == 0)
+            if (item is null || materials.Count + hammers.Count == 0)
             {
                 _errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
                 return false;
@@ -427,9 +441,8 @@ namespace Nekoyume.UI
                 {
                     if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id))
                     {
-                        var hammerExp = Equipment.GetHammerExp(
-                            inventoryItem.ItemBase.Id,
-                            enhancementCostSheet);
+                        var hammerExp = enhancementCostSheet.GetHammerExp(
+                            inventoryItem.ItemBase.Id);
                         return hammerExp * inventoryItem.SelectedMaterialCount.Value;
                     }
 

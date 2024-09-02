@@ -132,7 +132,7 @@ jobs:
           buildName: ${{ matrix.targetPlatform }}
           androidVersionCode: ${{ github.event.inputs.version-code }}
           version: ${{ github.event.inputs.app-version }}
-          androidTargetSdkVersion: AndroidApiLevel33
+          androidTargetSdkVersion: AndroidApiLevel34
           customParameters: -identifier ${{ github.event.inputs.package-name }} -playerName ${{ github.event.inputs.player-name }}
           allowDirtyBuild: true
 

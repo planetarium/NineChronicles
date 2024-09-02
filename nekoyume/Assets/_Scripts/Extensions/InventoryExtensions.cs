@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
@@ -12,27 +14,6 @@ namespace Nekoyume
 {
     public static class InventoryExtensions
     {
-        public static int GetEquippedFullCostumeOrArmorId(this Inventory inventory)
-        {
-            foreach (var costume in inventory.Costumes
-                .Where(e =>
-                    e.ItemSubType == ItemSubType.FullCostume &&
-                    e.Equipped))
-            {
-                return costume.Id;
-            }
-
-            foreach (var armor in inventory.Equipments
-                .Where(e =>
-                    e.ItemSubType == ItemSubType.Armor &&
-                    e.Equipped))
-            {
-                return armor.Id;
-            }
-
-            return GameConfig.DefaultAvatarArmorId;
-        }
-
         public static int GetMaterialCount(this Inventory inventory, int id)
         {
             if (inventory is null)
@@ -51,7 +32,7 @@ namespace Nekoyume
                 : 0;
         }
 
-        public static int GetUsableMaterialCount(this Inventory inventory, int id, long blockIndex)
+        public static int GetUsableItemCount(this Inventory inventory, int id, long blockIndex)
         {
             if (inventory is null)
             {
@@ -78,6 +59,21 @@ namespace Nekoyume
 
                 return true;
             }).Sum(item => item.count);
+        }
+
+        public static int GetUsableItemCount(this Inventory inventory, CostType type, long blockIndex)
+        {
+            if ((int)type > 100000)
+            {
+                return GetUsableItemCount(inventory, (int)type, blockIndex);
+            }
+
+            if (type == CostType.Hourglass)
+            {
+                return GetUsableItemCount(inventory, 400000, blockIndex);
+            }
+
+            return 0;
         }
 
         public static bool HasNotification(
@@ -132,6 +128,38 @@ namespace Nekoyume
             }
 
             return false;
+        }
+
+        private static readonly int[] DustIds = new[]
+        {
+            CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
+        }.Select(cost => (int)cost).ToArray();
+
+        // Get the priority by Id or ItemSubType of the material group about Inventory sorting.
+        // Dust -> ApStone or Hourglass (Tradable -> UnTradable) -> CustomCraft(Drawing) -> Hammer -> Others
+        public static int GetMaterialPriority(this Material material)
+        {
+            if (DustIds.Contains(material.Id))
+            {
+                return 0;
+            }
+
+            if (material.ItemSubType is ItemSubType.ApStone or ItemSubType.Hourglass)
+            {
+                return 1;
+            }
+
+            if (material.ItemSubType is ItemSubType.Circle or ItemSubType.Scroll)
+            {
+                return 2;
+            }
+
+            if (ItemEnhancement.HammerIds.Contains(material.Id))
+            {
+                return 3;
+            }
+
+            return int.MaxValue;
         }
     }
 }

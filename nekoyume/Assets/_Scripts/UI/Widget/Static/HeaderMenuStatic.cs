@@ -640,7 +640,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var states = States.Instance.GetCombinationSlotState(avatarState, currentBlockIndex);
+            var states = States.Instance.GetUsedCombinationSlotState(avatarState, currentBlockIndex);
             var hasNotification = states?.Any(state =>
                 HasCombinationNotification(state.Value, currentBlockIndex)) ?? false;
             _toggleNotifications[ToggleType.CombinationSlots].Value = hasNotification;
@@ -653,8 +653,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            var isAppraise = currentBlockIndex < state.StartBlockIndex +
-                States.Instance.GameConfigState.RequiredAppraiseBlock;
+            var isAppraise = currentBlockIndex < state.StartBlockIndex;
             if (isAppraise)
             {
                 return false;

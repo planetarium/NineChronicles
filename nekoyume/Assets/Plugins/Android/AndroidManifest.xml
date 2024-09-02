@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.planetariumlabs.ninechroniclesmobile" xmlns:tools="http://schemas.android.com/tools">
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.CAMERA" />
@@ -42,6 +42,8 @@
     <meta-data android:name="co.ab180.airbridge.sdk.auto_start_tracking_enabled" android:value="true" />
     <meta-data android:name="co.ab180.airbridge.sdk.facebook_deferred_app_link_enabled" android:value="true" />
     <provider android:name="co.ab180.airbridge.unity.AirbridgeContentProvider" android:authorities="com.planetariumlabs.ninechroniclesmobile.co.ab180.airbridge.unity.AirbridgeContentProvider" android:exported="false" />
+    <!--This was added by the AnalyticsFixPropertyRemover. If you want to prevent the generation of this, have "AnalyticsFixPropertyRemover" included in a comment-->
+    <property tools:node="removeAll" />
   </application>
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

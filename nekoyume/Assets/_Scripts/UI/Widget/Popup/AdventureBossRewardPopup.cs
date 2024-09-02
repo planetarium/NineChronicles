@@ -83,7 +83,7 @@ namespace Nekoyume.UI
                     var tableSheets = Game.instance.TableSheets;
                     var mailRewards = new List<MailReward>();
 
-                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null)
+                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.HasValue && !lastClaimableReward.NcgReward.Value.RawValue.IsZero)
                     {
                         mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
                     }
@@ -100,11 +100,8 @@ namespace Nekoyume.UI
                         {
                             for (var i = 0; i < itemReward.Value; i++)
                             {
-                                if (itemRow.ItemSubType != ItemSubType.Aura)
-                                {
-                                    var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                                    mailRewards.Add(new MailReward(item, 1));
-                                }
+                                var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                                mailRewards.Add(new MailReward(item, 1));
                             }
                         }
                     }
@@ -231,7 +228,7 @@ namespace Nekoyume.UI
                         }
                     }
 
-                    if (exploreInfo != null && !exploreInfo.Claimed)
+                    if (exploreInfo != null && exploreInfo.Score > 0 && !exploreInfo.Claimed)
                     {
                         exprolerClaimableReward = AdventureBossHelper.CalculateExploreReward(exprolerClaimableReward,
                             bountyBoard,
@@ -261,7 +258,7 @@ namespace Nekoyume.UI
                 rewardItemsBounty.SetActive(true);
                 noRewardItemsBounty.SetActive(false);
                 var i = 0;
-                if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue)
+                if (wantedClaimableReward.NcgReward != null && wantedClaimableReward.NcgReward.HasValue && !wantedClaimableReward.NcgReward.Value.RawValue.IsZero)
                 {
                     rewardItems[i].ItemViewSetCurrencyData(wantedClaimableReward.NcgReward.Value);
                     i++;
@@ -307,7 +304,7 @@ namespace Nekoyume.UI
                 rewardItemsExplore.SetActive(true);
                 noRewardItemsExplore.SetActive(false);
                 var i = 0;
-                if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue)
+                if (exprolerClaimableReward.NcgReward != null && exprolerClaimableReward.NcgReward.HasValue && !exprolerClaimableReward.NcgReward.Value.RawValue.IsZero)
                 {
                     rewardItemsExplores[i].ItemViewSetCurrencyData(exprolerClaimableReward.NcgReward.Value);
                     i++;
@@ -352,7 +349,7 @@ namespace Nekoyume.UI
             lastClaimableReward = AdventureBossData.AddClaimableReward(lastClaimableReward, exprolerClaimableReward);
 
             if (lastClaimableReward.ItemReward.Count == 0 && lastClaimableReward.FavReward.Count == 0 &&
-                (lastClaimableReward.NcgReward == null || !lastClaimableReward.NcgReward.HasValue || lastClaimableReward.NcgReward.Value.RawValue == 0))
+                (lastClaimableReward.NcgReward == null || !lastClaimableReward.NcgReward.HasValue || lastClaimableReward.NcgReward.Value.RawValue.IsZero))
             {
                 Game.instance.AdventureBossData.EndedExploreInfos.TryGetValue(_lastSeasonId, out var exploreInfo);
                 Game.instance.AdventureBossData.EndedBountyBoards.TryGetValue(_lastSeasonId, out var bountyBoard);

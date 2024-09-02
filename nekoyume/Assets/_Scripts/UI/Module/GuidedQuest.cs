@@ -15,6 +15,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using System.Diagnostics;
     using UniRx;
 
     // TODO: 위젯으로 빼서 정적으로 동작할 수 있게 만드는 것이 좋았겠습니다.
@@ -330,16 +331,23 @@ namespace Nekoyume.UI.Module
             if (SharedViewModel.eventDungeonQuest.Value is null ||
                 eventDungeonStageId != SharedViewModel.eventDungeonQuest.Value.Id)
             {
+                string questId = SharedViewModel.eventDungeonQuest.Value?.Id.ToString() ?? "null";
+                NcDebug.LogWarning($"[ClearEventDungeonStage] {eventDungeonStageId} {questId}");
                 onComplete?.Invoke(false);
                 return;
             }
 
+            NcDebug.LogWarning($"[ClearEventDungeonStage] wait _onClearEventDungeonStageComplete {eventDungeonStageId}");
             // NOTE: 이 라인까지 로직이 흐르면 `EnterToClearExistGuidedQuest()` 호출을 통해서
             // `_onClearWorldQuestComplete`가 반드시 호출되는 것을 기대합니다.
             _onClearEventDungeonStageComplete
                 .Where(row => row.Id == eventDungeonStageId)
                 .First()
-                .Subscribe(_ => onComplete?.Invoke(true));
+                .Subscribe(_ =>
+                {
+                    NcDebug.LogWarning($"[ClearEventDungeonStage] [_onClearEventDungeonStageComplete] {eventDungeonStageId}");
+                    onComplete?.Invoke(true);
+                });
 
             EnterToClearExistGuidedQuest(SharedViewModel.eventDungeonQuest);
         }
@@ -415,10 +423,24 @@ namespace Nekoyume.UI.Module
         private IEnumerator CoUpdateList(System.Action onComplete)
         {
             var questList = SharedViewModel.avatarState?.questList;
+            //각 Coriutine마다 시간을 체크하여 소요시간을 로그로 남깁니다.
+            var watch = Stopwatch.StartNew();
             yield return StartCoroutine(CoUpdateWorldQuest(questList));
+            watch.Stop();
+            NcDebug.Log($"CoUpdateWorldQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            watch.Restart();
             yield return StartCoroutine(CoUpdateCombinationEquipmentQuest(questList));
+            watch.Stop();
+            NcDebug.Log($"CoUpdateCombinationEquipmentQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            watch.Restart();
             yield return StartCoroutine(CoUpdateEventDungeonQuest());
+            watch.Stop();
+            NcDebug.Log($"CoUpdateEventDungeonQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            watch.Restart();
             yield return StartCoroutine(CoUpdateCraftEventItemQuest());
+            watch.Stop();
+            NcDebug.Log($"CoUpdateCraftEventItemQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            watch.Restart();
             onComplete?.Invoke();
         }
 
@@ -766,9 +788,11 @@ namespace Nekoyume.UI.Module
             var state = _state.Value;
             if (eventDungeonQuest is null)
             {
+                NcDebug.LogWarning($"[SubscribeEventDungeonQuest] eventDungeonQuest is null");
                 if (state == ViewState.ClearExistGuidedQuest &&
                     _eventDungeonQuestCell.Quest is WorldQuest quest)
                 {
+                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear");
                     _eventDungeonQuestCell.HideAsClear(
                         ignoreQuestResult: true,
                         onComplete: _ =>

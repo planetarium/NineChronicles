@@ -16,6 +16,7 @@ using UnityEngine.UI;
 using Nekoyume.L10n;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Game.Scene;
 using Nekoyume.Helper;
 using Nekoyume.UI.Module.WorldBoss;
 
@@ -384,25 +385,18 @@ namespace Nekoyume.UI
             {
                 try
                 {
-                    var loadingScreen = Find<LoadingScreen>();
-                    loadingScreen.Show(
-                        LoadingScreen.LoadingType.Entering,
-                        L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
-                    await RxProps.SelectAvatarAsync(slotIndex, Game.Game.instance.Agent.BlockTipStateRootHash);
-                    loadingScreen.Close();
-                    Game.Event.OnRoomEnter.Invoke(false);
-                    Game.Event.OnUpdateAddresses.Invoke();
+                    await LoginScene.EnterGame(slotIndex, false);
                 }
                 catch (KeyNotFoundException e)
                 {
                     NcDebug.LogWarning(e.Message);
                     Find<LoadingScreen>().Close();
-                    EnterLogin();
+                    await LoginScene.EnterCharacterSelect();
                 }
             }
             else
             {
-                EnterLogin();
+                await LoginScene.EnterCharacterSelect();
             }
 
             Analyzer.Instance.Track("Unity/Synopsis End");
@@ -427,12 +421,6 @@ namespace Nekoyume.UI
 
             skipAll = true;
             Skip();
-        }
-
-        private void EnterLogin()
-        {
-            Find<Login>().Show();
-            Game.Event.OnNestEnter.Invoke();
         }
     }
 }

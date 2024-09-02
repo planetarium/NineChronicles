@@ -25,6 +25,8 @@ namespace Nekoyume.ApiClient
 
         public NineChroniclesAPIClient RpcGraphQlClient { get; private set; }
 
+        public NineChroniclesAPIClient ArenaServiceClient { get; private set; }
+
         public MarketServiceClient MarketServiceClient { get; private set; }
 
         public NineChroniclesAPIClient PatrolRewardServiceClient { get; private set; }
@@ -55,7 +57,10 @@ namespace Nekoyume.ApiClient
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
             WorldBossClient = new NineChroniclesAPIClient(clo.ApiServerHost);
-            RpcGraphQlClient = new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
+            RpcGraphQlClient = string.IsNullOrEmpty(clo.RpcServerHost) ?
+                new NineChroniclesAPIClient(string.Empty) :
+                new NineChroniclesAPIClient($"http://{clo.RpcServerHost}/graphql");
+            ArenaServiceClient = new NineChroniclesAPIClient(clo.ArenaServiceHost);
             WorldBossQuery.SetUrl(clo.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(clo.MarketServiceHost);
             PatrolRewardServiceClient = new NineChroniclesAPIClient(clo.PatrolRewardServiceHost);
@@ -68,7 +73,6 @@ namespace Nekoyume.ApiClient
             //pc has to find iap product for mail box system
             IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Google);
 #endif
-
             IsInitialized = true;
         }
 

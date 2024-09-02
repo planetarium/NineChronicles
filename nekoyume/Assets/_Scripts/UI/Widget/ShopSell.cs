@@ -167,14 +167,9 @@ namespace Nekoyume.UI
 
         private void ShowSellTooltip(ShopItem model)
         {
-            var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-            var apStoneCount = inventoryItems.Where(x =>
-                    x.item.ItemSubType == ItemSubType.ApStone &&
-                    !x.Locked &&
-                    !(x.item is ITradableItem tradableItem &&
-                        tradableItem.RequiredBlockIndex > blockIndex))
-                .Sum(item => item.count);
+            var apStoneCount = States.Instance.CurrentAvatarState.inventory
+                .GetUsableItemCount(CostType.ApPotion, blockIndex);
 
             if (model.ItemBase is not null)
             {
@@ -202,14 +197,9 @@ namespace Nekoyume.UI
         {
             if (apStoneCount == null)
             {
-                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+                var inventory = States.Instance.CurrentAvatarState.inventory;
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                apStoneCount = inventoryItems.Where(x =>
-                        x.item.ItemSubType == ItemSubType.ApStone &&
-                        !x.Locked &&
-                        !(x.item is ITradableItem tradableItem &&
-                            tradableItem.RequiredBlockIndex > blockIndex))
-                    .Sum(item => item.count);
+                apStoneCount = inventory.GetUsableItemCount(CostType.ApPotion, blockIndex);
             }
 
             switch (state)

@@ -125,6 +125,9 @@ namespace Nekoyume.Helper
             var fileName = string.Empty;
             switch (mailType)
             {
+                case MailType.CustomCraft:
+                    fileName = "icon_mail_custom_craft";
+                    break;
                 case MailType.Workshop:
                     fileName = "icon_mail_workshop";
                     break;

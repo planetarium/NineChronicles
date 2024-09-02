@@ -16,7 +16,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public static readonly TimeSpan DefaultProductsCacheLifetime =
             TimeSpan.FromMinutes(10);
 
-        private readonly IAPServiceClient _client;
+        private readonly IAPServiceClient? _client;
 
         // NOTE: Enable this code if you want to use poller.
         // private readonly IAPServicePoller _poller;
@@ -29,6 +29,12 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public IAPServiceManager(string url, Store store)
         {
+            if (string.IsNullOrEmpty(url))
+            {
+                Debug.LogError($"[{nameof(IAPServiceManager)}] IAPServiceHost is null.");
+                return;
+            }
+            
             _client = new IAPServiceClient(url);
             // NOTE: Enable this code if you want to use poller.
             // _poller = new IAPServicePoller(_client);
@@ -40,7 +46,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async Task InitializeAsync()
         {
-            if (IsInitialized)
+            if (IsInitialized || _client is null)
             {
                 Debug.LogError("IAPServiceManager is already initialized.");
                 return;
@@ -72,7 +78,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 return;
             }
 
-            _client.Dispose();
+            _client?.Dispose();
             // _poller.OnPoll -= OnPoll;
             // _poller.Clear();
             IsDisposed = true;
@@ -138,7 +144,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 return null;
             }
 
-            if (!IsInitialized)
+            if (!IsInitialized || _client is null)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
@@ -199,7 +205,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             string transactionId,
             string appleOriginalTransactionID)
         {
-            if (!IsInitialized)
+            if (!IsInitialized || _client is null)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
@@ -269,7 +275,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             string planetId,
             string sku)
         {
-            if (!IsInitialized)
+            if (!IsInitialized || _client is null)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
@@ -334,7 +340,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public async Task<Dictionary<string, ReceiptDetailSchema?>?> PurchaseStatusAsync(
             HashSet<string> uuids)
         {
-            if (!IsInitialized)
+            if (!IsInitialized || _client is null)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
@@ -384,7 +390,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             string orderId,
             string data)
         {
-            if (!IsInitialized)
+            if (!IsInitialized || _client is null)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
@@ -433,7 +439,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async Task<L10NSchema?> L10NAsync()
         {
-            if (!IsInitialized)
+            if (!IsInitialized || _client is null)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;

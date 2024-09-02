@@ -133,6 +133,7 @@ namespace Nekoyume.UI
                     case ProductCancelMail:
                     case UnloadFromMyGaragesRecipientMail:
                     case ClaimItemsMail:
+                    case CustomCraftMail:
                         LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id);
                         break;
                     case ItemEnhanceMail:
@@ -148,7 +149,7 @@ namespace Nekoyume.UI
             loading.SetActive(false);
             ChangeState(0);
             UpdateTabs();
-            Find<MailRewardScreen>().Show(mailRewards);
+            Find<MailRewardScreen>().Show(mailRewards, "UI_ALL_RECEIVED");
         }
 
         private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
@@ -339,6 +340,14 @@ namespace Nekoyume.UI
                     }
 
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
+                    break;
+                case CustomCraftMail customCraftMail:
+                    var equipment = customCraftMail.Equipment;
+                    if (equipment is not null)
+                    {
+                        mailRewards.Add(new MailReward(equipment, 1));
+                    }
+
                     break;
             }
         }
@@ -743,15 +752,10 @@ namespace Nekoyume.UI
                 var iapProductFindComplete = false;
                 if (unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
                 {
-#if UNITY_IOS
-                    Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
-#else
-                    var gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
-#endif
-                    var gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
-                    if (gSkuMatch.Success)
+                    var sku = MailExtensions.GetSkuFromMemo(unloadFromMyGaragesRecipientMail.Memo);
+                    if (!string.IsNullOrEmpty(sku))
                     {
-                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == gSkuMatch.Groups[1].Value);
+                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.CheckSku(sku));
                         if (findKey.Value != null)
                         {
                             iapProductFindComplete = true;
@@ -940,6 +944,23 @@ namespace Nekoyume.UI
             NcDebug.Log($"[{nameof(AdventureBossRaffleWinnerMail)}] ItemCount: {adventureBossRaffleWinnerMail.id}, Season: {adventureBossRaffleWinnerMail.Season}, ");
             adventureBossRaffleWinnerMail.New = false;
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
+        }
+
+        public void Read(CustomCraftMail customCraftMail)
+        {
+            var itemUsable = customCraftMail?.Equipment;
+            if (itemUsable is null)
+            {
+                NcDebug.LogError("CombinationMail.itemUsable is null");
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, customCraftMail.id);
+            customCraftMail.New = false;
+            NcDebug.Log("CombinationMail LocalLayer task completed");
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
+            Find<CombinationResultPopup>().Show(itemUsable);
         }
 
         [Obsolete]

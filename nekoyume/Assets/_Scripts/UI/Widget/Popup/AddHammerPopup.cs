@@ -129,7 +129,7 @@ namespace Nekoyume.UI
             base.Show();
 
             _baseItem = baseModel;
-            _baseExp = GetBaseExp(baseModel, materialModels);
+            _baseExp = GetBaseExp(baseModel, materialModels, hammerItem.ItemBase);
             _hammerItem = new CountEditableItem(
                 hammerItem.ItemBase,
                 hammerItem.SelectedMaterialCount.Value,
@@ -153,7 +153,8 @@ namespace Nekoyume.UI
 
         private static long GetBaseExp(
             Equipment baseItem,
-            List<EnhancementInventoryItem> materialModels)
+            List<EnhancementInventoryItem> materialModels,
+            ItemBase ignoreItem)
         {
             var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             var enhancementCostSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
@@ -163,15 +164,21 @@ namespace Nekoyume.UI
                 enhancementCostSheet);
             var materialItemsExp = materialModels.Sum(inventoryItem =>
             {
-                if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id))
+                if (ItemEnhancement.HammerIds.Contains(inventoryItem.ItemBase.Id) && 
+                    inventoryItem.ItemBase.Id != ignoreItem.Id)
                 {
-                    var hammerExp = Equipment.GetHammerExp(
-                        inventoryItem.ItemBase.Id,
-                        enhancementCostSheet);
+                    var hammerExp = enhancementCostSheet.GetHammerExp(
+                        inventoryItem.ItemBase.Id);
                     return hammerExp * inventoryItem.SelectedMaterialCount.Value;
                 }
+                
+                var equipment = inventoryItem.ItemBase as Equipment;
+                if (equipment == null)
+                {
+                    return 0;
+                }
 
-                return (inventoryItem.ItemBase as Equipment).GetRealExp(
+                return equipment.GetRealExp(
                     equipmentItemSheet,
                     enhancementCostSheet);
             });
@@ -189,9 +196,8 @@ namespace Nekoyume.UI
                     row.Grade == baseEquipment.Grade).ToList();
 
             // Get Target Exp
-            var materialsExp = Equipment.GetHammerExp(
-                _hammerItem.ItemBase.Value.Id,
-                enhancementCostSheet);
+            var materialsExp = enhancementCostSheet.GetHammerExp(
+                _hammerItem.ItemBase.Value.Id);
             var targetExp = _baseExp + materialsExp * count;
 
             // Get Target Level

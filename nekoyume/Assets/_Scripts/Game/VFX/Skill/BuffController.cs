@@ -1,9 +1,8 @@
-using JetBrains.Annotations;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using Nekoyume.Helper;
 using Nekoyume.Model.Buff;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Model.Skill;
 using UnityEngine;
 
@@ -22,11 +21,21 @@ namespace Nekoyume.Game.VFX.Skill
         public BuffController(ObjectPool objectPool)
         {
             _pool = objectPool;
-            var buffs = Resources.LoadAll<BuffVFX>("VFX/Prefabs");
-            foreach (var buff in buffs)
+        }
+        
+        public async UniTask InitializeAsync()
+        {
+            // TODO: BuffVfx 상속받은 프리팹만 로드하도록 에셋 구분
+            await ResourceManager.Instance.LoadAllAsync<GameObject>(ResourceManager.BuffLabel, true, assetAddress =>
             {
-                _pool.Add(buff.gameObject, InitCount);
-            }
+                var prefab = ResourceManager.Instance.Load<GameObject>(assetAddress);
+                if (prefab == null)
+                {
+                    NcDebug.LogError($"Failed to load {assetAddress}");
+                    return;
+                }
+                _pool.Add(prefab, InitCount);
+            });
         }
 
         public T Get<T>(GameObject target, Buff buff) where T : BuffVFX

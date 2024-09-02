@@ -247,7 +247,7 @@ namespace Editor
             string targetDirName = null,
             bool useDevExtension = false)
         {
-            string[] scenes = { "Assets/_Scenes/Game.unity" };
+            string[] scenes = { "Assets/_Scenes/IntroScene.unity", "Assets/_Scenes/LoadingScene.unity", "Assets/_Scenes/LoginScene.unity", "Assets/_Scenes/Game.unity" };
 #if UNITY_ANDROID || UNITY_IOS
             PlayerSettings.productName = PlayerName;
 #endif

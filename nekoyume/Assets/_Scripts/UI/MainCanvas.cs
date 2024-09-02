@@ -135,32 +135,21 @@ namespace Nekoyume.UI
 
         private void UpdateLayers()
         {
-            if (_layers is null)
+            _layers ??= new List<CanvasLayer>
             {
-                _layers = new List<CanvasLayer>
-                {
-                    hudLayer,
-                    popupLayer,
-                    screenLayer,
-                    staticLayer,
-                    tooltipLayer,
-                    widgetLayer,
-                    animationLayer,
-                    systemLayer,
-                    developmentLayer,
-                    tutorialMaskLayer
-                };
-            }
+                hudLayer,
+                popupLayer,
+                screenLayer,
+                staticLayer,
+                tooltipLayer,
+                widgetLayer,
+                animationLayer,
+                systemLayer,
+                developmentLayer,
+                tutorialMaskLayer
+            };
 
             _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
-        }
-
-        public void InitializeIntro()
-        {
-            var intro = Widget.Create<IntroScreen>(true);
-            intro.Initialize();
-
-            UpdateLayers();
         }
 
         public void InitializeFirst()
@@ -274,8 +263,6 @@ namespace Nekoyume.UI
             yield return null;
 
             // 일반.
-            _secondWidgets.Add(Widget.Create<Synopsis>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<Login>());
             yield return null;
             _secondWidgets.Add(Widget.Create<LoginDetail>());
@@ -349,6 +336,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Summon>());
             _secondWidgets.Add(Widget.Create<DccMain>());
             _secondWidgets.Add(Widget.Create<DccCollection>());
+            _secondWidgets.Add(Widget.Create<CustomCraft>());
             yield return null;
 
             // header menu
@@ -379,6 +367,8 @@ namespace Nekoyume.UI
             // popup
             _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CombinationSlotAllPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<BuyFungibleAssetInformationPopup>());
@@ -393,6 +383,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<GrindingLoadingScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CustomCraftLoadingScreen>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CelebratesPopup>());
@@ -402,6 +394,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SummonResultPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<PaymentPopup>());
             yield return null;
@@ -441,8 +435,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<SummonResultPopup>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonSkillsPopup>());
@@ -462,6 +454,12 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<AddHammerPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RelationshipInfoPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CustomCraftInfoPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<GrindRewardPopup>());
             yield return null;
 
             // tooltip
@@ -495,6 +493,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<AdventureBossPreparation>());
             _secondWidgets.Add(Widget.Create<AdventureBossResultPopup>());
             _secondWidgets.Add(Widget.Create<AdventureBossStageBuff>());
+            _secondWidgets.Add(Widget.Create<PreviousSeasonReportPopup>());
 #endif
         }
 

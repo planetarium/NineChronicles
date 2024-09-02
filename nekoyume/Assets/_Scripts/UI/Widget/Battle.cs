@@ -143,7 +143,10 @@ namespace Nekoyume.UI
             accelerationToggle.gameObject.SetActive(canAccel);
             accelerationToggle.interactable = canAccel;
             accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
-            SetAccelToggle(accelerationToggle.isOn);
+            if(stageType != StageType.AdventureBoss)
+            {
+                SetAccelToggle(accelerationToggle.isOn);
+            }
 
             var canExit = States.Instance.CurrentAvatarState.worldInformation
                 .IsStageCleared(RequiredStageForExitButton);

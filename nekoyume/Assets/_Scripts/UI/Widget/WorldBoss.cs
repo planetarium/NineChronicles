@@ -149,7 +149,7 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject
-                .Subscribe(x => UpdateViewAsync(x))
+                .Subscribe(x => UpdateViewAsync(x).Forget())
                 .AddTo(_disposables);
         }
 
@@ -176,17 +176,33 @@ namespace Nekoyume.UI
             _headerMenu.Show(assetVisibleState, showHeaderMenuAnimation);
         }
 
-        private async Task UpdateViewAsync(long currentBlockIndex,
-            bool forceUpdate = false,
+        private async UniTask UpdateViewAsync(long currentBlockIndex,
+            bool forceUpdateState = false,
             bool ignoreHeaderMenuAnimation = false,
             bool ignoreHeaderMenu = false)
         {
-            if (forceUpdate)
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            await UpdateWorldBossState(currentBlockIndex, avatarAddress, forceUpdateState, ignoreHeaderMenuAnimation, ignoreHeaderMenu);
+
+            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
+            var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
+            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
+            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            UpdateRemainTimer(_period, currentBlockIndex, secondsPerBlock);
+            SetActiveQueryLoading(false);
+        }
+
+        private async UniTask UpdateWorldBossState(long currentBlockIndex,
+            Address avatarAddress,
+            bool forceUpdateState = false,
+            bool ignoreHeaderMenuAnimation = false,
+            bool ignoreHeaderMenu = false)
+        {
+            if (forceUpdateState)
             {
                 _status = WorldBossStatus.None;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var curStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
             if (_status != curStatus)
             {
@@ -232,13 +248,6 @@ namespace Nekoyume.UI
                         throw new ArgumentOutOfRangeException();
                 }
             }
-
-            var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
-            var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
-            _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
-            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-            UpdateRemainTimer(_period, currentBlockIndex, secondsPerBlock);
-            SetActiveQueryLoading(false);
         }
 
         private void UpdateOffSeason(long currentBlockIndex)
@@ -404,7 +413,7 @@ namespace Nekoyume.UI
             var myRecord =
                 records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
             var userCount = response?.WorldBossTotalUsers ?? 0;
-            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? 0;
+            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? -1;
             return (myRecord, blockIndex, userCount);
         }
 

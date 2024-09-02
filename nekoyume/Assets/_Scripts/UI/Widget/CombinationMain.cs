@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -24,6 +23,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button runeButton;
+
+        [SerializeField]
+        private Button blueprintButton;
 
         [SerializeField]
         private Button closeButton;
@@ -87,6 +89,13 @@ namespace Nekoyume.UI
             {
                 Close(true);
                 Find<Rune>().Show(true);
+                AudioController.PlayClick();
+            });
+
+            blueprintButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<CustomCraft>().Show();
                 AudioController.PlayClick();
             });
 

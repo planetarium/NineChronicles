@@ -1,6 +1,5 @@
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -143,6 +142,7 @@ namespace Nekoyume.UI.Module
                     case CostType.ActionPoint:
                     case CostType.Hourglass:
                     case CostType.ApPotion:
+                    case CostType.GoldDust:
                         break;
                     default:
                         return CostType.None;
@@ -167,10 +167,6 @@ namespace Nekoyume.UI.Module
                     return States.Instance.CrystalBalance.MajorUnit >= cost;
                 case CostType.ActionPoint:
                     return ReactiveAvatarState.ActionPoint >= cost;
-                case CostType.Hourglass:
-                    var inventory = States.Instance.CurrentAvatarState.inventory;
-                    var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-                    return count >= cost;
                 case CostType.ArenaTicket:
                     return RxProps.ArenaTicketsProgress.Value.currentTickets >= cost;
                 case CostType.EventDungeonTicket:
@@ -179,13 +175,15 @@ namespace Nekoyume.UI.Module
                 case CostType.GoldDust:
                 case CostType.RubyDust:
                 case CostType.EmeraldDust:
-                    inventory = States.Instance.CurrentAvatarState.inventory;
-                    var materialCount = inventory.GetMaterialCount((int)type);
-                    return materialCount >= cost;
+                    var inventory = States.Instance.CurrentAvatarState.inventory;
+                    var count = inventory.GetMaterialCount((int)type);
+                    return count >= cost;
+                case CostType.Hourglass:
                 case CostType.ApPotion:
+                    var blockIndex = Game.Game.instance.Agent.BlockIndex;
                     inventory = States.Instance.CurrentAvatarState.inventory;
-                    var apPotionCount = inventory.GetMaterialCount((int)type);
-                    return apPotionCount >= cost;
+                    count = inventory.GetUsableItemCount(type, blockIndex);
+                    return count >= cost;
                 default:
                     return true;
             }
@@ -233,6 +231,12 @@ namespace Nekoyume.UI.Module
                         OneLineSystem.Push(
                             MailType.System,
                             L10nManager.Localize("UI_NOT_ENOUGH_AP_POTION"),
+                            NotificationCell.NotificationType.Alert);
+                        break;
+                    case CostType.GoldDust:
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_GOLD_DUST"),
                             NotificationCell.NotificationType.Alert);
                         break;
                 }

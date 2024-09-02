@@ -86,7 +86,7 @@ namespace Nekoyume.Blockchain
         {
             try
             {
-                combinationSlotState = GetCombinationSlotState(hash, avatarAddress, index);
+                combinationSlotState = GetStateExtensions.GetCombinationSlotState(hash, avatarAddress, index);
                 return true;
             }
             catch (Exception)

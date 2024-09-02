@@ -193,7 +193,7 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_MONSTER_COLLECTION_MAIL_FORMAT");
                 case GrindingMail grindingMail:
                     return L10nManager.Localize("UI_GRINDING_CRYSTALMAIL_FORMAT",
-                        grindingMail.Asset.ToString());
+                        grindingMail.Asset.ToString(), grindingMail.RewardMaterialCount);
                 case RaidRewardMail rewardMail:
                     return L10nManager.Localize("UI_RAID_SEASON_REWARD_MAIL_FORMAT",
                         rewardMail.RaidId, rewardMail.CurrencyName, rewardMail.Amount);
@@ -230,6 +230,11 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_ADVENTURE_BOSS_WINNER_MAIL_FORMAT",
                         adventureBossRaffleWinnerMail.Season,
                         adventureBossRaffleWinnerMail.Reward);
+                case CustomCraftMail customCraftMail:
+                    return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT",
+                        GetLocalizedNonColoredName(
+                            customCraftMail.Equipment,
+                            customCraftMail.Equipment.ItemType.HasElementType()));
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
@@ -563,11 +568,29 @@ namespace Nekoyume
             return $"<color=#{GetColorHexByGrade(equipment.Grade)}>{grade}  |  {subType}</color>";
         }
 
+        public static string GetLocalizedInformation(this EquipmentItemSheet.Row equipmentRow)
+        {
+            var grade = equipmentRow.Grade >= 1 ? equipmentRow.Grade : 1;
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subTypeText = GetLocalizedItemSubTypeText(equipmentRow.ItemSubType);
+
+            return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subTypeText}</color>";
+        }
+
         public static string GetLocalizedInformation(this FungibleAssetValue fav)
         {
             var grade = Util.GetTickerGrade(fav.Currency.Ticker);
             var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
             var subType = L10nManager.Localize("UI_STONES");
+            return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subType}</color>";
+        }
+
+        public static string GetLocalizedInformation(string ticker)
+        {
+            var grade = Util.GetTickerGrade(ticker);
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subType = L10nManager.Localize("UI_RUNE");
+
             return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subType}</color>";
         }
 
@@ -721,8 +744,7 @@ namespace Nekoyume
             BigInteger cost)
         {
             // NCG
-            if (asset.Currency.Equals(
-                Game.Game.instance.States.GoldBalanceState.Gold.Currency))
+            if (asset.Currency.Equals(Game.Game.instance.States.GoldBalanceState.Gold.Currency))
             {
                 var ncgText = L10nManager.Localize("UI_NCG");
                 return L10nManager.Localize(
