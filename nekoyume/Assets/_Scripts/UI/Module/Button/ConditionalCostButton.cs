@@ -79,6 +79,20 @@ namespace Nekoyume.UI.Module
             UpdateObjects();
         }
 
+        public void SetCost(IEnumerable<CostParam> costs)
+        {
+            _costMap.Clear();
+            foreach (var cost in costs)
+            {
+                if (cost.cost > 0)
+                {
+                    _costMap[cost.type] = cost.cost;
+                }
+            }
+
+            UpdateObjects();
+        }
+
         public void SetCost(CostType type, long cost)
         {
             _costMap.Clear();
