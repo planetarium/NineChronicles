@@ -106,7 +106,7 @@ namespace Nekoyume.UI
         private void OnInsufficientCost(BigInteger cost)
         {
             var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-            Find<PaymentPopup>().ShowAttract(
+            Find<PaymentPopup>().ShowLackPayment(
                 CostType.Crystal,
                 cost,
                 message,

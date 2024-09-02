@@ -1,20 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet;
-using Libplanet.Crypto;
+using Nekoyume.Action;
 using Nekoyume.Game.Battle;
+using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Game;
     using UniRx;
 
     public class CombinationSlotsPopup : PopupWidget
@@ -24,8 +26,28 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private PetInventory petInventory;
-
+        
+        [SerializeField]
+        private ConditionalButton rapidCombinationButton;
+        
+        [SerializeField]
+        private TMP_Text openCostText;
+        
         private readonly List<IDisposable> _disposablesOnEnable = new();
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            rapidCombinationButton.OnSubmitSubject
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    var currentBlockIndex = Game.instance.Agent.BlockIndex;
+                    Find<CombinationSlotAllPopup>().Show(GetWorkingSlotStateList(), currentBlockIndex);
+                })
+                .AddTo(gameObject);
+        }
 
         public override void Initialize()
         {
@@ -36,7 +58,7 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             base.OnEnable();
-            Game.Game.instance.Agent.BlockIndexSubject
+            Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(UpdateSlots)
                 .AddTo(_disposablesOnEnable);
@@ -84,6 +106,16 @@ namespace Nekoyume.UI
         {
             slots[slotIndex].OnSendCombinationAction(requiredBlockIndex, itemUsable);
         }
+        
+        public void OnSendRapidCombination(List<int> slotIndex)
+        {
+            foreach (var index in slotIndex)
+            {
+                OnSendRapidCombination(index);
+            }
+            
+            UpdateSlots();
+        }
 
         public void OnSendRapidCombination(int slotIndex)
         {
@@ -99,7 +131,7 @@ namespace Nekoyume.UI
 
         public bool TryGetEmptyCombinationSlot(out int slotIndex)
         {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var blockIndex = Game.instance.Agent.BlockIndex;
             var slotDict = States.Instance.GetCombinationSlotState(States.Instance.CurrentAvatarState);
             var states = slotDict?.Values.ToList();
             if (states == null)
@@ -142,12 +174,13 @@ namespace Nekoyume.UI
         
         public void UpdateSlots()
         {
-            UpdateSlots(Game.Game.instance.Agent.BlockIndex, null);
+            UpdateSlots(Game.instance.Agent.BlockIndex);
         }
         
-        public void UpdateSlots(long blockIndex)
+        private void UpdateSlots(long blockIndex)
         {
             UpdateSlots(blockIndex, null);
+            UpdateAllOpenCost(blockIndex);
         }
         
         public void ClearSlots()
@@ -163,6 +196,26 @@ namespace Nekoyume.UI
         public void SetLockLoading(int slotIndex, bool isLoading)
         {
             slots[slotIndex].SetLockLoading(isLoading);
+        }
+        
+        private void UpdateAllOpenCost(long currentBlockIndex)
+        {
+            var stateList = GetWorkingSlotStateList();
+            var cost = GetWorkingSlotsOpenCost(stateList, currentBlockIndex);
+            openCostText.text = cost.ToString();
+            rapidCombinationButton.SetState(SetRapidCombinationButtonCondition(cost));
+        }
+
+        private ConditionalButton.State SetRapidCombinationButtonCondition(int cost)
+        {
+            if (cost > 0)
+            {
+                rapidCombinationButton.Interactable = true;
+                return ConditionalButton.State.Normal;
+            }
+            
+            rapidCombinationButton.Interactable = false;
+            return ConditionalButton.State.Disabled;
         }
 
         private void UpdateSlots(long blockIndex, IDictionary<int, CombinationSlotState> states)
@@ -192,6 +245,36 @@ namespace Nekoyume.UI
                     slots[i].SetSlot(blockIndex, i);
                 }
             }
+        }
+        
+        private List<CombinationSlotState> GetWorkingSlotStateList()
+        {
+            return slots
+                .Where(s => s.UIState == CombinationSlot.SlotUIState.Working && s.State != null)
+                .Select(s => s.State).ToList();
+        }
+
+        public static int GetWorkingSlotsOpenCost(List<CombinationSlotState> stateList, long currentBlockIndex)
+        {
+            var cost = 0;
+            foreach (var state in stateList)
+            {
+                var diff = state.UnlockBlockIndex - currentBlockIndex;
+                if (state.PetId.HasValue && States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
+                {
+                    cost += PetHelper.CalculateDiscountedHourglass(
+                        diff,
+                        States.Instance.GameConfigState.HourglassPerBlock,
+                        petState,
+                        TableSheets.Instance.PetOptionSheet);
+                }
+                else
+                {
+                    cost += RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+                }
+            }
+
+            return cost;
         }
     }
 }

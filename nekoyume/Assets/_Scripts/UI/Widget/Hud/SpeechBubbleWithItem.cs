@@ -51,25 +51,25 @@ namespace Nekoyume.UI
             _showRune = false;
         }
 
-        public void SetCurrency(long ncg, long crystal)
+        public void SetCrystal(long crystal)
         {
             Item = null;
-            var hasNCG = ncg > 0;
-            var hasCrystal = crystal > 0;
-
-            if (hasNCG)
-            {
-                ncgView.amountText.text = ncg.ToString();
-            }
-
-            if (hasCrystal)
-            {
-                crystalView.amountText.text = crystal.ToString();
-            }
+            crystalView.amountText.text = crystal.ToString();
 
             _showItemView = false;
-            _showNCGView = hasNCG;
-            _showCrystalView = hasCrystal;
+            _showNCGView = false;
+            _showCrystalView = true;
+            _showRune = false;
+        }
+
+        public void SetCurrency(long ncg)
+        {
+            Item = null;
+            ncgView.amountText.text = ncg.ToString();
+
+            _showItemView = false;
+            _showNCGView = true;
+            _showCrystalView = false;
             _showRune = false;
         }
 

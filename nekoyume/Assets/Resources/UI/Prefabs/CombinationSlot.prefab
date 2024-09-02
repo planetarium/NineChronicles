@@ -20140,6 +20140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17b02b95bdb156841b56b22378f3b58f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lockButton: {fileID: 1187452486021232400}
   costText: {fileID: 3172165208916715075}
   loadingIndicator: {fileID: 6150848573912631196}
   lockPriceObject: {fileID: 579591126688764477}

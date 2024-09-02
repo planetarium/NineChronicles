@@ -149,7 +149,7 @@ namespace Nekoyume.UI
             loading.SetActive(false);
             ChangeState(0);
             UpdateTabs();
-            Find<MailRewardScreen>().Show(mailRewards);
+            Find<MailRewardScreen>().Show(mailRewards, "UI_ALL_RECEIVED");
         }
 
         private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)

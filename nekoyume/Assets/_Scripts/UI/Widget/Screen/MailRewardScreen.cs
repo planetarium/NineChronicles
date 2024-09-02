@@ -82,14 +82,14 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
         }
 
-        public void Show(List<MailReward> mailRewards, string titleText = "UI_ALL_RECEIVED", bool ignoreShowAnimation = false)
+        public void Show(List<MailReward> mailRewards, string titleTextKey, bool ignoreShowAnimation = false)
         {
             foreach (var rewards in _mailRewardsList)
             {
                 DestroyImmediate(rewards.gameObject);
             }
 
-            titleTextObj.text = L10nManager.Localize(titleText);
+            titleTextObj.text = L10nManager.Localize(titleTextKey);
 
             _mailRewardsList.Clear();
 

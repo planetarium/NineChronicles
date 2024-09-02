@@ -101,6 +101,8 @@ namespace Nekoyume.UI.Module
         private bool _isWaitingCombinationActionRender;
         
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
+        
+        public CombinationSlotState? State => _state;
 
         public SlotUIState UIState { get; private set; } = SlotUIState.Locked;
 
@@ -286,8 +288,7 @@ namespace Nekoyume.UI.Module
             }
             
             var startBlockIndex = Math.Max(_sendActionBlockIndex, _state.StartBlockIndex);
-            var workingBlockIndex = startBlockIndex + States.Instance.GameConfigState.RequiredAppraiseBlock;
-            if (currentBlockIndex <= workingBlockIndex || _isWaitingCombinationActionRender)
+            if (currentBlockIndex <= startBlockIndex || _isWaitingCombinationActionRender)
             {
                 return;
             }
@@ -335,7 +336,7 @@ namespace Nekoyume.UI.Module
             long currentBlockIndex,
             CombinationSlotState? state)
         {
-            petSelectButton.SetData(state?.PetId ?? null);
+            UpdatePetButton(uiState, state);
 
             switch (uiState)
             {
@@ -392,6 +393,22 @@ namespace Nekoyume.UI.Module
                 case SlotUIState.Locked:
                     SetContainer(true, false, false, false);
                     itemView.Clear();
+                    break;
+            }
+        }
+        
+        private void UpdatePetButton(SlotUIState uiState, CombinationSlotState? state)
+        {
+            switch (uiState)
+            {
+                case SlotUIState.Locked:
+                case SlotUIState.Empty:
+                case SlotUIState.Appraise:
+                    petSelectButton.SetData(null);
+                    break;
+                case SlotUIState.Working:
+                case SlotUIState.WaitingReceive:
+                    petSelectButton.SetData(state?.PetId ?? null);
                     break;
             }
         }
