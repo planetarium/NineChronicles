@@ -449,7 +449,8 @@ namespace Nekoyume.UI
             return L10nManager.Localize(!canAttract ? "UI_LACK_AP_PORTION_PC" : "UI_LACK_AP_PORTION");
         }
         
-        private static bool CanAttractShop()
+        // TODO: 공용으로 뺄 수 없을지 확인.
+        public static bool CanAttractShop()
         {
 #if UNITY_ANDROID || UNITY_IOS
             return false;
