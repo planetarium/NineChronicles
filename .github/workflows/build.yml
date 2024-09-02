@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - development
+      - previewnet
       - release/*
       - fast-track/*
     tags: ["*"]
@@ -92,7 +93,10 @@ jobs:
           if-no-files-found: error
 
   extract:
-    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')
+    if: (startsWith(github.ref, 'refs/heads/release/')
+      || github.ref == 'refs/heads/previewnet'
+      || startsWith(github.event.ref, 'refs/tags/')
+      )
     needs: build
     runs-on: ubuntu-latest
     outputs:
@@ -104,16 +108,19 @@ jobs:
       - name: extract
         id: extract
         run: |
+          timestamp=$(date +%s)
+
+          major=${timestamp:0:4}
+          minor=${timestamp:4:3}
+          patch=${timestamp:7:3}
+
+          semver="${major}.${minor}.${patch}"
           if [[ "${{ startsWith(github.ref, 'refs/heads/release/') }}" == "true" ]]; then
-              timestamp=$(date +%s)
-
-              major=${timestamp:0:4}
-              minor=${timestamp:4:3}
-              patch=${timestamp:7:3}
-
-              semver="${major}.${minor}.${patch}"
-
               echo "::set-output name=network::internal"
+              echo "::set-output name=signing::--no-signing"
+              echo "::set-output name=version::$semver"
+          elif [[ "${{ github.ref == 'refs/heads/previewnet' }}" == "true" ]]; then
+              echo "::set-output name=network::previewnet"
               echo "::set-output name=signing::--no-signing"
               echo "::set-output name=version::$semver"
           elif [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == "true" ]]; then
@@ -129,7 +136,10 @@ jobs:
           fi
 
   release:
-    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')
+    if: (startsWith(github.ref, 'refs/heads/release/')
+      || github.ref == 'refs/heads/previewnet'
+      || startsWith(github.event.ref, 'refs/tags/')
+      )
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -176,7 +186,10 @@ jobs:
 
 
   update-latest-metadata:
-    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')
+    if: (startsWith(github.ref, 'refs/heads/release/')
+      || github.ref == 'refs/heads/previewnet'
+      || startsWith(github.event.ref, 'refs/tags/')
+      )
     runs-on: ubuntu-20.04
     needs: [extract, release]
     environment:
