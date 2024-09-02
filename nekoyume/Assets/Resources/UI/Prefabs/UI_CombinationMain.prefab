@@ -334,7 +334,7 @@ MonoBehaviour:
   upgradeButton: {fileID: 6274492408546324230}
   grindButton: {fileID: 4868108788663917727}
   runeButton: {fileID: 4062579702270901021}
-  blueprintButton: {fileID: 601257163011505506}
+  customCraftButton: {fileID: 601257163011505506}
   closeButton: {fileID: 3174719986751943182}
   craftNotificationImage: {fileID: 6274492409712002948}
   runeNotificationImage: {fileID: 889186927360354802}
@@ -353,6 +353,9 @@ MonoBehaviour:
   - lockObject: {fileID: 7119327703163488112}
     requiredStageId: 40
     lockedButton: {fileID: 4868108788663917727}
+  - lockObject: {fileID: 8843854341914765179}
+    requiredStageId: 200
+    lockedButton: {fileID: 601257163011505506}
 --- !u!225 &3856260509446582021
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3154,8 +3157,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.65023947, y: 1}
-  m_AnchoredPosition: {x: 38.762146, y: 0}
-  m_SizeDelta: {x: 77.52432, y: 0}
+  m_AnchoredPosition: {x: 38.762074, y: 0}
+  m_SizeDelta: {x: 77.52415, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1146382431221227957
 CanvasRenderer:
@@ -7917,16 +7920,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 86858638747430341, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 86858638747430341, guid: 0517f477e3636ed42aaab081c05cd889,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 86858638747430341, guid: 0517f477e3636ed42aaab081c05cd889,
-        type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -7995,11 +7988,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -82
       objectReference: {fileID: 0}
-    - target: {fileID: 4393373084810810037, guid: 0517f477e3636ed42aaab081c05cd889,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5160208393108687111, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -8062,11 +8050,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6917837726481924647, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
-      propertyPath: m_Type
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6917837726481924647, guid: 0517f477e3636ed42aaab081c05cd889,
-        type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 5fc9b92970574174885d71615928d44b,
@@ -8096,15 +8079,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Custom Craft
       objectReference: {fileID: 0}
-    - target: {fileID: 8231017677692183359, guid: 0517f477e3636ed42aaab081c05cd889,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8259376983496205467, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_text
-      value: Stage 40
+      value: Stage 200
       objectReference: {fileID: 0}
     - target: {fileID: 8322290979673836999, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -8240,7 +8218,7 @@ PrefabInstance:
     - target: {fileID: 8516529415375919055, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: l10nKey
-      value: 
+      value: CUSTOM_CRAFT
       objectReference: {fileID: 0}
     - target: {fileID: 8897611578532137315, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
@@ -8279,21 +8257,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8970168292455586449, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8970168292455586449, guid: 0517f477e3636ed42aaab081c05cd889,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8970168292455586449, guid: 0517f477e3636ed42aaab081c05cd889,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8970168292455586449, guid: 0517f477e3636ed42aaab081c05cd889,
-        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -8307,6 +8270,12 @@ PrefabInstance:
 --- !u!224 &8268525015680033759 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8322290979673836999, guid: 0517f477e3636ed42aaab081c05cd889,
+    type: 3}
+  m_PrefabInstance: {fileID: 126386920303341080}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8843854341914765179 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8897611578532137315, guid: 0517f477e3636ed42aaab081c05cd889,
     type: 3}
   m_PrefabInstance: {fileID: 126386920303341080}
   m_PrefabAsset: {fileID: 0}

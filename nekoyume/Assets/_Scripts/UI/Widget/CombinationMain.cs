@@ -25,7 +25,7 @@ namespace Nekoyume.UI
         private Button runeButton;
 
         [SerializeField]
-        private Button blueprintButton;
+        private Button customCraftButton;
 
         [SerializeField]
         private Button closeButton;
@@ -92,7 +92,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            blueprintButton.onClick.AddListener(() =>
+            customCraftButton.onClick.AddListener(() =>
             {
                 Close(true);
                 Find<CustomCraft>().Show();

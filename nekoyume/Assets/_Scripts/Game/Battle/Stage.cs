@@ -1662,6 +1662,11 @@ namespace Nekoyume.Game.Battle
                 menuNames.Add("UI_WORLD_BOSS");
             }
 
+            if (stageId == LiveAsset.GameConfig.RequiredStage.CustomCraft)
+            {
+                // Todo : Add CustomCraft
+            }
+
             var celebratesPopup = Widget.Find<CelebratesPopup>();
             foreach (var menuName in menuNames)
             {
