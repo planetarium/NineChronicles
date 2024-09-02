@@ -8,9 +8,9 @@ on:
       - previewnet
       - release/*
       - fast-track/*
-    tags: ["*"]
+    tags: [ "*" ]
   pull_request:
-    types: [ready_for_review, opened, reopened, auto_merge_enabled]
+    types: [ ready_for_review, opened, reopened, auto_merge_enabled ]
   workflow_dispatch:
     inputs:
 
@@ -19,8 +19,8 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-    id-token: write
-    contents: read
+  id-token: write
+  contents: read
 
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -33,8 +33,8 @@ jobs:
     runs-on:
       group: linux-8cores
     defaults:
-        run:
-          shell: bash
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -191,7 +191,7 @@ jobs:
       || startsWith(github.event.ref, 'refs/tags/')
       )
     runs-on: ubuntu-20.04
-    needs: [extract, release]
+    needs: [ extract, release ]
     environment:
       name: ${{ needs.extract.outputs.network }}
     permissions:
@@ -201,10 +201,10 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-            role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
-            role-session-name: GitHubActions-${{ github.run_id }}
-            role-duration-seconds: 1200
-            aws-region: ap-northeast-2
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GitHubActions-${{ github.run_id }}
+          role-duration-seconds: 1200
+          aws-region: ap-northeast-2
 
       - name: update-latest-metadata
         uses: planetarium/9c-toolbelt@main
