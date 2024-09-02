@@ -69,6 +69,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI waitingReceiveText = null!;
 
+        [Header("StateContainer")]
         [SerializeField]
         private GameObject lockContainer = null!;
 
@@ -89,6 +90,13 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private PetSelectButton petSelectButton = null!;
+        
+        [Header("BackGround")]
+        [SerializeField]
+        private GameObject defaultBackGroundObject = null!;
+        
+        [SerializeField]
+        private GameObject customCraftGroundObject = null!;
 
         private CombinationSlotLockObject _lockObject = null!;
         private CombinationSlotState? _state;
@@ -349,7 +357,7 @@ namespace Nekoyume.UI.Module
                     SetContainer(false, true, false, false);
                     preparingContainer.gameObject.SetActive(true);
                     workingContainer.gameObject.SetActive(false);
-                    if (state is { Result: not null })
+                    if (state is { Result: not null } && state.ValidateV2(currentBlockIndex))
                     {
                         UpdateItemInformation(state.Result.itemUsable, uiState);
                         UpdateHourglass(state, currentBlockIndex);
