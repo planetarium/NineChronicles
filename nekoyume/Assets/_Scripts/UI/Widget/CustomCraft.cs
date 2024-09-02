@@ -167,6 +167,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            foreach (var subTypeButton in subTypeButtons)
+            {
+                subTypeButton.toggleButton.isOn = subTypeButton.itemSubType == ItemSubType.Weapon;
+            }
+
             OnItemSubtypeSelected(ItemSubType.Weapon);
             ReactiveAvatarState.Inventory
                 .Where(_ => _selectedOutfit != null)
