@@ -720,6 +720,8 @@ namespace Nekoyume
                 case ItemSubType.MonsterPart:
                 case ItemSubType.NormalMaterial:
                 case ItemSubType.Hourglass:
+                case ItemSubType.Scroll:
+                case ItemSubType.Circle:
                     return L10nManager.Localize("UI_MATERIAL");
                 default:
                     return string.Empty;
