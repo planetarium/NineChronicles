@@ -76,6 +76,12 @@ namespace Nekoyume.Helper
             return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
                 Resources.Load<Sprite>(ItemIconDefaultPath);
         }
+        
+        public static Sprite GetProfileIcon(int profileId)
+        {
+            return Resources.Load<Sprite>(string.Format(ProfileIconPathFormat, profileId)) ??
+                Resources.Load<Sprite>(ProfileIconDefaultPath);
+        }
 
         public static Sprite GetDccProfileIcon(int dccId)
         {
