@@ -50,16 +50,7 @@ namespace Nekoyume.UI
         private Image costIcon;
 
         [SerializeField]
-        private Image addCostIcon;
-
-        [SerializeField]
         private TextMeshProUGUI costText;
-
-        [SerializeField]
-        private TextMeshProUGUI addCostText;
-
-        [SerializeField]
-        private GameObject addCostContainer;
 
         [SerializeField]
         private GameObject attractArrowObject;
@@ -130,8 +121,6 @@ namespace Nekoyume.UI
             System.Action onAttract)
         {
             SetPopupType(PopupType.AttractAction);
-            addCostContainer.SetActive(false);
-
             costIcon.overrideSprite = costIconData.GetIcon(costType);
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost;
@@ -160,9 +149,6 @@ namespace Nekoyume.UI
         // TODO: 위의 ShowLackPayment를 Obsolete 처리 후 아래의 메서드를 사용하도록 변경
         public void ShowLackPaymentDust(CostType costType, BigInteger cost)
         {
-            // TODO: remove
-            addCostContainer.SetActive(false);
-
             var canAttract = CanAttractDust(costType);
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
 
@@ -180,6 +166,47 @@ namespace Nekoyume.UI
             };
             Show(title, content, GetDustAttractString(costType), string.Empty, false);
         }
+        
+        public void ShowLackPaymentCrystal(BigInteger cost)
+        {
+            SetPopupType(PopupType.AttractAction);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.Crystal);
+            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            costText.text = cost.ToString();
+            var content = L10nManager.Localize("UI_LACK_CRYSTAL");
+            var labelYesText = L10nManager.Localize("GRIND_UI_BUTTON");
+            
+            CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    AttractGrind();
+                }
+            };
+            Show(title, content, labelYesText, string.Empty, false);
+        }
+
+        public void ShowLackPaymentNCG(string cost, bool isStaking = false)
+        {
+            var canAttract = CanAttractNCG();
+            SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
+            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            costText.text = cost;
+            var content = GetLackNCGContentString(isStaking);
+            
+            CloseCallback = result =>
+            {
+                if (canAttract && result == ConfirmResult.Yes)
+                {
+                    AttractShop();
+                }
+            };
+            
+            Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
+        }
 #endregion LackPaymentAction
 
 #region PaymentCheckAction
@@ -187,14 +214,12 @@ namespace Nekoyume.UI
             CostType costType,
             BigInteger balance,
             BigInteger cost,
-            string enoughMessage,
+            string checkCostMessage,
             string insufficientMessage,
             System.Action onPaymentSucceed,
             System.Action onAttract)
         {
             SetPopupType(PopupType.PaymentCheck);
-            addCostContainer.SetActive(false);
-
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
             costText.text = cost.ToString();
@@ -216,15 +241,24 @@ namespace Nekoyume.UI
                 else
                 {
                     Close(true);
-                    var attractMessage = costType == CostType.Crystal
-                        ? L10nManager.Localize("UI_GO_GRINDING")
-                        : L10nManager.Localize("UI_YES");
-                    ShowLackPayment(costType, cost, insufficientMessage, attractMessage, onAttract);
+                    if (costType == CostType.NCG)
+                    {
+                        ShowLackPaymentNCG(cost.ToString());
+                        return;
+                    }
+                    
+                    if (costType == CostType.Crystal)
+                    {
+                        ShowLackPaymentCrystal(cost);
+                        return;
+                    }
+                    
+                    ShowLackPayment(costType, cost, insufficientMessage, L10nManager.Localize("UI_YES"), onAttract);
                 }
             };
 
-            SetContent(popupTitle, enoughMessage, yes, no, false);
-            Show(popupTitle, enoughMessage, yes, no, false);
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
         }
 
         // TODO: 재화 관리 팝업관련 작업을 진행하며 정리되면 제거
@@ -232,12 +266,10 @@ namespace Nekoyume.UI
             CostType costType,
             BigInteger balance,
             BigInteger cost,
-            string enoughMessage,
+            string checkCostMessage,
             System.Action onPaymentSucceed)
         {
             SetPopupType(PopupType.PaymentCheck);
-            addCostContainer.SetActive(false);
-
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
             costText.text = cost.ToString();
@@ -263,8 +295,45 @@ namespace Nekoyume.UI
                 }
             };
 
-            SetContent(popupTitle, enoughMessage, yes, no, false);
-            Show(popupTitle, enoughMessage, yes, no, false);
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
+        }
+
+        public void ShowCheckPaymentCrystal(
+            BigInteger balance,
+            BigInteger cost,
+            string checkCostMessage,
+            System.Action onPaymentSucceed)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            var enoughBalance = balance >= cost;
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.Crystal);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            CloseCallback = result =>
+            {
+                if (result != ConfirmResult.Yes)
+                {
+                    return;
+                }
+
+                if (enoughBalance)
+                {
+                    onPaymentSucceed.Invoke();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackPaymentCrystal(cost);
+                }
+            };
+
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
         }
 #endregion PaymentCheckAction
 
@@ -338,6 +407,24 @@ namespace Nekoyume.UI
         }
 #endregion DustHelper
 
+#region NCGHelper
+        public static string GetLackNCGContentString(bool isStaking = false)
+        {
+            return isStaking ?
+                L10nManager.Localize("UI_LACK_NCG_STAKING") :
+                L10nManager.Localize("UI_LACK_NCG");
+        }
+        
+        // TODO: CanUseNCG같은 용도로 공용으로 뺄 수 없을지 확인.
+        public static bool CanAttractNCG()
+        {
+#if UNITY_ANDROID || UNITY_IOS
+            return false;
+#endif
+            return !Game.LiveAsset.GameConfig.IsKoreanBuild;
+        }
+#endregion NCGHelper
+        
 #region Attract
         private void AttractToMonsterCollection()
         {
@@ -349,16 +436,14 @@ namespace Nekoyume.UI
 
         private void AttractToAdventureBoss()
         {
-            CloseWithOtherWidgets();
-
             if (Game.LiveAsset.GameConfig.IsKoreanBuild)
             {
-                // K빌드인 경우 로비로 이동
+                // K빌드인 경우 이동하지 않음
                 NcDebug.LogWarning("Korean build is not supported.");
-                Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
 
+            CloseWithOtherWidgets();
             Find<WorldMap>().Show();
 
             var currState = Game.Game.instance.AdventureBossData.CurrentState.Value;
@@ -366,6 +451,31 @@ namespace Nekoyume.UI
             {
                 WorldMapAdventureBoss.OnClickOpenAdventureBoss();
             }
+        }
+        
+        private void AttractGrind()
+        {
+            Find<Menu>().Close();
+            Find<WorldMap>().Close();
+            Find<StageInformation>().Close();
+            Find<BattlePreparation>().Close();
+            Find<Craft>().Close(true);
+            Find<Grind>().Show();
+        }
+
+        private void AttractShop()
+        {
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                // K빌드인 경우 이동하지 않음
+                NcDebug.LogWarning("Korean build is not supported.");
+                Game.Event.OnRoomEnter.Invoke(true);
+                return;
+            }
+            
+            CloseWithOtherWidgets();            
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            Find<ShopSell>().Show();
         }
 #endregion Attract
 
@@ -408,7 +518,6 @@ namespace Nekoyume.UI
         }
 #endregion General
 
-
         private void Yes()
         {
             base.Close();
@@ -424,35 +533,6 @@ namespace Nekoyume.UI
         public void NoWithoutCallback()
         {
             base.Close();
-        }
-
-        // TODO: Remove after add world boss exception
-        public void ShowAttractWithAddCost(
-            string title,
-            string content,
-            CostType costType,
-            int cost,
-            CostType addCostType,
-            int addCost,
-            System.Action onConfirm)
-        {
-            SetPopupType(PopupType.AttractAction);
-            addCostContainer.SetActive(true);
-
-            costIcon.overrideSprite = costIconData.GetIcon(costType);
-            costText.text = $"{cost:#,0}";
-
-            addCostIcon.overrideSprite = costIconData.GetIcon(addCostType);
-            addCostText.text = $"{addCost:#,0}";
-
-            CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-                    onConfirm?.Invoke();
-                }
-            };
-            Show(title, content);
         }
     }
 }
