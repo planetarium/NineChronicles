@@ -40,6 +40,9 @@ namespace Nekoyume.UI
         private Image summonNotificationImage;
 
         [SerializeField]
+        private Image customCraftNotificationImage;
+
+        [SerializeField]
         private SpeechBubble speechBubble;
 
         [SerializeField]
@@ -164,7 +167,11 @@ namespace Nekoyume.UI
                 }
             }
 
+            // summon
             summonNotificationImage.enabled = Summon.HasNotification;
+
+            // custom craft
+            customCraftNotificationImage.enabled = CustomCraft.HasNotification;
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
