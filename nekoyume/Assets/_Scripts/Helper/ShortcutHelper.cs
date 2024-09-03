@@ -37,6 +37,7 @@ namespace Nekoyume.Helper
             Summon = 12,
             AdventureBoss = 13,
             WorldBoss = 14,
+            Grinding = 15,
 
             MobileShop, // Shop icon is same as ShopPC.
             Upgrade // Upgrade icon is same as Craft.
@@ -352,6 +353,15 @@ namespace Nekoyume.Helper
                 case PlaceType.WorldBoss:
                     shortcutAction = () => ShortcutActionForWorldBoss(caller);
                     guideText = L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS");
+                    break;
+                case PlaceType.Grinding:
+                    shortcutAction = () =>
+                    {
+                        caller.CloseWithOtherWidgets();
+                        Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                        Widget.Find<Grind>().Show();
+                    };
+                    guideText = L10nManager.Localize("GRIND_UI_BUTTON");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
