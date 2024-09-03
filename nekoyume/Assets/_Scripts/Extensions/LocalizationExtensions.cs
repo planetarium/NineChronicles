@@ -231,7 +231,7 @@ namespace Nekoyume
                         adventureBossRaffleWinnerMail.Season,
                         adventureBossRaffleWinnerMail.Reward);
                 case CustomCraftMail customCraftMail:
-                    return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT",
+                    return L10nManager.Localize("UI_CUSTOM_CRAFT_MAIL_FORMAT",
                         GetLocalizedNonColoredName(
                             customCraftMail.Equipment,
                             customCraftMail.Equipment.ItemType.HasElementType()));
