@@ -68,15 +68,19 @@ namespace Nekoyume.UI.Model
             switch (_costType)
             {
                 case CostType.Crystal:
+                    paymentPopup.ShowCheckPaymentCrystal(
+                        GetBalance(),
+                        GetCost(),
+                        GetCheckCostMessageString(),
+                        OnPaymentSucceed);
+                    break;
                 case CostType.NCG:
                     paymentPopup.ShowCheckPayment(
                         _costType,
                         GetBalance(),
                         GetCost(),
                         GetCheckCostMessageString(),
-                        L10nManager.Localize(_costType == CostType.Crystal
-                            ? "UI_NOT_ENOUGH_CRYSTAL"
-                            : "UI_NOT_ENOUGH_NCG"),
+                        L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
                         OnPaymentSucceed,
                         () =>
                         {
