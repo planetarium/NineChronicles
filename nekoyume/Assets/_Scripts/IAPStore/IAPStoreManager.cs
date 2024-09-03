@@ -517,6 +517,7 @@ namespace Nekoyume.IAPStore
                 else
                 {
                     Widget.Find<MobileShop>()?.PurchaseComplete(sku);
+                    PurchaseCountRefresh(sku);
                     popup.Show(
                         "UI_COMPLETED",
                         "UI_IAP_PURCHASE_COMPLETE",
@@ -551,6 +552,22 @@ namespace Nekoyume.IAPStore
             return;
         }
 
+        private void PurchaseCountRefresh(string sku)
+        {
+            if (_initializedProductSchema.TryGetValue(sku, out var p))
+            {
+                p.PurchaseCount++;
+                if (p.DailyLimit != null)
+                {
+                    p.Buyable = p.PurchaseCount < p.DailyLimit.Value;
+                }
+                else if (p.WeeklyLimit != null)
+                {
+                    p.Buyable = p.PurchaseCount < p.WeeklyLimit.Value;
+                }
+            }
+        }
+
         private async void OnPurchaseRequestAsync(PurchaseEventArgs e)
         {
             var popup = Widget.Find<IconAndButtonSystem>();
@@ -583,19 +600,7 @@ namespace Nekoyume.IAPStore
                     try
                     {
                         Widget.Find<MobileShop>()?.PurchaseComplete(e.purchasedProduct.definition.id);
-                        if (_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var p))
-                        {
-                            p.PurchaseCount++;
-                            if (p.DailyLimit != null)
-                            {
-                                p.Buyable = p.PurchaseCount < p.DailyLimit.Value;
-                            }
-                            else if (p.WeeklyLimit != null)
-                            {
-                                p.Buyable = p.PurchaseCount < p.WeeklyLimit.Value;
-                            }
-                        }
-
+                        PurchaseCountRefresh(e.purchasedProduct.definition.id);
                         Analyzer.Instance.Track(
                             "Unity/Shop/IAP/PurchaseResult",
                             ("product-id", e.purchasedProduct.definition.id),
