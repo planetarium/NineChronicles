@@ -127,6 +127,50 @@ namespace Nekoyume.UI
 
         public bool RequiredUpdateCraftCount { get; set; }
 
+        public static bool HasNotification
+        {
+            get
+            {
+                var tableSheets = TableSheets.Instance;
+                var recipeRow = tableSheets.CustomEquipmentCraftRecipeSheet.Values
+                    .OrderBy(row => row.CircleAmount + row.ScrollAmount).First();
+                var relationshipRow = tableSheets.CustomEquipmentCraftRelationshipSheet.OrderedList!
+                    .First(row => row.Relationship >= ReactiveAvatarState.Relationship);
+                var costRow = tableSheets.CustomEquipmentCraftCostSheet.Values
+                    .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship);
+
+                var (ncgCost, materialCosts) = CustomCraftHelper.CalculateCraftCost(
+                    0, tableSheets.MaterialItemSheet, recipeRow, relationshipRow, costRow,
+                    States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
+                );
+
+                if (States.Instance.GoldBalanceState.Gold.MajorUnit < ncgCost)
+                {
+                    return false;
+                }
+
+                var inventory = States.Instance.CurrentAvatarState.inventory;
+                foreach (var material in materialCosts)
+                {
+                    if (!tableSheets.MaterialItemSheet.TryGetValue(material.Key, out var row))
+                    {
+                        continue;
+                    }
+
+                    var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                        ? outFungibleItems.Sum(e => e.count)
+                        : 0;
+
+                    if (material.Value > itemCount)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
