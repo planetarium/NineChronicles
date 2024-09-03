@@ -118,6 +118,7 @@ namespace Nekoyume.Helper
                     {
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.WorldBoss));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Grinding));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
 
                         var stageRow = TableSheets.Instance.StageSheet
@@ -131,6 +132,7 @@ namespace Nekoyume.Helper
                         break;
                     }
                     case ItemSubType.Scroll:
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Grinding));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                         break;
