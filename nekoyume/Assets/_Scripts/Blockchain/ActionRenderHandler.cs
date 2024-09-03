@@ -976,11 +976,12 @@ namespace Nekoyume.Blockchain
                         break;
                 }
 
-                var format = L10nManager.Localize(formatKey);
                 NotificationSystem.CancelReserve(result.itemUsable.ItemId);
                 NotificationSystem.Push(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
+                    result.itemUsable is Equipment e && e.IconId != 0 && e.Id != e.IconId
+                        ? MailType.CustomCraft
+                        : MailType.Workshop,
+                    L10nManager.Localize(formatKey, result.itemUsable.GetLocalizedName()),
                     NotificationCell.NotificationType.Notification);
 
                 var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
@@ -4296,10 +4297,12 @@ namespace Nekoyume.Blockchain
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             // Notify
-            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            var message = L10nManager.Localize(
+                "NOTIFICATION_COMBINATION_COMPLETE",
+                result.itemUsable.GetLocalizedName());
             NotificationSystem.Reserve(
-                MailType.Workshop,
-                string.Format(format, result.itemUsable.GetLocalizedName()),
+                MailType.CustomCraft,
+                message,
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
