@@ -519,9 +519,10 @@ namespace Nekoyume
         public static string GetLocalizedNonColoredName(this ItemBase item,
             bool useElementalIcon = true)
         {
+            var equipmentId = item is Equipment equipment ? equipment.IconId : item.Id;
             return GetLocalizedNonColoredName(
                 item.ElementalType,
-                item.Id,
+                equipmentId,
                 useElementalIcon && item.ItemType.HasElementType());
         }
 
