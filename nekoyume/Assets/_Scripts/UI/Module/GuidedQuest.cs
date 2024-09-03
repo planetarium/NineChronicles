@@ -374,9 +374,19 @@ namespace Nekoyume.UI.Module
                     $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
                 return;
             }
-
-            SharedViewModel.avatarState = avatarState;
-            StartCoroutine(CoUpdateList(onComplete));
+            try
+            {
+                SharedViewModel.avatarState = avatarState;
+                StartCoroutine(CoUpdateList(onComplete));
+            }
+            catch (Exception e)
+            {
+                NcDebug.LogError($"[GuidedQuest UpdateList] {e}");
+            }
+            finally
+            {
+                onComplete?.Invoke();
+            }
         }
 
 #endregion
@@ -422,26 +432,31 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoUpdateList(System.Action onComplete)
         {
-            var questList = SharedViewModel.avatarState?.questList;
-            //각 Coriutine마다 시간을 체크하여 소요시간을 로그로 남깁니다.
-            var watch = Stopwatch.StartNew();
-            yield return StartCoroutine(CoUpdateWorldQuest(questList));
-            watch.Stop();
-            NcDebug.Log($"CoUpdateWorldQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-            watch.Restart();
-            yield return StartCoroutine(CoUpdateCombinationEquipmentQuest(questList));
-            watch.Stop();
-            NcDebug.Log($"CoUpdateCombinationEquipmentQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-            watch.Restart();
-            yield return StartCoroutine(CoUpdateEventDungeonQuest());
-            watch.Stop();
-            NcDebug.Log($"CoUpdateEventDungeonQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-            watch.Restart();
-            yield return StartCoroutine(CoUpdateCraftEventItemQuest());
-            watch.Stop();
-            NcDebug.Log($"CoUpdateCraftEventItemQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-            watch.Restart();
-            onComplete?.Invoke();
+            try
+            {
+                var questList = SharedViewModel.avatarState?.questList;
+                //각 Coriutine마다 시간을 체크하여 소요시간을 로그로 남깁니다.
+                var watch = Stopwatch.StartNew();
+                yield return StartCoroutine(CoUpdateWorldQuest(questList));
+                watch.Stop();
+                NcDebug.Log($"CoUpdateWorldQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+                watch.Restart();
+                yield return StartCoroutine(CoUpdateCombinationEquipmentQuest(questList));
+                watch.Stop();
+                NcDebug.Log($"CoUpdateCombinationEquipmentQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+                watch.Restart();
+                yield return StartCoroutine(CoUpdateEventDungeonQuest());
+                watch.Stop();
+                NcDebug.Log($"CoUpdateEventDungeonQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+                watch.Restart();
+                yield return StartCoroutine(CoUpdateCraftEventItemQuest());
+                watch.Stop();
+                NcDebug.Log($"CoUpdateCraftEventItemQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            }
+            finally
+            {
+                onComplete?.Invoke();
+            }
         }
 
         private IEnumerator CoUpdateWorldQuest(QuestList questList)
@@ -792,7 +807,7 @@ namespace Nekoyume.UI.Module
                 if (state == ViewState.ClearExistGuidedQuest &&
                     _eventDungeonQuestCell.Quest is WorldQuest quest)
                 {
-                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear");
+                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear {quest.Id}");
                     _eventDungeonQuestCell.HideAsClear(
                         ignoreQuestResult: true,
                         onComplete: _ =>
@@ -803,6 +818,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
+                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear Faild  state:{state} questType:{_eventDungeonQuestCell.Quest.GetType()}");
                     _eventDungeonQuestCell.Hide();
                 }
             }

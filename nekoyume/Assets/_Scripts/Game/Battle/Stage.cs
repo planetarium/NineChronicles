@@ -498,9 +498,20 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoGuidedQuest)}() enter. stageIdToClear: {stageIdToClear}");
 #endif
             var done = false;
+            var startTime = Time.time;
             var battle = Widget.Find<UI.Battle>();
             battle.ClearStage(stageIdToClear, cleared => done = true);
-            yield return new WaitUntil(() => done);
+            yield return new WaitUntil(() =>
+            {
+                // NOTE: 5초 이상 걸리면 타임아웃 처리
+                // ClearStage onComplete 콜백체인에서 원인을 찾기 어려운 문제가 발생할수 있어 추가
+                if (Time.time >= startTime + 5f)
+                {
+                    NcDebug.LogError("CoGuidedQuest() timeout.");
+                    return true;
+                }
+                return done;
+            });
         }
 
         private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
