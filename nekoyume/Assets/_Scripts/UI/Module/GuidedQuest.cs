@@ -374,19 +374,8 @@ namespace Nekoyume.UI.Module
                     $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
                 return;
             }
-            try
-            {
-                SharedViewModel.avatarState = avatarState;
-                StartCoroutine(CoUpdateList(onComplete));
-            }
-            catch (Exception e)
-            {
-                NcDebug.LogError($"[GuidedQuest UpdateList] {e}");
-            }
-            finally
-            {
-                onComplete?.Invoke();
-            }
+            SharedViewModel.avatarState = avatarState;
+            StartCoroutine(CoUpdateList(onComplete));
         }
 
 #endregion
@@ -432,31 +421,25 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoUpdateList(System.Action onComplete)
         {
-            try
-            {
-                var questList = SharedViewModel.avatarState?.questList;
-                //각 Coriutine마다 시간을 체크하여 소요시간을 로그로 남깁니다.
-                var watch = Stopwatch.StartNew();
-                yield return StartCoroutine(CoUpdateWorldQuest(questList));
-                watch.Stop();
-                NcDebug.Log($"CoUpdateWorldQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-                watch.Restart();
-                yield return StartCoroutine(CoUpdateCombinationEquipmentQuest(questList));
-                watch.Stop();
-                NcDebug.Log($"CoUpdateCombinationEquipmentQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-                watch.Restart();
-                yield return StartCoroutine(CoUpdateEventDungeonQuest());
-                watch.Stop();
-                NcDebug.Log($"CoUpdateEventDungeonQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-                watch.Restart();
-                yield return StartCoroutine(CoUpdateCraftEventItemQuest());
-                watch.Stop();
-                NcDebug.Log($"CoUpdateCraftEventItemQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-            }
-            finally
-            {
-                onComplete?.Invoke();
-            }
+            var questList = SharedViewModel.avatarState?.questList;
+            //각 Coriutine마다 시간을 체크하여 소요시간을 로그로 남깁니다.
+            var watch = Stopwatch.StartNew();
+            yield return StartCoroutine(CoUpdateWorldQuest(questList));
+            watch.Stop();
+            NcDebug.Log($"CoUpdateWorldQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            watch.Restart();
+            yield return StartCoroutine(CoUpdateCombinationEquipmentQuest(questList));
+            watch.Stop();
+            NcDebug.Log($"CoUpdateCombinationEquipmentQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            watch.Restart();
+            yield return StartCoroutine(CoUpdateEventDungeonQuest());
+            watch.Stop();
+            NcDebug.Log($"CoUpdateEventDungeonQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            watch.Restart();
+            yield return StartCoroutine(CoUpdateCraftEventItemQuest());
+            watch.Stop();
+            NcDebug.Log($"CoUpdateCraftEventItemQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
+            onComplete?.Invoke();
         }
 
         private IEnumerator CoUpdateWorldQuest(QuestList questList)
@@ -818,7 +801,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear Faild  state:{state} questType:{_eventDungeonQuestCell.Quest.GetType()}");
+                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear Failed  state:{state} questType:{_eventDungeonQuestCell.Quest.GetType()}");
                     _eventDungeonQuestCell.Hide();
                 }
             }
