@@ -97,9 +97,9 @@ namespace Nekoyume.UI
             speechBubble.SetItemMaterial(item);
         }
 
-        public void SetCurrency(long ncg, long crystal)
+        public void SetCrystal(long crystal)
         {
-            speechBubble.SetCurrency(ncg, crystal);
+            speechBubble.SetCrystal(crystal);
         }
 
         public void SetCloseAction(System.Action closeAction)

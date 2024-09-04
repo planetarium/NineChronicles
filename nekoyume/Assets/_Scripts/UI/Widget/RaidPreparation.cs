@@ -217,29 +217,8 @@ namespace Nekoyume.UI
                     var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
                     if (raiderState is null)
                     {
-                        var cost = GetEntranceFee(avatarState);
-                        if (States.Instance.CrystalBalance.MajorUnit < cost)
-                        {
-                            Find<PaymentPopup>().ShowLackPayment(
-                                CostType.Crystal,
-                                cost,
-                                L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
-                                L10nManager.Localize("UI_GO_GRINDING"),
-                                () =>
-                                {
-                                    Find<Grind>().Show();
-                                    Find<WorldBoss>().ForceClose();
-                                    Close();
-                                });
-                        }
-                        else
-                        {
-                            Find<PaymentPopup>()
-                                .ShowAttractWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
-                                    CostType.Crystal, cost,
-                                    CostType.WorldBossTicket, 1,
-                                    () => StartCoroutine(CoRaid()));
-                        }
+                        var exception = new WorldBossStateNotFoundException();
+                        Game.Game.BackToMainAsync(exception).Forget();
                     }
                     else
                     {

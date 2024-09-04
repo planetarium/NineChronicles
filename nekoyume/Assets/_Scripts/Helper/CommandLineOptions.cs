@@ -96,6 +96,8 @@ namespace Nekoyume.Helper
 
         private bool ingameDebugConsole;
 
+        private string _arenaServiceHost;
+
         private string _patrolRewardServiceHost;
 
         private string _seasonPassServiceHost;
@@ -519,6 +521,17 @@ namespace Nekoyume.Helper
             set
             {
                 ingameDebugConsole = value;
+                Empty = false;
+            }
+        }
+
+        [Option("arena-service-host", Required = false, HelpText = "arena service host")]
+        public string ArenaServiceHost
+        {
+            get => _arenaServiceHost;
+            set
+            {
+                _arenaServiceHost = value;
                 Empty = false;
             }
         }

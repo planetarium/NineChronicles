@@ -24,6 +24,9 @@ namespace Nekoyume.UI.Module
 
     public class GrindModule : MonoBehaviour
     {
+        // TODO: 셋팅 파일 or lib9c 등으로 분리
+        private const int GrindCost = 5;
+        
         [Serializable]
         private struct CrystalAnimationData
         {
@@ -63,8 +66,6 @@ namespace Nekoyume.UI.Module
 
         private int _inventoryApStoneCount;
 
-        private FungibleAssetValue _cachedGrindingRewardNCG;
-
         private FungibleAssetValue _cachedGrindingRewardCrystal;
 
         private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind = new();
@@ -93,7 +94,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            grindButton.SetCost(CostType.ActionPoint, 5);
+            grindButton.SetCost(CostType.ActionPoint, GrindCost);
             grindButton.SetCondition(() => CanGrind);
             removeAllButton.OnSubmitSubject.Subscribe(_ =>
             {
@@ -314,21 +315,13 @@ namespace Nekoyume.UI.Module
                 TableSheets.Instance.CrystalEquipmentGrindingSheet,
                 TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
                 States.Instance.StakingLevel);
+            _cachedGrindingRewardCrystal = crystalReward;
             var favRewards = new[] { crystalReward };
-
-            // Todo : Fix ordering conditions (refer the inventory `GetOrganizedMaterials` method)
-            var dustIds = new[]
-            {
-                CostType.SilverDust, CostType.GoldDust, CostType.RubyDust, CostType.EmeraldDust
-            }.Select(cost => (int)cost).ToArray();
-            var usableItemIds = new[] { (int)CostType.ApPotion, 400000 };  // 400000 : Hourglass
             var itemRewards = Grinding.CalculateMaterialReward(
                     equipmentsForGrind,
                     TableSheets.Instance.CrystalEquipmentGrindingSheet,
                     TableSheets.Instance.MaterialItemSheet)
-                .OrderByDescending(pair => dustIds.Contains(pair.Key.Id))
-                .ThenByDescending(pair => usableItemIds.Contains(pair.Key.Id))
-                .ThenByDescending(pair => ItemEnhancement.HammerIds.Contains(pair.Key.Id))
+                .OrderBy(pair => pair.Key.GetMaterialPriority())
                 .ThenByDescending(pair => pair.Key.Grade)
                 .ThenBy(pair => pair.Key.Id)
                 .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
@@ -404,26 +397,15 @@ namespace Nekoyume.UI.Module
             {
                 case ConditionalButton.State.Conditional:
                 {
+                    var paymentPopup = Widget.Find<PaymentPopup>();
                     if (_inventoryApStoneCount > 0)
                     {
-                        var confirm = Widget.Find<IconAndButtonSystem>();
-                        confirm.ShowWithTwoButton(
-                            L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
-                                L10nManager.Localize("GRIND_UI_BUTTON"), _inventoryApStoneCount),
-                            L10nManager.Localize("UI_OK"),
-                            L10nManager.Localize("UI_CANCEL"),
-                            false, IconAndButtonSystem.SystemType.Information);
-                        confirm.ConfirmCallback = () => chargeAp(true);
+                        paymentPopup.ShowCheckPaymentApPortion(GrindCost);
                     }
                     else
                     {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("ERROR_ACTION_POINT"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowLackApPortion(1);
                     }
-
                     break;
                 }
                 case ConditionalButton.State.Normal:
@@ -470,9 +452,7 @@ namespace Nekoyume.UI.Module
         {
             var loadingScreen = Widget.Find<GrindingLoadingScreen>();
             loadingScreen.OnDisappear = OnNPCDisappear;
-            loadingScreen.SetCurrency(
-                (long)_cachedGrindingRewardNCG.MajorUnit,
-                (long)_cachedGrindingRewardCrystal.MajorUnit);
+            loadingScreen.SetCrystal((long)rewardCrystal);
             loadingScreen.CrystalAnimationCount = GetCrystalMoveAnimationCount(rewardCrystal);
             canvasGroup.interactable = false;
 

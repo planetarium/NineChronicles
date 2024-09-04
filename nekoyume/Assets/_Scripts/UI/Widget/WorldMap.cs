@@ -415,12 +415,6 @@ namespace Nekoyume.UI
             worldMapRoot.SetActive(true);
         }
 
-        private void OnAttractInPaymentPopup()
-        {
-            Close(true);
-            Find<Grind>().Show();
-        }
-
         private void ShowWorldUnlockPopup(int worldId)
         {
             var cost = CrystalCalculator.CalculateWorldUnlockCost(
@@ -431,19 +425,16 @@ namespace Nekoyume.UI
             var usageMessage = L10nManager.Localize(
                 "UI_UNLOCK_WORLD_FORMAT",
                 L10nManager.LocalizeWorldName(worldId));
-            Find<PaymentPopup>().ShowCheckPayment(
-                CostType.Crystal,
+            Find<PaymentPopup>().ShowCheckPaymentCrystal(
                 balance.MajorUnit,
                 cost,
                 balance.GetPaymentFormatText(usageMessage, cost),
-                L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
                 () =>
                 {
                     Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldUnlock);
                     ActionManager.Instance.UnlockWorld(new List<int> { worldId }, (int)cost)
                         .Subscribe();
-                },
-                OnAttractInPaymentPopup);
+                });
         }
 
         private bool ShowManyWorldUnlockPopup(WorldInformation worldInformation)
@@ -462,20 +453,16 @@ namespace Nekoyume.UI
                     var paymentPopup = Find<PaymentPopup>();
                     var cost = CrystalCalculator.CalculateWorldUnlockCost(worldIdListForUnlock,
                         tableSheets.WorldUnlockSheet).MajorUnit;
-                    paymentPopup.ShowCheckPayment(
-                        CostType.Crystal,
+                    paymentPopup.ShowCheckPaymentCrystal(
                         States.Instance.CrystalBalance.MajorUnit,
                         cost,
-                        L10nManager.Localize(
-                            "CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
-                        L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
+                        L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
                         () =>
                         {
                             Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldUnlock);
                             ActionManager.Instance.UnlockWorld(worldIdListForUnlock, (int)cost)
                                 .Subscribe();
-                        },
-                        OnAttractInPaymentPopup);
+                        });
                     return true;
                 }
             }
