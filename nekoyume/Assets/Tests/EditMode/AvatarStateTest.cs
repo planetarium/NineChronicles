@@ -31,7 +31,7 @@ namespace Tests.EditMode
         [Test, Sequential]
         public void GetRandomSeed([Values(-599628938, -1717973115, 1534786375)] int expected, [Values(1, 2, 3)] int count)
         {
-            var avatarState = new AvatarState(
+            var avatarState = AvatarState.Create(
                 _avatarAddress,
                 new Address(),
                 0,
