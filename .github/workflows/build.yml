@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - development
-      - previewnet
+      - preview
       - release/*
       - fast-track/*
     tags: [ "*" ]
@@ -94,7 +94,7 @@ jobs:
 
   extract:
     if: (startsWith(github.ref, 'refs/heads/release/')
-      || github.ref == 'refs/heads/previewnet'
+      || github.ref == 'refs/heads/preview'
       || startsWith(github.event.ref, 'refs/tags/')
       )
     needs: build
@@ -119,8 +119,8 @@ jobs:
               echo "::set-output name=network::internal"
               echo "::set-output name=signing::--no-signing"
               echo "::set-output name=version::$semver"
-          elif [[ "${{ github.ref == 'refs/heads/previewnet' }}" == "true" ]]; then
-              echo "::set-output name=network::previewnet"
+          elif [[ "${{ github.ref == 'refs/heads/preview' }}" == "true" ]]; then
+              echo "::set-output name=network::preview"
               echo "::set-output name=signing::--no-signing"
               echo "::set-output name=version::$semver"
           elif [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == "true" ]]; then
@@ -137,7 +137,7 @@ jobs:
 
   release:
     if: (startsWith(github.ref, 'refs/heads/release/')
-      || github.ref == 'refs/heads/previewnet'
+      || github.ref == 'refs/heads/preview'
       || startsWith(github.event.ref, 'refs/tags/')
       )
     runs-on: ubuntu-20.04
@@ -187,7 +187,7 @@ jobs:
 
   update-latest-metadata:
     if: (startsWith(github.ref, 'refs/heads/release/')
-      || github.ref == 'refs/heads/previewnet'
+      || github.ref == 'refs/heads/preview'
       || startsWith(github.event.ref, 'refs/tags/')
       )
     runs-on: ubuntu-20.04
