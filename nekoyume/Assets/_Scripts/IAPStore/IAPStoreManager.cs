@@ -287,6 +287,29 @@ namespace Nekoyume.IAPStore
             }
         }
 
+        /// <summary>
+        /// Tx정보만 남아 있는 경우 구매처리
+        /// </summary>
+        /// <param name="product"></param>
+        private async void OnlyTxRetryPurchaseAsync(Product product)
+        {
+            var result = await ApiClients.Instance.IAPServiceManager
+                .PurchaseRetryAsync(
+                    product.receipt,
+                    product.transactionID,
+                    product.appleOriginalTransactionID);
+
+            if (result is null)
+            {
+                NcDebug.LogError($"[OnlyTxRetryPurchaseAsync] Failed");
+            }
+            else
+            {
+                _controller.ConfirmPendingPurchase(product);
+                RemoveLocalTransactions(product.transactionID);
+            }
+        }
+
         private async void RePurchaseTryAsync(Product product)
         {
             var purchaseData = PlayerPrefs.GetString("PURCHASE_TX_" + product.transactionID, string.Empty);
@@ -381,14 +404,13 @@ namespace Nekoyume.IAPStore
                 existTxInfo = PlayerPrefs.HasKey("PURCHASE_TX_" + e.purchasedProduct.transactionID);
                 if (!existTxInfo)
                 {
+                    //로컬에 트랜잭션 정보가 없는데 체인정보가 아직 초기화되지않은경우 영수증만 남은경우이므로 영수증 정보만을 가지고 구매처리 시도.
                     if (states?.AgentState?.address == null
                         || states?.CurrentAvatarState?.address == null
                         || Game.Game.instance?.CurrentPlanetId == null)
                     {
                         NcDebug.Log($"[ProcessPurchase] AgentState{states?.AgentState?.address.ToHex()}, AvatarState{states?.CurrentAvatarState?.address.ToHex()} or PlanetId{Game.Game.instance?.CurrentPlanetId.ToString()} is null");
-                        // Todo : TX 정보만 가지고 구매처리 시도해야함.
-
-
+                        OnlyTxRetryPurchaseAsync(e.purchasedProduct);
                         return PurchaseProcessingResult.Pending;
                     }
 
@@ -410,6 +432,7 @@ namespace Nekoyume.IAPStore
 
             try
             {
+                //로컬에 트랜잭션 정보가 있는채로 동일한 재품 구매시도이므로 로컬정보를 가지고 구매처리 재시도.
                 if (existTxInfo)
                 {
                     NcDebug.Log("[ProcessPurchase] Is not PurchasePage");
