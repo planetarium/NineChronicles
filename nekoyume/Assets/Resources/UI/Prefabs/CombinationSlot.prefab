@@ -11162,17 +11162,17 @@ MonoBehaviour:
   workingContainer: {fileID: 5994851212524165853}
   waitReceiveContainer: {fileID: 592734672684037806}
   petSelectButton: {fileID: 4676538049449707538}
-  randomOnlyIcon: {fileID: 2941656297980246173}
   backGroundGroups:
   - backGroundType: 0
     backGroundObjects:
     - {fileID: 8576494201380609782}
     - {fileID: 5097211417809675546}
-  - backGroundType: 2
+  - backGroundType: 1
     backGroundObjects:
     - {fileID: 3115001680785024305}
     - {fileID: 894765483503454459}
-  customCraftObject: {fileID: 0}
+  customCraftObject: {fileID: 531860405089716012}
+  randomOnlyIcon: {fileID: 2941656297980246173}
 --- !u!114 &4775150537336452424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12129,6 +12129,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ad634ecd8fec49ba9291bfa3f942e7b, type: 3}
+--- !u!1 &531860405089716012 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2307457120124173085, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2838446708130954289}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1849666679564753566 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4525948530569832111, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
