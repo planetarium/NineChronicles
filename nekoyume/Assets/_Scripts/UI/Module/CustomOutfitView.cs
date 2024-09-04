@@ -4,10 +4,10 @@ using Nekoyume.Editor;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -37,6 +37,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI requiredRelationshipText;
 
+        [SerializeField]
+        private Image hasNotification;
+
         public readonly Subject<CustomOutfitView> OnClick = new();
 
         public List<IDisposable> DisposablesAtSetData { get; } = new();
@@ -61,6 +64,7 @@ namespace Nekoyume.UI.Module
                     iconImage.SetNativeSize();
                 }
             });
+            Model.HasNotification.SubscribeTo(hasNotification).AddTo(DisposablesAtSetData);
         }
 
         protected virtual void Awake()

@@ -69,8 +69,32 @@ namespace Nekoyume.UI.Module
             _costMap.TryGetValue(CostType.EventDungeonTicket, out var cost)
                 ? (int)cost
                 : 0;
+        
+        public int ActionPointCost =>
+            _costMap.TryGetValue(CostType.ActionPoint, out var cost)
+                ? (int)cost
+                : 0;
+        
+        public int ApPortionCost =>
+            _costMap.TryGetValue(CostType.ApPotion, out var cost)
+                ? (int)cost
+                : 0;
 
         public void SetCost(params CostParam[] costs)
+        {
+            _costMap.Clear();
+            foreach (var cost in costs)
+            {
+                if (cost.cost > 0)
+                {
+                    _costMap[cost.type] = cost.cost;
+                }
+            }
+
+            UpdateObjects();
+        }
+
+        public void SetCost(IEnumerable<CostParam> costs)
         {
             _costMap.Clear();
             foreach (var cost in costs)
@@ -216,10 +240,7 @@ namespace Nekoyume.UI.Module
                         paymentPopup.ShowLackPaymentCrystal(CrystalCost);
                         break;
                     case CostType.ActionPoint:
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("ERROR_ACTION_POINT"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowCheckPaymentApPortion(ActionPointCost);
                         break;
                     case CostType.Hourglass:
                         OneLineSystem.Push(
@@ -228,10 +249,7 @@ namespace Nekoyume.UI.Module
                             NotificationCell.NotificationType.Alert);
                         break;
                     case CostType.ApPotion:
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_NOT_ENOUGH_AP_POTION"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowLackApPortion(ApPortionCost);
                         break;
                     case CostType.GoldDust:
                         OneLineSystem.Push(

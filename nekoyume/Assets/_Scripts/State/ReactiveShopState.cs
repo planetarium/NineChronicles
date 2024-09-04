@@ -249,6 +249,8 @@ namespace Nekoyume.State
                     break;
                 case ItemSubType.ApStone:
                 case ItemSubType.Hourglass:
+                case ItemSubType.Scroll:
+                case ItemSubType.Circle:
                     tradableItem = new TradableMaterial((MaterialItemSheet.Row)itemRow);
                     break;
                 case ItemSubType.EarCostume:

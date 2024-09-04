@@ -37,6 +37,7 @@ namespace Nekoyume.Helper
             Summon = 12,
             AdventureBoss = 13,
             WorldBoss = 14,
+            Grinding = 15,
 
             MobileShop, // Shop icon is same as ShopPC.
             Upgrade // Upgrade icon is same as Craft.
@@ -117,6 +118,7 @@ namespace Nekoyume.Helper
                     {
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.AdventureBoss));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.WorldBoss));
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Grinding));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
 
                         var stageRow = TableSheets.Instance.StageSheet
@@ -130,6 +132,7 @@ namespace Nekoyume.Helper
                         break;
                     }
                     case ItemSubType.Scroll:
+                        acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Grinding));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Staking));
                         break;
@@ -352,6 +355,15 @@ namespace Nekoyume.Helper
                 case PlaceType.WorldBoss:
                     shortcutAction = () => ShortcutActionForWorldBoss(caller);
                     guideText = L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS");
+                    break;
+                case PlaceType.Grinding:
+                    shortcutAction = () =>
+                    {
+                        caller.CloseWithOtherWidgets();
+                        Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                        Widget.Find<Grind>().Show();
+                    };
+                    guideText = L10nManager.Localize("GRIND_UI_BUTTON");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -606,6 +618,7 @@ namespace Nekoyume.Helper
                 case PlaceType.Craft:
                 case PlaceType.Upgrade:
                 case PlaceType.Summon:
+                case PlaceType.Grinding:
                     return true;
                 case PlaceType.AdventureBoss:
                     return !Game.LiveAsset.GameConfig.IsKoreanBuild;
@@ -637,6 +650,7 @@ namespace Nekoyume.Helper
                 PlaceType.Summon => true,
                 PlaceType.AdventureBoss => !BattleRenderer.Instance.IsOnBattle,
                 PlaceType.WorldBoss => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.Grinding => true,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }

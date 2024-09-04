@@ -374,7 +374,6 @@ namespace Nekoyume.UI.Module
                     $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
                 return;
             }
-
             SharedViewModel.avatarState = avatarState;
             StartCoroutine(CoUpdateList(onComplete));
         }
@@ -440,7 +439,6 @@ namespace Nekoyume.UI.Module
             yield return StartCoroutine(CoUpdateCraftEventItemQuest());
             watch.Stop();
             NcDebug.Log($"CoUpdateCraftEventItemQuest 소요시간 : {watch.ElapsedMilliseconds}ms");
-            watch.Restart();
             onComplete?.Invoke();
         }
 
@@ -792,7 +790,7 @@ namespace Nekoyume.UI.Module
                 if (state == ViewState.ClearExistGuidedQuest &&
                     _eventDungeonQuestCell.Quest is WorldQuest quest)
                 {
-                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear");
+                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear {quest.Id}");
                     _eventDungeonQuestCell.HideAsClear(
                         ignoreQuestResult: true,
                         onComplete: _ =>
@@ -803,6 +801,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
+                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear Failed  state:{state} questType:{_eventDungeonQuestCell.Quest.GetType()}");
                     _eventDungeonQuestCell.Hide();
                 }
             }
