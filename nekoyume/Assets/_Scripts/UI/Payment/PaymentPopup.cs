@@ -3,6 +3,7 @@ using Nekoyume.L10n;
 using System.Numerics;
 using JetBrains.Annotations;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -45,6 +46,9 @@ namespace Nekoyume.UI
 #region SerializeField
         [SerializeField]
         private CostIconDataScriptableObject costIconData;
+        
+        [SerializeField] 
+        private StakeIconDataScriptableObject stakeIconData;
 
         [SerializeField]
         private Image costIcon;
@@ -74,7 +78,7 @@ namespace Nekoyume.UI
         private GameObject titleBorder;
 #endregion SerializeField
 
-        private ConfirmDelegate CloseCallback { get; set; }
+        private System.Action YesCallback { get; set; }
 
         protected override void Awake()
         {
@@ -125,13 +129,7 @@ namespace Nekoyume.UI
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost;
             var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-                    onAttract();
-                }
-            };
+            YesCallback = onAttract;
             Show(title, content, attractMessage, no, false);
         }
 
@@ -157,13 +155,7 @@ namespace Nekoyume.UI
             costText.text = cost.ToString();
             var content = GetLackDustContentString(costType);
 
-            CloseCallback = result =>
-            {
-                if (canAttract && result == ConfirmResult.Yes)
-                {
-                    AttractDust(costType);
-                }
-            };
+            YesCallback = () => AttractDust(costType);
             Show(title, content, GetDustAttractString(costType), string.Empty, false);
         }
         
@@ -176,35 +168,49 @@ namespace Nekoyume.UI
             costText.text = cost.ToString();
             var content = L10nManager.Localize("UI_LACK_CRYSTAL");
             var labelYesText = L10nManager.Localize("GRIND_UI_BUTTON");
-            
-            CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-                    AttractGrind();
-                }
-            };
+
+            YesCallback = AttractGrind;
             Show(title, content, labelYesText, string.Empty, false);
         }
 
         public void ShowLackPaymentNCG(string cost, bool isStaking = false)
         {
-            var canAttract = CanAttractNCG();
+            var canAttract = CanAttractShop();
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
             var title = L10nManager.Localize("UI_REQUIRED_COUNT");
             costText.text = cost;
             var content = GetLackNCGContentString(isStaking);
+
+            YesCallback = AttractShop;
+            Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
+        }
+
+        public void ShowLackMonsterCollection(int stakeLevel)
+        {
+            SetPopupType(PopupType.AttractAction);
             
-            CloseCallback = result =>
-            {
-                if (canAttract && result == ConfirmResult.Yes)
-                {
-                    AttractShop();
-                }
-            };
+            costIcon.overrideSprite = stakeIconData.GetIcon(stakeLevel, IconType.Small);
+            var title = L10nManager.Localize("UI_REQUIRED_MONSTER_COLLECTION_LEVEL");
+            costText.text = L10nManager.Localize("UI_MONSTER_COLLECTION_LEVEL_FORMAT", stakeLevel);
+            var content = L10nManager.Localize("UI_LACK_MONSTER_COLLECTION");
+
+            YesCallback = AttractToMonsterCollection;
+            Show(title, content, MonsterCollectionString, string.Empty, false);
+        }
+
+        public void ShowLackApPortion(int cost)
+        {
+            var canAttract = CanAttractShop();
+            SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.ApPotion);
+            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            costText.text = cost.ToString();
+            var content = GetLackApPortionContentString();
+            
+            YesCallback = AttractShop;
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
         }
 #endregion LackPaymentAction
@@ -227,13 +233,8 @@ namespace Nekoyume.UI
 
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
+            YesCallback = () =>
             {
-                if (result != ConfirmResult.Yes)
-                {
-                    return;
-                }
-
                 if (enoughBalance)
                 {
                     onPaymentSucceed.Invoke();
@@ -277,13 +278,8 @@ namespace Nekoyume.UI
 
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
+            YesCallback = () =>
             {
-                if (result != ConfirmResult.Yes)
-                {
-                    return;
-                }
-
                 if (enoughBalance)
                 {
                     onPaymentSucceed.Invoke();
@@ -306,7 +302,6 @@ namespace Nekoyume.UI
             System.Action onPaymentSucceed)
         {
             SetPopupType(PopupType.PaymentCheck);
-
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = balance >= cost;
             costText.text = cost.ToString();
@@ -314,13 +309,8 @@ namespace Nekoyume.UI
 
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
-            CloseCallback = result =>
+            YesCallback = () =>
             {
-                if (result != ConfirmResult.Yes)
-                {
-                    return;
-                }
-
                 if (enoughBalance)
                 {
                     onPaymentSucceed.Invoke();
@@ -334,6 +324,38 @@ namespace Nekoyume.UI
 
             SetContent(popupTitle, checkCostMessage, yes, no, false);
             Show(popupTitle, checkCostMessage, yes, no, false);
+        }
+
+        public void ShowCheckPaymentApPortion(BigInteger cost)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.ActionPoint);
+
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            var apPortionCount = inventory.GetUsableItemCount(CostType.ApPotion, Game.Game.instance.Agent.BlockIndex);
+            var enoughBalance = apPortionCount >= 1;
+            var content = L10nManager.Localize("UI_CHECK_ACTION_POINT", apPortionCount);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            YesCallback = () =>
+            {
+                if (enoughBalance)
+                {
+                    Close(true);
+                    ActionPoint.ChargeAP();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackApPortion(1);
+                }
+            };
+            
+            SetContent(popupTitle, content, yes, no, false);
+            Show(popupTitle, content, yes, no, false);
         }
 #endregion PaymentCheckAction
 
@@ -407,23 +429,35 @@ namespace Nekoyume.UI
         }
 #endregion DustHelper
 
-#region NCGHelper
+#region ShopHelper
         public static string GetLackNCGContentString(bool isStaking = false)
         {
+            var canAttract = CanAttractShop();
+            if (!canAttract)
+            {
+                return L10nManager.Localize("UI_LACK_NCG_PC");
+            }
+            
             return isStaking ?
                 L10nManager.Localize("UI_LACK_NCG_STAKING") :
                 L10nManager.Localize("UI_LACK_NCG");
         }
         
-        // TODO: CanUseNCG같은 용도로 공용으로 뺄 수 없을지 확인.
-        public static bool CanAttractNCG()
+        public static string GetLackApPortionContentString()
+        {
+            var canAttract = CanAttractShop();
+            return L10nManager.Localize(!canAttract ? "UI_LACK_AP_PORTION_PC" : "UI_LACK_AP_PORTION");
+        }
+        
+        // TODO: 공용으로 뺄 수 없을지 확인.
+        public static bool CanAttractShop()
         {
 #if UNITY_ANDROID || UNITY_IOS
             return false;
 #endif
             return !Game.LiveAsset.GameConfig.IsKoreanBuild;
         }
-#endregion NCGHelper
+#endregion ShopHelper
         
 #region Attract
         private void AttractToMonsterCollection()
@@ -521,13 +555,12 @@ namespace Nekoyume.UI
         private void Yes()
         {
             base.Close();
-            CloseCallback?.Invoke(ConfirmResult.Yes);
+            YesCallback?.Invoke();
         }
 
         private void No()
         {
             base.Close();
-            CloseCallback?.Invoke(ConfirmResult.No);
         }
 
         public void NoWithoutCallback()

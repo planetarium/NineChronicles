@@ -237,7 +237,7 @@ namespace Nekoyume.UI
                     itemId = 9999999;
                     count = States.Instance.GoldBalanceState.Gold.GetQuantityString();
                     buttonText = L10nManager.Localize("UI_SHOP");
-                    if (PaymentPopup.CanAttractNCG())
+                    if (PaymentPopup.CanAttractShop())
                     {
                         callback = () =>
                         {

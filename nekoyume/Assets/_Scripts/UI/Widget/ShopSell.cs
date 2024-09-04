@@ -209,12 +209,10 @@ namespace Nekoyume.UI
                     action(false);
                     break;
                 case ConditionalButton.State.Conditional:
+                    var paymentPopup = Widget.Find<PaymentPopup>();
                     if (apStoneCount <= 0)
                     {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("ERROR_ACTION_POINT"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowLackApPortion(1);
                         break;
                     }
 
