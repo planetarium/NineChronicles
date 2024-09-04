@@ -26,7 +26,7 @@ namespace Tests.EditMode.Battle
         public void SerializeBattleLog()
         {
             var agentState = new AgentState(new Address());
-            var avatarState = new AvatarState(
+            var avatarState = AvatarState.Create(
                 new Address(),
                 agentState.address,
                 0,
