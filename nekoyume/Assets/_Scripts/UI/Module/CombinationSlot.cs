@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Battle;
@@ -18,6 +17,7 @@ using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace Nekoyume.UI.Module
 {
@@ -27,6 +27,33 @@ namespace Nekoyume.UI.Module
 
     public class CombinationSlot : MonoBehaviour
     {
+#region Internal
+        private enum BackGroundType
+        {
+            Default,
+            CustomCraft,
+        }
+        
+        [Serializable]
+        private class BackGroundGroup
+        {
+            [SerializeField]
+            private BackGroundType backGroundType = BackGroundType.Default;
+            
+            [SerializeField]
+            private GameObject[] backGroundObjects = null!;
+            
+            public BackGroundType BackGroundType => backGroundType;
+            
+            public void SetActive(bool isActive)
+            {
+                foreach (var backGroundObject in backGroundObjects)
+                {
+                    backGroundObject.SetActive(isActive);
+                }
+            }
+        }
+        
         public enum SlotUIState
         {
             Empty,
@@ -35,7 +62,8 @@ namespace Nekoyume.UI.Module
             WaitingReceive,
             Locked
         }
-
+#endregion Internal
+        
         [SerializeField]
         private SimpleItemView itemView = null!;
 
@@ -90,13 +118,16 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private PetSelectButton petSelectButton = null!;
-
-        [Header("BackGround")]
+        
+        [Header("For CustomCraft")]
         [SerializeField]
-        private GameObject defaultBackGroundObject = null!;
-
+        private BackGroundGroup[] backGroundGroups = null!;
+        
         [SerializeField]
-        private GameObject customCraftGroundObject = null!;
+        private GameObject customCraftObject = null!;
+        
+        [SerializeField]
+        private GameObject randomOnlyIcon = null!;
 
         private CombinationSlotLockObject _lockObject = null!;
         private CombinationSlotState? _state;
@@ -351,6 +382,9 @@ namespace Nekoyume.UI.Module
                 case SlotUIState.Empty:
                     SetContainer(false, false, true, false);
                     itemView.Clear();
+                    
+                    SetBackGroundGroup(BackGroundType.Default);
+                    ClearCustomCraftObject();
                     break;
 
                 case SlotUIState.Appraise:
@@ -358,6 +392,9 @@ namespace Nekoyume.UI.Module
                     preparingContainer.gameObject.SetActive(true);
                     workingContainer.gameObject.SetActive(false);
                     hasNotificationImage.enabled = false;
+                    
+                    // Appraise 상태에서는 커스텀 제작이라도 배경만 활성화하고 customCraft 오브젝트는 비활성화
+                    SetItemUsableImage(state?.Result?.itemUsable, true);
                     break;
 
                 case SlotUIState.Working:
@@ -374,6 +411,7 @@ namespace Nekoyume.UI.Module
                             currentBlockIndex);
                         UpdateNotification(state, currentBlockIndex);
                     }
+                    SetItemUsableImage(state?.Result?.itemUsable);
                     break;
 
                 case SlotUIState.WaitingReceive:
@@ -387,11 +425,14 @@ namespace Nekoyume.UI.Module
                                 false,
                                 true));
                     }
+                    SetItemUsableImage(state?.Result?.itemUsable);
                     break;
 
                 case SlotUIState.Locked:
                     SetContainer(true, false, false, false);
                     itemView.Clear();
+                    SetBackGroundGroup(BackGroundType.Default);
+                    ClearCustomCraftObject();
                     break;
             }
         }
@@ -570,6 +611,56 @@ namespace Nekoyume.UI.Module
                         NotificationCell.NotificationType.Information);
                     break;
             }
+        }
+        
+        private void SetBackGroundGroup(BackGroundType backGroundType)
+        {
+            foreach (var backGround in backGroundGroups)
+            {
+                if (backGround.BackGroundType == backGroundType)
+                {
+                    continue;
+                }
+                backGround.SetActive(false);
+            }
+            
+            foreach (var backGround in backGroundGroups)
+            {
+                if (backGround.BackGroundType != backGroundType)
+                {
+                    continue;
+                }
+                backGround.SetActive(true);
+            }
+        }
+        
+        private void SetItemUsableImage(ItemUsable? itemUsable, bool clearCustomObjects = false)
+        {                    
+            if (itemUsable is Equipment equipment)
+            {
+                SetBackGroundGroup(equipment.ByCustomCraft ? BackGroundType.CustomCraft : BackGroundType.Default);
+
+                if (!clearCustomObjects)
+                {
+                    customCraftObject.SetActive(equipment.ByCustomCraft);
+                    randomOnlyIcon.SetActive(equipment.HasRandomOnlyIcon);
+                }
+                else
+                {
+                    ClearCustomCraftObject();
+                }
+            }
+            else
+            {
+                SetBackGroundGroup(BackGroundType.Default);
+                ClearCustomCraftObject();
+            }
+        }
+        
+        private void ClearCustomCraftObject()
+        {
+            randomOnlyIcon.SetActive(false);
+            customCraftObject.SetActive(false);
         }
     }
 }

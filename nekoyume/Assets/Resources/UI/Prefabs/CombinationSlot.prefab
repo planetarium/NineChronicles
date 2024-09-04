@@ -11162,8 +11162,17 @@ MonoBehaviour:
   workingContainer: {fileID: 5994851212524165853}
   waitReceiveContainer: {fileID: 592734672684037806}
   petSelectButton: {fileID: 4676538049449707538}
-  defaultBackGroundObject: {fileID: 0}
-  customCraftGroundObject: {fileID: 0}
+  randomOnlyIcon: {fileID: 2941656297980246173}
+  backGroundGroups:
+  - backGroundType: 0
+    backGroundObjects:
+    - {fileID: 8576494201380609782}
+    - {fileID: 5097211417809675546}
+  - backGroundType: 2
+    backGroundObjects:
+    - {fileID: 3115001680785024305}
+    - {fileID: 894765483503454459}
+  customCraftObject: {fileID: 0}
 --- !u!114 &4775150537336452424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11850,7 +11859,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1953920585190130717, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1953920585190130717, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+        type: 3}
       propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2307457120124173085, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2371554513605322229, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
@@ -11862,6 +11881,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0.9000015
+      objectReference: {fileID: 0}
+    - target: {fileID: 2901451010217154596, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4525948530569832111, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
         type: 3}
@@ -12030,6 +12054,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7569564060208831133, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7569564060208831133, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+        type: 3}
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
@@ -12103,6 +12132,12 @@ PrefabInstance:
 --- !u!224 &1849666679564753566 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4525948530569832111, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2838446708130954289}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2941656297980246173 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1132352868853122220, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
     type: 3}
   m_PrefabInstance: {fileID: 2838446708130954289}
   m_PrefabAsset: {fileID: 0}
