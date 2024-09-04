@@ -34726,8 +34726,9 @@ GameObject:
   - component: {fileID: 4338364084532864457}
   - component: {fileID: 4340529069344161853}
   - component: {fileID: 6697118859364855306}
+  - component: {fileID: 4100858033528254880}
   m_Layer: 5
-  m_Name: 'UI_CustomCraftResultPopup '
+  m_Name: UI_CustomCraftResultScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34789,6 +34790,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4100858033528254880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4553037001367407467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74621f8ff8bb4db8b9627cece2c3fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  itemView: {fileID: 491457504165726781}
 --- !u!1 &4656908193305296544
 GameObject:
   m_ObjectHideFlags: 0
@@ -72988,6 +73004,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5fca3c5620884591bceed7b864eb406, type: 3}
+--- !u!114 &491457504165726781 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7085430038173831174, guid: d5fca3c5620884591bceed7b864eb406,
+    type: 3}
+  m_PrefabInstance: {fileID: 7243618799084395067}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c42f0ed0866e40cfb7a72e7e9aa790a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3547373936473594512 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6177897621818474667, guid: d5fca3c5620884591bceed7b864eb406,
