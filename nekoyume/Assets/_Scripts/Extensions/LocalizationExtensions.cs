@@ -231,7 +231,7 @@ namespace Nekoyume
                         adventureBossRaffleWinnerMail.Season,
                         adventureBossRaffleWinnerMail.Reward);
                 case CustomCraftMail customCraftMail:
-                    return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT",
+                    return L10nManager.Localize("UI_CUSTOM_CRAFT_MAIL_FORMAT",
                         GetLocalizedNonColoredName(
                             customCraftMail.Equipment,
                             customCraftMail.Equipment.ItemType.HasElementType()));
@@ -519,9 +519,10 @@ namespace Nekoyume
         public static string GetLocalizedNonColoredName(this ItemBase item,
             bool useElementalIcon = true)
         {
+            var equipmentId = item is Equipment equipment ? equipment.IconId : item.Id;
             return GetLocalizedNonColoredName(
                 item.ElementalType,
-                item.Id,
+                equipmentId,
                 useElementalIcon && item.ItemType.HasElementType());
         }
 

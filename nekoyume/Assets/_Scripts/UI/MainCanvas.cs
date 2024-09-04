@@ -395,6 +395,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SummonResultPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<PaymentPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ReplaceMaterialPopup>());
@@ -433,8 +435,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<SummonResultPopup>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonSkillsPopup>());
@@ -457,7 +457,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<RelationshipInfoPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CustomEquipmentSkillPopup>());
+            _secondWidgets.Add(Widget.Create<CustomCraftInfoPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<GrindRewardPopup>());
             yield return null;

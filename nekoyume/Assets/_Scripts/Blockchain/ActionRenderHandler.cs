@@ -872,7 +872,7 @@ namespace Nekoyume.Blockchain
                 {
                     UpdatePetState(avatarAddress, slotState.PetId.Value, eval.OutputState);
                 }
-                
+
                 slotStates.Add(slotState);
             }
 
@@ -884,7 +884,7 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
             var slotIndexList = renderArgs.Evaluation.Action.slotIndexList;
-            
+
             if (renderArgs.CombinationSlotStates is null)
             {
                 NcDebug.LogError("CombinationSlotState is null.");
@@ -896,7 +896,7 @@ namespace Nekoyume.Blockchain
                 NcDebug.LogError("AvatarState is null.");
                 return;
             }
-            
+
             foreach (var slotIndex in slotIndexList)
             {
                 var index = slotIndex;
@@ -904,13 +904,13 @@ namespace Nekoyume.Blockchain
                     .Where(state => state.Index == index)
                     .Select(state => (RapidCombination5.ResultModel)state.Result)
                     .FirstOrDefault();
-                
+
                 if (result is null)
                 {
                     NcDebug.LogError("Result is null.");
                     continue;
                 }
-                
+
                 string formatKey;
                 var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
 
@@ -976,11 +976,12 @@ namespace Nekoyume.Blockchain
                         break;
                 }
 
-                var format = L10nManager.Localize(formatKey);
                 NotificationSystem.CancelReserve(result.itemUsable.ItemId);
                 NotificationSystem.Push(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
+                    result.itemUsable is Equipment e && e.IconId != 0 && e.Id != e.IconId
+                        ? MailType.CustomCraft
+                        : MailType.Workshop,
+                    L10nManager.Localize(formatKey, result.itemUsable.GetLocalizedName()),
                     NotificationCell.NotificationType.Notification);
 
                 var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
@@ -2440,7 +2441,8 @@ namespace Nekoyume.Blockchain
             return mail is not null;
         }
 
-        private ActionEvaluation<Grinding> PrepareGrinding(ActionEvaluation<Grinding> eval)
+        private (ActionEvaluation<Grinding> eval, List<Equipment> equipmentList)
+            PrepareGrinding(ActionEvaluation<Grinding> eval)
         {
             var avatarAddress = eval.Action.AvatarAddress;
             if (eval.Action.ChargeAp)
@@ -2459,15 +2461,50 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
             ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
-            return eval;
+
+            var inventory = StateGetter.GetInventory(eval.PreviousState, eval.Action.AvatarAddress);
+            var equipmentList = new List<Equipment>();
+            foreach (var equipmentId in eval.Action.EquipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(equipmentId, out Equipment equipment) ||
+                    equipment.RequiredBlockIndex > eval.BlockIndex ||
+                    !inventory.RemoveNonFungibleItem(equipmentId))
+                {
+                    Debug.LogError($"Grinding action failed to remove equipment {equipmentId}");
+                    OneLineSystem.Push(
+                        MailType.Grinding,
+                        L10nManager.Localize("ERROR_UNKNOWN"),
+                        NotificationCell.NotificationType.Alert);
+                    return (eval, new List<Equipment>());
+                }
+
+                equipmentList.Add(equipment);
+            }
+
+            return (eval, equipmentList);
         }
 
-        private void ResponseGrinding(ActionEvaluation<Grinding> eval)
+        private void ResponseGrinding((ActionEvaluation<Grinding> eval, List<Equipment> equipmentList) prepared)
         {
-            OneLineSystem.Push(
-                MailType.Grinding,
-                L10nManager.Localize("UI_GRINDING_NOTIFY"),
-                NotificationCell.NotificationType.Information);
+            var crystalReward = CrystalCalculator.CalculateCrystal(
+                prepared.equipmentList,
+                false,
+                TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
+                States.Instance.StakingLevel);
+            var itemRewards = Action.Grinding.CalculateMaterialReward(
+                    prepared.equipmentList,
+                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                    TableSheets.Instance.MaterialItemSheet)
+                .OrderBy(pair => pair.Key.GetMaterialPriority())
+                .ThenByDescending(pair => pair.Key.Grade)
+                .ThenBy(pair => pair.Key.Id)
+                .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
+
+            var mailRewards = new List<MailReward> { new(crystalReward, (int)crystalReward.MajorUnit) };
+            mailRewards.AddRange(itemRewards.Select(pair => new MailReward(pair.Item1, pair.Item2)));
+
+            Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_GRINDING_REWARD");
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
@@ -4231,15 +4268,13 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
+            ReactiveAvatarState.UpdateRelationship(
+                (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
+            );
             var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
-            LoadingHelper.CustomEquipmentCraft.Value = false;
             UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
-
-            ReactiveAvatarState.UpdateProficiency(
-                (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
-            );
 
             return (eval, slot);
         }
@@ -4262,10 +4297,12 @@ namespace Nekoyume.Blockchain
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             // Notify
-            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            var message = L10nManager.Localize(
+                "NOTIFICATION_COMBINATION_COMPLETE",
+                result.itemUsable.GetLocalizedName());
             NotificationSystem.Reserve(
-                MailType.Workshop,
-                string.Format(format, result.itemUsable.GetLocalizedName()),
+                MailType.CustomCraft,
+                message,
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
@@ -4291,6 +4328,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
+            LoadingHelper.CustomEquipmentCraft.Value = false;
         }
 
         /// <summary>

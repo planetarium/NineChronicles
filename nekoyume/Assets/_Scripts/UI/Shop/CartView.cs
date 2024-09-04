@@ -43,9 +43,10 @@ namespace Nekoyume.UI.Module
 
             buyButton.OnClickDisabledSubject.Subscribe(_ =>
             {
-                OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                    NotificationCell.NotificationType.Information);
+                var sumPrice = ShopBuy.GetSumPrice(cartItems
+                    .Where(i => i.ShopItem is not null)
+                    .Select(i => i.ShopItem).ToList());
+                Widget.Find<PaymentPopup>().ShowLackPaymentNCG(sumPrice.ToString());
             }).AddTo(gameObject);
         }
 

@@ -236,8 +236,25 @@ namespace Nekoyume.UI
                 case CostType.NCG:
                     itemId = 9999999;
                     count = States.Instance.GoldBalanceState.Gold.GetQuantityString();
-                    buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
-                    callback = null;
+                    buttonText = L10nManager.Localize("UI_SHOP");
+                    if (PaymentPopup.CanAttractNCG())
+                    {
+                        callback = () =>
+                        {
+                            if (BattleRenderer.Instance.IsOnBattle)
+                            {
+                                return;
+                            }
+
+                            CloseWithOtherWidgets();      
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                            Find<ShopSell>().Show();
+                        };
+                    }
+                    else
+                    {
+                        callback = null;
+                    }
                     break;
                 case CostType.Crystal:
                     itemId = 9999998;

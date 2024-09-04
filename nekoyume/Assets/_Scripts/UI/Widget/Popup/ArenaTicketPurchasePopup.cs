@@ -23,7 +23,6 @@ namespace Nekoyume.UI
             FungibleAssetValue balance,
             FungibleAssetValue cost,
             System.Action onConfirm,
-            System.Action goToMarget,
             int seasonPurchasedCount,
             int maxSeasonPurchaseCount,
             int intervalPurchasedCount,
@@ -43,12 +42,12 @@ namespace Nekoyume.UI
             else if (remainIntervalPurchaseCount > remainSeasonPurchaseCount)
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    seasonPurchasedCount, maxSeasonPurchaseCount, onConfirm, goToMarget, false);
+                    seasonPurchasedCount, maxSeasonPurchaseCount, onConfirm, false);
             }
             else
             {
                 ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    intervalPurchasedCount, maxIntervalPurchaseCount, onConfirm, goToMarget, true, true);
+                    intervalPurchasedCount, maxIntervalPurchaseCount, onConfirm, true, true);
             }
 
             Show();
@@ -99,7 +98,6 @@ namespace Nekoyume.UI
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget,
             bool isInternalLimit,
             bool showRemaining = false)
         {
@@ -139,12 +137,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Find<PaymentPopup>().ShowAttract(
-                        CostType.NCG,
-                        cost.GetQuantityString(),
-                        L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO"),
-                        L10nManager.Localize("UI_SHOP"),
-                        goToMarget);
+                    Find<PaymentPopup>().ShowLackPaymentNCG(cost.GetQuantityString());
                 }
 
                 Close(!enoughBalance);

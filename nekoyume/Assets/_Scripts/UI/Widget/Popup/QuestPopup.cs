@@ -155,7 +155,7 @@ namespace Nekoyume.UI
                 }).ToList();
             // 퀘스트 완료처리된 목록으로 갱신해서 레드닷 비활성화처리
             ReactiveAvatarState.UpdateQuestList(questList);
-            Find<MailRewardScreen>().Show(mailRewards);
+            Find<MailRewardScreen>().Show(mailRewards, "UI_ALL_RECEIVED");
         }
     }
 

@@ -28,8 +28,6 @@ namespace Nekoyume.UI
 
         private BigInteger _advancedCost;
 
-        private System.Action _onAttract;
-
         [SerializeField]
         private Button buffListButton = null;
 
@@ -48,16 +46,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-
-            _onAttract = () =>
-            {
-                Close(true);
-                Find<Menu>().Close();
-                Find<WorldMap>().Close();
-                Find<StageInformation>().Close();
-                Find<BattlePreparation>().Close();
-                Find<Grind>().Show();
-            };
 
             normalButton.OnClickSubject
                 .Subscribe(OnClickNormalButton)
@@ -98,19 +86,13 @@ namespace Nekoyume.UI
 
         private bool CheckCrystal(BigInteger cost)
         {
-            if (States.Instance.CrystalBalance.MajorUnit < cost)
+            if (States.Instance.CrystalBalance.MajorUnit >= cost)
             {
-                var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Find<PaymentPopup>().ShowAttract(
-                    CostType.Crystal,
-                    _normalCost,
-                    message,
-                    L10nManager.Localize("UI_GO_GRINDING"),
-                    _onAttract);
-                return false;
+                return true;
             }
 
-            return true;
+            Find<PaymentPopup>().ShowLackPaymentCrystal(_normalCost);
+            return false;
         }
 
         private void OnClickNormalButton(ConditionalButton.State state)
@@ -121,14 +103,11 @@ namespace Nekoyume.UI
                 var balance = States.Instance.CrystalBalance;
                 var content = balance.GetPaymentFormatText(usageMessage, _normalCost);
 
-                Find<PaymentPopup>().Show(
-                    CostType.Crystal,
+                Find<PaymentPopup>().ShowCheckPaymentCrystal(
                     balance.MajorUnit,
                     _normalCost,
                     content,
-                    L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
-                    () => PushAction(false),
-                    _onAttract);
+                    () => PushAction(false));
             }
         }
 
@@ -140,14 +119,11 @@ namespace Nekoyume.UI
                 var balance = States.Instance.CrystalBalance;
                 var content = balance.GetPaymentFormatText(usageMessage, _advancedCost);
 
-                Find<PaymentPopup>().Show(
-                    CostType.Crystal,
+                Find<PaymentPopup>().ShowCheckPaymentCrystal(
                     balance.MajorUnit,
                     _advancedCost,
                     content,
-                    L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
-                    () => PushAction(true),
-                    _onAttract);
+                    () => PushAction(true));
             }
         }
 

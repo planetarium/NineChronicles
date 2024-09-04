@@ -255,10 +255,9 @@ namespace Nekoyume.State
             var lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
-                var response = await ApiClients.Instance.RpcGraphQlClient.QueryArenaInfoAsync(currentAvatarAddr);
+                var response = await ApiClients.Instance.ArenaServiceClient.QueryArenaInfoAsync(currentAvatarAddr);
                 // Arrange my information so that it comes first when it's the same score.
-                arenaInfo = response.StateQuery.ArenaParticipants
-                    .ToList();
+                arenaInfo = response.StateQuery.ArenaParticipants.ToList();
             }
             catch (Exception e)
             {
