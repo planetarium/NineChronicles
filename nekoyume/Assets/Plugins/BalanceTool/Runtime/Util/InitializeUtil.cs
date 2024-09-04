@@ -56,7 +56,7 @@ namespace BalanceTool.Runtime.Util
             agentAddr ??= new PrivateKey().Address;
             var avatarAddr = Addresses.GetAvatarAddress(agentAddr.Value, avatarIndex);
             var agentState = new AgentState(agentAddr.Value);
-            var avatarState = new AvatarState(
+            var avatarState = AvatarState.Create(
                 avatarAddr,
                 agentAddr.Value,
                 0,
