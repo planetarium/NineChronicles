@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using Lib9c.Renderers;
-using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -30,7 +28,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI optionCpText;
 
-        public void Show(Equipment resultEquipment, ActionEvaluation<CustomEquipmentCraft> eval)
+        public void Show(Equipment resultEquipment)
         {
             itemView.SetData(resultEquipment);
             itemNameText.SetText(resultEquipment.GetLocalizedName());
