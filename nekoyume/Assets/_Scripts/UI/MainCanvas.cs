@@ -261,6 +261,12 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<PetSummonResultScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CombinationResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<EnhancementResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CollectionResultScreen>());
+            yield return null;
 
             // 일반.
             _secondWidgets.Add(Widget.Create<Login>());
@@ -357,8 +363,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             _secondWidgets.Add(Widget.Create<InputBoxPopup>());
             _secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
-            _secondWidgets.Add(Widget.Create<CombinationResultPopup>());
-            _secondWidgets.Add(Widget.Create<EnhancementResultPopup>());
             _secondWidgets.Add(Widget.Create<BattleResultPopup>());
             _secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             _secondWidgets.Add(Widget.Create<WorldBossResultPopup>());
@@ -394,10 +398,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<SummonResultPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PaymentPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ReplaceMaterialPopup>());
             yield return null;
@@ -439,6 +439,10 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonSkillsPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SummonResultPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<PaymentPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<ShopListPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SeasonPassPremiumPopup>());
@@ -448,8 +452,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<StatsBonusPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionRegistrationPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CollectionResultPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<RuneLevelBonusEffectPopup>());
             yield return null;

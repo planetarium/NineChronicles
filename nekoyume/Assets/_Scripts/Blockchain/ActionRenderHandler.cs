@@ -3259,7 +3259,7 @@ namespace Nekoyume.Blockchain
 
             var completionRate = (States.Instance.CollectionState.Ids.Count, collectionSheet.Count);
             var cp = Util.GetCpChanged(previousState, States.Instance.CollectionState);
-            Widget.Find<CollectionResultPopup>().Show(collectionRow, completionRate, cp);
+            Widget.Find<CollectionResultScreen>().Show(collectionRow, completionRate, cp);
 
 
             UniTask.RunOnThreadPool(() => UpdateCurrentAvatarStateAsync(eval).Forget());
