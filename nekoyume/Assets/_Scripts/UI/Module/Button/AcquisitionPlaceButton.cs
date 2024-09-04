@@ -94,6 +94,7 @@ namespace Nekoyume.UI.Module
                     iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.PCShop}");
                     break;
                 case ShortcutHelper.PlaceType.Upgrade:
+                case ShortcutHelper.PlaceType.Grinding:
                     iconName = string.Format(IconNameFormat, $"00{(int)ShortcutHelper.PlaceType.Craft}");
                     break;
                 default:
