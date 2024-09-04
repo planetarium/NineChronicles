@@ -600,7 +600,7 @@ namespace Nekoyume.UI
             {
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
                 var itemBase = data.Item.Value.ItemBase.Value;
-                var type = itemBase.ItemSubType is ItemSubType.Hourglass or ItemSubType.ApStone
+                var type = itemBase.ItemType is ItemType.Material
                     ? ProductType.Fungible
                     : ProductType.NonFungible;
                 var count = data.Count.Value;
@@ -762,7 +762,7 @@ namespace Nekoyume.UI
                     Price = new FungibleAssetValue(goldCurrency, (BigInteger)newPrice, 0),
                     TradableId = itemProduct.TradableId,
                     ItemCount = (int)itemProduct.Quantity,
-                    Type = itemProduct.ItemSubType is ItemSubType.Hourglass or ItemSubType.ApStone
+                    Type = itemProduct.ItemType is ItemType.Material
                         ? ProductType.Fungible
                         : ProductType.NonFungible
                 };
