@@ -1,7 +1,12 @@
-﻿using Nekoyume.Model.Item;
+﻿using System.Linq;
+using Lib9c.Renderers;
+using Nekoyume.Action.CustomEquipmentCraft;
+using Nekoyume.Battle;
+using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -16,10 +21,24 @@ namespace Nekoyume.UI
         [SerializeField]
         private VanillaItemView itemView;
 
-        public void Show(Equipment resultEquipment)
+        [SerializeField]
+        private TextMeshProUGUI itemNameText;
+
+        [SerializeField]
+        private TextMeshProUGUI baseStatText;
+
+        [SerializeField]
+        private TextMeshProUGUI optionCpText;
+
+        public void Show(Equipment resultEquipment, ActionEvaluation<CustomEquipmentCraft> eval)
         {
-            // 일단 이러면 아이템뷰 세팅은 됨
             itemView.SetData(resultEquipment);
+            itemNameText.SetText(resultEquipment.GetLocalizedName());
+            baseStatText.SetText(resultEquipment.Stat.DecimalStatToString());
+            var cp = resultEquipment.StatsMap.GetAdditionalStats().Sum(stat =>
+                CPHelper.GetStatCP(stat.StatType, stat.AdditionalValue,
+                    States.Instance.CurrentAvatarState.level));
+            optionCpText.SetText($"{(long)cp}");
             base.Show();
         }
     }

@@ -4328,7 +4328,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
-            Widget.Find<CustomCraftResultPopup>().Show((Equipment)result.itemUsable);
+            Widget.Find<CustomCraftResultPopup>().Show((Equipment)result.itemUsable, evaluation);
             LoadingHelper.CustomEquipmentCraft.Value = false;
         }
 
