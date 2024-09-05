@@ -236,13 +236,13 @@ namespace Nekoyume.UI
         public void ShowLackHourglass(long cost)
         {
             var itemId = 400000;
-            var canBuyShop = CanAttractShop() && CanAttractMobileShop(itemId);
+            var canBuyShop = CanAttractShop() || CanAttractMobileShop(itemId);
             SetPopupType(PopupType.AttractAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.Hourglass);
             var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
-            var content = L10nManager.Localize("UI_LACK_HOURGLASS");
+            var content = GetLackHourglassContentString(canBuyShop);
             var labelYesText = canBuyShop ? 
                 L10nManager.Localize("UI_SHOP") : 
                 MonsterCollectionString;
@@ -425,6 +425,11 @@ namespace Nekoyume.UI
             return isStaking ?
                 L10nManager.Localize("UI_LACK_NCG_STAKING") :
                 L10nManager.Localize("UI_LACK_NCG");
+        }
+        
+        public static string GetLackHourglassContentString(bool canBuyShop)
+        {
+            return L10nManager.Localize(canBuyShop ? "UI_LACK_HOURGLASS_SHOP" : "UI_LACK_HOURGLASS_MONSTER_COLLECTION");
         }
         
         public static string GetLackApPortionContentString()
