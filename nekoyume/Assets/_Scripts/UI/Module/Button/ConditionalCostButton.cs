@@ -60,23 +60,28 @@ namespace Nekoyume.UI.Module
                 ? cost
                 : 0L;
 
-        public int ArenaTicketCost =>
+        public long ArenaTicketCost =>
             _costMap.TryGetValue(CostType.ArenaTicket, out var cost)
                 ? (int)cost
                 : 0;
 
-        public int EventDungeonTicketCost =>
+        public long EventDungeonTicketCost =>
             _costMap.TryGetValue(CostType.EventDungeonTicket, out var cost)
                 ? (int)cost
                 : 0;
         
-        public int ActionPointCost =>
+        public long ActionPointCost =>
             _costMap.TryGetValue(CostType.ActionPoint, out var cost)
                 ? (int)cost
                 : 0;
         
-        public int ApPortionCost =>
+        public long ApPortionCost =>
             _costMap.TryGetValue(CostType.ApPotion, out var cost)
+                ? (int)cost
+                : 0;
+        
+        public long HourglassCost =>
+            _costMap.TryGetValue(CostType.Hourglass, out var cost)
                 ? (int)cost
                 : 0;
 
@@ -243,10 +248,7 @@ namespace Nekoyume.UI.Module
                         paymentPopup.ShowCheckPaymentApPortion(ActionPointCost);
                         break;
                     case CostType.Hourglass:
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowLackHourglass(HourglassCost);
                         break;
                     case CostType.ApPotion:
                         paymentPopup.ShowLackApPortion(ApPortionCost);

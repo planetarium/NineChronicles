@@ -92,7 +92,7 @@ namespace Nekoyume.UI
             Find<ShopListPopup>().Show(product, purchasingData).Forget();
         }
 
-        public async void ShowAsTab(string categoryName)
+        public async UniTask ShowAsTab(string categoryName)
         {
             await ShowAsync();
 
