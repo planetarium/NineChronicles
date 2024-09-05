@@ -225,7 +225,7 @@ namespace Nekoyume.UI
             ReactiveAvatarState.ObservableRelationship
                 .Subscribe(relationship => relationshipGaugeView.Set(
                     relationship,
-                    TableSheets.Instance.CustomEquipmentCraftRelationshipSheet))
+                    TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.First(row => row.Relationship >= relationship).Relationship))
                 .AddTo(_disposables);
 
             if (RequiredUpdateCraftCount)

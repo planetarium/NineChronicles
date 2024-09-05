@@ -1,5 +1,4 @@
-﻿using Nekoyume.TableData.CustomEquipmentCraft;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,27 +15,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Slider slider;
 
-        public void Set(long current, CustomEquipmentCraftRelationshipSheet sheet)
+        public void Set(long current, long max)
         {
-            var prev = 0;
-            var max = 0;
-            foreach (var row in sheet.OrderedList)
-            {
-                if (row.Relationship < current)
-                {
-                    prev = row.Relationship;
-                }
-                else
-                {
-                    max = row.Relationship;
-                    break;
-                }
-            }
-
             currentRelationshipText.SetText(current.ToString());
             maxRelationshipText.SetText(max.ToString());
             slider.maxValue = max;
-            slider.minValue = prev;
             slider.value = current;
         }
     }
