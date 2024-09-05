@@ -21177,7 +21177,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 229.5, y: -30.5}
-  m_SizeDelta: {x: 190, y: 26}
+  m_SizeDelta: {x: 0, y: 26}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3608364749563383036
 CanvasRenderer:
@@ -31647,6 +31647,7 @@ MonoBehaviour:
   craftedCountText: {fileID: 3011621742617305177}
   maxMainStatText: {fileID: 2450121384887211001}
   randomOnlyOutfitInfoObject: {fileID: 8649726341838711196}
+  outfitRatioInfoButton: {fileID: 2444748559465406343}
 --- !u!1 &5424563364131905743
 GameObject:
   m_ObjectHideFlags: 0
@@ -35400,7 +35401,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 24.75, y: -30.5}
-  m_SizeDelta: {x: 200, y: 26}
+  m_SizeDelta: {x: 0, y: 26}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3460906418828552700
 CanvasRenderer:
