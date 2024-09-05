@@ -466,21 +466,19 @@ namespace Nekoyume.UI
         private void ShowLackMaterialPopup(Unit _)
         {
             var paymentPopup = Find<PaymentPopup>();
+            var runeCost = _selectedRuneItem.CostRow.Cost[_selectedRuneItem.Level];
             
-            paymentPopup.ShowLackRuneStone(_selectedRuneItem, "444");
-            
-            // TODO: 우선순위 별로 재화 팝업, 현재는 테스트를 위해 룬스톤 부족 팝업만 띄움
             if (!_selectedRuneItem.EnoughRuneStone)
             {
-                // paymentPopup.ShowLackRuneStone(_selectedRuneItem, "444");
+                paymentPopup.ShowLackRuneStone(_selectedRuneItem, runeCost.RuneStoneQuantity);
             }
             else if (!_selectedRuneItem.EnoughNcg)
             {
-                // paymentPopup.ShowLackCurrency(CostType.Crystal);
+                paymentPopup.ShowLackPaymentNCG(runeCost.NcgQuantity.ToString());
             }
             else if (!_selectedRuneItem.EnoughCrystal)
             {
-                // paymentPopup.ShowLackCurrency(CostType.NCG);
+                paymentPopup.ShowLackPaymentCrystal(runeCost.CrystalQuantity);
             }
         }
     }

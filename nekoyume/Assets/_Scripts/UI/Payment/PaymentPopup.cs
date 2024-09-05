@@ -134,14 +134,14 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
-        public void ShowLackRuneStone(RuneItem runeItem, string requiredCost)
+        public void ShowLackRuneStone(RuneItem runeItem, int requiredCost)
         {
             var runeStone = runeItem.RuneStone;
             var hasAttract = HasAttractActionRuneStone(runeStone);
             SetPopupType(hasAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = GetRuneStoneSprite(runeStone);
-            costText.text = requiredCost;
+            costText.text = requiredCost.ToString();
             
             var title = L10nManager.Localize("UI_REQUIRED_COST");
             var content = GetRuneStoneContent(runeStone);
