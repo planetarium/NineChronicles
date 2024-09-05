@@ -134,9 +134,7 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
-        public void ShowLackRuneStone(
-            RuneItem runeItem,
-            string requiredCost)
+        public void ShowLackRuneStone(RuneItem runeItem, string requiredCost)
         {
             var runeStone = runeItem.RuneStone;
             var hasAttract = HasAttractActionRuneStone(runeStone);
@@ -147,10 +145,10 @@ namespace Nekoyume.UI
             
             var title = L10nManager.Localize("UI_REQUIRED_COST");
             var content = GetRuneStoneContent(runeStone);
-            var attractMessage = L10nManager.Localize("UI_SUMMON");
+            var attractMessage = GetRuneStoneAttractMessage(runeStone);
             
-            // YesCallback = onAttract;
-            Show(title, content, attractMessage);
+            YesCallback = AttractRuneStone(runeStone);
+            Show(title, content, attractMessage, string.Empty, false);
         }
 
         public void ShowLackPayment(
@@ -461,6 +459,12 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             Find<ShopSell>().Show();
         }
+
+        private void AttractToSummon()
+        {
+            CloseWithOtherWidgets();
+            Find<Summon>().Show();
+        }
 #endregion Attract
 
 #region General
@@ -595,18 +599,34 @@ namespace Nekoyume.UI
         private string GetRuneStoneContent(FungibleAssetValue runeStone)
         {
             var hasAttract = HasAttractActionRuneStone(runeStone);
+            var runeName = runeStone.GetLocalizedName();
             if (runeStone.IsTradable())
             {
-                return L10nManager.Localize(hasAttract ?
-                    "UI_LACK_TRADEABLE_RUNESTONE_PC" :
-                    "UI_LACK_TRADEABLE_RUNESTONE_MOBILE");
+                return hasAttract ? 
+                    L10nManager.Localize("UI_LACK_TRADEABLE_RUNESTONE_PC", runeName) : 
+                    L10nManager.Localize("UI_LACK_TRADEABLE_RUNESTONE_MOBILE");
             }
-            return L10nManager.Localize("UI_LACK_UNTRADEABLE_RUNESTONE");
+            return L10nManager.Localize("UI_LACK_UNTRADEABLE_RUNESTONE", runeName);
         }
         
         private Sprite GetRuneStoneSprite(FungibleAssetValue runeStone)
         {
             return RuneFrontHelper.TryGetRuneStoneIcon(runeStone.Currency.Ticker, out var icon) ? icon : null;
+        }
+
+        private string GetRuneStoneAttractMessage(FungibleAssetValue runeStone)
+        {
+            return L10nManager.Localize(runeStone.IsTradable() ? "UI_SHOP" : "UI_SUMMON");
+        }
+        
+        private System.Action AttractRuneStone(FungibleAssetValue runeStone)
+        {
+            if (runeStone.IsTradable())
+            {
+                return AttractShop;
+            }
+
+            return AttractToSummon;
         }
 #endregion RuneStoneHelper
 #endregion Helper
