@@ -15,6 +15,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.CustomEquipmentCraft;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
@@ -126,6 +127,50 @@ namespace Nekoyume.UI
 
         public bool RequiredUpdateCraftCount { get; set; }
 
+        public static bool HasNotification
+        {
+            get
+            {
+                var tableSheets = TableSheets.Instance;
+                var recipeRow = tableSheets.CustomEquipmentCraftRecipeSheet.Values
+                    .OrderBy(row => row.CircleAmount + row.ScrollAmount).First();
+                var relationshipRow = tableSheets.CustomEquipmentCraftRelationshipSheet.OrderedList!
+                    .First(row => row.Relationship >= ReactiveAvatarState.Relationship);
+                var costRow = tableSheets.CustomEquipmentCraftCostSheet.Values
+                    .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship);
+
+                var (ncgCost, materialCosts) = CustomCraftHelper.CalculateCraftCost(
+                    0, tableSheets.MaterialItemSheet, recipeRow, relationshipRow, costRow,
+                    States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
+                );
+
+                if (States.Instance.GoldBalanceState.Gold.MajorUnit < ncgCost)
+                {
+                    return false;
+                }
+
+                var inventory = States.Instance.CurrentAvatarState.inventory;
+                foreach (var material in materialCosts)
+                {
+                    if (!tableSheets.MaterialItemSheet.TryGetValue(material.Key, out var row))
+                    {
+                        continue;
+                    }
+
+                    var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                        ? outFungibleItems.Sum(e => e.count)
+                        : 0;
+
+                    if (material.Value > itemCount)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -167,6 +212,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            foreach (var subTypeButton in subTypeButtons)
+            {
+                subTypeButton.toggleButton.isOn = subTypeButton.itemSubType == ItemSubType.Weapon;
+            }
+
             OnItemSubtypeSelected(ItemSubType.Weapon);
             ReactiveAvatarState.Inventory
                 .Where(_ => _selectedOutfit != null)
@@ -349,27 +399,42 @@ namespace Nekoyume.UI
                     .Subscribe(index => routine(index));
             }
 
-            var (ncgCost, materialCosts) = CustomCraftHelper.CalculateCraftCost(
+            var additionalCostRow = tableSheets.CustomEquipmentCraftCostSheet.Values
+                .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship);
+            var (_, materialCosts) = CustomCraftHelper.CalculateCraftCost(
                 iconId,
                 tableSheets.MaterialItemSheet,
                 customEquipmentCraftRecipeRow,
                 relationshipRow,
-                tableSheets.CustomEquipmentCraftCostSheet.Values
-                    .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship),
+                null,
                 States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
             );
 
             SetCostAndMaterial(materialCosts.Select(pair =>
                     new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value))
-                .ToList(), (long)ncgCost, randomOnly);
+                .ToList(),
+                randomOnly,
+                additionalCostRow);
         }
 
-        private void SetCostAndMaterial(List<EquipmentItemSubRecipeSheet.MaterialInfo> materials, long ncgCost, bool randomOnly)
+        private void SetCostAndMaterial(List<EquipmentItemSubRecipeSheet.MaterialInfo> materials, bool randomOnly, CustomEquipmentCraftCostSheet.Row additionalCostRow = null)
         {
+            var ncgCost = additionalCostRow != null ? (long) additionalCostRow.GoldAmount : 0L;
             requiredItemRecipeView.SetData(
                 materials,
                 true);
-            conditionalCostButton.SetCost(CostType.NCG, ncgCost);
+            if (additionalCostRow != null)
+            {
+                var costs = new List<ConditionalCostButton.CostParam>
+                    {new(CostType.NCG, ncgCost)};
+                costs.AddRange(additionalCostRow.MaterialCosts.Select(cost => new ConditionalCostButton.CostParam((CostType) cost.ItemId, cost.Amount)));
+                conditionalCostButton.SetCost(costs);
+            }
+            else
+            {
+                conditionalCostButton.SetCost(CostType.NCG, 0);
+            }
+
             conditionalCostButton.SetCondition(() => !randomOnly);
             _submittableState = CheckSubmittableState(
                 ncgCost,

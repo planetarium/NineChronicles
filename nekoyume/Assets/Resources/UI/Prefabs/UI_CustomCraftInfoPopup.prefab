@@ -309,7 +309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -48.409035}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &575061411878486855
@@ -1138,8 +1138,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1533da7d7d340c490e631ae71415cc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: 0.09583333
-  scrollOffset: 0.09583333
+  cellInterval: 0.10697675
+  scrollOffset: 0.10697675
   loop: 0
   cellContainer: {fileID: 5240674189203256206}
   reuseCellMarginCount: 0
@@ -2533,7 +2533,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 14, y: 0}
-  m_SizeDelta: {x: -14, y: 0}
+  m_SizeDelta: {x: -14, y: -50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8032102582736325369
 MonoBehaviour:

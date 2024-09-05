@@ -25,7 +25,7 @@ namespace Nekoyume.UI
         private Button runeButton;
 
         [SerializeField]
-        private Button blueprintButton;
+        private Button customCraftButton;
 
         [SerializeField]
         private Button closeButton;
@@ -38,6 +38,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Image summonNotificationImage;
+
+        [SerializeField]
+        private Image customCraftNotificationImage;
 
         [SerializeField]
         private SpeechBubble speechBubble;
@@ -92,7 +95,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            blueprintButton.onClick.AddListener(() =>
+            customCraftButton.onClick.AddListener(() =>
             {
                 Close(true);
                 Find<CustomCraft>().Show();
@@ -164,7 +167,11 @@ namespace Nekoyume.UI
                 }
             }
 
+            // summon
             summonNotificationImage.enabled = Summon.HasNotification;
+
+            // custom craft
+            customCraftNotificationImage.enabled = CustomCraft.HasNotification;
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

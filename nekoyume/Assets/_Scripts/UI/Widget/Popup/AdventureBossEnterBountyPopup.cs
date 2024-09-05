@@ -103,7 +103,7 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            stakingWarningButton.onClick.AddListener(() => { OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_ADVENTURE_BOSS_STAKING_LEVEL_WARNING"), Scroller.NotificationCell.NotificationType.Alert); });
+            stakingWarningButton.onClick.AddListener(LackStakingLevelPopup);
             bountyInputPlaceholder.text = L10nManager.Localize("ADVENTURE_BOSS_BOUNTY_INPUT_PLACEHOLDER", States.Instance.GameConfigState.AdventureBossMinBounty);
             bountyInputArea.onSelect.AddListener(OnBountyInputAreaFocus);
             bountyInputArea.onValueChanged.AddListener(OnBountyInputAreaValueChanged);
@@ -114,6 +114,13 @@ namespace Nekoyume.UI
                 Find<AdventureBossFullBountyStatusPopup>().Show()
             ).AddTo(gameObject);
             base.Awake();
+        }
+
+        private void LackStakingLevelPopup()
+        {
+            var paymentPopup = Find<PaymentPopup>();
+            paymentPopup.ShowLackMonsterCollection(States.Instance.GameConfigState.AdventureBossWantedRequiredStakingLevel);
+            Close(true);
         }
 
         private void OnBountyInputAreaFocus(string input)

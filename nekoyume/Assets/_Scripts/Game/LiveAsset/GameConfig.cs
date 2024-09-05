@@ -25,6 +25,7 @@ namespace Nekoyume.Game.LiveAsset
             public const int Sweep = 23;
             public const int SeasonPass = 15;
             public const int TutorialEnd = 10;
+            public const int CustomCraft = 200;
         }
 
         public const string DiscordLink = "https://discord.com/invite/planetarium";

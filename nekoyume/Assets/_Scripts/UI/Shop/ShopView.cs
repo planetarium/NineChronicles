@@ -209,6 +209,7 @@ namespace Nekoyume.UI.Module
                 {
                     if (!ReactiveShopState.TryGetItemBase(product, out var itemBase))
                     {
+                        Debug.LogError($"Failed to get itemBase from {product}");
                         continue;
                     }
 

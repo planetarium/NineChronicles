@@ -619,7 +619,7 @@ namespace Nekoyume.State
             ReactiveAvatarState.UpdateDailyRewardReceivedIndex(listStates[3] is Integer index
                 ? index
                 : curAvatarState.dailyRewardReceivedIndex);
-            ReactiveAvatarState.UpdateProficiency(listStates[4] is Integer proficiency
+            ReactiveAvatarState.UpdateRelationship(listStates[4] is Integer proficiency
                 ? proficiency
                 : 0);
 

@@ -215,7 +215,6 @@ namespace Nekoyume.UI
                 balance,
                 cost,
                 () => StartCoroutine(CoBattleStart(CostType.NCG)),
-                GoToMarket,
                 currentArenaInfo.PurchasedTicketCount,
                 _roundData.MaxPurchaseCount,
                 RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
@@ -339,13 +338,6 @@ namespace Nekoyume.UI
                     ? L10nManager.Localize("UI_BATTLE_INTERVAL", battleArenaInterval)
                     : L10nManager.Localize("UI_EQUIP_FAILED");
             }
-        }
-
-        private void GoToMarket()
-        {
-            Close(true);
-            Find<ShopBuy>().Show();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
     }
 }

@@ -24,6 +24,9 @@ namespace Nekoyume.UI.Module
 
     public class GrindModule : MonoBehaviour
     {
+        // TODO: 셋팅 파일 or lib9c 등으로 분리
+        private const int GrindCost = 5;
+        
         [Serializable]
         private struct CrystalAnimationData
         {
@@ -91,7 +94,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            grindButton.SetCost(CostType.ActionPoint, 5);
+            grindButton.SetCost(CostType.ActionPoint, GrindCost);
             grindButton.SetCondition(() => CanGrind);
             removeAllButton.OnSubmitSubject.Subscribe(_ =>
             {
@@ -394,26 +397,15 @@ namespace Nekoyume.UI.Module
             {
                 case ConditionalButton.State.Conditional:
                 {
+                    var paymentPopup = Widget.Find<PaymentPopup>();
                     if (_inventoryApStoneCount > 0)
                     {
-                        var confirm = Widget.Find<IconAndButtonSystem>();
-                        confirm.ShowWithTwoButton(
-                            L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
-                                L10nManager.Localize("GRIND_UI_BUTTON"), _inventoryApStoneCount),
-                            L10nManager.Localize("UI_OK"),
-                            L10nManager.Localize("UI_CANCEL"),
-                            false, IconAndButtonSystem.SystemType.Information);
-                        confirm.ConfirmCallback = () => chargeAp(true);
+                        paymentPopup.ShowCheckPaymentApPortion(GrindCost);
                     }
                     else
                     {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("ERROR_ACTION_POINT"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowLackApPortion(1);
                     }
-
                     break;
                 }
                 case ConditionalButton.State.Normal:

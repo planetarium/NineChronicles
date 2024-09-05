@@ -325,9 +325,7 @@ namespace Nekoyume.UI
                 States.Instance.StakedBalanceState.Gold;
             if (inputBigInt > totalDepositNcg.MajorUnit)
             {
-                OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_STAKING_AMOUNT_LIMIT"),
-                    NotificationCell.NotificationType.Alert);
+                Find<PaymentPopup>().ShowLackPaymentNCG(inputBigInt.ToString(), true);
                 return;
             }
 
