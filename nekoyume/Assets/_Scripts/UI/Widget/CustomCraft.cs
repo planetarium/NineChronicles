@@ -117,6 +117,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject randomOnlyOutfitInfoObject;
+
+        [SerializeField]
+        private Button outfitRatioInfoButton;
 #endregion
 
         private CustomOutfit _selectedOutfit;
@@ -189,6 +192,10 @@ namespace Nekoyume.UI
             skillListButton.onClick.AddListener(() =>
             {
                 Find<CustomCraftInfoPopup>().Show(_selectedSubType ?? ItemSubType.Weapon);
+            });
+            outfitRatioInfoButton.onClick.AddListener(() =>
+            {
+                Find<OutfitInfoListPopup>().Show(_selectedSubType ?? ItemSubType.Weapon);
             });
             foreach (var subTypeButton in subTypeButtons)
             {
