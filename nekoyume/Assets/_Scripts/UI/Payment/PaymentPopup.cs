@@ -598,10 +598,10 @@ namespace Nekoyume.UI
             if (runeStone.IsTradable())
             {
                 return L10nManager.Localize(hasAttract ?
-                    "UI_MESSAGE_NOT_ENOUGH_TRADEABLE_RUNESTONE_PC" :
-                    "UI_MESSAGE_NOT_ENOUGH_TRADEABLE_RUNESTONE_MOBILE");
+                    "UI_LACK_TRADEABLE_RUNESTONE_PC" :
+                    "UI_LACK_TRADEABLE_RUNESTONE_MOBILE");
             }
-            return L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_UNTRADEABLE_RUNESTONE");
+            return L10nManager.Localize("UI_LACK_UNTRADEABLE_RUNESTONE");
         }
         
         private Sprite GetRuneStoneSprite(FungibleAssetValue runeStone)
