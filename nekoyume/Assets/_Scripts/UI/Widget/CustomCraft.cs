@@ -123,6 +123,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button outfitRatioInfoButton;
+
+        [SerializeField]
+        private GameObject emptyScrollObject;
+
+        [SerializeField]
+        private GameObject speechBubbleObject;
 #endregion
 
         private CustomOutfit _selectedOutfit;
@@ -285,13 +291,21 @@ namespace Nekoyume.UI
 
             _selectedSubType = type;
             _selectedOutfit = null;
-            var scrollData = new List<CustomOutfit> {new(null)};
-            scrollData.AddRange(TableSheets.Instance.CustomEquipmentCraftIconSheet.Values
-                .Where(row => row.ItemSubType == _selectedSubType)
-                .Select(r => new CustomOutfit(r))
-                .OrderBy(r => r.IconRow.Value.RequiredRelationship)
-                .ThenBy(r => r.IconRow.Value.RandomOnly));
-            outfitScroll.UpdateData(scrollData);
+            var iconSheetRows = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values;
+            var existSubType = iconSheetRows.Any(row => row.ItemSubType == type);
+            outfitScroll.ContainerObject.SetActive(existSubType);
+            emptyScrollObject.SetActive(!existSubType);
+            speechBubbleObject.SetActive(existSubType);
+            if (existSubType)
+            {
+                var scrollData = new List<CustomOutfit> {new(null)};
+                scrollData.AddRange(iconSheetRows
+                    .Where(row => row.ItemSubType == _selectedSubType)
+                    .Select(r => new CustomOutfit(r))
+                    .OrderBy(r => r.IconRow.Value.RequiredRelationship)
+                    .ThenBy(r => r.IconRow.Value.RandomOnly));
+                outfitScroll.UpdateData(scrollData);
+            }
         }
 
         private void OnSubmitCraftButton()
