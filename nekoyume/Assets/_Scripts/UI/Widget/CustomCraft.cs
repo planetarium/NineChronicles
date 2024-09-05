@@ -68,7 +68,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI outfitNameText;
 
         [SerializeField]
-        private TextMeshProUGUI relationshipText;
+        private RelationshipGaugeView relationshipGaugeView;
 
         [SerializeField]
         private CustomOutfitScroll outfitScroll;
@@ -223,7 +223,9 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnOutfitSelected(_selectedOutfit))
                 .AddTo(_disposables);
             ReactiveAvatarState.ObservableRelationship
-                .Subscribe(relationship => relationshipText.SetText(relationship.ToString()))
+                .Subscribe(relationship => relationshipGaugeView.Set(
+                    relationship,
+                    TableSheets.Instance.CustomEquipmentCraftRelationshipSheet))
                 .AddTo(_disposables);
 
             if (RequiredUpdateCraftCount)
