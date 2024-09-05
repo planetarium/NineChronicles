@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.L10n;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Libplanet.Types.Assets;
 using Nekoyume.Helper;
@@ -169,7 +170,7 @@ namespace Nekoyume.UI
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
 
             costIcon.overrideSprite = costIconData.GetIcon(costType);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = GetLackDustContentString(costType);
 
@@ -182,7 +183,7 @@ namespace Nekoyume.UI
             SetPopupType(PopupType.AttractAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.Crystal);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = L10nManager.Localize("UI_LACK_CRYSTAL");
             var labelYesText = L10nManager.Localize("GRIND_UI_BUTTON");
@@ -197,7 +198,7 @@ namespace Nekoyume.UI
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost;
             var content = GetLackNCGContentString(isStaking);
 
@@ -224,7 +225,7 @@ namespace Nekoyume.UI
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.ApPotion);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = GetLackApPortionContentString();
             
@@ -454,10 +455,17 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
-            
-            CloseWithOtherWidgets();            
+
+            AttractShopAsync().Forget();
+        }
+
+        private async UniTask AttractShopAsync()
+        {
+            CloseWithOtherWidgets();      
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);      
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            Find<ShopSell>().Show();
+            await Find<ShopSell>().ShowAsync();
+            Find<LoadingScreen>().Close();
         }
 
         private void AttractToSummon()
