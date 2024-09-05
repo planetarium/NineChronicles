@@ -12533,6 +12533,7 @@ GameObject:
   - component: {fileID: 5526766342109847056}
   - component: {fileID: 1355968227564867427}
   - component: {fileID: 7420378732517704629}
+  - component: {fileID: 7378907044486643861}
   m_Layer: 5
   m_Name: Relationship
   m_TagString: Untagged
@@ -12605,6 +12606,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7378907044486643861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2489998745693917467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24c6fa25c3914558a09a4056ba265d6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentRelationshipText: {fileID: 9200793681328425705}
+  maxRelationshipText: {fileID: 4041114228992673177}
+  slider: {fileID: 1139174133948932207}
 --- !u!1 &2544202370385347040
 GameObject:
   m_ObjectHideFlags: 0
@@ -31630,7 +31646,7 @@ MonoBehaviour:
   relationshipHelpButton: {fileID: 3932781385247576806}
   skillListButton: {fileID: 1616879328483722661}
   outfitNameText: {fileID: 248923700688696113}
-  relationshipText: {fileID: 9200793681328425705}
+  relationshipGaugeView: {fileID: 7378907044486643861}
   outfitScroll: {fileID: 5083340207273886926}
   baseStatText: {fileID: 7864550637954108092}
   expText: {fileID: 7834337744012634540}
