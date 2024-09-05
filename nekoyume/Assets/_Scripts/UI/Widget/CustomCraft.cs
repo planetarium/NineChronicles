@@ -114,6 +114,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI maxMainStatText;
+
+        [SerializeField]
+        private GameObject randomOnlyOutfitInfoObject;
 #endregion
 
         private CustomOutfit _selectedOutfit;
@@ -345,6 +348,7 @@ namespace Nekoyume.UI
                 ? L10nManager.LocalizeItemName(iconId)
                 : L10nManager.Localize("UI_RANDOM_OUTFIT"));
             craftedCountObject.SetActive(hasSelectedOutfit && !randomOnly);
+            randomOnlyOutfitInfoObject.SetActive(!hasSelectedOutfit);
             craftedCountText.SetText(L10nManager.Localize("UI_TOTAL_CRAFT_COUNT_FORMAT",
                 hasSelectedOutfit &&
                 _craftCountDict.TryGetValue(iconId, out var count)
