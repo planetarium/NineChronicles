@@ -618,6 +618,7 @@ namespace Nekoyume.Helper
                 case PlaceType.Craft:
                 case PlaceType.Upgrade:
                 case PlaceType.Summon:
+                case PlaceType.Grinding:
                     return true;
                 case PlaceType.AdventureBoss:
                     return !Game.LiveAsset.GameConfig.IsKoreanBuild;
@@ -649,6 +650,7 @@ namespace Nekoyume.Helper
                 PlaceType.Summon => true,
                 PlaceType.AdventureBoss => !BattleRenderer.Instance.IsOnBattle,
                 PlaceType.WorldBoss => !BattleRenderer.Instance.IsOnBattle,
+                PlaceType.Grinding => true,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
