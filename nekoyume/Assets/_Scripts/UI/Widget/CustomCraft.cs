@@ -59,6 +59,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton conditionalCostButton;
 
         [SerializeField]
+        private GameObject buttonBlockerObject;
+
+        [SerializeField]
         private Button relationshipHelpButton;
 
         [SerializeField]
@@ -229,11 +232,16 @@ namespace Nekoyume.UI
 
             OnItemSubtypeSelected(ItemSubType.Weapon);
             ReactiveAvatarState.Inventory
+                .Merge(LoadingHelper.CustomEquipmentCraft
+                    .Select<bool, Nekoyume.Model.Item.Inventory>(_ => null))
                 .Where(_ => _selectedOutfit != null)
                 .Subscribe(_ => OnOutfitSelected(_selectedOutfit))
                 .AddTo(_disposables);
             ReactiveAvatarState.ObservableRelationship
                 .Subscribe(relationship => relationshipText.SetText(relationship.ToString()))
+                .AddTo(_disposables);
+            LoadingHelper.CustomEquipmentCraft
+                .SubscribeTo(buttonBlockerObject)
                 .AddTo(_disposables);
 
             if (RequiredUpdateCraftCount)
