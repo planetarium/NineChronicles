@@ -96,11 +96,13 @@ namespace Nekoyume.UI
 
             var skillRows = TableSheets.Instance.CustomEquipmentCraftRecipeSkillSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubtype)
-                .Select(row => (TableSheets.Instance.EquipmentItemOptionSheet[row.ItemOptionId], row.Ratio));
+                .Select(row => (TableSheets.Instance.EquipmentItemOptionSheet[row.ItemOptionId], row.Ratio))
+                .ToList();
+            var sumRatio = skillRows.Sum(tuple => (float)tuple.Ratio);
             skillScroll.UpdateData(skillRows.Select(tuple => new CustomCraftSkillCell.Model
             {
                 SkillName = L10nManager.Localize($"SKILL_NAME_{tuple.Item1.SkillId}"),
-                SkillRatio = $"{tuple.Ratio}%",
+                SkillRatio = $"{tuple.Ratio / sumRatio * 100f}%",
                 OptionRow = tuple.Item1,
                 SkillRow = TableSheets.Instance.SkillSheet[tuple.Item1.SkillId]
             }));
