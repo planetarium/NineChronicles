@@ -19,7 +19,7 @@ namespace Nekoyume.UI
                 row.ItemSubType == subType).ToList();
             var sumRatio = rows.Sum(row => (float)row.Ratio);
             scroll.UpdateData(rows.Select(
-                row => new RandomOutfitCell.Model(row.IconId, $"{row.Ratio / sumRatio * 100f}%")));
+                row => new RandomOutfitCell.Model(row.IconId, $"{row.Ratio / sumRatio * 100f:F4}%")));
             base.Show(ignoreShowAnimation);
         }
     }

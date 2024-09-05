@@ -102,7 +102,7 @@ namespace Nekoyume.UI
             skillScroll.UpdateData(skillRows.Select(tuple => new CustomCraftSkillCell.Model
             {
                 SkillName = L10nManager.Localize($"SKILL_NAME_{tuple.Item1.SkillId}"),
-                SkillRatio = $"{tuple.Ratio / sumRatio * 100f}%",
+                SkillRatio = $"{tuple.Ratio / sumRatio * 100f:F4}%",
                 OptionRow = tuple.Item1,
                 SkillRow = TableSheets.Instance.SkillSheet[tuple.Item1.SkillId]
             }));
