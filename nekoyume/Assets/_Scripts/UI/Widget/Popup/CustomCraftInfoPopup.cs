@@ -114,7 +114,7 @@ namespace Nekoyume.UI
         {
             skillPositionTooltip.transform.SetParent(model.Item2);
             skillPositionTooltip.transform.localPosition = Vector3.zero;
-            skillPositionTooltip.transform.SetParent(skillScroll.transform);
+            skillPositionTooltip.transform.SetParent(transform);
             skillPositionTooltip.Show(model.Item1.SkillRow, model.Item1.OptionRow);
         }
     }
