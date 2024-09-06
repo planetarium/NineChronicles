@@ -4,6 +4,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -12,6 +13,15 @@ namespace Nekoyume.UI
         [SerializeField]
         private RandomOutfitScroll scroll;
 
+        [SerializeField]
+        private Button closeButton;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            closeButton.onClick.AddListener(() => Close());
+        }
+        
         public void Show(ItemSubType subType, bool ignoreShowAnimation = false)
         {
             var rows = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values.Where(row =>
