@@ -105,9 +105,9 @@ namespace Nekoyume.UI
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             npcSkeletonGraphic.gameObject.SetActive(true);
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
-                NPCAnimation.Type.Motion_01.ToString(), false);
+                NPCAnimation.Type.Appear_01.ToString(), false);
             npcSkeletonGraphic.AnimationState.AddAnimation(0,
-                NPCAnimation.Type.Idle.ToString(), true, 0f);
+                NPCAnimation.Type.Motion_01.ToString(), true, 0f);
 
             yield return _waitForOneSec;
 
@@ -154,7 +154,7 @@ namespace Nekoyume.UI
         {
             // TODO: Disappear animation이 추가될 예정인데 그걸로 바꿔줘야함
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
-                NPCAnimation.Type.Motion_01.ToString(), false);
+                NPCAnimation.Type.Disappear_01.ToString(), false);
             npcSkeletonGraphic.AnimationState.Complete += OnComplete;
             HideButton();
             if (speechBubble.Item != null && _itemMoveAnimation)

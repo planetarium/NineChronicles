@@ -221,30 +221,35 @@ namespace Nekoyume.State
                     var weapon = new Weapon((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     weapon.optionCountFromCombination = product.OptionCountFromCombination;
+                    weapon.IconId = product.IconId;
                     tradableItem = weapon;
                     break;
                 case ItemSubType.Armor:
                     var armor = new Armor((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     armor.optionCountFromCombination = product.OptionCountFromCombination;
+                    armor.IconId = product.IconId;
                     tradableItem = armor;
                     break;
                 case ItemSubType.Belt:
                     var belt = new Belt((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     belt.optionCountFromCombination = product.OptionCountFromCombination;
+                    belt.IconId = product.IconId;
                     tradableItem = belt;
                     break;
                 case ItemSubType.Necklace:
                     var necklace = new Necklace((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     necklace.optionCountFromCombination = product.OptionCountFromCombination;
+                    necklace.IconId = product.IconId;
                     tradableItem = necklace;
                     break;
                 case ItemSubType.Ring:
                     var ring = new Ring((EquipmentItemSheet.Row)itemRow, id,
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     ring.optionCountFromCombination = product.OptionCountFromCombination;
+                    ring.IconId = product.IconId;
                     tradableItem = ring;
                     break;
                 case ItemSubType.ApStone:

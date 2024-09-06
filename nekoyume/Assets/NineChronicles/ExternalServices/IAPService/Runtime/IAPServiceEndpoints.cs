@@ -12,6 +12,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public readonly Uri PurchaseStatus;
         public readonly Uri PurchaseLog;
         public readonly Uri L10N;
+        public readonly Uri PurchaseRetry;
 
         public IAPServiceEndpoints(string url)
         {
@@ -23,6 +24,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             PurchaseStatus = new Uri(Url + "/api/purchase/status");
             PurchaseLog = new Uri(Url + "/api/purchase/log");
             L10N = new Uri(Url + "/api/l10n");
+            PurchaseRetry = new Uri(Url + "/api/purchase/retry");
         }
     }
 }

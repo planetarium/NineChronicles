@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5297402686404097796}
   - component: {fileID: 8371830290440222178}
   - component: {fileID: 8747444233679835067}
-  - component: {fileID: 8570303168562386458}
+  - component: {fileID: 936794371061944880}
   m_Layer: 0
   m_Name: RelationshipInfoScroll
   m_TagString: Untagged
@@ -106,7 +106,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 2451498279914828373}
---- !u!114 &8570303168562386458
+--- !u!114 &936794371061944880
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,7 +115,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1927580798769987883}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 633888be98b54c9fb6b7fb02bb53bd26, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f31000a04524a5e842bea83a7ea8b26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cellInterval: 0.11057692
@@ -126,10 +126,10 @@ MonoBehaviour:
   paddingHead: 15
   paddingTail: 15
   spacing: 0
-  cellPrefab: {fileID: 4279953781941882700, guid: c99b7616f3323af428ba60fdcc6e4484,
+  cellPrefab: {fileID: 3955371182557579077, guid: 672f5705462a7c54996e95da31811d00,
     type: 3}
   cellSize: 46
-  forcedScrollSensitivity: 8
+  forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 0
 --- !u!1 &2165833955544882637
 GameObject:
@@ -257,7 +257,7 @@ GameObject:
   - component: {fileID: 2105008930869355180}
   - component: {fileID: 2033344120589905401}
   m_Layer: 5
-  m_Name: RelationshipText
+  m_Name: OutfitText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -398,7 +398,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_OUTFIT
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -715,9 +715,9 @@ GameObject:
   - component: {fileID: 5440122921084496452}
   - component: {fileID: 5437935945969258416}
   - component: {fileID: 3479555142955687380}
-  - component: {fileID: 357602419862566079}
+  - component: {fileID: 4016574414146971755}
   m_Layer: 5
-  m_Name: UI_RandomInfoPopup
+  m_Name: UI_OutfitInfoListPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -774,7 +774,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &357602419862566079
+--- !u!114 &4016574414146971755
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -783,13 +783,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5216407350241494246}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e632e3287f349f8885917f4c28ff5a2, type: 3}
+  m_Script: {fileID: 11500000, guid: 407531b8f79648699ad7476e756a4995, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  closeButton: {fileID: 136273471320652604}
-  scroll: {fileID: 8570303168562386458}
+  scroll: {fileID: 936794371061944880}
 --- !u!1 &5384710755831772471
 GameObject:
   m_ObjectHideFlags: 0
@@ -1484,7 +1483,7 @@ GameObject:
   - component: {fileID: 7898482070500782024}
   - component: {fileID: 305822289318711712}
   m_Layer: 5
-  m_Name: SubStatTotalText
+  m_Name: ProbabilityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1625,7 +1624,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_SUMMON_DETAIL_LIST_TITLE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
