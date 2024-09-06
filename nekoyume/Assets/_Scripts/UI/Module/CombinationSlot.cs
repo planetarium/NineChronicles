@@ -186,6 +186,8 @@ namespace Nekoyume.UI.Module
                 requiredBlockIndex + currentBlockIndex,
                 currentBlockIndex,
                 currentBlockIndex);
+            UpdateInformation(currentBlockIndex);
+            SetItemUsableImage(itemUsable, true);
             _sendActionBlockIndex = currentBlockIndex;
         }
 

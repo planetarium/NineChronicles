@@ -217,8 +217,7 @@ namespace Nekoyume.UI
                     var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
                     if (raiderState is null)
                     {
-                        var exception = new WorldBossStateNotFoundException();
-                        Game.Game.BackToMainAsync(exception).Forget();
+                        StartCoroutine(CoRaid());
                     }
                     else
                     {
