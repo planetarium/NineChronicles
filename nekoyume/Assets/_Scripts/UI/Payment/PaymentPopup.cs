@@ -1,4 +1,3 @@
-using System;
 using Nekoyume.L10n;
 using System.Numerics;
 using Cysharp.Threading.Tasks;
@@ -117,7 +116,7 @@ namespace Nekoyume.UI
         }
 
 #region LackPaymentAction
-        public void ShowLackPayment(
+        public void ShowLackPaymentLegacy(
             CostType costType,
             string cost,
             string content,
@@ -133,24 +132,24 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
-        public void ShowLackPayment(
+        public void ShowLackPaymentLegacy(
             CostType costType,
             BigInteger cost,
             string content,
             string attractMessage,
             System.Action onAttract)
         {
-            ShowLackPayment(costType, cost.ToString(), content, attractMessage, onAttract);
+            ShowLackPaymentLegacy(costType, cost.ToString(), content, attractMessage, onAttract);
         }
 
-        public void ShowLackRuneStone(RuneItem runeItem, int requiredCost)
+        public void ShowLackRuneStone(RuneItem runeItem, int cost)
         {
             var runeStone = runeItem.RuneStone;
             var hasAttract = HasAttractActionRuneStone(runeStone);
             SetPopupType(hasAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = GetRuneStoneSprite(runeStone);
-            costText.text = requiredCost.ToString();
+            costText.text = cost.ToString();
             
             var title = L10nManager.Localize("UI_REQUIRED_COST");
             var content = GetRuneStoneContent(runeStone);
@@ -160,8 +159,6 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, string.Empty, false);
         }
 
-        // TODO: 해당 메서드 기반으로 위의 ShowLackPayment을 대체할 수 있을 것으로 보인다면,
-        // TODO: 위의 ShowLackPayment를 Obsolete 처리 후 아래의 메서드를 사용하도록 변경
         public void ShowLackPaymentDust(CostType costType, BigInteger cost)
         {
             var canAttract = CanAttractDust(costType);
@@ -268,7 +265,7 @@ namespace Nekoyume.UI
 #endregion LackPaymentAction
 
 #region PaymentCheckAction
-        public void ShowCheckPayment(
+        public void ShowCheckPaymentLegacy(
             CostType costType,
             BigInteger balance,
             BigInteger cost,
@@ -306,7 +303,7 @@ namespace Nekoyume.UI
                         return;
                     }
                     
-                    ShowLackPayment(costType, cost, insufficientMessage, L10nManager.Localize("UI_YES"), onAttract);
+                    ShowLackPaymentLegacy(costType, cost, insufficientMessage, L10nManager.Localize("UI_YES"), onAttract);
                 }
             };
 
