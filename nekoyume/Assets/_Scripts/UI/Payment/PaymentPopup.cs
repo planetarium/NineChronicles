@@ -84,10 +84,10 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            buttonNo.OnClick = No;
+            buttonNo.OnClick = Cancel;
             buttonYes.OnClick = Yes;
-            buttonClose.onClick.AddListener(NoWithoutCallback);
-            CloseWidget = NoWithoutCallback;
+            buttonClose.onClick.AddListener(Cancel);
+            CloseWidget = Cancel;
             SubmitWidget = Yes;
         }
 
@@ -739,12 +739,7 @@ namespace Nekoyume.UI
             YesCallback?.Invoke();
         }
 
-        private void No()
-        {
-            base.Close();
-        }
-
-        public void NoWithoutCallback()
+        private void Cancel()
         {
             base.Close();
         }
