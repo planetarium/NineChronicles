@@ -2,7 +2,6 @@ using System;
 using Nekoyume.L10n;
 using System.Numerics;
 using Cysharp.Threading.Tasks;
-using JetBrains.Annotations;
 using Libplanet.Types.Assets;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -10,7 +9,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -135,6 +133,16 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
+        public void ShowLackPayment(
+            CostType costType,
+            BigInteger cost,
+            string content,
+            string attractMessage,
+            System.Action onAttract)
+        {
+            ShowLackPayment(costType, cost.ToString(), content, attractMessage, onAttract);
+        }
+
         public void ShowLackRuneStone(RuneItem runeItem, int requiredCost)
         {
             var runeStone = runeItem.RuneStone;
@@ -150,16 +158,6 @@ namespace Nekoyume.UI
             
             YesCallback = AttractRuneStone(runeStone);
             Show(title, content, attractMessage, string.Empty, false);
-        }
-
-        public void ShowLackPayment(
-            CostType costType,
-            BigInteger cost,
-            string content,
-            string attractMessage,
-            System.Action onAttract)
-        {
-            ShowLackPayment(costType, cost.ToString(), content, attractMessage, onAttract);
         }
 
         // TODO: 해당 메서드 기반으로 위의 ShowLackPayment을 대체할 수 있을 것으로 보인다면,
@@ -316,7 +314,6 @@ namespace Nekoyume.UI
             Show(popupTitle, checkCostMessage, yes, no, false);
         }
 
-        // TODO: 재화 관리 팝업관련 작업을 진행하며 정리되면 제거
         public void ShowCheckPaymentDust(
             CostType costType,
             BigInteger balance,
@@ -342,6 +339,38 @@ namespace Nekoyume.UI
                 {
                     Close(true);
                     ShowLackPaymentDust(costType, cost);
+                }
+            };
+
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
+        }
+
+        public void ShowCheckPaymentNCG(
+            BigInteger balance,
+            BigInteger cost,
+            string checkCostMessage,
+            System.Action onPaymentSucceed,
+            bool isStaking = false)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            var enoughBalance = balance >= cost;
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            YesCallback = () =>
+            {
+                if (enoughBalance)
+                {
+                    onPaymentSucceed.Invoke();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackPaymentNCG(cost.ToString(), isStaking);
                 }
             };
 
