@@ -317,10 +317,11 @@ namespace Nekoyume.UI
             {
                 var recipe = TableSheets.Instance.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                     r.ItemSubType == _selectedSubType);
-                var item = ItemFactory.CreateItemUsable(
+                var item = (Equipment)ItemFactory.CreateItemUsable(
                     TableSheets.Instance.EquipmentItemSheet[_selectedItemId],
                     Guid.NewGuid(),
                     recipe.RequiredBlock);
+                item.ByCustomCraft = true;
                 combinationSlotsPopup.OnSendCombinationAction(
                     slotIndex,
                     recipe.RequiredBlock,
