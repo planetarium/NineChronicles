@@ -272,9 +272,9 @@ namespace Nekoyume.IAPStore
             {
                 var result = await ApiClients.Instance.IAPServiceManager
                     .PurchaseLogAsync(
-                        states.AgentState.address.ToHex(),
-                        states.CurrentAvatarState.address.ToHex(),
-                        Game.Game.instance.CurrentPlanetId.ToString(),
+                        states?.AgentState?.address.ToHex(),
+                        states?.CurrentAvatarState?.address.ToHex(),
+                        Game.Game.instance?.CurrentPlanetId?.ToString(),
                         productId,
                         orderId,
                         data);
@@ -284,6 +284,29 @@ namespace Nekoyume.IAPStore
             catch (Exception error)
             {
                 NcDebug.LogError("[PurchaseLog] Log Error " + error);
+            }
+        }
+
+        /// <summary>
+        /// Tx정보만 남아 있는 경우 구매처리
+        /// </summary>
+        /// <param name="product"></param>
+        private async void OnlyTxRetryPurchaseAsync(Product product)
+        {
+            var result = await ApiClients.Instance.IAPServiceManager
+                .PurchaseRetryAsync(
+                    product.receipt,
+                    product.transactionID,
+                    product.appleOriginalTransactionID);
+
+            if (result is null)
+            {
+                NcDebug.LogError($"[OnlyTxRetryPurchaseAsync] Failed");
+            }
+            else
+            {
+                _controller.ConfirmPendingPurchase(product);
+                RemoveLocalTransactions(product.transactionID);
             }
         }
 
@@ -354,9 +377,9 @@ namespace Nekoyume.IAPStore
                     "Unity/Shop/IAP/ProcessPurchase",
                     ("product-id", e.purchasedProduct.definition.id),
                     ("transaction-id", e.purchasedProduct.transactionID),
-                    ("agent-address", States.Instance.AgentState.address.ToHex()),
-                    ("avatar-address", States.Instance.CurrentAvatarState.address.ToHex()),
-                    ("planet-id", Game.Game.instance.CurrentPlanetId.ToString()));
+                    ("agent-address", States.Instance?.AgentState?.address.ToHex()),
+                    ("avatar-address", States.Instance?.CurrentAvatarState?.address.ToHex()),
+                    ("planet-id", Game.Game.instance?.CurrentPlanetId?.ToString()));
             }
             catch (Exception error)
             {
@@ -381,6 +404,16 @@ namespace Nekoyume.IAPStore
                 existTxInfo = PlayerPrefs.HasKey("PURCHASE_TX_" + e.purchasedProduct.transactionID);
                 if (!existTxInfo)
                 {
+                    //로컬에 트랜잭션 정보가 없는데 체인정보가 아직 초기화되지않은경우 영수증만 남은경우이므로 영수증 정보만을 가지고 구매처리 시도.
+                    if (states?.AgentState?.address == null
+                        || states?.CurrentAvatarState?.address == null
+                        || Game.Game.instance?.CurrentPlanetId == null)
+                    {
+                        NcDebug.Log($"[ProcessPurchase] AgentState{states?.AgentState?.address.ToHex()}, AvatarState{states?.CurrentAvatarState?.address.ToHex()} or PlanetId{Game.Game.instance?.CurrentPlanetId.ToString()} is null");
+                        OnlyTxRetryPurchaseAsync(e.purchasedProduct);
+                        return PurchaseProcessingResult.Pending;
+                    }
+
                     var purchaseReciepe = new PurchaseReciept
                     {
                         Receipt = e.purchasedProduct.receipt,
@@ -399,6 +432,7 @@ namespace Nekoyume.IAPStore
 
             try
             {
+                //로컬에 트랜잭션 정보가 있는채로 동일한 재품 구매시도이므로 로컬정보를 가지고 구매처리 재시도.
                 if (existTxInfo)
                 {
                     NcDebug.Log("[ProcessPurchase] Is not PurchasePage");
