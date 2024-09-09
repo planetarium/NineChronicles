@@ -759,5 +759,10 @@ namespace Nekoyume.UI
                 L10nManager.Localize("BTN_OPEN_A_BROWSER"),
                 false);
         }
+
+        public void OnClickQrReaderBackButton()
+        {
+            keyImportButton.onClick.Invoke();
+        }
     }
 }

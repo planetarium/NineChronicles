@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1000, y: 600}
+  m_SizeDelta: {x: 900, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &845447122924971240
 CanvasRenderer:
@@ -886,8 +886,8 @@ MonoBehaviour:
   paddingTail: 15
   spacing: 10
   startAxisSpacing: 10
-  startAxisCellCount: 1
-  cellSize: {x: 900, y: 280}
+  startAxisCellCount: 2
+  cellSize: {x: 390, y: 280}
   forcedScrollSensitivity: 8
   fillWithNullToEmptyViewport: 0
   fillWithNullToEmptyCellGroup: 0

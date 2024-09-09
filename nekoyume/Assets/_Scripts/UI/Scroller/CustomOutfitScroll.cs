@@ -34,6 +34,7 @@ namespace Nekoyume.UI.Scroller
 
         protected override FancyCell<CustomOutfit, ContextModel> CellTemplate => cellTemplate;
 
+        public GameObject ContainerObject => cellContainer.gameObject;
         protected override void Initialize()
         {
             base.Initialize();
