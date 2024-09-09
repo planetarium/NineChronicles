@@ -1,9 +1,6 @@
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Scroller;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -146,7 +143,10 @@ namespace Nekoyume.UI.Module
                     case CostType.ActionPoint:
                     case CostType.Hourglass:
                     case CostType.ApPotion:
+                    case CostType.SilverDust:
                     case CostType.GoldDust:
+                    case CostType.RubyDust:
+                    case CostType.EmeraldDust:
                         break;
                     default:
                         return CostType.None;
@@ -179,13 +179,21 @@ namespace Nekoyume.UI.Module
                 case CostType.GoldDust:
                 case CostType.RubyDust:
                 case CostType.EmeraldDust:
-                    var inventory = States.Instance.CurrentAvatarState.inventory;
+                    var inventory = States.Instance.CurrentAvatarState?.inventory;
+                    if (inventory == null)
+                    {
+                        return false;
+                    }
                     var count = inventory.GetMaterialCount((int)type);
                     return count >= cost;
                 case CostType.Hourglass:
                 case CostType.ApPotion:
                     var blockIndex = Game.Game.instance.Agent.BlockIndex;
-                    inventory = States.Instance.CurrentAvatarState.inventory;
+                    inventory = States.Instance.CurrentAvatarState?.inventory;
+                    if (inventory == null)
+                    {
+                        return false;
+                    }
                     count = inventory.GetUsableItemCount(type, blockIndex);
                     return count >= cost;
                 default:
