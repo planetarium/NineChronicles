@@ -89,7 +89,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject currencyContainer;
 
-        private int _requiredCost;
         private int _bossId;
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
@@ -217,7 +216,13 @@ namespace Nekoyume.UI
                     var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
                     if (raiderState is null)
                     {
-                        StartCoroutine(CoRaid());
+                        var cost = GetEntranceFee(avatarState);
+                        var balance = States.Instance.CrystalBalance.MajorUnit;
+                        Find<PaymentPopup>().ShowCheckPaymentCrystal(
+                            balance,
+                            cost,
+                            L10nManager.Localize("UI_BOSS_JOIN_THE_SEASON"),
+                            () => StartCoroutine(CoRaid()));
                     }
                     else
                     {
