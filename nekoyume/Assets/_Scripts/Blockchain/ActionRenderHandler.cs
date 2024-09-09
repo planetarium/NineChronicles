@@ -4294,7 +4294,7 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.AddNewMail(avatarAddress, result.id);
 
             // Notify
             var message = L10nManager.Localize(
