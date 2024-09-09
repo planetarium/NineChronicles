@@ -104,6 +104,47 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             return await ProcessResponseAsync(res);
         }
 
+        /// <summary>
+        /// 예외처리 전용 구매 재시도 API (tx정보만 남아있는경우 사용)
+        /// </summary>
+        /// <param name="store"></param>
+        /// <param name="receipt"></param>
+        /// <param name="transactionId"></param>
+        /// <param name="appleOriginalTransactionID"></param>
+        /// <returns></returns>
+        public async
+            Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
+            PurchaseRetryAsync(
+                Store store,
+                string receipt,
+                string transactionId,
+                string appleOriginalTransactionID)
+        {
+            var receiptJson = JsonNode.Parse(receipt);
+            
+            var reqJson = new JsonObject
+            {
+                { "data", receiptJson },
+                { "store", (int)store }
+            };
+
+            Debug.Log($"PurchaseRetryAsync : {reqJson}");
+
+            var reqContent = new StringContent(
+                reqJson.ToJsonString(JsonSerializerOptions),
+                Encoding.UTF8,
+                "application/json");
+
+            reqContent.Headers.Add("orderId", transactionId);
+            if (!string.IsNullOrEmpty(appleOriginalTransactionID))
+            {
+                reqContent.Headers.Add("appleOriginalTransactionID", appleOriginalTransactionID);
+            }
+
+            var res = await _client.PostAsync(_endpoints.PurchaseRetry, reqContent);
+            return await ProcessResponseAsync(res);
+        }
+
         public async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             PurchaseFreeAsync(
