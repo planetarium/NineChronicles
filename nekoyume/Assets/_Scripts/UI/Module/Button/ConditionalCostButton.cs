@@ -237,7 +237,7 @@ namespace Nekoyume.UI.Module
                     case CostType.GoldDust:
                     case CostType.RubyDust:
                     case CostType.EmeraldDust:
-                        paymentPopup.ShowLackPaymentDust(CostType.GoldDust, cost);
+                        paymentPopup.ShowLackPaymentDust(costType, cost);
                         break;
                 }
             }
