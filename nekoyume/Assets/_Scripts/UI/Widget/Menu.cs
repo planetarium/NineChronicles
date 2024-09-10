@@ -122,7 +122,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             speechBubbles = GetComponentsInChildren<SpeechBubble>();
-            Lobby.OnLobbyEnterEvent += _ => EnterLobby();
+            Lobby.OnLobbyEnterEvent += _ => Show();
 
             CloseWidget = null;
 
