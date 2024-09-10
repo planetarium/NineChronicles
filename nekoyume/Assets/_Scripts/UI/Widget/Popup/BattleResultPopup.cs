@@ -488,11 +488,6 @@ namespace Nekoyume.UI
             UpdateView(isBoosted);
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-        }
-
         private void UpdateView(bool isBoosted)
         {
             expText.text = $"EXP + {SharedModel.Exp}";
@@ -903,23 +898,6 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void NextMimisbrunnrStage(BattleLog log)
-        {
-            StartCoroutine(CoGoToNextMimisbrunnrStageClose(log));
-        }
-
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(BattleLog log)
-        {
-            if (Find<Menu>().IsActive())
-            {
-                yield break;
-            }
-
-            yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
-            yield return StartCoroutine(CoFadeOut());
-            Close();
-        }
-
         private void GoToMain(bool worldClear)
         {
             var props = new Dictionary<string, Value>()
@@ -1059,20 +1037,6 @@ namespace Nekoyume.UI
             {
                 CloseWithOtherWidgets();
                 Find<Menu>().GoToCraftEquipment();
-            });
-        }
-
-        private void GoToFood()
-        {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
-
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
-            {
-                CloseWithOtherWidgets();
-                Find<Menu>().GoToFood();
             });
         }
 
