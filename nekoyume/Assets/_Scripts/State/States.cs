@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
@@ -84,7 +85,17 @@ namespace Nekoyume.State
 
         private class Workshop
         {
-            public SortedDictionary<int, CombinationSlotState> States { get; } = new();
+            private readonly ConcurrentDictionary<int, CombinationSlotState> _states = new();
+            
+            public void UpdateCombinationSlotState(int index, CombinationSlotState state)
+            {
+                _states[index] = state;
+            }
+            
+            /// <summary>
+            /// If you want to update the state, use <see cref="UpdateCombinationSlotState"/>.
+            /// </summary>
+            public IDictionary<int, CombinationSlotState> States => _states.ToImmutableSortedDictionary();
         }
 
         public PetStates PetStates { get; } = new();
@@ -648,7 +659,7 @@ namespace Nekoyume.State
             _slotStates.TryAdd(avatarAddress, new Workshop());
 
             var slots = _slotStates[avatarAddress];
-            slots.States[index] = state;
+            slots.UpdateCombinationSlotState(index, state);
         }
 
         public Dictionary<int, CombinationSlotState> GetUsedCombinationSlotState()

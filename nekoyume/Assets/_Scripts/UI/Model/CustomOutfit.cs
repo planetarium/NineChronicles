@@ -23,11 +23,12 @@ namespace Nekoyume.UI.Model
             if (row is not null)
             {
                 RandomOnly.Value = row.RandomOnly;
-                ReactiveAvatarState.ObservableRelationship.Subscribe(relationship =>
+                ReactiveAvatarState.ObservableRelationship.Subscribe(current =>
                 {
                     var required = row.RequiredRelationship;
-                    Dimmed.Value = required > relationship;
-                    HasNotification.Value = relationship >= required && relationship < required + 5;
+                    Dimmed.Value = required > current;
+                    HasNotification.Value =
+                        required > 0 && current >= required && current < required + 5;
                 }).AddTo(_disposables);
             }
             else
