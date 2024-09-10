@@ -919,10 +919,6 @@ namespace Nekoyume.Blockchain
                 {
                     case CombinationConsumable5.ResultModel combineResultModel:
                     {
-                        LocalLayerModifier.AddNewResultAttachmentMail(
-                            avatarAddress,
-                            combineResultModel.id,
-                            currentBlockIndex);
                         if (combineResultModel.itemUsable is Equipment equipment)
                         {
                             var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
@@ -940,12 +936,23 @@ namespace Nekoyume.Blockchain
                             {
                                 formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                             }
+
+                            // CustomEquipmentCraft 액션으로 만들어진 장비의 경우, AddNewResultAttachmentMail 대신 AddNewMail을 써야합니다.
+                            if (equipment.ByCustomCraft)
+                            {
+                                LocalLayerModifier.AddNewMail(avatarAddress, result.id);
+                                break;
+                            }
                         }
                         else
                         {
                             formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                         }
 
+                        LocalLayerModifier.AddNewResultAttachmentMail(
+                            avatarAddress,
+                            combineResultModel.id,
+                            currentBlockIndex);
                         break;
                     }
                     case ItemEnhancement13.ResultModel enhancementResultModel:
@@ -4294,7 +4301,7 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.AddNewMail(avatarAddress, result.id);
 
             // Notify
             var message = L10nManager.Localize(
