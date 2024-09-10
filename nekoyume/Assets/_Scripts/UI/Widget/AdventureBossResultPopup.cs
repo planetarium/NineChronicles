@@ -199,7 +199,7 @@ namespace Nekoyume.UI
             Game.Event.OnLobbyEnter.Invoke(true);
             Close();
             ShowLoadingConstantly().Forget();
-            Game.Game.instance.Stage.OnLobbyEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
@@ -226,7 +226,7 @@ namespace Nekoyume.UI
             Game.Event.OnLobbyEnter.Invoke(true);
             Close();
             ShowLoadingConstantly().Forget();
-            Game.Game.instance.Stage.OnLobbyEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);

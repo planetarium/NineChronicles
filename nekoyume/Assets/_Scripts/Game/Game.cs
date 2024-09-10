@@ -917,10 +917,7 @@ namespace Nekoyume.Game
 
             var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
             Event.OnLobbyEnter.Invoke(showLoadingScreen);
-            instance.Stage.OnLobbyEnterEnd
-                .First()
-                .Subscribe(_ => PopupError(key, code, errorMsg));
-            instance.Arena.OnLobbyEnterEnd
+            instance.Lobby.OnLobbyEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
             MainCanvas.instance.InitWidgetInMain();

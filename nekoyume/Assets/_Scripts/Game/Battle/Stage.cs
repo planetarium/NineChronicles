@@ -119,19 +119,13 @@ namespace Nekoyume.Game.Battle
             return new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
         }
 
-        public bool showLoadingScreen;
-
         public float StageSkipSpeed = 3f;
         public bool StageSkipCritical = false;
 
 #region Events
-
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
         public IObservable<Stage> OnEnterToStageEnd => _onEnterToStageEnd;
-
-        public readonly ISubject<Stage> OnLobbyEnterEnd = new Subject<Stage>();
-
-#endregion
+#endregion Events
 
         protected void Awake()
         {
@@ -278,13 +272,57 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(OnLobbyEnter)}() enter");
 #endif
-            showLoadingScreen = showScreen;
-            gameObject.AddComponent<RoomEntering>();
+            StartCoroutine(ActLobbyEnter(showScreen));
             BattleRenderer.Instance.IsOnBattle = false;
+        }
 
-            // Clear Memory
-            Resources.UnloadUnusedAssets();
-            GC.Collect();
+        private IEnumerator ActLobbyEnter(bool showScreen)
+        {
+            if (showScreen)
+            {
+                Widget.Find<LoadingScreen>().Show();
+            }
+
+            var stage = Game.instance.Stage;
+            stage.ClearBattle();
+            stage.stageId = 0;
+
+            yield return new WaitForEndOfFrame();
+            if (!(stage.AvatarState is null))
+            {
+                ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(stage.AvatarState);
+            }
+
+            var stageLoadingScreen = Widget.Find<StageLoadingEffect>();
+            if (stageLoadingScreen.IsActive())
+            {
+                stageLoadingScreen.Close();
+            }
+
+            var battle = Widget.Find<UI.Battle>();
+            if (battle.IsActive())
+            {
+                battle.Close(true);
+            }
+
+            var battleResult = Widget.Find<BattleResultPopup>();
+            if (battleResult.IsActive())
+            {
+                battleResult.Close();
+            }
+
+            // TODO: 불리는 경우 추적
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            if (loadingScreen.IsActive())
+            {
+                loadingScreen.Close();
+            }
+
+            var arenaBattleLoadingScreen = Widget.Find<ArenaBattleLoadingScreen>();
+            if (arenaBattleLoadingScreen.IsActive())
+            {
+                arenaBattleLoadingScreen.Close();
+            }
         }
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)

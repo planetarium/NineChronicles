@@ -1128,7 +1128,7 @@ namespace Nekoyume.Blockchain
 
             NcDebug.Log($"{message} (code: {code})");
             Game.Event.OnLobbyEnter.Invoke(true);
-            Game.Game.instance.Stage.OnLobbyEnterEnd
+            Game.Game.instance.Lobby.OnLobbyEnterEnd
                 .First()
                 .Subscribe(_ =>
                 {
