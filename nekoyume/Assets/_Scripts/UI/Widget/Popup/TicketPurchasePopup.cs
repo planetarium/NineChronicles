@@ -1,6 +1,7 @@
 ﻿using Nekoyume.L10n;
 using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -49,7 +50,6 @@ namespace Nekoyume.UI
 
         public void Show(
             CostType ticketType,
-            FungibleAssetValue balance,
             FungibleAssetValue cost,
             int purchasedCount,
             int maxPurchaseCount,
@@ -59,7 +59,7 @@ namespace Nekoyume.UI
         {
             if (purchasedCount < maxPurchaseCount || isMaxPurchaseInfinite)
             {
-                ShowPurchaseTicketPopup(ticketType, balance, cost,
+                ShowPurchaseTicketPopup(ticketType, cost,
                     purchasedCount, maxPurchaseCount, onConfirm, goToMarget, isMaxPurchaseInfinite);
             }
             else
@@ -72,7 +72,6 @@ namespace Nekoyume.UI
 
         private void ShowPurchaseTicketPopup(
             CostType ticketType,
-            FungibleAssetValue balance,
             FungibleAssetValue cost,
             int purchasedCount,
             int maxPurchaseCount,
@@ -84,6 +83,7 @@ namespace Nekoyume.UI
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
             costIcon.overrideSprite = costIconData.GetIcon(costType);
 
+            var balance = States.Instance.GoldBalanceState.Gold;
             var enoughBalance = balance >= cost;
 
             costContainer.SetActive(true);
