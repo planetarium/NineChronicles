@@ -90,13 +90,13 @@ namespace Nekoyume.UI
             _backButton.OnClickAsObservable().Subscribe(_ =>
             {
                 Close(true);
-                Game.Event.OnLobbyEnter.Invoke(true);
+                Lobby.Enter(true);
             }).AddTo(gameObject);
 
             CloseWidget = () =>
             {
                 Close(true);
-                Game.Event.OnLobbyEnter.Invoke(true);
+                Lobby.Enter(true);
             };
         }
 

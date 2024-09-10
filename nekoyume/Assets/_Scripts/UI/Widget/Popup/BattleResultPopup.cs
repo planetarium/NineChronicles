@@ -939,7 +939,7 @@ namespace Nekoyume.UI
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
 
             if (worldClear)
@@ -960,7 +960,7 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
 
             var worldMapLoading = Find<LoadingScreen>();
@@ -1024,7 +1024,7 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
 
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
@@ -1039,7 +1039,7 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
 
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
@@ -1054,7 +1054,7 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
 
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
@@ -1068,7 +1068,7 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
 
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>

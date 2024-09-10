@@ -181,7 +181,7 @@ namespace Nekoyume.UI
                         NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
 
-            Game.Event.OnLobbyEnter.AddListener(b => Close());
+            Lobby.OnLobbyEnterEvent += _ => Close();
         }
 
         public void Show(

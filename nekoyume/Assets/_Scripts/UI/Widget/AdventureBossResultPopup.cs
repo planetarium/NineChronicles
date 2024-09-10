@@ -196,7 +196,7 @@ namespace Nekoyume.UI
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
             ShowLoadingConstantly().Forget();
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
@@ -223,7 +223,7 @@ namespace Nekoyume.UI
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
             ShowLoadingConstantly().Forget();
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>

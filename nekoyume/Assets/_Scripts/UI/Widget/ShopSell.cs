@@ -9,6 +9,7 @@ using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -99,7 +100,7 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 Close();
-                Game.Event.OnLobbyEnter.Invoke(false);
+                Lobby.Enter();
             };
         }
 

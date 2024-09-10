@@ -279,7 +279,7 @@ namespace Nekoyume.UI
         private void EnterLobby()
         {
             Close();
-            Game.Event.OnLobbyEnter.Invoke(false);
+            Lobby.Enter();
             Game.Event.OnUpdateAddresses.Invoke();
             Find<Login>()?.Close();
         }

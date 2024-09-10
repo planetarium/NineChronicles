@@ -916,7 +916,7 @@ namespace Nekoyume.Game
             NcDebug.LogException(exc);
 
             var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
-            Event.OnLobbyEnter.Invoke(showLoadingScreen);
+            Lobby.Enter(showLoadingScreen);
             instance.Lobby.OnLobbyEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));

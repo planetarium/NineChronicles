@@ -29,6 +29,7 @@ using MagicOnion.Unity;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model;
@@ -1127,7 +1128,7 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize(key), errorCode);
 
             NcDebug.Log($"{message} (code: {code})");
-            Game.Event.OnLobbyEnter.Invoke(true);
+            Lobby.Enter(true);
             Game.Game.instance.Lobby.OnLobbyEnterEnd
                 .First()
                 .Subscribe(_ =>

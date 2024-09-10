@@ -11,6 +11,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Events;
 using Object = UnityEngine.Object;
 
 namespace Nekoyume.Game
@@ -27,15 +28,35 @@ namespace Nekoyume.Game
         public FriendCharacter FriendCharacter => friendCharacter;
 
         public readonly ISubject<Object> OnLobbyEnterEnd = new Subject<Object>();
-
+        
+        private static Action<bool>? _onLobbyEnterEnd;
+        
+        public static event Action<bool>? OnLobbyEnterEvent
+        {
+            add
+            {
+                _onLobbyEnterEnd -= value;
+                _onLobbyEnterEnd += value;
+            }
+            remove => _onLobbyEnterEnd -= value;
+        }
+        
+        public static void Enter(bool showScreen = false)
+        {
+            Debug.LogError("232121321321321321321321");
+            
+            _onLobbyEnterEnd?.Invoke(showScreen);
+        }
+        
         private void Awake()
         {
-            Event.OnLobbyEnter.AddListener(OnLobbyEnter);
+            OnLobbyEnterEvent += OnLobbyEnter;
         }
 
         private void OnDestroy()
         {
-            Event.OnLobbyEnter.RemoveListener(OnLobbyEnter);
+            OnLobbyEnterEvent -= OnLobbyEnter;
+            _onLobbyEnterEnd = null;
         }
 
         private void OnLobbyEnter(bool showScreen)
@@ -46,7 +67,6 @@ namespace Nekoyume.Game
         private async UniTask OnLobbyEnterAsync(bool showScreen)
         {
             Widget.Find<HeaderMenuStatic>().Close(true);
-            
             
             var avatarState = States.Instance.CurrentAvatarState;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);

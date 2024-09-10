@@ -56,7 +56,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            Game.Event.OnLobbyEnter.AddListener(b => Show());
+            Lobby.OnLobbyEnterEvent += b => Show();
             Game.Event.OnUpdatePlayerEquip.Where(_ => _activatedDccId != null)
                 .Subscribe(characterView.SetByPlayer).AddTo(gameObject);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Libplanet.Action;
 using Nekoyume.ApiClient;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -128,7 +129,7 @@ namespace Nekoyume.UI
                 Find<BattlePreparation>().Close();
                 Find<StageInformation>().Close();
                 Find<WorldMap>().Close();
-                Game.Event.OnLobbyEnter.Invoke(true);
+                Lobby.Enter(true);
             }).AddTo(gameObject);
         }
 

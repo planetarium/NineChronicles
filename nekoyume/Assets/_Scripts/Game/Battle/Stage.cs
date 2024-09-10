@@ -142,7 +142,7 @@ namespace Nekoyume.Game.Battle
 
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
-            Event.OnLobbyEnter.AddListener(OnLobbyEnter);
+            Lobby.OnLobbyEnterEvent += OnLobbyEnter;
 
             BattleRenderer.Instance.OnStageStart += OnStartStage;
         }
@@ -151,7 +151,7 @@ namespace Nekoyume.Game.Battle
         {
             Event.OnNestEnter.RemoveListener(OnNestEnter);
             Event.OnLoginDetail.RemoveListener(OnLoginDetail);
-            Event.OnLobbyEnter.RemoveListener(OnLobbyEnter);
+            Lobby.OnLobbyEnterEvent -= OnLobbyEnter;
 
             BattleRenderer.Instance.OnStageStart -= OnStartStage;
         }

@@ -7,6 +7,7 @@ using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -81,7 +82,7 @@ namespace Nekoyume.UI
                 void CloseAndGoToMain()
                 {
                     Close();
-                    Game.Event.OnLobbyEnter.Invoke(false);
+                    Lobby.Enter();
                 }
             };
 

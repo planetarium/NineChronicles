@@ -81,13 +81,13 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 Close();
-                Game.Event.OnLobbyEnter.Invoke(true);
+                Lobby.Enter(true);
             });
 
             CloseWidget = () =>
             {
                 Close();
-                Game.Event.OnLobbyEnter.Invoke(true);
+                Lobby.Enter(true);
             };
         }
 
