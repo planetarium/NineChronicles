@@ -126,9 +126,6 @@ namespace Nekoyume.UI
             mainButton.OnSubmitSubject.Subscribe(_ =>
             {
                 Close();
-                Find<BattlePreparation>().Close();
-                Find<StageInformation>().Close();
-                Find<WorldMap>().Close();
                 Lobby.Enter(true);
             }).AddTo(gameObject);
         }

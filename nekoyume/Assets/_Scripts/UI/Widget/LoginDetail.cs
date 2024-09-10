@@ -281,7 +281,6 @@ namespace Nekoyume.UI
             Close();
             Lobby.Enter();
             Game.Event.OnUpdateAddresses.Invoke();
-            Find<Login>()?.Close();
         }
     }
 }

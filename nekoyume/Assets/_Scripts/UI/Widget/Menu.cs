@@ -122,8 +122,6 @@ namespace Nekoyume.UI
             base.Awake();
 
             speechBubbles = GetComponentsInChildren<SpeechBubble>();
-            Lobby.OnLobbyEnterEvent += _ => Show();
-
             CloseWidget = null;
 
             playerButton.onClick.AddListener(() => Game.Game.instance.Lobby.Character.Touch());

@@ -301,7 +301,6 @@ namespace Nekoyume.UI
                                 return;
                             }
 
-                            CloseWithOtherWidgets();
                             Lobby.Enter(true);
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
                             Find<PatrolRewardPopup>().Show();
