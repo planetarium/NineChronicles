@@ -374,7 +374,6 @@ namespace Nekoyume.UI
             var balance = States.Instance.GoldBalanceState;
             Find<TicketPurchasePopup>().Show(
                 CostType.WorldBossTicket,
-                CostType.NCG,
                 balance.Gold,
                 cost,
                 raiderState.PurchaseCount,

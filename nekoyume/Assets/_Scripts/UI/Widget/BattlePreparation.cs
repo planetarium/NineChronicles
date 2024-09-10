@@ -467,7 +467,6 @@ namespace Nekoyume.UI
 
                     Find<TicketPurchasePopup>().Show(
                         CostType.EventDungeonTicket,
-                        CostType.NCG,
                         balance,
                         cost,
                         purchasedCount,

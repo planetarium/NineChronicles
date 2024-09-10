@@ -49,7 +49,6 @@ namespace Nekoyume.UI
 
         public void Show(
             CostType ticketType,
-            CostType costType,
             FungibleAssetValue balance,
             FungibleAssetValue cost,
             int purchasedCount,
@@ -60,7 +59,7 @@ namespace Nekoyume.UI
         {
             if (purchasedCount < maxPurchaseCount || isMaxPurchaseInfinite)
             {
-                ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
+                ShowPurchaseTicketPopup(ticketType, balance, cost,
                     purchasedCount, maxPurchaseCount, onConfirm, goToMarget, isMaxPurchaseInfinite);
             }
             else
@@ -73,7 +72,6 @@ namespace Nekoyume.UI
 
         private void ShowPurchaseTicketPopup(
             CostType ticketType,
-            CostType costType,
             FungibleAssetValue balance,
             FungibleAssetValue cost,
             int purchasedCount,
@@ -82,6 +80,7 @@ namespace Nekoyume.UI
             System.Action goToMarget,
             bool isMaxPurchaseInfinite = false)
         {
+            var costType = CostType.NCG;
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
             costIcon.overrideSprite = costIconData.GetIcon(costType);
 
@@ -122,7 +121,7 @@ namespace Nekoyume.UI
                 else
                 {
                     Find<PaymentPopup>().ShowLackPaymentLegacy(
-                        CostType.NCG,
+                        costType,
                         cost.GetQuantityString(),
                         L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO"),
                         L10nManager.Localize("UI_SHOP"),
