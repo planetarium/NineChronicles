@@ -916,11 +916,11 @@ namespace Nekoyume.Game
             NcDebug.LogException(exc);
 
             var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
-            Event.OnRoomEnter.Invoke(showLoadingScreen);
-            instance.Stage.OnRoomEnterEnd
+            Event.OnLobbyEnter.Invoke(showLoadingScreen);
+            instance.Stage.OnLobbyEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
-            instance.Arena.OnRoomEnterEnd
+            instance.Arena.OnLobbyEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
             MainCanvas.instance.InitWidgetInMain();

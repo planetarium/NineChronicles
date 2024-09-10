@@ -127,7 +127,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowArenaTicketPopup())
                 .AddTo(gameObject);
 
-            Game.Event.OnRoomEnter.AddListener(b => Close());
+            Game.Event.OnLobbyEnter.AddListener(b => Close());
         }
 
         public void Show(

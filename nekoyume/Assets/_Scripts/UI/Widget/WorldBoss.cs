@@ -110,13 +110,13 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 ForceClose(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
             };
 
             backButton.OnClickAsObservable().Subscribe(_ =>
             {
                 ForceClose(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
             }).AddTo(gameObject);
 
             rewardButton.OnClickAsObservable()
@@ -255,7 +255,7 @@ namespace Nekoyume.UI
             if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var nextRow))
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
                 return;
             }
 

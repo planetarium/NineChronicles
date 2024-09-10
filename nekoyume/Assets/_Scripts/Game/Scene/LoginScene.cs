@@ -392,7 +392,7 @@ namespace Nekoyume.Game.Scene
             await NcSceneManager.Instance.LoadScene(SceneType.Game);
             loadingScreen.Close();
 
-            Event.OnRoomEnter.Invoke(false);
+            Event.OnLobbyEnter.Invoke(false);
             Event.OnUpdateAddresses.Invoke();
         }
 

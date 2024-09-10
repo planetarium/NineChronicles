@@ -95,7 +95,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER"))
                 .AddTo(gameObject);
 
-            Game.Event.OnRoomEnter.AddListener(b => Close(true));
+            Game.Event.OnLobbyEnter.AddListener(b => Close(true));
         }
 
         private static void ShowTooltip(StageRewardItemView view)
@@ -109,7 +109,7 @@ namespace Nekoyume.UI
         {
             if (_stageType == StageType.Mimisbrunnr)
             {
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
             }
 
             Close(true);

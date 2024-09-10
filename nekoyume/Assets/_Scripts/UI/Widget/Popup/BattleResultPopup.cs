@@ -939,14 +939,14 @@ namespace Nekoyume.UI
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Event.OnLobbyEnter.Invoke(true);
             Close();
 
             if (worldClear)
             {
                 var worldMapLoading = Find<LoadingScreen>();
                 worldMapLoading.Show(LoadingScreen.LoadingType.Adventure);
-                Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+                Game.Game.instance.Stage.OnLobbyEnterEnd.First().Subscribe(_ =>
                 {
                     Find<HeaderMenuStatic>().Show();
                     Find<Menu>().Close();
@@ -960,12 +960,12 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Event.OnLobbyEnter.Invoke(true);
             Close();
 
             var worldMapLoading = Find<LoadingScreen>();
             worldMapLoading.Show();
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Stage.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
@@ -1024,10 +1024,10 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Event.OnLobbyEnter.Invoke(true);
             Close();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Stage.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
@@ -1039,10 +1039,10 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Event.OnLobbyEnter.Invoke(true);
             Close();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Stage.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
@@ -1054,10 +1054,10 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Event.OnLobbyEnter.Invoke(true);
             Close();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Stage.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<Menu>().GoToCraftEquipment();
@@ -1068,10 +1068,10 @@ namespace Nekoyume.UI
         {
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Event.OnLobbyEnter.Invoke(true);
             Close();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Stage.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<Menu>().GoToFood();

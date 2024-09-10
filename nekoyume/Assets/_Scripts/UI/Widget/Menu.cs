@@ -122,7 +122,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             speechBubbles = GetComponentsInChildren<SpeechBubble>();
-            Game.Event.OnRoomEnter.AddListener(b => Show());
+            Game.Event.OnLobbyEnter.AddListener(b => Show());
 
             CloseWidget = null;
 
@@ -287,7 +287,7 @@ namespace Nekoyume.UI
             _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
-        public void EnterRoom()
+        public void EnterLobby()
         {
             player.localPosition = playerPosition.localPosition + Vector3.left * 300;
             player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);

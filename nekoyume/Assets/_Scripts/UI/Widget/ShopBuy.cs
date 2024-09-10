@@ -81,7 +81,7 @@ namespace Nekoyume.UI
                 void CloseAndGoToMain()
                 {
                     Close();
-                    Game.Event.OnRoomEnter.Invoke(false);
+                    Game.Event.OnLobbyEnter.Invoke(false);
                 }
             };
 

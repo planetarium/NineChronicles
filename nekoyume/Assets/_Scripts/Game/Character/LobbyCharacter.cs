@@ -70,7 +70,7 @@ namespace Nekoyume.Game.Character
             appearance.Pet.Animator.Play(PetAnimation.Type.Interaction);
         }
 
-        public void EnterRoom()
+        public void EnterLobby()
         {
             var status = Widget.Find<Status>();
             status.Close(true);

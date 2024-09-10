@@ -109,7 +109,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
 
-            Game.Event.OnRoomEnter.AddListener(b => Close());
+            Game.Event.OnLobbyEnter.AddListener(b => Close());
         }
 
         public void Show(

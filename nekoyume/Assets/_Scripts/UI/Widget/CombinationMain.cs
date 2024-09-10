@@ -105,14 +105,14 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
                 AudioController.PlayClick();
             });
 
             CloseWidget = () =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
             };
 
             speechBubble.SetKey("SPEECH_COMBINE_EQUIPMENT_");

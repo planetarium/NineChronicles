@@ -62,14 +62,14 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(false);
+                Game.Event.OnLobbyEnter.Invoke(false);
                 AudioController.PlayClick();
             });
 
             CloseWidget = () =>
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke(false);
+                Game.Event.OnLobbyEnter.Invoke(false);
             };
         }
 
@@ -149,7 +149,7 @@ namespace Nekoyume.UI
             {
                 NcDebug.LogError(e.Message);
                 loading.Close();
-                Game.Event.OnRoomEnter.Invoke(false);
+                Game.Event.OnLobbyEnter.Invoke(false);
                 if (Game.LiveAsset.GameConfig.IsKoreanBuild)
                 {
                     Find<IconAndButtonSystem>().Show(

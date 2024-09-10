@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Battle
         [SerializeField]
         private Character.ArenaCharacter enemy;
 
-        public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
+        public readonly ISubject<Stage> OnLobbyEnterEnd = new Subject<Stage>();
         public IObservable<Arena> OnArenaEnd => _onArenaEnd;
         private readonly ISubject<Arena> _onArenaEnd = new Subject<Arena>();
         private const float SkillDelay = 0.1f;

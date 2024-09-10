@@ -3026,7 +3026,7 @@ namespace Nekoyume.Blockchain
                 worldBoss.Close();
                 await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
 
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
                 return;
             }
 

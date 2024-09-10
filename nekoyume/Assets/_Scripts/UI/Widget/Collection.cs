@@ -154,7 +154,7 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
             };
 
             foreach (var itemType in Enum.GetValues(typeof(ItemType)).OfType<ItemType>())

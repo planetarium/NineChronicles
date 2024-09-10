@@ -1127,8 +1127,8 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize(key), errorCode);
 
             NcDebug.Log($"{message} (code: {code})");
-            Game.Event.OnRoomEnter.Invoke(true);
-            Game.Game.instance.Stage.OnRoomEnterEnd
+            Game.Event.OnLobbyEnter.Invoke(true);
+            Game.Game.instance.Stage.OnLobbyEnterEnd
                 .First()
                 .Subscribe(_ =>
                 {

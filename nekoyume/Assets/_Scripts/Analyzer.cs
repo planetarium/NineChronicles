@@ -77,7 +77,7 @@ namespace Nekoyume
             SetPlanetId(planetId);
             UpdateAvatarAddress();
 
-            Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
+            Game.Event.OnLobbyEnter.AddListener(_ => UpdateAvatarAddress());
 
             NcDebug.Log($"Analyzer initialized: {uniqueId}");
 

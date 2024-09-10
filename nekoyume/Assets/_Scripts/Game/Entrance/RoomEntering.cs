@@ -41,8 +41,8 @@ namespace Nekoyume.Game.Entrance
             Game.instance.Lobby.Character.Set(avatarState, equipments, costumes, () => onFinish = true);
 
             yield return new WaitUntil(() => onFinish);
-            Game.instance.Lobby.Character.EnterRoom();
-            Widget.Find<Menu>().EnterRoom();
+            Game.instance.Lobby.Character.EnterLobby();
+            Widget.Find<Menu>().EnterLobby();
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
 
@@ -87,7 +87,7 @@ namespace Nekoyume.Game.Entrance
                 headerMenu.Show();
             }
 
-            const int requiredStage = LiveAsset.GameConfig.RequiredStage.ShowPopupRoomEntering;
+            const int requiredStage = LiveAsset.GameConfig.RequiredStage.ShowPopupLobbyEntering;
             if (States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
                 try
@@ -96,7 +96,7 @@ namespace Nekoyume.Game.Entrance
                     var shopListPopup = Widget.Find<ShopListPopup>();
                     if (shopListPopup.HasUnread)
                     {
-                        shopListPopup.ShowAtRoomEntering();
+                        shopListPopup.ShowAtLobbyEntering();
                     }
 #endif
 
@@ -121,7 +121,7 @@ namespace Nekoyume.Game.Entrance
             }
 
             Destroy(this);
-            stage.OnRoomEnterEnd.OnNext(stage);
+            stage.OnLobbyEnterEnd.OnNext(stage);
         }
     }
 }

@@ -80,7 +80,6 @@ namespace Nekoyume.Game.Battle
 
         public int foodCount;
         public string zone;
-        public Animator roomAnimator { get; private set; }
 
         private Camera _camera;
         private BattleLog _battleLog;
@@ -130,7 +129,7 @@ namespace Nekoyume.Game.Battle
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
         public IObservable<Stage> OnEnterToStageEnd => _onEnterToStageEnd;
 
-        public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
+        public readonly ISubject<Stage> OnLobbyEnterEnd = new Subject<Stage>();
 
 #endregion
 
@@ -149,7 +148,7 @@ namespace Nekoyume.Game.Battle
 
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
-            Event.OnRoomEnter.AddListener(OnRoomEnter);
+            Event.OnLobbyEnter.AddListener(OnLobbyEnter);
 
             BattleRenderer.Instance.OnStageStart += OnStartStage;
         }
@@ -158,7 +157,7 @@ namespace Nekoyume.Game.Battle
         {
             Event.OnNestEnter.RemoveListener(OnNestEnter);
             Event.OnLoginDetail.RemoveListener(OnLoginDetail);
-            Event.OnRoomEnter.RemoveListener(OnRoomEnter);
+            Event.OnLobbyEnter.RemoveListener(OnLobbyEnter);
 
             BattleRenderer.Instance.OnStageStart -= OnStartStage;
         }
@@ -274,10 +273,10 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        private void OnRoomEnter(bool showScreen)
+        private void OnLobbyEnter(bool showScreen)
         {
 #if TEST_LOG
-            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnRoomEnter)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnLobbyEnter)}() enter");
 #endif
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();

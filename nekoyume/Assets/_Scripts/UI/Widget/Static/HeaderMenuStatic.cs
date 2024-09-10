@@ -399,7 +399,7 @@ namespace Nekoyume.UI.Module
                 }
             });
 
-            Event.OnRoomEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
+            Event.OnLobbyEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
             Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)

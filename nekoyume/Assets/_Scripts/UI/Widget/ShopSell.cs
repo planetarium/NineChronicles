@@ -99,7 +99,7 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke(false);
+                Game.Event.OnLobbyEnter.Invoke(false);
             };
         }
 

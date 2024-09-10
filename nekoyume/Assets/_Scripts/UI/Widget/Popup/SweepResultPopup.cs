@@ -128,7 +128,7 @@ namespace Nekoyume.UI
                 Find<BattlePreparation>().Close();
                 Find<StageInformation>().Close();
                 Find<WorldMap>().Close();
-                Game.Event.OnRoomEnter.Invoke(true);
+                Game.Event.OnLobbyEnter.Invoke(true);
             }).AddTo(gameObject);
         }
 
