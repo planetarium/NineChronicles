@@ -11,25 +11,7 @@ Nine Chronicles
 
 ### 의존성
  - [Unity Hub]
-
-
-### 설치 방법
-
- 1. [Unity Hub] 설치
- 1. Unity 2021.3.37f1 버전 설치
- 1. 저장소 클론
-    ```
-    git clone https://github.com/planetarium/NineChronicles.git
-    ```
- 1. 터미널에서 클론한 디렉터리로 들어가서 아래 명령 실행
-    ```
-    git config core.hooksPath hooks
-    ```
- 1. 유니티 실행후 프로젝트 빌드
-
- ### 에디터에서 실행 방법
-
-에디터에서 실행하고 싶다면 'IntroScene'에서 실행 버튼을 눌러주세요. 또는 상단의 '동글이 버튼'을 누르면 해당 씬으로 이동해서 게임이 시작됩니다.
+ 
 
 ### 커맨드라인 옵션
 

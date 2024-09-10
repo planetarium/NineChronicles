@@ -35,30 +35,6 @@ visit [docs.nine-chronicles.com][9c-docs].
 ### Dependency
  - [Unity Hub]
 
-
-### Installation
-
- 1. Install [Unity Hub]
- 1. Install Unity 2021.3.37f1 version
- 1. Clone repository
-    ```
-    git clone https://github.com/planetarium/NineChronicles.git
-    ```
- 1. Navigate to the cloned directory and run the command:
-    ```
-    git config core.hooksPath hooks
-    git submodule update --init --recursive
-    ```
- 1. Run Unity and build project
-
-To launch Nine Chronicles from the Unity editor, please follow the [step-by-step guide][9c-unity-guide].
-
-[9c-unity-guide]: https://docs.nine-chronicles.com/unity-guide
-
- ### How to play in the editor
-
-If you want to run on the editor, please press the run button on 'IntroScene', or press 'Donguri button' at the top to go to that scene and start the game.
-
 ### Command Line Options
 
  - `--private-key`       : private key to use.
