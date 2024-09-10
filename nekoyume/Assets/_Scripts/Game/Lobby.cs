@@ -43,8 +43,6 @@ namespace Nekoyume.Game
         
         public static void Enter(bool showScreen = false)
         {
-            Debug.LogError("232121321321321321321321");
-            
             _onLobbyEnterEnd?.Invoke(showScreen);
         }
         
