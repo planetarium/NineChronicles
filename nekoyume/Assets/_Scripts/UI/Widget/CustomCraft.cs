@@ -6,6 +6,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.ApiClient;
+using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -77,21 +78,6 @@ namespace Nekoyume.UI
         private CustomOutfitScroll outfitScroll;
 
         [SerializeField]
-        private TextMeshProUGUI baseStatText;
-
-        [SerializeField]
-        private TextMeshProUGUI expText;
-
-        [SerializeField]
-        private TextMeshProUGUI cpText;
-
-        [SerializeField]
-        private TextMeshProUGUI requiredBlockText;
-
-        [SerializeField]
-        private TextMeshProUGUI requiredLevelText;
-
-        [SerializeField]
         private RequiredItemRecipeView requiredItemRecipeView;
 
         [SerializeField]
@@ -116,9 +102,6 @@ namespace Nekoyume.UI
         private TextMeshProUGUI craftedCountText;
 
         [SerializeField]
-        private TextMeshProUGUI maxMainStatText;
-
-        [SerializeField]
         private GameObject randomOnlyOutfitInfoObject;
 
         [SerializeField]
@@ -129,6 +112,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject speechBubbleObject;
+
+        [SerializeField]
+        private CustomEquipmentStatView statView;
 #endregion
 
         private CustomOutfit _selectedOutfit;
@@ -397,14 +383,7 @@ namespace Nekoyume.UI
                 tableSheets.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                     r.ItemSubType == _selectedSubType);
 
-            baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
-            expText.SetText($"EXP {equipmentRow.Exp?.ToCurrencyNotation()}");
-            cpText.SetText($"CP: {relationshipRow.MinCp}-{relationshipRow.MaxCp}");
-            maxMainStatText.SetText($"{equipmentRow.Stat.StatType} : MAX 100%");
-            requiredBlockText.SetText($"{customEquipmentCraftRecipeRow.RequiredBlock}");
-            requiredLevelText.SetText(
-                $"Lv {tableSheets.ItemRequirementSheet[_selectedItemId].Level}");
-
+            statView.Set(equipmentRow, relationshipRow, customEquipmentCraftRecipeRow, iconId);
             var viewSpinePreview =
                 _selectedSubType is ItemSubType.Armor or ItemSubType.Weapon;
             selectedImageView.SetActive(!viewSpinePreview);
