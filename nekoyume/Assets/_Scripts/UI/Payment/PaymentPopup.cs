@@ -1,8 +1,6 @@
-using System;
 using Nekoyume.L10n;
 using System.Numerics;
 using Cysharp.Threading.Tasks;
-using JetBrains.Annotations;
 using Libplanet.Types.Assets;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -10,7 +8,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -86,10 +83,10 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            buttonNo.OnClick = No;
+            buttonNo.OnClick = Cancel;
             buttonYes.OnClick = Yes;
-            buttonClose.onClick.AddListener(NoWithoutCallback);
-            CloseWidget = NoWithoutCallback;
+            buttonClose.onClick.AddListener(Cancel);
+            CloseWidget = Cancel;
             SubmitWidget = Yes;
         }
 
@@ -119,7 +116,7 @@ namespace Nekoyume.UI
         }
 
 #region LackPaymentAction
-        public void ShowLackPayment(
+        public void ShowLackPaymentLegacy(
             CostType costType,
             string cost,
             string content,
@@ -135,14 +132,24 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
-        public void ShowLackRuneStone(RuneItem runeItem, int requiredCost)
+        public void ShowLackPaymentLegacy(
+            CostType costType,
+            BigInteger cost,
+            string content,
+            string attractMessage,
+            System.Action onAttract)
+        {
+            ShowLackPaymentLegacy(costType, cost.ToString(), content, attractMessage, onAttract);
+        }
+
+        public void ShowLackRuneStone(RuneItem runeItem, int cost)
         {
             var runeStone = runeItem.RuneStone;
             var hasAttract = HasAttractActionRuneStone(runeStone);
             SetPopupType(hasAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = GetRuneStoneSprite(runeStone);
-            costText.text = requiredCost.ToString();
+            costText.text = cost.ToString();
             
             var title = L10nManager.Localize("UI_REQUIRED_COST");
             var content = GetRuneStoneContent(runeStone);
@@ -152,18 +159,6 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, string.Empty, false);
         }
 
-        public void ShowLackPayment(
-            CostType costType,
-            BigInteger cost,
-            string content,
-            string attractMessage,
-            System.Action onAttract)
-        {
-            ShowLackPayment(costType, cost.ToString(), content, attractMessage, onAttract);
-        }
-
-        // TODO: 해당 메서드 기반으로 위의 ShowLackPayment을 대체할 수 있을 것으로 보인다면,
-        // TODO: 위의 ShowLackPayment를 Obsolete 처리 후 아래의 메서드를 사용하도록 변경
         public void ShowLackPaymentDust(CostType costType, BigInteger cost)
         {
             var canAttract = CanAttractDust(costType);
@@ -270,7 +265,7 @@ namespace Nekoyume.UI
 #endregion LackPaymentAction
 
 #region PaymentCheckAction
-        public void ShowCheckPayment(
+        public void ShowCheckPaymentLegacy(
             CostType costType,
             BigInteger balance,
             BigInteger cost,
@@ -308,7 +303,7 @@ namespace Nekoyume.UI
                         return;
                     }
                     
-                    ShowLackPayment(costType, cost, insufficientMessage, L10nManager.Localize("UI_YES"), onAttract);
+                    ShowLackPaymentLegacy(costType, cost, insufficientMessage, L10nManager.Localize("UI_YES"), onAttract);
                 }
             };
 
@@ -316,7 +311,6 @@ namespace Nekoyume.UI
             Show(popupTitle, checkCostMessage, yes, no, false);
         }
 
-        // TODO: 재화 관리 팝업관련 작업을 진행하며 정리되면 제거
         public void ShowCheckPaymentDust(
             CostType costType,
             BigInteger balance,
@@ -342,6 +336,38 @@ namespace Nekoyume.UI
                 {
                     Close(true);
                     ShowLackPaymentDust(costType, cost);
+                }
+            };
+
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
+        }
+
+        public void ShowCheckPaymentNCG(
+            BigInteger balance,
+            BigInteger cost,
+            string checkCostMessage,
+            System.Action onPaymentSucceed,
+            bool isStaking = false)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            var enoughBalance = balance >= cost;
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            YesCallback = () =>
+            {
+                if (enoughBalance)
+                {
+                    onPaymentSucceed.Invoke();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackPaymentNCG(cost.ToString(), isStaking);
                 }
             };
 
@@ -710,12 +736,7 @@ namespace Nekoyume.UI
             YesCallback?.Invoke();
         }
 
-        private void No()
-        {
-            base.Close();
-        }
-
-        public void NoWithoutCallback()
+        private void Cancel()
         {
             base.Close();
         }

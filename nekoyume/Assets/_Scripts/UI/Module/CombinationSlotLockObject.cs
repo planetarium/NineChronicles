@@ -75,17 +75,12 @@ namespace Nekoyume.UI.Model
                         OnPaymentSucceed);
                     break;
                 case CostType.NCG:
-                    paymentPopup.ShowCheckPayment(
-                        _costType,
+                    paymentPopup.ShowCheckPaymentNCG(
                         GetBalance(),
                         GetCost(),
                         GetCheckCostMessageString(),
-                        L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                        OnPaymentSucceed,
-                        () =>
-                        {
-                            // TODO
-                        });
+                        OnPaymentSucceed
+                    );
                     break;
                 case CostType.GoldDust:
                 case CostType.RubyDust:
