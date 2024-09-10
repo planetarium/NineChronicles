@@ -1100,7 +1100,7 @@ namespace Nekoyume.Blockchain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var menu = Widget.Find<Menu>();
+                            var menu = Widget.Find<LobbyMenu>();
                             if (menu.isActiveAndEnabled)
                             {
                                 menu.UpdateGuideQuest(avatarState);
@@ -3060,7 +3060,7 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
-            Widget.Find<Menu>().Close();
+            Widget.Find<LobbyMenu>().Close();
 
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,

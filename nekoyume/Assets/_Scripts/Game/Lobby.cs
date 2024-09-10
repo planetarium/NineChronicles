@@ -43,7 +43,7 @@ namespace Nekoyume.Game
         
         public static void Enter(bool showScreen = false)
         {
-            var lobbyMenu = Widget.Find<Menu>();
+            var lobbyMenu = Widget.Find<LobbyMenu>();
             lobbyMenu.CloseWithOtherWidgets();
             lobbyMenu.Show();
             
@@ -78,7 +78,7 @@ namespace Nekoyume.Game
             await UniTask.WaitUntil(() => onFinish);
             
             Character.EnterLobby();
-            Widget.Find<Menu>().EnterLobby();
+            Widget.Find<LobbyMenu>().EnterLobby();
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
 

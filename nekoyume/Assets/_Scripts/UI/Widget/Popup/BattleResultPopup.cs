@@ -758,7 +758,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 yield break;
             }
@@ -795,7 +795,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 yield break;
             }
@@ -886,7 +886,7 @@ namespace Nekoyume.UI
 
         private async UniTask CoGoToNextStageClose(BattleLog log)
         {   
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 return;
             }
@@ -912,7 +912,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoGoToNextMimisbrunnrStageClose(BattleLog log)
         {
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 yield break;
             }
@@ -949,7 +949,7 @@ namespace Nekoyume.UI
                 Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
                 {
                     Find<HeaderMenuStatic>().Show();
-                    Find<Menu>().Close();
+                    Find<LobbyMenu>().Close();
                     Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
                     worldMapLoading.Close(true);
                 });
@@ -1060,7 +1060,7 @@ namespace Nekoyume.UI
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
-                Find<Menu>().GoToCraftEquipment();
+                Find<LobbyMenu>().GoToCraftEquipment();
             });
         }
 
@@ -1074,7 +1074,7 @@ namespace Nekoyume.UI
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
-                Find<Menu>().GoToFood();
+                Find<LobbyMenu>().GoToFood();
             });
         }
 

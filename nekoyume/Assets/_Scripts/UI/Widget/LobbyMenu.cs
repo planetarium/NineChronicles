@@ -33,11 +33,10 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Model;
     using Scroller;
     using UniRx;
 
-    public class Menu : Widget
+    public class LobbyMenu : Widget
     {
         private const string FirstOpenShopKeyFormat = "Nekoyume.UI.Menu.FirstOpenShopKey_{0}";
 
@@ -244,7 +243,7 @@ namespace Nekoyume.UI
             }
             else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
             {
-                Find<Menu>().QuestClick();
+                Find<LobbyMenu>().QuestClick();
             }
         }
 
@@ -268,7 +267,7 @@ namespace Nekoyume.UI
             else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType
                 .EventDungeonStage))
             {
-                Find<Menu>().QuestClick();
+                Find<LobbyMenu>().QuestClick();
             }
         }
 

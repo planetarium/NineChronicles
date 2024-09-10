@@ -512,7 +512,7 @@ namespace Nekoyume.UI
         
         private void AttractGrind()
         {
-            Find<Menu>().Close();
+            Find<LobbyMenu>().Close();
             Find<WorldMap>().Close();
             Find<StageInformation>().Close();
             Find<BattlePreparation>().Close();

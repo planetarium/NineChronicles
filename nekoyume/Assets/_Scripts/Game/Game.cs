@@ -47,7 +47,6 @@ using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.Playables;
 using Currency = Libplanet.Types.Assets.Currency;
-using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
 using UnityEngine.Android;
@@ -535,7 +534,7 @@ namespace Nekoyume.Game
                     needToBackToMain = true;
                 }
 
-                widget = Widget.Find<Menu>();
+                widget = Widget.Find<LobbyMenu>();
                 if (widget.IsActive())
                 {
                     widget.Close(true);
