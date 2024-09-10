@@ -1,7 +1,9 @@
 using System;
 using Nekoyume.L10n;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
+using Libplanet.Types.Assets;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -133,6 +135,23 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
+        public void ShowLackRuneStone(RuneItem runeItem, int requiredCost)
+        {
+            var runeStone = runeItem.RuneStone;
+            var hasAttract = HasAttractActionRuneStone(runeStone);
+            SetPopupType(hasAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            
+            costIcon.overrideSprite = GetRuneStoneSprite(runeStone);
+            costText.text = requiredCost.ToString();
+            
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
+            var content = GetRuneStoneContent(runeStone);
+            var attractMessage = GetRuneStoneAttractMessage(runeStone);
+            
+            YesCallback = AttractRuneStone(runeStone);
+            Show(title, content, attractMessage, string.Empty, false);
+        }
+
         public void ShowLackPayment(
             CostType costType,
             BigInteger cost,
@@ -151,7 +170,7 @@ namespace Nekoyume.UI
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
 
             costIcon.overrideSprite = costIconData.GetIcon(costType);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = GetLackDustContentString(costType);
 
@@ -164,7 +183,7 @@ namespace Nekoyume.UI
             SetPopupType(PopupType.AttractAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.Crystal);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = L10nManager.Localize("UI_LACK_CRYSTAL");
             var labelYesText = L10nManager.Localize("GRIND_UI_BUTTON");
@@ -179,7 +198,7 @@ namespace Nekoyume.UI
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost;
             var content = GetLackNCGContentString(isStaking);
 
@@ -206,7 +225,7 @@ namespace Nekoyume.UI
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.ApPotion);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = GetLackApPortionContentString();
             
@@ -359,76 +378,6 @@ namespace Nekoyume.UI
         }
 #endregion PaymentCheckAction
 
-// TODO: RuneHelper등과 통합? 혹은 별도 파일(PaymentHelper등)으로 분리
-#region DustHelper
-        public static string GetLackDustContentString(CostType costType)
-        {
-            switch (costType)
-            {
-                case CostType.SilverDust:
-                    return L10nManager.Localize("UI_LACK_SILVER_DUST");
-                case CostType.GoldDust:
-                    return L10nManager.Localize("UI_LACK_GOLD_DUST");
-                case CostType.RubyDust:
-                    return L10nManager.Localize("UI_LACK_RUBY_DUST");
-                case CostType.EmeraldDust:
-                    return L10nManager.Localize(CanAttractDust(costType) ?
-                        "UI_LACK_EMERALD_DUST" :
-                        "UI_LACK_EMERALD_DUST_KR");
-            }
-
-            return string.Empty;
-        }
-
-        // TODO: 모든 CostType에 대해 처리 가능하면 메서드명 일반적이게 변경하고 수정
-        private string GetDustAttractString(CostType costType)
-        {
-            switch (costType)
-            {
-                case CostType.SilverDust:
-                case CostType.GoldDust:
-                case CostType.RubyDust:
-                    return MonsterCollectionString;
-                case CostType.EmeraldDust:
-                    return AdventureBossString;
-            }
-
-            return string.Empty;
-        }
-
-        private static bool CanAttractDust(CostType costType)
-        {
-            switch (costType)
-            {
-                case CostType.SilverDust:
-                case CostType.GoldDust:
-                case CostType.RubyDust:
-                    return true;
-                case CostType.EmeraldDust:
-                    return !Game.LiveAsset.GameConfig.IsKoreanBuild;
-            }
-
-            return false;
-        }
-
-        private void AttractDust(CostType costType)
-        {
-            switch (costType)
-            {
-                case CostType.SilverDust:
-                case CostType.GoldDust:
-                case CostType.RubyDust:
-                    AttractToMonsterCollection();
-                    return;
-                case CostType.EmeraldDust:
-                    AttractToAdventureBoss();
-                    return;
-            }
-
-            NcDebug.LogWarning($"[{nameof(PaymentPopup)}] AttractDust: Invalid costType.");
-        }
-#endregion DustHelper
-
 #region ShopHelper
         public static string GetLackNCGContentString(bool isStaking = false)
         {
@@ -506,10 +455,23 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
-            
-            CloseWithOtherWidgets();            
+
+            AttractShopAsync().Forget();
+        }
+
+        private async UniTask AttractShopAsync()
+        {
+            CloseWithOtherWidgets();      
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);      
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            Find<ShopSell>().Show();
+            await Find<ShopSell>().ShowAsync();
+            Find<LoadingScreen>().Close();
+        }
+
+        private void AttractToSummon()
+        {
+            CloseWithOtherWidgets();
+            Find<Summon>().Show();
         }
 #endregion Attract
 
@@ -551,6 +513,131 @@ namespace Nekoyume.UI
             titleBorder.SetActive(titleExists);
         }
 #endregion General
+
+// TODO: 별도 파일(PaymentHelper등)으로 분리?
+#region Helper
+#region DustHelper
+        public static string GetLackDustContentString(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                    return L10nManager.Localize("UI_LACK_SILVER_DUST");
+                case CostType.GoldDust:
+                    return L10nManager.Localize("UI_LACK_GOLD_DUST");
+                case CostType.RubyDust:
+                    return L10nManager.Localize("UI_LACK_RUBY_DUST");
+                case CostType.EmeraldDust:
+                    return L10nManager.Localize(CanAttractDust(costType) ?
+                        "UI_LACK_EMERALD_DUST" :
+                        "UI_LACK_EMERALD_DUST_KR");
+            }
+
+            return string.Empty;
+        }
+
+        // TODO: 모든 CostType에 대해 처리 가능하면 메서드명 일반적이게 변경하고 수정
+        private string GetDustAttractString(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                case CostType.RubyDust:
+                    return MonsterCollectionString;
+                case CostType.EmeraldDust:
+                    return AdventureBossString;
+            }
+
+            return string.Empty;
+        }
+
+        private static bool CanAttractDust(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                case CostType.RubyDust:
+                    return true;
+                case CostType.EmeraldDust:
+                    return !Game.LiveAsset.GameConfig.IsKoreanBuild;
+            }
+
+            return false;
+        }
+
+        private void AttractDust(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                case CostType.RubyDust:
+                    AttractToMonsterCollection();
+                    return;
+                case CostType.EmeraldDust:
+                    AttractToAdventureBoss();
+                    return;
+            }
+
+            NcDebug.LogWarning($"[{nameof(PaymentPopup)}] AttractDust: Invalid costType.");
+        }
+#endregion DustHelper
+        
+#region RuneStoneHelper
+        /// <summary>
+        /// 해당 runeStone을 획득할 AttractAction이 있는지 확인합니다.
+        /// </summary>
+        /// <param name="runeStone">NoneAction인지 확인할 runeStone의 fav 값</param>
+        /// <returns>PC Shop에서 거래 가능하지만, 모바일인 경우 false</returns>
+        private bool HasAttractActionRuneStone(FungibleAssetValue runeStone)
+        {
+            if (runeStone.IsTradable())
+            {
+                // 에디터 안드로이드, IOS 테스트를 위해 RUN_ON_MOBILE을 사용하지 않음
+#if UNITY_ANDROID || UNITY_IOS
+                return false;
+#endif
+            }
+
+            return true;
+        }
+
+        private string GetRuneStoneContent(FungibleAssetValue runeStone)
+        {
+            var hasAttract = HasAttractActionRuneStone(runeStone);
+            var runeName = runeStone.GetLocalizedName();
+            if (runeStone.IsTradable())
+            {
+                return hasAttract ? 
+                    L10nManager.Localize("UI_LACK_TRADEABLE_RUNESTONE_PC", runeName) : 
+                    L10nManager.Localize("UI_LACK_TRADEABLE_RUNESTONE_MOBILE");
+            }
+            return L10nManager.Localize("UI_LACK_UNTRADEABLE_RUNESTONE", runeName);
+        }
+        
+        private Sprite GetRuneStoneSprite(FungibleAssetValue runeStone)
+        {
+            return RuneFrontHelper.TryGetRuneStoneIcon(runeStone.Currency.Ticker, out var icon) ? icon : null;
+        }
+
+        private string GetRuneStoneAttractMessage(FungibleAssetValue runeStone)
+        {
+            return L10nManager.Localize(runeStone.IsTradable() ? "UI_SHOP" : "UI_SUMMON");
+        }
+        
+        private System.Action AttractRuneStone(FungibleAssetValue runeStone)
+        {
+            if (runeStone.IsTradable())
+            {
+                return AttractShop;
+            }
+
+            return AttractToSummon;
+        }
+#endregion RuneStoneHelper
+#endregion Helper
 
         private void Yes()
         {
