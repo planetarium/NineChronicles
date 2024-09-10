@@ -898,6 +898,14 @@ namespace Nekoyume.UI
             Close();
         }
 
+        private void CloseWithBattle()
+        {            
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.ReleaseBattleAssets();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+        }
+
         private void GoToMain(bool worldClear)
         {
             var props = new Dictionary<string, Value>()
@@ -912,11 +920,7 @@ namespace Nekoyume.UI
             var evt = new AirbridgeEvent(category);
             evt.SetValue(Game.Game.instance.Stage.stageId);
             AirbridgeUnity.TrackEvent(evt);
-
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
             if (worldClear)
             {
@@ -934,10 +938,7 @@ namespace Nekoyume.UI
 
         private void GoToPreparation()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
             var worldMapLoading = Find<LoadingScreen>();
             worldMapLoading.Show();
@@ -998,10 +999,7 @@ namespace Nekoyume.UI
 
         private void GoToMarket()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {
@@ -1013,10 +1011,7 @@ namespace Nekoyume.UI
 
         private void GoToProduct()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {
@@ -1028,10 +1023,7 @@ namespace Nekoyume.UI
 
         private void GoToCraft()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+            CloseWithBattle();
 
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {
