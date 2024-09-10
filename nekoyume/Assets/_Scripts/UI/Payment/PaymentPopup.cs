@@ -219,7 +219,7 @@ namespace Nekoyume.UI
             Show(title, content, MonsterCollectionString, string.Empty, false);
         }
 
-        public void ShowLackApPortion(int cost)
+        public void ShowLackApPortion(long cost)
         {
             var canAttract = CanAttractShop();
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
@@ -231,6 +231,41 @@ namespace Nekoyume.UI
             
             YesCallback = AttractShop;
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
+        }
+        
+        public void ShowLackHourglass(long cost)
+        {
+            var itemId = 400000;
+            var canBuyShop = CanAttractShop() || CanAttractMobileShop(itemId);
+            SetPopupType(PopupType.AttractAction);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.Hourglass);
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
+            costText.text = cost.ToString();
+            var content = GetLackHourglassContentString(canBuyShop);
+            var labelYesText = canBuyShop ? 
+                L10nManager.Localize("UI_SHOP") : 
+                MonsterCollectionString;
+            
+            YesCallback = () =>
+            {
+                if (canBuyShop)
+                {
+                    if (CanAttractMobileShop(itemId))
+                    {
+                        AttractMobileShopAsync(itemId).Forget();
+                    }
+                    else
+                    {
+                        AttractShop();
+                    }
+                }
+                else
+                {
+                    AttractToMonsterCollection();
+                }
+            };
+            Show(title, content, labelYesText, string.Empty, false);
         }
 #endregion LackPaymentAction
 
@@ -392,6 +427,11 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_LACK_NCG");
         }
         
+        public static string GetLackHourglassContentString(bool canBuyShop)
+        {
+            return L10nManager.Localize(canBuyShop ? "UI_LACK_HOURGLASS_SHOP" : "UI_LACK_HOURGLASS_MONSTER_COLLECTION");
+        }
+        
         public static string GetLackApPortionContentString()
         {
             var canAttract = CanAttractShop();
@@ -405,6 +445,15 @@ namespace Nekoyume.UI
             return false;
 #endif
             return !Game.LiveAsset.GameConfig.IsKoreanBuild;
+        }
+
+        public static bool CanAttractMobileShop(int itemId)
+        {
+#if UNITY_ANDROID || UNITY_IOS
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
+            return iapStoreManager.TryGetCategoryName(itemId, out _);
+#endif
+            return false;
         }
 #endregion ShopHelper
         
@@ -472,6 +521,22 @@ namespace Nekoyume.UI
         {
             CloseWithOtherWidgets();
             Find<Summon>().Show();
+        }
+
+        private async UniTask AttractMobileShopAsync(int id)
+        {
+#if !(UNITY_ANDROID || UNITY_IOS)
+            return;
+#endif
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
+            if (iapStoreManager.TryGetCategoryName(id, out var categoryName))
+            {
+                CloseWithOtherWidgets();      
+                Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);      
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                await Find<MobileShop>().ShowAsTab(categoryName);
+                Find<LoadingScreen>().Close();
+            }
         }
 #endregion Attract
 
