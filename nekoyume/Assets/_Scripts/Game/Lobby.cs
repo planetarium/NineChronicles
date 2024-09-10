@@ -96,19 +96,23 @@ namespace Nekoyume.Game
                         shopListPopup.ShowAtLobbyEntering();
                     }
 #endif
-
                 var avatarInfo = ApiClients.Instance.SeasonPassServiceManager.AvatarInfo;
-                var seasonPassNewPopup = Widget.Find<SeasonPassNewPopup>();
-                if (seasonPassNewPopup.HasUnread && avatarInfo.HasValue &&
-                    !avatarInfo.Value.IsPremium)
+                if (avatarInfo.Value != null && Widget.TryFind<SeasonPassNewPopup>(out var seasonPassNewPopup))
                 {
-                    seasonPassNewPopup.Show();
+                    if (seasonPassNewPopup.HasUnread &&
+                        avatarInfo.HasValue &&
+                        !avatarInfo.Value.IsPremium)
+                    {
+                        seasonPassNewPopup.Show();
+                    }
                 }
 
-                var eventReleaseNotePopup = Widget.Find<EventReleaseNotePopup>();
-                if (eventReleaseNotePopup.HasUnread)
+                if (Widget.TryFind<EventReleaseNotePopup>(out var eventReleaseNotePopup))
                 {
-                    eventReleaseNotePopup.Show();
+                    if (eventReleaseNotePopup.HasUnread)
+                    {
+                        eventReleaseNotePopup.Show();
+                    }
                 }
             }
             catch (Exception e)
