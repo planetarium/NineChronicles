@@ -330,7 +330,6 @@ namespace Nekoyume.UI
                         purchasedCount,
                         1,
                         () => StartCoroutine(CoProceedNextStage(true)),
-                        GoToMarket,
                         true
                     );
                     yield break;
@@ -374,7 +373,6 @@ namespace Nekoyume.UI
                         purchasedCount,
                         1,
                         () => StartCoroutine(CoRepeatStage(true)),
-                        GoToMarket,
                         true
                     );
                     yield break;
@@ -988,18 +986,6 @@ namespace Nekoyume.UI
                     true);
 
                 worldMapLoading.Close(true);
-            });
-        }
-
-        private void GoToMarket()
-        {
-            CloseWithBattle();
-
-            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
-            {
-                CloseWithOtherWidgets();
-                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                Find<ShopSell>().Show();
             });
         }
 

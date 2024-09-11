@@ -468,7 +468,6 @@ namespace Nekoyume.UI
                         purchasedCount,
                         1,
                         () => StartCoroutine(CoBattleStart(_stageType, CostType.NCG, true)),
-                        () => GoToMarket(TradeType.Sell),
                         true
                     );
                     return;

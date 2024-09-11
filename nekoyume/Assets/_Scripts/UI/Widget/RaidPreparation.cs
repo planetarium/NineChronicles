@@ -378,17 +378,8 @@ namespace Nekoyume.UI
                 {
                     coverToBlockClick.SetActive(true);
                     Raid(true);
-                },
-                GoToMarket
+                }
             );
-        }
-
-        private void GoToMarket()
-        {
-            Find<WorldBoss>().ForceClose();
-            Find<RaidPreparation>().Close(true);
-            Find<ShopBuy>().Show();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
 
         /// <summary>

@@ -54,13 +54,12 @@ namespace Nekoyume.UI
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget,
             bool isMaxPurchaseInfinite = false)
         {
             if (purchasedCount < maxPurchaseCount || isMaxPurchaseInfinite)
             {
                 ShowPurchaseTicketPopup(ticketType, cost,
-                    purchasedCount, maxPurchaseCount, onConfirm, goToMarget, isMaxPurchaseInfinite);
+                    purchasedCount, maxPurchaseCount, onConfirm, isMaxPurchaseInfinite);
             }
             else
             {
@@ -76,7 +75,6 @@ namespace Nekoyume.UI
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget,
             bool isMaxPurchaseInfinite = false)
         {
             var costType = CostType.NCG;
@@ -120,12 +118,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Find<PaymentPopup>().ShowLackPaymentLegacy(
-                        costType,
-                        cost.GetQuantityString(),
-                        L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO"),
-                        L10nManager.Localize("UI_SHOP"),
-                        goToMarget);
+                    Find<PaymentPopup>().ShowLackPaymentNCG(cost.GetQuantityString());
                 }
 
                 Close(!enoughBalance);
