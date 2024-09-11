@@ -36,6 +36,14 @@ visit [docs.nine-chronicles.com][9c-docs].
  - [Unity Hub]
 
 
+## Contribution
+Any contributions are welcome. Please check [here](CONTRIBUTING.md).
+
+
+## License
+Lib9c is under GNU GPL3 license. For details, Please check our [LICENSE](LICENSE).
+
+
  ### Nine Chronicles Developer Portal
 For a comprehensive overview of the game, development resources, and documentation, visit the [Nine Chronicles Developer Portal]. The portal provides insights into the game’s decentralized nature, blockchain mechanics, and various guides for developers and players alike.
 
