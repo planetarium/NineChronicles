@@ -3,11 +3,13 @@ using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Libplanet.Types.Assets;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -732,7 +734,20 @@ namespace Nekoyume.UI
         private void Yes()
         {
             base.Close();
-            YesCallback?.Invoke();
+
+            if (BattleRenderer.Instance.IsOnBattle)
+            {
+                Lobby.Enter(true);
+                
+                Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
+                {
+                    YesCallback?.Invoke();
+                });
+            }
+            else
+            {
+                YesCallback?.Invoke();
+            }
         }
 
         private void Cancel()
