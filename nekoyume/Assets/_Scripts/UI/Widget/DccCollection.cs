@@ -67,7 +67,7 @@ namespace Nekoyume.UI
                 Close(true);
 
 #if UNITY_ANDROID || UNITY_IOS
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
 #else
                 Find<DccMain>().Show(true);
 #endif

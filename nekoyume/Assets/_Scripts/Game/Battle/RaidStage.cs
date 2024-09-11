@@ -78,7 +78,6 @@ namespace Nekoyume.Game.Battle
         private RaidPlayer _player;
         private Character.RaidBoss _boss;
 
-        public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
         public IObservable<RaidStage> OnBattleEnded => _onBattleEnded;
         private readonly ISubject<RaidStage> _onBattleEnded = new Subject<RaidStage>();
         private readonly Queue<RaidActionParams> _actionQueue = new();

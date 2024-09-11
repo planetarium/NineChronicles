@@ -2,6 +2,7 @@ using Nekoyume.L10n;
 using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Libplanet.Types.Assets;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -486,9 +487,7 @@ namespace Nekoyume.UI
 #region Attract
         private void AttractToMonsterCollection()
         {
-            // 기능 충돌 방지를 위해 StakingPopup실행 전 다른 UI를 닫음
-            CloseWithOtherWidgets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Lobby.Enter(true);
             Find<StakingPopup>().Show();
         }
 
@@ -513,7 +512,7 @@ namespace Nekoyume.UI
         
         private void AttractGrind()
         {
-            Find<Menu>().Close();
+            Find<LobbyMenu>().Close();
             Find<WorldMap>().Close();
             Find<StageInformation>().Close();
             Find<BattlePreparation>().Close();
@@ -527,7 +526,7 @@ namespace Nekoyume.UI
             {
                 // K빌드인 경우 이동하지 않음
                 NcDebug.LogWarning("Korean build is not supported.");
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
                 return;
             }
 

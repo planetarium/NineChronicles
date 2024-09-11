@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -105,14 +106,14 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
                 AudioController.PlayClick();
             });
 
             CloseWidget = () =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             };
 
             speechBubble.SetKey("SPEECH_COMBINE_EQUIPMENT_");

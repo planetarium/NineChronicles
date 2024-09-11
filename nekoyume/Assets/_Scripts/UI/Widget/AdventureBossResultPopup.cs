@@ -196,10 +196,10 @@ namespace Nekoyume.UI
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
             ShowLoadingConstantly().Forget();
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
@@ -223,10 +223,10 @@ namespace Nekoyume.UI
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
             ShowLoadingConstantly().Forget();
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);

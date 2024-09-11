@@ -747,7 +747,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 yield break;
             }
@@ -784,7 +784,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 yield break;
             }
@@ -875,7 +875,7 @@ namespace Nekoyume.UI
 
         private async UniTask CoGoToNextStageClose(BattleLog log)
         {   
-            if (Find<Menu>().IsActive())
+            if (Find<LobbyMenu>().IsActive())
             {
                 return;
             }
@@ -896,9 +896,7 @@ namespace Nekoyume.UI
 
         private void CloseWithBattle()
         {            
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
-            Game.Event.OnRoomEnter.Invoke(true);
+            Lobby.Enter(true);
             Close();
         }
 
@@ -922,10 +920,10 @@ namespace Nekoyume.UI
             {
                 var worldMapLoading = Find<LoadingScreen>();
                 worldMapLoading.Show(LoadingScreen.LoadingType.Adventure);
-                Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+                Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
                 {
                     Find<HeaderMenuStatic>().Show();
-                    Find<Menu>().Close();
+                    Find<LobbyMenu>().Close();
                     Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
                     worldMapLoading.Close(true);
                 });
@@ -938,7 +936,7 @@ namespace Nekoyume.UI
 
             var worldMapLoading = Find<LoadingScreen>();
             worldMapLoading.Show();
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
@@ -997,7 +995,7 @@ namespace Nekoyume.UI
         {
             CloseWithBattle();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
@@ -1009,7 +1007,7 @@ namespace Nekoyume.UI
         {
             CloseWithBattle();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
@@ -1021,10 +1019,10 @@ namespace Nekoyume.UI
         {
             CloseWithBattle();
 
-            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
-                Find<Menu>().GoToCraftEquipment();
+                Find<LobbyMenu>().GoToCraftEquipment();
             });
         }
 

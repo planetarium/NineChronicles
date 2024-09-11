@@ -283,7 +283,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoShowTutorialRewardScreen()
         {
-            yield return new WaitUntil(() => Widget.Find<Menu>().IsShown);
+            yield return new WaitUntil(() => Widget.Find<LobbyMenu>().IsShown);
 
             var mailRewards = new List<MailReward>();
             foreach (var row in TableSheets.Instance.CreateAvatarItemSheet.Values)
