@@ -198,7 +198,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Menu>());
+            _secondWidgets.Add(Widget.Create<LobbyMenu>());
             yield return null;
 
             _secondWidgets.Add(Widget.Create<MobileShop>());

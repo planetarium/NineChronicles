@@ -87,7 +87,7 @@ namespace Nekoyume.UI
             buffLayout.SetBuff(null);
 
 #if UNITY_ANDROID || UNITY_IOS
-            this.transform.SetSiblingIndex(Widget.Find<Menu>().transform.GetSiblingIndex()+1);
+            transform.SetSiblingIndex(Find<LobbyMenu>().transform.GetSiblingIndex()+1);
 #endif
         }
 
