@@ -267,22 +267,17 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        private void OnLobbyEnter(bool showScreen)
+        private void OnLobbyEnter()
         {
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(OnLobbyEnter)}() enter");
 #endif
-            StartCoroutine(ActLobbyEnter(showScreen));
+            StartCoroutine(ActLobbyEnter());
             BattleRenderer.Instance.IsOnBattle = false;
         }
 
-        private IEnumerator ActLobbyEnter(bool showScreen)
+        private IEnumerator ActLobbyEnter()
         {
-            if (showScreen)
-            {
-                Widget.Find<LoadingScreen>().Show();
-            }
-
             var stage = Game.instance.Stage;
             stage.ClearBattle();
             stage.stageId = 0;
@@ -309,13 +304,6 @@ namespace Nekoyume.Game.Battle
             if (battleResult.IsActive())
             {
                 battleResult.Close();
-            }
-
-            // TODO: 불리는 경우 추적
-            var loadingScreen = Widget.Find<LoadingScreen>();
-            if (loadingScreen.IsActive())
-            {
-                loadingScreen.Close();
             }
 
             var arenaBattleLoadingScreen = Widget.Find<ArenaBattleLoadingScreen>();

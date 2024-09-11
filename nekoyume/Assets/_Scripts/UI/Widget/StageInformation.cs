@@ -95,7 +95,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER"))
                 .AddTo(gameObject);
 
-            Lobby.OnLobbyEnterEvent += b => Close(true);
+            Lobby.OnLobbyEnterEvent += () => Close(true);
         }
 
         private static void ShowTooltip(StageRewardItemView view)

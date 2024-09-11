@@ -121,7 +121,7 @@ namespace Nekoyume.UI
 
             startButton.onClick.AddListener(OnClickStartButton);
 
-            Game.Lobby.OnLobbyEnterEvent += b => Close();
+            Lobby.OnLobbyEnterEvent += () => Close();
             toggle.gameObject.SetActive(GameConfig.IsEditor);
         }
 

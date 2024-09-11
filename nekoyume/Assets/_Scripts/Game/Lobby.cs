@@ -29,9 +29,9 @@ namespace Nekoyume.Game
 
         public readonly ISubject<Object> OnLobbyEnterEnd = new Subject<Object>();
         
-        private static Action<bool>? _onLobbyEnterEnd;
+        private static System.Action? _onLobbyEnterEnd;
         
-        public static event Action<bool>? OnLobbyEnterEvent
+        public static event System.Action? OnLobbyEnterEvent
         {
             add
             {
@@ -47,7 +47,12 @@ namespace Nekoyume.Game
             lobbyMenu.CloseWithOtherWidgets();
             lobbyMenu.Show();
             
-            _onLobbyEnterEnd?.Invoke(showScreen);
+            _onLobbyEnterEnd?.Invoke();
+            
+            if (showScreen)
+            {
+                Widget.Find<LoadingScreen>().Show();
+            }
         }
         
         private void Awake()
@@ -61,12 +66,12 @@ namespace Nekoyume.Game
             _onLobbyEnterEnd = null;
         }
 
-        private void OnLobbyEnter(bool showScreen)
+        private void OnLobbyEnter()
         {
-            OnLobbyEnterAsync(showScreen).Forget();
+            OnLobbyEnterAsync().Forget();
         }
 
-        private async UniTask OnLobbyEnterAsync(bool showScreen)
+        private async UniTask OnLobbyEnterAsync()
         {
             Widget.Find<HeaderMenuStatic>().Close(true);
             
@@ -75,7 +80,17 @@ namespace Nekoyume.Game
             var onFinish = false;
             Character.Set(avatarState, equipments, costumes, () => onFinish = true);
 
+            // Clear Memory
+            Resources.UnloadUnusedAssets();
+            GC.Collect();
+
             await UniTask.WaitUntil(() => onFinish);
+            
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            if (loadingScreen.IsActive())
+            {
+                loadingScreen.Close();
+            }
             
             Character.EnterLobby();
             Widget.Find<LobbyMenu>().EnterLobby();
@@ -95,10 +110,6 @@ namespace Nekoyume.Game
 
             OnLobbyPopup();
             OnLobbyEnterEnd.OnNext(this);
-
-            // Clear Memory
-            Resources.UnloadUnusedAssets();
-            GC.Collect();
         }
 
         private void OnLobbyPopup()
