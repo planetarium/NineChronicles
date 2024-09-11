@@ -82,6 +82,8 @@ namespace Nekoyume.UI
 
         private System.Action YesCallback { get; set; }
 
+        private PopupType _type;
+
         protected override void Awake()
         {
             base.Awake();
@@ -95,6 +97,7 @@ namespace Nekoyume.UI
 
         private void SetPopupType(PopupType popupType)
         {
+            _type = popupType;
             switch (popupType)
             {
                 case PopupType.AttractAction:
@@ -735,7 +738,7 @@ namespace Nekoyume.UI
         {
             base.Close();
 
-            if (BattleRenderer.Instance.IsOnBattle)
+            if (_type == PopupType.AttractAction && BattleRenderer.Instance.IsOnBattle)
             {
                 Lobby.Enter(true);
                 
