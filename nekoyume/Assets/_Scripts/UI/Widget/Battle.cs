@@ -210,8 +210,6 @@ namespace Nekoyume.UI
                     exitToggle.gameObject.SetActive(false);
                     Find<HeaderMenuStatic>().Close(true);
                     break;
-                default:
-                    break;
             }
 
             bossStatus.Close();

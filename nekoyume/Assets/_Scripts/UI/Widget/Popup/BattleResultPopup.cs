@@ -905,23 +905,6 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void NextMimisbrunnrStage(BattleLog log)
-        {
-            StartCoroutine(CoGoToNextMimisbrunnrStageClose(log));
-        }
-
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(BattleLog log)
-        {
-            if (Find<LobbyMenu>().IsActive())
-            {
-                yield break;
-            }
-
-            yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
-            yield return StartCoroutine(CoFadeOut());
-            Close();
-        }
-
         private void GoToMain(bool worldClear)
         {
             var props = new Dictionary<string, Value>()
@@ -937,8 +920,6 @@ namespace Nekoyume.UI
             evt.SetValue(Game.Game.instance.Stage.stageId);
             AirbridgeUnity.TrackEvent(evt);
 
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
             Lobby.Enter(true);
             Close();
 
@@ -958,8 +939,6 @@ namespace Nekoyume.UI
 
         private void GoToPreparation()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
             Lobby.Enter(true);
             Close();
 
@@ -1022,8 +1001,6 @@ namespace Nekoyume.UI
 
         private void GoToMarket()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
             Lobby.Enter(true);
             Close();
 
@@ -1037,8 +1014,6 @@ namespace Nekoyume.UI
 
         private void GoToProduct()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
             Lobby.Enter(true);
             Close();
 
@@ -1052,8 +1027,6 @@ namespace Nekoyume.UI
 
         private void GoToCraft()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
             Lobby.Enter(true);
             Close();
 
@@ -1066,8 +1039,6 @@ namespace Nekoyume.UI
 
         private void GoToFood()
         {
-            Find<Battle>().Close(true);
-            Game.Game.instance.Stage.ReleaseBattleAssets();
             Lobby.Enter(true);
             Close();
 

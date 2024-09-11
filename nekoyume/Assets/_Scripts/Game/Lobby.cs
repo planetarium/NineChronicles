@@ -11,7 +11,6 @@ using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Events;
 using Object = UnityEngine.Object;
 
 namespace Nekoyume.Game
@@ -100,6 +99,7 @@ namespace Nekoyume.Game
             ActionRenderHandler.Instance.Pending = false;
             
             await UniTask.Delay(TimeSpan.FromSeconds(1f));
+            
             Widget.Find<Status>().Show();
             Widget.Find<EventBanner>().Show();
             var headerMenu = Widget.Find<HeaderMenuStatic>();

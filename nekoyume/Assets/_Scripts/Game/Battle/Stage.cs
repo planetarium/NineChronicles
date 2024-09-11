@@ -272,6 +272,7 @@ namespace Nekoyume.Game.Battle
 #if TEST_LOG
             NcDebug.Log($"[{nameof(Stage)}] {nameof(OnLobbyEnter)}() enter");
 #endif
+            Game.instance.Stage.ReleaseBattleAssets();
             StartCoroutine(ActLobbyEnter());
             BattleRenderer.Instance.IsOnBattle = false;
         }
