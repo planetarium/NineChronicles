@@ -180,8 +180,6 @@ namespace Nekoyume.UI
                         L10nManager.Localize("ERROR_ACTION_POINT"),
                         NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
-
-            Lobby.OnLobbyEnterEvent += () => Close();
         }
 
         public void Show(

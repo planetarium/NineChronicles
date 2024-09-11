@@ -283,33 +283,9 @@ namespace Nekoyume.Game.Battle
             stage.stageId = 0;
 
             yield return new WaitForEndOfFrame();
-            if (!(stage.AvatarState is null))
+            if (stage.AvatarState is not null)
             {
-                ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(stage.AvatarState);
-            }
-
-            var stageLoadingScreen = Widget.Find<StageLoadingEffect>();
-            if (stageLoadingScreen.IsActive())
-            {
-                stageLoadingScreen.Close();
-            }
-
-            var battle = Widget.Find<UI.Battle>();
-            if (battle.IsActive())
-            {
-                battle.Close(true);
-            }
-
-            var battleResult = Widget.Find<BattleResultPopup>();
-            if (battleResult.IsActive())
-            {
-                battleResult.Close();
-            }
-
-            var arenaBattleLoadingScreen = Widget.Find<ArenaBattleLoadingScreen>();
-            if (arenaBattleLoadingScreen.IsActive())
-            {
-                arenaBattleLoadingScreen.Close();
+                ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(stage.AvatarState).Forget();
             }
         }
 
