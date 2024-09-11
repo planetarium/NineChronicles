@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI cpTopPercentText;
 
         [SerializeField]
-        private List<CustomCraftCpOptionView> optionViews;
+        private List<CoveredItemOptionView> optionViews;
 
         [SerializeField]
         private CoveredItemOptionView skillView;
@@ -51,17 +51,32 @@ namespace Nekoyume.UI.Module
                 var cp = (long)CPHelper.GetStatCP(stat.StatType, stat.AdditionalValue,
                     States.Instance.CurrentAvatarState.level);
                 cpSum += cp;
-                view.UpdateView(cp, stat);
+                if(view is CustomCraftCpOptionView cpView)
+                {
+                    cpView.UpdateView(cp, stat);
+                }
+                else
+                {
+                    view.UpdateView($"{stat.StatType} {stat.AdditionalValueAsLong}", "");
+                }
+
                 view.Show();
             }
 
             var skill = resultEquipment.Skills.First();
             var powerText = SkillExtensions.EffectToString(skill.SkillRow.Id, skill.SkillRow.SkillType, skill.Power, skill.StatPowerRatio, skill.ReferencedStatType);
             skillView.UpdateAsSkill(skill.SkillRow.GetLocalizedName(), powerText, skill.Chance);
-            optionCpText.SetText($"{cpSum}");
-            var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
-            var cpRatingPercent = (int)Math.Max(100 - cpSum / (float) relationshipRow.MaxCp * 100, 1);
-            cpTopPercentText.SetText(L10nManager.Localize("UI_TOP_N_PERCENT_FORMAT", cpRatingPercent));
+            if (cpTopPercentText)
+            {
+                var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
+                var cpRatingPercent = (int)Math.Max(100 - cpSum / (float) relationshipRow.MaxCp * 100, 1);
+                cpTopPercentText.SetText(L10nManager.Localize("UI_TOP_N_PERCENT_FORMAT", cpRatingPercent));
+                optionCpText.SetText($"{cpSum}");
+            }
+            else
+            {
+                optionCpText.SetText($"CP {cpSum}");
+            }
         }
     }
 }
