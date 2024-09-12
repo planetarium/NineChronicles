@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.Item;
-using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
