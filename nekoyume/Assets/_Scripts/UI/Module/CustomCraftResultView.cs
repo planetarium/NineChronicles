@@ -34,17 +34,20 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private CoveredItemOptionView skillView;
 
+        private int _statCount;
+
         public void Show(Equipment resultEquipment)
         {
             itemView.SetData(resultEquipment);
             itemNameText.SetText(resultEquipment.GetLocalizedName());
             baseStatText.SetText($"{resultEquipment.Stat.StatType} {resultEquipment.Stat.BaseValueAsLong}");
             optionViews.ForEach(view => view.Hide(true));
+            skillView.Hide(true);
 
             long cpSum = 0;
             var additionalStats = resultEquipment.StatsMap.GetAdditionalStats().ToList();
-            var statCount = additionalStats.Count;
-            for (var i = 0; i < statCount; i++)
+            _statCount = additionalStats.Count;
+            for (var i = 0; i < _statCount; i++)
             {
                 var stat = additionalStats[i];
                 var view = optionViews[i];
@@ -59,8 +62,6 @@ namespace Nekoyume.UI.Module
                 {
                     view.UpdateView($"{stat.StatType} {stat.AdditionalValueAsLong}", "");
                 }
-
-                view.Show();
             }
 
             var skill = resultEquipment.Skills.First();
@@ -77,6 +78,19 @@ namespace Nekoyume.UI.Module
             {
                 optionCpText.SetText($"CP {cpSum}");
             }
+        }
+
+        public void ShowStatView(int index)
+        {
+            if (index < _statCount)
+            {
+                optionViews[index].Show();
+            }
+        }
+
+        public void ShowSkillView()
+        {
+            skillView.Show();
         }
     }
 }
