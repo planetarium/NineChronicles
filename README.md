@@ -41,10 +41,21 @@ Any contributions are welcome. Please check [here](CONTRIBUTING.md).
 
 
 ## License
-Lib9c is under GNU GPL3 license. For details, Please check our [LICENSE](LICENSE).
+Nine Chronicles is under GNU GPL3 license. For details, Please check our [LICENSE](LICENSE).
 
 
- ### Nine Chronicles Developer Portal
+## Design Resources License
+The design resources (e.g., in-game icons, NPC images, UI elements) are not covered under the AGPL license. Instead, the following brand guideline applies:
+
+### Usage Permissions
+#### Non-commercial use: Design resources can be freely used for derivative works that contribute to the expansion of the Nine Chronicles ecosystem.
+#### Commercial use restriction: Use of design resources in commercial works unrelated to the Nine Chronicles ecosystem is not permitted.
+### Restrictions on Modification and Use:
+#### No commercial use: Resources cannot be used for commercial purposes if they are unrelated to the Nine Chronicles ecosystem.
+#### Proper use required: The resources should not be used in inappropriate content or in ways that could damage the brand's value.
+
+
+ ## Nine Chronicles Developer Portal
 For a comprehensive overview of the game, development resources, and documentation, visit the [Nine Chronicles Developer Portal]. The portal provides insights into the game’s decentralized nature, blockchain mechanics, and various guides for developers and players alike.
 
 [Nine Chronicles Developer Portal]: https://nine-chronicles.dev/
