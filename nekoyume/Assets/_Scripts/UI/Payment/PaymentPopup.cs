@@ -406,7 +406,7 @@ namespace Nekoyume.UI
             Show(popupTitle, checkCostMessage, yes, no, false);
         }
 
-        public void ShowCheckPaymentApPortion(BigInteger cost)
+        public void ShowCheckPaymentApPortion(BigInteger cost, System.Action onPaymentSucceed)
         {
             SetPopupType(PopupType.PaymentCheck);
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
@@ -425,7 +425,7 @@ namespace Nekoyume.UI
                 if (enoughBalance)
                 {
                     Close(true);
-                    ActionPoint.ChargeAP();
+                    onPaymentSucceed?.Invoke();
                 }
                 else
                 {

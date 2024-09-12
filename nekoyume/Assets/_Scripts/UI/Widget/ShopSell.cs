@@ -29,6 +29,8 @@ namespace Nekoyume.UI
 
     public class ShopSell : Widget
     {
+        private const int APCost = 5;
+        
         [SerializeField]
         private Inventory inventory;
 
@@ -65,7 +67,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_SHOP_UPDATESELLALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    CostType.ActionPoint, 5,
+                    CostType.ActionPoint, APCost,
                     state => SubscribeConditionalButtonForChargeAp(state, 
                         "UI_SHOP_UPDATESELLALL",
                         SubscribeReRegisterProduct));
@@ -76,7 +78,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_SHOP_CANCELLATIONALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    CostType.ActionPoint, 5,
+                    CostType.ActionPoint, APCost,
                     state => SubscribeConditionalButtonForChargeAp(state, 
                         "UI_SHOP_CANCELLATIONALL", 
                         SubscribeCancelProductRegistration));
@@ -179,12 +181,18 @@ namespace Nekoyume.UI
             {
                 var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
                 tooltip.Show(model, apStoneCount,
-                    state => SubscribeConditionalButtonForChargeAp(state, 
-                        "UI_RETRIEVE",
-                        chargeAp => ShowReRegisterProductPopup(model, chargeAp)),
-                    state => SubscribeConditionalButtonForChargeAp(state, "" +
-                        "UI_REREGISTER",
-                        chargeAp => ShowRetrievePopup(model, chargeAp)),
+                    state =>
+                    {
+                        SubscribeConditionalButtonForChargeAp(state,
+                            "UI_RETRIEVE",
+                            chargeAp => ShowReRegisterProductPopup(model, chargeAp));
+                    },
+                    state =>
+                    {
+                        SubscribeConditionalButtonForChargeAp(state, 
+                            "UI_REREGISTER",
+                            chargeAp => ShowRetrievePopup(model, chargeAp));
+                    },
                     view.ClearSelectedItem);
             }
             else
@@ -220,15 +228,7 @@ namespace Nekoyume.UI
                         paymentPopup.ShowLackApPortion(1);
                         break;
                     }
-
-                    var confirm = Find<IconAndButtonSystem>();
-                    confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                        L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
-                            L10nManager.Localize(key), apStoneCount),
-                        L10nManager.Localize("UI_OK"),
-                        L10nManager.Localize("UI_CANCEL"),
-                        false, IconAndButtonSystem.SystemType.Information);
-                    confirm.ConfirmCallback = () => action(true);
+                    paymentPopup.ShowCheckPaymentApPortion(APCost, () => action(true));
                     break;
                 case ConditionalButton.State.Disabled:
                     break;
