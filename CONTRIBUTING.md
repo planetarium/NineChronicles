@@ -86,6 +86,32 @@ Command Line Options
  - `--auto-play`         : automatically generate character and enter battle stage in the background.
  - `--console-sink`      : print logs on console.
  - `--development`       : run in development mode. Shows debugging UI and log level configuration.
+ - `--maintenance`       : enable maintenance mode.
+ - `--testEnd`           : indicates that a test has ended.
+ - `--app-protocol-version`: version of the app protocol to use.
+ - `--trusted-app-protocol-version-signer`: trusted signers for app protocol version updates.
+ - `--language`          : select language to use.
+ - `--aws-sink-guid`     : AWS CloudWatch logging GUID (optional in development mode, required in production).
+ - `--api-server-host`   : host for internal API client.
+ - `--on-boarding-host`  : host for on-boarding server.
+ - `--sentry-sample-rate`: sample rate for Sentry error reporting.
+ - `--market-service-host`: host for market service.
+ - `--mead-pledge-portal-url`: URL for the Mead pledge portal.
+ - `--iap-service-host`  : host for in-app purchase service.
+ - `--ingame-debug-console`: enable in-game debug console.
+ - `--arena-service-host`: host for arena service.
+ - `--patrol-reward-service-host`: host for patrol reward service.
+ - `--season-pass-service-host`: host for season pass service.
+ - `--google-market-url` : Google market URL.
+ - `--apple-market-url`  : Apple market URL.
+ - `--required-update`   : flag to enforce a required update.
+ - `--guild-service-url` : URL for guild service (deprecated).
+ - `--guild-icon-bucket` : S3 bucket URL for guild icons.
+ - `--enable-guest-login`: enable guest login functionality.
+ - `--mixpanel-debug-error`: enable Mixpanel debug logging for errors.
+ - `--mixpanel-debug-assert`: enable Mixpanel debug logging for assertions.
+ - `--mixpanel-debug-exception`: enable Mixpanel debug logging for exceptions.
+ - `--mixpanel-debug-warning`: enable Mixpanel debug logging for warnings.
 
 #### Using Command Line Options on Unity Editor
 
@@ -94,16 +120,19 @@ To use the above command line options on Unity Editor or on build player, `Asset
 ```
 {
    "privateKey": "",
-   "host": "127.0.0.1",
-   "port": 5555,
-   "noMiner": true,
-   "peers": ["02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1,nekoyume1.koreacentral.cloudapp.azure.com,58598"]
+   "noMiner": false,
 }
 ```
 
-- `Assets/StreamingAssets/clo.json` is excluded from version control.
-  - `Assets/StreamingAssets/clo_nekoalpha_nominer.json` could be provided as a preset. To use this file, change the name to `clo.json`.
+#### Local Setup Guide for `clo.json`
 
+- The file `Assets/StreamingAssets/clo.json` is excluded from version control.
+- To set up your local environment, create an empty `clo.json` file like this:
+
+```json
+{}
+```
+- This empty file ensures the project can run locally without requiring the actual content of clo.json in version control.
 
 ### Command Line Build
 
