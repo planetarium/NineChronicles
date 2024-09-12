@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.ApiClient;
@@ -142,11 +143,10 @@ namespace Nekoyume.UI
                     .OrderBy(row => row.CircleAmount + row.ScrollAmount).First();
                 var relationshipRow = tableSheets.CustomEquipmentCraftRelationshipSheet.OrderedList!
                     .First(row => row.Relationship >= ReactiveAvatarState.Relationship);
-                var costRow = tableSheets.CustomEquipmentCraftCostSheet.Values
-                    .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship);
 
                 var (ncgCost, materialCosts) = CustomCraftHelper.CalculateCraftCost(
-                    0, tableSheets.MaterialItemSheet, recipeRow, relationshipRow, costRow,
+                    0, (int)ReactiveAvatarState.Relationship, tableSheets.MaterialItemSheet, recipeRow,
+                    relationshipRow,
                     States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
                 );
 
@@ -385,7 +385,7 @@ namespace Nekoyume.UI
 
             var tableSheets = TableSheets.Instance;
             var relationshipRow = tableSheets.CustomEquipmentCraftRelationshipSheet
-                .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
+                .OrderedList.Last(row => row.Relationship <= ReactiveAvatarState.Relationship);
             _selectedItemId = relationshipRow.GetItemId(_selectedSubType!.Value);
             var equipmentItemSheet = tableSheets.EquipmentItemSheet;
             var equipmentRow = equipmentItemSheet[_selectedItemId];
@@ -424,14 +424,12 @@ namespace Nekoyume.UI
                     .Subscribe(index => routine(index));
             }
 
-            var additionalCostRow = tableSheets.CustomEquipmentCraftCostSheet.Values
-                .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship);
-            var (_, materialCosts) = CustomCraftHelper.CalculateCraftCost(
+            var (ncg, materialCosts) = CustomCraftHelper.CalculateCraftCost(
                 iconId,
+                (int)ReactiveAvatarState.Relationship,
                 tableSheets.MaterialItemSheet,
                 customEquipmentCraftRecipeRow,
                 relationshipRow,
-                null,
                 States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
             );
 
@@ -439,20 +437,26 @@ namespace Nekoyume.UI
                     new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value))
                 .ToList(),
                 randomOnly,
-                additionalCostRow);
+                (long)ncg);
         }
 
-        private void SetCostAndMaterial(List<EquipmentItemSubRecipeSheet.MaterialInfo> materials, bool randomOnly, CustomEquipmentCraftCostSheet.Row additionalCostRow = null)
+        private void SetCostAndMaterial(List<EquipmentItemSubRecipeSheet.MaterialInfo> materials, bool randomOnly, long ncgCost)
         {
-            var ncgCost = additionalCostRow != null ? (long) additionalCostRow.GoldAmount : 0L;
             requiredItemRecipeView.SetData(
                 materials,
                 true);
-            if (additionalCostRow != null)
+            if (ncgCost != 0)
             {
+                var scrollItemId = TableSheets.Instance.MaterialItemSheet.OrderedList!
+                    .First(row => row.ItemSubType == ItemSubType.Scroll).Id;
+                var circleItemId = TableSheets.Instance.MaterialItemSheet.OrderedList!
+                    .First(row => row.ItemSubType == ItemSubType.Circle).Id;
                 var costs = new List<ConditionalCostButton.CostParam>
                     {new(CostType.NCG, ncgCost)};
-                costs.AddRange(additionalCostRow.MaterialCosts.Select(cost => new ConditionalCostButton.CostParam((CostType) cost.ItemId, cost.Amount)));
+                costs.AddRange(materials
+                    .Where(item => item.Id != scrollItemId && item.Id != circleItemId)
+                    .Select(cost =>
+                        new ConditionalCostButton.CostParam((CostType) cost.Id, cost.Count)));
                 conditionalCostButton.SetCost(costs);
             }
             else
