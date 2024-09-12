@@ -111521,6 +111521,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
         type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
+        type: 3}
       propertyPath: m_Particles.Array.data[0]
       value: 
       objectReference: {fileID: 0}
@@ -113310,6 +113315,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
         type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
+        type: 3}
       propertyPath: m_Particles.Array.data[0]
       value: 
       objectReference: {fileID: 0}
@@ -113494,6 +113504,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
         type: 3}
+      propertyPath: m_ResetScaleOnEnable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
+        type: 3}
       propertyPath: m_Particles.Array.data[0]
       value: 
       objectReference: {fileID: 0}
@@ -113669,6 +113684,11 @@ PrefabInstance:
     - target: {fileID: 7131509589717367904, guid: 5d868248d41888644bba6cbfa759c9f0,
         type: 3}
       propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
+        type: 3}
+      propertyPath: m_ResetScaleOnEnable
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8744368677755501508, guid: 5d868248d41888644bba6cbfa759c9f0,
