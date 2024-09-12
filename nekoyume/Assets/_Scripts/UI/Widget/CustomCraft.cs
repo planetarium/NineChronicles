@@ -115,16 +115,21 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private CustomEquipmentStatView statView;
+
+        [SerializeField]
+        private GameObject relationshipInfoPopupObject;
 #endregion
 
         private CustomOutfit _selectedOutfit;
         private ItemSubType? _selectedSubType;
         private SubmittableState _submittableState;
         private int _selectedItemId;
+        private IDisposable _outfitAnimationDisposable;
 
         private readonly List<IDisposable> _disposables = new();
-        private IDisposable _outfitAnimationDisposable;
         private readonly ConcurrentDictionary<int, long> _craftCountDict = new();
+
+        private const string RelationshipInfoKey = "RELATIONSHIP-INFO-{0}";
 
         public bool RequiredUpdateCraftCount { get; set; }
 
@@ -230,9 +235,14 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnOutfitSelected(_selectedOutfit))
                 .AddTo(_disposables);
             ReactiveAvatarState.ObservableRelationship
-                .Subscribe(relationship => relationshipGaugeView.Set(
-                    relationship,
-                    TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.First(row => row.Relationship >= relationship).Relationship))
+                .Subscribe(relationship =>
+                {
+                    relationshipGaugeView.Set(
+                        relationship,
+                        TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList
+                            .First(row => row.Relationship >= relationship).Relationship);
+                    ShowRelationshipInfoPopup(relationship);
+                })
                 .AddTo(_disposables);
             LoadingHelper.CustomEquipmentCraft
                 .SubscribeTo(buttonBlockerObject)
@@ -558,6 +568,23 @@ namespace Nekoyume.UI
             Push();
             yield return new WaitForSeconds(.5f);
             loadingScreen.AnimateNPC();
+        }
+
+        private void ShowRelationshipInfoPopup(long relationship)
+        {
+            var key = string.Format(RelationshipInfoKey, relationship);
+            if (PlayerPrefs.HasKey(key))
+            {
+                return;
+            }
+
+            if (TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values.All(row => row.Relationship != relationship))
+            {
+                return;
+            }
+
+            relationshipInfoPopupObject.SetActive(true);
+            PlayerPrefs.SetString(key, string.Empty);
         }
     }
 }
