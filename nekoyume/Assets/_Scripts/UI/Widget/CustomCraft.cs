@@ -576,12 +576,20 @@ namespace Nekoyume.UI
 
         private void ShowRelationshipInfoPopup(long relationship)
         {
+            // 맨 처음엔 보여줄 필요가 없다.
+            if (relationship == 0)
+            {
+                return;
+            }
+
+            // 이미 보여준 경우엔 안보여줘도 됨
             var key = string.Format(RelationshipInfoKey, relationship);
             if (PlayerPrefs.HasKey(key))
             {
                 return;
             }
 
+            // 친밀도 구간이 넘어간 직후가 아니라면 안띄워도 됨
             if (TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values.All(row => row.Relationship != relationship))
             {
                 return;
