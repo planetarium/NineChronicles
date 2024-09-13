@@ -23,6 +23,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Model;
 using UnityEngine.Serialization;
 using Toggle = UnityEngine.UI.Toggle;
 
@@ -288,7 +289,7 @@ namespace Nekoyume.UI
                 false,
                 true,
                 null,
-                new List<FungibleAssetValue>());
+                new WorldBossRewards());
 
             raidStage.Play(raidStartData);
 
