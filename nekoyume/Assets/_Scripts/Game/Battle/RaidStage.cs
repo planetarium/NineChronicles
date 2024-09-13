@@ -19,6 +19,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
@@ -40,8 +41,8 @@ namespace Nekoyume.Game.Battle
             public long DamageDealt;
             public bool IsNewRecord;
             public bool IsPractice;
-            public List<FungibleAssetValue> BattleRewards;
-            public List<FungibleAssetValue> KillRewards;
+            public WorldBossRewards BattleRewards;
+            public WorldBossRewards KillRewards;
 
             public RaidStartData(
                 Address avatarAddress,
@@ -51,8 +52,8 @@ namespace Nekoyume.Game.Battle
                 long damageDealt,
                 bool isNewRecord,
                 bool isPractice,
-                List<FungibleAssetValue> battleRewards,
-                List<FungibleAssetValue> killRewards)
+                WorldBossRewards battleRewards,
+                WorldBossRewards killRewards)
             {
                 AvatarAddress = avatarAddress;
                 BossId = bossId;
@@ -256,8 +257,8 @@ namespace Nekoyume.Game.Battle
             long damageDealt,
             bool isNewRecord,
             bool isPractice,
-            List<FungibleAssetValue> rewards,
-            List<FungibleAssetValue> killRewards)
+            WorldBossRewards rewards,
+            WorldBossRewards killRewards)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);

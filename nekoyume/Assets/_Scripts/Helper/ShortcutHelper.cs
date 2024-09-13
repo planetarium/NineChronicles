@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
@@ -284,7 +285,7 @@ namespace Nekoyume.Helper
                     {
                         caller.CloseWithOtherWidgets();
                         Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                        Widget.Find<MobileShop>().ShowAsTab(categoryName);
+                        Widget.Find<MobileShop>().ShowAsTab(categoryName).Forget();
                     };
                     guideText = L10nManager.Localize("UI_SHOP_MOBILE");
                     break;

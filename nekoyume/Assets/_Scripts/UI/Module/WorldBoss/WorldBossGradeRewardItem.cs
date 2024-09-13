@@ -23,16 +23,20 @@ namespace Nekoyume.UI.Module.WorldBoss
         private TextMeshProUGUI crystalCountText;
 
         [SerializeField]
+        private TextMeshProUGUI circleCountText;
+
+        [SerializeField]
         private GameObject received;
 
         [SerializeField]
         private GameObject active;
 
-        public void Set(int score, int runeCount, int crystalCount)
+        public void Set(int score, int runeCount, int crystalCount, int circleCount)
         {
             scoreText.text = $"{score:#,0}";
-            runeCountText.text = $"{runeCount:#,0}";
-            crystalCountText.text = $"{crystalCount:#,0}";
+            runeCountText.text = runeCount.ToCurrencyNotation();
+            crystalCountText.text = crystalCount.ToCurrencyNotation();
+            circleCountText.text = circleCount.ToCurrencyNotation();
         }
 
         public void SetStatus(Status status)

@@ -40,6 +40,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -919,10 +920,6 @@ namespace Nekoyume.Blockchain
                 {
                     case CombinationConsumable5.ResultModel combineResultModel:
                     {
-                        LocalLayerModifier.AddNewResultAttachmentMail(
-                            avatarAddress,
-                            combineResultModel.id,
-                            currentBlockIndex);
                         if (combineResultModel.itemUsable is Equipment equipment)
                         {
                             var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
@@ -940,12 +937,23 @@ namespace Nekoyume.Blockchain
                             {
                                 formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                             }
+
+                            // CustomEquipmentCraft 액션으로 만들어진 장비의 경우, AddNewResultAttachmentMail 대신 AddNewMail을 써야합니다.
+                            if (equipment.ByCustomCraft)
+                            {
+                                LocalLayerModifier.AddNewMail(avatarAddress, result.id);
+                                break;
+                            }
                         }
                         else
                         {
                             formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                         }
 
+                        LocalLayerModifier.AddNewResultAttachmentMail(
+                            avatarAddress,
+                            combineResultModel.id,
+                            currentBlockIndex);
                         break;
                     }
                     case ItemEnhancement13.ResultModel enhancementResultModel:
@@ -3064,7 +3072,7 @@ namespace Nekoyume.Blockchain
 
             await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
-            var killRewards = new List<FungibleAssetValue>();
+            var killRewards = new WorldBossRewards();
             if (latestBossLevel < raiderState.LatestBossLevel)
             {
                 if (preKillReward != null && preKillReward.IsClaimable(raiderState.LatestBossLevel))
@@ -3081,16 +3089,17 @@ namespace Nekoyume.Blockchain
 
                     foreach (var level in filtered)
                     {
-                        var rewards = RuneHelper.CalculateReward(
+                        var rewards = WorldBossHelper.CalculateReward(
                             rank,
                             row.BossId,
                             Game.Game.instance.TableSheets.RuneWeightSheet,
                             Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
                             Game.Game.instance.TableSheets.RuneSheet,
+                            Game.Game.instance.TableSheets.MaterialItemSheet,
                             random
                         );
 
-                        killRewards.AddRange(rewards);
+                        killRewards.Assets.AddRange(rewards.assets);
                     }
                 }
             }
@@ -3108,7 +3117,7 @@ namespace Nekoyume.Blockchain
                 simulator.DamageDealt,
                 isNewRecord,
                 false,
-                simulator.AssetReward,
+                new WorldBossRewards(simulator.AssetReward, simulator.Reward),
                 killRewards);
 
             Game.Game.instance.RaidStage.Play(raidStartData);
@@ -4294,7 +4303,7 @@ namespace Nekoyume.Blockchain
                     result.gold);
             });
 
-            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.AddNewMail(avatarAddress, result.id);
 
             // Notify
             var message = L10nManager.Localize(

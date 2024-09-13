@@ -1,9 +1,6 @@
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Scroller;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -49,35 +46,10 @@ namespace Nekoyume.UI.Module
         private List<GameObject> costParents = null;
 
         private readonly Dictionary<CostType, long> _costMap = new();
-
-        public long CrystalCost =>
-            _costMap.TryGetValue(CostType.Crystal, out var cost)
+        
+        public long GetCost(CostType type) =>
+            _costMap.TryGetValue(type, out var cost)
                 ? cost
-                : 0L;
-        
-        public long NcgCost =>
-            _costMap.TryGetValue(CostType.NCG, out var cost)
-                ? cost
-                : 0L;
-
-        public int ArenaTicketCost =>
-            _costMap.TryGetValue(CostType.ArenaTicket, out var cost)
-                ? (int)cost
-                : 0;
-
-        public int EventDungeonTicketCost =>
-            _costMap.TryGetValue(CostType.EventDungeonTicket, out var cost)
-                ? (int)cost
-                : 0;
-        
-        public int ActionPointCost =>
-            _costMap.TryGetValue(CostType.ActionPoint, out var cost)
-                ? (int)cost
-                : 0;
-        
-        public int ApPortionCost =>
-            _costMap.TryGetValue(CostType.ApPotion, out var cost)
-                ? (int)cost
                 : 0;
 
         public void SetCost(params CostParam[] costs)
@@ -171,7 +143,10 @@ namespace Nekoyume.UI.Module
                     case CostType.ActionPoint:
                     case CostType.Hourglass:
                     case CostType.ApPotion:
+                    case CostType.SilverDust:
                     case CostType.GoldDust:
+                    case CostType.RubyDust:
+                    case CostType.EmeraldDust:
                         break;
                     default:
                         return CostType.None;
@@ -204,13 +179,21 @@ namespace Nekoyume.UI.Module
                 case CostType.GoldDust:
                 case CostType.RubyDust:
                 case CostType.EmeraldDust:
-                    var inventory = States.Instance.CurrentAvatarState.inventory;
+                    var inventory = States.Instance.CurrentAvatarState?.inventory;
+                    if (inventory == null)
+                    {
+                        return false;
+                    }
                     var count = inventory.GetMaterialCount((int)type);
                     return count >= cost;
                 case CostType.Hourglass:
                 case CostType.ApPotion:
                     var blockIndex = Game.Game.instance.Agent.BlockIndex;
-                    inventory = States.Instance.CurrentAvatarState.inventory;
+                    inventory = States.Instance.CurrentAvatarState?.inventory;
+                    if (inventory == null)
+                    {
+                        return false;
+                    }
                     count = inventory.GetUsableItemCount(type, blockIndex);
                     return count >= cost;
                 default:
@@ -229,33 +212,32 @@ namespace Nekoyume.UI.Module
             if (showCostAlert)
             {
                 var paymentPopup = Widget.Find<PaymentPopup>();
-                switch (CheckCost())
+                var costType = CheckCost();
+                var cost = GetCost(costType);
+                switch (costType)
                 {
                     case CostType.None:
                         break;
                     case CostType.NCG:
-                        paymentPopup.ShowLackPaymentNCG(NcgCost.ToString());
+                        paymentPopup.ShowLackPaymentNCG(cost.ToString());
                         break;
                     case CostType.Crystal:
-                        paymentPopup.ShowLackPaymentCrystal(CrystalCost);
+                        paymentPopup.ShowLackPaymentCrystal(cost);
                         break;
                     case CostType.ActionPoint:
-                        paymentPopup.ShowCheckPaymentApPortion(ActionPointCost);
+                        paymentPopup.ShowCheckPaymentApPortion(cost);
                         break;
                     case CostType.Hourglass:
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowLackHourglass(cost);
                         break;
                     case CostType.ApPotion:
-                        paymentPopup.ShowLackApPortion(ApPortionCost);
+                        paymentPopup.ShowLackApPortion(cost);
                         break;
+                    case CostType.SilverDust:
                     case CostType.GoldDust:
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_NOT_ENOUGH_GOLD_DUST"),
-                            NotificationCell.NotificationType.Alert);
+                    case CostType.RubyDust:
+                    case CostType.EmeraldDust:
+                        paymentPopup.ShowLackPaymentDust(costType, cost);
                         break;
                 }
             }

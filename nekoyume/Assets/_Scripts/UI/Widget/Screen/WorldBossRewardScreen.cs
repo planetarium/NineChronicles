@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
-using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -69,9 +68,8 @@ namespace Nekoyume.UI
         public void Show(IRandom random)
         {
             base.Show();
-            var rewards = GetRewards(random);
             titleText.text = L10nManager.Localize("UI_BOSS_BATTLE_GRADE_REWARDS");
-            UpdateRewardItems(rewards);
+            UpdateRewardItems(GetRewards(random));
             Find<WorldBossDetail>().GotRewards();
 
             graphicAlphaTweener.Play();
@@ -84,7 +82,7 @@ namespace Nekoyume.UI
             _coCloseCoroutine = StartCoroutine(CoClose());
         }
 
-        public void Show(IReadOnlyList<FungibleAssetValue> rewards, System.Action closeCallback)
+        public void Show(WorldBossRewards rewards, System.Action closeCallback)
         {
             base.Show();
             titleText.text = L10nManager.Localize("UI_BOSS_KILL_REWARDS");
@@ -141,36 +139,43 @@ namespace Nekoyume.UI
             Close();
         }
 
-        private List<FungibleAssetValue> GetRewards(IRandom random)
+        private WorldBossRewards GetRewards(IRandom random)
         {
             var runeWeightSheet = Game.Game.instance.TableSheets.RuneWeightSheet;
             var rewardSheet = Game.Game.instance.TableSheets.WorldBossRankRewardSheet;
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            var materialItemSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var characterSheet = Game.Game.instance.TableSheets.WorldBossCharacterSheet;
             var rank = WorldBossHelper.CalculateRank(
                 characterSheet[_cachedBossId],
                 _cachedRaiderState.HighScore);
 
-            var totalRewards = new List<FungibleAssetValue>();
+            var totalRewards = new WorldBossRewards();
             for (var i = _cachedRaiderState.LatestRewardRank; i < rank; i++)
             {
-                var rewards = RuneHelper.CalculateReward(
+                var (assets, materials) = WorldBossHelper.CalculateReward(
                     i + 1,
                     _cachedBossId,
                     runeWeightSheet,
                     rewardSheet,
                     runeSheet,
+                    materialItemSheet,
                     random
                 );
-                totalRewards.AddRange(rewards);
+                totalRewards.Assets.AddRange(assets);
+                foreach (var pair in materials)
+                {
+                    totalRewards.Materials.TryAdd(pair.Key, 0);
+                    totalRewards.Materials[pair.Key] += pair.Value;
+                }
             }
 
             return totalRewards;
         }
 
-        private void UpdateRewardItems(IReadOnlyList<FungibleAssetValue> rewards)
+        private void UpdateRewardItems(WorldBossRewards rewards)
         {
-            var crystalReward = rewards
+            var crystalReward = rewards.Assets
                 .Where(x => x.Currency.Ticker == "CRYSTAL")
                 .Sum(x => MathematicsExtensions.ConvertToInt32(x.GetQuantityString()));
             crystalCountText.text = $"{crystalReward:#,0}";
@@ -181,15 +186,11 @@ namespace Nekoyume.UI
             }
 
             var totalRuneRewards = new Dictionary<string, int>();
-            foreach (var runeReward in rewards.Where(x => x.Currency.Ticker != "CRYSTAL"))
+            foreach (var runeReward in rewards.Assets.Where(x => x.Currency.Ticker != "CRYSTAL"))
             {
                 var key = runeReward.Currency.Ticker;
-                if (!totalRuneRewards.ContainsKey(key))
-                {
-                    totalRuneRewards.Add(key, 0);
-                }
-
                 var count = MathematicsExtensions.ConvertToInt32(runeReward.GetQuantityString());
+                totalRuneRewards.TryAdd(key, 0);
                 totalRuneRewards[key] += count;
             }
 
@@ -202,6 +203,15 @@ namespace Nekoyume.UI
                 {
                     runes[index].Icon.sprite = icon;
                 }
+
+                index++;
+            }
+
+            foreach (var (material, count) in rewards.Materials)
+            {
+                runes[index].Object.SetActive(true);
+                runes[index].Count.text = $"{count:#,0}";
+                runes[index].Icon.sprite = SpriteHelper.GetItemIcon(material.Id);
 
                 index++;
             }

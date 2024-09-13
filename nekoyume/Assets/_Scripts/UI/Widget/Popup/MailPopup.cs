@@ -960,7 +960,7 @@ namespace Nekoyume.UI
             customCraftMail.New = false;
             NcDebug.Log("CombinationMail LocalLayer task completed");
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
-            Find<CombinationResultPopup>().Show(itemUsable);
+            Find<CustomCraftResultScreen>().Show(itemUsable);
         }
 
         [Obsolete]

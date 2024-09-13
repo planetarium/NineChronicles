@@ -373,7 +373,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
                 var balance = States.Instance.CrystalBalance;
-                var cost = _paymentButton.CrystalCost;
+                var cost = _paymentButton.GetCost(CostType.Crystal);
                 var enoughMessageFormat = L10nManager.Localize("UI_ARENA_JOIN_WITH_CRYSTAL_Q");
                 Find<PaymentPopup>().ShowCheckPaymentCrystal(
                     balance.MajorUnit,

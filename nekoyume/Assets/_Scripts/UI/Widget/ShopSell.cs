@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -235,11 +236,11 @@ namespace Nekoyume.UI
 #if UNITY_ANDROID || UNITY_IOS
             Find<MobileShop>().Show();
 #else
-            ShowAsync(ignoreShowAnimation);
+            ShowAsync(ignoreShowAnimation).Forget();
 #endif
         }
 
-        private async void ShowAsync(bool ignoreShowAnimation = false)
+        public async UniTask ShowAsync(bool ignoreShowAnimation = false)
         {
             inventory.SetShop(ShowItemTooltip);
             await ReactiveShopState.RequestSellProductsAsync();

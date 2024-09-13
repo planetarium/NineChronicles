@@ -192,7 +192,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var arenaTicketCost = startButton.ArenaTicketCost;
+            var arenaTicketCost = startButton.GetCost(CostType.ArenaTicket);
             var hasEnoughTickets =
                 RxProps.ArenaTicketsProgress.HasValue &&
                 RxProps.ArenaTicketsProgress.Value.currentTickets >= arenaTicketCost;
