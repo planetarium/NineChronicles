@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityToolbarExtender;
@@ -34,7 +35,8 @@ namespace Nekoyume.Editor
             const string toolTip = "Start IntroScene";
             const string sceneName = "IntroScene";
 
-            var sprite = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/UI/Textures/icon_executable.png");
+            var sprite = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown)
+                .FirstOrDefault();
             if (sprite == null)
             {
                 if (GUILayout.Button(new GUIContent("Intro", toolTip), ToolbarStyles.commandButtonStyle))
