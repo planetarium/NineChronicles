@@ -1,3 +1,4 @@
+using Nekoyume.L10n;
 using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace Nekoyume.UI.Module
             ratingText.text = $"Top {topPercent}%";
             top10Object.SetActive(topPercent <= 10);
 
-            coverText.text = $"{type} Get Random Stats";
+            coverText.text = L10nManager.Localize("UI_GET_RANDOM_STAT", type);
         }
 
         public void UpdateAsSkill(string skillName, string powerString, int totalChance, int topPercent)
@@ -38,7 +39,7 @@ namespace Nekoyume.UI.Module
             ratingText.text = $"Top {topPercent}%";
             top10Object.SetActive(topPercent <= 10);
             
-            coverText.text = $"{skillName} Get Random Skill";
+            coverText.text = L10nManager.Localize("UI_GET_RANDOM_SKILL", skillName);
         }
         
         public override void UpdateToEmpty()
