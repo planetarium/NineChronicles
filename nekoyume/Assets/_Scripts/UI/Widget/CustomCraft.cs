@@ -598,5 +598,10 @@ namespace Nekoyume.UI
             relationshipInfoPopupObject.SetActive(true);
             PlayerPrefs.SetString(key, string.Empty);
         }
+
+        public void TutorialActionShowInfo()
+        {
+            OnOutfitSelected(new CustomOutfit(null));
+        }
     }
 }

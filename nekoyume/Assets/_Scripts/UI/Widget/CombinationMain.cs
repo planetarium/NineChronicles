@@ -198,5 +198,11 @@ namespace Nekoyume.UI
         {
             runeButton.onClick?.Invoke();
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionCustomCraftShow()
+        {
+            customCraftButton.onClick?.Invoke();
+        }
     }
 }

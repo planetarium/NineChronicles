@@ -328,7 +328,9 @@ MonoBehaviour:
     rectTransform: {fileID: 449854588667141351}
   - type: 3
     rectTransform: {fileID: 2825980892997678628}
-  tutorialActions: 51c3000041420f0045420f004e420f00
+  - type: 1000023
+    rectTransform: {fileID: 2127526991923566990}
+  tutorialActions: 51c3000041420f0045420f004e420f0053420f00
   summonButton: {fileID: 3248731447781743755}
   combineButton: {fileID: 6274492408613066932}
   upgradeButton: {fileID: 6274492408546324230}

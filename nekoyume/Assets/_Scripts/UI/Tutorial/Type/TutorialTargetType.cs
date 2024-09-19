@@ -72,7 +72,13 @@ namespace Nekoyume.UI
         ActionPointChargeButton,
         CombinationRuneButton, // Combination -> Rune
         CombinationRuneCombineButton,
-        CombinationRuneLevelBonusArea
+        CombinationRuneLevelBonusArea,
+
+        // 커스텀 제작, 201스테이지, 순서 모르겠어서 일단 맨 밑으로
+        CustomCraftMenu,
+        CustomCraftOutfitScroll,
+        CustomCraftInfo,
+        CustomCraftRelationshipArea
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>
