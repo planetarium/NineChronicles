@@ -34,17 +34,20 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private CoveredItemOptionView skillView;
 
+        private int _statCount;
+
         public void Show(Equipment resultEquipment)
         {
             itemView.SetData(resultEquipment);
             itemNameText.SetText(resultEquipment.GetLocalizedName());
             baseStatText.SetText($"{resultEquipment.Stat.StatType} {resultEquipment.Stat.BaseValueAsLong}");
             optionViews.ForEach(view => view.Hide(true));
+            skillView.Hide(true);
 
             long cpSum = 0;
             var additionalStats = resultEquipment.StatsMap.GetAdditionalStats().ToList();
-            var statCount = additionalStats.Count;
-            for (var i = 0; i < statCount; i++)
+            _statCount = additionalStats.Count;
+            for (var i = 0; i < _statCount; i++)
             {
                 var stat = additionalStats[i];
                 var view = optionViews[i];
@@ -59,8 +62,6 @@ namespace Nekoyume.UI.Module
                 {
                     view.UpdateView($"{stat.StatType} {stat.AdditionalValueAsLong}", "");
                 }
-
-                view.Show();
             }
 
             var skill = resultEquipment.Skills.First();
@@ -68,7 +69,7 @@ namespace Nekoyume.UI.Module
             skillView.UpdateAsSkill(skill.SkillRow.GetLocalizedName(), powerText, skill.Chance);
             if (cpTopPercentText)
             {
-                var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
+                var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.Last(row => row.Relationship <= ReactiveAvatarState.Relationship);
                 var cpRatingPercent = (int)Math.Max(100 - cpSum / (float) relationshipRow.MaxCp * 100, 1);
                 cpTopPercentText.SetText(L10nManager.Localize("UI_TOP_N_PERCENT_FORMAT", cpRatingPercent));
                 optionCpText.SetText($"{cpSum}");
@@ -77,6 +78,19 @@ namespace Nekoyume.UI.Module
             {
                 optionCpText.SetText($"CP {cpSum}");
             }
+        }
+
+        public void ShowStatView(int index)
+        {
+            if (index < _statCount)
+            {
+                optionViews[index].Show();
+            }
+        }
+
+        public void ShowSkillView()
+        {
+            skillView.Show();
         }
     }
 }

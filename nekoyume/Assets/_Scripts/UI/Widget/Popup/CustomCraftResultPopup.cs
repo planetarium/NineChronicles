@@ -15,10 +15,14 @@ namespace Nekoyume.UI
         [SerializeField]
         private CustomCraftResultView view;
 
+        private readonly int _randomShowHash = Animator.StringToHash("RandomShow");
+        private readonly int _normalShowHash = Animator.StringToHash("NormalShow");
+
         public void Show(Equipment resultEquipment)
         {
             view.Show(resultEquipment);
             base.Show();
+            Animator.Play(resultEquipment.CraftWithRandom ? _randomShowHash : _normalShowHash);
         }
     }
 }
