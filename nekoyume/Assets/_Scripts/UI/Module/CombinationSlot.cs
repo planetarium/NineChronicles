@@ -384,6 +384,7 @@ namespace Nekoyume.UI.Module
                 case SlotUIState.Empty:
                     SetContainer(false, false, true, false);
                     itemView.Clear();
+                    itemView.gameObject.SetActive(false);
                     
                     SetBackGroundGroup(BackGroundType.Default);
                     ClearCustomCraftObject();
@@ -394,6 +395,7 @@ namespace Nekoyume.UI.Module
                     preparingContainer.gameObject.SetActive(true);
                     workingContainer.gameObject.SetActive(false);
                     hasNotificationImage.enabled = false;
+                    itemView.gameObject.SetActive(false);
                     
                     // Appraise 상태에서는 커스텀 제작이라도 배경만 활성화하고 customCraft 오브젝트는 비활성화
                     SetItemUsableImage(state?.Result?.itemUsable, true);
@@ -403,6 +405,8 @@ namespace Nekoyume.UI.Module
                     SetContainer(false, true, false, false);
                     preparingContainer.gameObject.SetActive(false);
                     workingContainer.gameObject.SetActive(true);
+                    itemView.gameObject.SetActive(true);
+                    
                     if (state is { Result: not null })
                     {
                         UpdateItemInformation(state.Result.itemUsable, uiState);
@@ -418,6 +422,7 @@ namespace Nekoyume.UI.Module
 
                 case SlotUIState.WaitingReceive:
                     SetContainer(false, false, false, true);
+                    itemView.gameObject.SetActive(true);
                     if (state != null)
                     {
                         waitingReceiveItemView.SetData(new Item(state.Result.itemUsable));
@@ -433,6 +438,7 @@ namespace Nekoyume.UI.Module
                 case SlotUIState.Locked:
                     SetContainer(true, false, false, false);
                     itemView.Clear();
+                    itemView.gameObject.SetActive(false);
                     SetBackGroundGroup(BackGroundType.Default);
                     ClearCustomCraftObject();
                     break;
@@ -640,16 +646,16 @@ namespace Nekoyume.UI.Module
         {                    
             if (itemUsable is Equipment equipment)
             {
-                SetBackGroundGroup(equipment.ByCustomCraft ? BackGroundType.CustomCraft : BackGroundType.Default);
-
                 if (!clearCustomObjects)
                 {
                     customCraftObject.SetActive(equipment.ByCustomCraft);
                     randomOnlyIcon.SetActive(equipment.HasRandomOnlyIcon);
+                    SetBackGroundGroup(equipment.ByCustomCraft ? BackGroundType.CustomCraft : BackGroundType.Default);
                 }
                 else
                 {
                     ClearCustomCraftObject();
+                    SetBackGroundGroup(BackGroundType.Default);
                 }
             }
             else
