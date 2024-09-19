@@ -5,8 +5,6 @@ Nine Chronicles
 [![CircleCI][ci-badge]][ci]
 [![Discord][Discord-badge]][Discord]
 [![Planetarium-Dev Discord Invite](https://img.shields.io/discord/928926944937013338?color=6278DA&label=Planetarium-dev&logo=discord&logoColor=white)](https://discord.gg/RYJDyFRYY7)
-[![Discourse posts](https://img.shields.io/discourse/posts?server=https%3A%2F%2Fdevforum.nine-chronicles.com%2F&logo=discourse&label=9c-devforum&color=00D1C2
-)](https://devforum.nine-chronicles.com)
 
 [Nine Chronicles][9c] is a fully open-sourced online RPG without servers — like Bitcoin or BitTorrent,
 the gamers and miners connect to each other to power a distributed game network.
@@ -18,8 +16,8 @@ can become the actual owners of an online world. By fully open sourcing the repo
 Nine Chronicles, players and developers alike can use any part of the game, from the beautiful
 bespoke 2D assets to in-game logic and code.
 
-To learn more about the [codebase][9c-source-code-guide] and the [GraphQL API][9c-api-guide],
-visit [docs.nine-chronicles.com][9c-docs].
+To learn more about the codebase, the GraphQL API and etc,
+visit [Nine Chronicles Developer Portal][9c-devportal].
 
 [ci-badge]: https://circleci.com/gh/planetarium/nekoyume-unity.svg?style=svg&circle-token=ca79d4f6281fe60cdde55d0f1c3d97d561106bda
 [ci]: https://circleci.com/gh/planetarium/nekoyume-unity
@@ -27,9 +25,8 @@ visit [docs.nine-chronicles.com][9c-docs].
 [Discord]: https://discord.gg/planetarium
 [9c]: https://nine-chronicles.com
 [9c-docs]: https://docs.nine-chronicles.com
-[9c-api-guide]: https://docs.nine-chronicles.com/api-guide
-[9c-source-code-guide]: https://docs.nine-chronicles.com/source-code-guide
 [9c-banner]: docs/9c-banner.jpeg
+[9c-devportal]: https://nine-chronicles.dev/
 
 
 ### Dependency
