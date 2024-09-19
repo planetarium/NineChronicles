@@ -261,6 +261,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<PetSummonResultScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<CustomCraftResultScreen>());
+            yield return null;
 
             // 일반.
             _secondWidgets.Add(Widget.Create<Login>());

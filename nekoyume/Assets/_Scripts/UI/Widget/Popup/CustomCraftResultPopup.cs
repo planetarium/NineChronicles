@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nekoyume.Battle;
-using Nekoyume.Game;
-using Nekoyume.L10n;
-using Nekoyume.Model.Item;
-using Nekoyume.State;
+﻿using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
-using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -21,55 +13,16 @@ namespace Nekoyume.UI
     public class CustomCraftResultPopup : PopupWidget
     {
         [SerializeField]
-        private VanillaItemView itemView;
+        private CustomCraftResultView view;
 
-        [SerializeField]
-        private TextMeshProUGUI itemNameText;
-
-        [SerializeField]
-        private TextMeshProUGUI baseStatText;
-
-        [SerializeField]
-        private TextMeshProUGUI optionCpText;
-
-        [SerializeField]
-        private TextMeshProUGUI cpTopPercentText;
-
-        [SerializeField]
-        private List<CustomCraftCpOptionView> optionViews;
-
-        [SerializeField]
-        private CoveredItemOptionView skillView;
+        private readonly int _randomShowHash = Animator.StringToHash("RandomShow");
+        private readonly int _normalShowHash = Animator.StringToHash("NormalShow");
 
         public void Show(Equipment resultEquipment)
         {
-            itemView.SetData(resultEquipment);
-            itemNameText.SetText(resultEquipment.GetLocalizedName());
-            baseStatText.SetText($"{resultEquipment.Stat.StatType} {resultEquipment.Stat.BaseValueAsLong}");
-            optionViews.ForEach(view => view.Hide(true));
-
-            long cpSum = 0;
-            var additionalStats = resultEquipment.StatsMap.GetAdditionalStats().ToList();
-            var statCount = additionalStats.Count;
-            for (var i = 0; i < statCount; i++)
-            {
-                var stat = additionalStats[i];
-                var view = optionViews[i];
-                var cp = (long)CPHelper.GetStatCP(stat.StatType, stat.AdditionalValue,
-                    States.Instance.CurrentAvatarState.level);
-                cpSum += cp;
-                view.UpdateView(cp, stat);
-                view.Show();
-            }
-
-            var skill = resultEquipment.Skills.First();
-            var powerText = SkillExtensions.EffectToString(skill.SkillRow.Id, skill.SkillRow.SkillType, skill.Power, skill.StatPowerRatio, skill.ReferencedStatType);
-            skillView.UpdateAsSkill(skill.SkillRow.GetLocalizedName(), powerText, skill.Chance);
-            optionCpText.SetText($"{cpSum}");
-            var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
-            var cpRatingPercent = (int)Math.Max(100 - cpSum / (float) relationshipRow.MaxCp * 100, 1);
-            cpTopPercentText.SetText(L10nManager.Localize("UI_TOP_N_PERCENT_FORMAT", cpRatingPercent));
+            view.Show(resultEquipment);
             base.Show();
+            Animator.Play(resultEquipment.CraftWithRandom ? _randomShowHash : _normalShowHash);
         }
     }
 }

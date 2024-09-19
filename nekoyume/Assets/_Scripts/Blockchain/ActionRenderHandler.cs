@@ -40,6 +40,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -3073,7 +3074,7 @@ namespace Nekoyume.Blockchain
 
             await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
-            var killRewards = new List<FungibleAssetValue>();
+            var killRewards = new WorldBossRewards();
             if (latestBossLevel < raiderState.LatestBossLevel)
             {
                 if (preKillReward != null && preKillReward.IsClaimable(raiderState.LatestBossLevel))
@@ -3090,16 +3091,17 @@ namespace Nekoyume.Blockchain
 
                     foreach (var level in filtered)
                     {
-                        var rewards = RuneHelper.CalculateReward(
+                        var rewards = WorldBossHelper.CalculateReward(
                             rank,
                             row.BossId,
                             Game.Game.instance.TableSheets.RuneWeightSheet,
                             Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
                             Game.Game.instance.TableSheets.RuneSheet,
+                            Game.Game.instance.TableSheets.MaterialItemSheet,
                             random
                         );
 
-                        killRewards.AddRange(rewards);
+                        killRewards.Assets.AddRange(rewards.assets);
                     }
                 }
             }
@@ -3117,7 +3119,7 @@ namespace Nekoyume.Blockchain
                 simulator.DamageDealt,
                 isNewRecord,
                 false,
-                simulator.AssetReward,
+                new WorldBossRewards(simulator.AssetReward, simulator.Reward),
                 killRewards);
 
             Game.Game.instance.RaidStage.Play(raidStartData);
