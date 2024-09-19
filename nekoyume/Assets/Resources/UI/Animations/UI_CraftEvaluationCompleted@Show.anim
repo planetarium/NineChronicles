@@ -2199,30 +2199,30 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.9166667
-    functionName: ShowStatViewEffect
+    functionName: ShowOptionViewEffect
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.0833334
-    functionName: ShowStatViewEffect
+    functionName: ShowOptionViewEffect
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 1
     messageOptions: 0
   - time: 1.25
-    functionName: ShowStatViewEffect
+    functionName: ShowOptionViewEffect
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 2
     messageOptions: 0
   - time: 1.4166666
-    functionName: ShowSkillViewEffect
+    functionName: ShowOptionViewEffect
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 3
     messageOptions: 0

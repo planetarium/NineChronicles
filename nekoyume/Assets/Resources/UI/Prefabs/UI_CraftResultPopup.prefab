@@ -10638,6 +10638,7 @@ MonoBehaviour:
   animator: {fileID: 5422638656214794140}
   ratingText: {fileID: 5745555363203470916}
   top10Object: {fileID: 8228404500127317603}
+  coverText: {fileID: 6958784004810865621}
 --- !u!114 &6152722537026424243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10961,11 +10962,11 @@ MonoBehaviour:
   - {fileID: 8963281362090972418}
   skillView: {fileID: 3896286638835457381}
   itemViewEffect: {fileID: 6814726985799712632}
-  statViewEffects:
+  viewEffects:
   - {fileID: 6958784004849234345}
   - {fileID: 5918520779926953652}
   - {fileID: 1899402233840536322}
-  skillViewEffect: {fileID: 1883351952185185415}
+  - {fileID: 1883351952185185415}
 --- !u!1 &4284233230621130886
 GameObject:
   m_ObjectHideFlags: 0
@@ -34322,6 +34323,7 @@ MonoBehaviour:
   animator: {fileID: 4221067022691841053}
   ratingText: {fileID: 5911901556558013829}
   top10Object: {fileID: 2757371588616024991}
+  coverText: {fileID: 5768702804550449620}
 --- !u!114 &4825132586281397097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40365,6 +40367,7 @@ MonoBehaviour:
   animator: {fileID: 973364388613219550}
   ratingText: {fileID: 7866343638747116154}
   top10Object: {fileID: 5525156309153274528}
+  coverText: {fileID: 413515056107806570}
 --- !u!222 &5772309111277210901
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40508,6 +40511,7 @@ MonoBehaviour:
   animator: {fileID: 2473413346007647626}
   ratingText: {fileID: 8634275759246362599}
   top10Object: {fileID: 3395244624528056771}
+  coverText: {fileID: 8898985057893805515}
 --- !u!114 &984932110586096867
 MonoBehaviour:
   m_ObjectHideFlags: 0
