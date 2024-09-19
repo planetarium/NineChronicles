@@ -2,7 +2,6 @@ using Coffee.UIEffects;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -14,7 +13,6 @@ using System;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume
