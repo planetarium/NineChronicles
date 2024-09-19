@@ -2,7 +2,6 @@ using Coffee.UIEffects;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -14,7 +13,6 @@ using System;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume
@@ -130,6 +128,9 @@ namespace Nekoyume
         [SerializeField]
         private GameObject selectArrowObject;
 
+        [SerializeField]
+        private GameObject customCraftArea;
+
         public GameObject Container => container;
         public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
@@ -194,7 +195,7 @@ namespace Nekoyume
             return itemViewData.GetItemViewData(grade);
         }
 
-        protected void ClearItem()
+        public void ClearItem()
         {
             Container.SetActive(true);
             EmptyObject.SetActive(false);
@@ -218,6 +219,7 @@ namespace Nekoyume
             RewardReceived.SetActive(false);
             LevelLimitObject.SetActive(false);
             RuneNotificationObj.SetActiveSafe(false);
+            customCraftArea.SetActive(false);
         }
 
         public void ItemViewSetCurrencyData(FungibleAssetValue fav)
