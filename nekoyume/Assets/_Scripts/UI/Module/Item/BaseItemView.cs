@@ -170,6 +170,7 @@ namespace Nekoyume
         public GameObject RuneSelectMove => runeSelectMove;
         public GameObject SelectCollectionObject => selectCollectionObject;
         public GameObject SelectArrowObject => selectArrowObject;
+        public GameObject CustomCraftArea => customCraftArea;
 
         private readonly List<IDisposable> _disposables = new();
 

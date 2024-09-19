@@ -119,6 +119,11 @@ namespace Nekoyume.UI.Module
                 .Subscribe(context.OnClick.OnNext).AddTo(Disposables);
             baseItemView.TouchHandler.OnDoubleClick.Select(_ => model)
                 .Subscribe(context.OnDoubleClick.OnNext).AddTo(Disposables);
+
+            if (model.ItemBase is Equipment equipmentItem)
+            {
+                baseItemView.CustomCraftArea.SetActive(equipmentItem.ByCustomCraft);
+            }
         }
 
         protected virtual void UpdateRune(InventoryItem model, InventoryScroll.ContextModel context)
