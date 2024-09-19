@@ -82,6 +82,7 @@ namespace Nekoyume.UI
                 var powerText = SkillExtensions.EffectToString(skillRow.Id, skillRow.SkillType, power, ratio, type);
                 skillView.UpdateAsSkill(skillRow.GetLocalizedName(), powerText, chance, GetSkillRating(skillRow.Id, power, ratio, subRecipeId));
             }
+
             base.Show();
         }
 
