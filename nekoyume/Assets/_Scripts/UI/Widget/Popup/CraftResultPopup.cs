@@ -150,6 +150,12 @@ namespace Nekoyume.UI
             return ratingPercent;
         }
 
+        /// <summary>
+        /// 스킬의 레이팅을 계산해주는 함수<br/>
+        /// 계산공식 1. (현재 스킬 데미지 - 최소 데미지) / (최대 데미지 - 최소 데미지) * 100
+        /// 2. 데미지가 없는 경우 0% 반환
+        /// </summary>
+        /// <returns></returns>
         private int GetSkillRating(int skillId, long power, int damageRatio, int subRecipeId)
         {
             var equipmentItemSubRecipeSheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
