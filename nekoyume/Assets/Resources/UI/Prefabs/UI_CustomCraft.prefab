@@ -31969,8 +31969,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef1ddad87e6646c7ba283677831c9bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
+  tutorialTargets:
+  - type: 1000024
+    rectTransform: {fileID: 4286478050083018039}
+  - type: 1000025
+    rectTransform: {fileID: 7060187425190984339}
+  - type: 1000026
+    rectTransform: {fileID: 5526766342109847056}
+  tutorialActions: 54420f00
   closeButton: {fileID: 955710648470885945}
   subTypeButtons:
   - itemSubType: 6
