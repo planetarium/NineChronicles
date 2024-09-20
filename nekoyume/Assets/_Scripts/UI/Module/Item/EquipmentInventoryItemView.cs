@@ -31,7 +31,6 @@ namespace Nekoyume.UI.Module
 
             _disposables.DisposeAllAndClear();
             baseItemView.ClearItem();
-            baseItemView.LoadingObject.SetActive(false);
             baseItemView.RuneSelectMove.SetActive(false);
             baseItemView.SelectCollectionObject.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);

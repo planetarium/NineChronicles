@@ -27,6 +27,7 @@ namespace Nekoyume.UI.Module
                 baseItemView.EmptyObject.SetActive(true);
                 return;
             }
+            
             baseItemView.ClearItem();
 
             if (model.ItemBase != null)
