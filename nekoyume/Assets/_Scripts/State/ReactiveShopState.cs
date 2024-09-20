@@ -222,6 +222,7 @@ namespace Nekoyume.State
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     weapon.optionCountFromCombination = product.OptionCountFromCombination;
                     weapon.IconId = product.IconId;
+                    weapon.ByCustomCraft = product.ByCustomCraft;
                     tradableItem = weapon;
                     break;
                 case ItemSubType.Armor:
@@ -229,6 +230,7 @@ namespace Nekoyume.State
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     armor.optionCountFromCombination = product.OptionCountFromCombination;
                     armor.IconId = product.IconId;
+                    armor.ByCustomCraft = product.ByCustomCraft;
                     tradableItem = armor;
                     break;
                 case ItemSubType.Belt:
@@ -236,6 +238,7 @@ namespace Nekoyume.State
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     belt.optionCountFromCombination = product.OptionCountFromCombination;
                     belt.IconId = product.IconId;
+                    belt.ByCustomCraft = product.ByCustomCraft;
                     tradableItem = belt;
                     break;
                 case ItemSubType.Necklace:
@@ -243,6 +246,7 @@ namespace Nekoyume.State
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     necklace.optionCountFromCombination = product.OptionCountFromCombination;
                     necklace.IconId = product.IconId;
+                    necklace.ByCustomCraft = product.ByCustomCraft;
                     tradableItem = necklace;
                     break;
                 case ItemSubType.Ring:
@@ -250,6 +254,7 @@ namespace Nekoyume.State
                         requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     ring.optionCountFromCombination = product.OptionCountFromCombination;
                     ring.IconId = product.IconId;
+                    ring.ByCustomCraft = product.ByCustomCraft;
                     tradableItem = ring;
                     break;
                 case ItemSubType.ApStone:
