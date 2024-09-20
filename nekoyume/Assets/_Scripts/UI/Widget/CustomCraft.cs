@@ -132,7 +132,7 @@ namespace Nekoyume.UI
 
         private const string RelationshipInfoKey = "RELATIONSHIP-INFO-{0}";
 
-        private static string TutorialKey => $"Tutorial_Check_Rune_{Game.Game.instance.States.CurrentAvatarKey}";
+        private static string TutorialKey => $"Tutorial_Check_CustomCraft_{Game.Game.instance.States.CurrentAvatarKey}";
 
         public bool RequiredUpdateCraftCount { get; set; }
 
