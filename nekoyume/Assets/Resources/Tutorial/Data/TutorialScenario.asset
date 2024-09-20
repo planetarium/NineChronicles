@@ -2640,7 +2640,7 @@ MonoBehaviour:
           presetId: 1
           arrowPositionOffset: {x: 5, y: 5}
           targetPositionOffset: {x: 0, y: 0}
-          targetSizeOffset: {x: 10, y: 10}
+          targetSizeOffset: {x: -50, y: 10}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000025
           actionType: 0
