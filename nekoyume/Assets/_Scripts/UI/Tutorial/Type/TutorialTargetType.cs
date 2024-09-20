@@ -74,8 +74,8 @@ namespace Nekoyume.UI
         CombinationRuneCombineButton,
         CombinationRuneLevelBonusArea,
 
-        // 커스텀 제작, 201스테이지, 순서 모르겠어서 일단 맨 밑으로
-        CustomCraftMenu,
+        // Custom equipment craft - 201
+        CustomCraftMenu, // Combination -> CustomCraft
         CustomCraftOutfitScroll,
         CustomCraftInfo,
         CustomCraftRelationshipArea

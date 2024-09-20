@@ -132,6 +132,8 @@ namespace Nekoyume.UI
 
         private const string RelationshipInfoKey = "RELATIONSHIP-INFO-{0}";
 
+        private static string TutorialKey => $"Tutorial_Check_Rune_{Game.Game.instance.States.CurrentAvatarKey}";
+
         public bool RequiredUpdateCraftCount { get; set; }
 
         public static bool HasNotification
@@ -222,6 +224,14 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (ReactiveAvatarState.Relationship > 0 &&
+                PlayerPrefs.GetInt(TutorialKey, 0) == 0)
+            {
+                // Play Tutorial - Custom craft (for old user)
+                Game.Game.instance.Stage.TutorialController.Play(2010002);
+                PlayerPrefs.SetInt(TutorialKey, 1);
+            }
+
             foreach (var subTypeButton in subTypeButtons)
             {
                 subTypeButton.toggleButton.isOn = subTypeButton.itemSubType == ItemSubType.Weapon;
@@ -599,9 +609,11 @@ namespace Nekoyume.UI
             PlayerPrefs.SetString(key, string.Empty);
         }
 
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionShowInfo()
         {
             OnOutfitSelected(new CustomOutfit(null));
+            PlayerPrefs.SetInt(TutorialKey, 1);
         }
     }
 }
