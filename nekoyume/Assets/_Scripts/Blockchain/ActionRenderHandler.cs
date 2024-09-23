@@ -300,6 +300,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<CombinationConsumable>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionCombinationConsumable)
+                .AddTo(_disposables);
         }
 
         private void RegisterProduct()
@@ -574,6 +582,14 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareEventConsumableItemCrafts)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventConsumableItemCrafts)
+                .AddTo(_disposables);
+            
+            _actionRenderer.EveryRender<EventConsumableItemCrafts>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionEventConsumableItemCrafts)
                 .AddTo(_disposables);
         }
 
@@ -1227,7 +1243,8 @@ namespace Nekoyume.Blockchain
 
             NcDebug.LogError(stringBuilder.ToString());
 
-            // TODO: workshop ui 갱신
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            combinationSlotsPopup.ClearSlot(q.Action.slotIndex);
         }
 
         private void ResponseCombinationConsumable(
@@ -1265,6 +1282,12 @@ namespace Nekoyume.Blockchain
 
             Widget.Find<CombinationSlotsPopup>()
                 .OnCraftActionRender(renderArgs.Evaluation.Action.slotIndex);
+        }
+
+        private void ExceptionCombinationConsumable(ActionEvaluation<CombinationConsumable> eval)
+        {
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            combinationSlotsPopup.ClearSlot(eval.Action.slotIndex);
         }
 
         private (ActionEvaluation<EventConsumableItemCrafts> Evaluation, CombinationSlotState CombinationSlotState) PrepareEventConsumableItemCrafts(
@@ -1316,6 +1339,12 @@ namespace Nekoyume.Blockchain
 
             Widget.Find<CombinationSlotsPopup>()
                 .OnCraftActionRender(renderArgs.Evaluation.Action.SlotIndex);
+        }
+
+        private void ExceptionEventConsumableItemCrafts(ActionEvaluation<EventConsumableItemCrafts> eval)
+        {
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            combinationSlotsPopup.ClearSlot(eval.Action.SlotIndex);
         }
 
         private ActionEvaluation<EventMaterialItemCrafts> PrepareEventMaterialItemCrafts(ActionEvaluation<EventMaterialItemCrafts> eval)

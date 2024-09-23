@@ -182,6 +182,16 @@ namespace Nekoyume.UI
             UpdateSlots(blockIndex, null);
             UpdateAllOpenCost(blockIndex);
         }
+
+        public void ClearSlot(int index)
+        {
+            if (index < 0 || index >= slots.Count)
+            {
+                return;
+            }
+            
+            slots[index].Clear();
+        }
         
         public void ClearSlots()
         {
