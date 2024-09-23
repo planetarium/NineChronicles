@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module
                 iconArea.elementalTypeObject.SetActive(false);
             }
 
-            iconArea.itemDescriptionText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{itemRow.Id}");
+            iconArea.itemDescriptionText.text = L10nManager.LocalizeItemDescription(itemRow.Id);
 
             SetAcquisitionPlaceButtons(shortcutCaller, itemRow, required);
         }

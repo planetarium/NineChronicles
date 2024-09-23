@@ -91,8 +91,7 @@ namespace Nekoyume
                 }
 
                 case MaterialCraftMail materialCraftMail:
-                    var materialItemName =
-                        L10nManager.Localize($"ITEM_NAME_{materialCraftMail.ItemId}");
+                    var materialItemName = L10nManager.LocalizeItemName(materialCraftMail.ItemId);
                     return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT", materialItemName);
 
                 case ItemEnhanceMail itemEnhanceMail:
@@ -672,7 +671,7 @@ namespace Nekoyume
 
         public static string GetLocalizedDescription(this ItemBase item)
         {
-            return L10nManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
+            return L10nManager.LocalizeItemDescription(item.Id);
         }
 
         public static string GetColorHexByGrade(int grade)
@@ -786,7 +785,7 @@ namespace Nekoyume
 
         public static string GetLocalizedName(this ItemSheet.Row row, int level)
         {
-            var itemName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
+            var itemName = L10nManager.LocalizeItemName(row.Id);
             if (level > 0)
             {
                 itemName = $"+{level} {itemName}";

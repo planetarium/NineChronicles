@@ -53,9 +53,9 @@ namespace Nekoyume.UI
             var popup = Widget.Find<MaterialNavigationPopup>();
             string name, count, content, buttonText;
             System.Action callback;
-            name = L10nManager.Localize($"ITEM_NAME_{data.id}");
+            name = L10nManager.LocalizeItemName(data.id);
             count = States.Instance.CurrentAvatarBalances[data.ticker].GetQuantityString();
-            content = L10nManager.Localize($"ITEM_DESCRIPTION_{data.id}");
+            content = L10nManager.LocalizeItemDescription(data.id);
             buttonText = L10nManager.Localize("UI_RUNE");
             callback = () =>
             {

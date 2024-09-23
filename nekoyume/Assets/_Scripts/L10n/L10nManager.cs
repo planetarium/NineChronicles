@@ -486,8 +486,12 @@ namespace Nekoyume.L10n
 
         public static string LocalizeItemName(int itemId)
         {
-            var key = $"ITEM_NAME_{itemId}";
-            return Localize(key);
+            return Localize($"ITEM_NAME_{itemId}");
+        }
+
+        public static string LocalizeItemDescription(int itemId)
+        {
+            return Localize($"ITEM_DESCRIPTION_{itemId}");
         }
 
         public static string LocalizeCustomItemName(int itemId)

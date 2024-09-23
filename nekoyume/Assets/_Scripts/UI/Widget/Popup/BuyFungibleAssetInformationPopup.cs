@@ -79,7 +79,7 @@ namespace Nekoyume.UI
 
             fungibleAssetImage.sprite = fav.GetIconSprite();
             nameText.text = fav.GetLocalizedName();
-            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{id}");
+            contentText.text = L10nManager.LocalizeItemDescription(id);
             countText.text = fav.GetQuantityString();
             UpdateGrade(grade);
             scrollbar.value = 1f;

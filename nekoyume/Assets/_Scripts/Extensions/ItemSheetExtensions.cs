@@ -37,7 +37,7 @@ namespace Nekoyume
 
         public static string GetLocalizedDescription(this ItemSheet.Row value)
         {
-            return L10nManager.Localize($"ITEM_DESCRIPTION_{value.Id}");
+            return L10nManager.LocalizeItemDescription(value.Id);
         }
 
         public static bool TryGetLocalizedName(
