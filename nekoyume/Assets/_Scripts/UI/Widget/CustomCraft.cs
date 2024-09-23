@@ -299,6 +299,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Typing);
             _selectedSubType = type;
             _selectedOutfit = null;
             var iconSheetRows = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values;
