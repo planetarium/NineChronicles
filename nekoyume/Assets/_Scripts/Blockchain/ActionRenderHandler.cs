@@ -460,6 +460,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination)
                 .AddTo(_disposables);
+            
+            _actionRenderer.EveryRender<RapidCombination>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionRapidCombination)
+                .AddTo(_disposables);
         }
 
         private void GameConfig()
@@ -1025,6 +1033,15 @@ namespace Nekoyume.Blockchain
                 }
 
                 Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
+            }
+        }
+
+        private void ExceptionRapidCombination(ActionEvaluation<RapidCombination> eval)
+        {
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            foreach (var slotIndex in eval.Action.slotIndexList)
+            {
+                combinationSlotsPopup.ClearSlot(slotIndex);
             }
         }
 
