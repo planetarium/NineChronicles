@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -85,12 +86,14 @@ namespace Nekoyume.UI.Module
             if (index < _statCount)
             {
                 optionViews[index].Show();
+                AudioController.instance.PlaySfx(AudioController.SfxCode.CustomCraftJudge2);
             }
         }
 
         public void ShowSkillView()
         {
             skillView.Show();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.CustomCraftJudge2);
         }
     }
 }
