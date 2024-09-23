@@ -224,6 +224,9 @@ namespace Nekoyume.Game.Controller
             public const string AdventureBossMonCollision = "sfx_adventure_boss_mon_collision";
             public const string AdventureBossPenetration = "sfx_adventure_boss_penetration";
             public const string AdventureBossPopUp = "sfx_adventure_boss_pop_up";
+            public const string CustomCraftJudge1 = "sfx_custom_craft_judge_01";
+            public const string CustomCraftJudge2 = "sfx_custom_craft_judge_02";
+            public const string CustomCraftJudge3 = "sfx_custom_craft_judge_03";
         }
 
         private enum State
