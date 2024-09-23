@@ -4302,6 +4302,12 @@ namespace Nekoyume.Blockchain
             }
 
             NcDebug.LogException(eval.Exception?.InnerException ?? eval.Exception);
+            
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            foreach (var customCraftData in eval.Action.CraftList)
+            {
+                combinationSlotsPopup.ClearSlot(customCraftData.SlotIndex);
+            }
         }
 
         private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
