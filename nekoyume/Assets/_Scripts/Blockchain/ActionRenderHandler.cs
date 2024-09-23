@@ -1114,14 +1114,16 @@ namespace Nekoyume.Blockchain
             string formatKey;
             if (result.itemUsable is Equipment equipment)
             {
-                if (renderArgs.Evaluation.Action.subRecipeId.HasValue &&
-                    TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                        renderArgs.Evaluation.Action.subRecipeId.Value,
-                        out var row))
+                // aura, grimoire has not subRecipeId
+                var subRecipeId = renderArgs.Evaluation.Action.subRecipeId;
+                if (subRecipeId.HasValue &&
+                    TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(subRecipeId.Value, out var row))
                 {
                     formatKey = equipment.optionCountFromCombination == row.Options.Count
                         ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
                         : "NOTIFICATION_COMBINATION_COMPLETE";
+                    
+                    Widget.Find<CraftResultPopup>().Show(equipment, subRecipeId.Value);
                 }
                 else
                 {
