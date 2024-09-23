@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -91,6 +92,7 @@ namespace Nekoyume.UI.Module
         };
 
         private readonly List<ShopItem> _selectedItems = new();
+        private readonly List<int> _iconIds = new(); // only for equipment
         private readonly List<int> _itemIds = new();
         private readonly List<int> _runeIds = new();
         private readonly List<int> _petIds = new();
@@ -140,7 +142,7 @@ namespace Nekoyume.UI.Module
 
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             var tableSheets = Game.Game.instance.TableSheets;
-            _itemIds.AddRange(tableSheets.EquipmentItemSheet.Values.Select(x => x.Id));
+            _iconIds.AddRange(tableSheets.CustomEquipmentCraftIconSheet.Values.Select(x => x.IconId));
             _itemIds.AddRange(tableSheets.ConsumableItemSheet.Values.Select(x => x.Id));
             _itemIds.AddRange(tableSheets.CostumeItemSheet.Values.Select(x => x.Id));
             _itemIds.AddRange(tableSheets.MaterialItemSheet.Values.Select(x => x.Id));
@@ -295,23 +297,80 @@ namespace Nekoyume.UI.Module
             var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
             var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
 
-            if ((!_useSearch.Value && !_levelLimit.Value) ||
-                filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
+            if (!_useSearch.Value && !_levelLimit.Value)
             {
                 return Array.Empty<int>();
             }
 
+            var useSearch = _useSearch.Value;
+            var levelLimit = _levelLimit.Value;
+            var inputText = inputField.text;
             bool IsValid(int id)
             {
-                var inSearch = !_useSearch.Value ||
-                    Regex.IsMatch(L10nManager.LocalizeItemName(id), inputField.text, RegexOptions.IgnoreCase);
-                var inLevelLimit = !_levelLimit.Value ||
+                var inSearch = !useSearch ||
+                    Regex.IsMatch(L10nManager.LocalizeItemName(id), inputText, RegexOptions.IgnoreCase);
+                var inLevelLimit = !levelLimit ||
                     (requirementSheet.TryGetValue(id, out var requirementRow) &&
                         avatarLevel >= requirementRow.Level);
                 return inSearch && inLevelLimit;
             }
 
             return _itemIds.Where(IsValid).ToArray();
+        }
+
+        private (int iconId, bool byCustomCraft)[] GetFilteredItemIds_(ItemSubTypeFilter filter)
+        {
+            var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
+            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+
+            var useSearch = _useSearch.Value;
+            var useLevelLimit = _levelLimit.Value;
+            if (!useSearch && !useLevelLimit)
+            {
+                return Array.Empty<(int iconId, bool byCustomCraft)>();
+            }
+
+            var inputText = inputField.text;
+            bool IsValid(int iconId)
+            {
+                var byCustomCraft = false;
+                var inSearch = true;
+                if (useSearch)
+                {
+                    if (Regex.IsMatch(L10nManager.LocalizeItemName(iconId), inputText, RegexOptions.IgnoreCase))
+                    {
+                        inSearch = true;
+                        byCustomCraft = false;
+                    }
+                    else if (Regex.IsMatch(L10nManager.LocalizeCustomItemName(iconId), inputText, RegexOptions.IgnoreCase))
+                    {
+                        inSearch = true;
+                        byCustomCraft = true;
+                    }
+                }
+
+                var inLevelLimit = true;
+                if (useLevelLimit)
+                {
+                    inLevelLimit = requirementSheet.TryGetValue(iconId, out var requirementRow) && avatarLevel >= requirementRow.Level;
+                }
+
+                return inSearch && inLevelLimit;
+            }
+
+            switch (filter)
+            {
+                case ItemSubTypeFilter.Equipment:
+                    return _iconIds.Where(IsValid).Select(x => (x, true)).ToArray();
+                case ItemSubTypeFilter.Food:
+                    return _itemIds.Where(IsValid).Select(x => (x, false)).ToArray();
+                case ItemSubTypeFilter.Costume:
+                    return _itemIds.Where(IsValid).Select(x => (x, false)).ToArray();
+                case ItemSubTypeFilter.Materials:
+                    return _itemIds.Where(IsValid).Select(x => (x, false)).ToArray();
+                default:
+                    return Array.Empty<(int iconId, bool byCustomCraft)>();
+            }
         }
 
         private string[] GetFilteredTicker(ItemSubTypeFilter filter)
