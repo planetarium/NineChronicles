@@ -490,6 +490,12 @@ namespace Nekoyume.L10n
             return Localize(key);
         }
 
+        public static string LocalizeCustomItemName(int itemId)
+        {
+            var key = $"ITEM_NAME_CUSTOM_{itemId}";
+            return Localize(key);
+        }
+
         public static string LocalizeRuneName(int id)
         {
             var key = $"RUNE_NAME_{id}";
