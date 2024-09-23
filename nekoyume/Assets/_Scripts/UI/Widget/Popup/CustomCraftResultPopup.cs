@@ -1,4 +1,5 @@
-﻿using Nekoyume.Model.Item;
+﻿using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UnityEngine;
 
@@ -23,6 +24,16 @@ namespace Nekoyume.UI
             view.Show(resultEquipment);
             base.Show();
             Animator.Play(resultEquipment.CraftWithRandom ? _randomShowHash : _normalShowHash);
+        }
+
+        public void PlayIconJudgementSfx()
+        {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.CustomCraftJudge1);
+        }
+
+        public void PlayStatPercentSfx()
+        {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.CustomCraftJudge3);
         }
     }
 }
