@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Module
             int iconId)
         {
             outfitNameText.SetText(iconId != CustomEquipmentCraft.RandomIconId
-                ? L10nManager.LocalizeItemName(iconId)
+                ? L10nManager.LocalizeCustomItemName(iconId)
                 : L10nManager.Localize("UI_RANDOM_OUTFIT"));
             baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
             expText.SetText($"EXP {equipmentRow.Exp?.ToCurrencyNotation()}");

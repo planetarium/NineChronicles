@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Scroller
         public override void UpdateContent(Model itemData)
         {
             iconImage.overrideSprite = SpriteHelper.GetItemIcon(itemData.IconId);
-            outfitNameText.SetText(L10nManager.LocalizeItemName(itemData.IconId));
+            outfitNameText.SetText(L10nManager.LocalizeCustomItemName(itemData.IconId));
             ratioText.SetText(itemData.Ratio);
         }
     }

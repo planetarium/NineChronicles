@@ -383,7 +383,7 @@ namespace Nekoyume.UI
                 ? _selectedOutfit.IconRow.Value.IconId
                 : CustomEquipmentCraft.RandomIconId;
             outfitNameText.SetText(hasSelectedOutfit
-                ? L10nManager.LocalizeItemName(iconId)
+                ? L10nManager.LocalizeCustomItemName(iconId)
                 : L10nManager.Localize("UI_RANDOM_OUTFIT"));
             craftedCountObject.SetActive(hasSelectedOutfit && !randomOnly);
             randomOnlyOutfitInfoObject.SetActive(!hasSelectedOutfit);

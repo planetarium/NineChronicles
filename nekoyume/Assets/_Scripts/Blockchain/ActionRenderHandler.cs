@@ -986,7 +986,7 @@ namespace Nekoyume.Blockchain
 
                 NotificationSystem.CancelReserve(result.itemUsable.ItemId);
                 NotificationSystem.Push(
-                    result.itemUsable is Equipment e && e.IconId != 0 && e.Id != e.IconId
+                    result.itemUsable is Equipment { ByCustomCraft: true }
                         ? MailType.CustomCraft
                         : MailType.Workshop,
                     L10nManager.Localize(formatKey, result.itemUsable.GetLocalizedName()),
