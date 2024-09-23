@@ -1,14 +1,13 @@
-using System;
 using Nekoyume.L10n;
 using System.Numerics;
-using JetBrains.Annotations;
+using Cysharp.Threading.Tasks;
+using Libplanet.Types.Assets;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -84,10 +83,10 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            buttonNo.OnClick = No;
+            buttonNo.OnClick = Cancel;
             buttonYes.OnClick = Yes;
-            buttonClose.onClick.AddListener(NoWithoutCallback);
-            CloseWidget = NoWithoutCallback;
+            buttonClose.onClick.AddListener(Cancel);
+            CloseWidget = Cancel;
             SubmitWidget = Yes;
         }
 
@@ -117,7 +116,7 @@ namespace Nekoyume.UI
         }
 
 #region LackPaymentAction
-        public void ShowLackPayment(
+        public void ShowLackPaymentLegacy(
             CostType costType,
             string cost,
             string content,
@@ -133,25 +132,40 @@ namespace Nekoyume.UI
             Show(title, content, attractMessage, no, false);
         }
 
-        public void ShowLackPayment(
+        public void ShowLackPaymentLegacy(
             CostType costType,
             BigInteger cost,
             string content,
             string attractMessage,
             System.Action onAttract)
         {
-            ShowLackPayment(costType, cost.ToString(), content, attractMessage, onAttract);
+            ShowLackPaymentLegacy(costType, cost.ToString(), content, attractMessage, onAttract);
         }
 
-        // TODO: 해당 메서드 기반으로 위의 ShowLackPayment을 대체할 수 있을 것으로 보인다면,
-        // TODO: 위의 ShowLackPayment를 Obsolete 처리 후 아래의 메서드를 사용하도록 변경
+        public void ShowLackRuneStone(RuneItem runeItem, int cost)
+        {
+            var runeStone = runeItem.RuneStone;
+            var hasAttract = HasAttractActionRuneStone(runeStone);
+            SetPopupType(hasAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            
+            costIcon.overrideSprite = GetRuneStoneSprite(runeStone);
+            costText.text = cost.ToString();
+            
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
+            var content = GetRuneStoneContent(runeStone);
+            var attractMessage = GetRuneStoneAttractMessage(runeStone);
+            
+            YesCallback = AttractRuneStone(runeStone);
+            Show(title, content, attractMessage, string.Empty, false);
+        }
+
         public void ShowLackPaymentDust(CostType costType, BigInteger cost)
         {
             var canAttract = CanAttractDust(costType);
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
 
             costIcon.overrideSprite = costIconData.GetIcon(costType);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = GetLackDustContentString(costType);
 
@@ -164,7 +178,7 @@ namespace Nekoyume.UI
             SetPopupType(PopupType.AttractAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.Crystal);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = L10nManager.Localize("UI_LACK_CRYSTAL");
             var labelYesText = L10nManager.Localize("GRIND_UI_BUTTON");
@@ -179,7 +193,7 @@ namespace Nekoyume.UI
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost;
             var content = GetLackNCGContentString(isStaking);
 
@@ -200,23 +214,58 @@ namespace Nekoyume.UI
             Show(title, content, MonsterCollectionString, string.Empty, false);
         }
 
-        public void ShowLackApPortion(int cost)
+        public void ShowLackApPortion(long cost)
         {
             var canAttract = CanAttractShop();
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.ApPotion);
-            var title = L10nManager.Localize("UI_REQUIRED_COUNT");
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
             var content = GetLackApPortionContentString();
             
             YesCallback = AttractShop;
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
         }
+        
+        public void ShowLackHourglass(long cost)
+        {
+            var itemId = 400000;
+            var canBuyShop = CanAttractShop() || CanAttractMobileShop(itemId);
+            SetPopupType(PopupType.AttractAction);
+            
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.Hourglass);
+            var title = L10nManager.Localize("UI_REQUIRED_COST");
+            costText.text = cost.ToString();
+            var content = GetLackHourglassContentString(canBuyShop);
+            var labelYesText = canBuyShop ? 
+                L10nManager.Localize("UI_SHOP") : 
+                MonsterCollectionString;
+            
+            YesCallback = () =>
+            {
+                if (canBuyShop)
+                {
+                    if (CanAttractMobileShop(itemId))
+                    {
+                        AttractMobileShopAsync(itemId).Forget();
+                    }
+                    else
+                    {
+                        AttractShop();
+                    }
+                }
+                else
+                {
+                    AttractToMonsterCollection();
+                }
+            };
+            Show(title, content, labelYesText, string.Empty, false);
+        }
 #endregion LackPaymentAction
 
 #region PaymentCheckAction
-        public void ShowCheckPayment(
+        public void ShowCheckPaymentLegacy(
             CostType costType,
             BigInteger balance,
             BigInteger cost,
@@ -254,7 +303,7 @@ namespace Nekoyume.UI
                         return;
                     }
                     
-                    ShowLackPayment(costType, cost, insufficientMessage, L10nManager.Localize("UI_YES"), onAttract);
+                    ShowLackPaymentLegacy(costType, cost, insufficientMessage, L10nManager.Localize("UI_YES"), onAttract);
                 }
             };
 
@@ -262,7 +311,6 @@ namespace Nekoyume.UI
             Show(popupTitle, checkCostMessage, yes, no, false);
         }
 
-        // TODO: 재화 관리 팝업관련 작업을 진행하며 정리되면 제거
         public void ShowCheckPaymentDust(
             CostType costType,
             BigInteger balance,
@@ -288,6 +336,38 @@ namespace Nekoyume.UI
                 {
                     Close(true);
                     ShowLackPaymentDust(costType, cost);
+                }
+            };
+
+            SetContent(popupTitle, checkCostMessage, yes, no, false);
+            Show(popupTitle, checkCostMessage, yes, no, false);
+        }
+
+        public void ShowCheckPaymentNCG(
+            BigInteger balance,
+            BigInteger cost,
+            string checkCostMessage,
+            System.Action onPaymentSucceed,
+            bool isStaking = false)
+        {
+            SetPopupType(PopupType.PaymentCheck);
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            var enoughBalance = balance >= cost;
+            costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(CostType.NCG);
+
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            YesCallback = () =>
+            {
+                if (enoughBalance)
+                {
+                    onPaymentSucceed.Invoke();
+                }
+                else
+                {
+                    Close(true);
+                    ShowLackPaymentNCG(cost.ToString(), isStaking);
                 }
             };
 
@@ -326,7 +406,7 @@ namespace Nekoyume.UI
             Show(popupTitle, checkCostMessage, yes, no, false);
         }
 
-        public void ShowCheckPaymentApPortion(BigInteger cost)
+        public void ShowCheckPaymentApPortion(BigInteger cost, System.Action onPaymentSucceed)
         {
             SetPopupType(PopupType.PaymentCheck);
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
@@ -345,7 +425,7 @@ namespace Nekoyume.UI
                 if (enoughBalance)
                 {
                     Close(true);
-                    ActionPoint.ChargeAP();
+                    onPaymentSucceed?.Invoke();
                 }
                 else
                 {
@@ -359,7 +439,174 @@ namespace Nekoyume.UI
         }
 #endregion PaymentCheckAction
 
-// TODO: RuneHelper등과 통합? 혹은 별도 파일(PaymentHelper등)으로 분리
+#region ShopHelper
+        public static string GetLackNCGContentString(bool isStaking = false)
+        {
+            var canAttract = CanAttractShop();
+            if (!canAttract)
+            {
+                return L10nManager.Localize("UI_LACK_NCG_PC");
+            }
+            
+            return isStaking ?
+                L10nManager.Localize("UI_LACK_NCG_STAKING") :
+                L10nManager.Localize("UI_LACK_NCG");
+        }
+        
+        public static string GetLackHourglassContentString(bool canBuyShop)
+        {
+            return L10nManager.Localize(canBuyShop ? "UI_LACK_HOURGLASS_SHOP" : "UI_LACK_HOURGLASS_MONSTER_COLLECTION");
+        }
+        
+        public static string GetLackApPortionContentString()
+        {
+            var canAttract = CanAttractShop();
+            return L10nManager.Localize(!canAttract ? "UI_LACK_AP_PORTION_PC" : "UI_LACK_AP_PORTION");
+        }
+        
+        // TODO: 공용으로 뺄 수 없을지 확인.
+        public static bool CanAttractShop()
+        {
+#if UNITY_ANDROID || UNITY_IOS
+            return false;
+#endif
+            return !Game.LiveAsset.GameConfig.IsKoreanBuild;
+        }
+
+        public static bool CanAttractMobileShop(int itemId)
+        {
+#if UNITY_ANDROID || UNITY_IOS
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
+            return iapStoreManager.TryGetCategoryName(itemId, out _);
+#endif
+            return false;
+        }
+#endregion ShopHelper
+        
+#region Attract
+        private void AttractToMonsterCollection()
+        {
+            // 기능 충돌 방지를 위해 StakingPopup실행 전 다른 UI를 닫음
+            CloseWithOtherWidgets();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Find<StakingPopup>().Show();
+        }
+
+        private void AttractToAdventureBoss()
+        {
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                // K빌드인 경우 이동하지 않음
+                NcDebug.LogWarning("Korean build is not supported.");
+                return;
+            }
+
+            CloseWithOtherWidgets();
+            Find<WorldMap>().Show();
+
+            var currState = Game.Game.instance.AdventureBossData.CurrentState.Value;
+            if (currState == AdventureBossData.AdventureBossSeasonState.Progress)
+            {
+                WorldMapAdventureBoss.OnClickOpenAdventureBoss();
+            }
+        }
+        
+        private void AttractGrind()
+        {
+            Find<Menu>().Close();
+            Find<WorldMap>().Close();
+            Find<StageInformation>().Close();
+            Find<BattlePreparation>().Close();
+            Find<Craft>().Close(true);
+            Find<Grind>().Show();
+        }
+
+        private void AttractShop()
+        {
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                // K빌드인 경우 이동하지 않음
+                NcDebug.LogWarning("Korean build is not supported.");
+                Game.Event.OnRoomEnter.Invoke(true);
+                return;
+            }
+
+            AttractShopAsync().Forget();
+        }
+
+        private async UniTask AttractShopAsync()
+        {
+            CloseWithOtherWidgets();      
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);      
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+            await Find<ShopSell>().ShowAsync();
+            Find<LoadingScreen>().Close();
+        }
+
+        private void AttractToSummon()
+        {
+            CloseWithOtherWidgets();
+            Find<Summon>().Show();
+        }
+
+        private async UniTask AttractMobileShopAsync(int id)
+        {
+#if !(UNITY_ANDROID || UNITY_IOS)
+            return;
+#endif
+            var iapStoreManager = Game.Game.instance.IAPStoreManager;
+            if (iapStoreManager.TryGetCategoryName(id, out var categoryName))
+            {
+                CloseWithOtherWidgets();      
+                Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);      
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                await Find<MobileShop>().ShowAsTab(categoryName);
+                Find<LoadingScreen>().Close();
+            }
+        }
+#endregion Attract
+
+#region General
+        private void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL", bool localize = true)
+        {
+            SetContent(title, content, labelYes, labelNo, localize);
+
+            if (!gameObject.activeSelf)
+            {
+                Show();
+            }
+        }
+
+        private void SetContent(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
+            bool localize = true)
+        {
+            var titleExists = !string.IsNullOrEmpty(title);
+            if (localize)
+            {
+                if (titleExists)
+                {
+                    titleText.text = L10nManager.Localize(title);
+                }
+
+                contentText.text = L10nManager.Localize(content);
+                buttonYes.Text = L10nManager.Localize(labelYes);
+                buttonNo.Text = L10nManager.Localize(labelNo);
+            }
+            else
+            {
+                titleText.text = title;
+                contentText.text = content;
+                buttonYes.Text = labelYes;
+                buttonNo.Text = labelNo;
+            }
+
+            titleText.gameObject.SetActive(titleExists);
+            titleBorder.SetActive(titleExists);
+        }
+#endregion General
+
+// TODO: 별도 파일(PaymentHelper등)으로 분리?
+#region Helper
 #region DustHelper
         public static string GetLackDustContentString(CostType costType)
         {
@@ -428,129 +675,60 @@ namespace Nekoyume.UI
             NcDebug.LogWarning($"[{nameof(PaymentPopup)}] AttractDust: Invalid costType.");
         }
 #endregion DustHelper
-
-#region ShopHelper
-        public static string GetLackNCGContentString(bool isStaking = false)
+        
+#region RuneStoneHelper
+        /// <summary>
+        /// 해당 runeStone을 획득할 AttractAction이 있는지 확인합니다.
+        /// </summary>
+        /// <param name="runeStone">NoneAction인지 확인할 runeStone의 fav 값</param>
+        /// <returns>PC Shop에서 거래 가능하지만, 모바일인 경우 false</returns>
+        private bool HasAttractActionRuneStone(FungibleAssetValue runeStone)
         {
-            var canAttract = CanAttractShop();
-            if (!canAttract)
+            if (runeStone.IsTradable())
             {
-                return L10nManager.Localize("UI_LACK_NCG_PC");
-            }
-            
-            return isStaking ?
-                L10nManager.Localize("UI_LACK_NCG_STAKING") :
-                L10nManager.Localize("UI_LACK_NCG");
-        }
-        
-        public static string GetLackApPortionContentString()
-        {
-            var canAttract = CanAttractShop();
-            return L10nManager.Localize(!canAttract ? "UI_LACK_AP_PORTION_PC" : "UI_LACK_AP_PORTION");
-        }
-        
-        // TODO: 공용으로 뺄 수 없을지 확인.
-        public static bool CanAttractShop()
-        {
+                // 에디터 안드로이드, IOS 테스트를 위해 RUN_ON_MOBILE을 사용하지 않음
 #if UNITY_ANDROID || UNITY_IOS
-            return false;
+                return false;
 #endif
-            return !Game.LiveAsset.GameConfig.IsKoreanBuild;
-        }
-#endregion ShopHelper
-        
-#region Attract
-        private void AttractToMonsterCollection()
-        {
-            // 기능 충돌 방지를 위해 StakingPopup실행 전 다른 UI를 닫음
-            CloseWithOtherWidgets();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Find<StakingPopup>().Show();
-        }
-
-        private void AttractToAdventureBoss()
-        {
-            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-            {
-                // K빌드인 경우 이동하지 않음
-                NcDebug.LogWarning("Korean build is not supported.");
-                return;
             }
 
-            CloseWithOtherWidgets();
-            Find<WorldMap>().Show();
+            return true;
+        }
 
-            var currState = Game.Game.instance.AdventureBossData.CurrentState.Value;
-            if (currState == AdventureBossData.AdventureBossSeasonState.Progress)
+        private string GetRuneStoneContent(FungibleAssetValue runeStone)
+        {
+            var hasAttract = HasAttractActionRuneStone(runeStone);
+            var runeName = runeStone.GetLocalizedName();
+            if (runeStone.IsTradable())
             {
-                WorldMapAdventureBoss.OnClickOpenAdventureBoss();
+                return hasAttract ? 
+                    L10nManager.Localize("UI_LACK_TRADEABLE_RUNESTONE_PC", runeName) : 
+                    L10nManager.Localize("UI_LACK_TRADEABLE_RUNESTONE_MOBILE");
             }
+            return L10nManager.Localize("UI_LACK_UNTRADEABLE_RUNESTONE", runeName);
         }
         
-        private void AttractGrind()
+        private Sprite GetRuneStoneSprite(FungibleAssetValue runeStone)
         {
-            Find<Menu>().Close();
-            Find<WorldMap>().Close();
-            Find<StageInformation>().Close();
-            Find<BattlePreparation>().Close();
-            Find<Craft>().Close(true);
-            Find<Grind>().Show();
+            return RuneFrontHelper.TryGetRuneStoneIcon(runeStone.Currency.Ticker, out var icon) ? icon : null;
         }
 
-        private void AttractShop()
+        private string GetRuneStoneAttractMessage(FungibleAssetValue runeStone)
         {
-            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
-            {
-                // K빌드인 경우 이동하지 않음
-                NcDebug.LogWarning("Korean build is not supported.");
-                Game.Event.OnRoomEnter.Invoke(true);
-                return;
-            }
-            
-            CloseWithOtherWidgets();            
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            Find<ShopSell>().Show();
+            return L10nManager.Localize(runeStone.IsTradable() ? "UI_SHOP" : "UI_SUMMON");
         }
-#endregion Attract
-
-#region General
-        private void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL", bool localize = true)
+        
+        private System.Action AttractRuneStone(FungibleAssetValue runeStone)
         {
-            SetContent(title, content, labelYes, labelNo, localize);
-
-            if (!gameObject.activeSelf)
+            if (runeStone.IsTradable())
             {
-                Show();
+                return AttractShop;
             }
+
+            return AttractToSummon;
         }
-
-        private void SetContent(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true)
-        {
-            var titleExists = !string.IsNullOrEmpty(title);
-            if (localize)
-            {
-                if (titleExists)
-                {
-                    titleText.text = L10nManager.Localize(title);
-                }
-
-                contentText.text = L10nManager.Localize(content);
-                buttonYes.Text = L10nManager.Localize(labelYes);
-                buttonNo.Text = L10nManager.Localize(labelNo);
-            }
-            else
-            {
-                titleText.text = title;
-                contentText.text = content;
-                buttonYes.Text = labelYes;
-                buttonNo.Text = labelNo;
-            }
-
-            titleText.gameObject.SetActive(titleExists);
-            titleBorder.SetActive(titleExists);
-        }
-#endregion General
+#endregion RuneStoneHelper
+#endregion Helper
 
         private void Yes()
         {
@@ -558,12 +736,7 @@ namespace Nekoyume.UI
             YesCallback?.Invoke();
         }
 
-        private void No()
-        {
-            base.Close();
-        }
-
-        public void NoWithoutCallback()
+        private void Cancel()
         {
             base.Close();
         }

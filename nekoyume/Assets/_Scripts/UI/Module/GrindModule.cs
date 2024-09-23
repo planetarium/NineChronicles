@@ -400,7 +400,7 @@ namespace Nekoyume.UI.Module
                     var paymentPopup = Widget.Find<PaymentPopup>();
                     if (_inventoryApStoneCount > 0)
                     {
-                        paymentPopup.ShowCheckPaymentApPortion(GrindCost);
+                        paymentPopup.ShowCheckPaymentApPortion(GrindCost, ActionPoint.ChargeAP);
                     }
                     else
                     {

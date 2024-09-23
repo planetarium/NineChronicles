@@ -519,11 +519,19 @@ namespace Nekoyume
         public static string GetLocalizedNonColoredName(this ItemBase item,
             bool useElementalIcon = true)
         {
-            var equipmentId = item is Equipment equipment ? equipment.IconId : item.Id;
+            if (item is Equipment equipment)
+            {
+                return GetLocalizedNonColoredName(
+                    equipment.ElementalType,
+                    equipment.IconId,
+                    useElementalIcon,
+                    equipment.ByCustomCraft);
+            }
+
             return GetLocalizedNonColoredName(
                 item.ElementalType,
-                equipmentId,
-                useElementalIcon && item.ItemType.HasElementType());
+                item.Id,
+                item.ItemType.HasElementType() && useElementalIcon);
         }
 
         public static string GetLocalizedName(this EquipmentItemSheet.Row equipmentRow, int level,
@@ -550,10 +558,14 @@ namespace Nekoyume
         }
 
         public static string GetLocalizedNonColoredName(ElementalType elementalType,
-            int equipmentId, bool useElementalIcon)
+            int itemId, bool useElementalIcon, bool byCustomCraft = false)
         {
-            var elemental = useElementalIcon ? GetElementalIcon(elementalType) : string.Empty;
-            var name = L10nManager.Localize($"ITEM_NAME_{equipmentId}");
+            var name = byCustomCraft
+                ? L10nManager.LocalizeCustomItemName(itemId)
+                : L10nManager.LocalizeItemName(itemId);
+            var elemental = useElementalIcon
+                ? GetElementalIcon(elementalType)
+                : string.Empty;
             return $"{name}{elemental}";
         }
 

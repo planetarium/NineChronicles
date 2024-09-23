@@ -956,11 +956,11 @@ namespace Nekoyume.UI
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, customCraftMail.id);
+            LocalLayerModifier.RemoveNewMail(avatarAddress, customCraftMail.id);
             customCraftMail.New = false;
             NcDebug.Log("CombinationMail LocalLayer task completed");
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
-            Find<CombinationResultPopup>().Show(itemUsable);
+            Find<CustomCraftResultScreen>().Show(itemUsable);
         }
 
         [Obsolete]

@@ -39,8 +39,7 @@ namespace Nekoyume.UI.Module
 
         public void Hide(bool ignoreAnimation = false)
         {
-            if (ignoreAnimation ||
-                !animator)
+            if (ignoreAnimation || !animator)
             {
                 gameObject.SetActive(false);
                 return;
@@ -59,8 +58,7 @@ namespace Nekoyume.UI.Module
 
         public void UpdateViewAsTotalAndPlusStat(StatType type, long totalValue, long plusValue)
         {
-            UpdateView(
-                $"{type} {type.ValueToString(totalValue)}",
+            UpdateView($"{type} {type.ValueToString(totalValue)}",
                 plusValue > 0 ? $"+{type.ValueToString(plusValue)}" : string.Empty);
         }
 

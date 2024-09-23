@@ -32,24 +32,8 @@ namespace Nekoyume.UI.Module
             }
 
             _disposables.DisposeAllAndClear();
-            baseItemView.Container.SetActive(true);
-            baseItemView.EmptyObject.SetActive(false);
-            baseItemView.EnoughObject.SetActive(false);
-            baseItemView.SelectBaseItemObject.SetActive(false);
-            baseItemView.SelectMaterialItemObject.SetActive(false);
-            baseItemView.LockObject.SetActive(false);
-            baseItemView.ShadowObject.SetActive(false);
-            baseItemView.NotificationObject.SetActive(false);
-            baseItemView.FocusObject.SetActive(false);
-            baseItemView.TradableObject.SetActive(false);
-            baseItemView.DimObject.SetActive(false);
-            baseItemView.EquippedObject.SetActive(false);
-            baseItemView.SelectObject.SetActive(false);
-            baseItemView.ExpiredObject.SetActive(false);
+            baseItemView.ClearItem();
             baseItemView.PriceText.gameObject.SetActive(false);
-            baseItemView.LoadingObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActiveSafe(false);
             baseItemView.RuneSelectMove.SetActive(false);
             baseItemView.SelectCollectionObject.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);
@@ -135,6 +119,11 @@ namespace Nekoyume.UI.Module
 
             baseItemView.MinusTouchHandler.OnClick.Select(_ => model)
                 .Subscribe(onClick).AddTo(_disposables);
+            
+            if (model.ItemBase is Equipment equipmentItem)
+            {
+                baseItemView.CustomCraftArea.SetActive(equipmentItem.ByCustomCraft);
+            }
         }
     }
 }
