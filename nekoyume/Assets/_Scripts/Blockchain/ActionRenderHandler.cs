@@ -361,6 +361,14 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement)
                 .AddTo(_disposables);
+            
+            _actionRenderer.EveryRender<ItemEnhancement>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionItemEnhancement)
+                .AddTo(_disposables);
         }
 
         private void DailyReward()
@@ -1534,6 +1542,12 @@ namespace Nekoyume.Blockchain
             }
 
             Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
+        }
+
+        private void ExceptionItemEnhancement(ActionEvaluation<ItemEnhancement> eval)
+        {
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            combinationSlotsPopup.ClearSlot(eval.Action.slotIndex);
         }
 
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
