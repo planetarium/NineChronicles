@@ -3128,6 +3128,7 @@ namespace Nekoyume.Blockchain
         {
             UpdateCurrentAvatarRuneStoneBalance(eval);
             UpdateCrystalBalance(eval);
+            UpdateCurrentAvatarInventory(eval);
 
             return eval;
         }
