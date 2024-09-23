@@ -405,14 +405,7 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            try
-            {
-                Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
-            }
-            catch (NotSupportedException)
-            {
-                Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.SerializeList();
-            }
+            Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
         }
 
         protected static void UpdateCurrentAvatarItemSlotState<T>(
