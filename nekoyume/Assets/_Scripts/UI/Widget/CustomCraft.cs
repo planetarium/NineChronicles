@@ -10,6 +10,7 @@ using Nekoyume.ApiClient;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -224,6 +225,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            AudioController.instance.PlayMusic(AudioController.MusicCode.CustomCraft);
             if (ReactiveAvatarState.Relationship > 0 &&
                 PlayerPrefs.GetInt(TutorialKey, 0) == 0)
             {

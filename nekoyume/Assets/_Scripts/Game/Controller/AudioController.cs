@@ -49,6 +49,7 @@ namespace Nekoyume.Game.Controller
             public const string BattleLoading = "bgm_battle_loading";
             public const string AdventureBoss01 = "bgm_adventure_boss_01";
             public const string AdventureBossLobby = "bgm_adventure_boss_lobby";
+            public const string CustomCraft = "bgm_custom_craft";
 
 #region WorldBoss
 
