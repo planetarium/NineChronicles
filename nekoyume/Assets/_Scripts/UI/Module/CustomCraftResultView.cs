@@ -71,7 +71,7 @@ namespace Nekoyume.UI.Module
             if (cpTopPercentText)
             {
                 var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.Last(row => row.Relationship <= ReactiveAvatarState.Relationship);
-                var cpRatingPercent = (int)Math.Max(100 - cpSum / (float) relationshipRow.MaxCp * 100, 1);
+                var cpRatingPercent = (int)Math.Max(100 - cpSum / (float) relationshipRow.CpGroups.Max(cp => cp.MaxCp) * 100, 1);
                 cpTopPercentText.SetText(L10nManager.Localize("UI_TOP_N_PERCENT_FORMAT", cpRatingPercent));
                 optionCpText.SetText($"{cpSum}");
             }
