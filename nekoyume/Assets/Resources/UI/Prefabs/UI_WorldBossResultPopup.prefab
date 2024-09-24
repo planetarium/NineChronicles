@@ -378,8 +378,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: SEASON BEST
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e14cdec1ec99d4f2ba55eff738f74f8e, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 74174c1e0d4374a7fa44a7c4befb41e1, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 4476c7fd06b24477ebfc3d62904481f9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -409,13 +409,13 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 8
   m_fontSizeMax: 18
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -40
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -3266,15 +3266,30 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2072516700111849783, guid: d640dc21c89cd1d4391491862d8a5f6e,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3145519810320375132, guid: d640dc21c89cd1d4391491862d8a5f6e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3145519810320375132, guid: d640dc21c89cd1d4391491862d8a5f6e,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4448479993150648812, guid: d640dc21c89cd1d4391491862d8a5f6e,
         type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4448479993150648812, guid: d640dc21c89cd1d4391491862d8a5f6e,
         type: 3}
-      propertyPath: m_Enabled
-      value: 1
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5183144423858213932, guid: d640dc21c89cd1d4391491862d8a5f6e,
         type: 3}
@@ -3325,6 +3340,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7647743083565160573, guid: d640dc21c89cd1d4391491862d8a5f6e,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8281203931229735741, guid: d640dc21c89cd1d4391491862d8a5f6e,
         type: 3}
