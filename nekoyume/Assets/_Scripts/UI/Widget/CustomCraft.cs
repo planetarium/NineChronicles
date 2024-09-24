@@ -251,8 +251,8 @@ namespace Nekoyume.UI
                 {
                     relationshipGaugeView.Set(
                         relationship,
-                        Mathf.Max(TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList
-                            .First(row => row.Relationship >= relationship).Relationship - 1, 0));
+                        Math.Max(TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList
+                            .FirstOrDefault(row => row.Relationship > relationship).Relationship - 1, 0));
                     ShowRelationshipInfoPopup(relationship);
                 })
                 .AddTo(_disposables);
