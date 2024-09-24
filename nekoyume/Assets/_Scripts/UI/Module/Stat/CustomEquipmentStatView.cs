@@ -54,13 +54,13 @@ namespace Nekoyume.UI.Module
                 : L10nManager.Localize("UI_RANDOM_OUTFIT"));
             baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
             expText.SetText($"EXP {equipmentRow.Exp?.ToCurrencyNotation()}");
-            cpText.SetText($"CP: {relationshipRow.MinCp}-{relationshipRow.MaxCp}");
+            cpText.SetText($"CP: {relationshipRow.CpGroups.Min(cp => cp.MinCp)}-{relationshipRow.CpGroups.Max(cp => cp.MaxCp)}");
             maxMainStatText.SetText(
-                $"{equipmentRow.Stat.StatType} : MAX {(long)CPHelper.ConvertCpToStat(equipmentRow.Stat.StatType, relationshipRow.MaxCp, 1)}");
+                $"{equipmentRow.Stat.StatType} : MAX {(long)CPHelper.ConvertCpToStat(equipmentRow.Stat.StatType, relationshipRow.CpGroups.Max(cp => cp.MaxCp), 1)}");
             requiredBlockText.SetText($"{customEquipmentCraftRecipeRow.RequiredBlock}");
             requiredLevelText.SetText(
                 $"Lv {TableSheets.Instance.ItemRequirementSheet[equipmentRow.Id].Level}");
-            var subStatStrings = GetMaxSubStat(equipmentRow.ItemSubType, relationshipRow.MaxCp, equipmentRow.Stat.StatType);
+            var subStatStrings = GetMaxSubStat(equipmentRow.ItemSubType, relationshipRow.CpGroups.Max(cp => cp.MaxCp), equipmentRow.Stat.StatType);
             maxSubStatTextFirst.SetText(subStatStrings.Item1);
             maxSubStatTextSecond.SetText(subStatStrings.Item2);
         }

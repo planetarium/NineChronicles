@@ -62,7 +62,7 @@ namespace Nekoyume.UI
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList
                 .Last(row => row.Relationship <= ReactiveAvatarState.Relationship);
-            var maxCp = relationshipRow.MaxCp;
+            var maxCp = relationshipRow.CpGroups.Max(cp => cp.MaxCp);
 
             var models = TableSheets.Instance.CustomEquipmentCraftOptionSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubtype)

@@ -40,8 +40,8 @@ namespace Nekoyume.UI
                 {
                     MinRelationship = row.Relationship,
                     MaxRelationship = nextRelationship,
-                    MinCp = row.MinCp,
-                    MaxCp = row.MaxCp,
+                    MinCp = row.CpGroups.Min(cp => cp.MinCp),
+                    MaxCp = row.CpGroups.Max(cp => cp.MaxCp),
                     RequiredLevel = TableSheets.Instance.ItemRequirementSheet[row.WeaponItemId]
                         .Level
                 };
