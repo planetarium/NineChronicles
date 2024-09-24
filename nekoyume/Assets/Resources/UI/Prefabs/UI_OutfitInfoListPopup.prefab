@@ -501,6 +501,7 @@ GameObject:
   - component: {fileID: 6699062477193614888}
   - component: {fileID: 136273471320652604}
   - component: {fileID: 8927643693034523321}
+  - component: {fileID: 7277351597991496203}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -631,6 +632,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7277351597991496203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3545257082435815725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &3655810726336299072
 GameObject:
   m_ObjectHideFlags: 0
@@ -1599,7 +1613,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 20}
+  m_AnchoredPosition: {x: 0, y: 20.00003}
   m_SizeDelta: {x: -80, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &6567848118549067047
