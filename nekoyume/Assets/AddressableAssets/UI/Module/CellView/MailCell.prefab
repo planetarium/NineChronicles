@@ -680,6 +680,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4508914646000692639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
+      propertyPath: m_fontStyle
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 4508914646000692639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
       propertyPath: m_fontColor.b
       value: 0.2901961
       objectReference: {fileID: 0}
@@ -705,6 +710,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4791061184244252715, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
+      propertyPath: m_fontStyle
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 4791061184244252715, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
       propertyPath: m_fontSizeMax
       value: 18
       objectReference: {fileID: 0}
@@ -722,6 +732,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontSize
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5915177305648263639, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
+      propertyPath: m_fontStyle
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 6022025817023840083, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
@@ -764,6 +779,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6545941750391536513, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf,
+        type: 2}
     - target: {fileID: 6938098714094323340, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: l10nKey
