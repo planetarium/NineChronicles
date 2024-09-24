@@ -330,14 +330,18 @@ namespace Nekoyume.UI
                     TableSheets.Instance.EquipmentItemSheet[_selectedItemId],
                     Guid.NewGuid(),
                     recipe.RequiredBlock);
+                var iconId = _selectedOutfit.IconRow.Value?.IconId ??
+                    CustomEquipmentCraft.RandomIconId;
+                item.IconId = iconId;
                 item.ByCustomCraft = true;
+                item.CraftWithRandom = iconId == CustomEquipmentCraft.RandomIconId;
                 combinationSlotsPopup.OnSendCombinationAction(
                     slotIndex,
                     recipe.RequiredBlock,
                     itemUsable: item);
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
                     recipe.Id,
-                    _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
+                    iconId)
                     .Subscribe();
                 LoadingHelper.CustomEquipmentCraft.Value = true;
                 OnOutfitSelected(_selectedOutfit);
@@ -577,13 +581,14 @@ namespace Nekoyume.UI
         }
 
         private IEnumerator CoCombineNPCAnimation(
-            ItemBase itemBase)
+            Equipment itemBase)
         {
             var loadingScreen = Find<CustomCraftLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
             Push();
             yield return new WaitForSeconds(.5f);
+            loadingScreen.SpeechBubbleWithItem.Show();
             loadingScreen.AnimateNPC();
         }
 
