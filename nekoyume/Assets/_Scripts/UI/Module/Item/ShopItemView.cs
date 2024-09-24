@@ -31,6 +31,7 @@ namespace Nekoyume.UI.Module
             baseItemView.RuneSelectMove.SetActive(false);
             baseItemView.SelectCollectionObject.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);
+            baseItemView.PriceText.gameObject.SetActive(true);
 
             if (model.ItemBase is not null)
             {
