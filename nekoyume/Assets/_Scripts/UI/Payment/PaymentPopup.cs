@@ -198,8 +198,9 @@ namespace Nekoyume.UI
 
         public void ShowLackApPotion(long cost)
         {
-            var canAttract = CanAttractShop();
-            SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
+            var itemId = 500000;
+            var canBuyShop = CanAttractShop() || CanAttractMobileShop(itemId);
+            SetPopupType(canBuyShop ? PopupType.AttractAction : PopupType.NoneAction);
             
             costIcon.overrideSprite = costIconData.GetIcon(CostType.ApPotion);
             var title = L10nManager.Localize("UI_REQUIRED_COST");
@@ -207,6 +208,18 @@ namespace Nekoyume.UI
             var content = GetLackApPotionContentString();
             
             YesCallback = AttractShop;
+            YesCallback = () =>
+            {
+                if (CanAttractMobileShop(itemId))
+                {
+                    AttractMobileShopAsync(itemId).Forget();
+                }
+                else
+                {
+                    AttractShop();
+                }
+            };
+            
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
         }
         
