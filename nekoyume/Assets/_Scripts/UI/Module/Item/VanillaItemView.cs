@@ -74,9 +74,11 @@ namespace Nekoyume.UI.Module
             iconImage.SetNativeSize();
         }
 
-        public void SetData(MaterialItemSheet.Row itemRow, System.Action onClick = null)
+        public void SetData(MaterialItemSheet.Row materialRow, System.Action onClick = null)
         {
-            var material = new Nekoyume.Model.Item.Material(itemRow);
+            var material = materialRow.ItemSubType is ItemSubType.Circle
+                ? ItemFactory.CreateTradableMaterial(materialRow)
+                : ItemFactory.CreateMaterial(materialRow);
             SetData(material, onClick);
         }
 

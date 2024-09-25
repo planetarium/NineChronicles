@@ -14,8 +14,6 @@ namespace Nekoyume.UI
         [SerializeField]
         protected GameObject acquisitionGroup;
 
-        private const int MaxCountOfAcquisitionPlace = 4;
-
         public override void Show(
             ItemBase item,
             string submitText,
@@ -84,7 +82,7 @@ namespace Nekoyume.UI
             if (acquisitionPlaceList.Any())
             {
                 acquisitionGroup.SetActive(true);
-                var repeatCount = Math.Min(acquisitionPlaceList.Count, MaxCountOfAcquisitionPlace);
+                var repeatCount = Math.Min(acquisitionPlaceList.Count, acquisitionPlaceButtons.Count);
                 for (var i = 0; i < repeatCount; i++)
                 {
                     acquisitionPlaceButtons[i].gameObject.SetActive(true);
