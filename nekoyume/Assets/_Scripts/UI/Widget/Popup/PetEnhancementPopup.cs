@@ -173,16 +173,12 @@ namespace Nekoyume.UI
             submitButton.OnSubmitSubject.Subscribe(_ => { Action(_petRow.Id, _targetLevel); }).AddTo(_disposables);
             submitButton.OnClickDisabledSubject.Subscribe(_ =>
             {
-                if (_enoughBalance)
-                {
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU"),
-                        NotificationCell.NotificationType.Information);
-                    return;
-                }
-                
-                Find<PaymentPopup>().ShowLackPaymentNCG(_ncgCost.ToString());
+                OneLineSystem.Push(
+                MailType.System,
+                _enoughBalance
+                    ? L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU")
+                    : L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                NotificationCell.NotificationType.Information);
             }).AddTo(_disposables);
         }
 
