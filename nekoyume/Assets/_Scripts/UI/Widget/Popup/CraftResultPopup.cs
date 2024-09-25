@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Nekoyume.UI
 {
@@ -45,6 +45,12 @@ namespace Nekoyume.UI
 
         public void Show(Equipment resultEquipment, int subRecipeId)
         {
+            if (BattleRenderer.Instance.IsOnBattle || Find<Tutorial>().isActiveAndEnabled)
+            {
+                NcDebug.LogWarning($"[{nameof(CraftResultPopup)}] Tutorial is active or Battle is on going.");
+                return;
+            }
+            
             HideAllEffects();
             
             itemView.SetData(resultEquipment);
