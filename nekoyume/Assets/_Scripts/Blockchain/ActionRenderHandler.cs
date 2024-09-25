@@ -1122,7 +1122,7 @@ namespace Nekoyume.Blockchain
                     formatKey = equipment.optionCountFromCombination == row.Options.Count
                         ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
                         : "NOTIFICATION_COMBINATION_COMPLETE";
-                    
+
                     Widget.Find<CraftResultPopup>().Show(equipment, subRecipeId.Value);
                 }
                 else
@@ -1813,106 +1813,134 @@ namespace Nekoyume.Blockchain
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var productInfos = eval.Action.ProductInfos;
-            if (eval.Action.AvatarAddress == avatarAddress) // buyer
-            {
-                foreach (var info in productInfos)
-                {
-                    var (itemName, itemProduct, favProduct) =
-                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(info.ProductId);
-                    var count = 0;
-                    if (itemProduct is not null)
-                    {
-                        count = (int)itemProduct.Quantity;
-                    }
-
-                    if (favProduct is not null)
-                    {
-                        count = (int)favProduct.Quantity;
-                        var currency = Currencies.GetMinterlessCurrency(favProduct.Ticker);
-                        UniTask.RunOnThreadPool(() => { States.Instance.SetCurrentAvatarBalance(eval, currency); }).Forget();
-                    }
-
-                    var price = info.Price;
-
-                    UniTask.RunOnThreadPool(() => { LocalLayerModifier.ModifyAgentGold(eval, agentAddress, price); });
-                    LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
-
-                    string message;
-                    if (count > 1)
-                    {
-                        message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_BUYER_COMPLETE"),
-                            itemName, price, count);
-                    }
-                    else
-                    {
-                        message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE"),
-                            itemName, price);
-                    }
-
-                    OneLineSystem.Push(
-                        MailType.Auction,
-                        message,
-                        NotificationCell.NotificationType.Notification);
-                }
-            }
-            else // seller
-            {
-                foreach (var info in productInfos)
-                {
-                    var buyerNameWithHash = $"#{eval.Action.AvatarAddress.ToHex()[..4]}";
-                    var (itemName, itemProduct, favProduct) =
-                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(info.ProductId);
-                    var count = 0;
-                    if (itemProduct is not null)
-                    {
-                        count = (int)itemProduct.Quantity;
-                    }
-
-                    if (favProduct is not null)
-                    {
-                        count = (int)favProduct.Quantity;
-                        var currency = Currencies.GetMinterlessCurrency(favProduct.Ticker);
-                        UniTask.RunOnThreadPool(() => { States.Instance.SetCurrentAvatarBalance(eval, currency); }).Forget();
-                    }
-
-                    var taxedPrice = info.Price.DivRem(100, out _) * Buy.TaxRate;
-                    UniTask.RunOnThreadPool(() => { LocalLayerModifier.ModifyAgentGold(eval, agentAddress, -taxedPrice); });
-                    LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
-
-                    string message;
-                    if (count > 1)
-                    {
-                        message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_SELLER_COMPLETE"),
-                            buyerNameWithHash,
-                            itemName,
-                            count);
-                    }
-                    else
-                    {
-                        message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
-                            buyerNameWithHash,
-                            itemName);
-                    }
-
-                    OneLineSystem.Push(MailType.Auction, message,
-                        NotificationCell.NotificationType.Notification);
-                }
-            }
-
-            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationTradingKey);
-
-            RenderQuest(avatarAddress,
-                States.Instance.CurrentAvatarState.questList.completedQuestIds);
-
             UniTask.RunOnThreadPool(async () =>
             {
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).Forget();
+            }).ToObservable().ObserveOnMainThread().Subscribe(unit =>
+            {
+                if (eval.Action.AvatarAddress == avatarAddress) // buyer
+                {
+                    foreach (var info in productInfos)
+                    {
+                        var count = 0;
+                        var productMail =
+                            States.Instance.CurrentAvatarState.mailBox.FirstOrDefault(mail =>
+                                mail.id == info.ProductId) as ProductBuyerMail;
+                        string itemName = string.Empty;
+
+                        if (productMail?.Product is ItemProduct itemProduct)
+                        {
+                            if (States.Instance.CurrentAvatarState.inventory.TryGetTradableItem(
+                                itemProduct.TradableItem.TradableId,
+                                itemProduct.TradableItem.RequiredBlockIndex, itemProduct.ItemCount,
+                                out var boughtItem))
+                            {
+                                count = itemProduct.ItemCount;
+                                itemName = boughtItem.item.GetLocalizedName();
+                            }
+                        }
+
+                        if (productMail?.Product is FavProduct favProduct)
+                        {
+                            count = (int) favProduct.Asset.MajorUnit;
+                            itemName = favProduct.Asset.GetLocalizedName();
+
+                            UniTask.RunOnThreadPool(() =>
+                            {
+                                States.Instance.SetCurrentAvatarBalance(eval,
+                                    favProduct.Asset.Currency);
+                            }).Forget();
+                        }
+
+                        var price = info.Price;
+
+                        UniTask.RunOnThreadPool(() =>
+                        {
+                            LocalLayerModifier.ModifyAgentGold(eval, agentAddress, price);
+                        });
+                        LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
+
+                        string message;
+                        if (count > 1)
+                        {
+                            message = string.Format(
+                                L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_BUYER_COMPLETE"),
+                                itemName, price, count);
+                        }
+                        else
+                        {
+                            message = string.Format(
+                                L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE"),
+                                itemName, price);
+                        }
+
+                        OneLineSystem.Push(
+                            MailType.Auction,
+                            message,
+                            NotificationCell.NotificationType.Notification);
+                    }
+                }
+                else // seller
+                {
+                    foreach (var info in productInfos)
+                    {
+                        var buyerNameWithHash = $"#{eval.Action.AvatarAddress.ToHex()[..4]}";
+                        var count = 0;
+                        var productMail =
+                            States.Instance.CurrentAvatarState.mailBox.FirstOrDefault(mail =>
+                                mail.id == info.ProductId) as ProductSellerMail;
+                        var itemName = productMail.Product is ItemProduct itemProduct
+                            ? itemProduct.TradableItem.ItemSubType.GetLocalizedString()
+                            : ((FavProduct) productMail.Product).Asset.GetLocalizedInformation();
+                        if (productMail.Product is ItemProduct itemProd)
+                        {
+                            count = itemProd.ItemCount;
+                        }
+
+                        if (productMail.Product is FavProduct favProd)
+                        {
+                            UniTask.RunOnThreadPool(() =>
+                            {
+                                States.Instance.SetCurrentAvatarBalance(eval, favProd.Asset.Currency);
+                            }).Forget();
+                        }
+
+                        var taxedPrice = productMail!.Product.Price.DivRem(100, out _) * Buy.TaxRate;
+                        UniTask.RunOnThreadPool(() =>
+                        {
+                            LocalLayerModifier.ModifyAgentGold(eval, agentAddress, -taxedPrice);
+                        });
+                        LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
+
+                        string message;
+                        if (count > 1)
+                        {
+                            message = string.Format(
+                                L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_SELLER_COMPLETE"),
+                                buyerNameWithHash,
+                                itemName,
+                                count);
+                        }
+                        else
+                        {
+                            message = string.Format(
+                                L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
+                                buyerNameWithHash,
+                                itemName);
+                        }
+
+                        OneLineSystem.Push(MailType.Auction, message,
+                            NotificationCell.NotificationType.Notification);
+                    }
+                }
+
+                Widget.Find<HeaderMenuStatic>()
+                    .UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationTradingKey);
+
+                RenderQuest(avatarAddress,
+                    States.Instance.CurrentAvatarState.questList.completedQuestIds);
+            });
         }
 
         /// <summary>
