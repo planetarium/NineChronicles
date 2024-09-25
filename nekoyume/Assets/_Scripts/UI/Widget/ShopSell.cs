@@ -225,10 +225,10 @@ namespace Nekoyume.UI
                     var paymentPopup = Find<PaymentPopup>();
                     if (apStoneCount <= 0)
                     {
-                        paymentPopup.ShowLackApPortion(1);
+                        paymentPopup.ShowLackApPotion(1);
                         break;
                     }
-                    paymentPopup.ShowCheckPaymentApPortion(APCost, () => action(true));
+                    paymentPopup.ShowCheckPaymentApPotion(APCost, () => action(true));
                     break;
                 case ConditionalButton.State.Disabled:
                     break;

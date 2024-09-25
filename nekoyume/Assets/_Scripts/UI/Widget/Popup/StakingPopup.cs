@@ -325,7 +325,8 @@ namespace Nekoyume.UI
                 States.Instance.StakedBalanceState.Gold;
             if (inputBigInt > totalDepositNcg.MajorUnit)
             {
-                Find<PaymentPopup>().ShowLackPaymentNCG(inputBigInt.ToString(), true);
+                Find<PaymentPopup>().ShowLackPaymentNCG(inputBigInt.ToString(), true);            
+                Close(true);
                 return;
             }
 
