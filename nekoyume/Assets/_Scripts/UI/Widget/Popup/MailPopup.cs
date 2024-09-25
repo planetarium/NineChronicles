@@ -460,7 +460,8 @@ namespace Nekoyume.UI
                     CombinationMail or
                     ItemEnhanceMail or
                     UnloadFromMyGaragesRecipientMail or
-                    ClaimItemsMail;
+                    ClaimItemsMail or
+                    CustomCraftMail;
         }
 
         private void SetList(MailBox mailBox)
