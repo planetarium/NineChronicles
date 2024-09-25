@@ -24,24 +24,6 @@ namespace Nekoyume.UI
             NoneAction, // 재화부족 팝업에서 재화를 얻을 수 없는 경우
         }
 
-        // TODO: 현재 추가해야하는 재화 타입을 확인하기 위해 메모용으로 임시 추가
-        // TODO: 가능하면 CostType을 사용할 것이지만, 대체 불가능하다 판단되면 이 타입을 사용할 것
-        // public enum PaymentType
-        // {
-        //     Crystal,
-        //     SilverDust,
-        //     GoldenDust, // TODO: GoldDust로 쓰는곳도 있고, GoldenDust로 쓰는 곳도 있어 정리가 안된듯함
-        //     RubyDust,
-        //     EmeraldDust,
-        //     NCG,
-        //     NCGStaking,
-        //     MonsterCollection,
-        //     RuneStoneSummonOnly, // 룬조각?
-        //     RuneStone,
-        //     ActionPoint,
-        //     APPortion,
-        // }
-
 #region SerializeField
         [SerializeField]
         private CostIconDataScriptableObject costIconData;
@@ -214,7 +196,7 @@ namespace Nekoyume.UI
             Show(title, content, MonsterCollectionString, string.Empty, false);
         }
 
-        public void ShowLackApPortion(long cost)
+        public void ShowLackApPotion(long cost)
         {
             var canAttract = CanAttractShop();
             SetPopupType(canAttract ? PopupType.AttractAction : PopupType.NoneAction);
@@ -222,7 +204,7 @@ namespace Nekoyume.UI
             costIcon.overrideSprite = costIconData.GetIcon(CostType.ApPotion);
             var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost.ToString();
-            var content = GetLackApPortionContentString();
+            var content = GetLackApPotionContentString();
             
             YesCallback = AttractShop;
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
@@ -406,7 +388,7 @@ namespace Nekoyume.UI
             Show(popupTitle, checkCostMessage, yes, no, false);
         }
 
-        public void ShowCheckPaymentApPortion(BigInteger cost, System.Action onPaymentSucceed)
+        public void ShowCheckPaymentApPotion(BigInteger cost, System.Action onPaymentSucceed)
         {
             SetPopupType(PopupType.PaymentCheck);
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
@@ -414,9 +396,9 @@ namespace Nekoyume.UI
             costIcon.overrideSprite = costIconData.GetIcon(CostType.ActionPoint);
 
             var inventory = States.Instance.CurrentAvatarState.inventory;
-            var apPortionCount = inventory.GetUsableItemCount(CostType.ApPotion, Game.Game.instance.Agent.BlockIndex);
-            var enoughBalance = apPortionCount >= 1;
-            var content = L10nManager.Localize("UI_CHECK_ACTION_POINT", apPortionCount);
+            var apPotionCount = inventory.GetUsableItemCount(CostType.ApPotion, Game.Game.instance.Agent.BlockIndex);
+            var enoughBalance = apPotionCount >= 1;
+            var content = L10nManager.Localize("UI_CHECK_ACTION_POINT", apPotionCount);
 
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
@@ -430,7 +412,7 @@ namespace Nekoyume.UI
                 else
                 {
                     Close(true);
-                    ShowLackApPortion(1);
+                    ShowLackApPotion(1);
                 }
             };
             
@@ -458,7 +440,7 @@ namespace Nekoyume.UI
             return L10nManager.Localize(canBuyShop ? "UI_LACK_HOURGLASS_SHOP" : "UI_LACK_HOURGLASS_MONSTER_COLLECTION");
         }
         
-        public static string GetLackApPortionContentString()
+        public static string GetLackApPotionContentString()
         {
             var canAttract = CanAttractShop();
             return L10nManager.Localize(!canAttract ? "UI_LACK_AP_PORTION_PC" : "UI_LACK_AP_PORTION");

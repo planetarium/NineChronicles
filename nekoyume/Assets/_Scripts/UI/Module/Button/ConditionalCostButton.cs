@@ -225,13 +225,13 @@ namespace Nekoyume.UI.Module
                         paymentPopup.ShowLackPaymentCrystal(cost);
                         break;
                     case CostType.ActionPoint:
-                        paymentPopup.ShowCheckPaymentApPortion(cost, ActionPoint.ChargeAP);
+                        paymentPopup.ShowCheckPaymentApPotion(cost, ActionPoint.ChargeAP);
                         break;
                     case CostType.Hourglass:
                         paymentPopup.ShowLackHourglass(cost);
                         break;
                     case CostType.ApPotion:
-                        paymentPopup.ShowLackApPortion(cost);
+                        paymentPopup.ShowLackApPotion(cost);
                         break;
                     case CostType.SilverDust:
                     case CostType.GoldDust:
