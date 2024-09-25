@@ -397,7 +397,7 @@ namespace Nekoyume.UI.Module
                     var paymentPopup = Widget.Find<PaymentPopup>();
                     if (_inventoryApStoneCount > 0)
                     {
-                        paymentPopup.ShowCheckPaymentApPotion(GrindCost, ActionPoint.ChargeAP);
+                        paymentPopup.ShowCheckPaymentApPotion(GrindCost, () => chargeAp(true));
                     }
                     else
                     {
