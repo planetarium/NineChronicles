@@ -286,7 +286,9 @@ namespace Nekoyume
             ItemBase itemBase = null;
             if (itemRow is MaterialItemSheet.Row materialRow)
             {
-                itemBase = ItemFactory.CreateMaterial(materialRow);
+                itemBase = materialRow.ItemSubType is ItemSubType.Circle
+                    ? ItemFactory.CreateTradableMaterial(materialRow)
+                    : ItemFactory.CreateMaterial(materialRow);
             }
             else
             {
