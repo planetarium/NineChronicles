@@ -39,7 +39,7 @@ namespace Nekoyume.UI
         [Header("Effects")]
         [SerializeField]
         private GameObject itemViewEffect;
-        
+
         [SerializeField]
         private List<GameObject> viewEffects;
 
@@ -50,9 +50,9 @@ namespace Nekoyume.UI
                 NcDebug.LogWarning($"[{nameof(CraftResultPopup)}] Tutorial is active or Battle is on going.");
                 return;
             }
-            
+
             HideAllEffects();
-            
+
             itemView.SetData(resultEquipment);
             itemNameText.SetText(resultEquipment.GetLocalizedName());
             baseStatText.SetText($"{resultEquipment.Stat.StatType} {resultEquipment.Stat.BaseValueAsLong}");
@@ -64,7 +64,7 @@ namespace Nekoyume.UI
             var statOptionsCount = statOptions.Count;
             var skillOptions = itemOptionInfo.SkillOptions;
             var skillOptionsCount = skillOptions.Count;
-            
+
             for (var i = 0; i < optionViews.Count; i++)
             {
                 var optionView = optionViews[i];
@@ -96,7 +96,7 @@ namespace Nekoyume.UI
         {
             var statOptions = itemOptionInfo.StatOptions;
             var result = new Dictionary<StatType, (long value, int count)>();
-            
+
             foreach (var (type, value, count) in statOptions)
             {
                 if (result.ContainsKey(type))
@@ -112,12 +112,12 @@ namespace Nekoyume.UI
 
             return result.Select(kv => (kv.Key, kv.Value.value, kv.Value.count)).ToList();
         }
-        
+
         private readonly Dictionary<StatType, MinMaxValue> _statValues = new();
         private int GetStatRating(StatType type, long value, int subRecipeId)
         {
             _statValues.Clear();
-            
+
             var equipmentItemSubRecipeSheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
             var row = equipmentItemSubRecipeSheet[subRecipeId];
             row.Options.ForEach(option =>
@@ -128,7 +128,7 @@ namespace Nekoyume.UI
                 {
                     return;
                 }
-                
+
                 if (_statValues.ContainsKey(statType))
                 {
                     var minMaxValue = new MinMaxValue
@@ -148,13 +148,19 @@ namespace Nekoyume.UI
                     });
                 }
             });
-            
+
             var minMaxValue = _statValues[type];
             var valueSubMin = value - minMaxValue.Min;
-            var rating = 1 - valueSubMin / (double)(minMaxValue.Max - minMaxValue.Min);
+            var denominator = minMaxValue.Max - minMaxValue.Min;
+            if (denominator == 0)
+            {
+                return 0;
+            }
+
+            var rating = 1 - valueSubMin / (double)denominator;
             var ratingPercent = (int)(rating * 100);
-            
-            return ratingPercent;
+
+            return Mathf.Clamp(ratingPercent, 0, 100);
         }
 
         /// <summary>
@@ -167,13 +173,13 @@ namespace Nekoyume.UI
         {
             var equipmentItemSubRecipeSheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
             var row = equipmentItemSubRecipeSheet[subRecipeId];
-            
+
             var ratingPercent = 0;
             row.Options.ForEach(option =>
             {
                 var optionRow = TableSheets.Instance.EquipmentItemOptionSheet[option.Id];
                 var statType = optionRow.StatType;
-                if (statType != StatType.NONE || optionRow.SkillId != skillId) 
+                if (statType != StatType.NONE || optionRow.SkillId != skillId)
                 {
                     return;
                 }
@@ -181,16 +187,28 @@ namespace Nekoyume.UI
                 if (damageRatio > 0 && optionRow.StatDamageRatioMin > 0)
                 {
                     var valueSubMin = damageRatio - optionRow.StatDamageRatioMin;
-                    var rating = 1 - valueSubMin / (double)(optionRow.StatDamageRatioMax - optionRow.StatDamageRatioMin);
-                    ratingPercent = (int)(rating * 100);
+                    var denominator = optionRow.StatDamageRatioMax - optionRow.StatDamageRatioMin;
+                    if (denominator == 0)
+                    {
+                        return;
+                    }
+
+                    var rating = 1 - valueSubMin / (double)denominator;
+                    ratingPercent = Mathf.Clamp((int)(rating * 100), 0, 100);
                     return;
                 }
 
                 if (power > 0 && optionRow.SkillDamageMin > 0)
-                {            
+                {
                     var valueSubMin = power - optionRow.SkillDamageMin;
-                    var rating = 1 - valueSubMin / (double)(optionRow.SkillDamageMax - optionRow.SkillDamageMin);
-                    ratingPercent = (int)(rating * 100);
+                    var denominator = optionRow.SkillDamageMax - optionRow.SkillDamageMin;
+                    if (denominator == 0)
+                    {
+                        return;
+                    }
+
+                    var rating = 1 - valueSubMin / (double)denominator;
+                    ratingPercent = Mathf.Clamp((int)(rating * 100), 0, 100);
                 }
             });
 
@@ -216,7 +234,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             foreach (var statView in optionViews)
             {
                 if (statView.gameObject.activeSelf || statView.IsEmpty)
@@ -237,7 +255,7 @@ namespace Nekoyume.UI
             viewEffects[idx].SetActive(true);
             skillView.Show();
         }
-        
+
         private void HideAllEffects()
         {
             itemViewEffect.SetActive(false);
