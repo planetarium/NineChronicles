@@ -216,7 +216,7 @@ namespace Nekoyume
                     // FAV, 영혼석이나 룬 조각을 구매한 경우
                     if (productBuyerMail.Product is FavProduct favProd)
                     {
-                        return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", favProd.Asset.GetLocalizedInformation());
+                        return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", favProd.Asset.GetLocalizedName());
                     }
 
                     // 상태에서 아이템을 찾을 수 없는 경우, 메일은 이제 네거야! 라는 문장이 나옵니다.
@@ -237,7 +237,7 @@ namespace Nekoyume
                     var fungibleAsset = new FungibleAssetValue(currency, majorUnit, minorUnit);
                     var productType = productSellerMail.Product is ItemProduct itemProduct
                         ? itemProduct.TradableItem.ItemSubType.GetLocalizedString()
-                        : ((FavProduct) productSellerMail.Product).Asset.GetLocalizedInformation();
+                        : ((FavProduct) productSellerMail.Product).Asset.GetLocalizedName();
                     return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", fungibleAsset,
                         productType);
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
