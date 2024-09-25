@@ -28,6 +28,23 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            goldUnlockButton.OnClickSubject.Subscribe(_ =>
+            {
+                if (goldUnlockButton.CurrentState.Value == ConditionalButton.State.Conditional)
+                {
+                    Close(true);
+                }
+            }).AddTo(gameObject);
+
+            goldenDustUnlockButton.OnClickSubject.Subscribe(_ =>
+            {
+                if (goldenDustUnlockButton.CurrentState.Value == ConditionalButton.State.Conditional)
+                {
+                    Close(true);
+                }
+            }).AddTo(gameObject);
+
             goldUnlockButton.OnSubmitSubject.Subscribe(_ =>
             {
                 Close();
