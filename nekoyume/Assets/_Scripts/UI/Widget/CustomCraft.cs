@@ -226,7 +226,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.CustomCraft);
-            if (ReactiveAvatarState.Relationship > 0 &&
+            if (ReactiveAvatarState.Relationship == 0 &&
                 PlayerPrefs.GetInt(TutorialKey, 0) == 0)
             {
                 // Play Tutorial - Custom craft (for old user)

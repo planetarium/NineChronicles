@@ -2572,13 +2572,13 @@ MonoBehaviour:
           fullScreenButton: 0
           noArrow: 0
           guideSprite: {fileID: 0}
-  - title: Stage 201
+  - title: Stage 301
     description: CustomEquipmentCraft
     tutorialScenario:
       scenario:
-      - id: 2010000
-        nextId: 2010001
-        checkPointId: 2010000
+      - id: 3010000
+        nextId: 3010001
+        checkPointId: 3010000
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2595,9 +2595,9 @@ MonoBehaviour:
           fullScreenButton: 0
           noArrow: 0
           guideSprite: {fileID: 0}
-      - id: 2010001
-        nextId: 2010002
-        checkPointId: 2010000
+      - id: 3010001
+        nextId: 3010002
+        checkPointId: 3010000
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2609,14 +2609,14 @@ MonoBehaviour:
           guideType: 3
           emojiType: 2
           dialogPositionType: 2
-          scriptKey: TUTORIAL_201_001
+          scriptKey: TUTORIAL_301_001
           arrowAdditionalDelay: 0
           fullScreenButton: 0
           noArrow: 0
           guideSprite: {fileID: 0}
-      - id: 2010002
-        nextId: 2010003
-        checkPointId: 2010000
+      - id: 3010002
+        nextId: 3010003
+        checkPointId: 3010000
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2628,14 +2628,14 @@ MonoBehaviour:
           guideType: 1
           emojiType: 2
           dialogPositionType: 2
-          scriptKey: TUTORIAL_201_002
+          scriptKey: TUTORIAL_301_002
           arrowAdditionalDelay: 0
           fullScreenButton: 0
           noArrow: 0
           guideSprite: {fileID: 0}
-      - id: 2010003
-        nextId: 2010004
-        checkPointId: 2010000
+      - id: 3010003
+        nextId: 3010004
+        checkPointId: 3010000
         data:
           presetId: 1
           arrowPositionOffset: {x: 5, y: 5}
@@ -2647,14 +2647,14 @@ MonoBehaviour:
           guideType: 1
           emojiType: 2
           dialogPositionType: 1
-          scriptKey: TUTORIAL_201_003
+          scriptKey: TUTORIAL_301_003
           arrowAdditionalDelay: 0
           fullScreenButton: 0
           noArrow: 0
           guideSprite: {fileID: 0}
-      - id: 2010004
+      - id: 3010004
         nextId: 0
-        checkPointId: -201
+        checkPointId: -301
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2666,7 +2666,7 @@ MonoBehaviour:
           guideType: 1
           emojiType: 2
           dialogPositionType: 2
-          scriptKey: TUTORIAL_201_004
+          scriptKey: TUTORIAL_301_004
           arrowAdditionalDelay: 0
           fullScreenButton: 0
           noArrow: 0

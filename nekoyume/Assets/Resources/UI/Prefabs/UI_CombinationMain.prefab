@@ -357,7 +357,7 @@ MonoBehaviour:
     requiredStageId: 40
     lockedButton: {fileID: 4868108788663917727}
   - lockObject: {fileID: 8843854341914765179}
-    requiredStageId: 200
+    requiredStageId: 301
     lockedButton: {fileID: 601257163011505506}
 --- !u!225 &3856260509446582021
 CanvasGroup:
@@ -8058,7 +8058,7 @@ PrefabInstance:
     - target: {fileID: 8259376983496205467, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_text
-      value: Stage 200
+      value: Stage 301
       objectReference: {fileID: 0}
     - target: {fileID: 8322290979673836999, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
