@@ -30,7 +30,7 @@ namespace Nekoyume.UI
         private static string CheckPointKey => $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
         // 튜토리얼이 실행될 스테이지를 넣는 배열입니다. 배열 요소에 해당하는 스테이지를 클리어하고나면 실행됩니다.
-        public static readonly int[] TutorialStageArray = { 5, 7, 10, 15, 23, 35, 40, 45, 49, 201 };
+        public static readonly int[] TutorialStageArray = { 5, 7, 10, 15, 23, 35, 40, 45, 49, 301 };
 
         public bool IsPlaying => _tutorial.IsActive();
 
