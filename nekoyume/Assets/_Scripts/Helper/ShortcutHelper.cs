@@ -122,11 +122,12 @@ namespace Nekoyume.Helper
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Grinding));
                         acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.PCShop));
 
-                        var stageRow = TableSheets.Instance.StageSheet
-                            .GetStagesContainsReward(itemId).OrderStagesByPriority(itemId)
-                            .FirstOrDefault();
-                        if (stageRow is not null && TableSheets.Instance.WorldSheet.TryGetByStageId(stageRow.Id, out var worldRow))
+                        var stageRows = TableSheets.Instance.StageSheet
+                            .GetStagesContainsReward(itemId)
+                            .OrderStagesByPriority(itemId);
+                        foreach (var stageRow in stageRows)
                         {
+                            TableSheets.Instance.WorldSheet.TryGetByStageId(stageRow.Id, out var worldRow);
                             acquisitionPlaceList.Add(GetAcquisitionPlace(caller, PlaceType.Stage, (worldRow.Id, stageRow.Id)));
                         }
 
