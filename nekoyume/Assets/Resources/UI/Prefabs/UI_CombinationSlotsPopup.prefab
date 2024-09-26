@@ -5416,7 +5416,7 @@ PrefabInstance:
     - target: {fileID: 411511002073010539, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: m_text
-      value: All Open
+      value: Open Now
       objectReference: {fileID: 0}
     - target: {fileID: 411511002073010539, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
@@ -5437,6 +5437,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontSizeMin
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 411511002073010539, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+        type: 3}
+      propertyPath: m_lineSpacing
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 2418683638863790235, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
@@ -5546,7 +5551,7 @@ PrefabInstance:
     - target: {fileID: 2885806143486015812, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -146
+      value: -128
       objectReference: {fileID: 0}
     - target: {fileID: 2885806143486015812, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
@@ -5556,7 +5561,7 @@ PrefabInstance:
     - target: {fileID: 2885806143486015812, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 55
+      value: 56
       objectReference: {fileID: 0}
     - target: {fileID: 2885806143486015812, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
@@ -5631,7 +5636,7 @@ PrefabInstance:
     - target: {fileID: 8744405165787708639, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: m_text
-      value: All Open
+      value: Open Now
       objectReference: {fileID: 0}
     - target: {fileID: 8744405165787708639, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
@@ -5652,6 +5657,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontSizeMin
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8744405165787708639, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+        type: 3}
+      propertyPath: m_lineSpacing
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 8928001901855831812, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
