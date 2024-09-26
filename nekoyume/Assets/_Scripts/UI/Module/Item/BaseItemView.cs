@@ -215,12 +215,12 @@ namespace Nekoyume
             SelectObject.SetActive(false);
             FocusObject.SetActive(false);
             NotificationObject.SetActive(false);
-            GrindingCountObject.SetActive(false);
-            LevelLimitObject.SetActive(false);
-            RewardReceived.SetActive(false);
-            LevelLimitObject.SetActive(false);
+            GrindingCountObject.SetActiveSafe(false);
+            LevelLimitObject.SetActiveSafe(false);
+            RewardReceived.SetActiveSafe(false);
+            LevelLimitObject.SetActiveSafe(false);
             RuneNotificationObj.SetActiveSafe(false);
-            customCraftArea.SetActive(false);
+            customCraftArea.SetActiveSafe(false);
         }
 
         public void ItemViewSetCurrencyData(FungibleAssetValue fav)
