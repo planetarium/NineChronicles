@@ -39,6 +39,7 @@ namespace Nekoyume
                 upgrade = 1;
             }
 
+            // it can be overflown if the item is already at the highest grade.
             return GetItemViewData(itemBase.Grade + upgrade);
         }
     }
