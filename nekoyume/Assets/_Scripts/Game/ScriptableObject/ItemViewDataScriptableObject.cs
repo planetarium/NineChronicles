@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Model.Item;
 using UnityEngine;
 
 namespace Nekoyume
@@ -25,6 +26,20 @@ namespace Nekoyume
             }
 
             return data;
+        }
+
+        public ItemViewData GetItemViewData(ItemBase itemBase)
+        {
+            var upgrade = 0;
+            // if itemBase is TradableMaterial, upgrade view data.
+            if (itemBase.ItemSubType != ItemSubType.Circle &&
+                itemBase.ItemSubType != ItemSubType.Scroll &&
+                itemBase is TradableMaterial)
+            {
+                upgrade = 1;
+            }
+
+            return GetItemViewData(itemBase.Grade + upgrade);
         }
     }
 }
