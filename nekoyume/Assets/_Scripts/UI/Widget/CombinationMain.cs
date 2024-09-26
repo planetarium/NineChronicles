@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -54,6 +55,7 @@ namespace Nekoyume.UI
             public GameObject lockObject;
             public int requiredStageId;
             public Button lockedButton;
+            public List<GameObject> unlockObjects;
         }
 
         protected override void Awake()
@@ -131,6 +133,7 @@ namespace Nekoyume.UI
                     var isLocked = lastClearedStageId < lockObj.requiredStageId;
                     lockObj.lockObject.SetActive(isLocked);
                     lockObj.lockedButton.interactable = !isLocked;
+                    lockObj.unlockObjects.ForEach(obj => obj.SetActive(!isLocked));
                 }
             }
 
