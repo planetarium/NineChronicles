@@ -14,9 +14,6 @@ namespace Nekoyume.UI
 {
     public class PaymentPopup : PopupWidget
     {
-        private const string MonsterCollectionString = "MONSTER COLLECTION";
-        private const string AdventureBossString = "ADVENTURE BOSS";
-
         private enum PopupType
         {
             AttractAction, // 재화부족 팝업에서 재화를 얻을 수 있는 경우
@@ -193,7 +190,7 @@ namespace Nekoyume.UI
             var content = L10nManager.Localize("UI_LACK_MONSTER_COLLECTION");
 
             YesCallback = AttractToMonsterCollection;
-            Show(title, content, MonsterCollectionString, string.Empty, false);
+            Show(title, content, L10nManager.Localize("UI_MENU_MONSTER_COLLECTION"), string.Empty, false);
         }
 
         public void ShowLackApPotion(long cost)
@@ -235,7 +232,7 @@ namespace Nekoyume.UI
             var content = GetLackHourglassContentString(canBuyShop);
             var labelYesText = canBuyShop ? 
                 L10nManager.Localize("UI_SHOP") : 
-                MonsterCollectionString;
+                L10nManager.Localize("UI_MENU_MONSTER_COLLECTION");
             
             YesCallback = () =>
             {
@@ -630,9 +627,9 @@ namespace Nekoyume.UI
                 case CostType.SilverDust:
                 case CostType.GoldDust:
                 case CostType.RubyDust:
-                    return MonsterCollectionString;
+                    return L10nManager.Localize("UI_MENU_MONSTER_COLLECTION");
                 case CostType.EmeraldDust:
-                    return AdventureBossString;
+                    return L10nManager.Localize("WORLD_NAME_ADVENTURE_BOSS");
             }
 
             return string.Empty;
