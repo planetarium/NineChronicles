@@ -3937,9 +3937,10 @@ namespace Nekoyume.Blockchain
                 prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
                 UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
-
+                
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
                 UpdateCurrentAvatarInventory(eval);
 
                 _disposableForBattleEnd?.Dispose();
