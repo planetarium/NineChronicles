@@ -118,16 +118,7 @@ namespace Nekoyume.UI.Module
 
         protected ItemViewData GetItemViewData(ItemBase itemBase)
         {
-            var upgrade = 0;
-            // if itemBase is TradableMaterial, upgrade view data.
-            if (itemBase.ItemSubType != ItemSubType.Circle &&
-                itemBase.ItemSubType != ItemSubType.Scroll &&
-                itemBase is TradableMaterial)
-            {
-                upgrade = 1;
-            }
-
-            return itemViewData.GetItemViewData(itemBase.Grade + upgrade);
+            return itemViewData.GetItemViewData(itemBase);
         }
 
         public virtual void Clear()
