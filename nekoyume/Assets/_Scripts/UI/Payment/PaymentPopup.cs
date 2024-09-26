@@ -8,10 +8,13 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+    
     public class PaymentPopup : PopupWidget
     {
         private const string MonsterCollectionString = "MONSTER COLLECTION";
@@ -47,7 +50,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI contentText;
 
         [SerializeField]
-        private TextButton buttonYes;
+        private ConditionalButton buttonYes;
 
         [SerializeField]
         private TextButton buttonNo;
@@ -66,7 +69,8 @@ namespace Nekoyume.UI
             base.Awake();
 
             buttonNo.OnClick = Cancel;
-            buttonYes.OnClick = Yes;
+            buttonYes.OnSubmitSubject.Subscribe(_ => Yes()).AddTo(gameObject);
+            
             buttonClose.onClick.AddListener(Cancel);
             CloseWidget = Cancel;
             SubmitWidget = Yes;
@@ -87,6 +91,9 @@ namespace Nekoyume.UI
                     buttonNo.gameObject.SetActive(true);
                     buttonClose.gameObject.SetActive(false);
                     attractArrowObject.SetActive(false);
+                    
+                    buttonYes.SetCondition(null);
+                    buttonYes.UpdateObjects();
                     break;
                 case PopupType.NoneAction:
                     buttonYes.gameObject.SetActive(false);
@@ -110,6 +117,10 @@ namespace Nekoyume.UI
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost;
             var no = L10nManager.Localize("UI_NO");
+            
+            buttonYes.SetCondition(null);
+            buttonYes.UpdateObjects();
+            
             YesCallback = onAttract;
             Show(title, content, attractMessage, no, false);
         }
@@ -137,6 +148,9 @@ namespace Nekoyume.UI
             var content = GetRuneStoneContent(runeStone);
             var attractMessage = GetRuneStoneAttractMessage(runeStone);
             
+            buttonYes.SetCondition(runeStone.IsTradable() ? CheckClearRequiredStageShop : null);
+            buttonYes.UpdateObjects();
+            
             YesCallback = AttractRuneStone(runeStone);
             Show(title, content, attractMessage, string.Empty, false);
         }
@@ -151,6 +165,8 @@ namespace Nekoyume.UI
             costText.text = cost.ToString();
             var content = GetLackDustContentString(costType);
 
+            CheckDustRequiredStage(costType);
+
             YesCallback = () => AttractDust(costType);
             Show(title, content, GetDustAttractString(costType), string.Empty, false);
         }
@@ -164,6 +180,9 @@ namespace Nekoyume.UI
             costText.text = cost.ToString();
             var content = L10nManager.Localize("UI_LACK_CRYSTAL");
             var labelYesText = L10nManager.Localize("GRIND_UI_BUTTON");
+            
+            buttonYes.SetCondition(CheckClearRequiredStageGrind);
+            buttonYes.UpdateObjects();
 
             YesCallback = AttractGrind;
             Show(title, content, labelYesText, string.Empty, false);
@@ -178,6 +197,10 @@ namespace Nekoyume.UI
             var title = L10nManager.Localize("UI_REQUIRED_COST");
             costText.text = cost;
             var content = GetLackNCGContentString(isStaking);
+            
+            buttonYes.SetCondition(CheckClearRequiredStageShop);
+            buttonYes.UpdateObjects();
+
 
             YesCallback = AttractShop;
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
@@ -191,6 +214,9 @@ namespace Nekoyume.UI
             var title = L10nManager.Localize("UI_REQUIRED_MONSTER_COLLECTION_LEVEL");
             costText.text = L10nManager.Localize("UI_MONSTER_COLLECTION_LEVEL_FORMAT", stakeLevel);
             var content = L10nManager.Localize("UI_LACK_MONSTER_COLLECTION");
+            
+            buttonYes.SetCondition(CheckClearRequiredStageMonsterCollection);
+            buttonYes.UpdateObjects();
 
             YesCallback = AttractToMonsterCollection;
             Show(title, content, MonsterCollectionString, string.Empty, false);
@@ -207,7 +233,9 @@ namespace Nekoyume.UI
             costText.text = cost.ToString();
             var content = GetLackApPotionContentString();
             
-            YesCallback = AttractShop;
+            buttonYes.SetCondition(CheckClearRequiredStageShop);
+            buttonYes.UpdateObjects();
+            
             YesCallback = () =>
             {
                 if (CanAttractMobileShop(itemId))
@@ -236,6 +264,10 @@ namespace Nekoyume.UI
             var labelYesText = canBuyShop ? 
                 L10nManager.Localize("UI_SHOP") : 
                 MonsterCollectionString;
+
+
+            buttonYes.SetCondition(canBuyShop ? CheckClearRequiredStageShop : CheckClearRequiredStageMonsterCollection);
+            buttonYes.UpdateObjects();
             
             YesCallback = () =>
             {
@@ -479,12 +511,34 @@ namespace Nekoyume.UI
 #endregion ShopHelper
         
 #region Attract
+        private bool CheckClearRequiredStage(int requireStage)
+        {
+            if (States.Instance.CurrentAvatarState.worldInformation == null ||
+                !States.Instance.CurrentAvatarState.worldInformation
+                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+            {
+                return false;
+            }
+
+            return requireStage <= world.StageClearedId;
+        }
+        
+        private bool CheckClearRequiredStageMonsterCollection()
+        {
+            return CheckClearRequiredStage(Game.LiveAsset.GameConfig.RequiredStage.TutorialEnd);
+        }
+        
         private void AttractToMonsterCollection()
         {
             // 기능 충돌 방지를 위해 StakingPopup실행 전 다른 UI를 닫음
             CloseWithOtherWidgets();
             Game.Event.OnRoomEnter.Invoke(true);
             Find<StakingPopup>().Show();
+        }
+        
+        private bool CheckClearRequiredStageAdventureBoss()
+        {
+            return CheckClearRequiredStage(Game.LiveAsset.GameConfig.RequiredStage.Adventure);
         }
 
         private void AttractToAdventureBoss()
@@ -506,6 +560,11 @@ namespace Nekoyume.UI
             }
         }
         
+        private bool CheckClearRequiredStageGrind()
+        {
+            return CheckClearRequiredStage(Game.LiveAsset.GameConfig.RequiredStage.Grind);
+        }
+        
         private void AttractGrind()
         {
             Find<Menu>().Close();
@@ -514,6 +573,11 @@ namespace Nekoyume.UI
             Find<BattlePreparation>().Close();
             Find<Craft>().Close(true);
             Find<Grind>().Show();
+        }
+        
+        private bool CheckClearRequiredStageShop()
+        {
+            return CheckClearRequiredStage(Game.LiveAsset.GameConfig.RequiredStage.Shop);
         }
 
         private void AttractShop()
@@ -538,12 +602,6 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Close();
         }
 
-        private void AttractToSummon()
-        {
-            CloseWithOtherWidgets();
-            Find<Summon>().Show();
-        }
-
         private async UniTask AttractMobileShopAsync(int id)
         {
 #if !(UNITY_ANDROID || UNITY_IOS)
@@ -558,6 +616,12 @@ namespace Nekoyume.UI
                 await Find<MobileShop>().ShowAsTab(categoryName);
                 Find<LoadingScreen>().Close();
             }
+        }
+
+        private void AttractToSummon()
+        {
+            CloseWithOtherWidgets();
+            Find<Summon>().Show();
         }
 #endregion Attract
 
@@ -668,6 +732,26 @@ namespace Nekoyume.UI
             }
 
             NcDebug.LogWarning($"[{nameof(PaymentPopup)}] AttractDust: Invalid costType.");
+        }
+        
+        private void CheckDustRequiredStage(CostType costType)
+        {
+            switch (costType)
+            {
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                case CostType.RubyDust:
+                    buttonYes.SetCondition(CheckClearRequiredStageMonsterCollection);
+                    break;
+                case CostType.EmeraldDust:
+                    buttonYes.SetCondition(CheckClearRequiredStageAdventureBoss);
+                    break;
+                default:
+                    buttonYes.SetCondition(null);
+                    break;
+            }
+            
+            buttonYes.UpdateObjects();
         }
 #endregion DustHelper
         
