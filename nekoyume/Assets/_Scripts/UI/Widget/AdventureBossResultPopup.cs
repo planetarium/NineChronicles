@@ -84,7 +84,7 @@ namespace Nekoyume.UI
                 if (i >= rewards.Count)
                 {
                     itemViews[i].gameObject.SetActive(false);
-                    return;
+                    continue;
                 }
 
                 switch (rewards[i].ItemType)
