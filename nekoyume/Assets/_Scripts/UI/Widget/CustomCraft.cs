@@ -608,7 +608,7 @@ namespace Nekoyume.UI
             }
 
             // 이번에 제작하면 친밀도 구간이 넘어갈때!
-            if (TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values.Any(row => row.Relationship + 1 == relationship))
+            if (TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values.Any(row => row.Relationship == relationship + 1))
             {
                 relationshipInfoPopupObject.SetActive(true);
                 PlayerPrefs.SetString(key, string.Empty);
