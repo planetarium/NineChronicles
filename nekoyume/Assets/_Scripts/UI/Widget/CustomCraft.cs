@@ -441,7 +441,7 @@ namespace Nekoyume.UI
                     .Subscribe(index => routine(index));
             }
 
-            var (ncg, materialCosts) = CustomCraftHelper.CalculateCraftCost(
+            var (_, materialCosts) = CustomCraftHelper.CalculateCraftCost(
                 iconId,
                 (int)ReactiveAvatarState.Relationship,
                 tableSheets.MaterialItemSheet,
@@ -450,30 +450,30 @@ namespace Nekoyume.UI
                 States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
             );
 
+            var additionalCost = CustomCraftHelper.CalculateAdditionalCost((int) ReactiveAvatarState.Relationship,
+                tableSheets.CustomEquipmentCraftRelationshipSheet);
+
             SetCostAndMaterial(materialCosts.Select(pair =>
                     new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value))
                 .ToList(),
                 randomOnly,
-                (long)ncg);
+                additionalCost);
         }
 
-        private void SetCostAndMaterial(List<EquipmentItemSubRecipeSheet.MaterialInfo> materials, bool randomOnly, long ncgCost)
+        private void SetCostAndMaterial(List<EquipmentItemSubRecipeSheet.MaterialInfo> materials, bool randomOnly, (BigInteger, IDictionary<int, int>)? additionalCost = null)
         {
             requiredItemRecipeView.SetData(
                 materials,
                 true);
-            if (ncgCost != 0)
+            var ncgCost = 0L;
+            if (additionalCost != null)
             {
-                var scrollItemId = TableSheets.Instance.MaterialItemSheet.OrderedList!
-                    .First(row => row.ItemSubType == ItemSubType.Scroll).Id;
-                var circleItemId = TableSheets.Instance.MaterialItemSheet.OrderedList!
-                    .First(row => row.ItemSubType == ItemSubType.Circle).Id;
+                ncgCost = (long)additionalCost.Value.Item1;
                 var costs = new List<ConditionalCostButton.CostParam>
                     {new(CostType.NCG, ncgCost)};
-                costs.AddRange(materials
-                    .Where(item => item.Id != scrollItemId && item.Id != circleItemId)
+                costs.AddRange(additionalCost.Value.Item2
                     .Select(cost =>
-                        new ConditionalCostButton.CostParam((CostType) cost.Id, cost.Count)));
+                        new ConditionalCostButton.CostParam((CostType) cost.Key, cost.Value)));
                 conditionalCostButton.SetCost(costs);
             }
             else
@@ -607,14 +607,12 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // 친밀도 구간이 넘어간 직후가 아니라면 안띄워도 됨
-            if (TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values.All(row => row.Relationship != relationship))
+            // 이번에 제작하면 친밀도 구간이 넘어갈때!
+            if (TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values.Any(row => row.Relationship + 1 == relationship))
             {
-                return;
+                relationshipInfoPopupObject.SetActive(true);
+                PlayerPrefs.SetString(key, string.Empty);
             }
-
-            relationshipInfoPopupObject.SetActive(true);
-            PlayerPrefs.SetString(key, string.Empty);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
