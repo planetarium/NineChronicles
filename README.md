@@ -30,7 +30,7 @@ visit [Nine Chronicles Developer Portal][9c-devportal].
 
 
 ### Dependency
- - [Unity Hub]
+ - [Unity Hub](https://unity.com/unity-hub)
 
 
 ## Contribution
