@@ -29,19 +29,19 @@ namespace Nekoyume.UI.Module
         private GameObject normalObject = null;
 
         [SerializeField]
-        private TextMeshProUGUI normalText = null;
+        protected TextMeshProUGUI normalText = null;
 
         [SerializeField]
         private GameObject conditionalObject = null;
 
         [SerializeField]
-        private TextMeshProUGUI conditionalText = null;
+        protected TextMeshProUGUI conditionalText = null;
 
         [SerializeField]
         protected GameObject disabledObject = null;
 
         [SerializeField]
-        private TextMeshProUGUI disabledText = null;
+        protected TextMeshProUGUI disabledText = null;
 
         [SerializeField]
         private GameObject effectOverlay = null;

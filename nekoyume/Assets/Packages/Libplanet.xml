@@ -296,7 +296,7 @@
             </summary>
             <returns><see cref="T:System.Collections.Immutable.IImmutableSet`1"/> of staged transactions.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.FindNextHashes(Libplanet.Blockchain.BlockLocator,System.Nullable{Libplanet.Types.Blocks.BlockHash},System.Int32)">
+        <member name="M:Libplanet.Blockchain.BlockChain.FindNextHashes(Libplanet.Blockchain.BlockLocator,System.Int32)">
             <summary>
             Finds the branch point <see cref="T:Libplanet.Types.Blocks.BlockHash"/> between this <see cref="T:Libplanet.Blockchain.BlockChain"/>
             and <paramref name="locator"/> and returns the list of <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es of
@@ -304,32 +304,15 @@
             <see cref="T:Libplanet.Types.Blocks.BlockHash"/>.</summary>
             <param name="locator">The <see cref="T:Libplanet.Blockchain.BlockLocator"/> to find the branching point
             from.</param>
-            <param name="stop">The <see cref="T:Libplanet.Types.Blocks.BlockHash"/> to stop looking for subsequent blocks
-            once encountered.
-            </param>
             <param name="count">The Maximum number of <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es to return.</param>
-            <returns>A tuple of the index of the branch point and <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es
-            including the branch point <see cref="T:Libplanet.Types.Blocks.BlockHash"/>.  If no branch point is found,
-            returns a tuple of <see langword="null"/> and an empty array of
-            <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es.</returns>
+            <returns>A list of <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es including
+            the branch point <see cref="T:Libplanet.Types.Blocks.BlockHash"/>.  If no branch point is found,
+            returns an empty list of <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.Fork(Libplanet.Types.Blocks.BlockHash,System.Boolean)">
-            <summary>
-            Forks the chain at <paramref name="point"/> and returns the newly forked chain.
-            </summary>
-            <param name="point">The hash in which to fork from.</param>
-            <param name="inheritRenderers">Whether to inherit the renderers from the existing chain.
-            </param>
-            <returns>An instance of the newly forked chain.</returns>
-            <exception cref="T:System.ArgumentException">Throws when the provided <paramref name="point"/>
-            does not exist in the current chain.</exception>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetBlockLocator(System.Int32)">
+        <member name="M:Libplanet.Blockchain.BlockChain.GetBlockLocator">
             <summary>
             Returns a new <see cref="T:Libplanet.Blockchain.BlockLocator"/> from the tip of current chain.
             </summary>
-            <param name="threshold">The amount of consequent blocks to include before sampling.
-            </param>
             <returns>A instance of block locator.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.GetBlockCommit(System.Int64)">
@@ -373,12 +356,12 @@
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.FindBranchpoint(Libplanet.Blockchain.BlockLocator)">
             <summary>
-            Find an approximate to the topmost common ancestor between this
+            Finds an approximate topmost common ancestor between this
             <see cref="T:Libplanet.Blockchain.BlockChain"/> and a given <see cref="T:Libplanet.Blockchain.BlockLocator"/>.
             </summary>
-            <param name="locator">A block locator that contains candidate common ancestors.</param>
-            <returns>An approximate to the topmost common ancestor.  If it failed to find anything
-            returns <see langword="null"/>.</returns>
+            <param name="locator">A block locator that contains common ancestor candidates.</param>
+            <returns>An approximate to the topmost common ancestor if found, otherwise
+            <see langword="null"/>.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.ListStagedTransactions(System.Collections.Generic.IComparer{Libplanet.Types.Tx.Transaction})">
             <summary>
@@ -855,72 +838,23 @@
         </member>
         <member name="T:Libplanet.Blockchain.BlockLocator">
             <summary>
-            A class that contains <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es for a series of blocks.
+            A class that thinly wraps a <see cref="T:Libplanet.Types.Blocks.BlockHash"/> for the purpose of syncing blocks.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockLocator.#ctor(System.Collections.Generic.IEnumerable{Libplanet.Types.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blockchain.BlockLocator.#ctor(Libplanet.Types.Blocks.BlockHash)">
             <summary>
-            Initializes a new instance of <see cref="T:Libplanet.Blockchain.BlockLocator"/> from <paramref name="hashes"/>.
+            Initializes a new instance of <see cref="T:Libplanet.Blockchain.BlockLocator"/> from <paramref name="hash"/>.
             </summary>
-            <param name="hashes">Enumerable of <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es to convert from.</param>
-            <exception cref="T:System.ArgumentException">Thrown when <paramref name="hashes"/> is empty.
-            </exception>
+            <param name="hash">The <see cref="T:Libplanet.Types.Blocks.BlockHash"/> value to hold.</param>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockLocator.Create(System.Int64,System.Func{System.Int64,System.Nullable{Libplanet.Types.Blocks.BlockHash}},System.Int64)">
-            <summary>
-            <para>
-            Creates a new instance of <see cref="T:Libplanet.Blockchain.BlockLocator"/> with an indexer
-            function, sampling after <paramref name="sampleAfter"/> number of
-            <see cref="T:Libplanet.Types.Blocks.Block"/>s.
-            </para>
-            <para>
-            This collects all <see cref="T:Libplanet.Types.Blocks.BlockHash"/>es corresponding to indices inductively
-            defined by:
-            <list type="bullet">
-              <item><description>
-                <c>i_0 = startIndex</c>
-              </description></item>
-              <item><description>
-                <c>i_k = max(i_(k - 1) - 1, 0)</c> for <c>0 &lt; k</c> and  <c>k &lt;= s</c>
-              </description></item>
-              <item><description>
-                <c>i_k = max(i_(k - 1) - 2^(k - 1 - s), 0)</c> for <c>0 &lt; k</c>
-                and <c>s &lt; k</c>
-              </description></item>
-            </list>
-            where <c>s = max(sampleAfter, 0)</c> and the sequence terminates after index <c>i_k</c>
-            reaches zero or the <see cref="T:Libplanet.Types.Blocks.BlockHash"/> returned by
-            <paramref name="indexToBlockHash"/> for <c>i_k</c> is <see langword="null"/>,
-            in which case the <see cref="T:Libplanet.Types.Blocks.BlockHash"/> corresponding to index <c>0</c>
-            (presumably a <see cref="T:Libplanet.Types.Blocks.BlockHash"/> of the genesis <see cref="T:Libplanet.Types.Blocks.Block"/>)
-            is added at the end.
-            </para>
-            </summary>
-            <param name="startIndex">The starting index.</param>
-            <param name="indexToBlockHash">The function that converts an index to a
-            <see cref="T:Libplanet.Types.Blocks.BlockHash"/>.  This can be <see langword="null"/> which indicates
-            a missing <see cref="T:Libplanet.Types.Blocks.Block"/> at the index.  Any value from <c>0</c> to
-            <paramref name="startIndex"/> may be used as an argument to call this function.</param>
-            <param name="sampleAfter">The number of consecutive blocks to include before sampling.
-            </param>
-            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="startIndex"/>
-            is negative.</exception>
-            <exception cref="T:System.ArgumentException">Thrown when either <see cref="T:Libplanet.Types.Blocks.BlockHash"/> returned
-            by <paramref name="indexToBlockHash"/> for index <c>0</c> is <see langword="null"/>.
-            </exception>
-            <returns>
-            An instance of <see cref="T:Libplanet.Blockchain.BlockLocator"/> created with given arguments.
-            </returns>
-            <remarks>
-            Returned <see cref="T:Libplanet.Blockchain.BlockLocator"/> created by this factory method is guaranteed
-            to have the <see cref="T:Libplanet.Types.Blocks.BlockHash"/> corresponding to index <c>0</c>.
-            </remarks>
+        <member name="M:Libplanet.Blockchain.BlockLocator.Equals(Libplanet.Blockchain.BlockLocator)">
+            <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockLocator.GetEnumerator">
-            <summary>
-            Gets the enumerator.
-            </summary>
-            <returns>The enumerator.</returns>
+        <member name="M:Libplanet.Blockchain.BlockLocator.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockLocator.GetHashCode">
+            <inheritdoc/>
         </member>
         <member name="T:Libplanet.Blockchain.Branch">
             <summary>
@@ -1723,7 +1657,7 @@
             a <see cref="T:Libplanet.Blockchain.BlockChain"/> (so that its <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/> has changed).
             </summary>
             <remarks>It is guaranteed to be called only once for a block, and only after applied to
-            the blockchain, unless it has been stale due to reorg.</remarks>
+            the blockchain.</remarks>
             <param name="oldTip">The previous <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/>.</param>
             <param name="newTip">The current <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/>.</param>
         </member>

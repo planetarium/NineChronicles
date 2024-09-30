@@ -6649,8 +6649,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4285114285
-  m_fontColor: {r: 0.6784314, g: 0.654902, b: 0.4117647, a: 1}
+    rgba: 4292146175
+  m_fontColor: {r: 1, g: 0.9529412, b: 0.83137256, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -8639,8 +8639,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4285114285
-  m_fontColor: {r: 0.6784314, g: 0.654902, b: 0.4117647, a: 1}
+    rgba: 4292146175
+  m_fontColor: {r: 1, g: 0.9529412, b: 0.83137256, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -10011,8 +10011,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282274982
-  m_fontColor: {r: 0.6509804, g: 0.32941177, b: 0.24313726, a: 1}
+    rgba: 4285039788
+  m_fontColor: {r: 0.6745098, g: 0.5176471, b: 0.40784314, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -14939,7 +14939,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 249, y: -29}
-  m_SizeDelta: {x: 118.02, y: 54}
+  m_SizeDelta: {x: 173.83, y: 54}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8712181609334187525
 CanvasRenderer:
@@ -14978,7 +14978,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292737535
   m_fontColor: {r: 1, g: 0.9764706, b: 0.8666667, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -20654,6 +20654,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224898616830980190}
     m_Modifications:
+    - target: {fileID: 982864167805053227, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
+        type: 3}
+      propertyPath: m_fontStyle
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 4026198494144953527, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4225486379158897180, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
+        type: 3}
+      propertyPath: m_TargetGraphic
+      value: 
+      objectReference: {fileID: 7219979526942275119}
     - target: {fileID: 5249319720707526681, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -20674,12 +20689,27 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UnityEngine.GameObject, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 7000804185109853539, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
+        type: 3}
+      propertyPath: m_fontStyle
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 7631049869878886197, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
         type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf,
         type: 2}
+    - target: {fileID: 8164024438008644767, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
+        type: 3}
+      propertyPath: m_fontStyle
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 8965215343042197547, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9012881842372670150, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
         type: 3}
       propertyPath: m_Name
@@ -20810,6 +20840,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b36febf8f4647fcbb37d13526f5c039, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7219979526942275119 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7761276656745361434, guid: e22ecdd1c2220b74e8f7a7199f1c2391,
+    type: 3}
+  m_PrefabInstance: {fileID: 1118883785642477109}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &8181604163424078553 stripped
@@ -23176,6 +23218,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 45179b48ce56c4ed18b4c1f9ef4e72b2,
         type: 3}
+    - target: {fileID: 7057353643760748405, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf,
+        type: 2}
     - target: {fileID: 7505806445016242676, guid: 543ea58faa96c47bea69a87c29ba0ce7,
         type: 3}
       propertyPath: fixedMarginOption

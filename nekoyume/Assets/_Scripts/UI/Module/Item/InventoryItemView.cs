@@ -27,6 +27,8 @@ namespace Nekoyume.UI.Module
                 baseItemView.EmptyObject.SetActive(true);
                 return;
             }
+            
+            baseItemView.ClearItem();
 
             if (model.ItemBase != null)
             {
@@ -45,18 +47,6 @@ namespace Nekoyume.UI.Module
         protected virtual void UpdateItem(InventoryItem model, InventoryScroll.ContextModel context)
         {
             Disposables.DisposeAllAndClear();
-            baseItemView.Container.SetActive(true);
-            baseItemView.EmptyObject.SetActive(false);
-            baseItemView.EnoughObject.SetActive(false);
-            baseItemView.MinusObject.SetActive(false);
-            baseItemView.ExpiredObject.SetActive(false);
-            baseItemView.SelectBaseItemObject.SetActive(false);
-            baseItemView.SelectMaterialItemObject.SetActive(false);
-            baseItemView.LockObject.SetActive(false);
-            baseItemView.ShadowObject.SetActive(false);
-            baseItemView.PriceText.gameObject.SetActive(false);
-            baseItemView.LoadingObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
             baseItemView.RuneSelectMove.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);
@@ -130,26 +120,19 @@ namespace Nekoyume.UI.Module
                 .Subscribe(context.OnClick.OnNext).AddTo(Disposables);
             baseItemView.TouchHandler.OnDoubleClick.Select(_ => model)
                 .Subscribe(context.OnDoubleClick.OnNext).AddTo(Disposables);
+
+            if (model.ItemBase is Equipment equipmentItem)
+            {
+                baseItemView.CustomCraftArea.SetActive(equipmentItem.ByCustomCraft);
+            }
         }
 
         protected virtual void UpdateRune(InventoryItem model, InventoryScroll.ContextModel context)
         {
             Disposables.DisposeAllAndClear();
-            baseItemView.Container.SetActive(true);
-            baseItemView.EmptyObject.SetActive(false);
-            baseItemView.EnoughObject.SetActive(false);
-            baseItemView.MinusObject.SetActive(false);
-            baseItemView.ExpiredObject.SetActive(false);
-            baseItemView.SelectBaseItemObject.SetActive(false);
-            baseItemView.SelectMaterialItemObject.SetActive(false);
-            baseItemView.LockObject.SetActive(false);
-            baseItemView.ShadowObject.SetActive(false);
-            baseItemView.PriceText.gameObject.SetActive(false);
-            baseItemView.LoadingObject.SetActive(false);
             baseItemView.CountText.gameObject.SetActive(false);
             baseItemView.LevelLimitObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.RuneNotificationObj.SetActiveSafe(false);
             baseItemView.RuneSelectMove.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);
@@ -213,20 +196,8 @@ namespace Nekoyume.UI.Module
         protected virtual void UpdateFungibleAsset(InventoryItem model, InventoryScroll.ContextModel context)
         {
             Disposables.DisposeAllAndClear();
-            baseItemView.Container.SetActive(true);
-            baseItemView.EmptyObject.SetActive(false);
-            baseItemView.EnoughObject.SetActive(false);
-            baseItemView.MinusObject.SetActive(false);
-            baseItemView.ExpiredObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
-            baseItemView.SelectBaseItemObject.SetActive(false);
-            baseItemView.SelectMaterialItemObject.SetActive(false);
-            baseItemView.LockObject.SetActive(false);
-            baseItemView.ShadowObject.SetActive(false);
-            baseItemView.PriceText.gameObject.SetActive(false);
-            baseItemView.LoadingObject.SetActive(false);
             baseItemView.LevelLimitObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive(false);
             baseItemView.EnhancementText.gameObject.SetActive(false);
             baseItemView.EnhancementImage.gameObject.SetActive(false);
             baseItemView.OptionTag.gameObject.SetActive(false);

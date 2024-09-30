@@ -23,6 +23,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Model;
 using UnityEngine.Serialization;
 using Toggle = UnityEngine.UI.Toggle;
 
@@ -89,7 +90,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject currencyContainer;
 
-        private int _requiredCost;
         private int _bossId;
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
@@ -217,8 +217,13 @@ namespace Nekoyume.UI
                     var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
                     if (raiderState is null)
                     {
-                        var exception = new WorldBossStateNotFoundException();
-                        Game.Game.BackToMainAsync(exception).Forget();
+                        var cost = GetEntranceFee(avatarState);
+                        var balance = States.Instance.CrystalBalance.MajorUnit;
+                        Find<PaymentPopup>().ShowCheckPaymentCrystal(
+                            balance,
+                            cost,
+                            L10nManager.Localize("UI_BOSS_JOIN_THE_SEASON"),
+                            () => StartCoroutine(CoRaid()));
                     }
                     else
                     {
@@ -284,7 +289,7 @@ namespace Nekoyume.UI
                 false,
                 true,
                 null,
-                new List<FungibleAssetValue>());
+                new WorldBossRewards());
 
             raidStage.Play(raidStartData);
 

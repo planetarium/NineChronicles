@@ -155,6 +155,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6009f633cefe3414dbd7b64dacbe1f3c, type: 3}
   - {fileID: 21300000, guid: 257e6d43c022ebb4bae0bd05c02b3922, type: 3}
   - {fileID: 21300000, guid: 51e8f853eec983d42b458d6590cae320, type: 3}
+  - {fileID: 21300000, guid: 691f4c53b0a552f4d85b348c38dfe2b2, type: 3}
   - {fileID: 21300000, guid: 652e7d53a43d14e1aaff6bd4ebbc6404, type: 3}
   - {fileID: 21300000, guid: 1c30f663db0ec48c8b262cb7e3f17be5, type: 3}
   - {fileID: 21300000, guid: 8caa176316bef944cb75025552249cc1, type: 3}
@@ -214,6 +215,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8b00ecf5590ff4124a931a3d1066af98, type: 3}
   - {fileID: 21300000, guid: 799eb006e60e04e8489d8430e89485b2, type: 3}
   - {fileID: 21300000, guid: c150b136096c64c4bbd3e99a2b1989ab, type: 3}
+  - {fileID: 21300000, guid: 016a83464a5d3da498b1343ec39cadc7, type: 3}
   - {fileID: 21300000, guid: 7bf3e44650dbc904684badbe312edb69, type: 3}
   - {fileID: 21300000, guid: bf432646c78aebe4badee49ca7ed3602, type: 3}
   - {fileID: 21300000, guid: cf59b94684ef45748b7042094e18e557, type: 3}
@@ -462,6 +464,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 03fb94ce603b3fa4d83f90720bcf8959, type: 3}
   - {fileID: 21300000, guid: 426aa6ce414d53b4c93571ad093bbbf7, type: 3}
   - {fileID: 21300000, guid: 56aabdcef6b854b2ebc12d98c148aa1c, type: 3}
+  - {fileID: 21300000, guid: 53767fce244e24043ac464daea5d9e8f, type: 3}
   - {fileID: 21300000, guid: 061bffde3e674d04aa94ffe48e1aa128, type: 3}
   - {fileID: 21300000, guid: d8af57eec015042759964f4e4b579c85, type: 3}
   - {fileID: 21300000, guid: c350a7fef0fe5400aae666922ecd5884, type: 3}
@@ -585,6 +588,7 @@ SpriteAtlas:
   - UI_bg_lock_Active
   - UI_stage_icon_star_01
   - UI_bg_stageback_00
+  - Relationship_Gauge
   - Common_Prrogressbar_GaugeBg_Glow
   - Button_Tab_bg_Press_01
   - UI_box_15
@@ -644,6 +648,7 @@ SpriteAtlas:
   - UI_popup_title_bg_04
   - UI_icon_Quest_type_03
   - UI_main_icon_Normalpowder
+  - TabButton_Pattern_Off
   - UI_arrow_03
   - Icon_FloorReward_01_Black
   - UI_icon_open_2
@@ -892,6 +897,7 @@ SpriteAtlas:
   - button_page_02
   - UI_Btn_bg_05
   - UI_bg_CP
+  - TabButton_Pattern_On
   - UI_Popup_bg_07_2
   - UI_Popup_icon_10
   - Ch_LevelBg

@@ -5,6 +5,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using Spine;
 using Spine.Unity;
@@ -31,6 +32,9 @@ namespace Nekoyume.UI
         [SerializeField] private SpeechBubbleWithItem speechBubble;
 
         [SerializeField] private SkeletonGraphic npcSkeletonGraphic;
+
+        [SerializeField]
+        private GameObject randomIconObject;
 
         private Coroutine _npcAppearCoroutine;
         private readonly WaitForSeconds _waitForOneSec = new(1f);
@@ -105,13 +109,20 @@ namespace Nekoyume.UI
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             npcSkeletonGraphic.gameObject.SetActive(true);
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
-                NPCAnimation.Type.Motion_01.ToString(), false);
+                NPCAnimation.Type.Appear_01.ToString(), false);
             npcSkeletonGraphic.AnimationState.AddAnimation(0,
-                NPCAnimation.Type.Idle.ToString(), true, 0f);
+                NPCAnimation.Type.Motion_01.ToString(), true, 0f);
 
             yield return _waitForOneSec;
 
             speechBubble.Show();
+            var isRandomIcon = ((Equipment) speechBubble.Item.ItemBase.Value).CraftWithRandom;
+            randomIconObject.SetActive(isRandomIcon);
+            if (isRandomIcon)
+            {
+                speechBubble.ItemView.iconImage.overrideSprite = null;
+            }
+
             speechBubble.SetKey("SPEECH_COMBINATION_START_");
             StartCoroutine(speechBubble.CoShowText(true));
 
@@ -154,7 +165,7 @@ namespace Nekoyume.UI
         {
             // TODO: Disappear animation이 추가될 예정인데 그걸로 바꿔줘야함
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
-                NPCAnimation.Type.Motion_01.ToString(), false);
+                NPCAnimation.Type.Disappear_01.ToString(), false);
             npcSkeletonGraphic.AnimationState.Complete += OnComplete;
             HideButton();
             if (speechBubble.Item != null && _itemMoveAnimation)

@@ -102,9 +102,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d492fa51ae0e52240a0ac2642d8cfd07, type: 3}
   - {fileID: 21300000, guid: 44de8532f7d6c0542909aaf390bf097d, type: 3}
   - {fileID: 21300000, guid: 74d8d8e20af0c0947b17c8a0d65c1121, type: 3}
+  - {fileID: 21300000, guid: 691f4c53b0a552f4d85b348c38dfe2b2, type: 3}
   - {fileID: 21300000, guid: c125fc140f2d83340840de166b9b0f5e, type: 3}
   - {fileID: 21300000, guid: 862541a5bb5f47e43b6565afcc8fe096, type: 3}
   - {fileID: 21300000, guid: f89d4a3664ff11e4a87f9499966fea3e, type: 3}
+  - {fileID: 21300000, guid: 016a83464a5d3da498b1343ec39cadc7, type: 3}
   - {fileID: 21300000, guid: 3ae25aa6528f4ac4eb203b6ded95fa44, type: 3}
   - {fileID: 21300000, guid: c080b3c8c72820343932e0b25ede9806, type: 3}
   - {fileID: 21300000, guid: 8e12c9c85995a2748817f3ef7550bfda, type: 3}
@@ -117,15 +119,18 @@ SpriteAtlas:
   - {fileID: 21300000, guid: af08128de7eb75744806daba57a2bd20, type: 3}
   - {fileID: 21300000, guid: ae778f9d52429b04ab4d82cbc77b6794, type: 3}
   - {fileID: 21300000, guid: 2b572a5ec038df04da42ef4355395771, type: 3}
+  - {fileID: 21300000, guid: 53767fce244e24043ac464daea5d9e8f, type: 3}
   - {fileID: 21300000, guid: aa1d274f9f0cbcb47a023ab69307d927, type: 3}
   - {fileID: 21300000, guid: 048642eff3f2329479dc139583993b55, type: 3}
   m_PackedSpriteNamesToIndex:
   - Relationship_Bg
   - Dice_05
   - Dice_09
+  - Relationship_Gauge
   - RandomInfo_Bg
   - UI_Combination_Slot_Question2
   - Dice_11
+  - TabButton_Pattern_Off
   - Dice_12
   - Dice_10
   - Dice_02
@@ -138,6 +143,7 @@ SpriteAtlas:
   - CustomCraft_Slot_Bg
   - Dice_08
   - Dice_00
+  - TabButton_Pattern_On
   - Dice_01
   - Dice_03
   m_RenderDataMap: {}

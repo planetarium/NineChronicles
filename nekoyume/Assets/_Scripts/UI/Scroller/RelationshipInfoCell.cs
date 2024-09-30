@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
@@ -28,8 +29,9 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(Model itemData)
         {
-            relationshipSectionText.SetText($"{itemData.MinRelationship}~{itemData.MaxRelationship}");
-            cpText.SetText($"{itemData.MinCp}~{itemData.MaxCp}");
+            relationshipSectionText.SetText(
+                $"{itemData.MinRelationship}-{(itemData.MaxRelationship != 0 ? itemData.MaxRelationship.ToString() : string.Empty)}");
+            cpText.SetText($"{itemData.MinCp}-{itemData.MaxCp}");
             requiredLevelText.SetText(itemData.RequiredLevel.ToString());
             focusObject.SetActive(Context.CurrentModel.MaxRelationship == itemData.MaxRelationship);
         }
