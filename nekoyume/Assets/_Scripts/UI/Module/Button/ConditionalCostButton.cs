@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
     public class ConditionalCostButton : ConditionalButton
     {
         public struct CostParam
@@ -46,7 +48,7 @@ namespace Nekoyume.UI.Module
         private List<GameObject> costParents = null;
 
         private readonly Dictionary<CostType, long> _costMap = new();
-        
+
         public long GetCost(CostType type) =>
             _costMap.TryGetValue(type, out var cost)
                 ? cost
@@ -95,12 +97,6 @@ namespace Nekoyume.UI.Module
         {
             base.UpdateObjects();
 
-            var showCost = _costMap.Count > 0;
-            foreach (var parent in costParents)
-            {
-                parent.SetActive(showCost);
-            }
-
             foreach (var costObject in costObjects)
             {
                 var exist = _costMap.ContainsKey(costObject.type);
@@ -121,6 +117,27 @@ namespace Nekoyume.UI.Module
                     costText.text.color = CheckCostOfType(costObject.type, cost) ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
                 }
             }
+
+            var showCost = _costMap.Count > 0;
+            foreach (var parent in costParents)
+            {
+                parent.SetActive(showCost);
+            }
+
+            var currentObject = CurrentState.Value switch
+            {
+                State.Normal => normalText,
+                State.Conditional => conditionalText,
+                State.Disabled => disabledText,
+            };
+            Observable.NextFrame().Subscribe(_ =>
+            {
+                currentObject.gameObject.SetActive(false);
+                currentObject.gameObject.SetActive(true);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(
+                    (RectTransform)currentObject.transform);
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)transform);
+            });
         }
 
         /// <summary>
