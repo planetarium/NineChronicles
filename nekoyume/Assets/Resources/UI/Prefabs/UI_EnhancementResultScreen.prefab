@@ -70142,11 +70142,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4508521128231051789}
-  - component: {fileID: 4508521128231051778}
+  - component: {fileID: 2122610656452575478}
   - component: {fileID: 1855230034404433799}
   - component: {fileID: 730985123631227733}
   m_Layer: 5
-  m_Name: UI_EnhancementResultPopup
+  m_Name: UI_EnhancementResultScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70177,7 +70177,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4508521128231051778
+--- !u!114 &2122610656452575478
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
