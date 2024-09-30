@@ -133,7 +133,7 @@ namespace Nekoyume.UI
 
         private const string RelationshipInfoKey = "RELATIONSHIP-INFO-{0}";
 
-        private static string TutorialKey => $"Tutorial_Check_CustomCraft_{Game.Game.instance.States.CurrentAvatarKey}";
+        private static string TutorialKey => $"Tutorial_Check_CustomCraft_V2_{Game.Game.instance.States.CurrentAvatarKey}";
 
         public bool RequiredUpdateCraftCount { get; set; }
 
@@ -230,7 +230,7 @@ namespace Nekoyume.UI
                 PlayerPrefs.GetInt(TutorialKey, 0) == 0)
             {
                 // Play Tutorial - Custom craft (for old user)
-                Game.Game.instance.Stage.TutorialController.Play(2010002);
+                Game.Game.instance.Stage.TutorialController.Play(3010002);
                 PlayerPrefs.SetInt(TutorialKey, 1);
             }
 
