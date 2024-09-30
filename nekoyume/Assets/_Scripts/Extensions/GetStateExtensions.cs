@@ -14,7 +14,6 @@ using Nekoyume.Model.AdventureBoss;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.Module;
-using Nekoyume.UI.Module;
 
 namespace Nekoyume
 {
@@ -60,6 +59,68 @@ namespace Nekoyume
             }
 
             return (itemSlotStates, runeSlotStates);
+        }
+        
+        public static async Task<AllCombinationSlotState> GetAllCombinationSlotStateAsync(
+            this IAgent agent, Address avatarAddress)
+        {
+            AllCombinationSlotState allCombinationSlotState;
+            
+            var value = await agent.GetStateAsync(Addresses.CombinationSlot, avatarAddress);
+            if (value is List list)
+            {
+                allCombinationSlotState = new AllCombinationSlotState(list);
+            }
+            else
+            {
+                var combinationSlotAddresses = new List<Address>();
+                for (var i = 0; i < AvatarState.DefaultCombinationSlotCount; i++)
+                {
+                    combinationSlotAddresses.Add(CombinationSlotState.DeriveAddress(avatarAddress, i));
+                }
+                var bulkStates = await agent.GetStateBulkAsync(ReservedAddresses.LegacyAccount, combinationSlotAddresses);
+                allCombinationSlotState = new AllCombinationSlotState();
+                
+                for (var i = 0; i < AvatarState.DefaultCombinationSlotCount; i++)
+                {
+                    var bulkState = bulkStates[combinationSlotAddresses[i]];
+                    var slotState = new CombinationSlotState((Dictionary)bulkState)
+                    {
+                        Index = i
+                    };
+                    allCombinationSlotState.AddSlot(slotState);
+                }
+            }
+
+            return allCombinationSlotState;
+        }
+
+        public static AllCombinationSlotState GetAllCombinationSlotState(HashDigest<SHA256> hash, Address avatarAddress)
+        {
+            AllCombinationSlotState allCombinationSlotState;
+
+            var allCombinationSlotStateValue = StateGetter.GetState(hash, Addresses.CombinationSlot, avatarAddress);
+            if (allCombinationSlotStateValue is List allCombinationSlotStateSerialized)
+            {
+                allCombinationSlotState = new AllCombinationSlotState(allCombinationSlotStateSerialized);
+            }
+            else
+            {
+                allCombinationSlotState = AllCombinationSlotState.MigrationLegacySlotState(slotIndex =>
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    return StateGetter.GetCombinationSlotState(hash, avatarAddress, slotIndex);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }, avatarAddress);
+            }
+
+            return allCombinationSlotState;
+        }
+
+        public static CombinationSlotState GetCombinationSlotState(HashDigest<SHA256> hash, Address avatarAddress, int slotIndex)
+        {
+            var allSlot = GetAllCombinationSlotState(hash, avatarAddress);
+            return allSlot.GetSlot(slotIndex);
         }
 
         public static async Task<AllRuneState> GetAllRuneStateAsync(

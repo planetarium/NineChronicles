@@ -23,6 +23,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Model.EnumType;
+using Nekoyume.UI.Model;
 using UnityEngine.Serialization;
 using Toggle = UnityEngine.UI.Toggle;
 
@@ -89,7 +90,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject currencyContainer;
 
-        private int _requiredCost;
         private int _bossId;
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
@@ -218,28 +218,12 @@ namespace Nekoyume.UI
                     if (raiderState is null)
                     {
                         var cost = GetEntranceFee(avatarState);
-                        if (States.Instance.CrystalBalance.MajorUnit < cost)
-                        {
-                            Find<PaymentPopup>().ShowAttract(
-                                CostType.Crystal,
-                                cost,
-                                L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
-                                L10nManager.Localize("UI_GO_GRINDING"),
-                                () =>
-                                {
-                                    Find<Grind>().Show();
-                                    Find<WorldBoss>().ForceClose();
-                                    Close();
-                                });
-                        }
-                        else
-                        {
-                            Find<PaymentPopup>()
-                                .ShowWithAddCost("UI_TOTAL_COST", "UI_BOSS_JOIN_THE_SEASON",
-                                    CostType.Crystal, cost,
-                                    CostType.WorldBossTicket, 1,
-                                    () => StartCoroutine(CoRaid()));
-                        }
+                        var balance = States.Instance.CrystalBalance.MajorUnit;
+                        Find<PaymentPopup>().ShowCheckPaymentCrystal(
+                            balance,
+                            cost,
+                            L10nManager.Localize("UI_BOSS_JOIN_THE_SEASON"),
+                            () => StartCoroutine(CoRaid()));
                     }
                     else
                     {
@@ -305,7 +289,7 @@ namespace Nekoyume.UI
                 false,
                 true,
                 null,
-                new List<FungibleAssetValue>());
+                new WorldBossRewards());
 
             raidStage.Play(raidStartData);
 

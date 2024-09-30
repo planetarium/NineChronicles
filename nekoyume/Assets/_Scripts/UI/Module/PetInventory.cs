@@ -198,7 +198,7 @@ namespace Nekoyume.UI.Module
 
             if (equipped)
             {
-                var combinationState = States.Instance.GetCombinationSlotState();
+                var combinationState = States.Instance.GetUsedCombinationSlotState();
                 var equippedSlot = combinationState.FirstOrDefault(x => x.Value.PetId == petId);
                 viewData.CombinationSlotIndex =
                     equippedSlot.Equals(default(KeyValuePair<int, CombinationSlotState>)) ? int.MaxValue : equippedSlot.Key;

@@ -28,6 +28,7 @@ using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using mixpanel;
+using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.Action.Garages;
 using Nekoyume.ApiClient;
 using Nekoyume.Arena;
@@ -39,6 +40,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -166,6 +168,7 @@ namespace Nekoyume.Blockchain
             EventMaterialItemCrafts();
             AuraSummon();
             RuneSummon();
+            CustomEquipmentCraft();
 
             // Market
             RegisterProduct();
@@ -179,9 +182,10 @@ namespace Nekoyume.Blockchain
             ChargeActionPoint();
             ClaimStakeReward();
 
-            // Crystal Unlocks
+            // Unlocks
             UnlockEquipmentRecipe();
             UnlockWorld();
+            UnlockCombinationSlot();
 
             // Arena
             InitializeArenaActions();
@@ -635,6 +639,25 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void UnlockCombinationSlot()
+        {
+            _actionRenderer.EveryRender<UnlockCombinationSlot>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockCombinationSlot)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<UnlockCombinationSlot>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionUnlockCombinationSlot)
+                .AddTo(_disposables);
+        }
+
         private void PetEnhancement()
         {
             _actionRenderer.EveryRender<PetEnhancement>()
@@ -760,6 +783,25 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void CustomEquipmentCraft()
+        {
+            _actionRenderer.EveryRender<CustomEquipmentCraft>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Select(PrepareCustomEquipmentCraft)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCustomEquipmentCraft)
+                .AddTo(_disposables);
+            _actionRenderer.EveryRender<CustomEquipmentCraft>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionCustomEquipmentCraft)
+                .AddTo(_disposables);
+        }
+
         private void ResponseCreateAvatar(
             ActionEvaluation<CreateAvatar> eval)
         {
@@ -793,26 +835,29 @@ namespace Nekoyume.Blockchain
             }).Forget();
         }
 
-        private (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState)
-            PrepareRapidCombination(
-                ActionEvaluation<RapidCombination> eval)
+        private (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, List<CombinationSlotState> CombinationSlotStates, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState)
+            PrepareRapidCombination(ActionEvaluation<RapidCombination> eval)
         {
             var avatarAddress = eval.Action.avatarAddress;
-            var slotIndex = eval.Action.slotIndex;
             var avatarState = States.Instance.AvatarStates.Values
                 .FirstOrDefault(x => x.address == avatarAddress);
             var combinationSlotState = avatarState is not null
-                ? States.Instance.GetCombinationSlotState(
+                ? States.Instance.GetUsedCombinationSlotState(
                     avatarState,
                     Game.Game.instance.Agent.BlockIndex)
                 : null;
-
-            if (StateGetter.TryGetCombinationSlotState(
-                    eval.OutputState,
-                    avatarAddress,
-                    slotIndex,
-                    out var slotState) && avatarState is not null)
+            var slotStates = new List<CombinationSlotState>();
+            foreach (var slotIndex in eval.Action.slotIndexList)
             {
+                if (!StateGetter.TryGetCombinationSlotState(
+                        eval.OutputState,
+                        avatarAddress,
+                        slotIndex,
+                        out var slotState) || avatarState is null)
+                {
+                    continue;
+                }
+
                 // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
                 var result = (RapidCombination5.ResultModel)slotState.Result;
                 foreach (var pair in result.cost)
@@ -828,130 +873,135 @@ namespace Nekoyume.Blockchain
                 {
                     UpdatePetState(avatarAddress, slotState.PetId.Value, eval.OutputState);
                 }
+
+                slotStates.Add(slotState);
             }
 
-            return (eval, avatarState, slotState, combinationSlotState);
+            return (eval, avatarState, slotStates, combinationSlotState);
         }
 
         private void ResponseRapidCombination(
-            (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState) renderArgs)
+            (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, List<CombinationSlotState> CombinationSlotStates, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState) renderArgs)
         {
             var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
-            var slotIndex = renderArgs.Evaluation.Action.slotIndex;
+            var slotIndexList = renderArgs.Evaluation.Action.slotIndexList;
 
-            if (renderArgs.CombinationSlotState is null)
+            if (renderArgs.CombinationSlotStates is null)
             {
+                NcDebug.LogError("CombinationSlotState is null.");
                 return;
             }
-
-            var result = (RapidCombination5.ResultModel)renderArgs.CombinationSlotState.Result;
-
-            string formatKey;
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
 
             if (renderArgs.AvatarState is null)
             {
+                NcDebug.LogError("AvatarState is null.");
                 return;
             }
 
-            var stateResult = renderArgs.CurrentCombinationSlotState[slotIndex]?.Result;
-            switch (stateResult)
+            foreach (var slotIndex in slotIndexList)
             {
-                case CombinationConsumable5.ResultModel combineResultModel:
+                var index = slotIndex;
+                var result = renderArgs.CombinationSlotStates
+                    .Where(state => state.Index == index)
+                    .Select(state => (RapidCombination5.ResultModel)state.Result)
+                    .FirstOrDefault();
+
+                if (result is null)
                 {
-                    LocalLayerModifier.AddNewResultAttachmentMail(
-                        avatarAddress,
-                        combineResultModel.id,
-                        currentBlockIndex);
-                    if (combineResultModel.itemUsable is Equipment equipment)
+                    NcDebug.LogError("Result is null.");
+                    continue;
+                }
+
+                string formatKey;
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+
+                var stateResult = renderArgs.CurrentCombinationSlotState[slotIndex]?.Result;
+                switch (stateResult)
+                {
+                    case CombinationConsumable5.ResultModel combineResultModel:
                     {
-                        var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
-                        if (combineResultModel.subRecipeId.HasValue &&
-                            sheet.TryGetValue(
-                                combineResultModel.subRecipeId.Value,
-                                out var subRecipeRow))
+                        if (combineResultModel.itemUsable is Equipment equipment)
                         {
-                            formatKey = equipment.optionCountFromCombination ==
-                                subRecipeRow.Options.Count
-                                    ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                                    : "NOTIFICATION_COMBINATION_COMPLETE";
+                            var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
+                            if (combineResultModel.subRecipeId.HasValue &&
+                                sheet.TryGetValue(
+                                    combineResultModel.subRecipeId.Value,
+                                    out var subRecipeRow))
+                            {
+                                formatKey = equipment.optionCountFromCombination ==
+                                    subRecipeRow.Options.Count
+                                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                                        : "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
+                            else
+                            {
+                                formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
+
+                            // CustomEquipmentCraft 액션으로 만들어진 장비의 경우, AddNewResultAttachmentMail 대신 AddNewMail을 써야합니다.
+                            if (equipment.ByCustomCraft)
+                            {
+                                LocalLayerModifier.AddNewMail(avatarAddress, result.id);
+                                break;
+                            }
                         }
                         else
                         {
                             formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                         }
+
+                        LocalLayerModifier.AddNewResultAttachmentMail(
+                            avatarAddress,
+                            combineResultModel.id,
+                            currentBlockIndex);
+                        break;
                     }
-                    else
+                    case ItemEnhancement13.ResultModel enhancementResultModel:
                     {
+                        LocalLayerModifier.AddNewResultAttachmentMail(
+                            avatarAddress,
+                            enhancementResultModel.id,
+                            currentBlockIndex);
+
+                        switch (enhancementResultModel.enhancementResult)
+                        {
+                            case ItemEnhancement13.EnhancementResult.Success:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                            default:
+                                NcDebug.LogError(
+                                    $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                        }
+
+                        break;
+                    }
+                    default:
+                        NcDebug.LogError(
+                            $"Unexpected state.Result: {stateResult}");
                         formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                    }
-
-                    break;
+                        break;
                 }
-                case ItemEnhancement13.ResultModel enhancementResultModel:
+
+                NotificationSystem.CancelReserve(result.itemUsable.ItemId);
+                NotificationSystem.Push(
+                    result.itemUsable is Equipment { ByCustomCraft: true }
+                        ? MailType.CustomCraft
+                        : MailType.Workshop,
+                    L10nManager.Localize(formatKey, result.itemUsable.GetLocalizedName()),
+                    NotificationCell.NotificationType.Notification);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                var identifier = PlayerPrefs.GetString(pushIdentifierKey, string.Empty);
+                if (!string.IsNullOrEmpty(identifier))
                 {
-                    LocalLayerModifier.AddNewResultAttachmentMail(
-                        avatarAddress,
-                        enhancementResultModel.id,
-                        currentBlockIndex);
-
-                    switch (enhancementResultModel.enhancementResult)
-                    {
-                        /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                            break;*/
-                        case ItemEnhancement13.EnhancementResult.Success:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                            break;
-                        /*case Action.ItemEnhancement.EnhancementResult.Fail:
-                            Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
-                                new Dictionary<string, Value>
-                                {
-                                    ["GainedCrystal"] =
-                                        (long)enhancementResultModel.CRYSTAL.MajorUnit,
-                                    ["BurntNCG"] = (long)enhancementResultModel.gold,
-                                    ["AvatarAddress"] =
-                                        States.Instance.CurrentAvatarState.address.ToString(),
-                                    ["AgentAddress"] =
-                                        States.Instance.AgentState.address.ToString(),
-                                });
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                            break;*/
-                        default:
-                            NcDebug.LogError(
-                                $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                            break;
-                    }
-
-                    break;
+                    PushNotifier.CancelReservation(identifier);
+                    PlayerPrefs.DeleteKey(pushIdentifierKey);
                 }
-                default:
-                    NcDebug.LogError(
-                        $"Unexpected state.Result: {stateResult}");
-                    formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                    break;
+
+                Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
             }
-
-            var format = L10nManager.Localize(formatKey);
-            NotificationSystem.CancelReserve(result.itemUsable.ItemId);
-            NotificationSystem.Push(
-                MailType.Workshop,
-                string.Format(format, result.itemUsable.GetLocalizedName()),
-                NotificationCell.NotificationType.Notification);
-
-            var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
-            var identifier = PlayerPrefs.GetString(pushIdentifierKey, string.Empty);
-            if (!string.IsNullOrEmpty(identifier))
-            {
-                PushNotifier.CancelReservation(identifier);
-                PlayerPrefs.DeleteKey(pushIdentifierKey);
-            }
-
-            Widget.Find<CombinationSlotsPopup>().SetCaching(
-                avatarAddress,
-                renderArgs.Evaluation.Action.slotIndex,
-                false);
         }
 
         private ActionEvaluation<CombinationEquipment> PreResponseCombinationEquipment(ActionEvaluation<CombinationEquipment> eval)
@@ -965,13 +1015,12 @@ namespace Nekoyume.Blockchain
         }
 
         private (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
-            PrepareCombinationEquipment(
-                ActionEvaluation<CombinationEquipment> eval)
+            PrepareCombinationEquipment(ActionEvaluation<CombinationEquipment> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
-            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             if (StateGetter.TryGetAvatarState(
@@ -1009,8 +1058,7 @@ namespace Nekoyume.Blockchain
             return (eval, avatarState, slot);
         }
 
-        private void ResponseCombinationEquipment(
-            (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
+        private void ResponseCombinationEquipment((ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
         {
             if (renderArgs.AvatarState is null)
             {
@@ -1066,14 +1114,16 @@ namespace Nekoyume.Blockchain
             string formatKey;
             if (result.itemUsable is Equipment equipment)
             {
-                if (renderArgs.Evaluation.Action.subRecipeId.HasValue &&
-                    TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                        renderArgs.Evaluation.Action.subRecipeId.Value,
-                        out var row))
+                // aura, grimoire has not subRecipeId
+                var subRecipeId = renderArgs.Evaluation.Action.subRecipeId;
+                if (subRecipeId.HasValue &&
+                    TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(subRecipeId.Value, out var row))
                 {
                     formatKey = equipment.optionCountFromCombination == row.Options.Count
                         ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
                         : "NOTIFICATION_COMBINATION_COMPLETE";
+
+                    Widget.Find<CraftResultPopup>().Show(equipment, subRecipeId.Value);
                 }
                 else
                 {
@@ -1115,17 +1165,16 @@ namespace Nekoyume.Blockchain
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
         private (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
-            PrepareCombinationConsumable(
-                ActionEvaluation<CombinationConsumable> eval)
+            PrepareCombinationConsumable(ActionEvaluation<CombinationConsumable> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
-            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             if (StateGetter.TryGetAvatarState(
@@ -1134,6 +1183,7 @@ namespace Nekoyume.Blockchain
                 avatarAddress,
                 out var avatarState))
             {
+
                 // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
                 foreach (var pair in result.materials)
                 {
@@ -1214,7 +1264,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
+                .OnCraftActionRender(renderArgs.Evaluation.Action.slotIndex);
         }
 
         private (ActionEvaluation<EventConsumableItemCrafts> Evaluation, CombinationSlotState CombinationSlotState) PrepareEventConsumableItemCrafts(
@@ -1222,7 +1272,7 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.SlotIndex;
-            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             // 액션을 스테이징한 시점에 미리 반영해둔 아이템의 레이어를 먼저 제거하고, 액션의 결과로 나온 실제 상태를 반영
             foreach (var pair in result.materials)
@@ -1265,7 +1315,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.SlotIndex, false);
+                .OnCraftActionRender(renderArgs.Evaluation.Action.SlotIndex);
         }
 
         private ActionEvaluation<EventMaterialItemCrafts> PrepareEventMaterialItemCrafts(ActionEvaluation<EventMaterialItemCrafts> eval)
@@ -1316,7 +1366,7 @@ namespace Nekoyume.Blockchain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var slotIndex = eval.Action.slotIndex;
-            var slot = StateGetter.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
             var result = (ItemEnhancement13.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
 
@@ -1454,7 +1504,7 @@ namespace Nekoyume.Blockchain
                 itemSlotState.Equipments.Remove(renderArgs.Evaluation.Action.itemId);
             }
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
         }
 
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
@@ -1763,106 +1813,134 @@ namespace Nekoyume.Blockchain
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var productInfos = eval.Action.ProductInfos;
-            if (eval.Action.AvatarAddress == avatarAddress) // buyer
-            {
-                foreach (var info in productInfos)
-                {
-                    var (itemName, itemProduct, favProduct) =
-                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(info.ProductId);
-                    var count = 0;
-                    if (itemProduct is not null)
-                    {
-                        count = (int)itemProduct.Quantity;
-                    }
-
-                    if (favProduct is not null)
-                    {
-                        count = (int)favProduct.Quantity;
-                        var currency = Currencies.GetMinterlessCurrency(favProduct.Ticker);
-                        UniTask.RunOnThreadPool(() => { States.Instance.SetCurrentAvatarBalance(eval, currency); }).Forget();
-                    }
-
-                    var price = info.Price;
-
-                    UniTask.RunOnThreadPool(() => { LocalLayerModifier.ModifyAgentGold(eval, agentAddress, price); });
-                    LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
-
-                    string message;
-                    if (count > 1)
-                    {
-                        message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_BUYER_COMPLETE"),
-                            itemName, price, count);
-                    }
-                    else
-                    {
-                        message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE"),
-                            itemName, price);
-                    }
-
-                    OneLineSystem.Push(
-                        MailType.Auction,
-                        message,
-                        NotificationCell.NotificationType.Notification);
-                }
-            }
-            else // seller
-            {
-                foreach (var info in productInfos)
-                {
-                    var buyerNameWithHash = $"#{eval.Action.AvatarAddress.ToHex()[..4]}";
-                    var (itemName, itemProduct, favProduct) =
-                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(info.ProductId);
-                    var count = 0;
-                    if (itemProduct is not null)
-                    {
-                        count = (int)itemProduct.Quantity;
-                    }
-
-                    if (favProduct is not null)
-                    {
-                        count = (int)favProduct.Quantity;
-                        var currency = Currencies.GetMinterlessCurrency(favProduct.Ticker);
-                        UniTask.RunOnThreadPool(() => { States.Instance.SetCurrentAvatarBalance(eval, currency); }).Forget();
-                    }
-
-                    var taxedPrice = info.Price.DivRem(100, out _) * Buy.TaxRate;
-                    UniTask.RunOnThreadPool(() => { LocalLayerModifier.ModifyAgentGold(eval, agentAddress, -taxedPrice); });
-                    LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
-
-                    string message;
-                    if (count > 1)
-                    {
-                        message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_SELLER_COMPLETE"),
-                            buyerNameWithHash,
-                            itemName,
-                            count);
-                    }
-                    else
-                    {
-                        message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
-                            buyerNameWithHash,
-                            itemName);
-                    }
-
-                    OneLineSystem.Push(MailType.Auction, message,
-                        NotificationCell.NotificationType.Notification);
-                }
-            }
-
-            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationTradingKey);
-
-            RenderQuest(avatarAddress,
-                States.Instance.CurrentAvatarState.questList.completedQuestIds);
-
             UniTask.RunOnThreadPool(async () =>
             {
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).Forget();
+            }).ToObservable().ObserveOnMainThread().Subscribe(unit =>
+            {
+                if (eval.Action.AvatarAddress == avatarAddress) // buyer
+                {
+                    foreach (var info in productInfos)
+                    {
+                        var count = 0;
+                        var productMail =
+                            States.Instance.CurrentAvatarState.mailBox.FirstOrDefault(mail =>
+                                mail.id == info.ProductId) as ProductBuyerMail;
+                        string itemName = string.Empty;
+
+                        if (productMail?.Product is ItemProduct itemProduct)
+                        {
+                            if (States.Instance.CurrentAvatarState.inventory.TryGetTradableItem(
+                                itemProduct.TradableItem.TradableId,
+                                itemProduct.TradableItem.RequiredBlockIndex, itemProduct.ItemCount,
+                                out var boughtItem))
+                            {
+                                count = itemProduct.ItemCount;
+                                itemName = boughtItem.item.GetLocalizedName();
+                            }
+                        }
+
+                        if (productMail?.Product is FavProduct favProduct)
+                        {
+                            count = (int) favProduct.Asset.MajorUnit;
+                            itemName = favProduct.Asset.GetLocalizedName();
+
+                            UniTask.RunOnThreadPool(() =>
+                            {
+                                States.Instance.SetCurrentAvatarBalance(eval,
+                                    favProduct.Asset.Currency);
+                            }).Forget();
+                        }
+
+                        var price = info.Price;
+
+                        UniTask.RunOnThreadPool(() =>
+                        {
+                            LocalLayerModifier.ModifyAgentGold(eval, agentAddress, price);
+                        });
+                        LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
+
+                        string message;
+                        if (count > 1)
+                        {
+                            message = string.Format(
+                                L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_BUYER_COMPLETE"),
+                                itemName, price, count);
+                        }
+                        else
+                        {
+                            message = string.Format(
+                                L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE"),
+                                itemName, price);
+                        }
+
+                        OneLineSystem.Push(
+                            MailType.Auction,
+                            message,
+                            NotificationCell.NotificationType.Notification);
+                    }
+                }
+                else // seller
+                {
+                    foreach (var info in productInfos)
+                    {
+                        var buyerNameWithHash = $"#{eval.Action.AvatarAddress.ToHex()[..4]}";
+                        var count = 0;
+                        var productMail =
+                            States.Instance.CurrentAvatarState.mailBox.FirstOrDefault(mail =>
+                                mail.id == info.ProductId) as ProductSellerMail;
+                        var itemName = productMail.Product is ItemProduct itemProduct
+                            ? itemProduct.TradableItem.ItemSubType.GetLocalizedString()
+                            : ((FavProduct) productMail.Product).Asset.GetLocalizedInformation();
+                        if (productMail.Product is ItemProduct itemProd)
+                        {
+                            count = itemProd.ItemCount;
+                        }
+
+                        if (productMail.Product is FavProduct favProd)
+                        {
+                            UniTask.RunOnThreadPool(() =>
+                            {
+                                States.Instance.SetCurrentAvatarBalance(eval, favProd.Asset.Currency);
+                            }).Forget();
+                        }
+
+                        var taxedPrice = productMail!.Product.Price.DivRem(100, out _) * Buy.TaxRate;
+                        UniTask.RunOnThreadPool(() =>
+                        {
+                            LocalLayerModifier.ModifyAgentGold(eval, agentAddress, -taxedPrice);
+                        });
+                        LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
+
+                        string message;
+                        if (count > 1)
+                        {
+                            message = string.Format(
+                                L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_SELLER_COMPLETE"),
+                                buyerNameWithHash,
+                                itemName,
+                                count);
+                        }
+                        else
+                        {
+                            message = string.Format(
+                                L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
+                                buyerNameWithHash,
+                                itemName);
+                        }
+
+                        OneLineSystem.Push(MailType.Auction, message,
+                            NotificationCell.NotificationType.Notification);
+                    }
+                }
+
+                Widget.Find<HeaderMenuStatic>()
+                    .UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationTradingKey);
+
+                RenderQuest(avatarAddress,
+                    States.Instance.CurrentAvatarState.questList.completedQuestIds);
+            });
         }
 
         /// <summary>
@@ -2401,7 +2479,8 @@ namespace Nekoyume.Blockchain
             return mail is not null;
         }
 
-        private ActionEvaluation<Grinding> PrepareGrinding(ActionEvaluation<Grinding> eval)
+        private (ActionEvaluation<Grinding> eval, List<Equipment> equipmentList)
+            PrepareGrinding(ActionEvaluation<Grinding> eval)
         {
             var avatarAddress = eval.Action.AvatarAddress;
             if (eval.Action.ChargeAp)
@@ -2420,15 +2499,50 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
             ReactiveAvatarState.UpdateActionPoint(GetActionPoint(eval, eval.Action.AvatarAddress));
-            return eval;
+
+            var inventory = StateGetter.GetInventory(eval.PreviousState, eval.Action.AvatarAddress);
+            var equipmentList = new List<Equipment>();
+            foreach (var equipmentId in eval.Action.EquipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(equipmentId, out Equipment equipment) ||
+                    equipment.RequiredBlockIndex > eval.BlockIndex ||
+                    !inventory.RemoveNonFungibleItem(equipmentId))
+                {
+                    Debug.LogError($"Grinding action failed to remove equipment {equipmentId}");
+                    OneLineSystem.Push(
+                        MailType.Grinding,
+                        L10nManager.Localize("ERROR_UNKNOWN"),
+                        NotificationCell.NotificationType.Alert);
+                    return (eval, new List<Equipment>());
+                }
+
+                equipmentList.Add(equipment);
+            }
+
+            return (eval, equipmentList);
         }
 
-        private void ResponseGrinding(ActionEvaluation<Grinding> eval)
+        private void ResponseGrinding((ActionEvaluation<Grinding> eval, List<Equipment> equipmentList) prepared)
         {
-            OneLineSystem.Push(
-                MailType.Grinding,
-                L10nManager.Localize("UI_GRINDING_NOTIFY"),
-                NotificationCell.NotificationType.Information);
+            var crystalReward = CrystalCalculator.CalculateCrystal(
+                prepared.equipmentList,
+                false,
+                TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
+                States.Instance.StakingLevel);
+            var itemRewards = Action.Grinding.CalculateMaterialReward(
+                    prepared.equipmentList,
+                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                    TableSheets.Instance.MaterialItemSheet)
+                .OrderBy(pair => pair.Key.GetMaterialPriority())
+                .ThenByDescending(pair => pair.Key.Grade)
+                .ThenBy(pair => pair.Key.Id)
+                .Select(pair => ((ItemBase)pair.Key, pair.Value)).ToArray();
+
+            var mailRewards = new List<MailReward> { new(crystalReward, (int)crystalReward.MajorUnit) };
+            mailRewards.AddRange(itemRewards.Select(pair => new MailReward(pair.Item1, pair.Item2)));
+
+            Widget.Find<RewardScreen>().Show(mailRewards, "NOTIFICATION_CLAIM_GRINDING_REWARD");
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
@@ -2988,7 +3102,7 @@ namespace Nekoyume.Blockchain
 
             await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
-            var killRewards = new List<FungibleAssetValue>();
+            var killRewards = new WorldBossRewards();
             if (latestBossLevel < raiderState.LatestBossLevel)
             {
                 if (preKillReward != null && preKillReward.IsClaimable(raiderState.LatestBossLevel))
@@ -3005,16 +3119,17 @@ namespace Nekoyume.Blockchain
 
                     foreach (var level in filtered)
                     {
-                        var rewards = RuneHelper.CalculateReward(
+                        var rewards = WorldBossHelper.CalculateReward(
                             rank,
                             row.BossId,
                             Game.Game.instance.TableSheets.RuneWeightSheet,
                             Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
                             Game.Game.instance.TableSheets.RuneSheet,
+                            Game.Game.instance.TableSheets.MaterialItemSheet,
                             random
                         );
 
-                        killRewards.AddRange(rewards);
+                        killRewards.Assets.AddRange(rewards.assets);
                     }
                 }
             }
@@ -3032,7 +3147,7 @@ namespace Nekoyume.Blockchain
                 simulator.DamageDealt,
                 isNewRecord,
                 false,
-                simulator.AssetReward,
+                new WorldBossRewards(simulator.AssetReward, simulator.Reward),
                 killRewards);
 
             Game.Game.instance.RaidStage.Play(raidStartData);
@@ -3043,6 +3158,7 @@ namespace Nekoyume.Blockchain
         {
             UpdateCurrentAvatarRuneStoneBalance(eval);
             UpdateCrystalBalance(eval);
+            UpdateCurrentAvatarInventory(eval);
 
             return eval;
         }
@@ -3106,6 +3222,30 @@ namespace Nekoyume.Blockchain
                 MailType.Workshop,
                 L10nManager.Localize("UI_MESSAGE_RUNE_SLOT_OPEN"),
                 NotificationCell.NotificationType.Notification);
+        }
+
+        private void ResponseUnlockCombinationSlot(ActionEvaluation<UnlockCombinationSlot> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
+            {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var slotIndex = eval.Action.SlotIndex;
+                var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+                combinationSlotsPopup.UpdateSlots();
+                combinationSlotsPopup.SetLockLoading(eval.Action.SlotIndex, false);
+            });
+        }
+
+        private void ExceptionUnlockCombinationSlot(ActionEvaluation<UnlockCombinationSlot> eval)
+        {
+            var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
+            combinationSlotsPopup.SetLockLoading(eval.Action.SlotIndex, false);
         }
 
         private ActionEvaluation<PetEnhancement> PreparePetEnhancement(ActionEvaluation<PetEnhancement> eval)
@@ -3797,9 +3937,10 @@ namespace Nekoyume.Blockchain
                 prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
                 UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
-
+                
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
                 UpdateCurrentAvatarInventory(eval);
 
                 _disposableForBattleEnd?.Dispose();
@@ -4150,6 +4291,88 @@ namespace Nekoyume.Blockchain
             StageExceptionHandle(evaluation.Exception?.InnerException);
         }
 
+        private void ExceptionCustomEquipmentCraft(
+            ActionEvaluation<CustomEquipmentCraft> eval)
+        {
+            LoadingHelper.CustomEquipmentCraft.Value = false;
+            if (States.Instance.CurrentAvatarState.address == eval.Action.AvatarAddress && eval.Action.CraftList.Count > 0)
+            {
+                Widget.Find<CombinationSlotsPopup>()
+                    .SetLockLoading(eval.Action.CraftList.First().SlotIndex, false);
+            }
+
+            NcDebug.LogException(eval.Exception?.InnerException ?? eval.Exception);
+        }
+
+        private (ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) PrepareCustomEquipmentCraft(
+            ActionEvaluation<CustomEquipmentCraft> eval)
+        {
+            var avatarAddress = eval.Action.AvatarAddress;
+            var slotIndex = eval.Action.CraftList.FirstOrDefault().SlotIndex;
+            ReactiveAvatarState.UpdateRelationship(
+                (Integer)StateGetter.GetState(eval.OutputState, Addresses.Relationship, avatarAddress)
+            );
+            var slot = GetStateExtensions.GetCombinationSlotState(eval.OutputState, avatarAddress, slotIndex);
+            UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            return (eval, slot);
+        }
+
+        private void ResponseCustomEquipmentCraft((ActionEvaluation<CustomEquipmentCraft>, CombinationSlotState) prepared)
+        {
+            var (evaluation, slot) = prepared;
+            var agentAddress = evaluation.Signer;
+            var avatarAddress = evaluation.Action.AvatarAddress;
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
+
+            Widget.Find<CustomCraft>().RequiredUpdateCraftCount = true;
+
+            UniTask.RunOnThreadPool(() =>
+            {
+                LocalLayerModifier.ModifyAgentGold(evaluation, agentAddress,
+                    result.gold);
+            });
+
+            LocalLayerModifier.AddNewMail(avatarAddress, result.id);
+
+            // Notify
+            var message = L10nManager.Localize(
+                "NOTIFICATION_COMBINATION_COMPLETE",
+                result.itemUsable.GetLocalizedName());
+            NotificationSystem.Reserve(
+                MailType.CustomCraft,
+                message,
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId);
+
+            var slotIndex = evaluation.Action.CraftList.FirstOrDefault().SlotIndex;
+            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            if (blockCount >= WorkshopNotifiedBlockCount)
+            {
+                var expectedNotifiedTime =
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount));
+                var notificationText = L10nManager.Localize(
+                    "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
+                    result.itemUsable.GetLocalizedNonColoredName(false));
+                var identifier = PushNotifier.Push(
+                    notificationText,
+                    expectedNotifiedTime,
+                    PushNotifier.PushType.Workshop);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                PlayerPrefs.SetString(pushIdentifierKey, identifier);
+            }
+
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
+            // ~Notify
+
+            Widget.Find<CombinationSlotsPopup>().OnCraftActionRender(slotIndex);
+            Widget.Find<CustomCraftResultPopup>().Show((Equipment)result.itemUsable);
+            LoadingHelper.CustomEquipmentCraft.Value = false;
+        }
+
         /// <summary>
         /// 정확한 전투 재현을 위해 관련 상태를 모두 PreviousState로 가져와서 갱신합니다.
         /// 여기엔 AvatarState, AllRuneState, CollectionState가 해당됩니다.
@@ -4157,13 +4380,15 @@ namespace Nekoyume.Blockchain
         /// <typeparam name="T"></typeparam>
         /// <param name="prevState"></param>
         /// <param name="avatarAddr"></param>
-        private static AvatarState UpdatePreviousAvatarState(HashDigest<SHA256> prevState, Address avatarAddr)
+        private static AvatarState UpdatePreviousAvatarState(HashDigest<SHA256> prevState,
+            Address avatarAddr)
         {
             var prevAvatarState = StateGetter.GetAvatarState(prevState, avatarAddr);
             States.Instance.UpdateCurrentAvatarState(prevAvatarState);
             States.Instance.SetAllRuneState(
                 GetStateExtensions.GetAllRuneState(prevState, avatarAddr));
-            States.Instance.SetCollectionState(StateGetter.GetCollectionState(prevState, avatarAddr));
+            States.Instance.SetCollectionState(
+                StateGetter.GetCollectionState(prevState, avatarAddr));
             return prevAvatarState;
         }
     }

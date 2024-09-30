@@ -104,33 +104,6 @@ namespace Nekoyume.Helper
             }, false);
         }
 
-        public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
-        {
-            if (inventory is null)
-            {
-                return 0;
-            }
-
-            var count = 0;
-            var materials =
-                inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
-            var hourglass = materials.Where(x => x.item.ItemSubType == ItemSubType.Hourglass);
-            foreach (var item in hourglass)
-            {
-                if (item.item is TradableMaterial tradableItem)
-                {
-                    if (tradableItem.RequiredBlockIndex > currentBlockIndex)
-                    {
-                        continue;
-                    }
-                }
-
-                count += item.count;
-            }
-
-            return count;
-        }
-
         public static bool TryGetStoredAvatarSlotIndex(out int slotIndex)
         {
             if (Game.Game.instance.Agent is null)

@@ -182,7 +182,7 @@ namespace Nekoyume.UI
             _useSweep = useSweep;
             var materialSheet = TableSheets.Instance.MaterialItemSheet;
             var haveApStoneCount =
-                States.Instance.CurrentAvatarState.inventory.GetUsableMaterialCount(
+                States.Instance.CurrentAvatarState.inventory.GetUsableItemCount(
                     materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
                     Game.Game.instance.Agent?.BlockIndex ?? -1);
             apStoneSlider.Set(0,
@@ -205,7 +205,7 @@ namespace Nekoyume.UI
                 }
 
                 var materialSheet = TableSheets.Instance.MaterialItemSheet;
-                var haveApStoneCount = inventory.GetUsableMaterialCount(
+                var haveApStoneCount = inventory.GetUsableItemCount(
                     materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone).Id,
                     Game.Game.instance.Agent?.BlockIndex ?? -1);
 

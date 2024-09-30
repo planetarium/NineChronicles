@@ -19,7 +19,7 @@ namespace Tests.EditMode.State.Modifiers
         public void SetUp()
         {
             _tableSheets = TableSheetsHelper.MakeTableSheets();
-            _avatarState = new AvatarState(
+            _avatarState = AvatarState.Create(
                 new PrivateKey().Address,
                 new PrivateKey().Address,
                 0,

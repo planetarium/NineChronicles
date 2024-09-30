@@ -22,26 +22,7 @@ namespace Nekoyume
         public void Set(MailReward mailReward)
         {
             _disposables.DisposeAllAndClear();
-            baseItemView.Container.SetActive(true);
-            baseItemView.EmptyObject.SetActive(false);
-            baseItemView.EnoughObject.SetActive(false);
-            baseItemView.MinusObject.SetActive(false);
-            baseItemView.ExpiredObject.SetActive(false);
-            baseItemView.SelectBaseItemObject.SetActive(false);
-            baseItemView.SelectMaterialItemObject.SetActive(false);
-            baseItemView.LockObject.SetActive(false);
-            baseItemView.ShadowObject.SetActive(false);
-            baseItemView.PriceText.gameObject.SetActive(false);
-            baseItemView.LoadingObject.SetActive(false);
-            baseItemView.EquippedObject.SetActive(false);
-            baseItemView.DimObject.SetActive(false);
-            baseItemView.TradableObject.SetActive(false);
-            baseItemView.SelectObject.SetActive(false);
-            baseItemView.FocusObject.SetActive(false);
-            baseItemView.NotificationObject.SetActive(false);
-            baseItemView.GrindingCountObject.SetActive(false);
-            baseItemView.LevelLimitObject.SetActive(false);
-            baseItemView.RuneNotificationObj.SetActiveSafe(false);
+            baseItemView.ClearItem();
             baseItemView.RuneSelectMove.SetActive(false);
             baseItemView.SelectCollectionObject.SetActive(false);
             baseItemView.SelectArrowObject.SetActive(false);
@@ -112,6 +93,11 @@ namespace Nekoyume
             }
 
             effect.SetActive(false);
+            
+            if (mailReward.ItemBase is Equipment equipmentItem)
+            {
+                baseItemView.CustomCraftArea.SetActive(equipmentItem.ByCustomCraft);
+            }
         }
 
         public void ShowEffect()

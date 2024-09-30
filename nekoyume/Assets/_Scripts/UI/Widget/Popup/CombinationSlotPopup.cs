@@ -14,7 +14,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -35,7 +34,6 @@ namespace Nekoyume.UI
         public class Information
         {
             public CraftType Type;
-            public GameObject Icon;
             public GameObject OptionContainer;
             public List<ItemOptionView> MainStatViews;
             public List<ItemOptionWithCountView> StatOptions;
@@ -83,12 +81,7 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex).Subscribe();
-                    var avatarAddress = States.Instance.CurrentAvatarState.address;
-                    Find<CombinationSlotsPopup>().SetCaching(
-                        avatarAddress,
-                        _slotIndex,
-                        true,
-                        slotType: CombinationSlot.SlotType.WaitingReceive);
+                    Find<CombinationSlotsPopup>().OnSendRapidCombination(_slotIndex);
                     Close();
                 })
                 .AddTo(gameObject);
@@ -146,7 +139,6 @@ namespace Nekoyume.UI
         {
             foreach (var information in _informations)
             {
-                information.Icon.SetActive(information.Type.Equals(type));
                 information.OptionContainer.SetActive(information.Type.Equals(type));
             }
 

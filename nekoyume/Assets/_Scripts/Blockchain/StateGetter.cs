@@ -135,6 +135,7 @@ namespace Nekoyume.Blockchain
             return new Inventory((List)inventoryState);
         }
 
+        [Obsolete("Use AllCombinationSlotState instead.")]
         public static CombinationSlotState GetCombinationSlotState(
             HashDigest<SHA256> hash,
             Address avatarAddress,
@@ -170,7 +171,6 @@ namespace Nekoyume.Blockchain
             }
         }
 
-
         public static RedeemCodeState GetRedeemCodeState(HashDigest<SHA256> hash)
         {
             var value = Game.Game.instance.Agent.GetState(
@@ -194,7 +194,7 @@ namespace Nekoyume.Blockchain
                 Log.Error(
                     e,
                     "Unexpected error occurred during {CombinationSlotStateName}()",
-                    nameof(GetCombinationSlotState));
+                    nameof(GetRedeemCodeState));
                 throw;
             }
         }

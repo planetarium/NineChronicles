@@ -72,7 +72,13 @@ namespace Nekoyume.UI
         ActionPointChargeButton,
         CombinationRuneButton, // Combination -> Rune
         CombinationRuneCombineButton,
-        CombinationRuneLevelBonusArea
+        CombinationRuneLevelBonusArea,
+
+        // Custom equipment craft - 201
+        CustomCraftMenu, // Combination -> CustomCraft
+        CustomCraftOutfitScroll,
+        CustomCraftInfo,
+        CustomCraftRelationshipArea
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>

@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -26,6 +26,9 @@ namespace Nekoyume.UI
         private Button runeButton;
 
         [SerializeField]
+        private Button customCraftButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -36,6 +39,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Image summonNotificationImage;
+
+        [SerializeField]
+        private Image customCraftNotificationImage;
 
         [SerializeField]
         private SpeechBubble speechBubble;
@@ -49,6 +55,7 @@ namespace Nekoyume.UI
             public GameObject lockObject;
             public int requiredStageId;
             public Button lockedButton;
+            public List<GameObject> unlockObjects;
         }
 
         protected override void Awake()
@@ -90,6 +97,13 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
+            customCraftButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<CustomCraft>().Show();
+                AudioController.PlayClick();
+            });
+
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
@@ -119,6 +133,7 @@ namespace Nekoyume.UI
                     var isLocked = lastClearedStageId < lockObj.requiredStageId;
                     lockObj.lockObject.SetActive(isLocked);
                     lockObj.lockedButton.interactable = !isLocked;
+                    lockObj.unlockObjects.ForEach(obj => obj.SetActive(!isLocked));
                 }
             }
 
@@ -155,7 +170,11 @@ namespace Nekoyume.UI
                 }
             }
 
+            // summon
             summonNotificationImage.enabled = Summon.HasNotification;
+
+            // custom craft
+            customCraftNotificationImage.enabled = CustomCraft.HasNotification;
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
@@ -181,6 +200,12 @@ namespace Nekoyume.UI
         public void TutorialActionClickCombinationRuneButton()
         {
             runeButton.onClick?.Invoke();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionCustomCraftShow()
+        {
+            customCraftButton.onClick?.Invoke();
         }
     }
 }

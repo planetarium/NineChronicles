@@ -1,7 +1,8 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Battle;
@@ -16,6 +17,7 @@ using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace Nekoyume.UI.Module
 {
@@ -25,129 +27,168 @@ namespace Nekoyume.UI.Module
 
     public class CombinationSlot : MonoBehaviour
     {
-        public enum SlotType
+#region Internal
+        private enum BackGroundType
+        {
+            Default,
+            CustomCraft,
+        }
+        
+        [Serializable]
+        private class BackGroundGroup
+        {
+            [SerializeField]
+            private BackGroundType backGroundType = BackGroundType.Default;
+            
+            [SerializeField]
+            private GameObject[] backGroundObjects = null!;
+            
+            public BackGroundType BackGroundType => backGroundType;
+            
+            public void SetActive(bool isActive)
+            {
+                foreach (var backGroundObject in backGroundObjects)
+                {
+                    backGroundObject.SetActive(isActive);
+                }
+            }
+        }
+        
+        public enum SlotUIState
         {
             Empty,
             Appraise,
             Working,
-            WaitingReceive
+            WaitingReceive,
+            Locked
         }
-
-        public enum CacheType
-        {
-            Appraise,
-            WaitingReceive
-        }
+#endregion Internal
+        
+        [SerializeField]
+        private SimpleItemView itemView = null!;
 
         [SerializeField]
-        private SimpleItemView itemView;
+        private SimpleItemView waitingReceiveItemView = null!;
 
         [SerializeField]
-        private SimpleItemView waitingReceiveItemView;
+        private TouchHandler touchHandler = null!;
 
         [SerializeField]
-        private TouchHandler touchHandler;
+        private Slider progressBar = null!;
 
         [SerializeField]
-        private Slider progressBar;
+        private Image hasNotificationImage = null!;
 
         [SerializeField]
-        private Image hasNotificationImage;
+        private TextMeshProUGUI requiredBlockIndexText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI lockText;
+        private TextMeshProUGUI requiredTimeText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI requiredBlockIndexText;
+        private TextMeshProUGUI itemNameText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI requiredTimeText;
+        private TextMeshProUGUI hourglassCountText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI itemNameText;
+        private TextMeshProUGUI preparingText = null!;
 
         [SerializeField]
-        private TextMeshProUGUI hourglassCountText;
+        private TextMeshProUGUI waitingReceiveText = null!;
+
+        [Header("StateContainer")]
+        [SerializeField]
+        private GameObject lockContainer = null!;
 
         [SerializeField]
-        private TextMeshProUGUI preparingText;
+        private GameObject baseContainer = null!;
 
         [SerializeField]
-        private TextMeshProUGUI waitingReceiveText;
+        private GameObject noneContainer = null!;
 
         [SerializeField]
-        private GameObject lockContainer;
+        private GameObject preparingContainer = null!;
 
         [SerializeField]
-        private GameObject baseContainer;
+        private GameObject workingContainer = null!;
 
         [SerializeField]
-        private GameObject noneContainer;
+        private GameObject waitReceiveContainer = null!;
 
         [SerializeField]
-        private GameObject preparingContainer;
-
+        private PetSelectButton petSelectButton = null!;
+        
+        [Header("For CustomCraft")]
         [SerializeField]
-        private GameObject workingContainer;
-
+        private BackGroundGroup[] backGroundGroups = null!;
+        
         [SerializeField]
-        private GameObject waitReceiveContainer;
-
+        private GameObject customCraftObject = null!;
+        
         [SerializeField]
-        private PetSelectButton petSelectButton;
+        private GameObject randomOnlyIcon = null!;
 
-        private CombinationSlotState _state;
-        private CacheType _cachedType;
+        private CombinationSlotLockObject _lockObject = null!;
+        private CombinationSlotState? _state;
         private int _slotIndex;
 
+        // TODO: 클라이언트 액션 에러처리 추가
+        private long _sendActionBlockIndex;
+        // 액션 렌더보다 block 업데이트가 더 빠른 경우, _state가 갱신이 안됬는데
+        // BlockIndex가 갱신되어 UI가 잘못 갱신될 수 있음
+        private bool _isWaitingCombinationActionRender;
+
         private readonly List<IDisposable> _disposablesOfOnEnable = new();
-        private readonly Dictionary<Address, bool> cached = new();
 
-        public SlotType Type { get; private set; } = SlotType.Empty;
+        public CombinationSlotState? State => _state;
 
-        public void SetCached(
-            Address avatarAddress,
-            bool value,
-            long requiredBlockIndex,
-            SlotType slotType,
-            ItemUsable itemUsable = null)
+        public SlotUIState UIState { get; private set; } = SlotUIState.Locked;
+
+        public void OnCraftActionRender()
         {
-            if (cached.ContainsKey(avatarAddress))
+            UIState = UIState switch
             {
-                cached[avatarAddress] = value;
-            }
-            else
-            {
-                cached.Add(avatarAddress, value);
-            }
+                SlotUIState.Appraise => SlotUIState.Working,
+                SlotUIState.WaitingReceive => SlotUIState.Empty,
+                _ => UIState
+            };
 
-            var currentBlockIndex = Game.instance.Agent.BlockIndex;
-            switch (slotType)
-            {
-                case SlotType.Appraise:
-                    if (itemUsable == null)
-                    {
-                        break;
-                    }
-
-                    _cachedType = CacheType.Appraise;
-                    UpdateItemInformation(itemUsable, slotType);
-                    UpdateRequiredBlockInformation(
-                        requiredBlockIndex + currentBlockIndex,
-                        currentBlockIndex,
-                        currentBlockIndex);
-                    break;
-
-                case SlotType.WaitingReceive:
-                    _cachedType = CacheType.WaitingReceive;
-                    UpdateInformation(Type, currentBlockIndex, _state, IsCached(avatarAddress));
-                    break;
-            }
+            UpdateInformation(Game.instance.Agent.BlockIndex);
+            _isWaitingCombinationActionRender = false;
         }
 
-        private bool IsCached(Address avatarAddress)
+        public void OnSendRapidCombinationAction()
         {
-            return cached.ContainsKey(avatarAddress) && cached[avatarAddress];
+            if (UIState != SlotUIState.Working)
+            {
+                NcDebug.LogWarning("Invalid UIState.");
+            }
+
+            UIState = SlotUIState.WaitingReceive;
+            UpdateInformation(Game.instance.Agent.BlockIndex);
+            _isWaitingCombinationActionRender = false;
+        }
+
+        public void OnSendCombinationAction(long requiredBlockIndex, ItemUsable itemUsable)
+        {
+            if (UIState != SlotUIState.Empty)
+            {
+                NcDebug.LogWarning("Invalid UIState.");
+            }
+            _isWaitingCombinationActionRender = true;
+
+            UIState = SlotUIState.Appraise;
+
+            var currentBlockIndex = Game.instance.Agent.BlockIndex;
+            UpdateItemInformation(itemUsable, UIState);
+            UpdateRequiredBlockInformation(
+                requiredBlockIndex + currentBlockIndex,
+                currentBlockIndex,
+                currentBlockIndex);
+            UpdateInformation(currentBlockIndex);
+            SetItemUsableImage(itemUsable, true);
+            _sendActionBlockIndex = currentBlockIndex;
         }
 
         private void Awake()
@@ -155,19 +196,21 @@ namespace Nekoyume.UI.Module
             touchHandler.OnClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                OnClickSlot(Type, _state, _slotIndex, Game.instance.Agent.BlockIndex);
+                OnClickSlot(UIState, _state, _slotIndex, Game.instance.Agent.BlockIndex);
             }).AddTo(gameObject);
+
+            _lockObject = lockContainer.GetComponent<CombinationSlotLockObject>();
         }
 
         private void OnEnable()
         {
             Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
-                .Subscribe(SubscribeOnBlockIndex)
+                .Subscribe(OnUpdateBlock)
                 .AddTo(_disposablesOfOnEnable);
             ReactiveAvatarState.Inventory
                 .Select(_ => Game.instance.Agent.BlockIndex)
-                .Subscribe(SubscribeOnBlockIndex)
+                .Subscribe(OnUpdateBlock)
                 .AddTo(_disposablesOfOnEnable);
         }
 
@@ -176,72 +219,207 @@ namespace Nekoyume.UI.Module
             _disposablesOfOnEnable.DisposeAllAndClear();
         }
 
+#region Lock
+        private void SetLockObject()
+        {
+            if (_lockObject == null)
+            {
+                NcDebug.LogError("Can't find CombinationSlotLockObject component.");
+                return;
+            }
+
+            if (TableSheets.Instance.UnlockCombinationSlotCostSheet.TryGetValue(_slotIndex, out var data))
+            {
+                _lockObject.SetData(data);
+            }
+        }
+
+        public void SetLockLoading(bool isLoading)
+        {
+            _lockObject.SetLoading(isLoading);
+        }
+#endregion Lock
+
+        public void Clear()
+        {
+            UIState = SlotUIState.Locked;
+            _state = null;
+            _lockObject.SetLoading(false);
+            _sendActionBlockIndex = 0;
+            _isWaitingCombinationActionRender = false;
+            UpdateInformation(Game.instance.Agent.BlockIndex);
+        }
+
         public void SetSlot(
-            Address avatarAddress,
             long currentBlockIndex,
             int slotIndex,
-            CombinationSlotState state = null)
+            CombinationSlotState? state = null)
         {
             _slotIndex = slotIndex;
             _state = state;
-            Type = GetSlotType(state, currentBlockIndex, IsCached(avatarAddress));
-            UpdateInformation(Type, currentBlockIndex, state, IsCached(avatarAddress));
+            UpdateSlotState();
+            UpdateInformation(UIState, currentBlockIndex, state);
+            SetLockObject();
         }
 
-        private void SubscribeOnBlockIndex(long currentBlockIndex)
+        private void UpdateSlotState()
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            Type = GetSlotType(_state, currentBlockIndex, IsCached(avatarAddress));
-            UpdateInformation(Type, currentBlockIndex, _state, IsCached(avatarAddress));
+            switch (UIState)
+            {
+                case SlotUIState.Empty:
+                    break;
+                case SlotUIState.Appraise:
+                    break;
+                case SlotUIState.Working:
+                    break;
+                case SlotUIState.WaitingReceive:
+                    break;
+                case SlotUIState.Locked:
+                    if (_state?.IsUnlocked ?? false)
+                    {
+                        UIState = SlotUIState.Empty;
+                    }
+                    break;
+            }
+        }
+
+#region OnBlockRender
+        private void OnUpdateBlock(long currentBlockIndex)
+        {
+            switch (UIState)
+            {
+                case SlotUIState.Empty:
+                    OnBlockRenderEmpty(currentBlockIndex);
+                    break;
+                case SlotUIState.Appraise:
+                    OnBlockRenderAppraise(currentBlockIndex);
+                    break;
+                case SlotUIState.Working:
+                    OnBlockRenderWorking(currentBlockIndex);
+                    break;
+                case SlotUIState.WaitingReceive:
+                    OnBlockRenderWaitingReceive(currentBlockIndex);
+                    break;
+                case SlotUIState.Locked:
+                    OnBlockRenderLocked(currentBlockIndex);
+                    break;
+            }
+        }
+
+        private void OnBlockRenderEmpty(long currentBlockIndex)
+        {
+            // state result에 값이 있고, 슬롯을 사용할 수 없는 경우 Empty로 변경
+            // 이 때, Validate에서 IsUnlocked는 항상 true라고 가정함
+            if (_state?.Result == null || _state.ValidateV2(currentBlockIndex))
+            {
+                return;
+            }
+
+            UIState = SlotUIState.Working;
+            UpdateInformation(currentBlockIndex);
+        }
+
+        private void OnBlockRenderAppraise(long currentBlockIndex)
+        {
+            if (_state == null)
+            {
+                UIState = SlotUIState.Empty;
+                UpdateInformation(currentBlockIndex);
+                return;
+            }
+
+            var startBlockIndex = Math.Max(_sendActionBlockIndex, _state.StartBlockIndex);
+            if (currentBlockIndex <= startBlockIndex || _isWaitingCombinationActionRender)
+            {
+                return;
+            }
+
+            UIState = SlotUIState.Working;
+            UpdateInformation(currentBlockIndex);
+        }
+
+        private void OnBlockRenderWorking(long currentBlockIndex)
+        {
+            if (_state?.Result == null || _sendActionBlockIndex >= currentBlockIndex || !_state.ValidateV2(currentBlockIndex))
+            {
+                return;
+            }
+            // 제작 완료(BlockIndex체크)나 제작 아이템 정보가 없는 경우 Empty로 변경
+            UIState = SlotUIState.Empty;
+            UpdateInformation(currentBlockIndex);
+        }
+
+        private void OnBlockRenderWaitingReceive(long currentBlockIndex)
+        {
+            // Not Cached && slot null
+            if (_state?.Result != null)
+            {
+                return;
+            }
+
+            UIState = SlotUIState.Empty;
+            UpdateInformation(currentBlockIndex);
+        }
+
+        private void OnBlockRenderLocked(long currentBlockIndex)
+        {
+            // Do nothing.
+        }
+#endregion OnBlockRender
+
+        private void UpdateInformation(long blockIndex)
+        {
+            UpdateInformation(UIState, blockIndex, _state);
         }
 
         private void UpdateInformation(
-            SlotType type,
+            SlotUIState uiState,
             long currentBlockIndex,
-            CombinationSlotState state,
-            bool isCached)
+            CombinationSlotState? state)
         {
-            petSelectButton.SetData(state?.PetId ?? null);
+            UpdatePetButton(uiState, state);
 
-            switch (type)
+            switch (uiState)
             {
-                case SlotType.Empty:
+                case SlotUIState.Empty:
                     SetContainer(false, false, true, false);
                     itemView.Clear();
+                    itemView.gameObject.SetActive(false);
+                    
+                    SetBackGroundGroup(BackGroundType.Default);
+                    ClearCustomCraftObject();
                     break;
 
-                case SlotType.Appraise:
+                case SlotUIState.Appraise:
                     SetContainer(false, true, false, false);
                     preparingContainer.gameObject.SetActive(true);
                     workingContainer.gameObject.SetActive(false);
-                    if (state != null)
+                    hasNotificationImage.enabled = false;
+                    itemView.gameObject.SetActive(false);
+                    break;
+
+                case SlotUIState.Working:
+                    SetContainer(false, true, false, false);
+                    preparingContainer.gameObject.SetActive(false);
+                    workingContainer.gameObject.SetActive(true);
+                    itemView.gameObject.SetActive(true);
+                    
+                    if (state is { Result: not null })
                     {
-                        UpdateItemInformation(state.Result.itemUsable, type);
+                        UpdateItemInformation(state.Result.itemUsable, uiState);
                         UpdateHourglass(state, currentBlockIndex);
                         UpdateRequiredBlockInformation(
                             state.UnlockBlockIndex,
                             state.StartBlockIndex,
                             currentBlockIndex);
+                        UpdateNotification(state, currentBlockIndex);
                     }
-
-                    hasNotificationImage.enabled = false;
+                    SetItemUsableImage(state?.Result?.itemUsable);
                     break;
 
-                case SlotType.Working:
-                    SetContainer(false, true, false, false);
-                    preparingContainer.gameObject.SetActive(false);
-                    workingContainer.gameObject.SetActive(true);
-                    UpdateItemInformation(state.Result.itemUsable, type);
-                    UpdateHourglass(state, currentBlockIndex);
-                    UpdateRequiredBlockInformation(
-                        state.UnlockBlockIndex,
-                        state.StartBlockIndex,
-                        currentBlockIndex);
-                    UpdateNotification(state, currentBlockIndex, isCached);
-                    break;
-
-                case SlotType.WaitingReceive:
+                case SlotUIState.WaitingReceive:
                     SetContainer(false, false, false, true);
+                    itemView.gameObject.SetActive(true);
                     if (state != null)
                     {
                         waitingReceiveItemView.SetData(new Item(state.Result.itemUsable));
@@ -251,7 +429,31 @@ namespace Nekoyume.UI.Module
                                 false,
                                 true));
                     }
+                    SetItemUsableImage(state?.Result?.itemUsable);
+                    break;
 
+                case SlotUIState.Locked:
+                    SetContainer(true, false, false, false);
+                    itemView.Clear();
+                    itemView.gameObject.SetActive(false);
+                    SetBackGroundGroup(BackGroundType.Default);
+                    ClearCustomCraftObject();
+                    break;
+            }
+        }
+
+        private void UpdatePetButton(SlotUIState uiState, CombinationSlotState? state)
+        {
+            switch (uiState)
+            {
+                case SlotUIState.Locked:
+                case SlotUIState.Empty:
+                case SlotUIState.Appraise:
+                    petSelectButton.SetData(null);
+                    break;
+                case SlotUIState.Working:
+                case SlotUIState.WaitingReceive:
+                    petSelectButton.SetData(state?.PetId ?? null);
                     break;
             }
         }
@@ -268,29 +470,6 @@ namespace Nekoyume.UI.Module
             waitReceiveContainer.gameObject.SetActive(isWaitingReceive);
         }
 
-        private SlotType GetSlotType(
-            CombinationSlotState state,
-            long currentBlockIndex,
-            bool isCached)
-        {
-            if (isCached)
-            {
-                return _cachedType == CacheType.Appraise
-                    ? SlotType.Appraise
-                    : SlotType.WaitingReceive;
-            }
-
-            if (state?.Result is null)
-            {
-                return SlotType.Empty;
-            }
-
-            return currentBlockIndex < state.StartBlockIndex +
-                States.Instance.GameConfigState.RequiredAppraiseBlock
-                    ? SlotType.Appraise
-                    : SlotType.Working;
-        }
-
         private void UpdateRequiredBlockInformation(
             long unlockBlockIndex,
             long startBlockIndex,
@@ -305,10 +484,9 @@ namespace Nekoyume.UI.Module
 
         private void UpdateNotification(
             CombinationSlotState state,
-            long currentBlockIndex,
-            bool isCached)
+            long currentBlockIndex)
         {
-            if (GetSlotType(state, currentBlockIndex, isCached) != SlotType.Working)
+            if (UIState != SlotUIState.Working)
             {
                 hasNotificationImage.enabled = false;
                 return;
@@ -332,16 +510,23 @@ namespace Nekoyume.UI.Module
             }
 
             var row = Game.instance.TableSheets.MaterialItemSheet
-                .OrderedList
-                .First(r => r.ItemSubType == ItemSubType.Hourglass);
+                .OrderedList?
+                .FirstOrDefault(r => r.ItemSubType == ItemSubType.Hourglass);
+
+            if (row == null)
+            {
+                hasNotificationImage.enabled = false;
+                return;
+            }
+
             var isEnough = States.Instance.CurrentAvatarState.inventory
                 .HasFungibleItem(row.ItemId, currentBlockIndex, cost);
             hasNotificationImage.enabled = isEnough;
         }
 
-        private void UpdateHourglass(CombinationSlotState state, long currentBlockIndex)
+        private void UpdateHourglass(CombinationSlotState state, long blockIndex)
         {
-            var diff = state.UnlockBlockIndex - currentBlockIndex;
+            var diff = state.UnlockBlockIndex - blockIndex;
             int cost;
             if (state.PetId.HasValue &&
                 States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
@@ -358,16 +543,16 @@ namespace Nekoyume.UI.Module
             }
 
             var inventory = States.Instance.CurrentAvatarState.inventory;
-            var count = Util.GetHourglassCount(inventory, currentBlockIndex);
+            var count = inventory.GetUsableItemCount(CostType.Hourglass, blockIndex);
             hourglassCountText.text = cost.ToString();
             hourglassCountText.color = count >= cost
                 ? Palette.GetColor(ColorType.ButtonEnabled)
                 : Palette.GetColor(ColorType.TextDenial);
         }
 
-        private void UpdateItemInformation(ItemUsable item, SlotType slotType)
+        private void UpdateItemInformation(ItemUsable? item, SlotUIState slotUIState)
         {
-            if (slotType == SlotType.Working)
+            if (slotUIState == SlotUIState.Working)
             {
                 itemView.SetData(new Item(item));
             }
@@ -383,14 +568,14 @@ namespace Nekoyume.UI.Module
         }
 
         private static void OnClickSlot(
-            SlotType type,
-            CombinationSlotState state,
+            SlotUIState uiState,
+            CombinationSlotState? state,
             int slotIndex,
             long currentBlockIndex)
         {
-            switch (type)
+            switch (uiState)
             {
-                case SlotType.Empty:
+                case SlotUIState.Empty:
                     if (BattleRenderer.Instance.IsOnBattle)
                     {
                         NotificationSystem.Push(
@@ -420,17 +605,66 @@ namespace Nekoyume.UI.Module
                     Widget.Find<CombinationSlotsPopup>().Close();
                     break;
 
-                case SlotType.Working:
+                case SlotUIState.Working:
                     Widget.Find<CombinationSlotPopup>().Show(state, slotIndex, currentBlockIndex);
                     break;
 
-                case SlotType.Appraise:
+                case SlotUIState.Appraise:
                     NotificationSystem.Push(
                         Nekoyume.Model.Mail.MailType.System,
                         L10nManager.Localize("UI_COMBINATION_NOTIFY_IDENTIFYING"),
                         NotificationCell.NotificationType.Information);
                     break;
             }
+        }
+        
+        private void SetBackGroundGroup(BackGroundType backGroundType)
+        {
+            foreach (var backGround in backGroundGroups)
+            {
+                if (backGround.BackGroundType == backGroundType)
+                {
+                    continue;
+                }
+                backGround.SetActive(false);
+            }
+            
+            foreach (var backGround in backGroundGroups)
+            {
+                if (backGround.BackGroundType != backGroundType)
+                {
+                    continue;
+                }
+                backGround.SetActive(true);
+            }
+        }
+        
+        private void SetItemUsableImage(ItemUsable? itemUsable, bool clearCustomObjects = false)
+        {                    
+            if (itemUsable is Equipment equipment)
+            {
+                SetBackGroundGroup(equipment.ByCustomCraft ? BackGroundType.CustomCraft : BackGroundType.Default);
+                if (!clearCustomObjects)
+                {
+                    customCraftObject.SetActive(equipment.ByCustomCraft);
+                    randomOnlyIcon.SetActive(equipment.HasRandomOnlyIcon);
+                }
+                else
+                {
+                    ClearCustomCraftObject();
+                }
+            }
+            else
+            {
+                SetBackGroundGroup(BackGroundType.Default);
+                ClearCustomCraftObject();
+            }
+        }
+        
+        private void ClearCustomCraftObject()
+        {
+            randomOnlyIcon.SetActive(false);
+            customCraftObject.SetActive(false);
         }
     }
 }

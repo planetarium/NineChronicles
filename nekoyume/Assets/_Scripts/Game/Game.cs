@@ -421,9 +421,10 @@ namespace Nekoyume.Game
                 }
             }
 
-            if (Widget.TryFind<IntroScreen>(out var introscreen))
+            var introScreen = FindObjectOfType<IntroScreen>();
+            if (introScreen != null)
             {
-                introscreen.GetGuestPrivateKey();
+                introScreen.GetGuestPrivateKey();
             }
 
             NcDebug.Log("[Game] CommandLineOptions loaded");

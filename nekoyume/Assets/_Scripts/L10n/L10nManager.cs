@@ -449,7 +449,7 @@ namespace Nekoyume.L10n
 
         public static bool ContainsKey(string key)
         {
-            return _dictionary.ContainsKey(key);
+            return _dictionary.ContainsKey(key) || _additionalDic.ContainsKey(key);
         }
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -487,6 +487,12 @@ namespace Nekoyume.L10n
         public static string LocalizeItemName(int itemId)
         {
             var key = $"ITEM_NAME_{itemId}";
+            return Localize(key);
+        }
+
+        public static string LocalizeCustomItemName(int itemId)
+        {
+            var key = $"ITEM_NAME_CUSTOM_{itemId}";
             return Localize(key);
         }
 

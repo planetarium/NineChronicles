@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using Nekoyume.TableData;
 using Nekoyume.TableData.AdventureBoss;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.CustomEquipmentCraft;
 using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.Pet;
@@ -111,6 +112,8 @@ namespace Nekoyume.Game
         public EquipmentItemSheet EquipmentItemSheet { get; private set; }
 
         public MaterialItemSheet MaterialItemSheet { get; private set; }
+
+        public UnlockCombinationSlotCostSheet UnlockCombinationSlotCostSheet { get; private set; }
 
         public QuestSheet QuestSheet { get; private set; }
 
@@ -282,6 +285,12 @@ namespace Nekoyume.Game
         public AdventureBossUnlockFloorCostSheet AdventureBossUnlockFloorCostSheet { get; private set; }
 
         public AdventureBossWantedRewardSheet AdventureBossWantedRewardSheet { get; private set; }
+
+        public CustomEquipmentCraftIconSheet CustomEquipmentCraftIconSheet { get; private set; }
+        public CustomEquipmentCraftOptionSheet CustomEquipmentCraftOptionSheet { get; private set; }
+        public CustomEquipmentCraftRelationshipSheet CustomEquipmentCraftRelationshipSheet { get; private set; }
+        public CustomEquipmentCraftRecipeSheet CustomEquipmentCraftRecipeSheet { get; private set; }
+        public CustomEquipmentCraftRecipeSkillSheet CustomEquipmentCraftRecipeSkillSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

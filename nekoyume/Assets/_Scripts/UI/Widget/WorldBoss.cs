@@ -183,7 +183,7 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             await UpdateWorldBossState(currentBlockIndex, avatarAddress, forceUpdateState, ignoreHeaderMenuAnimation, ignoreHeaderMenu);
-            
+
             var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
             var refillInterval = States.Instance.GameConfigState.DailyWorldBossInterval;
             _headerMenu.WorldBossTickets.UpdateTicket(raiderState, currentBlockIndex, refillInterval);
@@ -413,7 +413,7 @@ namespace Nekoyume.UI
             var myRecord =
                 records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
             var userCount = response?.WorldBossTotalUsers ?? 0;
-            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? 0;
+            var blockIndex = response?.WorldBossRanking?.BlockIndex ?? -1;
             return (myRecord, blockIndex, userCount);
         }
 
