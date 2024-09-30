@@ -24433,11 +24433,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2133587368603931066}
-  - component: {fileID: 1220895017630317803}
+  - component: {fileID: 9135075296982630440}
   - component: {fileID: 8279697057637998834}
   - component: {fileID: 4071821810463307430}
   m_Layer: 5
-  m_Name: UI_CombinationResultPopup
+  m_Name: UI_CombinationResultScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24470,7 +24470,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1220895017630317803
+--- !u!114 &9135075296982630440
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
