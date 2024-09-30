@@ -619,7 +619,13 @@ namespace Nekoyume.L10n
                 using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
                 var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    PrepareHeaderForMatch = args => args.Header.ToLower()
+                    PrepareHeaderForMatch = args => args.Header.ToLower(),
+
+                    // 헤더 검증을 비활성화 (헤더가 없어도 에러 발생하지 않음)
+                    HeaderValidated = null,
+
+                    // 필드 누락 시 에러를 무시하는 설정
+                    MissingFieldFound = null
                 };
                 using var csvReader = new CsvReader(streamReader, csvConfig);
                 var records = csvReader.GetRecords<L10nCsvModel>();
