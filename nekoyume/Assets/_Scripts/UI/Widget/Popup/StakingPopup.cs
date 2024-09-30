@@ -71,7 +71,7 @@ namespace Nekoyume.UI
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
-        private const string TableSheetViewUrlPrefix = "https://9c-board.netlify.app/odin/tablesheet/";
+        private const string TableSheetViewUrlPrefix = "https://9c-board.nine-chronicles.dev/odin/tablesheet/";
 
         private bool _benefitListViewsInitialized;
 
@@ -325,7 +325,7 @@ namespace Nekoyume.UI
                 States.Instance.StakedBalanceState.Gold;
             if (inputBigInt > totalDepositNcg.MajorUnit)
             {
-                Find<PaymentPopup>().ShowLackPaymentNCG(inputBigInt.ToString(), true);            
+                Find<PaymentPopup>().ShowLackPaymentNCG(inputBigInt.ToString(), true);
                 Close(true);
                 return;
             }
