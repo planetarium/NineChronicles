@@ -1,5 +1,9 @@
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Nekoyume.GraphQL;
 using Nekoyume.Helper;
+using Nekoyume.Multiplanetary;
+using Nekoyume.Multiplanetary.Extensions;
 using NineChronicles.ExternalServices.IAPService.Runtime;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 
@@ -20,6 +24,8 @@ namespace Nekoyume.ApiClient
 
         private static readonly string DccUrlJsonPath =
             Platform.GetStreamingAssetsPath("dccUrl.json");
+
+        public GraphQLHttpClient Mimir { get; private set; }
 
         public NineChroniclesAPIClient WorldBossClient { get; private set; }
 
@@ -46,7 +52,7 @@ namespace Nekoyume.ApiClient
         }
 
         // TODO: 중복코드 정리, 초기화 안 된 경우 로직 정리
-        public void Initialize(CommandLineOptions clo)
+        public void Initialize(CommandLineOptions clo, PlanetId? planetId)
         {
             if (clo == null)
             {
@@ -56,6 +62,17 @@ namespace Nekoyume.ApiClient
 
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
+            Mimir = planetId.HasValue
+                ? planetId.Value.Is("odin")
+                    ? new GraphQLHttpClient(
+                        "https://mimir.nine-chronicles.dev/odin/graphql/",
+                        new NewtonsoftJsonSerializer())
+                    : planetId.Value.Is("heimdall")
+                        ? new GraphQLHttpClient(
+                            "https://mimir.nine-chronicles.dev/heimdall/graphql/",
+                            new NewtonsoftJsonSerializer())
+                        : null
+                : null;
             WorldBossClient = new NineChroniclesAPIClient(clo.ApiServerHost);
             RpcGraphQlClient = string.IsNullOrEmpty(clo.RpcServerHost) ?
                 new NineChroniclesAPIClient(string.Empty) :

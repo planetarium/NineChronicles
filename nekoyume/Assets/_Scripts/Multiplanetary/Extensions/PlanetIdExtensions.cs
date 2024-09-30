@@ -4,6 +4,22 @@ namespace Nekoyume.Multiplanetary.Extensions
 {
     public static class PlanetIdExtensions
     {
+        public static bool Is(this PlanetId planetId, string planeName)
+        {
+            planeName = planeName.ToLowerInvariant();
+            if (planetId.Equals(PlanetId.Odin))
+            {
+                return planeName == "odin";
+            }
+
+            if (planetId.Equals(PlanetId.Heimdall))
+            {
+                return planeName == "heimdall";
+            }
+
+            return false;
+        }
+
         public static string ToLocalizedPlanetName(
             this PlanetId planetId,
             bool containsPlanetId)
