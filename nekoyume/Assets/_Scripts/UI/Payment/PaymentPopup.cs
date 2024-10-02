@@ -3,9 +3,11 @@ using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Libplanet.Types.Assets;
 using Nekoyume.Helper;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -60,6 +62,7 @@ namespace Nekoyume.UI
 #endregion SerializeField
 
         private System.Action YesCallback { get; set; }
+        private System.Action YesOnDisableCallback { get; set; }
 
         protected override void Awake()
         {
@@ -67,6 +70,7 @@ namespace Nekoyume.UI
 
             buttonNo.OnClick = Cancel;
             buttonYes.OnSubmitSubject.Subscribe(_ => Yes()).AddTo(gameObject);
+            buttonYes.OnClickSubject.Subscribe(_ => YesOnDisable()).AddTo(gameObject);
             
             buttonClose.onClick.AddListener(Cancel);
             CloseWidget = Cancel;
@@ -89,6 +93,7 @@ namespace Nekoyume.UI
                     buttonClose.gameObject.SetActive(false);
                     attractArrowObject.SetActive(false);
                     
+                    // PaymentCheck인 경우 항상 Yes버튼이 Submittable하도록 설정
                     buttonYes.SetCondition(null);
                     buttonYes.UpdateObjects();
                     break;
@@ -149,6 +154,13 @@ namespace Nekoyume.UI
             buttonYes.UpdateObjects();
             
             YesCallback = AttractRuneStone(runeStone);
+            YesOnDisableCallback = () =>
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_LOCK_SHOP_NOTI"),
+                    NotificationCell.NotificationType.Alert);
+            };
+            
             Show(title, content, attractMessage, string.Empty, false);
         }
 
@@ -165,6 +177,14 @@ namespace Nekoyume.UI
             CheckDustRequiredStage(costType);
 
             YesCallback = () => AttractDust(costType);
+            YesOnDisableCallback = () =>
+            {
+                // 어드벤처 보스의 경우 해당 메시지가 뜰 케이스가 없어서 Shop으로 노티 고정
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_LOCK_SHOP_NOTI"),
+                    NotificationCell.NotificationType.Alert);
+            };
+            
             Show(title, content, GetDustAttractString(costType), string.Empty, false);
         }
         
@@ -182,6 +202,13 @@ namespace Nekoyume.UI
             buttonYes.UpdateObjects();
 
             YesCallback = AttractGrind;
+            YesOnDisableCallback = () =>
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_LOCK_GRIND_NOTI"),
+                    NotificationCell.NotificationType.Alert);
+            };
+            
             Show(title, content, labelYesText, string.Empty, false);
         }
 
@@ -197,9 +224,15 @@ namespace Nekoyume.UI
             
             buttonYes.SetCondition(CheckClearRequiredStageShop);
             buttonYes.UpdateObjects();
-
-
+            
             YesCallback = AttractShop;
+            YesOnDisableCallback = () =>
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_LOCK_SHOP_NOTI"),
+                    NotificationCell.NotificationType.Alert);
+            };
+            
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
         }
 
@@ -216,6 +249,13 @@ namespace Nekoyume.UI
             buttonYes.UpdateObjects();
 
             YesCallback = AttractToMonsterCollection;
+            YesOnDisableCallback = () =>
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_LOCK_MONSTER_COLLECTION_NOTI"),
+                    NotificationCell.NotificationType.Alert);
+            };
+            
             Show(title, content, L10nManager.Localize("UI_MENU_MONSTER_COLLECTION"), string.Empty, false);
         }
 
@@ -243,6 +283,12 @@ namespace Nekoyume.UI
                 {
                     AttractShop();
                 }
+            };
+            YesOnDisableCallback = () =>
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_LOCK_SHOP_NOTI"),
+                    NotificationCell.NotificationType.Alert);
             };
             
             Show(title, content, L10nManager.Localize("UI_SHOP"), string.Empty, false);
@@ -283,6 +329,13 @@ namespace Nekoyume.UI
                     AttractToMonsterCollection();
                 }
             };
+            YesOnDisableCallback = () =>
+            {
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize(canBuyShop ? "UI_LOCK_SHOP_NOTI" : "UI_LOCK_MONSTER_COLLECTION_NOTI"),
+                    NotificationCell.NotificationType.Alert);
+            };
+            
             Show(title, content, labelYesText, string.Empty, false);
         }
 #endregion LackPaymentAction
@@ -809,6 +862,17 @@ namespace Nekoyume.UI
         {
             base.Close();
             YesCallback?.Invoke();
+        }
+
+        private void YesOnDisable()
+        {
+            if (buttonYes.IsSubmittable)
+            {
+                // 버튼이 Submittable한 경우 아래 로직이 아닌 YesCallback을 호출합니다.
+                return;
+            }
+            
+            YesOnDisableCallback?.Invoke();
         }
 
         private void Cancel()
