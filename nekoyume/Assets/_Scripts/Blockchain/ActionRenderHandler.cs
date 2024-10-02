@@ -3300,7 +3300,7 @@ namespace Nekoyume.Blockchain
 
             var completionRate = (States.Instance.CollectionState.Ids.Count, collectionSheet.Count);
             var cp = Util.GetCpChanged(previousState, States.Instance.CollectionState);
-            Widget.Find<CollectionResultPopup>().Show(collectionRow, completionRate, cp);
+            Widget.Find<CollectionResultScreen>().Show(collectionRow, completionRate, cp);
 
 
             UniTask.RunOnThreadPool(() => UpdateCurrentAvatarStateAsync(eval).Forget());
@@ -3937,9 +3937,10 @@ namespace Nekoyume.Blockchain
                 prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
                 UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
-
+                
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
                 UpdateCurrentAvatarInventory(eval);
 
                 _disposableForBattleEnd?.Dispose();
