@@ -12,7 +12,7 @@ Set in a vast fantasy world, it is governed by [its players][Discord], and suppo
 where supply and demand are the greatest currency.
 
 Decentralized infrastructure has created new possibilities for online gaming, where communities
-can become the actual owners of an online world. By fully open sourcing the repositories for
+can become the actual owners of an online world. By fully open-sourcing the repositories for
 Nine Chronicles, players and developers alike can use any part of the game, from the beautiful
 bespoke 2D assets to in-game logic and code.
 
