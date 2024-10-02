@@ -93,8 +93,10 @@ namespace Nekoyume.UI
                         var itemRow = TableSheets.Instance.ItemSheet[itemReward.Key];
                         if (itemRow is MaterialItemSheet.Row materialRow)
                         {
-                            var item = ItemFactory.CreateMaterial(materialRow);
-                            mailRewards.Add(new MailReward(item, itemReward.Value));
+                            var material = materialRow.ItemSubType is ItemSubType.Circle
+                                ? ItemFactory.CreateTradableMaterial(materialRow)
+                                : ItemFactory.CreateMaterial(materialRow);
+                            mailRewards.Add(new MailReward(material, itemReward.Value));
                         }
                         else
                         {

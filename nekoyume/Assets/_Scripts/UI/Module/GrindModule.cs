@@ -24,6 +24,9 @@ namespace Nekoyume.UI.Module
 
     public class GrindModule : MonoBehaviour
     {
+        // TODO: 셋팅 파일 or lib9c 등으로 분리
+        private const int GrindCost = 5;
+
         [Serializable]
         private struct CrystalAnimationData
         {
@@ -87,12 +90,9 @@ namespace Nekoyume.UI.Module
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
 
-        private bool CanGrind => _selectedItemsForGrind.Any();
-
         private void Awake()
         {
-            grindButton.SetCost(CostType.ActionPoint, 5);
-            grindButton.SetCondition(() => CanGrind);
+            grindButton.SetCost(CostType.ActionPoint, GrindCost);
             removeAllButton.OnSubmitSubject.Subscribe(_ =>
             {
                 foreach (var item in _selectedItemsForGrind.ToList())
@@ -281,7 +281,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            grindButton.UpdateObjects();
+            grindButton.Interactable = _selectedItemsForGrind.Any();
             _inventoryApStoneCount = inventoryModel.GetUsableItemCount(
                 (int)CostType.ApPotion,
                 Game.Game.instance.Agent?.BlockIndex ?? -1);
@@ -290,7 +290,7 @@ namespace Nekoyume.UI.Module
         private void UpdateScroll()
         {
             var count = _selectedItemsForGrind.Count;
-            grindButton.UpdateObjects();
+            grindButton.Interactable = _selectedItemsForGrind.Any();
             removeAllButton.Interactable = count > 1;
             scroll.UpdateData(_selectedItemsForGrind);
             scroll.RawJumpTo(count - 1);
@@ -394,26 +394,15 @@ namespace Nekoyume.UI.Module
             {
                 case ConditionalButton.State.Conditional:
                 {
+                    var paymentPopup = Widget.Find<PaymentPopup>();
                     if (_inventoryApStoneCount > 0)
                     {
-                        var confirm = Widget.Find<IconAndButtonSystem>();
-                        confirm.ShowWithTwoButton(
-                            L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
-                                L10nManager.Localize("GRIND_UI_BUTTON"), _inventoryApStoneCount),
-                            L10nManager.Localize("UI_OK"),
-                            L10nManager.Localize("UI_CANCEL"),
-                            false, IconAndButtonSystem.SystemType.Information);
-                        confirm.ConfirmCallback = () => chargeAp(true);
+                        paymentPopup.ShowCheckPaymentApPotion(GrindCost, () => chargeAp(true));
                     }
                     else
                     {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("ERROR_ACTION_POINT"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowLackApPotion(1);
                     }
-
                     break;
                 }
                 case ConditionalButton.State.Normal:

@@ -66,7 +66,11 @@ namespace Nekoyume.UI
         TutorialActionActionPointChargeButton,
 
         // SeasonPass
-        TutorialActionSeasonPassGuidePopup
+        TutorialActionSeasonPassGuidePopup,
+
+        // CustomCraft
+        TutorialActionCustomCraftShow,
+        TutorialActionShowInfo
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

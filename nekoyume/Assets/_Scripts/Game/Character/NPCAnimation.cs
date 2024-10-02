@@ -37,6 +37,8 @@ namespace Nekoyume.Game.Character
             Disappear_03,
             Over,
             Click,
+            Appear_01,
+            Disappear_01,
             Motion_01,
         }
 

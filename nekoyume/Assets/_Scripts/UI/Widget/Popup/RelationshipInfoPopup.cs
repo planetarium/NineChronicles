@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -32,28 +33,29 @@ namespace Nekoyume.UI
         {
             RelationshipInfoCell.Model currentModel = null;
             var scrollModels = new List<RelationshipInfoCell.Model>();
-            var prevRelationship = 0;
-            foreach (var row in TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values)
+            var nextRelationship = 0;
+            foreach (var row in TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList!.Reverse())
             {
                 var model = new RelationshipInfoCell.Model
                 {
-                    MinRelationship = prevRelationship,
-                    MaxRelationship = row.Relationship,
-                    MinCp = row.MinCp,
-                    MaxCp = row.MaxCp,
+                    MinRelationship = row.Relationship,
+                    MaxRelationship = nextRelationship,
+                    MinCp = row.CpGroups.Min(cp => cp.MinCp),
+                    MaxCp = row.CpGroups.Max(cp => cp.MaxCp),
                     RequiredLevel = TableSheets.Instance.ItemRequirementSheet[row.WeaponItemId]
                         .Level
                 };
                 scrollModels.Add(model);
-                prevRelationship = row.Relationship + 1;
+                nextRelationship = row.Relationship - 1;
 
-                if (currentModel == null && row.Relationship >= ReactiveAvatarState.Relationship)
+                if (currentModel == null && row.Relationship <= ReactiveAvatarState.Relationship)
                 {
                     currentModel = model;
                 }
             }
 
             scroll.CurrentModel = currentModel;
+            scrollModels.Reverse();
             scroll.UpdateData(scrollModels);
             base.Show(ignoreShowAnimation);
         }

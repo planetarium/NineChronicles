@@ -155,16 +155,7 @@ namespace Nekoyume.UI
             runeLevelBonus.infoButton.onClick.AddListener(() =>
                 Find<RuneLevelBonusEffectPopup>().Show(_runeLevelBonus));
             levelUpButton.OnSubmitSubject.Subscribe(_ => Enhancement()).AddTo(gameObject);
-            levelUpButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                var message = _selectedRuneItem.Level > 0
-                    ? L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_2") // Level Up
-                    : L10nManager.Localize("UI_MESSAGE_NOT_ENOUGH_MATERIAL_1"); // Combine
-
-                NotificationSystem.Push(MailType.System,
-                    message,
-                    NotificationCell.NotificationType.Alert);
-            }).AddTo(gameObject);
+            levelUpButton.OnClickDisabledSubject.Subscribe(ShowLackMaterialPopup).AddTo(gameObject);
 
             tryCountSlider.plusButton.onClick.AddListener(() =>
             {
@@ -470,6 +461,25 @@ namespace Nekoyume.UI
             Enhancement();
             // Rune Level Bonus (for new user)
             PlayerPrefs.SetInt(TutorialCheckKey, 1);
+        }
+
+        private void ShowLackMaterialPopup(Unit _)
+        {
+            var paymentPopup = Find<PaymentPopup>();
+            var runeCost = _selectedRuneItem.CostRow.Cost[_selectedRuneItem.Level];
+            
+            if (!_selectedRuneItem.EnoughRuneStone)
+            {
+                paymentPopup.ShowLackRuneStone(_selectedRuneItem, runeCost.RuneStoneQuantity);
+            }
+            else if (!_selectedRuneItem.EnoughNcg)
+            {
+                paymentPopup.ShowLackPaymentNCG(runeCost.NcgQuantity.ToString());
+            }
+            else if (!_selectedRuneItem.EnoughCrystal)
+            {
+                paymentPopup.ShowLackPaymentCrystal(runeCost.CrystalQuantity);
+            }
         }
     }
 }

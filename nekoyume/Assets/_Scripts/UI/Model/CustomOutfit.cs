@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Dimmed = new(false);
         public readonly ReactiveProperty<bool> Selected = new(false);
         public readonly ReactiveProperty<bool> RandomOnly = new(false);
+        public readonly ReactiveProperty<bool> HasNotification = new(false);
 
         public readonly Subject<CustomOutfit> OnClick = new();
         private readonly List<IDisposable> _disposables = new();
@@ -22,9 +23,12 @@ namespace Nekoyume.UI.Model
             if (row is not null)
             {
                 RandomOnly.Value = row.RandomOnly;
-                ReactiveAvatarState.ObservableRelationship.Subscribe(relationship =>
+                ReactiveAvatarState.ObservableRelationship.Subscribe(current =>
                 {
-                    Dimmed.Value = row.RequiredRelationship > relationship;
+                    var required = row.RequiredRelationship;
+                    Dimmed.Value = required > current;
+                    HasNotification.Value =
+                        required > 0 && current >= required && current < required + 5;
                 }).AddTo(_disposables);
             }
             else
@@ -32,6 +36,7 @@ namespace Nekoyume.UI.Model
                 Selected.Value = false;
                 RandomOnly.Value = false;
                 Dimmed.Value = false;
+                HasNotification.Value = false;
             }
         }
 
@@ -40,6 +45,7 @@ namespace Nekoyume.UI.Model
             Dimmed.Dispose();
             Selected.Dispose();
             RandomOnly.Dispose();
+            HasNotification.Dispose();
             OnClick.Dispose();
             _disposables.DisposeAllAndClear();
         }

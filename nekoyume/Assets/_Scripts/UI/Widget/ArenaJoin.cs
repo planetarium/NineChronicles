@@ -326,9 +326,6 @@ namespace Nekoyume.UI
         /// </summary>
         private void InitializeBottomButtons()
         {
-            _earlyPaymentButton.OnGoToGrinding
-                .Subscribe(_ => GoToGrinding())
-                .AddTo(gameObject);
             _earlyPaymentButton.OnJoinArenaAction
                 .Subscribe(_ =>
                 {
@@ -376,17 +373,13 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
                 var balance = States.Instance.CrystalBalance;
-                var cost = _paymentButton.CrystalCost;
+                var cost = _paymentButton.GetCost(CostType.Crystal);
                 var enoughMessageFormat = L10nManager.Localize("UI_ARENA_JOIN_WITH_CRYSTAL_Q");
-                var notEnoughMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Find<PaymentPopup>().ShowCheckPayment(
-                    CostType.Crystal,
+                Find<PaymentPopup>().ShowCheckPaymentCrystal(
                     balance.MajorUnit,
                     cost,
                     string.Format(enoughMessageFormat, cost),
-                    notEnoughMessage,
-                    JoinArenaAction,
-                    GoToGrinding);
+                    JoinArenaAction);
             }).AddTo(gameObject);
 
             _info.OnSeasonBeginning
@@ -662,16 +655,6 @@ namespace Nekoyume.UI
                     selectedRoundData.ChampionshipId,
                     selectedRoundData.Round)
                 .Subscribe();
-        }
-
-        private void GoToGrinding()
-        {
-            Close(true);
-            Find<Menu>().Close();
-            Find<WorldMap>().Close();
-            Find<StageInformation>().Close();
-            Find<BattlePreparation>().Close();
-            Find<Grind>().Show();
         }
 
         public void TutorialActionSeasonPassGuidePopup()

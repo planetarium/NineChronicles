@@ -1,8 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Numerics;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
@@ -11,17 +9,17 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Model
 {
     public class CombinationSlotLockObject : MonoBehaviour
     {
-        private Button _button = null!;
-
         // TODO: 동적으로 이미지 변경?
         // private Image _costImage;
+
+        [SerializeField]
+        private Button lockButton = null!;
 
         [SerializeField]
         private TMP_Text costText = null!;
@@ -38,8 +36,7 @@ namespace Nekoyume.UI.Model
 #region MonoBehavior
         private void Awake()
         {
-            _button = GetComponent<Button>();
-            _button.onClick.AddListener(() =>
+            lockButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
                 ShowPaymentPopup();
@@ -56,6 +53,7 @@ namespace Nekoyume.UI.Model
         {
             loadingIndicator.SetActive(isLoading);
             lockPriceObject.SetActive(!isLoading);
+            lockButton.interactable = !isLoading;
         }
 
         private void ShowPaymentPopup()
@@ -70,20 +68,19 @@ namespace Nekoyume.UI.Model
             switch (_costType)
             {
                 case CostType.Crystal:
-                case CostType.NCG:
-                    paymentPopup.ShowCheckPayment(
-                        _costType,
+                    paymentPopup.ShowCheckPaymentCrystal(
                         GetBalance(),
                         GetCost(),
                         GetCheckCostMessageString(),
-                        L10nManager.Localize(_costType == CostType.Crystal
-                            ? "UI_NOT_ENOUGH_CRYSTAL"
-                            : "UI_NOT_ENOUGH_NCG"),
-                        OnPaymentSucceed,
-                        () =>
-                        {
-                            // TODO
-                        });
+                        OnPaymentSucceed);
+                    break;
+                case CostType.NCG:
+                    paymentPopup.ShowCheckPaymentNCG(
+                        GetBalance(),
+                        GetCost(),
+                        GetCheckCostMessageString(),
+                        OnPaymentSucceed
+                    );
                     break;
                 case CostType.GoldDust:
                 case CostType.RubyDust:

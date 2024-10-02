@@ -42,9 +42,6 @@ namespace Nekoyume.UI.Module.Arena.Join
         private int _round;
         private long _cost;
 
-        private readonly Subject<Unit> _onGoToGrinding = new();
-        public IObservable<Unit> OnGoToGrinding => _onGoToGrinding;
-
 
         private readonly Subject<Unit> _onJoinArenaAction = new();
         public IObservable<Unit> OnJoinArenaAction => _onJoinArenaAction;
@@ -57,16 +54,11 @@ namespace Nekoyume.UI.Module.Arena.Join
                 var balance = States.Instance.CrystalBalance;
                 var enoughMessageFormat =
                     L10nManager.Localize("UI_ARENA_EARLY_REGISTRATION_Q");
-                var notEnoughMessage =
-                    L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Widget.Find<PaymentPopup>().ShowCheckPayment(
-                    CostType.Crystal,
+                Widget.Find<PaymentPopup>().ShowCheckPaymentCrystal(
                     balance.MajorUnit,
                     _cost,
                     string.Format(enoughMessageFormat, _cost),
-                    notEnoughMessage,
-                    JoinArenaAction,
-                    () => _onGoToGrinding.OnNext(Unit.Default));
+                    JoinArenaAction);
             });
         }
 

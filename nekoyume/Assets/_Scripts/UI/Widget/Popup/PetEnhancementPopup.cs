@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -82,6 +83,7 @@ namespace Nekoyume.UI
         private int _sliderCurrentValue;
         private bool _enoughBalance;
         private PetSheet.Row _petRow;
+        private FungibleAssetValue _ncgCost;
 
         protected override void Awake()
         {
@@ -172,11 +174,11 @@ namespace Nekoyume.UI
             submitButton.OnClickDisabledSubject.Subscribe(_ =>
             {
                 OneLineSystem.Push(
-                    MailType.System,
-                    _enoughBalance
-                        ? L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU")
-                        : L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                    NotificationCell.NotificationType.Information);
+                MailType.System,
+                _enoughBalance
+                    ? L10nManager.Localize("UI_CAN_NOT_ENTER_PET_MENU")
+                    : L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                NotificationCell.NotificationType.Information);
             }).AddTo(_disposables);
         }
 
@@ -203,15 +205,14 @@ namespace Nekoyume.UI
                     currentOption, targetOption);
             }
 
+            var goldBalanceState = States.Instance.GoldBalanceState;
             soulStoneCostText.text = soulStone.ToString();
-            var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * ncg;
+            _ncgCost = goldBalanceState.Gold.Currency * ncg;
             var soulStoneCost =
                 PetHelper.GetSoulstoneCurrency(_petRow.SoulStoneTicker) *
                 soulStone;
-            var enoughNcg
-                = States.Instance.GoldBalanceState.Gold >= ncgCost;
-            var enoughSoulStone
-                = States.Instance.CurrentAvatarBalances[soulStoneCost.Currency.Ticker] >= soulStoneCost;
+            var enoughNcg = goldBalanceState.Gold >= _ncgCost;
+            var enoughSoulStone = States.Instance.CurrentAvatarBalances[soulStoneCost.Currency.Ticker] >= soulStoneCost;
             var enough = enoughNcg && enoughSoulStone;
             _enoughBalance = enough;
             soulStoneNotEnoughObject.SetActive(!enoughSoulStone);

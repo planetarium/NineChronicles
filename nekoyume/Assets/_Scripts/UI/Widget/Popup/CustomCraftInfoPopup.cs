@@ -43,6 +43,7 @@ namespace Nekoyume.UI
         public void Show(ItemSubType subType, bool ignoreShowAnimation = false)
         {
             _selectedSubtype = subType;
+            skillTabButton.SetToggledOff();
             _selectedTabButton = statTabButton;
             ShowStatView(_selectedTabButton);
             base.Show(ignoreShowAnimation);
@@ -60,8 +61,8 @@ namespace Nekoyume.UI
 
             var relationshipRow = TableSheets.Instance.CustomEquipmentCraftRelationshipSheet
                 .OrderedList
-                .First(row => row.Relationship >= ReactiveAvatarState.Relationship);
-            var maxCp = relationshipRow.MaxCp;
+                .Last(row => row.Relationship <= ReactiveAvatarState.Relationship);
+            var maxCp = relationshipRow.CpGroups.Max(cp => cp.MaxCp);
 
             var models = TableSheets.Instance.CustomEquipmentCraftOptionSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubtype)
@@ -95,11 +96,13 @@ namespace Nekoyume.UI
 
             var skillRows = TableSheets.Instance.CustomEquipmentCraftRecipeSkillSheet.Values
                 .Where(row => row.ItemSubType == _selectedSubtype)
-                .Select(row => (TableSheets.Instance.EquipmentItemOptionSheet[row.ItemOptionId], row.Ratio));
+                .Select(row => (TableSheets.Instance.EquipmentItemOptionSheet[row.ItemOptionId], row.Ratio))
+                .ToList();
+            var sumRatio = skillRows.Sum(tuple => (float)tuple.Ratio);
             skillScroll.UpdateData(skillRows.Select(tuple => new CustomCraftSkillCell.Model
             {
                 SkillName = L10nManager.Localize($"SKILL_NAME_{tuple.Item1.SkillId}"),
-                SkillRatio = $"{tuple.Ratio}%",
+                SkillRatio = $"{tuple.Ratio / sumRatio * 100f:F4}%",
                 OptionRow = tuple.Item1,
                 SkillRow = TableSheets.Instance.SkillSheet[tuple.Item1.SkillId]
             }));
@@ -111,7 +114,7 @@ namespace Nekoyume.UI
         {
             skillPositionTooltip.transform.SetParent(model.Item2);
             skillPositionTooltip.transform.localPosition = Vector3.zero;
-            skillPositionTooltip.transform.SetParent(skillScroll.transform);
+            skillPositionTooltip.transform.SetParent(transform);
             skillPositionTooltip.Show(model.Item1.SkillRow, model.Item1.OptionRow);
         }
     }
