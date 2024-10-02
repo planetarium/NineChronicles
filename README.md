@@ -19,7 +19,7 @@ bespoke 2D assets to in-game logic and code.
 To learn more about the codebase, the GraphQL API and etc,
 visit [Nine Chronicles Developer Portal][9c-devportal].
 
-[ci-badge]: https://circleci.com/gh/planetarium/nekoyume-unity.svg?style=svg&circle-token=ca79d4f6281fe60cdde55d0f1c3d97d561106bda
+[ci-badge]: https://upload.wikimedia.org/wikipedia/commons/8/82/Circleci-icon-logo.svg
 [ci]: https://circleci.com/gh/planetarium/nekoyume-unity
 [Discord-badge]: https://img.shields.io/discord/539405872346955788.svg?color=7289da&logo=discord&logoColor=white
 [Discord]: https://bit.ly/3B8DrnX
