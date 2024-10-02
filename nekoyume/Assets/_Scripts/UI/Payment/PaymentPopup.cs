@@ -156,6 +156,7 @@ namespace Nekoyume.UI
             YesCallback = AttractRuneStone(runeStone);
             YesOnDisableCallback = () =>
             {
+                // 소환의 경우 해당 메시지가 뜰 케이스가 없어서 Monster Collection으로 노티 고정
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize("UI_LOCK_SHOP_NOTI"),
                     NotificationCell.NotificationType.Alert);
@@ -179,9 +180,9 @@ namespace Nekoyume.UI
             YesCallback = () => AttractDust(costType);
             YesOnDisableCallback = () =>
             {
-                // 어드벤처 보스의 경우 해당 메시지가 뜰 케이스가 없어서 Shop으로 노티 고정
+                // 어드벤처 보스의 경우 해당 메시지가 뜰 케이스가 없어서 Monster Collection으로 노티 고정
                 OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_LOCK_SHOP_NOTI"),
+                    L10nManager.Localize("UI_LOCK_MONSTER_COLLECTION_NOTI"),
                     NotificationCell.NotificationType.Alert);
             };
             
