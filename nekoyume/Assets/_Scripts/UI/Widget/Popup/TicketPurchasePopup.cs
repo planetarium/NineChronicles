@@ -1,6 +1,7 @@
 ﻿using Nekoyume.L10n;
 using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -49,19 +50,16 @@ namespace Nekoyume.UI
 
         public void Show(
             CostType ticketType,
-            CostType costType,
-            FungibleAssetValue balance,
             FungibleAssetValue cost,
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget,
             bool isMaxPurchaseInfinite = false)
         {
             if (purchasedCount < maxPurchaseCount || isMaxPurchaseInfinite)
             {
-                ShowPurchaseTicketPopup(ticketType, costType, balance, cost,
-                    purchasedCount, maxPurchaseCount, onConfirm, goToMarget, isMaxPurchaseInfinite);
+                ShowPurchaseTicketPopup(ticketType, cost,
+                    purchasedCount, maxPurchaseCount, onConfirm, isMaxPurchaseInfinite);
             }
             else
             {
@@ -73,18 +71,17 @@ namespace Nekoyume.UI
 
         private void ShowPurchaseTicketPopup(
             CostType ticketType,
-            CostType costType,
-            FungibleAssetValue balance,
             FungibleAssetValue cost,
             int purchasedCount,
             int maxPurchaseCount,
             System.Action onConfirm,
-            System.Action goToMarget,
             bool isMaxPurchaseInfinite = false)
         {
+            var costType = CostType.NCG;
             ticketIcon.overrideSprite = costIconData.GetIcon(ticketType);
             costIcon.overrideSprite = costIconData.GetIcon(costType);
 
+            var balance = States.Instance.GoldBalanceState.Gold;
             var enoughBalance = balance >= cost;
 
             costContainer.SetActive(true);
@@ -121,12 +118,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Find<PaymentPopup>().ShowLackPaymentLegacy(
-                        CostType.NCG,
-                        cost.GetQuantityString(),
-                        L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO"),
-                        L10nManager.Localize("UI_SHOP"),
-                        goToMarget);
+                    Find<PaymentPopup>().ShowLackPaymentNCG(cost.GetQuantityString());
                 }
 
                 Close(!enoughBalance);

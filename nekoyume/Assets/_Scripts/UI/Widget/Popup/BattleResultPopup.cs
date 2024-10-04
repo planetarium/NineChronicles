@@ -317,7 +317,6 @@ namespace Nekoyume.UI
 
                 if (SharedModel.ActionPointNotEnough)
                 {
-                    var balance = States.Instance.GoldBalanceState.Gold;
                     var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
@@ -327,13 +326,10 @@ namespace Nekoyume.UI
 
                     Find<TicketPurchasePopup>().Show(
                         CostType.EventDungeonTicket,
-                        CostType.NCG,
-                        balance,
                         cost,
                         purchasedCount,
                         1,
                         () => StartCoroutine(CoProceedNextStage(true)),
-                        GoToMarket,
                         true
                     );
                     yield break;
@@ -364,7 +360,6 @@ namespace Nekoyume.UI
 
                 if (SharedModel.ActionPointNotEnough)
                 {
-                    var balance = States.Instance.GoldBalanceState.Gold;
                     var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
@@ -374,13 +369,10 @@ namespace Nekoyume.UI
 
                     Find<TicketPurchasePopup>().Show(
                         CostType.EventDungeonTicket,
-                        CostType.NCG,
-                        balance,
                         cost,
                         purchasedCount,
                         1,
                         () => StartCoroutine(CoRepeatStage(true)),
-                        GoToMarket,
                         true
                     );
                     yield break;
@@ -488,11 +480,6 @@ namespace Nekoyume.UI
             }
 
             UpdateView(isBoosted);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateView(bool isBoosted)
@@ -905,6 +892,12 @@ namespace Nekoyume.UI
             Close();
         }
 
+        private void CloseWithBattle()
+        {            
+            Lobby.Enter(true);
+            Close();
+        }
+
         private void GoToMain(bool worldClear)
         {
             var props = new Dictionary<string, Value>()
@@ -919,9 +912,7 @@ namespace Nekoyume.UI
             var evt = new AirbridgeEvent(category);
             evt.SetValue(Game.Game.instance.Stage.stageId);
             AirbridgeUnity.TrackEvent(evt);
-
-            Lobby.Enter(true);
-            Close();
+            CloseWithBattle();
 
             if (worldClear)
             {
@@ -939,8 +930,7 @@ namespace Nekoyume.UI
 
         private void GoToPreparation()
         {
-            Lobby.Enter(true);
-            Close();
+            CloseWithBattle();
 
             var worldMapLoading = Find<LoadingScreen>();
             worldMapLoading.Show();
@@ -999,23 +989,9 @@ namespace Nekoyume.UI
             });
         }
 
-        private void GoToMarket()
-        {
-            Lobby.Enter(true);
-            Close();
-
-            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
-            {
-                CloseWithOtherWidgets();
-                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                Find<ShopSell>().Show();
-            });
-        }
-
         private void GoToProduct()
         {
-            Lobby.Enter(true);
-            Close();
+            CloseWithBattle();
 
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
@@ -1027,25 +1003,12 @@ namespace Nekoyume.UI
 
         private void GoToCraft()
         {
-            Lobby.Enter(true);
-            Close();
+            CloseWithBattle();
 
             Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
             {
                 CloseWithOtherWidgets();
                 Find<LobbyMenu>().GoToCraftEquipment();
-            });
-        }
-
-        private void GoToFood()
-        {
-            Lobby.Enter(true);
-            Close();
-
-            Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
-            {
-                CloseWithOtherWidgets();
-                Find<LobbyMenu>().GoToFood();
             });
         }
 
