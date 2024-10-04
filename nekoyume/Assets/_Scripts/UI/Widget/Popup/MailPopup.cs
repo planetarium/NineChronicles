@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -157,26 +158,22 @@ namespace Nekoyume.UI
             switch (mail)
             {
                 case ProductBuyerMail productBuyerMail:
-                    var productId = productBuyerMail.ProductId;
-                    var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productId);
-                    if (itemProduct is not null)
+                    if (productBuyerMail.Product is ItemProduct itemProduct)
                     {
                         var item = States.Instance.CurrentAvatarState.inventory.Items
                             .FirstOrDefault(i => i.item is ITradableItem item &&
-                                item.TradableId.Equals(itemProduct.TradableId));
+                                item.TradableId.Equals(itemProduct.TradableItem.TradableId));
                         if (item?.item is null)
                         {
                             return;
                         }
 
-                        mailRewards.Add(new MailReward(item.item, (int)itemProduct.Quantity, true));
+                        mailRewards.Add(new MailReward(item.item, itemProduct.ItemCount, true));
                     }
 
-                    if (favProduct is not null)
+                    if (productBuyerMail.Product is FavProduct favProduct)
                     {
-                        var currency = Currency.Legacy(favProduct.Ticker, 0, null);
-                        var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
-                        mailRewards.Add(new MailReward(fav, (int)favProduct.Quantity, true));
+                        mailRewards.Add(new MailReward(favProduct.Asset, (int)favProduct.Asset.MajorUnit, true));
                     }
 
                     break;
@@ -460,7 +457,8 @@ namespace Nekoyume.UI
                     CombinationMail or
                     ItemEnhanceMail or
                     UnloadFromMyGaragesRecipientMail or
-                    ClaimItemsMail;
+                    ClaimItemsMail or
+                    CustomCraftMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -507,11 +505,11 @@ namespace Nekoyume.UI
                         resultModel.subRecipeId.Value,
                         out var row))
                 {
-                    Find<CombinationResultPopup>().Show(itemUsable, row.Options.Count);
+                    Find<CombinationResultScreen>().Show(itemUsable, row.Options.Count);
                 }
                 else
                 {
-                    Find<CombinationResultPopup>().Show(itemUsable);
+                    Find<CombinationResultScreen>().Show(itemUsable);
                 }
             }
         }
@@ -564,17 +562,15 @@ namespace Nekoyume.UI
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
-        public async void Read(ProductBuyerMail productBuyerMail)
+        public void Read(ProductBuyerMail productBuyerMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var productId = productBuyerMail.ProductId;
-            var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productId);
-            if (itemProduct is not null)
+            if (productBuyerMail.Product is ItemProduct itemProduct)
             {
-                var count = (int)itemProduct.Quantity;
+                var count = itemProduct.ItemCount;
                 var item = States.Instance.CurrentAvatarState.inventory.Items
                     .FirstOrDefault(i => i.item is ITradableItem item &&
-                        item.TradableId.Equals(itemProduct.TradableId));
+                        item.TradableId.Equals(itemProduct.TradableItem.TradableId));
                 if (item is null || item.item is null)
                 {
                     return;
@@ -593,12 +589,13 @@ namespace Nekoyume.UI
                     ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                 }).AddTo(gameObject);
                 Find<BuyItemInformationPopup>().Pop(model);
+                return;
             }
 
-            if (favProduct is not null)
+            if (productBuyerMail.Product is FavProduct favProduct)
             {
-                var currency = Currency.Legacy(favProduct.Ticker, 0, null);
-                var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
+                var currency = Currency.Legacy(favProduct.Asset.Currency.Ticker, 0, null);
+                var fav = new FungibleAssetValue(currency, (int)favProduct.Asset.MajorUnit, 0);
                 Find<BuyFungibleAssetInformationPopup>().Show(
                     fav,
                     () =>
@@ -607,7 +604,12 @@ namespace Nekoyume.UI
                         LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id);
                         ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                     });
+                return;
             }
+
+            productBuyerMail.New = false;
+            LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id);
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
         public async void Read(ProductSellerMail productSellerMail)
@@ -693,7 +695,7 @@ namespace Nekoyume.UI
             }).ToObservable().SubscribeOnMainThread().Subscribe(_ => { NcDebug.Log("ItemEnhanceMail LocalLayer task completed"); });
             // ~LocalLayer
 
-            Find<EnhancementResultPopup>().Show(itemEnhanceMail);
+            Find<EnhancementResultScreen>().Show(itemEnhanceMail);
         }
 
         public void Read(DailyRewardMail dailyRewardMail)
@@ -956,11 +958,11 @@ namespace Nekoyume.UI
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, customCraftMail.id);
+            LocalLayerModifier.RemoveNewMail(avatarAddress, customCraftMail.id);
             customCraftMail.New = false;
             NcDebug.Log("CombinationMail LocalLayer task completed");
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
-            Find<CombinationResultPopup>().Show(itemUsable);
+            Find<CustomCraftResultScreen>().Show(itemUsable);
         }
 
         [Obsolete]

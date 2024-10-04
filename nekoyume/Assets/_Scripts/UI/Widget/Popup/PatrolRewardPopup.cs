@@ -232,6 +232,7 @@ namespace Nekoyume.UI
                     500000 => PatrolRewardType.ApStone,
                     600201 => PatrolRewardType.GoldPowder,
                     800201 => PatrolRewardType.SilverPowder,
+                    400000 => PatrolRewardType.Hourglass,
                     _ => throw new ArgumentOutOfRangeException()
                 };
             }

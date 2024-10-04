@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Action.CustomEquipmentCraft;
 using Nekoyume.ApiClient;
+using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -77,21 +80,6 @@ namespace Nekoyume.UI
         private CustomOutfitScroll outfitScroll;
 
         [SerializeField]
-        private TextMeshProUGUI baseStatText;
-
-        [SerializeField]
-        private TextMeshProUGUI expText;
-
-        [SerializeField]
-        private TextMeshProUGUI cpText;
-
-        [SerializeField]
-        private TextMeshProUGUI requiredBlockText;
-
-        [SerializeField]
-        private TextMeshProUGUI requiredLevelText;
-
-        [SerializeField]
         private RequiredItemRecipeView requiredItemRecipeView;
 
         [SerializeField]
@@ -116,9 +104,6 @@ namespace Nekoyume.UI
         private TextMeshProUGUI craftedCountText;
 
         [SerializeField]
-        private TextMeshProUGUI maxMainStatText;
-
-        [SerializeField]
         private GameObject randomOnlyOutfitInfoObject;
 
         [SerializeField]
@@ -129,16 +114,26 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject speechBubbleObject;
+
+        [SerializeField]
+        private CustomEquipmentStatView statView;
+
+        [SerializeField]
+        private GameObject relationshipInfoPopupObject;
 #endregion
 
         private CustomOutfit _selectedOutfit;
         private ItemSubType? _selectedSubType;
         private SubmittableState _submittableState;
         private int _selectedItemId;
+        private IDisposable _outfitAnimationDisposable;
 
         private readonly List<IDisposable> _disposables = new();
-        private IDisposable _outfitAnimationDisposable;
         private readonly ConcurrentDictionary<int, long> _craftCountDict = new();
+
+        private const string RelationshipInfoKey = "RELATIONSHIP-INFO-{0}";
+
+        private static string TutorialKey => $"Tutorial_Check_CustomCraft_V2_{Game.Game.instance.States.CurrentAvatarKey}";
 
         public bool RequiredUpdateCraftCount { get; set; }
 
@@ -151,11 +146,10 @@ namespace Nekoyume.UI
                     .OrderBy(row => row.CircleAmount + row.ScrollAmount).First();
                 var relationshipRow = tableSheets.CustomEquipmentCraftRelationshipSheet.OrderedList!
                     .First(row => row.Relationship >= ReactiveAvatarState.Relationship);
-                var costRow = tableSheets.CustomEquipmentCraftCostSheet.Values
-                    .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship);
 
                 var (ncgCost, materialCosts) = CustomCraftHelper.CalculateCraftCost(
-                    0, tableSheets.MaterialItemSheet, recipeRow, relationshipRow, costRow,
+                    0, (int)ReactiveAvatarState.Relationship, tableSheets.MaterialItemSheet, recipeRow,
+                    relationshipRow,
                     States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
                 );
 
@@ -231,6 +225,15 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            AudioController.instance.PlayMusic(AudioController.MusicCode.CustomCraft);
+            if (ReactiveAvatarState.Relationship == 0 &&
+                PlayerPrefs.GetInt(TutorialKey, 0) == 0)
+            {
+                // Play Tutorial - Custom craft (for old user)
+                Game.Game.instance.Stage.TutorialController.Play(3010002);
+                PlayerPrefs.SetInt(TutorialKey, 1);
+            }
+
             foreach (var subTypeButton in subTypeButtons)
             {
                 subTypeButton.toggleButton.isOn = subTypeButton.itemSubType == ItemSubType.Weapon;
@@ -244,9 +247,14 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnOutfitSelected(_selectedOutfit))
                 .AddTo(_disposables);
             ReactiveAvatarState.ObservableRelationship
-                .Subscribe(relationship => relationshipGaugeView.Set(
-                    relationship,
-                    TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList.First(row => row.Relationship >= relationship).Relationship))
+                .Subscribe(relationship =>
+                {
+                    relationshipGaugeView.Set(
+                        relationship,
+                        Math.Max(TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.OrderedList
+                            .FirstOrDefault(row => row.Relationship > relationship).Relationship - 1, 0));
+                    ShowRelationshipInfoPopup(relationship);
+                })
                 .AddTo(_disposables);
             LoadingHelper.CustomEquipmentCraft
                 .SubscribeTo(buttonBlockerObject)
@@ -291,6 +299,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Typing);
             _selectedSubType = type;
             _selectedOutfit = null;
             var iconSheetRows = TableSheets.Instance.CustomEquipmentCraftIconSheet.Values;
@@ -321,14 +330,18 @@ namespace Nekoyume.UI
                     TableSheets.Instance.EquipmentItemSheet[_selectedItemId],
                     Guid.NewGuid(),
                     recipe.RequiredBlock);
+                var iconId = _selectedOutfit.IconRow.Value?.IconId ??
+                    CustomEquipmentCraft.RandomIconId;
+                item.IconId = iconId;
                 item.ByCustomCraft = true;
+                item.CraftWithRandom = iconId == CustomEquipmentCraft.RandomIconId;
                 combinationSlotsPopup.OnSendCombinationAction(
                     slotIndex,
                     recipe.RequiredBlock,
                     itemUsable: item);
                 ActionManager.Instance.CustomEquipmentCraft(slotIndex,
                     recipe.Id,
-                    _selectedOutfit.IconRow.Value?.IconId ?? CustomEquipmentCraft.RandomIconId)
+                    iconId)
                     .Subscribe();
                 LoadingHelper.CustomEquipmentCraft.Value = true;
                 OnOutfitSelected(_selectedOutfit);
@@ -377,9 +390,9 @@ namespace Nekoyume.UI
                 ? _selectedOutfit.IconRow.Value.IconId
                 : CustomEquipmentCraft.RandomIconId;
             outfitNameText.SetText(hasSelectedOutfit
-                ? L10nManager.LocalizeItemName(iconId)
+                ? L10nManager.LocalizeCustomItemName(iconId)
                 : L10nManager.Localize("UI_RANDOM_OUTFIT"));
-            craftedCountObject.SetActive(hasSelectedOutfit && !randomOnly);
+            craftedCountObject.SetActive(hasSelectedOutfit);
             randomOnlyOutfitInfoObject.SetActive(!hasSelectedOutfit);
             craftedCountText.SetText(L10nManager.Localize("UI_TOTAL_CRAFT_COUNT_FORMAT",
                 hasSelectedOutfit &&
@@ -389,7 +402,7 @@ namespace Nekoyume.UI
 
             var tableSheets = TableSheets.Instance;
             var relationshipRow = tableSheets.CustomEquipmentCraftRelationshipSheet
-                .OrderedList.First(row => row.Relationship >= ReactiveAvatarState.Relationship);
+                .OrderedList.Last(row => row.Relationship <= ReactiveAvatarState.Relationship);
             _selectedItemId = relationshipRow.GetItemId(_selectedSubType!.Value);
             var equipmentItemSheet = tableSheets.EquipmentItemSheet;
             var equipmentRow = equipmentItemSheet[_selectedItemId];
@@ -397,14 +410,7 @@ namespace Nekoyume.UI
                 tableSheets.CustomEquipmentCraftRecipeSheet.Values.First(r =>
                     r.ItemSubType == _selectedSubType);
 
-            baseStatText.SetText($"{equipmentRow.Stat.DecimalStatToString()}");
-            expText.SetText($"EXP {equipmentRow.Exp?.ToCurrencyNotation()}");
-            cpText.SetText($"CP: {relationshipRow.MinCp}-{relationshipRow.MaxCp}");
-            maxMainStatText.SetText($"{equipmentRow.Stat.StatType} : MAX 100%");
-            requiredBlockText.SetText($"{customEquipmentCraftRecipeRow.RequiredBlock}");
-            requiredLevelText.SetText(
-                $"Lv {tableSheets.ItemRequirementSheet[_selectedItemId].Level}");
-
+            statView.Set(equipmentRow, relationshipRow, customEquipmentCraftRecipeRow, iconId);
             var viewSpinePreview =
                 _selectedSubType is ItemSubType.Armor or ItemSubType.Weapon;
             selectedImageView.SetActive(!viewSpinePreview);
@@ -435,35 +441,39 @@ namespace Nekoyume.UI
                     .Subscribe(index => routine(index));
             }
 
-            var additionalCostRow = tableSheets.CustomEquipmentCraftCostSheet.Values
-                .FirstOrDefault(r => r.Relationship == ReactiveAvatarState.Relationship);
             var (_, materialCosts) = CustomCraftHelper.CalculateCraftCost(
                 iconId,
+                (int)ReactiveAvatarState.Relationship,
                 tableSheets.MaterialItemSheet,
                 customEquipmentCraftRecipeRow,
                 relationshipRow,
-                null,
                 States.Instance.GameConfigState.CustomEquipmentCraftIconCostMultiplier
             );
+
+            var additionalCost = CustomCraftHelper.CalculateAdditionalCost((int) ReactiveAvatarState.Relationship,
+                tableSheets.CustomEquipmentCraftRelationshipSheet);
 
             SetCostAndMaterial(materialCosts.Select(pair =>
                     new EquipmentItemSubRecipeSheet.MaterialInfo(pair.Key, pair.Value))
                 .ToList(),
                 randomOnly,
-                additionalCostRow);
+                additionalCost);
         }
 
-        private void SetCostAndMaterial(List<EquipmentItemSubRecipeSheet.MaterialInfo> materials, bool randomOnly, CustomEquipmentCraftCostSheet.Row additionalCostRow = null)
+        private void SetCostAndMaterial(List<EquipmentItemSubRecipeSheet.MaterialInfo> materials, bool randomOnly, (BigInteger, IDictionary<int, int>)? additionalCost = null)
         {
-            var ncgCost = additionalCostRow != null ? (long) additionalCostRow.GoldAmount : 0L;
             requiredItemRecipeView.SetData(
                 materials,
                 true);
-            if (additionalCostRow != null)
+            var ncgCost = 0L;
+            if (additionalCost != null)
             {
+                ncgCost = (long)additionalCost.Value.Item1;
                 var costs = new List<ConditionalCostButton.CostParam>
                     {new(CostType.NCG, ncgCost)};
-                costs.AddRange(additionalCostRow.MaterialCosts.Select(cost => new ConditionalCostButton.CostParam((CostType) cost.ItemId, cost.Amount)));
+                costs.AddRange(additionalCost.Value.Item2
+                    .Select(cost =>
+                        new ConditionalCostButton.CostParam((CostType) cost.Key, cost.Value)));
                 conditionalCostButton.SetCost(costs);
             }
             else
@@ -571,14 +581,45 @@ namespace Nekoyume.UI
         }
 
         private IEnumerator CoCombineNPCAnimation(
-            ItemBase itemBase)
+            Equipment itemBase)
         {
             var loadingScreen = Find<CustomCraftLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(itemBase));
             Push();
             yield return new WaitForSeconds(.5f);
+            loadingScreen.SpeechBubbleWithItem.Show();
             loadingScreen.AnimateNPC();
+        }
+
+        private void ShowRelationshipInfoPopup(long relationship)
+        {
+            // 맨 처음엔 보여줄 필요가 없다.
+            if (relationship == 0)
+            {
+                return;
+            }
+
+            // 이미 보여준 경우엔 안보여줘도 됨
+            var key = string.Format(RelationshipInfoKey, relationship);
+            if (PlayerPrefs.HasKey(key))
+            {
+                return;
+            }
+
+            // 이번에 제작하면 친밀도 구간이 넘어갈때!
+            if (TableSheets.Instance.CustomEquipmentCraftRelationshipSheet.Values.Any(row => row.Relationship == relationship + 1))
+            {
+                relationshipInfoPopupObject.SetActive(true);
+                PlayerPrefs.SetString(key, string.Empty);
+            }
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionShowInfo()
+        {
+            OnOutfitSelected(new CustomOutfit(null));
+            PlayerPrefs.SetInt(TutorialKey, 1);
         }
     }
 }

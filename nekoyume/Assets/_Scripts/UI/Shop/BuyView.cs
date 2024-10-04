@@ -80,13 +80,13 @@ namespace Nekoyume.UI.Module
 
         private static readonly Dictionary<ShopSortFilter, bool> SortFilterAscending = new()
         {
-            { ShopSortFilter.CP, true },
-            { ShopSortFilter.Price, true },
-            { ShopSortFilter.Class, true },
-            { ShopSortFilter.Crystal, true },
-            { ShopSortFilter.CrystalPerPrice, true },
-            { ShopSortFilter.EquipmentLevel, true },
-            { ShopSortFilter.OptionCount, true },
+            { ShopSortFilter.CP, false },
+            { ShopSortFilter.Price, false },
+            { ShopSortFilter.Class, false },
+            { ShopSortFilter.Crystal, false },
+            { ShopSortFilter.CrystalPerPrice, false },
+            { ShopSortFilter.EquipmentLevel, false },
+            { ShopSortFilter.OptionCount, false },
             { ShopSortFilter.UnitPrice, true }
         };
 

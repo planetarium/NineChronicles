@@ -16,6 +16,7 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
@@ -205,23 +206,40 @@ namespace Nekoyume
                                 .ProductId);
                     return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", productName);
                 case ProductBuyerMail productBuyerMail:
-                    var (buyProductName, _, _) =
-                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(productBuyerMail
-                            .ProductId);
-                    return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", buyProductName);
+                    // 아이템을 구매한 경우
+                    if (productBuyerMail.Product is ItemProduct itemProd &&
+                        States.Instance.CurrentAvatarState.inventory.TryGetTradableItem(itemProd.TradableItem.TradableId, itemProd.TradableItem.RequiredBlockIndex, 1, out var realItem))
+                    {
+                        return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", realItem.item.GetLocalizedName());
+                    }
+
+                    // FAV, 영혼석이나 룬 조각을 구매한 경우
+                    if (productBuyerMail.Product is FavProduct favProd)
+                    {
+                        return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", favProd.Asset.GetLocalizedName());
+                    }
+
+                    // 상태에서 아이템을 찾을 수 없는 경우, 메일은 이제 네거야! 라는 문장이 나옵니다.
+                    return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", L10nManager.Localize("UI_MAIL"));
                 case ProductSellerMail productSellerMail:
-                    var (sellProductName, item, fav) =
-                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(
-                            productSellerMail.ProductId);
-                    var price = item?.Price ?? fav?.Price ?? 0;
+                    if (productSellerMail.Product == null)
+                    {
+                        // 이제 Product가 없는 이전의 상품은 무엇을 팔아서 얼마를 얻었는지 알 수 없습니다.
+                        return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", "?", "?");
+                    }
+
+                    var price = (int)productSellerMail.Product.Price.MajorUnit;
                     var tax = decimal.Divide(price, 100) * Buy.TaxRate;
                     var tp = price - tax;
                     var currency = States.Instance.GoldBalanceState.Gold.Currency;
                     var majorUnit = (int)tp;
                     var minorUnit = (int)((tp - majorUnit) * 100);
                     var fungibleAsset = new FungibleAssetValue(currency, majorUnit, minorUnit);
+                    var productType = productSellerMail.Product is ItemProduct itemProduct
+                        ? itemProduct.TradableItem.ItemSubType.GetLocalizedString()
+                        : ((FavProduct) productSellerMail.Product).Asset.GetLocalizedName();
                     return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", fungibleAsset,
-                        sellProductName);
+                        productType);
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
                     return await unloadFromMyGaragesRecipientMail.GetCellContentAsync();
                 case ClaimItemsMail claimItemsMail:
@@ -519,11 +537,19 @@ namespace Nekoyume
         public static string GetLocalizedNonColoredName(this ItemBase item,
             bool useElementalIcon = true)
         {
-            var equipmentId = item is Equipment equipment ? equipment.IconId : item.Id;
+            if (item is Equipment equipment)
+            {
+                return GetLocalizedNonColoredName(
+                    equipment.ElementalType,
+                    equipment.IconId,
+                    useElementalIcon,
+                    equipment.ByCustomCraft);
+            }
+
             return GetLocalizedNonColoredName(
                 item.ElementalType,
-                equipmentId,
-                useElementalIcon && item.ItemType.HasElementType());
+                item.Id,
+                item.ItemType.HasElementType() && useElementalIcon);
         }
 
         public static string GetLocalizedName(this EquipmentItemSheet.Row equipmentRow, int level,
@@ -550,10 +576,14 @@ namespace Nekoyume
         }
 
         public static string GetLocalizedNonColoredName(ElementalType elementalType,
-            int equipmentId, bool useElementalIcon)
+            int itemId, bool useElementalIcon, bool byCustomCraft = false)
         {
-            var elemental = useElementalIcon ? GetElementalIcon(elementalType) : string.Empty;
-            var name = L10nManager.Localize($"ITEM_NAME_{equipmentId}");
+            var name = byCustomCraft
+                ? L10nManager.LocalizeCustomItemName(itemId)
+                : L10nManager.LocalizeItemName(itemId);
+            var elemental = useElementalIcon
+                ? GetElementalIcon(elementalType)
+                : string.Empty;
             return $"{name}{elemental}";
         }
 

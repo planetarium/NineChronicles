@@ -124,7 +124,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             for (var i = 0; i < items.Count; i++)
             {
                 var score = WorldBossFrontHelper.GetScoreInRank(i + 1, bossRow);
-                items[i].Set(score, rows[i].Rune, rows[i].Crystal);
+                items[i].Set(score, rows[i].Rune, rows[i].Crystal, rows[i].Circle);
 
                 if (i + 1 <= latestRewardRank)
                 {

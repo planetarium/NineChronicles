@@ -801,7 +801,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear Failed  state:{state} questType:{_eventDungeonQuestCell.Quest.GetType()}");
+                    NcDebug.LogWarning($"[SubscribeEventDungeonQuest] HideAsClear Failed  state:{state} questType:{_eventDungeonQuestCell.Quest?.GetType()}");
                     _eventDungeonQuestCell.Hide();
                 }
             }
