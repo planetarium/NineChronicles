@@ -389,13 +389,15 @@ namespace Nekoyume
 
     public class OpenApiGenerator : EditorWindow
     {
-        private const string _outputDir = "Assets/_Scripts/GeneratedApi";
+        private const string _outputDir = "Assets/_Scripts/ApiClient/GeneratedApi";
         private const int _timeOut = 10;
 
         private static string _downloadJsonUrl;
         private static string _className;
         private static List<KeyValuePair<string, string>> _dataList = new();
         private Vector2 _scrollPosition;
+
+        private static List<string> dotEnumList = new List<string>();
 
         [MenuItem("Tools/Generate OpenAPI Class")]
         private static void Init()
@@ -507,6 +509,7 @@ namespace Nekoyume
 
         private static string GenerateCSharpFromOpenApiSpec(string jsonSpec, string rootClassName, string url)
         {
+
             var sb = new StringBuilder();
             var rootNode = JsonNode.Parse(jsonSpec);
 
@@ -592,10 +595,21 @@ namespace Nekoyume
                         var isString = false;
                         var isNumberPreText = false;
                         var isNumber = false;
+                        var isStringHasDot = false;
 
                         for (var i = 0; i < enumValues.Count; i++)
                         {
                             var enumVal = enumValues[i].ToString();
+                            if (enumVal.Contains("."))
+                            {
+                                isStringHasDot = true;
+                                enumVal = enumVal.Replace(".", "_");
+                                if(dotEnumList.Contains(schema.Key) == false)
+                                {
+                                    dotEnumList.Add(schema.Key);
+                                }
+                            }
+
                             if (enumMapping.ContainsKey(enumVal))
                             {
                                 var enumName = enumMapping[enumVal];
@@ -650,9 +664,9 @@ namespace Nekoyume
                             {
                                 if (int.TryParse(enumVal[0].ToString(), out var number))
                                 {
-                                    sb.AppendLine($"        _{enumVal},");
                                     preText = "\"_\"+";
                                     isStringPreText = true;
+                                    sb.AppendLine($"        _{enumVal},");
                                 }
                                 else
                                 {
@@ -675,7 +689,14 @@ namespace Nekoyume
                         sb.AppendLine("            return reader.TokenType switch");
                         sb.AppendLine("            {");
                         sb.AppendLine("                JsonTokenType.Number => (" + schema.Key + ")reader.GetInt32(),");
-                        sb.AppendLine("                JsonTokenType.String => Enum.Parse<" + schema.Key + ">(" + preText + "reader.GetString()),");
+                        if(isStringHasDot)
+                        {
+                            sb.AppendLine("                JsonTokenType.String => Enum.Parse<" + schema.Key + ">(" + preText + "reader.GetString().Replace(\".\", \"_\")),");
+                        }
+                        else
+                        {
+                            sb.AppendLine("                JsonTokenType.String => Enum.Parse<" + schema.Key + ">(" + preText + "reader.GetString()),");
+                        }
                         sb.AppendLine("                _ => throw new JsonException(");
                         sb.AppendLine("                    $\"Expected token type to be {string.Join(\" or \", new[] { JsonTokenType.Number, JsonTokenType.String })} but got {reader.TokenType}\")");
                         sb.AppendLine("            };");
@@ -688,11 +709,25 @@ namespace Nekoyume
                         sb.AppendLine("        {");
                         if (isStringPreText)
                         {
-                            sb.AppendLine("            writer.WriteStringValue(value.ToString().Substring(1));");
+                            if (isStringHasDot)
+                            {
+                                sb.AppendLine("            writer.WriteStringValue(value.ToString().Replace(\"_\", \".\"));");
+                            }
+                            else
+                            {
+                                sb.AppendLine("            writer.WriteStringValue(value.ToString().Substring(1));");
+                            }
                         }
                         else if (isString)
                         {
-                            sb.AppendLine("            writer.WriteStringValue(value.ToString());");
+                            if (isStringHasDot)
+                            {
+                                sb.AppendLine("            writer.WriteStringValue(value.ToString().Replace(\"_\", \".\"));");
+                            }
+                            else
+                            {
+                                sb.AppendLine("            writer.WriteStringValue(value.ToString());");
+                            }
                         }
                         else if (isNumber)
                         {
@@ -805,12 +840,14 @@ namespace Nekoyume
                             var queryParameters = new List<string>();
                             var headerParameters = new List<string>();
 
+                            var parameterTypeDict = new Dictionary<string, string>();
                             foreach (var parameter in parameters as JsonArray)
                             {
                                 var parameterName = parameter["name"].ToString();
                                 var parameterType = ConvertToCSharpType(parameter["schema"]);
-                                parameterDefinitions.Append($"{parameterType} {parameterName}, ");
+                                parameterDefinitions.Append($"{parameterType} {parameterName.Replace("-", "_")}, ");
 
+                                parameterTypeDict[parameterName] = parameterType;
                                 switch (parameter["in"].ToString())
                                 {
                                     case "query":
@@ -832,7 +869,14 @@ namespace Nekoyume
 
                             foreach (var headerName in headerParameters)
                             {
-                                parameterUsages.AppendLine($"            request.SetRequestHeader(\"{headerName}\", {headerName}.ToString());");
+                                if(parameterTypeDict.TryGetValue(headerName, out string type) && dotEnumList.Contains(type))
+                                {
+                                    parameterUsages.AppendLine($"            request.SetRequestHeader(\"{headerName}\", {headerName.Replace("-", "_")}.ToString().Replace(\"_\", \".\"));");
+                                }
+                                else
+                                {
+                                    parameterUsages.AppendLine($"            request.SetRequestHeader(\"{headerName}\", {headerName.Replace("-", "_")}.ToString());");
+                                }
                             }
                         }
 
@@ -891,7 +935,7 @@ namespace Nekoyume
 
                         sb.AppendLine($"    public async Task {methodName}({parameterDefinitions}Action<{returnType}> onSuccess, Action<string> onError)");
                         sb.AppendLine("    {");
-                        sb.AppendLine($"        string url = Url + \"{path}\";");
+                        sb.AppendLine($"        string url = Url + $\"{path}\";");
                         sb.AppendLine($"        using (var request = new UnityWebRequest(url, \"{httpMethod}\"))");
                         sb.AppendLine("        {");
                         sb.Append(parameterUsages);
@@ -949,8 +993,12 @@ namespace Nekoyume
                     sb.Append(char.ToUpper(segment[0]) + segment.Substring(1));
                 }
             }
+            string result = sb.ToString().Replace("-", "").Replace("Api", string.Empty) + "Async";
 
-            return sb.ToString().Replace("-", "").Replace("Api", string.Empty) + "Async";
+            //{} 포함된 문자열 제거
+            result = Regex.Replace(result, @"\{.*?\}", string.Empty);
+
+            return result;
         }
 
         private static void RefreshGeneratedInfo()
