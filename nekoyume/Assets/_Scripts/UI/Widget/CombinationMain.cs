@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -55,6 +56,7 @@ namespace Nekoyume.UI
             public GameObject lockObject;
             public int requiredStageId;
             public Button lockedButton;
+            public List<GameObject> unlockObjects;
         }
 
         protected override void Awake()
@@ -132,6 +134,7 @@ namespace Nekoyume.UI
                     var isLocked = lastClearedStageId < lockObj.requiredStageId;
                     lockObj.lockObject.SetActive(isLocked);
                     lockObj.lockedButton.interactable = !isLocked;
+                    lockObj.unlockObjects.ForEach(obj => obj.SetActive(!isLocked));
                 }
             }
 
@@ -198,6 +201,12 @@ namespace Nekoyume.UI
         public void TutorialActionClickCombinationRuneButton()
         {
             runeButton.onClick?.Invoke();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionCustomCraftShow()
+        {
+            customCraftButton.onClick?.Invoke();
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module
     {
         // TODO: 셋팅 파일 or lib9c 등으로 분리
         private const int GrindCost = 5;
-        
+
         [Serializable]
         private struct CrystalAnimationData
         {
@@ -90,12 +90,9 @@ namespace Nekoyume.UI.Module
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
 
-        private bool CanGrind => _selectedItemsForGrind.Any();
-
         private void Awake()
         {
             grindButton.SetCost(CostType.ActionPoint, GrindCost);
-            grindButton.SetCondition(() => CanGrind);
             removeAllButton.OnSubmitSubject.Subscribe(_ =>
             {
                 foreach (var item in _selectedItemsForGrind.ToList())
@@ -284,7 +281,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            grindButton.UpdateObjects();
+            grindButton.Interactable = _selectedItemsForGrind.Any();
             _inventoryApStoneCount = inventoryModel.GetUsableItemCount(
                 (int)CostType.ApPotion,
                 Game.Game.instance.Agent?.BlockIndex ?? -1);
@@ -293,7 +290,7 @@ namespace Nekoyume.UI.Module
         private void UpdateScroll()
         {
             var count = _selectedItemsForGrind.Count;
-            grindButton.UpdateObjects();
+            grindButton.Interactable = _selectedItemsForGrind.Any();
             removeAllButton.Interactable = count > 1;
             scroll.UpdateData(_selectedItemsForGrind);
             scroll.RawJumpTo(count - 1);
@@ -400,11 +397,11 @@ namespace Nekoyume.UI.Module
                     var paymentPopup = Widget.Find<PaymentPopup>();
                     if (_inventoryApStoneCount > 0)
                     {
-                        paymentPopup.ShowCheckPaymentApPortion(GrindCost);
+                        paymentPopup.ShowCheckPaymentApPotion(GrindCost, () => chargeAp(true));
                     }
                     else
                     {
-                        paymentPopup.ShowLackApPortion(1);
+                        paymentPopup.ShowLackApPotion(1);
                     }
                     break;
                 }

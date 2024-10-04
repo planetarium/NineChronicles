@@ -81,43 +81,42 @@ namespace Nekoyume.UI
 
             for (var i = 0; i < itemViews.Length; i++)
             {
-                if (i < rewards.Count)
-                {
-                    switch (rewards[i].ItemType)
-                    {
-                        case "Material":
-                            var countableItemMat = new CountableItem(
-                                ItemFactory.CreateMaterial(TableSheets.Instance.MaterialItemSheet[rewards[i].ItemId]),
-                                rewards[i].Amount);
-                            itemViews[i].SetData(countableItemMat, () => ShowTooltip(countableItemMat.ItemBase.Value));
-                            itemViews[i].gameObject.SetActive(true);
-                            break;
-                        case "Rune":
-                            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-                            runeSheet.TryGetValue(rewards[i].ItemId, out var runeRow);
-                            if (runeRow != null)
-                            {
-                                itemViews[i].SetData(GetFavCountableItem(runeRow.Ticker, rewards[i].Amount));
-                                itemViews[i].gameObject.SetActive(true);
-                            }
-                            else
-                            {
-                                itemViews[i].gameObject.SetActive(false);
-                            }
-
-                            break;
-                        case "Crystal":
-                            itemViews[i].SetData(GetFavCountableItem("CRYSTAL", rewards[i].Amount));
-                            itemViews[i].gameObject.SetActive(true);
-                            break;
-                        default:
-                            itemViews[i].gameObject.SetActive(false);
-                            break;
-                    }
-                }
-                else
+                if (i >= rewards.Count)
                 {
                     itemViews[i].gameObject.SetActive(false);
+                    continue;
+                }
+
+                switch (rewards[i].ItemType)
+                {
+                    case "Material":
+                        var materialRow = TableSheets.Instance.MaterialItemSheet[rewards[i].ItemId];
+                        var material = materialRow.ItemSubType is ItemSubType.Circle
+                            ? ItemFactory.CreateTradableMaterial(materialRow)
+                            : ItemFactory.CreateMaterial(materialRow);
+                        var countableItemMat = new CountableItem(material, rewards[i].Amount);
+                        itemViews[i].SetData(countableItemMat, () => ShowTooltip(countableItemMat.ItemBase.Value));
+                        itemViews[i].gameObject.SetActive(true);
+                        break;
+                    case "Rune":
+                        if (TableSheets.Instance.RuneSheet.TryGetValue(rewards[i].ItemId, out var runeRow))
+                        {
+                            itemViews[i].SetData(GetFavCountableItem(runeRow.Ticker, rewards[i].Amount));
+                            itemViews[i].gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            itemViews[i].gameObject.SetActive(false);
+                        }
+
+                        break;
+                    case "Crystal":
+                        itemViews[i].SetData(GetFavCountableItem("CRYSTAL", rewards[i].Amount));
+                        itemViews[i].gameObject.SetActive(true);
+                        break;
+                    default:
+                        itemViews[i].gameObject.SetActive(false);
+                        break;
                 }
             }
         }

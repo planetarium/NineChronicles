@@ -5,6 +5,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using Spine;
 using Spine.Unity;
@@ -31,6 +32,9 @@ namespace Nekoyume.UI
         [SerializeField] private SpeechBubbleWithItem speechBubble;
 
         [SerializeField] private SkeletonGraphic npcSkeletonGraphic;
+
+        [SerializeField]
+        private GameObject randomIconObject;
 
         private Coroutine _npcAppearCoroutine;
         private readonly WaitForSeconds _waitForOneSec = new(1f);
@@ -112,6 +116,13 @@ namespace Nekoyume.UI
             yield return _waitForOneSec;
 
             speechBubble.Show();
+            var isRandomIcon = ((Equipment) speechBubble.Item.ItemBase.Value).CraftWithRandom;
+            randomIconObject.SetActive(isRandomIcon);
+            if (isRandomIcon)
+            {
+                speechBubble.ItemView.iconImage.overrideSprite = null;
+            }
+
             speechBubble.SetKey("SPEECH_COMBINATION_START_");
             StartCoroutine(speechBubble.CoShowText(true));
 
