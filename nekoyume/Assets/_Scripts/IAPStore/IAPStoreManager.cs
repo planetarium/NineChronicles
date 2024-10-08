@@ -15,7 +15,6 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Unity.Services.Core;
 using Unity.Services.Core.Environments;
 using UnityEngine;
@@ -33,11 +32,11 @@ namespace Nekoyume.IAPStore
         public IEnumerable<Product> IAPProducts => _controller.products.all;
         public bool IsInitialized { get; private set; }
 
-        private Dictionary<string, ProductSchema> _initializedProductSchema = new();
-        private IReadOnlyList<CategorySchema> _initializedCategorySchema;
+        private Dictionary<string, InAppPurchaseServiceClient.ProductSchema> _initializedProductSchema = new();
+        private IReadOnlyList<InAppPurchaseServiceClient.CategorySchema> _initializedCategorySchema;
 
 
-        public Dictionary<string, ProductSchema> SeasonPassProduct = new();
+        public Dictionary<string, InAppPurchaseServiceClient.ProductSchema> SeasonPassProduct = new();
 
         private async void Awake()
         {
@@ -68,7 +67,7 @@ namespace Nekoyume.IAPStore
             {
                 foreach (var product in category.ProductList)
                 {
-                    _initializedProductSchema.TryAdd(product.Sku, product);
+                    _initializedProductSchema.TryAdd(product.Sku(), product);
                 }
 
                 if (category.Name == "NoShow")
@@ -84,7 +83,7 @@ namespace Nekoyume.IAPStore
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             foreach (var schema in _initializedProductSchema.Where(s => s.Value.Active))
             {
-                builder.AddProduct(schema.Value.Sku, ProductType.Consumable);
+                builder.AddProduct(schema.Value.Sku(), ProductType.Consumable);
             }
 
             UnityPurchasing.Initialize(this, builder);
@@ -119,7 +118,7 @@ namespace Nekoyume.IAPStore
             return false;
         }
 
-        public ProductSchema GetProductSchema(string sku)
+        public InAppPurchaseServiceClient.ProductSchema GetProductSchema(string sku)
         {
             if (!_initializedProductSchema.TryGetValue(sku, out var result))
             {
