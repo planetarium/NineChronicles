@@ -86,6 +86,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2568678952963797413}
   - component: {fileID: 194614334328927349}
+  - component: {fileID: 5642141974216676390}
   m_Layer: 15
   m_Name: Crystal
   m_TagString: Untagged
@@ -123,6 +124,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 324631276228498802}
   m_CullTransparentMesh: 1
+--- !u!114 &5642141974216676390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324631276228498802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 70
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &621074806985681672
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,6 +415,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4535381893823209262}
   - component: {fileID: 8068938755488316811}
+  - component: {fileID: 6193410588715614718}
   m_Layer: 15
   m_Name: Rank
   m_TagString: Untagged
@@ -431,6 +453,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2551142645588542026}
   m_CullTransparentMesh: 1
+--- !u!114 &6193410588715614718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2551142645588542026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 70
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &3608234702558004544
 GameObject:
   m_ObjectHideFlags: 0
@@ -519,6 +561,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3193684556706850578}
   - component: {fileID: 4462041304289114295}
+  - component: {fileID: 8025848018472300753}
   m_Layer: 15
   m_Name: Lune
   m_TagString: Untagged
@@ -556,6 +599,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3670495861227064474}
   m_CullTransparentMesh: 1
+--- !u!114 &8025848018472300753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3670495861227064474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 70
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &3871140220603762551
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,6 +1276,7 @@ GameObject:
   m_Component:
   - component: {fileID: 161536211036666502}
   - component: {fileID: 2730163179956384876}
+  - component: {fileID: 8669785245367453751}
   m_Layer: 15
   m_Name: ApPotion
   m_TagString: Untagged
@@ -1250,6 +1314,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5495105418394592374}
   m_CullTransparentMesh: 1
+--- !u!114 &8669785245367453751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5495105418394592374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 70
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &6051838544274667262
 GameObject:
   m_ObjectHideFlags: 0
@@ -1326,6 +1410,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2769064667213626028}
   - component: {fileID: 8744256549999612015}
+  - component: {fileID: 7638431288116209306}
   m_Layer: 15
   m_Name: GoldenDust
   m_TagString: Untagged
@@ -1363,6 +1448,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7785464816862778223}
   m_CullTransparentMesh: 1
+--- !u!114 &7638431288116209306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7785464816862778223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 70
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &7998300068917688277
 GameObject:
   m_ObjectHideFlags: 0
@@ -1607,7 +1712,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15.05
+  m_fontSize: 17.2
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
