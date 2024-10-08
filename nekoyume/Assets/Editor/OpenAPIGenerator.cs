@@ -601,24 +601,16 @@ namespace Nekoyume
                                 enumVal = validEnumVal;
                             }
 
-                            string enumName;
-                            if (enumMapping.TryGetValue(enumValue.ToString(), out enumName))
+                            if (enumMapping.TryGetValue(enumValue.ToString(), out string enumName))
                             {
                                 // 매핑이 있는 경우 숫자 타입으로 가정
                                 sb.AppendLine($"        {enumName} = {enumValue},");
+                                invalidEnumMapping[enumValue.ToString()] = enumName;
                             }
                             else
                             {
                                 // 매핑이 없는 경우 일반적으로 처리
-                                enumName = enumVal;
-                                if (char.IsDigit(enumName[0]))
-                                {
-                                    sb.AppendLine($"        _{enumName},");
-                                }
-                                else
-                                {
-                                    sb.AppendLine($"        {enumName},");
-                                }
+                                sb.AppendLine($"        {enumVal},");
                             }
                         }
 
@@ -639,6 +631,7 @@ namespace Nekoyume
                             sb.AppendLine($"            {{ \"{kvp.Key}\", \"{kvp.Value}\" }},");
                         }
                         sb.AppendLine("        };");
+                        //todo : 성능개선 필요시 역방향 매핑 추가
 
                         sb.AppendLine("        public override " + schema.Key + " Read(");
                         sb.AppendLine("            ref Utf8JsonReader reader,");
@@ -659,12 +652,35 @@ namespace Nekoyume
                         sb.AppendLine($"            {schema.Key} value,");
                         sb.AppendLine("            JsonSerializerOptions options)");
                         sb.AppendLine("        {");
-                        sb.AppendLine("            var enumString = value.ToString();");
-                        sb.AppendLine("            if (InvalidEnumMapping.ContainsValue(enumString))");
-                        sb.AppendLine("            {");
-                        sb.AppendLine("                enumString = InvalidEnumMapping.First(kvp => kvp.Value == enumString).Key;");
-                        sb.AppendLine("            }");
-                        sb.AppendLine("            writer.WriteStringValue(enumString);");
+                        if(enumType == "string")
+                        {
+                            sb.AppendLine("            var enumString = value.ToString();");
+                            sb.AppendLine("            if (InvalidEnumMapping.ContainsValue(enumString))");
+                            sb.AppendLine("            {");
+                            sb.AppendLine("                enumString = InvalidEnumMapping.First(kvp => kvp.Value == enumString).Key;");
+                            sb.AppendLine("            }");
+                            sb.AppendLine("            writer.WriteStringValue(enumString);");
+                        }
+                        else if (enumType == "integer")
+                        {
+                            sb.AppendLine("            writer.WriteNumberValue((int)value);");
+                        }
+                        else
+                        {
+                            sb.AppendLine("            var enumString = value.ToString();");
+                            sb.AppendLine("            if (InvalidEnumMapping.ContainsValue(enumString))");
+                            sb.AppendLine("            {");
+                            sb.AppendLine("                enumString = InvalidEnumMapping.First(kvp => kvp.Value == enumString).Key;");
+                            sb.AppendLine("            }");
+                            sb.AppendLine("            if (int.TryParse(enumString, out var intValue))");
+                            sb.AppendLine("            {");
+                            sb.AppendLine("                writer.WriteNumberValue(intValue);");
+                            sb.AppendLine("            }");
+                            sb.AppendLine("            else");
+                            sb.AppendLine("            {");
+                            sb.AppendLine("                writer.WriteStringValue(enumString);");
+                            sb.AppendLine("            }");
+                        }
                         sb.AppendLine("        }");
                         sb.AppendLine("    }");
                         sb.AppendLine();
