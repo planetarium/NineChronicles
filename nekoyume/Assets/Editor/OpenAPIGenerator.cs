@@ -757,10 +757,12 @@ namespace Nekoyume
 
         private static void AppendWebRequestsFromPaths(StringBuilder sb, JsonNode pathsNode)
         {
+            Dictionary<string, int> methodNameCounter = new Dictionary<string, int>();
+
             foreach (var pathItem in pathsNode as JsonObject)
             {
                 var path = pathItem.Key;
-                if (!path.Contains("api"))
+                if (path.Contains("."))
                 {
                     continue;
                 }
@@ -880,6 +882,19 @@ namespace Nekoyume
 
                                 hasReturnType = true;
                             }
+                        }
+
+                        // 중복 체크를 위해 key 생성
+                        string key = $"{methodName}-{parameterDefinitions}-{returnType}";
+
+                        if (methodNameCounter.ContainsKey(key))
+                        {
+                            methodNameCounter[key]++;
+                            methodName += methodNameCounter[key].ToString(); // 중복될 경우 숫자 추가
+                        }
+                        else
+                        {
+                            methodNameCounter[key] = 1; // 처음 발견된 경우
                         }
 
                         sb.AppendLine($"    public async Task {methodName}({parameterDefinitions}Action<{returnType}> onSuccess, Action<string> onError)");
