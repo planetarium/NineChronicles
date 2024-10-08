@@ -899,7 +899,7 @@ namespace Nekoyume
 
                         sb.AppendLine($"    public async Task {methodName}({parameterDefinitions}Action<{returnType}> onSuccess, Action<string> onError)");
                         sb.AppendLine("    {");
-                        sb.AppendLine($"        string url = Url + $\"{path}\";");
+                        sb.AppendLine($"        string url = $\"{{Url}}{path}\";");
                         sb.AppendLine($"        using (var request = new UnityWebRequest(url, \"{httpMethod}\"))");
                         sb.AppendLine("        {");
                         sb.Append(parameterUsages);
