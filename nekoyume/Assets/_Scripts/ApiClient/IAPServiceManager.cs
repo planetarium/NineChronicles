@@ -36,10 +36,6 @@ namespace Nekoyume.ApiClient
 
         private readonly InAppPurchaseServiceClient? _client;
 
-        // NOTE: Enable this code if you want to use poller.
-        // private readonly IAPServicePoller _poller;
-        // NOTE: Enable this code if you want to use cache.
-        // private readonly IAPServiceCache _cache;
         private readonly InAppPurchaseServiceClient.Store _store;
 
         private readonly InAppPurchaseServiceClient.PackageName _packageName;
@@ -56,11 +52,6 @@ namespace Nekoyume.ApiClient
             }
             
             _client = new InAppPurchaseServiceClient(url);
-            // NOTE: Enable this code if you want to use poller.
-            // _poller = new IAPServicePoller(_client);
-            // _poller.OnPoll += OnPoll;
-            // NOTE: Enable this code if you want to use cache.
-            // _cache = new IAPServiceCache(DefaultProductsCacheLifetime);
             _store = store;
             _packageName = Enum.Parse<InAppPurchaseServiceClient.PackageName>(Application.identifier);
         }
@@ -98,18 +89,6 @@ namespace Nekoyume.ApiClient
             _client?.Dispose();
             IsDisposed = true;
         }
-
-        // public async Task CheckReceiptsAsync()
-        // {
-        //     if (Application.platform == RuntimePlatform.Android)
-        //     {
-        //     }
-        //     // get all receipts from stores.
-        //
-        //     // get all receipts from IAPService.
-        //
-        //     //request to purchase to IAPService if there are missing receipts.
-        // }
 
         public async Task CheckProductAvailable(string productSku, Address agentAddr, string planetId, System.Action success, System.Action failed)
         {
