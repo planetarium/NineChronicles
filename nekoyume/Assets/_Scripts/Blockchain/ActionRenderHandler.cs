@@ -2938,7 +2938,7 @@ namespace Nekoyume.Blockchain
                     row.ArenaType != ArenaType.OffSeason;
                 var medalItem = ItemFactory.CreateMaterial(
                     tableSheets.MaterialItemSheet,
-                    ArenaHelper.GetMedalItemId(championshipId, round));
+                    row.MedalId);
 
                 var random = new LocalRandom(eval.RandomSeed);
                 var winCount = 0;
