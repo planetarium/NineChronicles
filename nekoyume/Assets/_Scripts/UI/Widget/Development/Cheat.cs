@@ -407,8 +407,8 @@ namespace Nekoyume
         private void DummyBattle(int stageId)
         {
             Find<BattleResultPopup>()?.Close();
-            Find<Menu>()?.Close();
-            Find<Menu>()?.ShowWorld();
+            Find<LobbyMenu>()?.Close();
+            Find<LobbyMenu>()?.ShowWorld();
 
             if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
             {

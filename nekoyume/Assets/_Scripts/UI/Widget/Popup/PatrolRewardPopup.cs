@@ -282,7 +282,7 @@ namespace Nekoyume.UI
                         MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
                         NotificationCell.NotificationType.Notification);
 
-                    Find<Menu>().PatrolRewardMenu.ClaimRewardAnimation();
+                    Find<LobbyMenu>().PatrolRewardMenu.ClaimRewardAnimation();
                     break;
                 }
 

@@ -33,11 +33,10 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using Cysharp.Threading.Tasks;
-    using Model;
     using Scroller;
     using UniRx;
 
-    public class Menu : Widget
+    public class LobbyMenu : Widget
     {
         private const string FirstOpenShopKeyFormat = "Nekoyume.UI.Menu.FirstOpenShopKey_{0}";
 
@@ -122,8 +121,6 @@ namespace Nekoyume.UI
             base.Awake();
 
             speechBubbles = GetComponentsInChildren<SpeechBubble>();
-            Game.Event.OnRoomEnter.AddListener(b => Show());
-
             CloseWidget = null;
 
             playerButton.onClick.AddListener(() => Game.Game.instance.Lobby.Character.Touch());
@@ -246,7 +243,7 @@ namespace Nekoyume.UI
             }
             else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
             {
-                Find<Menu>().QuestClick();
+                Find<LobbyMenu>().QuestClick();
             }
         }
 
@@ -270,7 +267,7 @@ namespace Nekoyume.UI
             else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType
                 .EventDungeonStage))
             {
-                Find<Menu>().QuestClick();
+                Find<LobbyMenu>().QuestClick();
             }
         }
 
@@ -287,7 +284,7 @@ namespace Nekoyume.UI
             _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
-        public void EnterRoom()
+        public void EnterLobby()
         {
             player.localPosition = playerPosition.localPosition + Vector3.left * 300;
             player.DOLocalMoveX(playerPosition.localPosition.x, 1.0f);

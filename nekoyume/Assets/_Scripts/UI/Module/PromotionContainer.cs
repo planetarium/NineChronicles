@@ -141,6 +141,12 @@ namespace Nekoyume.UI.Module
             // Only call when linkButton is not null
             void TryOpenBanner()
             {
+                const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.ShowPopupLobbyEntering;
+                if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                {
+                    return;
+                }
+                
                 var lastReadingDayKey = $"LAST_READING_DAY_{enableKey}";
                 const string dateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 

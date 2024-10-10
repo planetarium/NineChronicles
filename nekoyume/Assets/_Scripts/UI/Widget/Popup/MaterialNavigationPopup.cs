@@ -1,6 +1,7 @@
 using System;
 using Coffee.UIEffects;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -300,8 +301,7 @@ namespace Nekoyume.UI
                                 return;
                             }
 
-                            CloseWithOtherWidgets();
-                            Game.Event.OnRoomEnter.Invoke(true);
+                            Lobby.Enter(true);
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
                             Find<PatrolRewardPopup>().Show();
                         };

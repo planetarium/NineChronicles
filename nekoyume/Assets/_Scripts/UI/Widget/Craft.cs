@@ -805,7 +805,7 @@ namespace Nekoyume.UI
                 combinationMain.Close(true);
             }
 
-            Game.Event.OnRoomEnter.Invoke(true);
+            Lobby.Enter(true);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

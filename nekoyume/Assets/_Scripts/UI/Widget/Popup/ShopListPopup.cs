@@ -338,7 +338,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public async void ShowAtRoomEntering()
+        public async void ShowAtLobbyEntering()
         {
             _isInLobby = true;
 

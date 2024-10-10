@@ -432,7 +432,7 @@ namespace Nekoyume.UI
                 Console.WriteLine(e);
             }
 
-            Find<Menu>().Close(true);
+            Find<LobbyMenu>().Close(true);
             Find<ShopBuy>().Close(true);
             Find<ShopSell>().Close(true);
             Find<EventBanner>().Close(true);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Coffee.UIEffects;
 using Nekoyume.Blockchain;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -154,7 +155,7 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             };
 
             foreach (var itemType in Enum.GetValues(typeof(ItemType)).OfType<ItemType>())

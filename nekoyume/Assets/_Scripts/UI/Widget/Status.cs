@@ -56,7 +56,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            Game.Event.OnRoomEnter.AddListener(b => Show());
+            Lobby.OnLobbyEnterEvent += () => Show();
             Game.Event.OnUpdatePlayerEquip.Where(_ => _activatedDccId != null)
                 .Subscribe(characterView.SetByPlayer).AddTo(gameObject);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
@@ -87,7 +87,7 @@ namespace Nekoyume.UI
             buffLayout.SetBuff(null);
 
 #if UNITY_ANDROID || UNITY_IOS
-            this.transform.SetSiblingIndex(Widget.Find<Menu>().transform.GetSiblingIndex()+1);
+            transform.SetSiblingIndex(Find<LobbyMenu>().transform.GetSiblingIndex()+1);
 #endif
         }
 

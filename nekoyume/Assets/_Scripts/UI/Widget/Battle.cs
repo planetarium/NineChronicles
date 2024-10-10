@@ -1,6 +1,5 @@
 using System;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -210,8 +209,6 @@ namespace Nekoyume.UI
                     accelerationToggle.gameObject.SetActive(false);
                     exitToggle.gameObject.SetActive(false);
                     Find<HeaderMenuStatic>().Close(true);
-                    break;
-                default:
                     break;
             }
 
