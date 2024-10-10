@@ -626,7 +626,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetPingAsync(Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/ping";
+        string url = $"{Url}/ping";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.SetRequestHeader("accept", "application/json");
@@ -652,7 +652,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetHistorySyncAsync(int start, int end, int limit, Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/history/sync";
+        string url = $"{Url}/api/history/sync";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?start={start}&end={end}&limit={limit}";
@@ -680,7 +680,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetPurchaseLogAsync(string planet_id, string agent_address, string avatar_address, string product_id, string? order_id, string? data, Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/purchase/log";
+        string url = $"{Url}/api/purchase/log";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?planet_id={planet_id}&agent_address={agent_address}&avatar_address={avatar_address}&product_id={product_id}&order_id={order_id}&data={data}";
@@ -708,7 +708,7 @@ public class InAppPurchaseServiceClient
 
     public async Task PostPurchaseRetryAsync(PackageName? x_iap_packagename, SimpleReceiptSchema requestBody, Action<ReceiptDetailSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/purchase/retry";
+        string url = $"{Url}/api/purchase/retry";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             request.uri = new Uri(url);
@@ -747,7 +747,7 @@ public class InAppPurchaseServiceClient
 
     public async Task PostPurchaseRequestAsync(PackageName? x_iap_packagename, ReceiptSchema requestBody, Action<ReceiptDetailSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/purchase/request";
+        string url = $"{Url}/api/purchase/request";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             request.uri = new Uri(url);
@@ -786,7 +786,7 @@ public class InAppPurchaseServiceClient
 
     public async Task PostPurchaseFreeAsync(PackageName? x_iap_packagename, FreeReceiptSchema requestBody, Action<ReceiptDetailSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/purchase/free";
+        string url = $"{Url}/api/purchase/free";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             request.uri = new Uri(url);
@@ -825,7 +825,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetPurchaseStatusAsync(object uuid, Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/purchase/status";
+        string url = $"{Url}/api/purchase/status";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?uuid={uuid}";
@@ -853,7 +853,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetProductAsync(string agent_addr, string planet_id, PackageName? x_iap_packagename, Action<CategorySchema[]> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/product";
+        string url = $"{Url}/api/product";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?agent_addr={agent_addr}&planet_id={planet_id}";
@@ -889,7 +889,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetProductAllAsync(Action<SimpleProductSchema[]> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/product/all";
+        string url = $"{Url}/api/product/all";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -917,7 +917,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetL10nAsync(PackageName? x_iap_packagename, Action<L10NSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/l10n";
+        string url = $"{Url}/api/l10n";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.uri = new Uri(url);
@@ -952,7 +952,7 @@ public class InAppPurchaseServiceClient
 
     public async Task PostAdminUpdatepriceAsync(Store store, Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/admin/update-price";
+        string url = $"{Url}/api/admin/update-price";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             url += $"?store={store}";
@@ -980,7 +980,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetAdminUpdategarageAsync(Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/admin/update-garage";
+        string url = $"{Url}/api/admin/update-garage";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.SetRequestHeader("accept", "application/json");
@@ -1006,7 +1006,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetAdminRefundedAsync(int? start, int limit, Action<RefundedReceiptSchema[]> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/admin/refunded";
+        string url = $"{Url}/api/admin/refunded";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?start={start}&limit={limit}";
@@ -1036,7 +1036,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetAdminReceiptAsync(int page, int pp, Action<FullReceiptSchema[]> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/api/admin/receipt";
+        string url = $"{Url}/api/admin/receipt";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?page={page}&pp={pp}";
@@ -1066,7 +1066,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetViewsAsync(string page, Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/views/{page}";
+        string url = $"{Url}/views/{page}";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.uri = new Uri(url);
@@ -1093,7 +1093,7 @@ public class InAppPurchaseServiceClient
 
     public async Task GetViewsAsync2(string page, Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + $"/views/";
+        string url = $"{Url}/views/";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?page={page}";
