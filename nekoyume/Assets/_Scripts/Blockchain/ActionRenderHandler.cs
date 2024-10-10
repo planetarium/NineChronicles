@@ -361,7 +361,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement)
                 .AddTo(_disposables);
-            
+
             _actionRenderer.EveryRender<ItemEnhancement>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
@@ -460,7 +460,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination)
                 .AddTo(_disposables);
-            
+
             _actionRenderer.EveryRender<RapidCombination>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
@@ -599,7 +599,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventConsumableItemCrafts)
                 .AddTo(_disposables);
-            
+
             _actionRenderer.EveryRender<EventConsumableItemCrafts>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
@@ -3997,7 +3997,7 @@ namespace Nekoyume.Blockchain
                 prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
                 UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
-                
+
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneStoneBalance(eval);
@@ -4362,7 +4362,7 @@ namespace Nekoyume.Blockchain
             }
 
             NcDebug.LogException(eval.Exception?.InnerException ?? eval.Exception);
-            
+
             var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
             foreach (var customCraftData in eval.Action.CraftList)
             {
