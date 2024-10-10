@@ -418,6 +418,8 @@ namespace Nekoyume
             if (GUILayout.Button("Create"))
             {
                 GenerateOpenApiClass(_downloadJsonUrl, _className);
+                AssetDatabase.Refresh();
+                RefreshGeneratedInfo();
             }
 
             GUILayout.Space(10);
@@ -428,6 +430,8 @@ namespace Nekoyume
                 {
                     GenerateOpenApiClass(item.Value, item.Key);
                 }
+                AssetDatabase.Refresh();
+                RefreshGeneratedInfo();
             }
 
             GUILayout.Space(10);
@@ -484,14 +488,13 @@ namespace Nekoyume
             }
 
             File.WriteAllText(Path.Combine(_outputDir, $"{className}.cs"), generatedCode);
-            AssetDatabase.Refresh();
-            RefreshGeneratedInfo();
         }
 
         private static string DownloadOpenApiSpec(string url)
         {
             using (var www = UnityWebRequest.Get(url))
             {
+                www.timeout = 5;
                 www.SendWebRequest();
                 while (!www.isDone)
                 {
@@ -499,7 +502,7 @@ namespace Nekoyume
 
                 if (www.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError("Failed to download: " + www.error);
+                    Debug.LogError($"{url} Failed to download: {www.error}");
                     return null;
                 }
 
