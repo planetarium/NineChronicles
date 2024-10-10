@@ -760,6 +760,13 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<AuraSummon>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(eval => NotificationManager.FilterAuraSummon(eval).Any())
+                .ObserveOnMainThread()
+                .Subscribe(NotificationManager.NotifyAuraSummon)
+                .AddTo(_disposables);
         }
 
         private void RuneSummon()
@@ -771,6 +778,13 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneSummon)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<RuneSummon>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(eval => NotificationManager.FilterRuneSummon(eval).Any())
+                .ObserveOnMainThread()
+                .Subscribe(NotificationManager.NotifyRuneSummon)
                 .AddTo(_disposables);
         }
 
