@@ -144,43 +144,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!1 &621074806985681672
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8816159811582529263}
-  m_Layer: 15
-  m_Name: TextContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &8816159811582529263
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 621074806985681672}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5332570822668910354}
-  m_Father: {fileID: 4535381893823209262}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &709153334519045616
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,7 +399,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8498869998256029580}
-  - {fileID: 8816159811582529263}
+  - {fileID: 5332570822668910354}
   m_Father: {fileID: 8174963859020797658}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -563,7 +526,7 @@ GameObject:
   - component: {fileID: 4462041304289114295}
   - component: {fileID: 8025848018472300753}
   m_Layer: 15
-  m_Name: Lune
+  m_Name: Rune
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1394,10 +1357,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f791a636bdfb4467b3ca0310b199cca4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rune: {fileID: 2244114149237026163}
-  crystal: {fileID: 5837347930413298209}
+  runeItem:
+    container: {fileID: 3670495861227064474}
+    icon: {fileID: 3331018954814633534}
+    text: {fileID: 2244114149237026163}
+  crystalItem:
+    container: {fileID: 324631276228498802}
+    icon: {fileID: 2617124893349339880}
+    text: {fileID: 5837347930413298209}
+  materialItems:
+  - container: {fileID: 7785464816862778223}
+    icon: {fileID: 4607669384822066827}
+    text: {fileID: 2020964525115454334}
+  - container: {fileID: 5495105418394592374}
+    icon: {fileID: 6837286476855755910}
+    text: {fileID: 5351223863693650441}
   rankText: {fileID: 652911502052368753}
-  rankTextContainer: {fileID: 621074806985681672}
+  rankTextContainer: {fileID: 0}
   rankingImageContainer: {fileID: 5406259422990737356}
   selected: {fileID: 709153334519045616}
 --- !u!1 &7785464816862778223
@@ -1649,8 +1625,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8816159811582529263}
-  m_RootOrder: 0
+  m_Father: {fileID: 4535381893823209262}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
