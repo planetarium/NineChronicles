@@ -73,20 +73,16 @@ namespace Nekoyume.ApiClient
                 return;
             }
 
-/*            var (code, error, _, _) = await _client.getasync();
-            if (code != HttpStatusCode.OK ||
-                !string.IsNullOrEmpty(error))
-            {
-                Debug.LogError(
-                    $"Failed to initialize IAPServiceManager: {code}, {error}");
-                return;
-            }*/
-
-            // NOTE: Enable this code if you want to use cache.
-            // if (productsCacheLifetime is not null)
-            // {
-            //     _cache.SetOptions(productsCacheLifetime);
-            // }
+            await _client.GetPingAsync(
+                (success) =>
+                {
+                    IsInitialized = true;
+                },
+                (error) =>
+                {
+                    IsInitialized = false;
+                    Debug.LogError($"Failed to initialize IAPServiceManager: {error}");
+                });
 
             IsInitialized = true;
         }
@@ -100,8 +96,6 @@ namespace Nekoyume.ApiClient
             }
 
             _client?.Dispose();
-            // _poller.OnPoll -= OnPoll;
-            // _poller.Clear();
             IsDisposed = true;
         }
 
