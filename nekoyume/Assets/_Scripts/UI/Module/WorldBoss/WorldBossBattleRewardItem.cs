@@ -50,6 +50,21 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             crystal.container.gameObject.SetActive(row.Crystal > 0);
             crystal.text.text = $"{row.Crystal:#,0}";
+
+            for (var i = 0; i < materials.Length; i++)
+            {
+                var material = materials[i];
+                if (i == 0 && row.Circle > 0)
+                {
+                    material.container.gameObject.SetActive(true);
+                    material.icon.sprite = SpriteHelper.GetItemIcon(600402);
+                    material.text.text = $"{row.Circle:#,0}";
+                }
+                else
+                {
+                    material.container.gameObject.SetActive(false);
+                }
+            }
         }
 
         public void Set(WorldBossKillRewardSheet.Row row)
@@ -59,6 +74,21 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             crystal.container.gameObject.SetActive(row.Crystal > 0);
             crystal.text.text = $"{row.Crystal:#,0}";
+
+            for (var i = 0; i < materials.Length; i++)
+            {
+                var material = materials[i];
+                if (i == 0 && row.Circle > 0)
+                {
+                    material.container.gameObject.SetActive(true);
+                    material.icon.sprite = SpriteHelper.GetItemIcon(600402);
+                    material.text.text = $"{row.Circle:#,0}";
+                }
+                else
+                {
+                    material.container.gameObject.SetActive(false);
+                }
+            }
         }
 
         public void Set(WorldBossRankingRewardSheet.Row row, int myRank, int userCount)
@@ -106,6 +136,22 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             crystal.container.gameObject.SetActive(row.Crystal > 0);
             crystal.text.text = $"{row.Crystal:#,0}";
+
+            for (var i = 0; i < materials.Length; i++)
+            {
+                var material = materials[i];
+                if (i < row.Materials.Count)
+                {
+                    var (itemId, quantity) = row.Materials[i];
+                    material.container.gameObject.SetActive(true);
+                    material.icon.sprite = SpriteHelper.GetItemIcon(itemId);
+                    material.text.text = $"{quantity:#,0}";
+                }
+                else
+                {
+                    material.container.gameObject.SetActive(false);
+                }
+            }
         }
     }
 }
