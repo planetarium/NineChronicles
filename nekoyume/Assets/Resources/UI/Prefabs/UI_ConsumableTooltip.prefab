@@ -3630,8 +3630,8 @@ MonoBehaviour:
   descriptionButton: {fileID: 0}
   submitButtonContainer: {fileID: 8455195435469122129}
   acquisitionPlaceDescription: {fileID: 0}
-  _isPointerOnScrollArea: 0
-  _isClickedButtonArea: 0
+  _isPointerOnTooltipArea: 0
+  _isClickedTooltipArea: 0
 --- !u!114 &8115375518378515253 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5173925158521432478, guid: 208eab8c17f4afb41a89eedbfe42f722,

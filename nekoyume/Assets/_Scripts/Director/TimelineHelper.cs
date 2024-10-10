@@ -22,7 +22,7 @@ namespace Nekoyume.Director
                 var defaultAnimation = spineClip.template.animationReference;
                 if (defaultAnimation == null || string.IsNullOrEmpty(defaultAnimation.name))
                 {
-                    NcDebug.LogWarning($"[{nameof(TimelineHelper)}] AnimationReferenceAsset is null or empty");
+                    // TODO: 월드보스 마지막 컷신쯤 캐릭터를 대상으로 이 로그가 반복 호출됨. 동작상 문제는 없지만 원인 파악 필요.
                     if (string.IsNullOrEmpty(timelineClip.displayName) || timelineClip.displayName == "SpineAnimationStateClip")
                     {
                         spineClip.template.animationReference = null;
