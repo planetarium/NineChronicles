@@ -308,8 +308,8 @@ namespace Nekoyume.UI
 
         public static async Task LoadL10Ns()
         {
-            MOBILE_L10N_SCHEMA = await ApiClients.Instance.IAPServiceManager.L10NAsync();
             await UniTask.SwitchToMainThread();
+            MOBILE_L10N_SCHEMA = await ApiClients.Instance.IAPServiceManager.L10NAsync();
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
         }
