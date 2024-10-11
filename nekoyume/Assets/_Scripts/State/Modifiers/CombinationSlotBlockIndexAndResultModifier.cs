@@ -5,7 +5,7 @@ namespace Nekoyume.State.Modifiers
 {
     public class CombinationSlotBlockIndexAndResultModifier : CombinationSlotStateModifier
     {
-        private readonly long _unlockBlockIndex;
+        private readonly long _workCompleteBlockIndex;
         private readonly AttachmentActionResult _result;
         private readonly long _blockIndex;
 
@@ -14,17 +14,17 @@ namespace Nekoyume.State.Modifiers
         public CombinationSlotBlockIndexAndResultModifier(
             AttachmentActionResult resultModel,
             long blockIndex,
-            long unlockBlockIndex
+            long workCompleteBlockIndex
         )
         {
-            _unlockBlockIndex = unlockBlockIndex;
+            _workCompleteBlockIndex = workCompleteBlockIndex;
             _result = resultModel;
             _blockIndex = blockIndex;
         }
 
         public override CombinationSlotState Modify(CombinationSlotState state)
         {
-            state.Update(_result, _blockIndex, _unlockBlockIndex);
+            state.Update(_result, _blockIndex, _workCompleteBlockIndex);
             return state;
         }
     }

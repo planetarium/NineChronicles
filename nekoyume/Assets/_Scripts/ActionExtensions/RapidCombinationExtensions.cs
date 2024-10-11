@@ -60,7 +60,7 @@ namespace Nekoyume.ActionExtensions
             // currentAvatarState.inventory.RemoveFungibleItem(hourGlassRow.ItemId, nextBlockIndex, count);
             //
             // // FIXME: Add non-serialize field for slot state to use for UI
-            // slotState.Update(slotState.Result, slotState.StartBlockIndex, nextBlockIndex);
+            // slotState.Update(slotState.Result, slotState.WorkStartBlockIndex, nextBlockIndex);
             // states.UpdateCombinationSlotState(action.avatarAddress, action.slotIndex, slotState);
             //
             // ReactiveAvatarState.UpdateInventory(currentAvatarState.inventory);

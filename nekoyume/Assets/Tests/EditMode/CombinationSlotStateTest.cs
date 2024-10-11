@@ -28,7 +28,7 @@ namespace Tests.EditMode
             var address = new PrivateKey().PublicKey.Address;
             var state = new CombinationSlotState(address, 0);
             Assert.AreEqual(address, state.address);
-            Assert.AreEqual(0, state.UnlockBlockIndex);
+            Assert.AreEqual(0, state.WorkCompleteBlockIndex);
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace Tests.EditMode
             Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "unlockStage"));
             Assert.IsFalse(serialized.ContainsKey((IKey)(Text) "result"));
             var deserialize = new CombinationSlotState(serialized);
-            Assert.AreEqual(state.UnlockBlockIndex, deserialize.UnlockBlockIndex);
+            Assert.AreEqual(state.WorkCompleteBlockIndex, deserialize.WorkCompleteBlockIndex);
             Assert.AreEqual(state.address, deserialize.address);
         }
 
@@ -54,8 +54,8 @@ namespace Tests.EditMode
             var result = new CombinationConsumable5.ResultModel();
             state.Update(result,1, 10);
             Assert.AreEqual(result,state.Result);
-            Assert.AreEqual(10, state.UnlockBlockIndex);
-            Assert.AreEqual(1, state.StartBlockIndex);
+            Assert.AreEqual(10, state.WorkCompleteBlockIndex);
+            Assert.AreEqual(1, state.WorkStartBlockIndex);
         }
 
         [Test]
@@ -80,10 +80,10 @@ namespace Tests.EditMode
             Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "result"));
             Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "startBlockIndex"));
             var deserialize = new CombinationSlotState(serialized);
-            Assert.AreEqual(state.UnlockBlockIndex, deserialize.UnlockBlockIndex);
+            Assert.AreEqual(state.WorkCompleteBlockIndex, deserialize.WorkCompleteBlockIndex);
             Assert.AreEqual(state.address, deserialize.address);
             Assert.AreEqual(state.Result.itemUsable, deserialize.Result.itemUsable);
-            Assert.AreEqual(state.StartBlockIndex, deserialize.StartBlockIndex);
+            Assert.AreEqual(state.WorkStartBlockIndex, deserialize.WorkStartBlockIndex);
         }
     }
 }
