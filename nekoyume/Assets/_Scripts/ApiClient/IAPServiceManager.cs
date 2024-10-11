@@ -53,7 +53,21 @@ namespace Nekoyume.ApiClient
             
             _client = new InAppPurchaseServiceClient(url);
             _store = store;
-            _packageName = Enum.Parse<InAppPurchaseServiceClient.PackageName>(Application.identifier);
+
+            // 플렛폼에 따라 기본적으로 사용하는 패키지 이름이 다르기 때문에 그에 맞게 설정해준다.
+#if UNITY_IOS || UNITY_ANDROID
+            if(InAppPurchaseServiceClient.PackageNameTypeConverter.InvalidEnumMapping.TryGetValue(Application.identifier, out var packageName))
+            {
+                _packageName = Enum.Parse<InAppPurchaseServiceClient.PackageName>(packageName);
+            }
+            else
+            {
+                Debug.LogError($"[{nameof(IAPServiceManager)}] Invalid PackageName: {Application.identifier}");
+                _packageName = InAppPurchaseServiceClient.PackageName.com_planetariumlabs_ninechroniclesmobile;
+            }
+#else
+            _packageName = InAppPurchaseServiceClient.PackageName.com_planetariumlabs_ninechroniclesmobile;
+#endif
         }
 
         public async Task InitializeAsync()
