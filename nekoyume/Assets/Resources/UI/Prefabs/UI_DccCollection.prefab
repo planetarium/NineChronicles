@@ -7317,8 +7317,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0b527e1d9c849bf80f4c1de003b22f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: 0.30985916
-  scrollOffset: 0.30985916
+  cellInterval: 0.32876712
+  scrollOffset: 0.32876712
   loop: 0
   cellContainer: {fileID: 4310446150535609961}
   reuseCellMarginCount: 0
@@ -7327,7 +7327,7 @@ MonoBehaviour:
   spacing: 0
   startAxisSpacing: 0
   startAxisCellCount: 4
-  cellSize: {x: 180, y: 220}
+  cellSize: {x: 180, y: 240}
   forcedScrollSensitivity: 5
   fillWithNullToEmptyViewport: 1
   fillWithNullToEmptyCellGroup: 1
