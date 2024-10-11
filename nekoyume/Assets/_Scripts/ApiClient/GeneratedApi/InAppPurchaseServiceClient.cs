@@ -629,6 +629,7 @@ public class InAppPurchaseServiceClient
         string url = $"{Url}/ping";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
@@ -657,6 +658,7 @@ public class InAppPurchaseServiceClient
         {
             url += $"?start={start}&end={end}&limit={limit}";
             request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
@@ -685,6 +687,7 @@ public class InAppPurchaseServiceClient
         {
             url += $"?planet_id={planet_id}&agent_address={agent_address}&avatar_address={avatar_address}&product_id={product_id}&order_id={order_id}&data={data}";
             request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
@@ -830,6 +833,7 @@ public class InAppPurchaseServiceClient
         {
             url += $"?uuid={uuid}";
             request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
@@ -957,6 +961,7 @@ public class InAppPurchaseServiceClient
         {
             url += $"?store={store}";
             request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
@@ -983,6 +988,7 @@ public class InAppPurchaseServiceClient
         string url = $"{Url}/api/admin/update-garage";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
@@ -1070,6 +1076,7 @@ public class InAppPurchaseServiceClient
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
@@ -1098,6 +1105,7 @@ public class InAppPurchaseServiceClient
         {
             url += $"?page={page}";
             request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;

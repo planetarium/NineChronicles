@@ -906,10 +906,7 @@ namespace Nekoyume
                         sb.AppendLine($"        using (var request = new UnityWebRequest(url, \"{httpMethod}\"))");
                         sb.AppendLine("        {");
                         sb.Append(parameterUsages);
-                        if (hasReturnType)
-                        {
-                            sb.AppendLine($"            request.downloadHandler = new DownloadHandlerBuffer();");
-                        }
+                        sb.AppendLine($"            request.downloadHandler = new DownloadHandlerBuffer();");
 
                         sb.AppendLine($"            request.SetRequestHeader(\"accept\", \"application/json\");");
                         sb.AppendLine($"            request.SetRequestHeader(\"Content-Type\", \"application/json\");");
