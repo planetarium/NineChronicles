@@ -45,50 +45,12 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(WorldBossBattleRewardSheet.Row row)
         {
-            rune.container.gameObject.SetActive(row.RuneMax > 0);
-            rune.text.text = $"{row.RuneMin:#,0}~{row.RuneMax:#,0}";
-
-            crystal.container.gameObject.SetActive(row.Crystal > 0);
-            crystal.text.text = $"{row.Crystal:#,0}";
-
-            for (var i = 0; i < materials.Length; i++)
-            {
-                var material = materials[i];
-                if (i == 0 && row.Circle > 0)
-                {
-                    material.container.gameObject.SetActive(true);
-                    material.icon.sprite = SpriteHelper.GetItemIcon(600402);
-                    material.text.text = $"{row.Circle:#,0}";
-                }
-                else
-                {
-                    material.container.gameObject.SetActive(false);
-                }
-            }
+            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, new[] { (600402, row.Circle) });
         }
 
         public void Set(WorldBossKillRewardSheet.Row row)
         {
-            rune.container.gameObject.SetActive(row.RuneMax > 0);
-            rune.text.text = $"{row.RuneMin:#,0}~{row.RuneMax:#,0}";
-
-            crystal.container.gameObject.SetActive(row.Crystal > 0);
-            crystal.text.text = $"{row.Crystal:#,0}";
-
-            for (var i = 0; i < materials.Length; i++)
-            {
-                var material = materials[i];
-                if (i == 0 && row.Circle > 0)
-                {
-                    material.container.gameObject.SetActive(true);
-                    material.icon.sprite = SpriteHelper.GetItemIcon(600402);
-                    material.text.text = $"{row.Circle:#,0}";
-                }
-                else
-                {
-                    material.container.gameObject.SetActive(false);
-                }
-            }
+            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, new[] { (600402, row.Circle) });
         }
 
         public void Set(WorldBossRankingRewardSheet.Row row, int myRank, int userCount)
@@ -131,18 +93,28 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             var runeSum = row.Runes.Sum(x => x.RuneQty);
-            rune.container.gameObject.SetActive(runeSum > 0);
-            rune.text.text = $"{runeSum:#,0}";
+            SetRewardItem((runeSum, runeSum), row.Crystal, row.Materials.ToArray());
+        }
 
-            crystal.container.gameObject.SetActive(row.Crystal > 0);
-            crystal.text.text = $"{row.Crystal:#,0}";
+        private void SetRewardItem(
+            (int min, int max) rune,
+            int crystal,
+            (int itemId, int quantity)[] materials)
+        {
+            runeItem.container.gameObject.SetActive(rune.max > 0);
+            runeItem.text.text = rune.min == rune.max
+                ? $"{rune.max:#,0}"
+                : $"{rune.min:#,0}~{rune.max}";
 
-            for (var i = 0; i < materials.Length; i++)
+            crystalItem.container.gameObject.SetActive(crystal > 0);
+            crystalItem.text.text = $"{crystal:#,0}";
+
+            for (var i = 0; i < materialItems.Length; i++)
             {
-                var material = materials[i];
-                if (i < row.Materials.Count)
+                var material = materialItems[i];
+                if (i < materials.Length)
                 {
-                    var (itemId, quantity) = row.Materials[i];
+                    var (itemId, quantity) = materials[i];
                     material.container.gameObject.SetActive(true);
                     material.icon.sprite = SpriteHelper.GetItemIcon(itemId);
                     material.text.text = $"{quantity:#,0}";
