@@ -107,7 +107,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 : $"{rune.min:#,0}~{rune.max}";
 
             crystalItem.container.gameObject.SetActive(crystal > 0);
-            crystalItem.text.text = $"{crystal:#,0}";
+            crystalItem.text.text = crystal.ToCurrencyNotation();
 
             for (var i = 0; i < materialItems.Length; i++)
             {
