@@ -43,7 +43,7 @@ namespace Nekoyume.Game
         public static void Enter(bool showScreen = false)
         {
             var lobbyMenu = Widget.Find<LobbyMenu>();
-            lobbyMenu.CloseWithOtherWidgets();
+            lobbyMenu.CloseWithOtherWidgetsOnEnterLobby();
             lobbyMenu.Show();
             
             _onLobbyEnterEnd?.Invoke();

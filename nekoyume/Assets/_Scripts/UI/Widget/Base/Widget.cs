@@ -69,6 +69,8 @@ namespace Nekoyume.UI
         public virtual bool CanHandleInputEvent => AnimationState.Value == AnimationStateType.Shown;
 
         protected bool CanClose => CanHandleInputEvent;
+        
+        protected virtual bool CloseOnEnterLobby => true;
 
 #region Mono
 
@@ -406,7 +408,7 @@ namespace Nekoyume.UI
             AnimationState.Value = AnimationStateType.Closed;
         }
 
-        public void CloseWithOtherWidgets()
+        public void CloseWithOtherWidgets(Func<Widget, bool> conditionFunc = null)
         {
             try
             {
@@ -421,7 +423,7 @@ namespace Nekoyume.UI
                 for (var i = deletableWidgets.Count - 1; i >= 0; i--)
                 {
                     var widget = deletableWidgets[i];
-                    if (widget)
+                    if (widget && conditionFunc?.Invoke(widget) != false)
                     {
                         widget.Close(true);
                     }
@@ -438,6 +440,11 @@ namespace Nekoyume.UI
             Find<EventBanner>().Close(true);
             Find<Status>().Close(true);
             Close(true);
+        }
+
+        public void CloseWithOtherWidgetsOnEnterLobby()
+        {
+            CloseWithOtherWidgets(widget => widget.CloseOnEnterLobby);
         }
 
         private IEnumerator CoCompleteCloseAnimation()
