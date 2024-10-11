@@ -612,14 +612,11 @@ namespace Nekoyume.UI
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
-        public async void Read(ProductSellerMail productSellerMail)
+        public void Read(ProductSellerMail productSellerMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var agentAddress = States.Instance.AgentState.address;
-            var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
-            var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            var price = itemProduct?.Price ?? favProduct.Price;
-            var fav = new FungibleAssetValue(currency, (int)price, 0);
+            var fav = productSellerMail.Product.Price;
             var taxedPrice = fav.DivRem(100, out _) * Buy.TaxRate;
             LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
             productSellerMail.New = false;
