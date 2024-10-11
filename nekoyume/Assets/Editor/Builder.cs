@@ -250,6 +250,7 @@ namespace Editor
             string[] scenes = { "Assets/_Scenes/IntroScene.unity", "Assets/_Scenes/LoadingScene.unity", "Assets/_Scenes/LoginScene.unity", "Assets/_Scenes/Game.unity" };
 #if UNITY_ANDROID || UNITY_IOS
             PlayerSettings.productName = PlayerName;
+            PlayerSettings.muteOtherAudioSources = false;
 #endif
             targetDirName ??= buildTarget.ToString();
             var locationPathName = Path.Combine(

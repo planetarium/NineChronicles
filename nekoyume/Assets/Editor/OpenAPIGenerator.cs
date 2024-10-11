@@ -389,13 +389,15 @@ namespace Nekoyume
 
     public class OpenApiGenerator : EditorWindow
     {
-        private const string _outputDir = "Assets/_Scripts/GeneratedApi";
+        private const string _outputDir = "Assets/_Scripts/ApiClient/GeneratedApi";
         private const int _timeOut = 10;
 
         private static string _downloadJsonUrl;
         private static string _className;
         private static List<KeyValuePair<string, string>> _dataList = new();
         private Vector2 _scrollPosition;
+
+        private static HashSet<string> inValidEnumTypeList = new HashSet<string>();
 
         [MenuItem("Tools/Generate OpenAPI Class")]
         private static void Init()
@@ -507,6 +509,8 @@ namespace Nekoyume
 
         private static string GenerateCSharpFromOpenApiSpec(string jsonSpec, string rootClassName, string url)
         {
+            inValidEnumTypeList.Clear();
+
             var sb = new StringBuilder();
             var rootNode = JsonNode.Parse(jsonSpec);
 
@@ -529,6 +533,7 @@ namespace Nekoyume
             sb.AppendLine("using UnityEngine.Networking;");
             sb.AppendLine("using Cysharp.Threading.Tasks;");
             sb.AppendLine("using System.Text;");
+            sb.AppendLine("using System.Linq;");
 
             sb.AppendLine();
 
@@ -558,11 +563,10 @@ namespace Nekoyume
                         sb.AppendLine($"    public enum {schema.Key}");
                         sb.AppendLine("    {");
 
-                        var description = schema.Value["description"] != null ? schema.Value["description"].ToString() : string.Empty;
+                        var description = schema.Value["description"]?.ToString() ?? string.Empty;
                         var enumMapping = new Dictionary<string, string>();
 
                         var enumType = schema.Value["type"]?.ToString();
-
                         if (enumType != "string")
                         {
                             foreach (var line in description.Split('\n'))
@@ -577,89 +581,42 @@ namespace Nekoyume
                                         var match = Regex.Match(name, pattern);
                                         if (match.Success)
                                         {
-                                            name = match.Groups[0].Value.Trim('`');
+                                            name = match.Groups[1].Value.Trim('`');
                                         }
 
-                                        enumMapping[parts[0].Trim('*').Trim().Replace("- **", string.Empty).TrimEnd('\"')] = name;
+                                        enumMapping[parts[0].Trim('*').Trim().Replace("- **", string.Empty).TrimEnd('"')] = name;
                                     }
                                 }
                             }
                         }
 
-                        var preText = string.Empty;
-
-                        var isStringPreText = false;
-                        var isString = false;
-                        var isNumberPreText = false;
-                        var isNumber = false;
-
-                        for (var i = 0; i < enumValues.Count; i++)
+                        var invalidEnumMapping = new Dictionary<string, string>();
+                        foreach (var enumValue in enumValues)
                         {
-                            var enumVal = enumValues[i].ToString();
-                            if (enumMapping.ContainsKey(enumVal))
+                            var enumVal = enumValue.ToString();
+                            if (!IsValidEnumName(enumVal) || IsCSharpKeyword(enumVal))
                             {
-                                var enumName = enumMapping[enumVal];
+                                var validEnumVal = MakeValidEnumName(enumVal);
+                                invalidEnumMapping[enumVal] = validEnumVal;
+                                enumVal = validEnumVal;
+                            }
 
-                                if (enumName == enumVal)
-                                {
-                                    if (int.TryParse(enumName[0].ToString(), out var number))
-                                    {
-                                        sb.AppendLine($"        _{enumName},");
-                                        preText = "\"_\"+";
-                                        isStringPreText = true;
-                                    }
-                                    else
-                                    {
-                                        sb.AppendLine($"        {enumName},");
-                                        isString = true;
-                                    }
-                                }
-                                else
-                                {
-                                    if (int.TryParse(enumName[0].ToString(), out var number))
-                                    {
-                                        if (int.TryParse(enumVal[0].ToString(), out var enumValNumber))
-                                        {
-                                            sb.AppendLine($"        _{enumName} = {enumVal},");
-                                            preText = "\"_\"+";
-                                            isNumberPreText = true;
-                                        }
-                                        else
-                                        {
-                                            sb.AppendLine($"        _{enumName},");
-                                            preText = "\"_\"+";
-                                            isStringPreText = true;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (int.TryParse(enumVal[0].ToString(), out var enumValNumber))
-                                        {
-                                            sb.AppendLine($"        {enumName} = {enumVal},");
-                                            isNumber = true;
-                                        }
-                                        else
-                                        {
-                                            sb.AppendLine($"        {enumName},");
-                                            isString = true;
-                                        }
-                                    }
-                                }
+                            if (enumMapping.TryGetValue(enumValue.ToString(), out string enumName))
+                            {
+                                // 매핑이 있는 경우 숫자 타입으로 가정
+                                sb.AppendLine($"        {enumName} = {enumValue},");
+                                invalidEnumMapping[enumValue.ToString()] = enumName;
                             }
                             else
                             {
-                                if (int.TryParse(enumVal[0].ToString(), out var number))
-                                {
-                                    sb.AppendLine($"        _{enumVal},");
-                                    preText = "\"_\"+";
-                                    isStringPreText = true;
-                                }
-                                else
-                                {
-                                    sb.AppendLine($"        {enumVal},");
-                                    isString = true;
-                                }
+                                // 매핑이 없는 경우 일반적으로 처리
+                                sb.AppendLine($"        {enumVal},");
                             }
+                        }
+
+                        if(invalidEnumMapping.Count > 0)
+                        {
+                            inValidEnumTypeList.Add(schema.Key);
                         }
 
                         sb.AppendLine("    }");
@@ -667,6 +624,15 @@ namespace Nekoyume
 
                         sb.AppendLine($"    public class {schema.Key}TypeConverter : JsonConverter<{schema.Key}>");
                         sb.AppendLine("    {");
+                        sb.AppendLine("        public static readonly Dictionary<string, string> InvalidEnumMapping = new Dictionary<string, string>");
+                        sb.AppendLine("        {");
+                        foreach (var kvp in invalidEnumMapping)
+                        {
+                            sb.AppendLine($"            {{ \"{kvp.Key}\", \"{kvp.Value}\" }},");
+                        }
+                        sb.AppendLine("        };");
+                        //todo : 성능개선 필요시 역방향 매핑 추가
+
                         sb.AppendLine("        public override " + schema.Key + " Read(");
                         sb.AppendLine("            ref Utf8JsonReader reader,");
                         sb.AppendLine("            Type typeToConvert,");
@@ -675,7 +641,7 @@ namespace Nekoyume
                         sb.AppendLine("            return reader.TokenType switch");
                         sb.AppendLine("            {");
                         sb.AppendLine("                JsonTokenType.Number => (" + schema.Key + ")reader.GetInt32(),");
-                        sb.AppendLine("                JsonTokenType.String => Enum.Parse<" + schema.Key + ">(" + preText + "reader.GetString()),");
+                        sb.AppendLine("                JsonTokenType.String => Enum.Parse<" + schema.Key + ">(InvalidEnumMapping.TryGetValue(reader.GetString(), out var validName) ? validName : reader.GetString()),");
                         sb.AppendLine("                _ => throw new JsonException(");
                         sb.AppendLine("                    $\"Expected token type to be {string.Join(\" or \", new[] { JsonTokenType.Number, JsonTokenType.String })} but got {reader.TokenType}\")");
                         sb.AppendLine("            };");
@@ -686,23 +652,35 @@ namespace Nekoyume
                         sb.AppendLine($"            {schema.Key} value,");
                         sb.AppendLine("            JsonSerializerOptions options)");
                         sb.AppendLine("        {");
-                        if (isStringPreText)
+                        if(enumType == "string")
                         {
-                            sb.AppendLine("            writer.WriteStringValue(value.ToString().Substring(1));");
+                            sb.AppendLine("            var enumString = value.ToString();");
+                            sb.AppendLine("            if (InvalidEnumMapping.ContainsValue(enumString))");
+                            sb.AppendLine("            {");
+                            sb.AppendLine("                enumString = InvalidEnumMapping.First(kvp => kvp.Value == enumString).Key;");
+                            sb.AppendLine("            }");
+                            sb.AppendLine("            writer.WriteStringValue(enumString);");
                         }
-                        else if (isString)
-                        {
-                            sb.AppendLine("            writer.WriteStringValue(value.ToString());");
-                        }
-                        else if (isNumber)
-                        {
-                            sb.AppendLine("            writer.WriteNumberValue((int)value);");
-                        }
-                        else if (isNumberPreText)
+                        else if (enumType == "integer")
                         {
                             sb.AppendLine("            writer.WriteNumberValue((int)value);");
                         }
-
+                        else
+                        {
+                            sb.AppendLine("            var enumString = value.ToString();");
+                            sb.AppendLine("            if (InvalidEnumMapping.ContainsValue(enumString))");
+                            sb.AppendLine("            {");
+                            sb.AppendLine("                enumString = InvalidEnumMapping.First(kvp => kvp.Value == enumString).Key;");
+                            sb.AppendLine("            }");
+                            sb.AppendLine("            if (int.TryParse(enumString, out var intValue))");
+                            sb.AppendLine("            {");
+                            sb.AppendLine("                writer.WriteNumberValue(intValue);");
+                            sb.AppendLine("            }");
+                            sb.AppendLine("            else");
+                            sb.AppendLine("            {");
+                            sb.AppendLine("                writer.WriteStringValue(enumString);");
+                            sb.AppendLine("            }");
+                        }
                         sb.AppendLine("        }");
                         sb.AppendLine("    }");
                         sb.AppendLine();
@@ -779,10 +757,12 @@ namespace Nekoyume
 
         private static void AppendWebRequestsFromPaths(StringBuilder sb, JsonNode pathsNode)
         {
+            Dictionary<string, int> methodNameCounter = new Dictionary<string, int>();
+
             foreach (var pathItem in pathsNode as JsonObject)
             {
                 var path = pathItem.Key;
-                if (!path.Contains("api"))
+                if (path.Contains("."))
                 {
                     continue;
                 }
@@ -805,12 +785,14 @@ namespace Nekoyume
                             var queryParameters = new List<string>();
                             var headerParameters = new List<string>();
 
+                            var parameterTypeDict = new Dictionary<string, string>();
                             foreach (var parameter in parameters as JsonArray)
                             {
                                 var parameterName = parameter["name"].ToString();
                                 var parameterType = ConvertToCSharpType(parameter["schema"]);
-                                parameterDefinitions.Append($"{parameterType} {parameterName}, ");
+                                parameterDefinitions.Append($"{parameterType} {parameterName.Replace("-", "_")}, ");
 
+                                parameterTypeDict[parameterName] = parameterType.Replace("?", "");
                                 switch (parameter["in"].ToString())
                                 {
                                     case "query":
@@ -832,7 +814,20 @@ namespace Nekoyume
 
                             foreach (var headerName in headerParameters)
                             {
-                                parameterUsages.AppendLine($"            request.SetRequestHeader(\"{headerName}\", {headerName}.ToString());");
+                                if (parameterTypeDict.TryGetValue(headerName, out string type) && inValidEnumTypeList.Contains(type))
+                                {
+                                    var headerKey = MakeValidEnumName(headerName);
+                                    parameterUsages.AppendLine($"            string headerValue = {headerKey}.ToString();");
+                                    parameterUsages.AppendLine($"            if ({type}TypeConverter.InvalidEnumMapping.ContainsValue(headerValue))");
+                                    parameterUsages.AppendLine($"            {{");
+                                    parameterUsages.AppendLine($"                headerValue = {type}TypeConverter.InvalidEnumMapping.First(kvp => kvp.Value == headerValue).Key;");
+                                    parameterUsages.AppendLine($"            }}");
+                                    parameterUsages.AppendLine($"            request.SetRequestHeader(\"{headerName}\", headerValue);");
+                                }
+                                else
+                                {
+                                    parameterUsages.AppendLine($"            request.SetRequestHeader(\"{headerName}\", {MakeValidEnumName(headerName)}.ToString());");
+                                }
                             }
                         }
 
@@ -889,9 +884,22 @@ namespace Nekoyume
                             }
                         }
 
+                        // 중복 체크를 위해 key 생성
+                        string key = $"{methodName}-{parameterDefinitions}-{returnType}";
+
+                        if (methodNameCounter.ContainsKey(key))
+                        {
+                            methodNameCounter[key]++;
+                            methodName += methodNameCounter[key].ToString(); // 중복될 경우 숫자 추가
+                        }
+                        else
+                        {
+                            methodNameCounter[key] = 1; // 처음 발견된 경우
+                        }
+
                         sb.AppendLine($"    public async Task {methodName}({parameterDefinitions}Action<{returnType}> onSuccess, Action<string> onError)");
                         sb.AppendLine("    {");
-                        sb.AppendLine($"        string url = Url + \"{path}\";");
+                        sb.AppendLine($"        string url = $\"{{Url}}{path}\";");
                         sb.AppendLine($"        using (var request = new UnityWebRequest(url, \"{httpMethod}\"))");
                         sb.AppendLine("        {");
                         sb.Append(parameterUsages);
@@ -949,8 +957,12 @@ namespace Nekoyume
                     sb.Append(char.ToUpper(segment[0]) + segment.Substring(1));
                 }
             }
+            string result = sb.ToString().Replace("-", "").Replace("Api", string.Empty) + "Async";
 
-            return sb.ToString().Replace("-", "").Replace("Api", string.Empty) + "Async";
+            //{} 포함된 문자열 제거
+            result = Regex.Replace(result, @"\{.*?\}", string.Empty);
+
+            return result;
         }
 
         private static void RefreshGeneratedInfo()
@@ -981,6 +993,57 @@ namespace Nekoyume
                     }
                 }
             }
+        }
+
+        // Helper method to check if an enum value name is valid
+        // enum 값 이름이 유효한지 확인하는 헬퍼 메소드
+        private static bool IsValidEnumName(string name)
+        {
+            // enum 이름은 문자 또는 밑줄로 시작하고 문자, 숫자, 밑줄만 포함해야 함
+            var regex = new Regex(@"^[a-zA-Z_][a-zA-Z0-9_]*$");
+            return regex.IsMatch(name);
+        }
+
+        // Helper method to check if a name is a C# reserved keyword
+        // 이름이 C# 예약어인지 확인하는 헬퍼 메소드
+        private static bool IsCSharpKeyword(string name)
+        {
+            // C# 예약어 목록
+            var keywords = new HashSet<string>
+            {
+                "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
+                "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
+                "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for",
+                "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock",
+                "long", "namespace", "new", "null", "object", "operator", "out", "override", "params",
+                "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short",
+                "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true",
+                "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "virtual",
+                "void", "volatile", "while"
+            };
+            return keywords.Contains(name);
+        }
+
+        // Helper method to make a string a valid enum name
+        // 문자열을 유효한 enum 이름으로 만드는 헬퍼 메소드
+        private static string MakeValidEnumName(string name)
+        {
+            // 점과 같은 유효하지 않은 문자를 밑줄로 대체
+            var validName = Regex.Replace(name, @"[^a-zA-Z0-9_]+", "_");
+
+            // 이름이 숫자로 시작하면 밑줄을 추가
+            if (char.IsDigit(validName[0]))
+            {
+                validName = "_" + validName;
+            }
+
+            // 이름이 C# 예약어이면 밑줄을 추가
+            if (IsCSharpKeyword(validName))
+            {
+                validName = "_" + validName;
+            }
+
+            return validName;
         }
     }
 }
