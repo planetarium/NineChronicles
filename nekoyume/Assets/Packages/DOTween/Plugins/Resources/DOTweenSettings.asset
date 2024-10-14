@@ -34,7 +34,7 @@ MonoBehaviour:
   debugMode: 0
   debugStoreTargetId: 0
   showPreviewPanel: 1
-  storeSettingsLocation: 0
+  storeSettingsLocation: 1
   modules:
     showPanel: 0
     audioEnabled: 1
@@ -46,5 +46,5 @@ MonoBehaviour:
     tk2DEnabled: 0
     deAudioEnabled: 0
     deUnityExtendedEnabled: 0
-  showPlayingTweens: 0
+  showPlayingTweens: 1
   showPausedTweens: 0
