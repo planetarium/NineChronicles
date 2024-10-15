@@ -1182,11 +1182,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = renderArgs.Evaluation.Action.slotIndex;
-            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = slot.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
@@ -1300,7 +1300,7 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
@@ -1357,7 +1357,7 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
@@ -1520,11 +1520,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                renderArgs.CombinationSlotState.UnlockBlockIndex,
+                renderArgs.CombinationSlotState.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = renderArgs.Evaluation.Action.slotIndex;
-            var blockCount = renderArgs.CombinationSlotState.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = renderArgs.CombinationSlotState.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
@@ -4410,11 +4410,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.CustomCraft,
                 message,
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = evaluation.Action.CraftList.FirstOrDefault().SlotIndex;
-            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = slot.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
