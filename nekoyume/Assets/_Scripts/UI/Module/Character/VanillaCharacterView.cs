@@ -1,6 +1,7 @@
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
+using Nekoyume.TestScene;
 using UnityEngine;
 using UnityEngine.UI;
 using Player = Nekoyume.Game.Character.Player;
@@ -47,7 +48,10 @@ namespace Nekoyume.UI.Module
 
         public virtual void SetByFullCostumeOrArmorId(int armorOrFullCostumeId)
         {
-            var image = SpriteHelper.GetItemIcon(armorOrFullCostumeId);
+            var image = SpineCharacterViewer.IsFullCostume(armorOrFullCostumeId.ToString()) ? 
+                SpriteHelper.GetItemIcon(armorOrFullCostumeId) : 
+                SpriteHelper.GetProfileIcon(armorOrFullCostumeId);
+            
             if (image is null)
             {
                 throw new FailedToLoadResourceException<Sprite>(armorOrFullCostumeId.ToString());

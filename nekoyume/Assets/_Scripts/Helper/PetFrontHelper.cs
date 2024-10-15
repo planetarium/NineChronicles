@@ -118,12 +118,12 @@ namespace Nekoyume.Helper
                         optionInfo.OptionType == PetOptionType.ReduceRequiredBlockByFixedValue;
                     var requiredMin = PetHelper.CalculateReducedBlockOnCraft(
                         craftInfo.RequiredBlockMin,
-                        gameConfigState.RequiredAppraiseBlock,
+                        0,
                         petState,
                         TableSheets.Instance.PetOptionSheet);
                     var requiredMax = PetHelper.CalculateReducedBlockOnCraft(
                         craftInfo.RequiredBlockMax,
-                        gameConfigState.RequiredAppraiseBlock,
+                        0,
                         petState,
                         TableSheets.Instance.PetOptionSheet);
                     if (requiredMax == craftInfo.RequiredBlockMax)

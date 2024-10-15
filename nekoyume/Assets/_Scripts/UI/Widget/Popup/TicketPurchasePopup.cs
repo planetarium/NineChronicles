@@ -121,7 +121,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Find<PaymentPopup>().ShowAttract(
+                    Find<PaymentPopup>().ShowLackPaymentLegacy(
                         CostType.NCG,
                         cost.GetQuantityString(),
                         L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO"),

@@ -32,7 +32,7 @@ namespace Tests.EditMode
 #pragma warning restore CS0618
             var gold = new FungibleAssetValue(currency, 0, 0);
             _goldBalanceState = new GoldBalanceState(_agentState.address, gold);
-            _avatarState = new AvatarState(
+            _avatarState = AvatarState.Create(
                 new Address(),
                 _agentState.address,
                 0,

@@ -21,8 +21,6 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
-using UnityEngine;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Blockchain
 {
@@ -174,20 +172,6 @@ namespace Nekoyume.Blockchain
                 if (quest == null)
                 {
                     continue;
-                }
-
-                var rewardMap = quest.Reward.ItemMap;
-
-                foreach (var reward in rewardMap)
-                {
-                    var materialRow = TableSheets.Instance
-                        .MaterialItemSheet
-                        .First(pair => pair.Key == reward.Item1);
-
-                    LocalLayerModifier.RemoveItem(
-                        avatarAddress,
-                        materialRow.Value.ItemId,
-                        reward.Item2);
                 }
 
                 LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
@@ -416,17 +400,12 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            if (Game.Game.instance.CachedStates.ContainsKey(accountAddress.Derive(state.address.ToByteArray())))
+            if (!Game.Game.instance.CachedStates.ContainsKey(accountAddress.Derive(state.address.ToByteArray())))
             {
-                try
-                {
-                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
-                }
-                catch (NotSupportedException)
-                {
-                    Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.SerializeList();
-                }
+                return;
             }
+
+            Game.Game.instance.CachedStates[accountAddress.Derive(state.address.ToByteArray())] = state.Serialize();
         }
 
         protected static void UpdateCurrentAvatarItemSlotState<T>(

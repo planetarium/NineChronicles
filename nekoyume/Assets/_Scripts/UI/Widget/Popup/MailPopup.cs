@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Market;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -133,6 +134,7 @@ namespace Nekoyume.UI
                     case ProductCancelMail:
                     case UnloadFromMyGaragesRecipientMail:
                     case ClaimItemsMail:
+                    case CustomCraftMail:
                         LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id);
                         break;
                     case ItemEnhanceMail:
@@ -148,7 +150,7 @@ namespace Nekoyume.UI
             loading.SetActive(false);
             ChangeState(0);
             UpdateTabs();
-            Find<MailRewardScreen>().Show(mailRewards);
+            Find<MailRewardScreen>().Show(mailRewards, "UI_ALL_RECEIVED");
         }
 
         private static async Task AddRewards(Mail mail, List<MailReward> mailRewards)
@@ -156,26 +158,22 @@ namespace Nekoyume.UI
             switch (mail)
             {
                 case ProductBuyerMail productBuyerMail:
-                    var productId = productBuyerMail.ProductId;
-                    var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productId);
-                    if (itemProduct is not null)
+                    if (productBuyerMail.Product is ItemProduct itemProduct)
                     {
                         var item = States.Instance.CurrentAvatarState.inventory.Items
                             .FirstOrDefault(i => i.item is ITradableItem item &&
-                                item.TradableId.Equals(itemProduct.TradableId));
+                                item.TradableId.Equals(itemProduct.TradableItem.TradableId));
                         if (item?.item is null)
                         {
                             return;
                         }
 
-                        mailRewards.Add(new MailReward(item.item, (int)itemProduct.Quantity, true));
+                        mailRewards.Add(new MailReward(item.item, itemProduct.ItemCount, true));
                     }
 
-                    if (favProduct is not null)
+                    if (productBuyerMail.Product is FavProduct favProduct)
                     {
-                        var currency = Currency.Legacy(favProduct.Ticker, 0, null);
-                        var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
-                        mailRewards.Add(new MailReward(fav, (int)favProduct.Quantity, true));
+                        mailRewards.Add(new MailReward(favProduct.Asset, (int)favProduct.Asset.MajorUnit, true));
                     }
 
                     break;
@@ -340,6 +338,14 @@ namespace Nekoyume.UI
 
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
                     break;
+                case CustomCraftMail customCraftMail:
+                    var equipment = customCraftMail.Equipment;
+                    if (equipment is not null)
+                    {
+                        mailRewards.Add(new MailReward(equipment, 1));
+                    }
+
+                    break;
             }
         }
 
@@ -451,7 +457,8 @@ namespace Nekoyume.UI
                     CombinationMail or
                     ItemEnhanceMail or
                     UnloadFromMyGaragesRecipientMail or
-                    ClaimItemsMail;
+                    ClaimItemsMail or
+                    CustomCraftMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -498,11 +505,11 @@ namespace Nekoyume.UI
                         resultModel.subRecipeId.Value,
                         out var row))
                 {
-                    Find<CombinationResultPopup>().Show(itemUsable, row.Options.Count);
+                    Find<CombinationResultScreen>().Show(itemUsable, row.Options.Count);
                 }
                 else
                 {
-                    Find<CombinationResultPopup>().Show(itemUsable);
+                    Find<CombinationResultScreen>().Show(itemUsable);
                 }
             }
         }
@@ -555,17 +562,15 @@ namespace Nekoyume.UI
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
-        public async void Read(ProductBuyerMail productBuyerMail)
+        public void Read(ProductBuyerMail productBuyerMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var productId = productBuyerMail.ProductId;
-            var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productId);
-            if (itemProduct is not null)
+            if (productBuyerMail.Product is ItemProduct itemProduct)
             {
-                var count = (int)itemProduct.Quantity;
+                var count = itemProduct.ItemCount;
                 var item = States.Instance.CurrentAvatarState.inventory.Items
                     .FirstOrDefault(i => i.item is ITradableItem item &&
-                        item.TradableId.Equals(itemProduct.TradableId));
+                        item.TradableId.Equals(itemProduct.TradableItem.TradableId));
                 if (item is null || item.item is null)
                 {
                     return;
@@ -584,12 +589,13 @@ namespace Nekoyume.UI
                     ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                 }).AddTo(gameObject);
                 Find<BuyItemInformationPopup>().Pop(model);
+                return;
             }
 
-            if (favProduct is not null)
+            if (productBuyerMail.Product is FavProduct favProduct)
             {
-                var currency = Currency.Legacy(favProduct.Ticker, 0, null);
-                var fav = new FungibleAssetValue(currency, (int)favProduct.Quantity, 0);
+                var currency = Currency.Legacy(favProduct.Asset.Currency.Ticker, 0, null);
+                var fav = new FungibleAssetValue(currency, (int)favProduct.Asset.MajorUnit, 0);
                 Find<BuyFungibleAssetInformationPopup>().Show(
                     fav,
                     () =>
@@ -598,17 +604,19 @@ namespace Nekoyume.UI
                         LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id);
                         ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
                     });
+                return;
             }
+
+            productBuyerMail.New = false;
+            LocalLayerModifier.RemoveNewMail(avatarAddress, productBuyerMail.id);
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
         }
 
-        public async void Read(ProductSellerMail productSellerMail)
+        public void Read(ProductSellerMail productSellerMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var agentAddress = States.Instance.AgentState.address;
-            var (_, itemProduct, favProduct) = await ApiClients.Instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
-            var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            var price = itemProduct?.Price ?? favProduct.Price;
-            var fav = new FungibleAssetValue(currency, (int)price, 0);
+            var fav = productSellerMail.Product.Price;
             var taxedPrice = fav.DivRem(100, out _) * Buy.TaxRate;
             LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
             productSellerMail.New = false;
@@ -684,7 +692,7 @@ namespace Nekoyume.UI
             }).ToObservable().SubscribeOnMainThread().Subscribe(_ => { NcDebug.Log("ItemEnhanceMail LocalLayer task completed"); });
             // ~LocalLayer
 
-            Find<EnhancementResultPopup>().Show(itemEnhanceMail);
+            Find<EnhancementResultScreen>().Show(itemEnhanceMail);
         }
 
         public void Read(DailyRewardMail dailyRewardMail)
@@ -743,15 +751,10 @@ namespace Nekoyume.UI
                 var iapProductFindComplete = false;
                 if (unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
                 {
-#if UNITY_IOS
-                    Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
-#else
-                    var gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
-#endif
-                    var gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
-                    if (gSkuMatch.Success)
+                    var sku = MailExtensions.GetSkuFromMemo(unloadFromMyGaragesRecipientMail.Memo);
+                    if (!string.IsNullOrEmpty(sku))
                     {
-                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == gSkuMatch.Groups[1].Value);
+                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.CheckSku(sku));
                         if (findKey.Value != null)
                         {
                             iapProductFindComplete = true;
@@ -940,6 +943,23 @@ namespace Nekoyume.UI
             NcDebug.Log($"[{nameof(AdventureBossRaffleWinnerMail)}] ItemCount: {adventureBossRaffleWinnerMail.id}, Season: {adventureBossRaffleWinnerMail.Season}, ");
             adventureBossRaffleWinnerMail.New = false;
             ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
+        }
+
+        public void Read(CustomCraftMail customCraftMail)
+        {
+            var itemUsable = customCraftMail?.Equipment;
+            if (itemUsable is null)
+            {
+                NcDebug.LogError("CombinationMail.itemUsable is null");
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            LocalLayerModifier.RemoveNewMail(avatarAddress, customCraftMail.id);
+            customCraftMail.New = false;
+            NcDebug.Log("CombinationMail LocalLayer task completed");
+            ReactiveAvatarState.UpdateMailBox(States.Instance.CurrentAvatarState.mailBox);
+            Find<CustomCraftResultScreen>().Show(itemUsable);
         }
 
         [Obsolete]

@@ -97,6 +97,12 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<int> _attackCount = new();
         private readonly ReactiveProperty<bool> _sweepRewind = new(true);
 
+        protected override void Awake()
+        {
+            base.Awake();
+            CloseWidget = null;
+        } 
+
         private void Start()
         {
             _attackCount.Subscribe(UpdatePlayCount).AddTo(gameObject);
@@ -113,6 +119,11 @@ namespace Nekoyume.UI
                 Find<WorldMap>().Close();
                 Game.Event.OnRoomEnter.Invoke(true);
             }).AddTo(gameObject);
+        }
+
+        private void PlayDirector()
+        {
+            playableDirector.Play();
         }
 
         public void Show(StageSheet.Row stageRow, int worldId,
@@ -139,7 +150,7 @@ namespace Nekoyume.UI
 
             _attackCount.SetValueAndForceNotify(0);
             _sweepRewind.SetValueAndForceNotify(true);
-            playableDirector.Play();
+            PlayDirector();
 
             RefreshSeasonPassCourageAmount(apPlayCount + apStonePlayCount);
         }

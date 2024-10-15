@@ -83,7 +83,7 @@ namespace Nekoyume.UI
                     var tableSheets = Game.instance.TableSheets;
                     var mailRewards = new List<MailReward>();
 
-                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null)
+                    if (lastClaimableReward.NcgReward != null && lastClaimableReward.NcgReward.Value != null && lastClaimableReward.NcgReward.HasValue && !lastClaimableReward.NcgReward.Value.RawValue.IsZero)
                     {
                         mailRewards.Add(new MailReward(lastClaimableReward.NcgReward.Value, (int)lastClaimableReward.NcgReward.Value.MajorUnit));
                     }
@@ -93,18 +93,17 @@ namespace Nekoyume.UI
                         var itemRow = TableSheets.Instance.ItemSheet[itemReward.Key];
                         if (itemRow is MaterialItemSheet.Row materialRow)
                         {
-                            var item = ItemFactory.CreateMaterial(materialRow);
-                            mailRewards.Add(new MailReward(item, itemReward.Value));
+                            var material = materialRow.ItemSubType is ItemSubType.Circle
+                                ? ItemFactory.CreateTradableMaterial(materialRow)
+                                : ItemFactory.CreateMaterial(materialRow);
+                            mailRewards.Add(new MailReward(material, itemReward.Value));
                         }
                         else
                         {
                             for (var i = 0; i < itemReward.Value; i++)
                             {
-                                if (itemRow.ItemSubType != ItemSubType.Aura)
-                                {
-                                    var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                                    mailRewards.Add(new MailReward(item, 1));
-                                }
+                                var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                                mailRewards.Add(new MailReward(item, 1));
                             }
                         }
                     }

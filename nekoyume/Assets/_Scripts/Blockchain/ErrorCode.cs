@@ -304,6 +304,13 @@ namespace Nekoyume.Blockchain
                 case TicketPurchaseLimitExceedException _:
                     code = "66";
                     break;
+
+#region Client Error
+                case WorldBossStateNotFoundException _:
+                    code = "1067";
+                    errorMsg = exc.Message;
+                    break;
+#endregion Client Error
             }
 
             Analyzer.Instance.Track(

@@ -74,9 +74,11 @@ namespace Nekoyume.UI.Module
             iconImage.SetNativeSize();
         }
 
-        public void SetData(MaterialItemSheet.Row itemRow, System.Action onClick = null)
+        public void SetData(MaterialItemSheet.Row materialRow, System.Action onClick = null)
         {
-            var material = new Nekoyume.Model.Item.Material(itemRow);
+            var material = materialRow.ItemSubType is ItemSubType.Circle
+                ? ItemFactory.CreateTradableMaterial(materialRow)
+                : ItemFactory.CreateMaterial(materialRow);
             SetData(material, onClick);
         }
 
@@ -114,26 +116,9 @@ namespace Nekoyume.UI.Module
             iconImage.SetNativeSize();
         }
 
-        public void SetData(EquipmentItemSheet.Row itemRow, System.Action onClick = null)
-        {
-            var data = itemViewData.GetItemViewData(itemRow.Grade);
-            gradeImage.overrideSprite = data.GradeBackground;
-
-            gradeHsv.range = data.GradeHsvRange;
-            gradeHsv.hue = data.GradeHsvHue;
-            gradeHsv.saturation = data.GradeHsvSaturation;
-            gradeHsv.value = data.GradeHsvValue;
-
-            iconImage.enabled = true;
-            iconImage.overrideSprite = SpriteHelper.GetItemIcon(itemRow.Id);
-            iconImage.SetNativeSize();
-        }
-
         protected ItemViewData GetItemViewData(ItemBase itemBase)
         {
-            // if itemBase is TradableMaterial, upgrade view data.
-            var upgrade = itemBase is TradableMaterial ? 1 : 0;
-            return itemViewData.GetItemViewData(itemBase.Grade + upgrade);
+            return itemViewData.GetItemViewData(itemBase);
         }
 
         public virtual void Clear()

@@ -406,13 +406,13 @@ namespace Nekoyume.Game.Battle
             BattleRenderer.Instance.IsOnBattle = true;
 
             yield return StartCoroutine(CoStageEnter(log));
-
-
+            
+            var eventCount = log.events.Count;
             if (StageType == StageType.AdventureBoss)
             {
                 SetSpeed(AcceleratedAnimationTimeScaleWeight);
                 var isBreakThroughStarted = false;
-                for (var i = 0; i < log.events.Count; i++)
+                for (var i = 0; i < eventCount; i++)
                 {
                     var e = log.events[i];
                     if (!isBreakThroughStarted && e is Breakthrough)
@@ -427,15 +427,16 @@ namespace Nekoyume.Game.Battle
                         yield return StartCoroutine(CoBreakThroughEnd());
                     }
 
-                    e.LogEvent();
+                    e.LogEvent(i + 1, eventCount);
                     yield return StartCoroutine(e.CoExecute(this));
                 }
             }
             else
             {
-                foreach (var e in log)
+                for (var i = 0; i < eventCount; i++)
                 {
-                    e.LogEvent();
+                    var e = log.events[i];
+                    e.LogEvent(i + 1, eventCount);
                     yield return StartCoroutine(e.CoExecute(this));
                 }
             }
@@ -493,9 +494,20 @@ namespace Nekoyume.Game.Battle
             NcDebug.Log($"[{nameof(Stage)}] {nameof(CoGuidedQuest)}() enter. stageIdToClear: {stageIdToClear}");
 #endif
             var done = false;
+            var startTime = Time.unscaledTime;
             var battle = Widget.Find<UI.Battle>();
             battle.ClearStage(stageIdToClear, cleared => done = true);
-            yield return new WaitUntil(() => done);
+            yield return new WaitUntil(() =>
+            {
+                // NOTE: 5초 이상 걸리면 타임아웃 처리
+                // ClearStage onComplete 콜백체인에서 원인을 찾기 어려운 문제가 발생할수 있어 추가
+                if (Time.unscaledTime >= startTime + 5f)
+                {
+                    NcDebug.LogError("CoGuidedQuest() timeout.");
+                    return true;
+                }
+                return done;
+            });
         }
 
         private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
@@ -1655,6 +1667,11 @@ namespace Nekoyume.Game.Battle
             if (stageId == LiveAsset.GameConfig.RequiredStage.WorldBoss)
             {
                 menuNames.Add("UI_WORLD_BOSS");
+            }
+
+            if (stageId == LiveAsset.GameConfig.RequiredStage.CustomCraft)
+            {
+                // Todo : Add CustomCraft
             }
 
             var celebratesPopup = Widget.Find<CelebratesPopup>();

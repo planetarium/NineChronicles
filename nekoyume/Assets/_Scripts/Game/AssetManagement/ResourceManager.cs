@@ -57,22 +57,6 @@ namespace Nekoyume
 
             return null;
         }
-        
-        public T[]? LoadAll<T>(string label) where T : Object
-        {
-            var resources = Resources.LoadAll<T>($"VFX/{label}");
-            if (resources == null || resources.Length == 0)
-            {
-                return null;
-            }
-
-            foreach (var resource in resources)
-            {
-                _resources.Add(resource.name, resource);
-            }
-
-            return resources;
-        }
 
         public GameObject? Instantiate(string key, Transform? parent = null)
         {

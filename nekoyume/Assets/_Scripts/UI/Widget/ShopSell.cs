@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -28,6 +29,8 @@ namespace Nekoyume.UI
 
     public class ShopSell : Widget
     {
+        private const int APCost = 5;
+        
         [SerializeField]
         private Inventory inventory;
 
@@ -64,8 +67,9 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_SHOP_UPDATESELLALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    CostType.ActionPoint, 5,
-                    state => SubscribeConditionalButtonForChargeAp(state, "UI_SHOP_UPDATESELLALL",
+                    CostType.ActionPoint, APCost,
+                    state => SubscribeConditionalButtonForChargeAp(state, 
+                        "UI_SHOP_UPDATESELLALL",
                         SubscribeReRegisterProduct));
             });
             cancelRegistrationButton.onClick.AddListener(() =>
@@ -74,8 +78,9 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_SHOP_CANCELLATIONALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
-                    CostType.ActionPoint, 5,
-                    state => SubscribeConditionalButtonForChargeAp(state, "UI_SHOP_CANCELLATIONALL",
+                    CostType.ActionPoint, APCost,
+                    state => SubscribeConditionalButtonForChargeAp(state, 
+                        "UI_SHOP_CANCELLATIONALL", 
                         SubscribeCancelProductRegistration));
             });
 
@@ -114,7 +119,8 @@ namespace Nekoyume.UI
                 .Subscribe(tuple =>
                 {
                     var (state, data) = tuple;
-                    SubscribeConditionalButtonForChargeAp(state, "UI_SELL", chargeAp =>
+                    SubscribeConditionalButtonForChargeAp(state, "UI_SELL", 
+                        chargeAp =>
                     {
                         data.ChargeAp.Value = chargeAp;
                         SubscribeRegisterProduct(data);
@@ -167,50 +173,47 @@ namespace Nekoyume.UI
 
         private void ShowSellTooltip(ShopItem model)
         {
-            var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
+            var inventory = States.Instance.CurrentAvatarState.inventory;
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-            var apStoneCount = inventoryItems.Where(x =>
-                    x.item.ItemSubType == ItemSubType.ApStone &&
-                    !x.Locked &&
-                    !(x.item is ITradableItem tradableItem &&
-                        tradableItem.RequiredBlockIndex > blockIndex))
-                .Sum(item => item.count);
-
+            var apStoneCount = inventory.GetUsableItemCount(CostType.ApPotion, blockIndex);
+            
             if (model.ItemBase is not null)
             {
                 var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
                 tooltip.Show(model, apStoneCount,
-                    state => SubscribeConditionalButtonForChargeAp(state, "UI_RETRIEVE",
-                        chargeAp => ShowReRegisterProductPopup(model, chargeAp), apStoneCount),
-                    state => SubscribeConditionalButtonForChargeAp(state, "UI_REREGISTER",
-                        chargeAp => ShowRetrievePopup(model, chargeAp), apStoneCount),
+                    state =>
+                    {
+                        SubscribeConditionalButtonForChargeAp(state,
+                            "UI_RETRIEVE",
+                            chargeAp => ShowReRegisterProductPopup(model, chargeAp));
+                    },
+                    state =>
+                    {
+                        SubscribeConditionalButtonForChargeAp(state, 
+                            "UI_REREGISTER",
+                            chargeAp => ShowRetrievePopup(model, chargeAp));
+                    },
                     view.ClearSelectedItem);
             }
             else
             {
                 Find<FungibleAssetTooltip>().Show(model, apStoneCount,
-                    state => SubscribeConditionalButtonForChargeAp(state, "UI_RETRIEVE",
-                        chargeAp => ShowReRegisterProductPopup(model, chargeAp), apStoneCount),
-                    state => SubscribeConditionalButtonForChargeAp(state, "UI_REREGISTER",
-                        chargeAp => ShowRetrievePopup(model, chargeAp), apStoneCount),
+                    state => SubscribeConditionalButtonForChargeAp(state, 
+                        "UI_RETRIEVE",
+                        chargeAp => ShowReRegisterProductPopup(model, chargeAp)),
+                    state => SubscribeConditionalButtonForChargeAp(state, 
+                        "UI_REREGISTER",
+                        chargeAp => ShowRetrievePopup(model, chargeAp)),
                     view.ClearSelectedItem);
             }
         }
 
         private static void SubscribeConditionalButtonForChargeAp(ConditionalButton.State state,
-            string key, Action<bool> action, int? apStoneCount = null)
+            string key, Action<bool> action)
         {
-            if (apStoneCount == null)
-            {
-                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
-                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                apStoneCount = inventoryItems.Where(x =>
-                        x.item.ItemSubType == ItemSubType.ApStone &&
-                        !x.Locked &&
-                        !(x.item is ITradableItem tradableItem &&
-                            tradableItem.RequiredBlockIndex > blockIndex))
-                    .Sum(item => item.count);
-            }
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            var apStoneCount = inventory.GetUsableItemCount(CostType.ApPotion, blockIndex);
 
             switch (state)
             {
@@ -219,23 +222,13 @@ namespace Nekoyume.UI
                     action(false);
                     break;
                 case ConditionalButton.State.Conditional:
+                    var paymentPopup = Find<PaymentPopup>();
                     if (apStoneCount <= 0)
                     {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("ERROR_ACTION_POINT"),
-                            NotificationCell.NotificationType.Alert);
+                        paymentPopup.ShowLackApPotion(1);
                         break;
                     }
-
-                    var confirm = Find<IconAndButtonSystem>();
-                    confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                        L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT",
-                            L10nManager.Localize(key), apStoneCount),
-                        L10nManager.Localize("UI_OK"),
-                        L10nManager.Localize("UI_CANCEL"),
-                        false, IconAndButtonSystem.SystemType.Information);
-                    confirm.ConfirmCallback = () => action(true);
+                    paymentPopup.ShowCheckPaymentApPotion(APCost, () => action(true));
                     break;
                 case ConditionalButton.State.Disabled:
                     break;
@@ -247,11 +240,11 @@ namespace Nekoyume.UI
 #if UNITY_ANDROID || UNITY_IOS
             Find<MobileShop>().Show();
 #else
-            ShowAsync(ignoreShowAnimation);
+            ShowAsync(ignoreShowAnimation).Forget();
 #endif
         }
 
-        private async void ShowAsync(bool ignoreShowAnimation = false)
+        public async UniTask ShowAsync(bool ignoreShowAnimation = false)
         {
             inventory.SetShop(ShowItemTooltip);
             await ReactiveShopState.RequestSellProductsAsync();
@@ -612,7 +605,7 @@ namespace Nekoyume.UI
             {
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
                 var itemBase = data.Item.Value.ItemBase.Value;
-                var type = itemBase.ItemSubType is ItemSubType.Hourglass or ItemSubType.ApStone
+                var type = itemBase.ItemType is ItemType.Material
                     ? ProductType.Fungible
                     : ProductType.NonFungible;
                 var count = data.Count.Value;
@@ -774,7 +767,7 @@ namespace Nekoyume.UI
                     Price = new FungibleAssetValue(goldCurrency, (BigInteger)newPrice, 0),
                     TradableId = itemProduct.TradableId,
                     ItemCount = (int)itemProduct.Quantity,
-                    Type = itemProduct.ItemSubType is ItemSubType.Hourglass or ItemSubType.ApStone
+                    Type = itemProduct.ItemType is ItemType.Material
                         ? ProductType.Fungible
                         : ProductType.NonFungible
                 };

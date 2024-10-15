@@ -182,10 +182,12 @@ namespace Nekoyume.UI.Scroller
             }
             else
             {
+                NcDebug.LogWarning("[GuidedQuestCell] HideAsClear");
                 showingAndHidingTweener
                     .PlayReverse()
                     .OnComplete(() =>
                     {
+                        NcDebug.LogWarning($"[GuidedQuestCell] HideAsClear OnComplete {ignoreQuestResult}");
                         if (ignoreQuestResult)
                         {
                             PostHideAsClear(onComplete);
@@ -205,6 +207,7 @@ namespace Nekoyume.UI.Scroller
 
         private void PostHideAsClear(Action<GuidedQuestCell> onComplete)
         {
+            NcDebug.LogWarning("[GuidedQuestCell] PostHideAsClear");
             Quest = null;
             gameObject.SetActive(false);
             onComplete?.Invoke(this);

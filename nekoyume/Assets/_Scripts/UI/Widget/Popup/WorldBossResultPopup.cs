@@ -1,19 +1,21 @@
 using Nekoyume.Helper;
 using Nekoyume.UI.Module.WorldBoss;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Types.Assets;
 using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class WorldBossResultPopup : PopupWidget
     {
+
         [SerializeField]
         private Transform gradeParent;
 
@@ -26,8 +28,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
+        [FormerlySerializedAs("rewardViews")]
         [SerializeField]
-        private List<RuneStoneItem> rewardViews;
+        private List<RuneStoneItem> runeRewardViews;
+
+        [SerializeField]
+        private List<SimpleCountableItemView> itemRewardViews;
 
         [SerializeField]
         private GameObject _practiceText;
@@ -40,7 +46,7 @@ namespace Nekoyume.UI
 
         private GameObject _gradeObject;
 
-        private List<FungibleAssetValue> _killRewards;
+        private WorldBossRewards _killRewards;
 
         protected override void Awake()
         {
@@ -58,8 +64,8 @@ namespace Nekoyume.UI
             int bossId,
             long score,
             bool isBest,
-            List<FungibleAssetValue> battleRewards,
-            List<FungibleAssetValue> killRewards)
+            WorldBossRewards battleRewards,
+            WorldBossRewards killRewards)
         {
             base.Show();
             AudioController.instance.PlayMusic(AudioController.MusicCode.WorldBossBattleResult);
@@ -78,24 +84,40 @@ namespace Nekoyume.UI
                 }
             }
 
-            foreach (var view in rewardViews)
+            foreach (var view in runeRewardViews)
             {
                 view.gameObject.SetActive(false);
             }
 
-            _killRewards = killRewards;
-            if (battleRewards is not null && battleRewards.Any())
+            foreach (var view in itemRewardViews)
             {
-                foreach (var reward in battleRewards)
+                view.Hide();
+            }
+
+            _killRewards = killRewards;
+            if (battleRewards.Assets is not null && battleRewards.Assets.Any())
+            {
+                foreach (var reward in battleRewards.Assets)
                 {
                     var ticker = reward.Currency.Ticker;
                     if (RuneFrontHelper.TryGetRuneData(ticker, out var data))
                     {
-                        var view = rewardViews.First(x => !x.gameObject.activeSelf);
+                        var view = runeRewardViews.First(x => !x.gameObject.activeSelf);
                         var count = MathematicsExtensions.ConvertToInt32(reward.GetQuantityString());
                         view.Set(data, count);
                         view.gameObject.SetActive(true);
                     }
+                }
+            }
+
+            if (battleRewards.Materials is not null && battleRewards.Materials.Any())
+            {
+                foreach (var reward in battleRewards.Materials)
+                {
+                    var data = new CountableItem(reward.Key, reward.Value);
+                    var view = itemRewardViews.First(x => !x.gameObject.activeSelf);
+                    view.SetData(data);
+                    view.Show();
                 }
             }
 
@@ -104,7 +126,7 @@ namespace Nekoyume.UI
 
         public void ShowAsPractice(int bossId, long score)
         {
-            foreach (var view in rewardViews)
+            foreach (var view in runeRewardViews)
             {
                 view.gameObject.SetActive(false);
             }
@@ -115,7 +137,7 @@ namespace Nekoyume.UI
             scoreText.text = score.ToString("N0");
             seasonBestObject.SetActive(false);
 
-            foreach (var view in rewardViews)
+            foreach (var view in runeRewardViews)
             {
                 view.gameObject.SetActive(false);
             }
@@ -141,8 +163,7 @@ namespace Nekoyume.UI
         {
             if (_killRewards is not null && _killRewards.Any())
             {
-                Find<WorldBossRewardScreen>().Show(_killRewards,
-                    () => { Find<WorldBoss>().ShowAsync().Forget(); });
+                Find<WorldBossRewardScreen>().Show(_killRewards, () => { Find<WorldBoss>().ShowAsync().Forget(); });
             }
             else
             {

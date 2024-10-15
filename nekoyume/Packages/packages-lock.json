@@ -45,13 +45,6 @@
       "dependencies": {},
       "hash": "72e620d169841f32bc6110ad0e12ee9eae6f1aaf"
     },
-    "com.demigiant.dotween": {
-      "version": "https://github.com/yoshida190/dotween.git#v1.2.420-upm",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "24cc3c384ab9f3ee4e58fef46398eeb5fbe9d7e7"
-    },
     "com.elringus.spriteglow": {
       "version": "https://github.com/Elringus/SpriteGlow.git#package",
       "depth": 0,
@@ -100,6 +93,13 @@
       "source": "git",
       "dependencies": {},
       "hash": "307f51a7da3588d747dd49ab3d398e26d3eb3635"
+    },
+    "com.marijnzwemmer.unity-toolbar-extender": {
+      "version": "https://github.com/marijnz/unity-toolbar-extender.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "dbd76ed996483d219c39d240f785b1790aa039ed"
     },
     "com.mixpanel.unity": {
       "version": "https://github.com/mixpanel/mixpanel-unity.git#master",
@@ -250,7 +250,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.purchasing": {
-      "version": "4.11.0",
+      "version": "4.12.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -258,7 +258,7 @@
         "com.unity.modules.unitywebrequest": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.androidjni": "1.0.0",
-        "com.unity.services.core": "1.8.2"
+        "com.unity.services.core": "1.12.5"
       },
       "url": "https://packages.unity.com"
     },
@@ -298,7 +298,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.services.core": {
-      "version": "1.12.4",
+      "version": "1.12.5",
       "depth": 1,
       "source": "registry",
       "dependencies": {

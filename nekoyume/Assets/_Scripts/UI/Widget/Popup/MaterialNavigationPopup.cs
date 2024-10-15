@@ -236,8 +236,25 @@ namespace Nekoyume.UI
                 case CostType.NCG:
                     itemId = 9999999;
                     count = States.Instance.GoldBalanceState.Gold.GetQuantityString();
-                    buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
-                    callback = null;
+                    buttonText = L10nManager.Localize("UI_SHOP");
+                    if (PaymentPopup.CanAttractShop())
+                    {
+                        callback = () =>
+                        {
+                            if (BattleRenderer.Instance.IsOnBattle)
+                            {
+                                return;
+                            }
+
+                            CloseWithOtherWidgets();      
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                            Find<ShopSell>().Show();
+                        };
+                    }
+                    else
+                    {
+                        callback = null;
+                    }
                     break;
                 case CostType.Crystal:
                     itemId = 9999998;
@@ -257,9 +274,8 @@ namespace Nekoyume.UI
                     break;
                 case CostType.Hourglass:
                     itemId = 9999997;
-                    var hourglassCount = Util.GetHourglassCount(
-                        States.Instance.CurrentAvatarState.inventory,
-                        Game.Game.instance.Agent.BlockIndex);
+                    var hourglassCount = States.Instance.CurrentAvatarState.inventory
+                        .GetUsableItemCount(costType, Game.Game.instance.Agent.BlockIndex);
                     count = hourglassCount.ToString();
                     buttonText = L10nManager.Localize("UI_COMBINATION");
                     callback = () => { Find<CombinationSlotsPopup>().Show(); };

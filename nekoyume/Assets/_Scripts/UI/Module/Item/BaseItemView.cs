@@ -2,7 +2,6 @@ using Coffee.UIEffects;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -14,7 +13,6 @@ using System;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume
@@ -130,6 +128,9 @@ namespace Nekoyume
         [SerializeField]
         private GameObject selectArrowObject;
 
+        [SerializeField]
+        private GameObject customCraftArea;
+
         public GameObject Container => container;
         public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
@@ -169,6 +170,7 @@ namespace Nekoyume
         public GameObject RuneSelectMove => runeSelectMove;
         public GameObject SelectCollectionObject => selectCollectionObject;
         public GameObject SelectArrowObject => selectArrowObject;
+        public GameObject CustomCraftArea => customCraftArea;
 
         private readonly List<IDisposable> _disposables = new();
 
@@ -185,8 +187,7 @@ namespace Nekoyume
 
         public ItemViewData GetItemViewData(ItemBase itemBase)
         {
-            var add = itemBase is TradableMaterial ? 1 : 0;
-            return itemViewData.GetItemViewData(itemBase.Grade + add);
+            return itemViewData.GetItemViewData(itemBase);
         }
 
         public ItemViewData GetItemViewData(int grade)
@@ -194,7 +195,7 @@ namespace Nekoyume
             return itemViewData.GetItemViewData(grade);
         }
 
-        protected void ClearItem()
+        public void ClearItem()
         {
             Container.SetActive(true);
             EmptyObject.SetActive(false);
@@ -213,11 +214,12 @@ namespace Nekoyume
             SelectObject.SetActive(false);
             FocusObject.SetActive(false);
             NotificationObject.SetActive(false);
-            GrindingCountObject.SetActive(false);
-            LevelLimitObject.SetActive(false);
-            RewardReceived.SetActive(false);
-            LevelLimitObject.SetActive(false);
+            GrindingCountObject.SetActiveSafe(false);
+            LevelLimitObject.SetActiveSafe(false);
+            RewardReceived.SetActiveSafe(false);
+            LevelLimitObject.SetActiveSafe(false);
             RuneNotificationObj.SetActiveSafe(false);
+            customCraftArea.SetActiveSafe(false);
         }
 
         public void ItemViewSetCurrencyData(FungibleAssetValue fav)
@@ -283,16 +285,15 @@ namespace Nekoyume
             ItemBase itemBase = null;
             if (itemRow is MaterialItemSheet.Row materialRow)
             {
-                itemBase = ItemFactory.CreateMaterial(materialRow);
+                itemBase = materialRow.ItemSubType is ItemSubType.Circle
+                    ? ItemFactory.CreateTradableMaterial(materialRow)
+                    : ItemFactory.CreateMaterial(materialRow);
             }
             else
             {
                 for (var i = 0; i < amount; i++)
                 {
-                    if (itemRow.ItemSubType != ItemSubType.Aura)
-                    {
-                        itemBase = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                    }
+                    itemBase = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
                 }
             }
 

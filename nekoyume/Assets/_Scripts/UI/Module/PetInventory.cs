@@ -1,19 +1,18 @@
 using Nekoyume.Game;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
-using Nekoyume.Model.Pet;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Pet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Subjects;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+    
     public class PetInventory : MonoBehaviour
     {
         public class PetDescriptionData
@@ -94,6 +93,7 @@ namespace Nekoyume.UI.Module
             }
 
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
+                .ObserveOnMainThread()
                 .Subscribe(state => UpdateView(state));
             gameObject.SetActive(true);
             InitScrollPosition();
@@ -116,6 +116,7 @@ namespace Nekoyume.UI.Module
             }
 
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
+                .ObserveOnMainThread()
                 .Subscribe(state => UpdateView(state, craftInfo));
             gameObject.SetActive(true);
             InitScrollPosition();
@@ -198,7 +199,7 @@ namespace Nekoyume.UI.Module
 
             if (equipped)
             {
-                var combinationState = States.Instance.GetCombinationSlotState();
+                var combinationState = States.Instance.GetUsedCombinationSlotState();
                 var equippedSlot = combinationState.FirstOrDefault(x => x.Value.PetId == petId);
                 viewData.CombinationSlotIndex =
                     equippedSlot.Equals(default(KeyValuePair<int, CombinationSlotState>)) ? int.MaxValue : equippedSlot.Key;

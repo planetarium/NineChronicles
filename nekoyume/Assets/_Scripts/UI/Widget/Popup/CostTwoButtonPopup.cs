@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.Item;
-using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -62,16 +59,9 @@ namespace Nekoyume.UI
             costButton.SetCost(costType, cost);
             if (costType == CostType.ActionPoint)
             {
-                var condition = ConditionalCostButton.CheckCostOfType(costType, cost);
-                var inventoryItems = States.Instance.CurrentAvatarState.inventory.Items;
-                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                var apStoneCount = inventoryItems.Where(x =>
-                        x.item.ItemSubType == ItemSubType.ApStone &&
-                        !x.Locked &&
-                        !(x.item is ITradableItem tradableItem &&
-                            tradableItem.RequiredBlockIndex > blockIndex))
-                    .Sum(item => item.count);
-                costButton.Interactable = condition || apStoneCount > 0;
+                var apCondition = ConditionalCostButton.CheckCostOfType(costType, cost);
+                var apPotionCondition = ConditionalCostButton.CheckCostOfType(CostType.ApPotion, 1);
+                costButton.Interactable = apCondition || apPotionCondition;
             }
 
             base.Show();

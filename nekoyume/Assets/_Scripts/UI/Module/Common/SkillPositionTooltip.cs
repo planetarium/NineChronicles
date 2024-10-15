@@ -111,6 +111,7 @@ namespace Nekoyume.UI.Module.Common
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")} : {optionInfo.SkillCooldown}";
             buffObject.SetActive(false);
             debuffObject.SetActive(false);
+            gameObject.SetActive(true);
         }
 
         private void SetSkillDescription(string key, SkillSheet.Row skillRow, long skillPowerMin, long skillPowerMax, int skillRatioMin, int skillRatioMax, int skillChance)

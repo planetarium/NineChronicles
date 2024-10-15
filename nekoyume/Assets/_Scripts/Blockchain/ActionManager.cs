@@ -27,6 +27,7 @@ using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 using Nekoyume.Action.AdventureBoss;
+using Nekoyume.Action.CustomEquipmentCraft;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -807,9 +808,9 @@ namespace Nekoyume.Blockchain
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
 
-            if (baseEquipment.ItemSubType == ItemSubType.Aura)
+            if (baseEquipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
             {
-                //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                 LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, baseEquipment.ItemId);
             }
             else
@@ -821,9 +822,9 @@ namespace Nekoyume.Blockchain
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             foreach (var materialEquip in materialEquipments)
             {
-                if (materialEquip.ItemSubType == ItemSubType.Aura)
+                if (materialEquip.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                 {
-                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                     LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, materialEquip.ItemId);
                 }
                 else
@@ -1113,45 +1114,40 @@ namespace Nekoyume.Blockchain
             CombinationSlotState state,
             int slotIndex)
         {
+            return RapidCombination(new List<CombinationSlotState> { state }, new List<int> { slotIndex });
+        }
+
+        public IObservable<ActionEvaluation<RapidCombination>> RapidCombination(
+            List<CombinationSlotState> stateList,
+            List<int> slotIndexList)
+        {
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var agentAddress = States.Instance.AgentState.address;
             var hourglassDataRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
-            var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-            int cost;
-            if (state.PetId.HasValue &&
-                States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
-            {
-                cost = PetHelper.CalculateDiscountedHourglass(
-                    diff,
-                    States.Instance.GameConfigState.HourglassPerBlock,
-                    petState,
-                    TableSheets.Instance.PetOptionSheet);
-            }
-            else
-            {
-                cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-            }
-
+            
+            var cost = CombinationSlotsPopup.GetWorkingSlotsOpenCost(stateList, currentBlockIndex);
             LocalLayerModifier.RemoveItem(avatarAddress, hourglassDataRow.ItemId, cost);
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Rapid Combination",
                 new Dictionary<string, Value>()
                 {
                     ["HourglassCount"] = cost,
-                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                    ["AgentAddress"] = States.Instance.AgentState.address.ToString()
+                    ["AvatarAddress"] = avatarAddress.ToString(),
+                    ["AgentAddress"] = agentAddress.ToString()
                 }, true);
 
             var evt = new AirbridgeEvent("RapidCombination");
             evt.SetValue(cost);
-            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
-            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            evt.AddCustomAttribute("agent-address", avatarAddress.ToString());
+            evt.AddCustomAttribute("avatar-address", agentAddress.ToString());
             AirbridgeUnity.TrackEvent(evt);
 
             var action = new RapidCombination
             {
                 avatarAddress = avatarAddress,
-                slotIndex = slotIndex
+                slotIndexList = slotIndexList
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -1226,9 +1222,9 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
             {
-                if (equipment.ItemSubType == ItemSubType.Aura)
+                if (equipment.ItemSubType is ItemSubType.Aura or ItemSubType.Grimoire)
                 {
-                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    // Because aura is a tradable item, removal or addition in local layer will fail and exceptions will be handled.
                     LocalLayerModifier.RemoveNonFungibleItem(
                         avatarAddress,
                         equipment.ItemId);
@@ -1464,8 +1460,7 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
         }
 
-        public IObservable<ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(
-            int slotIndex)
+        public IObservable<ActionEvaluation<UnlockRuneSlot>> UnlockRuneSlot(int slotIndex)
         {
             var action = new UnlockRuneSlot
             {
@@ -1481,6 +1476,23 @@ namespace Nekoyume.Blockchain
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e => { Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget(); });
+        }
+
+        public IObservable<ActionEvaluation<UnlockCombinationSlot>> UnlockCombinationSlot(int slotIndex)
+        {
+            var action = new UnlockCombinationSlot
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                SlotIndex = slotIndex
+            };
+            
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<UnlockCombinationSlot>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionEvaluation<PetEnhancement>> PetEnhancement(
@@ -1818,6 +1830,30 @@ namespace Nekoyume.Blockchain
                 {
                     // NOTE: Handle exception outside of this method.
                 });
+        }
+
+        public IObservable<ActionEvaluation<CustomEquipmentCraft>> CustomEquipmentCraft(int slotIndex, int recipeId, int iconId)
+        {
+            var action = new CustomEquipmentCraft()
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                CraftList = new List<CustomCraftData>
+                {
+                    new()
+                    {
+                        IconId = iconId,
+                        RecipeId = recipeId,
+                        SlotIndex = slotIndex
+                    }
+                }
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<CustomEquipmentCraft>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(null, e));
         }
 
 #if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS

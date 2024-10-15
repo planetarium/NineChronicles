@@ -269,6 +269,79 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
         }
 
+        /// <summary>
+        /// Tx정보만 남아 있는 경우 구매처리
+        /// </summary>
+        /// <param name="receipt"></param>
+        /// <param name="transactionId"></param>
+        /// <param name="appleOriginalTransactionID"></param>
+        /// <returns></returns>
+        public async Task<ReceiptDetailSchema?> PurchaseRetryAsync(
+            string receipt,
+            string transactionId,
+            string appleOriginalTransactionID)
+        {
+            if (!IsInitialized || _client is null)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+
+            var (code, error, mediaType, content) =
+                await _client.PurchaseRetryAsync(
+                    _store,
+                    receipt,
+                    transactionId,
+                    appleOriginalTransactionID);
+            if (code != HttpStatusCode.OK ||
+                !string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(
+                    $"Purchase failed: {code}, {receipt}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (mediaType != "application/json")
+            {
+                Debug.LogError(
+                    $"Unexpected media type: {code}, {receipt}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                Debug.LogError(
+                    $"Content is empty: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            try
+            {
+                var result = JsonSerializer.Deserialize<ReceiptDetailSchema>(
+                    content!,
+                    IAPServiceClient.JsonSerializerOptions)!;
+                // NOTE: Enable this code if you want to use cache.
+                // _cache.PurchaseProcessResults[result.Uuid] = result;
+                if (result.Status == ReceiptStatus.Invalid ||
+                    result.Status == ReceiptStatus.Unknown)
+                {
+                    UnregisterAndCache(result);
+                }
+                // NOTE: Enable this code if you want to use poller.
+                // else
+                // {
+                //     _poller.Register(result.Uuid);
+                // }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return null;
+            }
+        }
+
         public async Task<ReceiptDetailSchema?> PurchaseFreeAsync(
             string agentAddr,
             string avatarAddr,

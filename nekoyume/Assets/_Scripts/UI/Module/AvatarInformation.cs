@@ -301,7 +301,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 var enough = balance >= balance.Currency * cost;
-                Widget.Find<PaymentPopup>().ShowAttract(
+                Widget.Find<PaymentPopup>().ShowLackPaymentLegacy(
                     costType,
                     cost,
                     enough ? enoughContent : notEnoughContent,

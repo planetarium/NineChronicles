@@ -188,14 +188,15 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView()
         {
-            if (Model is null ||
-                Model.ItemBase.Value is null)
+            if (Model?.ItemBase.Value is not null)
             {
-                enhancementImage.SetActive(false);
-                enhancementText.enabled = false;
-                selection.SetActive(false);
-                optionTagBg.gameObject.SetActive(false);
+                return;
             }
+
+            enhancementImage.SetActive(false);
+            enhancementText.enabled = false;
+            selection.SetActive(false);
+            optionTagBg.gameObject.SetActive(false);
         }
 
         protected void SetOptionTag(ItemBase itemBase)

@@ -29,7 +29,8 @@ namespace Nekoyume.UI
         private const int CreateAvatarRewardTutorialId = 50000;
         private static string CheckPointKey => $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
-        public static readonly int[] TutorialStageArray = { 5, 7, 10, 15, 23, 35, 40, 45, 49 };
+        // 튜토리얼이 실행될 스테이지를 넣는 배열입니다. 배열 요소에 해당하는 스테이지를 클리어하고나면 실행됩니다.
+        public static readonly int[] TutorialStageArray = { 5, 7, 10, 15, 23, 35, 40, 45, 49, 301 };
 
         public bool IsPlaying => _tutorial.IsActive();
 
@@ -236,16 +237,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            if (clearedStageId == 5 && checkPoint != -5)
-            {
-                var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
-                if (summonRow is not null && SimpleCostButton.CheckCostOfType(
-                    (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount))
-                {
-                    checkPoint = 50000;
-                }
-            }
-            else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
+            if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
             {
                 if (Game.LiveAsset.GameConfig.IsKoreanBuild && clearedStageId == 7)
                 {
@@ -309,6 +301,7 @@ namespace Nekoyume.UI
                 {
                     for (var i = 0; i < count; i++)
                     {
+                        // the Aura item will appear in summon tutorial
                         if (itemRow.ItemSubType != ItemSubType.Aura)
                         {
                             var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
