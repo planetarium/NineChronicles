@@ -653,7 +653,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            var isAppraise = currentBlockIndex < state.StartBlockIndex;
+            var isAppraise = currentBlockIndex < state.WorkStartBlockIndex;
             if (isAppraise)
             {
                 return false;

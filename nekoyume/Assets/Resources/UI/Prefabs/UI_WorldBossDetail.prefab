@@ -260,7 +260,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &4048704251836741697
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -277,7 +277,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &3928987645875510738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -496,7 +497,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &2066653470408543693
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -513,7 +514,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &5660633427472057629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -662,6 +664,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &1825900264546152418
 GameObject:
   m_ObjectHideFlags: 0
@@ -932,6 +935,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &3166446181280011926
 GameObject:
   m_ObjectHideFlags: 0
@@ -1013,7 +1017,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &3150079138705905151
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1030,7 +1034,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4867046334120293994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1588,6 +1593,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &5040769717617628674
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,7 +1980,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &1211003239917870085
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1991,7 +1997,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6369819670114451385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2114,7 +2121,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &4476344237695224530
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2131,7 +2138,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8392812633777069020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2463,7 +2471,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &3896387378274553186
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2480,7 +2488,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &8968028520431180908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2765,6 +2774,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1 &7286089323494970831
 GameObject:
   m_ObjectHideFlags: 0
@@ -2873,7 +2883,7 @@ MonoBehaviour:
   m_ReverseArrangement: 0
 --- !u!95 &2579296958970712416
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2890,7 +2900,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6203559815890438712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2986,7 +2997,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &1414377131209585611
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3003,7 +3014,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &916495309156449923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3257,7 +3269,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &4483243230559832501
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3274,7 +3286,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &786335577948134944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3366,7 +3379,7 @@ MonoBehaviour:
   notification: {fileID: 5040769717617628674}
 --- !u!95 &8753570326937385314
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3383,7 +3396,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8880764445416794594
 GameObject:
   m_ObjectHideFlags: 0
@@ -3465,7 +3479,7 @@ MonoBehaviour:
   m_PixelsPerUnitMultiplier: 1
 --- !u!95 &3907498316683775493
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3482,7 +3496,8 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &208349729446664592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3748,6 +3763,7 @@ MonoBehaviour:
   onClickObsoletedToggle:
     m_PersistentCalls:
       m_Calls: []
+  colorTransitionGraphics: []
 --- !u!1001 &512609546173148544
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5775,17 +5791,17 @@ PrefabInstance:
     - target: {fileID: 5501888239018853984, guid: 7a1b75400d4e1e54d929726172de2496,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5501888239018853984, guid: 7a1b75400d4e1e54d929726172de2496,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5501888239018853984, guid: 7a1b75400d4e1e54d929726172de2496,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 160
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5530183352971180232, guid: 7a1b75400d4e1e54d929726172de2496,
         type: 3}

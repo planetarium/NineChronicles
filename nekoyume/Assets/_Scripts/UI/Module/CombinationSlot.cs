@@ -328,7 +328,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var startBlockIndex = Math.Max(_sendActionBlockIndex, _state.StartBlockIndex);
+            var startBlockIndex = Math.Max(_sendActionBlockIndex, _state.WorkStartBlockIndex);
             if (currentBlockIndex <= startBlockIndex || _isWaitingCombinationActionRender)
             {
                 return;
@@ -409,8 +409,8 @@ namespace Nekoyume.UI.Module
                         UpdateItemInformation(state.Result.itemUsable, uiState);
                         UpdateHourglass(state, currentBlockIndex);
                         UpdateRequiredBlockInformation(
-                            state.UnlockBlockIndex,
-                            state.StartBlockIndex,
+                            state.WorkCompleteBlockIndex,
+                            state.WorkStartBlockIndex,
                             currentBlockIndex);
                         UpdateNotification(state, currentBlockIndex);
                     }
@@ -471,12 +471,12 @@ namespace Nekoyume.UI.Module
         }
 
         private void UpdateRequiredBlockInformation(
-            long unlockBlockIndex,
+            long workCompleteBlockIndex,
             long startBlockIndex,
             long currentBlockIndex)
         {
-            progressBar.maxValue = Math.Max(unlockBlockIndex - startBlockIndex, 1);
-            var diff = Math.Max(unlockBlockIndex - currentBlockIndex, 1);
+            progressBar.maxValue = Math.Max(workCompleteBlockIndex - startBlockIndex, 1);
+            var diff = Math.Max(workCompleteBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
             requiredBlockIndexText.text = $"{diff}";
             requiredTimeText.text = $"({diff.BlockRangeToTimeSpanString(true)})";
@@ -526,7 +526,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateHourglass(CombinationSlotState state, long blockIndex)
         {
-            var diff = state.UnlockBlockIndex - blockIndex;
+            var diff = state.WorkCompleteBlockIndex - blockIndex;
             int cost;
             if (state.PetId.HasValue &&
                 States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
