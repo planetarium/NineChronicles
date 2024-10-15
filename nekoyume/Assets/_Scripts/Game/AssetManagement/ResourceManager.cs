@@ -12,6 +12,8 @@ namespace Nekoyume
         public static string SkillLabel => "Skills";
         public static string BuffLabel => "Buffs";
         public static string BattleLabel => "Battle";
+        public static string MusicAudioLabel => "MusicAudio";
+        public static string SfxAudioLabel => "SfxAudio";
         public static string CharacterLabel => "Character";
 
         private static class Singleton
@@ -118,11 +120,16 @@ namespace Nekoyume
             }
         }
 
+        /// <summary>
+        /// 에디터에서 "use asset database" 모드로 로드시 굉장히 느림
+        /// https://discussions.unity.com/t/addressables-extremely-slow-load-time/827561
+        /// https://discussions.unity.com/t/very-slow-asset-loading-when-using-labels/828051
+        /// </summary>
         public async UniTask LoadAllAsync<T>(string label, bool isDonDestroy = false, System.Action<string>? loadCallback = null) where T : Object
         {
             var opHandle = Addressables.LoadResourceLocationsAsync(label, typeof(T));
             await opHandle;
-
+            
             NcDebug.Log($"LoadAllAsync : {label}");
 
             foreach (var result in opHandle.Result)

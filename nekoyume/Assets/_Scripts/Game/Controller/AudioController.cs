@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Pattern;
@@ -236,9 +237,6 @@ namespace Nekoyume.Game.Controller
             Idle
         }
 
-        private const string MusicContainerPath = "Audio/Music/Prefabs";
-        private const string SfxContainerPath = "Audio/Sfx/Prefabs";
-
         private State CurrentState { get; set; }
 
         protected override bool ShouldRename => true;
@@ -318,7 +316,7 @@ namespace Nekoyume.Game.Controller
 
 #region Initialize & Validate
 
-        public void Initialize()
+        public async UniTask InitializeAsync()
         {
             AudioListener.volume = Settings.Instance.MasterVolume;
 
@@ -329,25 +327,35 @@ namespace Nekoyume.Game.Controller
             }
 
             CurrentState = State.InInitializing;
-            InitializeInternal(MusicContainerPath, typeof(MusicCode), _musicPrefabs, _musicPool);
-            InitializeInternal(SfxContainerPath, typeof(SfxCode), _sfxPrefabs, _sfxPool);
+            await InitializeInternal(ResourceManager.MusicAudioLabel, typeof(MusicCode), _musicPrefabs, _musicPool);
+            await InitializeInternal(ResourceManager.SfxAudioLabel, typeof(SfxCode), _sfxPrefabs, _sfxPool);
             CurrentState = State.Idle;
         }
 
-        private void InitializeInternal(
-            string containerPath,
+        private async UniTask InitializeInternal(
+            string label,
             Type codeType,
             IDictionary<string, AudioSource> prefabs,
             IDictionary<string, Stack<AudioInfo>> pool)
         {
-            var assets = Resources.LoadAll<GameObject>(containerPath);
+            var assets = new List<GameObject>();
+            await ResourceManager.Instance.LoadAllAsync<GameObject>(label, true, assetAddress =>
+            {
+                var prefab = ResourceManager.Instance.Load<GameObject>(assetAddress);
+                if (prefab == null)
+                {
+                    NcDebug.LogError($"Failed to load {assetAddress}");
+                    return;
+                }
+                assets.Add(prefab);
+            });
+
             foreach (var asset in assets)
             {
                 var audioSource = asset.GetComponent<AudioSource>();
                 if (!audioSource)
                 {
-                    NcDebug.LogError(
-                        $"There is no AudioSource component: {Path.Combine(containerPath, asset.name)}");
+                    NcDebug.LogError($"There is no AudioSource component: {asset.name}");
                     continue;
                 }
 
@@ -355,11 +363,10 @@ namespace Nekoyume.Game.Controller
                 Push(pool, asset.name, new AudioInfo(Instantiate(asset.name, prefabs)));
             }
 
-            Validate(containerPath, codeType, prefabs);
+            Validate(codeType, prefabs);
         }
 
         private static void Validate(
-            string containerPath,
             Type codeType,
             IDictionary<string, AudioSource> prefabs)
         {
@@ -372,7 +379,7 @@ namespace Nekoyume.Game.Controller
                     continue;
                 }
 
-                NcDebug.LogError($"There is no audio prefab: {Path.Combine(containerPath, code)}");
+                NcDebug.LogError($"There is no audio prefab: {code}");
             }
         }
 
