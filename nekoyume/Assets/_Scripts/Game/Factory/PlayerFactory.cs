@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Factory
                     tableSheets.EquipmentItemSetEffectSheet);
             }
 
-            var objectPool = Game.instance.Stage.objectPool;
+            var objectPool = Game.instance.Stage.ObjectPool;
             var player = objectPool.Get<Character.Player>();
             if (!player)
             {
@@ -65,7 +65,7 @@ namespace Nekoyume.Game.Factory
                 tableSheets.CharacterSheet,
                 tableSheets.CharacterLevelSheet,
                 tableSheets.EquipmentItemSetEffectSheet);
-            var objectPool = Game.instance.Stage.objectPool;
+            var objectPool = Game.instance.Stage.ObjectPool;
 
             var player = objectPool.Get<Character.Player>();
             if (!player)

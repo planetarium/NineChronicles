@@ -374,7 +374,7 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = Game.instance.Arena.BuffController.Get<BuffVFX>(target.gameObject, buff);
+            var effect = BattleRenderer.Instance.BuffController.Get<BuffVFX>(target.gameObject, buff);
             effect.Target = target;
             effect.Buff = buff;
 
@@ -452,7 +452,7 @@ namespace Nekoyume.Game.Character
 
             var pos = transform.position;
             yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
-            var effect = Game.instance.Arena.SkillController.GetBlowCasting(
+            var effect = BattleRenderer.Instance.SkillController.GetBlowCasting(
                 pos,
                 info.SkillCategory,
                 info.ElementalType);
@@ -467,7 +467,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Arena.SkillController.Get(pos, info.ElementalType);
+            var effect = BattleRenderer.Instance.SkillController.Get(pos, info.ElementalType);
             effect.Play();
             yield return new WaitForSeconds(Game.DefaultSkillDelay);
         }
@@ -477,7 +477,7 @@ namespace Nekoyume.Game.Character
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
             var pos = transform.position;
-            var effect = Game.instance.Arena.BuffController.Get(pos, info.Buff);
+            var effect = BattleRenderer.Instance.BuffController.Get(pos, info.Buff);
 
             if (BuffCastCoroutine.TryGetValue(info.Buff.BuffInfo.Id, out var coroutine))
             {
@@ -545,7 +545,7 @@ namespace Nekoyume.Game.Character
                 {
                     var info = skillInfos[i];
                     var target = info.Target.Id == Id ? this : _target;
-                    var effect = Game.instance.Arena.SkillController.Get<SkillBlowVFX>(target, info);
+                    var effect = BattleRenderer.Instance.SkillController.Get<SkillBlowVFX>(target, info);
                     if (effect is null)
                     {
                         continue;
@@ -587,8 +587,8 @@ namespace Nekoyume.Game.Character
                     }
 
                     var targetEffectPos = target.transform.position + BuffHelper.GetDefaultBuffPosition();
-                    var targetEffectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
-                        Game.instance.Stage.objectPool.Get("ShatterStrike_magical", true, targetEffectPos);
+                    var targetEffectObj = Game.instance.Stage.ObjectPool.Get("ShatterStrike_magical", false, targetEffectPos) ??
+                        Game.instance.Stage.ObjectPool.Get("ShatterStrike_magical", true, targetEffectPos);
                     var strikeEffect = targetEffectObj.GetComponent<VFX.VFX>();
                     if (strikeEffect is null)
                     {
@@ -602,8 +602,8 @@ namespace Nekoyume.Game.Character
             };
 
             var effectPos = transform.position + BuffHelper.GetDefaultBuffPosition();
-            var effectObj = Game.instance.Stage.objectPool.Get("ShatterStrike_casting", false, effectPos) ??
-                Game.instance.Stage.objectPool.Get("ShatterStrike_casting", true, effectPos);
+            var effectObj = Game.instance.Stage.ObjectPool.Get("ShatterStrike_casting", false, effectPos) ??
+                Game.instance.Stage.ObjectPool.Get("ShatterStrike_casting", true, effectPos);
             var castEffect = effectObj.GetComponent<VFX.VFX>();
             if (castEffect != null)
             {
@@ -636,8 +636,8 @@ namespace Nekoyume.Game.Character
                     effectPos.x += 0.3f;
                     effectPos.y = Stage.StageStartPosition + 0.32f;
 
-                    var effectObj = Game.instance.Stage.objectPool.Get($"TwinAttack_{i + 1:D2}", false, effectPos) ??
-                        Game.instance.Stage.objectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
+                    var effectObj = Game.instance.Stage.ObjectPool.Get($"TwinAttack_{i + 1:D2}", false, effectPos) ??
+                        Game.instance.Stage.ObjectPool.Get($"TwinAttack_0{i + 1}", true, effectPos);
                     var effect = effectObj.GetComponent<VFX.VFX>();
                     if (effect != null)
                     {
@@ -666,7 +666,7 @@ namespace Nekoyume.Game.Character
                 {
                     var target = info.Target.Id == Id ? this : _target;
                     var effect =
-                        Game.instance.Arena.SkillController.Get<SkillDoubleVFX>(target, info);
+                        BattleRenderer.Instance.SkillController.Get<SkillDoubleVFX>(target, info);
                     if (effect != null)
                     {
                         if (skillInfosFirst == info)
@@ -700,7 +700,7 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationCast(skillInfosFirst));
 
             var effectTarget = skillInfosFirst.Target.Id == Id ? this : _target;
-            var effect = Game.instance.Arena.SkillController.Get<SkillAreaVFX>(effectTarget,
+            var effect = BattleRenderer.Instance.SkillController.Get<SkillAreaVFX>(effectTarget,
                 skillInfosFirst);
             if (effect is null)
             {
@@ -839,8 +839,8 @@ namespace Nekoyume.Game.Character
             {
                 var effectPos = item.transform.position;
 
-                var effectObj = Game.instance.Stage.objectPool.Get("buff_dispel_success", false, effectPos) ??
-                    Game.instance.Stage.objectPool.Get("buff_dispel_success", true, effectPos);
+                var effectObj = Game.instance.Stage.ObjectPool.Get("buff_dispel_success", false, effectPos) ??
+                    Game.instance.Stage.ObjectPool.Get("buff_dispel_success", true, effectPos);
                 var dispellEffect = effectObj.GetComponent<VFX.VFX>();
                 if (dispellEffect != null)
                 {

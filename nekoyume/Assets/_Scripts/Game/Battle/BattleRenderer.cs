@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Game.VFX.Skill;
 using UnityEngine;
 
 namespace Nekoyume.Game.Battle
@@ -31,12 +32,15 @@ namespace Nekoyume.Game.Battle
 #endregion Fields
 
 #region Properties & Events
-
         // TODO: don't use public setter
         // TODO: UI코드에서 불리는 부분이 많은데, 다른 방식으로 체크 불가능?
         // BattlePreparation쪽에서도 set되고, battle쪽에서도 set되는데 중복처리 아닌지
         // 캐릭터 머리 위 UI도 체크해서 고치자
         public bool IsOnBattle { get; set; }
+
+        public SkillController SkillController { get; } = new();
+
+        public BuffController BuffController { get; } = new();
 
         /// <summary>
         /// ActionRenderHandler의 응답을 받아 렌더링할 리소르를 준비할 때 호출
@@ -63,7 +67,6 @@ namespace Nekoyume.Game.Battle
             }
             remove => _onStageStart -= value;
         }
-
 #endregion Properties & Events
 
         // 나무이동, 에셋로드, 기타등등 대기..
@@ -75,8 +78,17 @@ namespace Nekoyume.Game.Battle
             _onPrepareStage?.Invoke(battleLog);
         }
 
-#region AssetLoad
+#region Vfx
+        public async UniTask  InitializeVfxAsync()
+        {
+            var objectPool = Game.instance.Stage.ObjectPool;
+            objectPool.Initialize();
+            await SkillController.InitializeAsync(objectPool);
+            await BuffController.InitializeAsync(objectPool);
+        }
+#endregion Vfx
 
+#region AssetLoad
         // TODO: 씬 분리 후 제거
         private readonly HashSet<int> loadedMonsterIds = new();
 
@@ -89,7 +101,7 @@ namespace Nekoyume.Game.Battle
             _onStageStart?.Invoke(battleLog);
         }
 
-        // TODO: 필요한 것만 로드
+        // TODO: 필요한 것만 로드, 현재 모든 리소스를 내렸다가 다시 로드하고있다.
         private IEnumerator LoadMonsterResources(HashSet<int> monsterIds)
         {
             var resourceManager = ResourceManager.Instance;
@@ -110,7 +122,6 @@ namespace Nekoyume.Game.Battle
 
             loadedMonsterIds.Clear();
         }
-
 #endregion AssetLoad
     }
 }
