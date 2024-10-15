@@ -32,18 +32,7 @@ namespace Nekoyume.UI
             comboSubject.SubscribeTo(labelText).AddTo(gameObject);
             _rectTransform = GetComponent<RectTransform>();
 
-            _sequence = DOTween.Sequence();
-            _sequence
-                .SetAutoKill(false)
-                .OnPlay(() =>
-                {
-                    _rectTransform.localScale = LocalScaleBefore;
-                    group.alpha = 1f;
-                })
-                .Insert(0, _rectTransform.DOScale(LocalScaleAfter, TweenDuration)
-                    .SetEase(Ease.OutCubic))
-                .Join(group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration)
-                    .SetEase(Ease.InCirc));
+            InitSequence();
         }
 
         public void Show(bool attacked)
@@ -60,20 +49,7 @@ namespace Nekoyume.UI
 
                 _sequence?.Complete();
 
-                _sequence = DOTween.Sequence();
-                _sequence
-                    .SetAutoKill(false)
-                    .OnPlay(() =>
-                    {
-                        _rectTransform.localScale = LocalScaleBefore;
-                        group.alpha = 1f;
-                    })
-                    .OnComplete(() => { _sequence = null; })
-                    .Insert(0, _rectTransform.DOScale(LocalScaleAfter, TweenDuration)
-                        .SetEase(Ease.OutCubic))
-                    .Join(group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration)
-                        .SetEase(Ease.InCirc));
-
+                InitSequence();
                 _sequence.Play();
 
                 if (_coroutine != null)
@@ -87,6 +63,28 @@ namespace Nekoyume.UI
             {
                 _combo = 0;
             }
+        }
+        
+        private void InitSequence()
+        {
+            _sequence = DOTween.Sequence().SetRecyclable(true).SetAutoKill();
+            _sequence
+                .OnPlay(() =>
+                {
+                    _rectTransform.localScale = LocalScaleBefore;
+                    group.alpha = 1f;
+                })
+                .OnComplete(ClearSequence)
+                .Insert(0, _rectTransform.DOScale(LocalScaleAfter, TweenDuration)
+                    .SetEase(Ease.OutCubic))
+                .Join(group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration)
+                    .SetEase(Ease.InCirc));
+        }
+        
+        private void ClearSequence()
+        {
+            _sequence?.Kill();
+            _sequence = null;
         }
 
         private IEnumerator CoClose()

@@ -169,7 +169,6 @@ namespace Nekoyume.UI
 
                 Color color;
                 TweenerCore<Color, Color, ColorOptions> tweener;
-                TweenerCore<float, float, FloatOptions> skeletonTweener = null;
                 switch (script.imageAnmationType)
                 {
                     case SynopsisScene.ImageAnimationType.FadeIn:
