@@ -80,7 +80,7 @@ namespace Nekoyume.ApiClient
 
             RefreshSeasonPassExpAmount();
 
-            Game.Event.OnRoomEnter.AddListener(_ => AvatarStateRefreshAsync().AsUniTask().Forget());
+            Game.Lobby.OnLobbyEnterEvent += () => AvatarStateRefreshAsync().AsUniTask().Forget();
         }
 
         private void RefreshSeasonPassExpAmount()

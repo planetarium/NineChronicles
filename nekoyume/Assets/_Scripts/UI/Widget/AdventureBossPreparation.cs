@@ -108,8 +108,6 @@ namespace Nekoyume.UI
                 .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
-
-            Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
         public void Show(

@@ -273,15 +273,14 @@ namespace Nekoyume.UI
                 Close();
             }
 
-            EnterRoom();
+            EnterLobby();
         }
 
-        private void EnterRoom()
+        private void EnterLobby()
         {
             Close();
-            Game.Event.OnRoomEnter.Invoke(false);
+            Lobby.Enter();
             Game.Event.OnUpdateAddresses.Invoke();
-            Find<Login>()?.Close();
         }
     }
 }

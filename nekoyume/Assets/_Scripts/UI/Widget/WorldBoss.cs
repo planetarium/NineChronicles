@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.ApiClient;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;
@@ -110,13 +111,13 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 ForceClose(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             };
 
             backButton.OnClickAsObservable().Subscribe(_ =>
             {
                 ForceClose(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             }).AddTo(gameObject);
 
             rewardButton.OnClickAsObservable()
@@ -255,7 +256,7 @@ namespace Nekoyume.UI
             if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var nextRow))
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
                 return;
             }
 
