@@ -544,7 +544,7 @@ namespace Nekoyume.UI.Scroller
 
             string GetItemNameString(T recipeRow)
             {
-                return L10nManager.Localize($"ITEM_NAME_{ResultItemId(recipeRow)}");
+                return L10nManager.LocalizeItemName(ResultItemId(recipeRow));
             }
 
             int GetItemRequirementLevel(T recipeRow)
