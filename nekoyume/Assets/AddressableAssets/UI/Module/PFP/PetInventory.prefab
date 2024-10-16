@@ -905,6 +905,7 @@ GameObject:
   - component: {fileID: 2584435005914544671}
   - component: {fileID: 3242600546882812517}
   - component: {fileID: 2065753067553883853}
+  - component: {fileID: 3250764658445321080}
   m_Layer: 5
   m_Name: Contents
   m_TagString: Untagged
@@ -974,6 +975,20 @@ MonoBehaviour:
   m_Spacing: {x: -20, y: -20}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &3250764658445321080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2723635646654526236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 1
 --- !u!1 &3601589991058484995
 GameObject:
   m_ObjectHideFlags: 0
@@ -1706,7 +1721,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   descriptionViewParent: {fileID: 2584435005914544671}
-  descriptionViewPrefab: {fileID: 0}
+  descriptionViewPrefab: {fileID: 376064458489931527, guid: 64dafc9b46b4f174aa851d4db34e2feb,
+    type: 3}
   scrollRect: {fileID: 5134610612906153839}
 --- !u!1 &5961282307343359900
 GameObject:

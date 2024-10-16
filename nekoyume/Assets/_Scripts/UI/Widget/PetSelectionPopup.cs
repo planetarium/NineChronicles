@@ -27,7 +27,7 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
-            petInventory.Initialize(true);
+            petInventory.Initialize();
         }
 
         public void Show(
