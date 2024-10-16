@@ -58,14 +58,12 @@ namespace Nekoyume.UI
         {
             if (_tweenScale != null)
             {
-                _tweenScale.Complete();
                 _tweenScale.Kill();
                 _tweenScale = null;
             }
 
             if (_tweenMoveBy != null)
             {
-                _tweenMoveBy.Complete();
                 _tweenMoveBy.Kill();
                 _tweenMoveBy = null;
             }
@@ -192,26 +190,34 @@ namespace Nekoyume.UI
                     !_tweenScale.IsActive() ||
                     !_tweenScale.IsPlaying())
                 {
-                    _tweenScale = DOTween.Sequence();
+                    _tweenScale = DOTween.Sequence().SetRecyclable(true).SetAutoKill();
                     _tweenScale.Append(bubbleContainer.DOScale(1.1f, 1.4f));
                     _tweenScale.Append(bubbleContainer.DOScale(1.0f, 1.4f));
                     _tweenScale.SetLoops(_forceFixed ? -1 : 3);
                     _tweenScale.Play();
-                    _tweenScale.onComplete = () => _tweenScale = null;
+                    _tweenScale.onComplete = () =>
+                    {
+                        _tweenScale.Kill();
+                        _tweenScale = null;
+                    };
                 }
 
                 if (_tweenMoveBy == null ||
                     !_tweenMoveBy.IsActive() ||
                     !_tweenMoveBy.IsPlaying())
                 {
-                    _tweenMoveBy = DOTween.Sequence();
+                    _tweenMoveBy = DOTween.Sequence().SetRecyclable(true).SetAutoKill();
                     _tweenMoveBy.Append(
                         contentSize.DOBlendableLocalMoveBy(new Vector3(0.0f, 6.0f), 1.4f));
                     _tweenMoveBy.Append(
                         contentSize.DOBlendableLocalMoveBy(new Vector3(0.0f, -6.0f), 1.4f));
                     _tweenMoveBy.SetLoops(_forceFixed ? -1 : 3);
                     _tweenMoveBy.Play();
-                    _tweenMoveBy.onComplete = () => _tweenMoveBy = null;
+                    _tweenMoveBy.onComplete = () =>
+                    {
+                        _tweenMoveBy.Kill();
+                        _tweenMoveBy = null;
+                    };
                 }
 
                 yield return new WaitForSeconds(bubbleTweenTime);

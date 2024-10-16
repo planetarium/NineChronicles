@@ -404,7 +404,7 @@ namespace Nekoyume.UI
         private void UpdateRequiredBlockInformation(CombinationSlotState state, long currentBlockIndex)
         {
             progressBar.maxValue = Math.Max(state.RequiredBlockIndex, 1);
-            var diff = Math.Max(state.UnlockBlockIndex - currentBlockIndex, 1);
+            var diff = Math.Max(state.WorkCompleteBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
             requiredBlockIndexText.text = $"{diff}";
             requiredTimeText.text = $"({diff.BlockRangeToTimeSpanString(true)})";
@@ -413,7 +413,7 @@ namespace Nekoyume.UI
 
         private void UpdateButtonInformation(CombinationSlotState state, long currentBlockIndex)
         {
-            var diff = state.UnlockBlockIndex - currentBlockIndex;
+            var diff = state.WorkCompleteBlockIndex - currentBlockIndex;
             int cost;
             if (state.PetId.HasValue &&
                 States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))

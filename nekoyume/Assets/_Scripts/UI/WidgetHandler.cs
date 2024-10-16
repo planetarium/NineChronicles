@@ -10,7 +10,7 @@ namespace Nekoyume.UI
         private MessageCatTooltip _messageCatTooltip;
         private HeaderMenuStatic _headerMenuStatic;
         private Battle _battle;
-        private Menu _menu;
+        private LobbyMenu lobbyMenu;
 
         public bool IsActiveTutorialMaskWidget { get; set; }
 
@@ -20,7 +20,7 @@ namespace Nekoyume.UI
                 : _messageCatTooltip = Widget.Find<MessageCatTooltip>();
 
         public Battle Battle => _battle ? _battle : _battle = Widget.Find<Battle>();
-        public Menu Menu => _menu ? _menu : _menu = Widget.Find<Menu>();
+        public LobbyMenu LobbyMenu => lobbyMenu ? lobbyMenu : lobbyMenu = Widget.Find<LobbyMenu>();
 
         public void HideAllMessageCat()
         {

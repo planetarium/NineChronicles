@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Libplanet.Action;
 using Nekoyume.ApiClient;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -93,8 +94,6 @@ namespace Nekoyume.UI
         private int _apPlayCount = 0;
         private int _apStonePlayCount = 0;
         private int _fixedApStonePlayCount = 0;
-        
-        private bool _isPlayedDirector = false;
 
         private readonly ReactiveProperty<int> _attackCount = new();
         private readonly ReactiveProperty<bool> _sweepRewind = new(true);
@@ -102,16 +101,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-
-            CloseWidget = () =>
-            {
-                if (_isPlayedDirector)
-                {
-                    return;
-                }
-                
-                Close();
-            };
+            CloseWidget = null;
         } 
 
         private void Start()
@@ -125,16 +115,12 @@ namespace Nekoyume.UI
             mainButton.OnSubmitSubject.Subscribe(_ =>
             {
                 Close();
-                Find<BattlePreparation>().Close();
-                Find<StageInformation>().Close();
-                Find<WorldMap>().Close();
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             }).AddTo(gameObject);
         }
 
         private void PlayDirector()
         {
-            _isPlayedDirector = true;
             playableDirector.Play();
         }
 
@@ -269,7 +255,6 @@ namespace Nekoyume.UI
             {
                 StopCoroutine(_coroutine);
             }
-            _isPlayedDirector = false;
         }
 
         private IEnumerator Accelerate()
@@ -299,7 +284,6 @@ namespace Nekoyume.UI
         public void OnBattleFinish() // for signal receiver
         {
             _attackCount.Value += 1;
-            _isPlayedDirector = false;
         }
 
         public void OnStopMusic()

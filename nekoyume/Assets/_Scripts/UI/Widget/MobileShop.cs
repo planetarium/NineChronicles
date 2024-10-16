@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.ApiClient;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -61,14 +62,14 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(false);
+                Lobby.Enter();
                 AudioController.PlayClick();
             });
 
             CloseWidget = () =>
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke(false);
+                Lobby.Enter();
             };
         }
 
@@ -148,7 +149,7 @@ namespace Nekoyume.UI
             {
                 NcDebug.LogError(e.Message);
                 loading.Close();
-                Game.Event.OnRoomEnter.Invoke(false);
+                Lobby.Enter();
                 if (Game.LiveAsset.GameConfig.IsKoreanBuild)
                 {
                     Find<IconAndButtonSystem>().Show(

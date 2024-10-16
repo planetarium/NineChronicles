@@ -399,7 +399,7 @@ namespace Nekoyume.UI.Module
                 }
             });
 
-            Event.OnRoomEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
+            Nekoyume.Game.Lobby.OnLobbyEnterEvent += () => UpdateAssets(AssetVisibleState.Main);
             Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
@@ -653,7 +653,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            var isAppraise = currentBlockIndex < state.StartBlockIndex;
+            var isAppraise = currentBlockIndex < state.WorkStartBlockIndex;
             if (isAppraise)
             {
                 return false;

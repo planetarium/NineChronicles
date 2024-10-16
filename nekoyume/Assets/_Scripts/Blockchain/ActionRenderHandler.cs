@@ -361,7 +361,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement)
                 .AddTo(_disposables);
-            
+
             _actionRenderer.EveryRender<ItemEnhancement>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
@@ -460,7 +460,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination)
                 .AddTo(_disposables);
-            
+
             _actionRenderer.EveryRender<RapidCombination>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
@@ -599,7 +599,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventConsumableItemCrafts)
                 .AddTo(_disposables);
-            
+
             _actionRenderer.EveryRender<EventConsumableItemCrafts>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
@@ -1142,7 +1142,7 @@ namespace Nekoyume.Blockchain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var menu = Widget.Find<Menu>();
+                            var menu = Widget.Find<LobbyMenu>();
                             if (menu.isActiveAndEnabled)
                             {
                                 menu.UpdateGuideQuest(avatarState);
@@ -1182,11 +1182,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = renderArgs.Evaluation.Action.slotIndex;
-            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = slot.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
@@ -1300,7 +1300,7 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
@@ -1357,7 +1357,7 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
@@ -1520,11 +1520,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
-                renderArgs.CombinationSlotState.UnlockBlockIndex,
+                renderArgs.CombinationSlotState.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = renderArgs.Evaluation.Action.slotIndex;
-            var blockCount = renderArgs.CombinationSlotState.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = renderArgs.CombinationSlotState.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
@@ -2938,7 +2938,7 @@ namespace Nekoyume.Blockchain
                     row.ArenaType != ArenaType.OffSeason;
                 var medalItem = ItemFactory.CreateMaterial(
                     tableSheets.MaterialItemSheet,
-                    ArenaHelper.GetMedalItemId(championshipId, round));
+                    row.MedalId);
 
                 var random = new LocalRandom(eval.RandomSeed);
                 var winCount = 0;
@@ -3117,7 +3117,7 @@ namespace Nekoyume.Blockchain
                 worldBoss.Close();
                 await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
 
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
                 return;
             }
 
@@ -3151,7 +3151,7 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
-            Widget.Find<Menu>().Close();
+            Widget.Find<LobbyMenu>().Close();
 
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,
@@ -3997,7 +3997,7 @@ namespace Nekoyume.Blockchain
                 prevTotalScore = exploreInfo == null ? 0 : exploreInfo.Score;
 
                 UpdatePreviousAvatarState(eval.PreviousState, eval.Action.AvatarAddress);
-                
+
                 UpdateCurrentAvatarItemSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneSlotState(eval, BattleType.Adventure);
                 UpdateCurrentAvatarRuneStoneBalance(eval);
@@ -4362,7 +4362,7 @@ namespace Nekoyume.Blockchain
             }
 
             NcDebug.LogException(eval.Exception?.InnerException ?? eval.Exception);
-            
+
             var combinationSlotsPopup = Widget.Find<CombinationSlotsPopup>();
             foreach (var customCraftData in eval.Action.CraftList)
             {
@@ -4410,11 +4410,11 @@ namespace Nekoyume.Blockchain
             NotificationSystem.Reserve(
                 MailType.CustomCraft,
                 message,
-                slot.UnlockBlockIndex,
+                slot.WorkCompleteBlockIndex,
                 result.itemUsable.ItemId);
 
             var slotIndex = evaluation.Action.CraftList.FirstOrDefault().SlotIndex;
-            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var blockCount = slot.WorkCompleteBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =

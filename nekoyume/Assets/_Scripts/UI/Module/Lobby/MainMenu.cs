@@ -52,9 +52,9 @@ namespace Nekoyume.UI.Module.Lobby
 
         protected virtual void Awake()
         {
-            if (!GetComponentInParent<Menu>())
+            if (!GetComponentInParent<LobbyMenu>())
             {
-                throw new NotFoundComponentException<Menu>();
+                throw new NotFoundComponentException<LobbyMenu>();
             }
 
             switch (type)

@@ -212,9 +212,7 @@ namespace Nekoyume
                 return false;
             }
 
-            medalItemResourceId = ArenaHelper.GetMedalItemId(
-                roundData.ChampionshipId,
-                roundData.Round);
+            medalItemResourceId = roundData.MedalId;
             return true;
         }
 

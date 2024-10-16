@@ -49,7 +49,7 @@ namespace Nekoyume.Game.Character
                 onFinish: onFinish);
 
             var title = costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
-            Widget.Find<Menu>().UpdateTitle(title);
+            Widget.Find<LobbyMenu>().UpdateTitle(title);
 
             var items = new List<Guid>();
             items.AddRange(costumes.Select(x => x.ItemId));
@@ -70,7 +70,7 @@ namespace Nekoyume.Game.Character
             appearance.Pet.Animator.Play(PetAnimation.Type.Interaction);
         }
 
-        public void EnterRoom()
+        public void EnterLobby()
         {
             var status = Widget.Find<Status>();
             status.Close(true);
