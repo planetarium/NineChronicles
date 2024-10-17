@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 84a92b25f83d49b9bc132d206b370281, type: 3}
-  m_Name: UI_icon_Stats
+  m_Name: UI_icon_Mileage
   m_EditorClassIdentifier: 
   hashCode: 1519315074
   material: {fileID: 9191269791557445651}
@@ -38,28 +38,28 @@ MonoBehaviour:
     m_StrikethroughOffset: 0
     m_StrikethroughThickness: 0
     m_TabWidth: 0
-  spriteSheet: {fileID: 2800000, guid: b60756f10df4d324bbfe891f69ba8f63, type: 3}
+  spriteSheet: {fileID: 2800000, guid: b319d6bc2afd65b4bbdd46a687adaf84, type: 3}
   m_SpriteCharacterTable:
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: Icon_Stats
-    m_HashCode: -1701902443
+    m_Name: Icon_Mileage
+    m_HashCode: -482823878
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
-      m_Width: 40
-      m_Height: 24
-      m_HorizontalBearingX: 1
-      m_HorizontalBearingY: 20
-      m_HorizontalAdvance: 48
+      m_Width: 29
+      m_Height: 26
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 19
+      m_HorizontalAdvance: 29
     m_GlyphRect:
       m_X: 0
       m_Y: 0
-      m_Width: 40
-      m_Height: 24
-    m_Scale: 1
+      m_Width: 29
+      m_Height: 26
+    m_Scale: 1.2
     m_AtlasIndex: 0
     m_ClassDefinitionType: 0
     sprite: {fileID: 21300000, guid: 54636d66abae6fe4d8ac4e716ff9bc3a, type: 3}
@@ -86,7 +86,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: b60756f10df4d324bbfe891f69ba8f63, type: 3}
+        m_Texture: {fileID: 2800000, guid: b319d6bc2afd65b4bbdd46a687adaf84, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
