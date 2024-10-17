@@ -192,7 +192,7 @@ namespace Nekoyume.Helper
                         return (statView, true);
                     }
                     
-                    return ($"{skillView}  {statView}", true);
+                    return ($"{skillView}      {statView}", true);
                 case PetOptionType.IncreaseBlockPerHourglass:
                     return (string.Format(
                         HourglassFormat,
