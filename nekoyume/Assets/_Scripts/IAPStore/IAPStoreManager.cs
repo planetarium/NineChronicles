@@ -135,6 +135,11 @@ namespace Nekoyume.IAPStore
             return result;
         }
 
+        public bool CheckCategoryName(string categoryName)
+        {
+            return _initializedCategorySchema.Any(c => c.Name.ToLower() == categoryName.ToLower());
+        }
+
         public bool TryGetCategoryName(int itemId, out string categoryName)
         {
             var level = States.Instance.CurrentAvatarState.level;

@@ -351,5 +351,27 @@ namespace Nekoyume.ApiClient
                 });
             return result;
         }
+
+        public async Task<InAppPurchaseServiceClient.MileageSchema> GetMileageAsync()
+        {
+            if (!IsInitialized || _client is null)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+            InAppPurchaseServiceClient.MileageSchema? result = null;
+            var states = State.States.Instance;
+            var agent = states?.AgentState?.address.ToHex();
+            await _client.GetMileageAsync(agent, Game.Game.instance?.CurrentPlanetId?.ToString(),
+                (success) =>
+                {
+                    result = success;
+                },
+                (error) =>
+                {
+                    Debug.LogError(error);
+                });
+            return result;
+        }
     }
 }
