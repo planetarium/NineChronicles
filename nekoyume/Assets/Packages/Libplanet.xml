@@ -905,7 +905,7 @@
             A default implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy"/> interface.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy.#ctor(Libplanet.Action.PolicyActionsRegistry,System.Nullable{System.TimeSpan},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Tx.Transaction,Libplanet.Types.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.BlockPolicyViolationException},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int64})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy.#ctor(Libplanet.Action.IPolicyActionsRegistry,System.Nullable{System.TimeSpan},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Tx.Transaction,Libplanet.Types.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain,Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.BlockPolicyViolationException},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int64})">
             <summary>
             <para>
             Creates a default <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy"/> instance.
