@@ -128,7 +128,7 @@ namespace Nekoyume.UI
                 evt.AddCustomAttribute("product-id", _data.Sku());
                 AirbridgeUnity.TrackEvent(evt);
 
-                if (_data.IsFree)
+                if (_data.ProductType == InAppPurchaseServiceClient.ProductType.FREE)
                 {
                     Game.Game.instance.IAPStoreManager.OnPurchaseFreeAsync(_data.Sku()).Forget();
                 }
@@ -186,7 +186,7 @@ namespace Nekoyume.UI
 
             var metadata = _puchasingData?.metadata;
 
-            if (!_data.IsFree)
+            if (_data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
             {
                 NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
                 foreach (var item in priceTexts)
@@ -258,7 +258,7 @@ namespace Nekoyume.UI
             discountText.gameObject.SetActive(false);
             timeLimitText.gameObject.SetActive(false);
 
-            if (isDiscount && !_data.IsFree)
+            if (isDiscount && _data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
             {
                 discountText.text = _data.Discount.ToString();
                 foreach (var item in preDiscountPrice)

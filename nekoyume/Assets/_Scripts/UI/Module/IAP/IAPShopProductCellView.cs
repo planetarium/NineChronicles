@@ -145,13 +145,13 @@ namespace Nekoyume.UI.Module
         private void Refresh()
         {
             _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku());
-            if (_purchasingData == null && !_data.IsFree)
+            if (_purchasingData == null && _data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
             {
                 gameObject.SetActive(false);
                 return;
             }
 
-            if (_data.IsFree)
+            if (_data.ProductType == InAppPurchaseServiceClient.ProductType.FREE)
             {
                 _purchasingData = null;
             }
@@ -171,7 +171,7 @@ namespace Nekoyume.UI.Module
             }
 
             var metadata = _purchasingData?.metadata;
-            if (!_data.IsFree)
+            if (_data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
             {
                 NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
                 foreach (var item in price)
@@ -197,7 +197,7 @@ namespace Nekoyume.UI.Module
             tagObj.SetActive(false);
             discount.gameObject.SetActive(false);
             timeLimitText.gameObject.SetActive(false);
-            if (isDiscount && !_data.IsFree)
+            if (isDiscount && _data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
             {
                 discount.text = $"{_data.Discount}%";
                 foreach (var item in preDiscountPrice)
@@ -269,7 +269,7 @@ namespace Nekoyume.UI.Module
 
         public bool IsNotification()
         {
-            if (!_data.IsFree)
+            if (_data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
             {
                 return false;
             }

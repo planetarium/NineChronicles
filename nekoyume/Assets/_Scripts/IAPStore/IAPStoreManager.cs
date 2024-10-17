@@ -94,7 +94,7 @@ namespace Nekoyume.IAPStore
         {
             foreach (var item in _initializedProductSchema)
             {
-                if (!item.Value.IsFree)
+                if (item.Value.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
                 {
                     continue;
                 }
