@@ -1,7 +1,5 @@
 using Nekoyume.GraphQL;
 using Nekoyume.Helper;
-using NineChronicles.ExternalServices.IAPService.Runtime;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 
 namespace Nekoyume.ApiClient
 {
@@ -68,10 +66,10 @@ namespace Nekoyume.ApiClient
             ApplySeasonPassMarketUrl(clo);
 
 #if UNITY_IOS
-            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Apple);
+            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, InAppPurchaseServiceClient.Store.APPLE);
 #else
             //pc has to find iap product for mail box system
-            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, Store.Google);
+            IAPServiceManager = new IAPServiceManager(clo.IAPServiceHost, InAppPurchaseServiceClient.Store.GOOGLE);
 #endif
             IsInitialized = true;
         }

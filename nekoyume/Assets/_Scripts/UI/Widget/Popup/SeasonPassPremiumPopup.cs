@@ -128,18 +128,18 @@ namespace Nekoyume.UI
             if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
             {
                 var index = 0;
-                for (var i = 0; i < premiumProduct.FavList.Length && index < premiumRewards.Length; i++, index++)
+                for (var i = 0; i < premiumProduct.FavList.Count && index < premiumRewards.Length; i++, index++)
                 {
                     premiumRewards[index].ItemViewSetCurrencyData(premiumProduct.FavList[i].Ticker, premiumProduct.FavList[i].Amount);
                 }
 
-                for (var i = 0; i < premiumProduct.FungibleItemList.Length && index < premiumRewards.Length; i++, index++)
+                for (var i = 0; i < premiumProduct.FungibleItemList.Count && index < premiumRewards.Length; i++, index++)
                 {
                     premiumRewards[index].ItemViewSetItemData(premiumProduct.FungibleItemList[i].SheetItemId, premiumProduct.FungibleItemList[i].Amount);
                     AddToolTip(premiumRewards[index], premiumProduct.FungibleItemList[i].SheetItemId);
                 }
 
-                var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.Sku);
+                var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.Sku());
                 if (_puchasingData != null)
                 {
                     foreach (var item in premiumPrices)
@@ -158,18 +158,18 @@ namespace Nekoyume.UI
             if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumPlusProductKey, out var premiumPlusProduct))
             {
                 var index = 0;
-                for (var i = 0; i < premiumPlusProduct.FavList.Length && index < premiumPlusRewards.Length; i++, index++)
+                for (var i = 0; i < premiumPlusProduct.FavList.Count && index < premiumPlusRewards.Length; i++, index++)
                 {
                     premiumPlusRewards[index].ItemViewSetCurrencyData(premiumPlusProduct.FavList[i].Ticker, premiumPlusProduct.FavList[i].Amount);
                 }
 
-                for (var i = 0; i < premiumPlusProduct.FungibleItemList.Length && index < premiumPlusRewards.Length; i++, index++)
+                for (var i = 0; i < premiumPlusProduct.FungibleItemList.Count && index < premiumPlusRewards.Length; i++, index++)
                 {
                     premiumPlusRewards[index].ItemViewSetItemData(premiumPlusProduct.FungibleItemList[i].SheetItemId, premiumPlusProduct.FungibleItemList[i].Amount);
                     AddToolTip(premiumPlusRewards[index], premiumPlusProduct.FungibleItemList[i].SheetItemId);
                 }
 
-                var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.Sku);
+                var _puchasingData = iapStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.Sku());
                 if (_puchasingData != null)
                 {
                     foreach (var item in premiumPlusPrices)
@@ -265,7 +265,7 @@ namespace Nekoyume.UI
                 premiumPurchaseButtonDisabledObj.SetActive(true);
                 premiumPurchaseButtonPriceObj.SetActive(false);
                 premiumPurchaseButtonLoadingObj.SetActive(true);
-                OnPurchase(product.Sku);
+                OnPurchase(product.Sku());
             }
         }
 
@@ -293,7 +293,7 @@ namespace Nekoyume.UI
                 premiumPlusPurchaseButtonDisabledObj.SetActive(true);
                 premiumPlusPurchaseButtonPriceObj.SetActive(false);
                 premiumPlusPurchaseButtonLoadingObj.SetActive(true);
-                OnPurchase(product.Sku);
+                OnPurchase(product.Sku());
             }
         }
 

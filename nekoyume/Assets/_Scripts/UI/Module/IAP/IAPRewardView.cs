@@ -1,6 +1,5 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
@@ -21,7 +20,7 @@ namespace Nekoyume.UI.Module
 
         private ItemBase itemBaseForToolTip = null;
 
-        private FungibleAssetValueSchema fungibleAssetValue = null;
+        private InAppPurchaseServiceClient.FungibleAssetValueSchema fungibleAssetValue = null;
 
         public void Awake()
         {
@@ -42,7 +41,7 @@ namespace Nekoyume.UI.Module
             });
         }
 
-        public void SetFavItem(FungibleAssetValueSchema fav)
+        public void SetFavItem(InAppPurchaseServiceClient.FungibleAssetValueSchema fav)
         {
             fungibleAssetValue = fav;
             itemBaseForToolTip = null;
