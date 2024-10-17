@@ -30,8 +30,8 @@ namespace Nekoyume.Helper
         private const string BlockIndexFormat = "<style=G5> {0}-{1} <style=SymbolAfter> <color=#{2}><style=G5> {3}-{4} (-{5})</color>";
         private const string HourglassFormat = "<style=G2> {0} <style=SymbolAfter> <color=#{1}><style=G2> {2} (+{3})</color>";
         private const string CrystalFormat = "<style=G1> {0} <style=SymbolAfter> <color=#{1}><style=G1> {2} (-{3}%)</color>";
-        private const string StatOptionFormat = "<sprite name=\"icon_Stats\"> {0}% <style=SymbolAfter> <sprite name=\"icon_Stats\"> <color=#{1}>{2}%</color>";
-        private const string SkillOptionFormat = "<style=Skill> {0}% <style=SymbolAfter> <style=Skill> <color=#{1}>{2}%</color>";
+        private const string StatOptionFormat = "<sprite name=\"icon_Stats\"> {0}%  <style=SymbolAfter> <sprite name=\"icon_Stats\"> <color=#{1}>{2}%</color>";
+        private const string SkillOptionFormat = "<style=Skill> {0}%  <style=SymbolAfter> <style=Skill> <color=#{1}>{2}%</color>";
 
         static PetFrontHelper()
         {
@@ -186,7 +186,13 @@ namespace Nekoyume.Helper
                             }
                         }
                     }
-                    return ($"{statView}\n{skillView}", true);
+
+                    if (string.IsNullOrEmpty(skillView))
+                    {
+                        return (statView, true);
+                    }
+                    
+                    return ($"{skillView}  {statView}", true);
                 case PetOptionType.IncreaseBlockPerHourglass:
                     return (string.Format(
                         HourglassFormat,
