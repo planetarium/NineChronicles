@@ -552,6 +552,18 @@ namespace Nekoyume.L10n
             };
         }
 
+        public static string LocalizeWorldBossServiceTicker(string ticker)
+        {
+            var parsedTicker = ticker.Split("_");
+            if (parsedTicker.Length == 3
+                && parsedTicker[0] == "Item"
+                && int.TryParse(parsedTicker[2], out var itemId))
+            {
+                return TryLocalize($"ITEM_NAME_{itemId}", out var itemText) ? itemText : ticker;
+            }
+            return LocalizeCurrencyName(ticker);
+        }
+
         public static string LocalizeCurrencyName(string ticker)
         {
             return TryLocalize($"UI_{ticker}", out var text) ? text : ticker;
