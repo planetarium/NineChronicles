@@ -218,6 +218,13 @@ namespace Nekoyume.UI
                 stakingRewardImage.overrideSprite = liveAssetManager.StakingRewardSprite;
                 stakingLevelImage.SetNativeSize();
             }
+
+            if (requiredMigrate)
+            {
+                var confirmSystem = Find<IconAndButtonSystem>();
+                confirmSystem.ShowWithTwoButton("UI_ITEM_INFORMATION", "MIGRATE_NOTICE", type: IconAndButtonSystem.SystemType.Information);
+                confirmSystem.ConfirmCallback = OnClickMigrateButton;
+            }
         }
 
         private void OnClickEditButton()
