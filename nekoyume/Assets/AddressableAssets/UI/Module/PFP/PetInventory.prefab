@@ -1721,9 +1721,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   descriptionViewParent: {fileID: 2584435005914544671}
+  emptyDescriptionView: {fileID: 0}
+  scrollRect: {fileID: 5134610612906153839}
   descriptionViewPrefab: {fileID: 376064458489931527, guid: 64dafc9b46b4f174aa851d4db34e2feb,
     type: 3}
-  scrollRect: {fileID: 5134610612906153839}
 --- !u!1 &5961282307343359900
 GameObject:
   m_ObjectHideFlags: 0
@@ -3566,11 +3567,9 @@ PrefabInstance:
     - target: {fileID: 3902826639146556451, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
       propertyPath: m_text
-      value: '<Style=G5> 100%<Style=G5> 100%<Style=G5> 100%<Style=G5> 19.5%(20%)  
-        <style=SymbolAfter>
-
-        <color=#02fc8a><Style=G5> 2,502<Style=G5> 2,502<Style=G5>
-        2,502<Style=G5> 2,502</color>'
+      value: <sprite name="icon_Stats"> {0}% <style=SymbolAfter> <sprite name="icon_Stats">
+        <color=#{1}>{2}%</color>  <style=Skill> {0}% <style=SymbolAfter> <style=Skill>
+        <color=#{1}>{2}%</color>
       objectReference: {fileID: 0}
     - target: {fileID: 4552389311115988333, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
@@ -3580,7 +3579,7 @@ PrefabInstance:
     - target: {fileID: 4552389311115988333, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
@@ -3605,7 +3604,7 @@ PrefabInstance:
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
@@ -3615,17 +3614,17 @@ PrefabInstance:
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 487
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 130
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
@@ -3665,7 +3664,7 @@ PrefabInstance:
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 243.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8517092670952843755, guid: 64dafc9b46b4f174aa851d4db34e2feb,
         type: 3}

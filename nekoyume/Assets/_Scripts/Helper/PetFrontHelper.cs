@@ -30,9 +30,8 @@ namespace Nekoyume.Helper
         private const string BlockIndexFormat = "<style=G5> {0}-{1} <style=SymbolAfter> <color=#{2}><style=G5> {3}-{4} (-{5})</color>";
         private const string HourglassFormat = "<style=G2> {0} <style=SymbolAfter> <color=#{1}><style=G2> {2} (+{3})</color>";
         private const string CrystalFormat = "<style=G1> {0} <style=SymbolAfter> <color=#{1}><style=G1> {2} (-{3}%)</color>";
-        private const string OptionRateFormat = "{0}<style=SymbolAfter>\n<color=#{1}>{2}(+{3})</color>";
-        private const string StatOptionFormat = "<style=Stat> {0}% ";
-        private const string SkillOptionFormat = "<style=Skill> {0}% ";
+        private const string StatOptionFormat = "<sprite name=\"icon_Stats\"> {0}% <style=SymbolAfter> <sprite name=\"icon_Stats\"> <color=#{1}>{2}%</color>";
+        private const string SkillOptionFormat = "<style=Skill> {0}% <style=SymbolAfter> <style=Skill> <color=#{1}>{2}%</color>";
 
         static PetFrontHelper()
         {
@@ -135,11 +134,11 @@ namespace Nekoyume.Helper
 
                     return (string.Format(
                         BlockIndexFormat,
-                        craftInfo.RequiredBlockMin,
-                        craftInfo.RequiredBlockMax,
+                        craftInfo.RequiredBlockMin.ToCurrencyNotation(),
+                        craftInfo.RequiredBlockMax.ToCurrencyNotation(),
                         appliedColorHex,
-                        requiredMin,
-                        requiredMax,
+                        requiredMin.ToCurrencyNotation(),
+                        requiredMax.ToCurrencyNotation(),
                         isFixedValue ? optionInfo.OptionValue : $"{optionInfo.OptionValue}%"), true);
                 case PetOptionType.AdditionalOptionRate:
                 case PetOptionType.AdditionalOptionRateByFixedValue:
@@ -151,8 +150,9 @@ namespace Nekoyume.Helper
                         return (defaultDescription, false);
                     }
 
-                    var before = new StringBuilder();
-                    var after = new StringBuilder();
+                    // 3,4 옵션이 존재하지 않는 아이템의 경우 100%로만 표기
+                    var statView = string.Format(StatOptionFormat, 100, appliedColorHex, 100);
+                    var skillView = string.Empty;
                     foreach (var equipmentOptionInfo in subrecipeRow.Options)
                     {
                         var ratio = PetHelper.GetBonusOptionProbability(
@@ -163,29 +163,37 @@ namespace Nekoyume.Helper
                         if (TableSheets.Instance.EquipmentItemOptionSheet
                             .TryGetValue(equipmentOptionInfo.Id, out var optionRow))
                         {
-                            var format = optionRow.SkillId == default ? StatOptionFormat : SkillOptionFormat;
-                            before.Append(string.Format(
-                                format,
-                                equipmentOptionInfo.Ratio / 100m));
-                            after.Append(string.Format(
-                                format,
-                                fixedRatio));
+                            if (optionRow.Id % 10 <= 2)
+                            {
+                                continue;
+                            }
+
+                            if (optionRow.SkillId == default)
+                            {
+                                statView = string.Format(
+                                    StatOptionFormat,
+                                    equipmentOptionInfo.Ratio / 100m,
+                                    appliedColorHex,
+                                    fixedRatio);
+                            }
+                            else
+                            {
+                                skillView = string.Format(
+                                    SkillOptionFormat,
+                                    equipmentOptionInfo.Ratio / 100m,
+                                    appliedColorHex,
+                                    fixedRatio);
+                            }
                         }
                     }
-
-                    return (string.Format(
-                        OptionRateFormat,
-                        before.ToString(),
-                        appliedColorHex,
-                        after.ToString(),
-                        $"{optionInfo.OptionValue}%"), true);
+                    return ($"{statView}\n{skillView}", true);
                 case PetOptionType.IncreaseBlockPerHourglass:
                     return (string.Format(
                         HourglassFormat,
-                        gameConfigState.HourglassPerBlock,
+                        gameConfigState.HourglassPerBlock.ToCurrencyNotation(),
                         appliedColorHex,
-                        gameConfigState.HourglassPerBlock + optionInfo.OptionValue,
-                        optionInfo.OptionValue), true);
+                        (gameConfigState.HourglassPerBlock + optionInfo.OptionValue).ToCurrencyNotation(),
+                        optionInfo.OptionValue.ToCurrencyNotation()), true);
                 case PetOptionType.DiscountMaterialCostCrystal:
                     var cost = PetHelper.CalculateDiscountedMaterialCost(
                         craftInfo.CostCrystal,
@@ -200,9 +208,9 @@ namespace Nekoyume.Helper
 
                     return (string.Format(
                         CrystalFormat,
-                        craftInfo.CostCrystal.MajorUnit,
+                        craftInfo.CostCrystal.MajorUnit.ToCurrencyNotation(),
                         appliedColorHex,
-                        cost.MajorUnit,
+                        cost.MajorUnit.ToCurrencyNotation(),
                         optionInfo.OptionValue), true);
                 default:
                     var desc =
