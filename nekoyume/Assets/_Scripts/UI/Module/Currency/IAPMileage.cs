@@ -1,8 +1,11 @@
+using Nekoyume.ApiClient;
 using TMPro;
+using System;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
     public class IAPMileage : MonoBehaviour
     {
         [SerializeField]
@@ -11,12 +14,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject loadingObject;
 
-        private void OnEnable()
+        private void Awake()
         {
-        }
-
-        private void OnDisable()
-        {
+            ApiClients.Instance.IAPServiceManager.CurrentMileage.Subscribe(mileage =>
+            {
+                amountText.text = mileage.ToCurrencyNotation();
+            });
         }
     }
 }

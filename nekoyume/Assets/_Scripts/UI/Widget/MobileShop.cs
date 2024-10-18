@@ -129,6 +129,8 @@ namespace Nekoyume.UI
 
                     await InitializeObj(categorySchemas);
 
+                    await ApiClients.Instance.IAPServiceManager.RefreshMileageAsync();
+
                     _isInitializedObj = true;
                 }
                 else

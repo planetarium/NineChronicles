@@ -7,6 +7,7 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Libplanet.Crypto;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.ApiClient
@@ -39,6 +40,8 @@ namespace Nekoyume.ApiClient
         private readonly InAppPurchaseServiceClient.Store _store;
 
         private readonly InAppPurchaseServiceClient.PackageName _packageName;
+
+        public ReactiveProperty<int> CurrentMileage = new(0);
 
         public bool IsInitialized { get; private set; }
         public bool IsDisposed { get; private set; }
@@ -352,7 +355,7 @@ namespace Nekoyume.ApiClient
             return result;
         }
 
-        public async Task<InAppPurchaseServiceClient.MileageSchema> GetMileageAsync()
+        public async Task<InAppPurchaseServiceClient.MileageSchema> RefreshMileageAsync()
         {
             if (!IsInitialized || _client is null)
             {
@@ -366,6 +369,7 @@ namespace Nekoyume.ApiClient
                 (success) =>
                 {
                     result = success;
+                    CurrentMileage.Value = success.Mileage;
                 },
                 (error) =>
                 {
