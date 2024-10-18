@@ -230,7 +230,7 @@ namespace Nekoyume.UI
         private void OnClickSoulStone(PetSheet.Row row)
         {
             var popup = Find<MaterialNavigationPopup>();
-            var soulStoneName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
+            var soulStoneName = L10nManager.LocalizeItemName(row.Id);
             var count = States.Instance.CurrentAvatarBalances[row.SoulStoneTicker].GetQuantityString();
             var content = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
             var buttonText = L10nManager.Localize("UI_SHOP");

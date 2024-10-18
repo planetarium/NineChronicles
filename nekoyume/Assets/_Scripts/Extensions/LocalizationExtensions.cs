@@ -92,7 +92,7 @@ namespace Nekoyume
 
                 case MaterialCraftMail materialCraftMail:
                     var materialItemName =
-                        L10nManager.Localize($"ITEM_NAME_{materialCraftMail.ItemId}");
+                        L10nManager.LocalizeItemName(materialCraftMail.ItemId);
                     return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT", materialItemName);
 
                 case ItemEnhanceMail itemEnhanceMail:
@@ -512,7 +512,7 @@ namespace Nekoyume
         {
             if (ticker.ToLower() == "crystal" || ticker.ToLower() == "fav_crystal")
             {
-                return L10nManager.Localize($"ITEM_NAME_9999998");
+                return L10nManager.LocalizeItemName(9999998);
             }
 
             var isRune = false;
@@ -812,7 +812,7 @@ namespace Nekoyume
 
         public static string GetLocalizedName(this ItemSheet.Row row, int level)
         {
-            var itemName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
+            var itemName = L10nManager.LocalizeItemName(row.Id);
             if (level > 0)
             {
                 itemName = $"+{level} {itemName}";
