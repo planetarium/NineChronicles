@@ -79,12 +79,12 @@ namespace Nekoyume.UI
             goldenDrawButton.Subscribe(gameObject);
         }
 
-        public void Show(
+        public void Show<T>(
             SummonSheet.Row summonRow,
             int summonCount,
-            List<Equipment> resultList,
+            List<T> resultList,
             System.Action completeCallback = null,
-            bool ignoreShowAnimation = false)
+            bool ignoreShowAnimation = false) where T : ItemBase
         {
             base.Show(ignoreShowAnimation);
             _completeCallback = completeCallback;

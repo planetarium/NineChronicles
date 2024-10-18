@@ -600,11 +600,11 @@ namespace Nekoyume
             return L10nManager.Localize($"SUMMON_NAME_{summonRow.GroupId}");
         }
 
-        public static string GetLocalizedInformation(this Equipment equipment)
+        public static string GetLocalizedInformation(this ItemBase itemBase)
         {
-            var grade = equipment.GetGradeText();
-            var subType = equipment.GetSubTypeText();
-            return $"<color=#{GetColorHexByGrade(equipment.Grade)}>{grade}  |  {subType}</color>";
+            var grade = itemBase.GetGradeText();
+            var subType = itemBase.GetSubTypeText();
+            return $"<color=#{GetColorHexByGrade(itemBase.Grade)}>{grade}  |  {subType}</color>";
         }
 
         public static string GetLocalizedInformation(this EquipmentItemSheet.Row equipmentRow)

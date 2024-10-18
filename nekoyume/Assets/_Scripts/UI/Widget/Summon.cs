@@ -277,6 +277,17 @@ namespace Nekoyume.UI
             Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
+        public void OnActionRender(ActionEvaluation<CostumeSummon> eval)
+        {
+            LoadingHelper.Summon.Value = null;
+
+            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
+            var summonCount = eval.Action.SummonCount;
+            var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
+            var resultList = SimulateCostume(summonRow, summonCount, random);
+            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
+        }
+
         private static List<Equipment> SimulateEquipment(
             SummonSheet.Row summonRow,
             int summonCount,
@@ -296,6 +307,22 @@ namespace Nekoyume.UI
                     summonRow, summonCount, random, blockIndex)
                 .Select(tuple => tuple.Item2)
                 .OrderByDescending(row => row.Grade)
+                .ToList();
+        }
+
+        private static List<Costume> SimulateCostume(
+            SummonSheet.Row summonRow,
+            int summonCount,
+            IRandom random)
+        {
+            var tableSheets = Game.Game.instance.TableSheets;
+            var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
+            return CostumeSummon.SimulateSummon(
+                    addressHex,
+                    tableSheets.CostumeItemSheet,
+                    summonRow,
+                    summonCount,
+                    random)
                 .ToList();
         }
 
