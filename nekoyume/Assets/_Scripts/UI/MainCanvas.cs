@@ -198,7 +198,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Menu>());
+            _secondWidgets.Add(Widget.Create<LobbyMenu>());
             yield return null;
 
             _secondWidgets.Add(Widget.Create<MobileShop>());
@@ -275,7 +275,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Menu>());
+            _secondWidgets.Add(Widget.Create<LobbyMenu>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
             yield return null;
@@ -537,7 +537,7 @@ namespace Nekoyume.UI
             {
                 var child = layer.GetChild(i);
                 var widget = child.GetComponent<Widget>();
-                if (widget is Status || widget is Menu)
+                if (widget is Status || widget is LobbyMenu)
                 {
                     widget.Show();
                 }
