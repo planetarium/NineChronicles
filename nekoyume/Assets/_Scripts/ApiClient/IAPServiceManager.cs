@@ -199,6 +199,7 @@ namespace Nekoyume.ApiClient
                 (success) =>
                 {
                     result = success;
+                    CurrentMileage.Value = success.MileageResult;
                 },
                 (error) =>
                 {
@@ -236,6 +237,7 @@ namespace Nekoyume.ApiClient
                 (success) =>
                 {
                     result = success;
+                    CurrentMileage.Value = success.MileageResult;
                 },
                 (error) =>
                 {
@@ -270,6 +272,7 @@ namespace Nekoyume.ApiClient
                 (success) =>
                 {
                     result = success;
+                    CurrentMileage.Value = success.MileageResult;
                 },
                 (error) =>
                 {

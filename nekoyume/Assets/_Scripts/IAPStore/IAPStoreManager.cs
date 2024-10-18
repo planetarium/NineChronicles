@@ -557,18 +557,26 @@ namespace Nekoyume.IAPStore
                     Widget.Find<MobileShop>()?.PurchaseComplete(sku);
 
                     PurchaseCountRefresh(sku);
-                    string purchaseCompleteContents = "UI_IAP_PURCHASE_COMPLETE";
-                    if (_initializedProductSchema.TryGetValue(sku, out var product))
-                    {
-                        purchaseCompleteContents = L10nManager.Localize("UI_IAP_PURCHASE_COMPLETE", product.Mileage);
-                    }
 
-                    popup.Show(
-                        "UI_COMPLETED",
-                        purchaseCompleteContents,
-                        "UI_OK",
-                        true,
-                        IconAndButtonSystem.SystemType.Information);
+                    if (_initializedProductSchema.TryGetValue(sku, out var product) && product.Mileage > 0)
+                    {
+                        popup.Show(
+                            "UI_COMPLETED",
+                            "UI_IAP_PURCHASE_WITH_MILEAGE_COMPLETE",
+                            "UI_OK",
+                            true,
+                            IconAndButtonSystem.SystemType.Information,
+                            product.Mileage);
+                    }
+                    else
+                    {
+                        popup.Show(
+                            "UI_COMPLETED",
+                            "UI_IAP_PURCHASE_COMPLETE",
+                            "UI_OK",
+                            true,
+                            IconAndButtonSystem.SystemType.Information);
+                    }
 
                     popup.ConfirmCallback = () =>
                     {
@@ -624,18 +632,25 @@ namespace Nekoyume.IAPStore
                     Widget.Find<MobileShop>()?.PurchaseComplete(sku);
                     PurchaseCountRefresh(sku);
 
-                    string purchaseCompleteContents = "UI_IAP_PURCHASE_COMPLETE";
-                    if (_initializedProductSchema.TryGetValue(sku, out var product))
+                    if(_initializedProductSchema.TryGetValue(sku, out var product) && product.Mileage > 0)
                     {
-                        purchaseCompleteContents = L10nManager.Localize("UI_IAP_PURCHASE_COMPLETE", product.Mileage);
+                        popup.Show(
+                            "UI_COMPLETED",
+                            "UI_IAP_PURCHASE_WITH_MILEAGE_COMPLETE",
+                            "UI_OK",
+                            true,
+                            IconAndButtonSystem.SystemType.Information,
+                            product?.Mileage);
                     }
-
-                    popup.Show(
-                        "UI_COMPLETED",
-                        purchaseCompleteContents,
-                        "UI_OK",
-                        true,
-                        IconAndButtonSystem.SystemType.Information);
+                    else
+                    {
+                        popup.Show(
+                            "UI_COMPLETED",
+                            "UI_IAP_PURCHASE_COMPLETE",
+                            "UI_OK",
+                            true,
+                            IconAndButtonSystem.SystemType.Information);
+                    }
 
                     popup.ConfirmCallback = () =>
                     {
@@ -727,18 +742,25 @@ namespace Nekoyume.IAPStore
                         evt.SetTransactionId(e.purchasedProduct.transactionID);
                         AirbridgeUnity.TrackEvent(evt);
 
-                        string purchaseCompleteContents = "UI_IAP_PURCHASE_COMPLETE";
-                        if(_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var product))
+                        if (_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var product) && product.Mileage > 0)
                         {
-                            purchaseCompleteContents = L10nManager.Localize("UI_IAP_PURCHASE_COMPLETE", product.Mileage);
+                            popup.Show(
+                                "UI_COMPLETED",
+                                "UI_IAP_PURCHASE_WITH_MILEAGE_COMPLETE",
+                                "UI_OK",
+                                true,
+                                IconAndButtonSystem.SystemType.Information,
+                                product?.Mileage);
                         }
-
-                        popup.Show(
-                            "UI_COMPLETED",
-                            purchaseCompleteContents,
-                            "UI_OK",
-                            true,
-                            IconAndButtonSystem.SystemType.Information);
+                        else
+                        {
+                            popup.Show(
+                                "UI_COMPLETED",
+                                "UI_IAP_PURCHASE_COMPLETE",
+                                "UI_OK",
+                                true,
+                                IconAndButtonSystem.SystemType.Information);
+                        }
 
                         popup.ConfirmCallback = () =>
                         {
