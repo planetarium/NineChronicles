@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Audio
+  m_EditorClassIdentifier: 
+  m_GroupName: Audio
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 4d7bd51820f9f2946ac858fb69363d83
+  m_SerializeEntries:
+  - m_GUID: 4a77bc26521304dd788e4167c2e8cdc8
+    m_Address: Assets/AddressableAssets/Audio/Music/Prefabs
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MusicAudio
+  - m_GUID: c6b30a8fd61e44d1d8d586610de658de
+    m_Address: Assets/AddressableAssets/Audio/Sfx/Prefabs
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - SfxAudio
+  - m_GUID: f84234ca553c443c69f5457997eda065
+    m_Address: Assets/AddressableAssets/Audio/AudioMixer.mixer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: ac541e2ce40a4e441b1e4fe7bb752ac7, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: abf552441d212d54c9977cf5ea4ab30b, type: 2}
+    - {fileID: 11400000, guid: e304e2ba361d3ad46883fdb7f5c83cab, type: 2}
