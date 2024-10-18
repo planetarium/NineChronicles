@@ -278,6 +278,40 @@ namespace Nekoyume.ApiClient
             return result;
         }
 
+        public async Task<InAppPurchaseServiceClient.ReceiptDetailSchema?> PurchaseMileageAsync(
+            string agentAddr,
+            string avatarAddr,
+            string planetId,
+            string sku)
+        {
+            if (!IsInitialized || _client is null)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+
+            InAppPurchaseServiceClient.ReceiptDetailSchema? result = null;
+            await _client.PostPurchaseMileageAsync(_packageName,
+                new InAppPurchaseServiceClient.FreeReceiptSchema
+                {
+                    Store = _store,
+                    AgentAddress = agentAddr,
+                    AvatarAddress = avatarAddr,
+                    PlanetId = planetId,
+                    Sku = sku
+                },
+                (success) =>
+                {
+                    result = success;
+                    CurrentMileage.Value = success.MileageResult;
+                },
+                (error) =>
+                {
+                    Debug.LogError(error);
+                });
+            return result;
+        }
+
         public async Task<Dictionary<string, InAppPurchaseServiceClient.ReceiptDetailSchema?>?> PurchaseStatusAsync(
             HashSet<string> uuids)
         {

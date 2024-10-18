@@ -555,10 +555,17 @@ namespace Nekoyume.IAPStore
                 else
                 {
                     Widget.Find<MobileShop>()?.PurchaseComplete(sku);
+
                     PurchaseCountRefresh(sku);
+                    string purchaseCompleteContents = "UI_IAP_PURCHASE_COMPLETE";
+                    if (_initializedProductSchema.TryGetValue(sku, out var product))
+                    {
+                        purchaseCompleteContents = L10nManager.Localize("UI_IAP_PURCHASE_COMPLETE", product.Mileage);
+                    }
+
                     popup.Show(
                         "UI_COMPLETED",
-                        "UI_IAP_PURCHASE_COMPLETE",
+                        purchaseCompleteContents,
                         "UI_OK",
                         true,
                         IconAndButtonSystem.SystemType.Information);
@@ -586,7 +593,73 @@ namespace Nekoyume.IAPStore
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }
+            return;
+        }
 
+        public async UniTaskVoid OnPurchaseMileageAsync(string sku)
+        {
+            var popup = Widget.Find<IconAndButtonSystem>();
+            var states = States.Instance;
+            try
+            {
+                var result = await ApiClients.Instance.IAPServiceManager.PurchaseMileageAsync(
+                    states.AgentState.address.ToHex(),
+                    states.CurrentAvatarState.address.ToHex(),
+                    Game.Game.instance.CurrentPlanetId.ToString(),
+                    sku);
+
+                Widget.Find<ShopListPopup>()?.PurchaseButtonLoadingEnd();
+                Widget.Find<SeasonPassPremiumPopup>()?.PurchaseButtonLoadingEnd();
+
+                if (result is null)
+                {
+                    popup.Show(
+                        "UI_ERROR",
+                        "UI_IAP_PURCHASE_FAILED",
+                        "UI_OK",
+                        true);
+                }
+                else
+                {
+                    Widget.Find<MobileShop>()?.PurchaseComplete(sku);
+                    PurchaseCountRefresh(sku);
+
+                    string purchaseCompleteContents = "UI_IAP_PURCHASE_COMPLETE";
+                    if (_initializedProductSchema.TryGetValue(sku, out var product))
+                    {
+                        purchaseCompleteContents = L10nManager.Localize("UI_IAP_PURCHASE_COMPLETE", product.Mileage);
+                    }
+
+                    popup.Show(
+                        "UI_COMPLETED",
+                        purchaseCompleteContents,
+                        "UI_OK",
+                        true,
+                        IconAndButtonSystem.SystemType.Information);
+
+                    popup.ConfirmCallback = () =>
+                    {
+                        var cachedPassphrase = KeyManager.GetCachedPassphrase(
+                            states.AgentState.address,
+                            Util.AesDecrypt,
+                            string.Empty);
+                        if (cachedPassphrase.Equals(string.Empty))
+                        {
+                            Widget.Find<LoginSystem>().ShowResetPassword();
+                        }
+                    };
+
+                    Widget.Find<MobileShop>()?.RefreshGrid();
+                    Widget.Find<ShopListPopup>()?.Close();
+                }
+            }
+            catch (Exception exc)
+            {
+                Widget.Find<MobileShop>()?.RefreshGrid();
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
+                Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+                Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
+            }
             return;
         }
 
@@ -654,9 +727,15 @@ namespace Nekoyume.IAPStore
                         evt.SetTransactionId(e.purchasedProduct.transactionID);
                         AirbridgeUnity.TrackEvent(evt);
 
+                        string purchaseCompleteContents = "UI_IAP_PURCHASE_COMPLETE";
+                        if(_initializedProductSchema.TryGetValue(e.purchasedProduct.definition.id, out var product))
+                        {
+                            purchaseCompleteContents = L10nManager.Localize("UI_IAP_PURCHASE_COMPLETE", product.Mileage);
+                        }
+
                         popup.Show(
                             "UI_COMPLETED",
-                            "UI_IAP_PURCHASE_COMPLETE",
+                            purchaseCompleteContents,
                             "UI_OK",
                             true,
                             IconAndButtonSystem.SystemType.Information);

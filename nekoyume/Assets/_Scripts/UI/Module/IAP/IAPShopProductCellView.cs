@@ -145,15 +145,10 @@ namespace Nekoyume.UI.Module
         private void Refresh()
         {
             _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku());
-            if (_purchasingData == null && _data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
+            if (_purchasingData == null && _data.ProductType == InAppPurchaseServiceClient.ProductType.IAP)
             {
                 gameObject.SetActive(false);
                 return;
-            }
-
-            if (_data.ProductType == InAppPurchaseServiceClient.ProductType.FREE)
-            {
-                _purchasingData = null;
             }
 
             switch (_data.Size)
@@ -170,47 +165,54 @@ namespace Nekoyume.UI.Module
                     break;
             }
 
-            var metadata = _purchasingData?.metadata;
-            if (_data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
-            {
-                NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
-                foreach (var item in price)
-                {
-                    item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
-                }
-            }
-            else
-            {
-                foreach (var item in price)
-                {
-                    item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
-                }
-            }
-
-
+            tagObj.SetActive(false);
+            discount.gameObject.SetActive(false);
+            timeLimitText.gameObject.SetActive(false);
             var isDiscount = _data.Discount > 0;
             foreach (var item in discountObjs)
             {
                 item.SetActive(isDiscount);
             }
-
-            tagObj.SetActive(false);
-            discount.gameObject.SetActive(false);
-            timeLimitText.gameObject.SetActive(false);
-            if (isDiscount && _data.ProductType != InAppPurchaseServiceClient.ProductType.FREE)
+            switch (_data.ProductType)
             {
-                discount.text = $"{_data.Discount}%";
-                foreach (var item in preDiscountPrice)
-                {
-                    var originPrice = metadata.localizedPrice * ((decimal)100 / (100 - _data.Discount));
-                    var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
-                    item.text = origin;
-                }
+                case InAppPurchaseServiceClient.ProductType.IAP:
+                    var metadata = _purchasingData?.metadata;
+                    NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                    foreach (var item in price)
+                    {
+                        item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                    }
+                    if (isDiscount)
+                    {
+                        discount.text = $"{_data.Discount}%";
+                        foreach (var item in preDiscountPrice)
+                        {
+                            var originPrice = metadata.localizedPrice * ((decimal)100 / (100 - _data.Discount));
+                            var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
+                            item.text = origin;
+                        }
 
-                discount.gameObject.SetActive(true);
-                tagObj.SetActive(true);
+                        discount.gameObject.SetActive(true);
+                        tagObj.SetActive(true);
+                    }
+                    break;
+                case InAppPurchaseServiceClient.ProductType.FREE:
+                    foreach (var item in price)
+                    {
+                        item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
+                    }
+                    _purchasingData = null;
+                    break;
+                case InAppPurchaseServiceClient.ProductType.MILEAGE:
+                    foreach (var item in price)
+                    {
+                        item.text = L10nManager.Localize("UI_MILEAGE_PRICE", _data.MileagePrice?.ToCurrencyNotation());
+                    }
+                    _purchasingData = null;
+                    break;
             }
-            else if (_data.DailyLimit != null)
+
+            if (_data.DailyLimit != null)
             {
                 timeLimitText.text = MobileShop.RemainTimeForDailyLimit;
                 timeLimitText.gameObject.SetActive(true);
