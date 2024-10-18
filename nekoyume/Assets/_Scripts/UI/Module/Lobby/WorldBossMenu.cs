@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Module.Lobby
             var now = Game.Game.instance.Agent.BlockIndex;
             foreach (var reward in rewards.OrderBy(reward => reward.ticker))
             {
-                var currencyName = L10nManager.LocalizeCurrencyName(reward.ticker);
+                var currencyName = L10nManager.LocalizeWorldBossServiceTicker(reward.ticker);
                 LocalMailHelper.Instance.Add(
                     address,
                     new RaidRewardMail(
