@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Nekoyume.UI.Module;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Nekoyume.Helper;
 using Cysharp.Threading.Tasks;
 using System.Numerics;
@@ -65,7 +64,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI[] priceTexts;
 
-        private ProductSchema _data;
+        private InAppPurchaseServiceClient.ProductSchema _data;
         private UnityEngine.Purchasing.Product _puchasingData;
         private bool _isInLobby;
 
@@ -100,11 +99,11 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku()));
 
                 var evt = new AirbridgeEvent("IAP_ShopListPopup_Close");
-                evt.SetAction(_data.Sku);
-                evt.AddCustomAttribute("product-id", _data.Sku);
+                evt.SetAction(_data.Sku());
+                evt.AddCustomAttribute("product-id", _data.Sku());
                 AirbridgeUnity.TrackEvent(evt);
 
                 Close();
@@ -120,24 +119,24 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                NcDebug.Log($"Purchase: {_data.Sku}");
+                NcDebug.Log($"Purchase: {_data.Sku()}");
 
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click", ("product-id", _data.Sku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click", ("product-id", _data.Sku()));
 
                 var evt = new AirbridgeEvent("IAP_ShopListPopup_PurchaseButton_Click");
-                evt.SetAction(_data.Sku);
-                evt.AddCustomAttribute("product-id", _data.Sku);
+                evt.SetAction(_data.Sku());
+                evt.AddCustomAttribute("product-id", _data.Sku());
                 AirbridgeUnity.TrackEvent(evt);
 
                 if (_data.IsFree)
                 {
-                    Game.Game.instance.IAPStoreManager.OnPurchaseFreeAsync(_data.Sku).Forget();
+                    Game.Game.instance.IAPStoreManager.OnPurchaseFreeAsync(_data.Sku()).Forget();
                 }
                 else
                 {
-                    ApiClients.Instance.IAPServiceManager.CheckProductAvailable(_data.Sku, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
+                    ApiClients.Instance.IAPServiceManager.CheckProductAvailable(_data.Sku(), States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
                         //success
-                        () => { Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku); },
+                        () => { Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku()); },
                         //failed
                         () =>
                         {
@@ -176,7 +175,7 @@ namespace Nekoyume.UI
             productBgImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(_data.PopupPathKey)}");
         }
 
-        public async UniTask Show(ProductSchema data, UnityEngine.Purchasing.Product purchasingData, bool ignoreShowAnimation = false)
+        public async UniTask Show(InAppPurchaseServiceClient.ProductSchema data, UnityEngine.Purchasing.Product purchasingData, bool ignoreShowAnimation = false)
         {
             _data = data;
             _puchasingData = purchasingData;
@@ -350,7 +349,7 @@ namespace Nekoyume.UI
                 .Where(p => p.Active && p.Buyable)
                 .OrderBy(p => p.Order).First();
             var purchasingProduct = Game.Game.instance.IAPStoreManager.IAPProducts
-                .FirstOrDefault(p => p.definition.id == product.Sku);
+                .FirstOrDefault(p => p.definition.id == product.Sku());
             Show(product, purchasingProduct).Forget();
         }
     }
