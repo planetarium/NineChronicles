@@ -1,4 +1,3 @@
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -8,6 +7,7 @@ using Nekoyume.L10n;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
 using Nekoyume.State;
+using Nekoyume.ApiClient;
 
 namespace Nekoyume.UI.Module
 {
@@ -62,7 +62,7 @@ namespace Nekoyume.UI.Module
         private GameObject dimObj;
 
         private RectTransform _rect;
-        private ProductSchema _data;
+        private InAppPurchaseServiceClient.ProductSchema _data;
         private UnityEngine.Purchasing.Product _purchasingData;
 
         private void Awake()
@@ -74,11 +74,11 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.Sku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.Sku()));
 
                 var evt = new AirbridgeEvent("IAP_GridCell_Click");
-                evt.SetAction(_data.Sku);
-                evt.AddCustomAttribute("product-id", _data.Sku);
+                evt.SetAction(_data.Sku());
+                evt.AddCustomAttribute("product-id", _data.Sku());
                 AirbridgeUnity.TrackEvent(evt);
 
                 Widget.Find<ShopListPopup>().Show(_data, _purchasingData).Forget();
@@ -91,7 +91,7 @@ namespace Nekoyume.UI.Module
 
         public async UniTask RefreshLocalized()
         {
-            productName.text = L10nManager.Localize(_data.L10n_Key);
+            productName.text = L10nManager.Localize(_data.L10nKey);
 
             buyLimitDescription.gameObject.SetActive(false);
             if (_data.AccountLimit != null)
@@ -127,7 +127,7 @@ namespace Nekoyume.UI.Module
             productImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.Path}");
         }
 
-        public void SetData(ProductSchema data, bool isRecommended)
+        public void SetData(InAppPurchaseServiceClient.ProductSchema data, bool isRecommended)
         {
             _data = data;
             _rect = GetComponent<RectTransform>();
@@ -135,7 +135,7 @@ namespace Nekoyume.UI.Module
             recommended.SetActive(isRecommended);
         }
 
-        public void SetData(ProductSchema data)
+        public void SetData(InAppPurchaseServiceClient.ProductSchema data)
         {
             _data = data;
             _rect = GetComponent<RectTransform>();
@@ -144,7 +144,7 @@ namespace Nekoyume.UI.Module
 
         private void Refresh()
         {
-            _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku);
+            _purchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku());
             if (_purchasingData == null && !_data.IsFree)
             {
                 gameObject.SetActive(false);
@@ -158,12 +158,12 @@ namespace Nekoyume.UI.Module
 
             switch (_data.Size)
             {
-                case "1x1":
+                case InAppPurchaseServiceClient.ProductAssetUISize._1x1:
                     _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 230);
                     bottomButtonLayoutElement.minHeight = 65;
                     bottomLayout.spacing = 0;
                     break;
-                case "1x2":
+                case InAppPurchaseServiceClient.ProductAssetUISize._1x2:
                     _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 467); // add spacing size
                     bottomButtonLayoutElement.minHeight = 75;
                     bottomLayout.spacing = 3;
