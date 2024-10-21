@@ -99,7 +99,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private SortType currentSortType = SortType.Id;
 
-        private bool _isSortDescending = false;
+        private bool _isSortDescending = true;
 
         private List<CollectionModel> _items;
 
@@ -587,7 +587,7 @@ namespace Nekoyume.UI
             // 다른 조건이 같다면 ID로 비교
             if (a.Row.Id != b.Row.Id)
             {
-                return a.Row.Id < b.Row.Id ? -1 : 1;
+                return a.Row.Id > b.Row.Id ? -1 : 1;
             }
 
             return 0;
