@@ -17,9 +17,16 @@ namespace Nekoyume.ApiClient
         public static string Sku(this InAppPurchaseServiceClient.ProductSchema product)
         {
 #if UNITY_ANDROID
-                return product.GoogleSku;
+            return product.GoogleSku;
 #elif UNITY_IOS
+            if (Game.LiveAsset.GameConfig.IsKoreanBuild)
+            {
+                return product.AppleSkuK;
+            }
+            else
+            {
                 return product.AppleSku;
+            }
 #else
             return product.GoogleSku;
 #endif
