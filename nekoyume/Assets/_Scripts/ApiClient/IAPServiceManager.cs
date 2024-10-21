@@ -7,6 +7,7 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Libplanet.Crypto;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.ApiClient
@@ -39,6 +40,8 @@ namespace Nekoyume.ApiClient
         private readonly InAppPurchaseServiceClient.Store _store;
 
         private readonly InAppPurchaseServiceClient.PackageName _packageName;
+
+        public ReactiveProperty<int> CurrentMileage = new(0);
 
         public bool IsInitialized { get; private set; }
         public bool IsDisposed { get; private set; }
@@ -196,6 +199,7 @@ namespace Nekoyume.ApiClient
                 (success) =>
                 {
                     result = success;
+                    CurrentMileage.Value = success.MileageResult;
                 },
                 (error) =>
                 {
@@ -233,6 +237,7 @@ namespace Nekoyume.ApiClient
                 (success) =>
                 {
                     result = success;
+                    CurrentMileage.Value = success.MileageResult;
                 },
                 (error) =>
                 {
@@ -267,6 +272,41 @@ namespace Nekoyume.ApiClient
                 (success) =>
                 {
                     result = success;
+                    CurrentMileage.Value = success.MileageResult;
+                },
+                (error) =>
+                {
+                    Debug.LogError(error);
+                });
+            return result;
+        }
+
+        public async Task<InAppPurchaseServiceClient.ReceiptDetailSchema?> PurchaseMileageAsync(
+            string agentAddr,
+            string avatarAddr,
+            string planetId,
+            string sku)
+        {
+            if (!IsInitialized || _client is null)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+
+            InAppPurchaseServiceClient.ReceiptDetailSchema? result = null;
+            await _client.PostPurchaseMileageAsync(_packageName,
+                new InAppPurchaseServiceClient.FreeReceiptSchema
+                {
+                    Store = _store,
+                    AgentAddress = agentAddr,
+                    AvatarAddress = avatarAddr,
+                    PlanetId = planetId,
+                    Sku = sku
+                },
+                (success) =>
+                {
+                    result = success;
+                    CurrentMileage.Value = success.MileageResult;
                 },
                 (error) =>
                 {
@@ -344,6 +384,29 @@ namespace Nekoyume.ApiClient
                 (success) =>
                 {
                     result = success;
+                },
+                (error) =>
+                {
+                    Debug.LogError(error);
+                });
+            return result;
+        }
+
+        public async Task<InAppPurchaseServiceClient.MileageSchema> RefreshMileageAsync()
+        {
+            if (!IsInitialized || _client is null)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+            InAppPurchaseServiceClient.MileageSchema? result = null;
+            var states = State.States.Instance;
+            var agent = states?.AgentState?.address.ToHex();
+            await _client.GetMileageAsync(agent, Game.Game.instance?.CurrentPlanetId?.ToString(),
+                (success) =>
+                {
+                    result = success;
+                    CurrentMileage.Value = success.Mileage;
                 },
                 (error) =>
                 {

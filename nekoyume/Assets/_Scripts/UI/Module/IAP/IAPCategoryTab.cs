@@ -34,6 +34,7 @@ namespace Nekoyume.UI.Module
             foreach (var item in icons)
             {
                 item.sprite = icon;
+                item.SetNativeSize();
             }
         }
 
