@@ -125,6 +125,7 @@ namespace Nekoyume.UI.Module
         {
             backgroundImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.BgPath}");
             productImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.Path}");
+            productImage.SetNativeSize();
         }
 
         public void SetData(InAppPurchaseServiceClient.ProductSchema data, bool isRecommended)

@@ -1959,13 +1959,14 @@ NPC_46_NAME,Modgud,모드구드,Moodgud,モドグド,Moodgud,Moodgud,Moodgud,М�
 NPC_47_NAME,Hrímgrímnir,흐림그림니르,Blurgrimnir,フリムグリームニル,Borrosogrím,ฝุ่นกริมนีล์,Blurgrimnir,Блюргримнир,模糊格里尼尔,模糊格里尼爾,Blurgrimnir,Hrímgrímnir
 NPC_48_NAME,Garmr,가름,Garam,ガルム,Garum,Garam,Garam,Гарам,Garam,Garam,Garam,Garmr
 NPC_49_NAME,Hella,헬라,Hera,ヘラ,Hera,เฮร่า,Hera,Гера,赫拉,赫拉,Hera,Hella
-UI_INTRODUCE_MIGRATION,"<color=#1264a3><link={0}>current rewards</link>
-<link={1}>new rewards</link></color>
-The reward has been updated.
-Would you like to migrate the contract?","<color=#1264A3><link={0}>현재 보상</link>
+UI_INTRODUCE_MIGRATION,"<Style=Link><link={0}>current rewards</link>
+<link={1}>new rewards</link></Style>
+Would you like to migrate the contract?
+<size=14>Upon migration, the block for claiming rewards
+and adjusting the amount will be updated.</size>","<color=#1264A3><link={0}>현재 보상</link>
 <link={1}>새로운 보상</link></color>
-보상이 업데이트되었습니다.
-계약을 이전하시겠습니까?","<color=#1264A3><link={0}>recompensas atuais</link>
+계약을 이전하시겠습니까?
+이전시 보상 claim과 금액을 변경할수 있는 block이 갱신됩니다.","<color=#1264A3><link={0}>recompensas atuais</link>
 <link={1}>novas recompensas</link></color>
 A recompensa foi atualizada.
 Gostaria de migrar o contrato?","<color=#1264A3><link={0}>現在の報酬</link>
@@ -2073,4 +2074,5 @@ UI_MENU_MONSTER_COLLECTION,MONSTER COLLECTION,몬스터 컬렉션,Coleção de M
 UI_LOCK_MONSTER_COLLECTION_NOTI,The monster collection menu is locked.,몬스터 컬렉션 메뉴는 잠겨 있습니다.,El menú de colección de monstruos está bloqueado.,モンスターコレクションメニューはロックされています。,El menú de colección de monstruos está bloqueado.,เมนูการสะสมมอนสเตอร์ถูกล็อก,Menu koleksi monster terkunci.,Меню коллекции монстров заблокировано.,怪物收集菜单被锁定,怪物收集菜单被锁定,Ang menu ng koleksyon ng halimaw ay nakalock.,Menu Bộ Sưu Tập Quái Vật bị khóa
 UI_LOCK_GRIND_NOTI,The grind menu is locked.,그라인드 메뉴는 잠겨 있습니다.,El menú de molienda está bloqueado.,グラインドメニューはロックされています。,El menú de molienda está bloqueado.,เมนูการบดถูกล็อก,Menu grind terkunci.,Меню измельчения заблокировано.,研磨菜单被锁定,研磨菜单被锁定,Ang grind menu ay nakalock.,Menu nghiền bị khóa
 UI_LOCK_SHOP_NOTI,The shop menu is locked.,상점 메뉴는 잠겨 있습니다.,El menú de la tienda está bloqueado.,ショップメニューはロックされています。,El menú de la tienda está bloqueado.,เมนูร้านค้าถูกล็อก,Menu toko terkunci.,Меню магазина заблокировано.,商店菜单被锁定,商店菜单被锁定,Ang menu ng tindahan ay nakalock.,Menu cửa hàng bị khóa
+MIGRATE_NOTICE,"A new contract with different rewards from the current one has been added. Would you like to migrate?",현재와 보상이 다른 신규 계약이 추가되었습니다. 이전하시겠습니까?,,,,,,,,,,,
 UI_MILEAGE_PRICE,M{0},,,,,,,,,,,,

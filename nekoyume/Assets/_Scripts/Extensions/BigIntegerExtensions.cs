@@ -39,8 +39,8 @@ namespace Nekoyume
         {
             return ToCurrencyNotation((decimal)num);
         }
-
-        private static string ToCurrencyNotation(decimal value)
+        
+        public static string ToCurrencyNotation(this decimal value)
         {
             string[] suffixes = { "", "K", "M", "B" };
 
@@ -51,7 +51,7 @@ namespace Nekoyume
                 suffixIndex++;
             }
 
-            return string.Format("{0:N2}", value).TrimEnd('0').TrimEnd('.') + suffixes[suffixIndex];
+            return $"{$"{value:N2}".TrimEnd('0').TrimEnd('.')}{suffixes[suffixIndex]}";
         }
     }
 }
