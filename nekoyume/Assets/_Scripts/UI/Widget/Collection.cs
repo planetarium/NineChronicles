@@ -575,7 +575,13 @@ namespace Nekoyume.UI
                 return aPartiallyActive ? -1 : 1;
             }
 
-            // 3. 재료 모두 미달성 (나머지)
+            // 3. 재료 모두 미달성 (활성화 되지 않은 것이 먼저 나오도록)
+            if (a.Active != b.Active)
+            {
+                return a.Active ? 1 : -1;
+            }
+            
+            // 4. 활성화 된 것이 나중에 나오도록 정렬
 
             // 설정된 타입별로 정렬
             var sortByTypeValue = SortByType(a, b, currentSortType);
