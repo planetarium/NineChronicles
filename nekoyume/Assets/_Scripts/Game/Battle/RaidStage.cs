@@ -68,9 +68,6 @@ namespace Nekoyume.Game.Battle
         }
 
         [SerializeField]
-        private ObjectPool objectPool;
-
-        [SerializeField]
         private float skillDelay = 0.3f;
 
         [SerializeField]
@@ -95,20 +92,9 @@ namespace Nekoyume.Game.Battle
 
         private RaidStartData? _currentPlayData;
 
-        public SkillController SkillController { get; private set; }
-        public BuffController BuffController { get; private set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public RaidCamera Camera => container.Camera;
         public int TurnNumber => _waveTurn;
-
-        public async UniTask InitializeAsync()
-        {
-            objectPool.Initialize();
-            SkillController = new SkillController(objectPool);
-            await SkillController.InitializeAsync();
-            BuffController = new BuffController(objectPool);
-            await BuffController.InitializeAsync();
-        }
 
         public void Play(RaidStartData data)
         {
@@ -652,7 +638,7 @@ namespace Nekoyume.Game.Battle
             {
                 StopCoroutine(_battleCoroutine);
                 _battleCoroutine = null;
-                objectPool.ReleaseAll();
+                Game.instance.Stage.ObjectPool.ReleaseAll();
             }
 
             _currentPlayData = null;
