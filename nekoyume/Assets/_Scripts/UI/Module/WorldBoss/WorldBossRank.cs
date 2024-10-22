@@ -200,7 +200,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             var records = response?.WorldBossRanking.RankingInfo ?? new List<WorldBossRankingRecord>();
             var userCount = response?.WorldBossTotalUsers ?? 0;
             var blockIndex = response?.WorldBossRanking?.BlockIndex ?? -1;
-            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+            var myRecord = records.FirstOrDefault(record => new Address(record.Address).Equals(avatarAddress));
 
             if (records.Count > LimitCount)
             {
