@@ -1304,7 +1304,7 @@ RectTransform:
   m_GameObject: {fileID: 1239844752606460693}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 1, y: 1, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5050718796212635842}
@@ -1314,7 +1314,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 178}
-  m_SizeDelta: {x: 158, y: 168}
+  m_SizeDelta: {x: 108, y: 115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7202534050436178820
 CanvasRenderer:
@@ -1344,7 +1344,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0b4bb9ffd3f805f48bfda990be18a62a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 006f2f552fe412a4da629e639882095d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15057,7 +15057,7 @@ RectTransform:
   m_GameObject: {fileID: 5191121612743324129}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5223651326665187904}
@@ -15066,7 +15066,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 178}
-  m_SizeDelta: {x: 158, y: 168}
+  m_SizeDelta: {x: 108, y: 115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &399477030251242725
 CanvasRenderer:
@@ -15096,7 +15096,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0d8d9983815cd874789d2436617f3396, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1a86673f63c6c424dba9f59bdfccdd3f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -20562,6 +20562,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -20576,6 +20581,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -20719,6 +20734,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -20733,6 +20753,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -20871,6 +20901,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -20885,6 +20920,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -20961,17 +21006,17 @@ PrefabInstance:
     - target: {fileID: 4404329406838311846, guid: c119f56cb662861429fece9a1b620795,
         type: 3}
       propertyPath: m_Scale3D.x
-      value: 190
+      value: 133
       objectReference: {fileID: 0}
     - target: {fileID: 4404329406838311846, guid: c119f56cb662861429fece9a1b620795,
         type: 3}
       propertyPath: m_Scale3D.y
-      value: 190
+      value: 133
       objectReference: {fileID: 0}
     - target: {fileID: 4404329406838311846, guid: c119f56cb662861429fece9a1b620795,
         type: 3}
       propertyPath: m_Scale3D.z
-      value: 190
+      value: 133
       objectReference: {fileID: 0}
     - target: {fileID: 4404329406838311846, guid: c119f56cb662861429fece9a1b620795,
         type: 3}
@@ -21353,6 +21398,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -21367,6 +21417,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -21505,6 +21565,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -21519,6 +21584,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -21657,6 +21732,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -21671,6 +21751,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -21809,6 +21899,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -21823,6 +21918,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -21961,6 +22066,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -21975,6 +22085,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -22242,6 +22362,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -22256,6 +22381,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -22529,6 +22664,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -22543,6 +22683,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -22681,6 +22831,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -22695,6 +22850,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
@@ -22833,6 +22998,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonPassItemView
       objectReference: {fileID: 0}
+    - target: {fileID: 1192770997361741104, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3117758420345534243, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
         type: 3}
       propertyPath: m_IsActive
@@ -22847,6 +23017,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ResetScaleOnEnable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6150304901931611213, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180963042730973760, guid: f339d16bbe21ac24abfa5de5a0d0cc1d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f339d16bbe21ac24abfa5de5a0d0cc1d, type: 3}
