@@ -2397,7 +2397,7 @@ GameObject:
   - component: {fileID: 5576596252843123129}
   - component: {fileID: 2885557285241037586}
   - component: {fileID: 7546307749182851757}
-  - component: {fileID: 528390963655366275}
+  - component: {fileID: 4932056234727640919}
   m_Layer: 0
   m_Name: TimeArea
   m_TagString: Untagged
@@ -2468,32 +2468,58 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &528390963655366275
+--- !u!114 &4932056234727640919
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2328163621414470345}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Script: {fileID: 11500000, guid: 47293dec5779427aadf9fa0b4ac861f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 1
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  rewardViews:
+  - rewardType: 0
+    cumulativeReward:
+      container: {fileID: 5544385584220164435}
+      text: {fileID: 8722450153346242495}
+    rewardPerTime:
+      container: {fileID: 3054287669519595827}
+      text: {fileID: 3799313865113001445}
+  - rewardType: 1
+    cumulativeReward:
+      container: {fileID: 7169766031393995574}
+      text: {fileID: 7300757663897800431}
+    rewardPerTime:
+      container: {fileID: 4870598158221992227}
+      text: {fileID: 1829142020145883379}
+  - rewardType: 3
+    cumulativeReward:
+      container: {fileID: 3668181364395969780}
+      text: {fileID: 7835482936739241006}
+    rewardPerTime:
+      container: {fileID: 3469853620311651828}
+      text: {fileID: 2521502172570499718}
+  - rewardType: 2
+    cumulativeReward:
+      container: {fileID: 7032792931028124825}
+      text: {fileID: 209233258875042024}
+    rewardPerTime:
+      container: {fileID: 3441779405622155078}
+      text: {fileID: 3035609969122779457}
+  - rewardType: 4
+    cumulativeReward:
+      container: {fileID: 2002252355235324918}
+      text: {fileID: 5027518284946541491}
+    rewardPerTime:
+      container: {fileID: 3783224074651935712}
+      text: {fileID: 5979385787529861809}
+  patrolTimeText: {fileID: 1539163856215977922}
+  patrolTimeGauge: {fileID: 3088565068093844524}
+  gaugeUnitText1: {fileID: 3728871724624060550}
+  gaugeUnitText2: {fileID: 6816962330808662938}
 --- !u!1 &2371903875736333862
 GameObject:
   m_ObjectHideFlags: 0

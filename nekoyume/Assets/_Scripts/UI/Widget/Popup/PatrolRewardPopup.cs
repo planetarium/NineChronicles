@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using mixpanel;
 using Nekoyume.ApiClient;
@@ -8,10 +7,9 @@ using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using Nekoyume.UI.Model.Patrol;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,27 +19,8 @@ namespace Nekoyume.UI
 
     public class PatrolRewardPopup : PopupWidget
     {
-        [Serializable]
-        private class RewardView
-        {
-            public GameObject container;
-            public TextMeshProUGUI text;
-        }
-
-        [Serializable]
-        private class RewardData
-        {
-            public PatrolRewardType rewardType;
-            public RewardView cumulativeReward;
-            public RewardView rewardPerTime;
-        }
-
         [SerializeField] private Button closeButton;
-        [SerializeField] private RewardData[] rewardViews;
-        [SerializeField] private TextMeshProUGUI patrolTimeText;
-        [SerializeField] private Image patrolTimeGauge;
-        [SerializeField] private TextMeshProUGUI gaugeUnitText1;
-        [SerializeField] private TextMeshProUGUI gaugeUnitText2;
+        [SerializeField] private PatrolRewardModule patrolRewardModule;
         [SerializeField] private ConditionalButton receiveButton;
 
         public readonly PatrolReward PatrolReward = new();
@@ -175,6 +154,12 @@ namespace Nekoyume.UI
                 : L10nManager.Localize("UI_REMAINING_TIME", GetTimeString(remainTime));
         }
 
+        private void SetIntervalText(TimeSpan interval)
+        {
+            gaugeUnitText1.text = GetTimeString(interval / 2);
+            gaugeUnitText2.text = GetTimeString(interval);
+        }
+
         private static string GetTimeString(TimeSpan time)
         {
             var hourExist = time.TotalHours >= 1;
@@ -182,32 +167,6 @@ namespace Nekoyume.UI
             var hourText = hourExist ? $"{(int)time.TotalHours}h " : string.Empty;
             var minuteText = minuteExist || !hourExist ? $"{time.Minutes}m" : string.Empty;
             return $"{hourText}{minuteText}";
-        }
-
-        private void SetIntervalText(TimeSpan interval)
-        {
-            gaugeUnitText1.text = GetTimeString(interval / 2);
-            gaugeUnitText2.text = GetTimeString(interval);
-        }
-
-        private void OnChangeRewards(Dictionary<PatrolRewardType, int> rewards)
-        {
-            foreach (var rewardView in rewardViews)
-            {
-                rewardView.cumulativeReward.container.SetActive(false);
-            }
-
-            foreach (var (rewardType, value) in rewards)
-            {
-                var view = rewardViews.FirstOrDefault(view => view.rewardType == rewardType);
-                if (view == null)
-                {
-                    continue;
-                }
-
-                view.cumulativeReward.container.SetActive(value > 0);
-                view.cumulativeReward.text.text = $"{value}";
-            }
         }
 
         private void SetRewards(List<PatrolRewardModel> rewardModels)
@@ -220,7 +179,7 @@ namespace Nekoyume.UI
                 _rewards[rewardType] = reward.PerInterval;
             }
 
-            OnChangeRewards(_rewards);
+            patrolRewardModule.OnChangeRewards(_rewards);
         }
 
         private static PatrolRewardType GetRewardType(PatrolRewardModel reward)
