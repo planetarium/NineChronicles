@@ -15,39 +15,27 @@ namespace Nekoyume.State
     public static class ReactiveAvatarState
     {
         private static readonly ReactiveProperty<Address> AddressInternal;
-
-        public static readonly IObservable<Address> Address;
-
         private static readonly ReactiveProperty<Inventory> InventoryInternal;
-
-        public static readonly IObservable<Inventory> Inventory;
-
         private static readonly ReactiveProperty<MailBox> MailBoxInternal;
-
-        public static readonly IObservable<MailBox> MailBox;
-
         private static readonly ReactiveProperty<WorldInformation> WorldInformationInternal;
-
-        public static readonly IObservable<WorldInformation> WorldInformation;
-
         private static readonly ReactiveProperty<long> ActionPointInternal;
+        private static readonly ReactiveProperty<long> DailyRewardReceivedIndexInternal;
+        private static readonly ReactiveProperty<QuestList> QuestListInternal;
+        private static readonly ReactiveProperty<long> RelationshipInternal;
+        
+        public static readonly IObservable<Address> Address;
+        public static readonly IObservable<Inventory> Inventory;
+        public static readonly IObservable<MailBox> MailBox;
+        public static readonly IObservable<WorldInformation> WorldInformation;
+        public static readonly IObservable<long> ObservableActionPoint;
+        public static readonly IObservable<long> ObservableDailyRewardReceivedIndex;
+        public static readonly IObservable<QuestList> ObservableQuestList;
+        public static readonly IObservable<long> ObservableRelationship;
 
         public static long ActionPoint => ActionPointInternal.Value;
-        public static readonly IObservable<long> ObservableActionPoint;
-
-        private static readonly ReactiveProperty<long> DailyRewardReceivedIndexInternal;
-
         public static long DailyRewardReceivedIndex => DailyRewardReceivedIndexInternal.Value;
-        public static readonly IObservable<long> ObservableDailyRewardReceivedIndex;
-
-        private static readonly ReactiveProperty<QuestList> QuestListInternal;
-
         public static QuestList QuestList => QuestListInternal.Value;
-        public static readonly IObservable<QuestList> ObservableQuestList;
-
-        private static readonly ReactiveProperty<long> RelationshipInternal;
         public static long Relationship => RelationshipInternal.Value;
-        public static readonly IObservable<long> ObservableRelationship;
 
         static ReactiveAvatarState()
         {
