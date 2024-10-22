@@ -195,11 +195,6 @@ namespace Nekoyume.UI
                     _tweenScale.Append(bubbleContainer.DOScale(1.0f, 1.4f));
                     _tweenScale.SetLoops(_forceFixed ? -1 : 3);
                     _tweenScale.Play();
-                    _tweenScale.onComplete = () =>
-                    {
-                        _tweenScale.Kill();
-                        _tweenScale = null;
-                    };
                 }
 
                 if (_tweenMoveBy == null ||
@@ -213,11 +208,6 @@ namespace Nekoyume.UI
                         contentSize.DOBlendableLocalMoveBy(new Vector3(0.0f, -6.0f), 1.4f));
                     _tweenMoveBy.SetLoops(_forceFixed ? -1 : 3);
                     _tweenMoveBy.Play();
-                    _tweenMoveBy.onComplete = () =>
-                    {
-                        _tweenMoveBy.Kill();
-                        _tweenMoveBy = null;
-                    };
                 }
 
                 yield return new WaitForSeconds(bubbleTweenTime);
