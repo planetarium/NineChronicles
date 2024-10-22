@@ -256,7 +256,7 @@ namespace Nekoyume.UI
 
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
-            var txId = await PatrolReward.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
+            // var txId = await PatrolReward.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
             while (true)
             {
                 var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
