@@ -2,16 +2,19 @@ using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Nekoyume.ApiClient;
+using Nekoyume.GraphQL;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 
-namespace Nekoyume.UI.Model.Patrol
+namespace Nekoyume.ApiClient
 {
     using UniRx;
 
     public class PatrolReward
     {
-        private int AvatarLevel { get; set; }
         private readonly ReactiveProperty<DateTime> LastRewardTime = new();
 
         public int NextLevel { get; private set; }
@@ -25,68 +28,16 @@ namespace Nekoyume.UI.Model.Patrol
 
         public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
         {
-            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
-            if (!serviceClient.IsInitialized)
+            var (avatar, policy) =
+                await PatrolRewardQuery.InitializeInformation(avatarAddress, agentAddress, level);
+            if (avatar is not null)
             {
-                return;
+                SetAvatarModel(avatar);
             }
 
-            var query =
-                $@"query {{
-    avatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
-        avatarAddress
-        agentAddress
-        createdAt
-        lastClaimedAt
-        level
-    }}
-    policy(level: {level}, free: true) {{
-        activate
-        minimumLevel
-        maxLevel
-        minimumRequiredInterval
-        rewards {{
-            ... on FungibleAssetValueRewardModel {{
-                currency
-                perInterval
-                rewardInterval
-            }}
-            ... on FungibleItemRewardModel {{
-                itemId
-                perInterval
-                rewardInterval
-            }}
-        }}
-    }}
-}}";
-
-            var response = await serviceClient.GetObjectAsync<InitializeResponse>(query);
-            if (response is null)
+            if (policy is not null)
             {
-                NcDebug.LogError($"Failed getting response : {nameof(InitializeResponse)}");
-                return;
-            }
-
-            if (response.Avatar is null)
-            {
-                await PutAvatar(avatarAddress, agentAddress);
-            }
-            else
-            {
-                AvatarLevel = response.Avatar.Level;
-                var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
-                LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
-            }
-
-            if (response.Policy is null)
-            {
-                NcDebug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
-            }
-            else
-            {
-                NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
-                Interval = response.Policy.MinimumRequiredInterval;
-                RewardModels.Value = response.Policy.Rewards;
+                SetPolicyModel(policy);
             }
 
             if (Initialized)
@@ -95,6 +46,7 @@ namespace Nekoyume.UI.Model.Patrol
             }
 
             Initialized = true;
+
             PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
                 .CombineLatest(LastRewardTime, (_, lastReward) =>
                 {
@@ -107,148 +59,104 @@ namespace Nekoyume.UI.Model.Patrol
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
         {
-            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
-            if (!serviceClient.IsInitialized)
+            var avatar = await PatrolRewardQuery.LoadAvatarInfo(avatarAddress, agentAddress);
+            if (avatar is not null)
             {
-                return;
-            }
-
-            var query = $@"query {{
-                avatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
-                    avatarAddress
-                    agentAddress
-                    createdAt
-                    lastClaimedAt
-                    level
-                }}
-            }}";
-
-            var response = await serviceClient.GetObjectAsync<AvatarResponse>(query);
-            if (response is null)
-            {
-                NcDebug.LogError($"Failed getting response : {nameof(AvatarResponse)}");
-                return;
-            }
-
-            if (response.Avatar is null)
-            {
-                await PutAvatar(avatarAddress, agentAddress);
-            }
-            else
-            {
-                AvatarLevel = response.Avatar.Level;
-                var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
-                LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+                SetAvatarModel(avatar);
             }
         }
 
         public async Task LoadPolicyInfo(int level, bool free = true)
         {
-            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
-            if (!serviceClient.IsInitialized)
+            var policy = await PatrolRewardQuery.LoadPolicyInfo(level, free);
+            if (policy is not null)
             {
-                return;
-            }
-
-            var query =
-                $@"query {{
-    policy(level: {level}, free: true) {{
-        activate
-        minimumLevel
-        maxLevel
-        minimumRequiredInterval
-        rewards {{
-            ... on FungibleAssetValueRewardModel {{
-                currency
-                perInterval
-                rewardInterval
-            }}
-            ... on FungibleItemRewardModel {{
-                itemId
-                perInterval
-                rewardInterval
-            }}
-        }}
-    }}
-}}";
-
-            var response = await serviceClient.GetObjectAsync<PolicyResponse>(query);
-            if (response is null)
-            {
-                NcDebug.LogError($"Failed getting response : {nameof(PolicyResponse)}");
-                return;
-            }
-
-            if (response.Policy is null)
-            {
-                NcDebug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
-            }
-            else
-            {
-                NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
-                Interval = response.Policy.MinimumRequiredInterval;
-                RewardModels.Value = response.Policy.Rewards;
+                SetPolicyModel(policy);
             }
         }
 
         public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
         {
-            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
-            if (!serviceClient.IsInitialized)
-            {
-                return null;
-            }
-
-            var query =
-                $@"mutation {{
-    claim(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"")
-}}";
-
-            var response = await serviceClient.GetObjectAsync<ClaimResponse>(query);
-            if (response is null)
-            {
-                NcDebug.LogError($"Failed getting response : {nameof(ClaimResponse)}");
-                return null;
-            }
-
-            return response.Claim;
+            var claim = await PatrolRewardQuery.ClaimReward(avatarAddress, agentAddress);
+            return claim;
         }
 
-        private async Task PutAvatar(string avatarAddress, string agentAddress)
+        private async void ClaimRewardAsync()
         {
-            var serviceClient = ApiClients.Instance.PatrolRewardServiceClient;
-            if (!serviceClient.IsInitialized)
+            Analyzer.Instance.Track("Unity/PatrolReward/Request Claim Reward");
+
+            var evt = new AirbridgeEvent("PatrolReward_Request_Claim_Reward");
+            AirbridgeUnity.TrackEvent(evt);
+
+            // Claiming.Value = true;
+            // Close();
+
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            var txId = await PatrolRewardQuery.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
+            while (true)
             {
-                return;
+                var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
+                if (txResultResponse is null)
+                {
+                    NcDebug.LogError(
+                        $"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                        NotificationCell.NotificationType.Alert);
+                    break;
+                }
+
+                var txStatus = txResultResponse.transaction.transactionResult.txStatus;
+                if (txStatus == TxResultQuery.TxStatus.SUCCESS)
+                {
+                    if (avatarAddress != Game.Game.instance.States.CurrentAvatarState.address)
+                    {
+                        return;
+                    }
+
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
+                        NotificationCell.NotificationType.Notification);
+
+                    // Find<Menu>().PatrolRewardMenu.ClaimRewardAnimation();
+                    break;
+                }
+
+                if (txStatus == TxResultQuery.TxStatus.FAILURE)
+                {
+                    if (avatarAddress != Game.Game.instance.States.CurrentAvatarState.address)
+                    {
+                        return;
+                    }
+
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                        NotificationCell.NotificationType.Alert);
+                    break;
+                }
+
+                await Task.Delay(3000);
             }
 
-            var query =
-                $@"mutation {{
-    putAvatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
-        avatarAddress
-        agentAddress
-        createdAt
-        lastClaimedAt
-        level
-    }}
-}}";
+            // Claiming.Value = false;
+            await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+        }
 
-            var response = await serviceClient.GetObjectAsync<PutAvatarResponse>(query);
-            if (response is null)
-            {
-                NcDebug.LogError($"Failed getting response : {nameof(PutAvatarResponse)}");
-                return;
-            }
-
-            if (response.PutAvatar is null)
-            {
-                NcDebug.LogError($"Failed getting response : {nameof(PutAvatarResponse.PutAvatar)}");
-                return;
-            }
-
-            AvatarLevel = response.PutAvatar.Level;
-            var lastClaimedAt = response.PutAvatar.LastClaimedAt ?? response.PutAvatar.CreatedAt;
+        private void SetAvatarModel(AvatarModel avatar)
+        {
+            var lastClaimedAt = avatar.LastClaimedAt ?? avatar.CreatedAt;
             LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+        }
+
+        private void SetPolicyModel(PolicyModel policy)
+        {
+            NextLevel = policy.MaxLevel ?? int.MaxValue;
+            Interval = policy.MinimumRequiredInterval;
+            RewardModels.Value = policy.Rewards;
         }
 
         private void SetPushNotification()
