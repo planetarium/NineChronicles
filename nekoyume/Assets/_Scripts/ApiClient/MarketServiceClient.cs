@@ -39,12 +39,13 @@ namespace Nekoyume.ApiClient
             int limit,
             MarketOrderType order,
             StatType statType,
-            int[] itemIds)
+            int[] iconIds,
+            bool isCustom = false)
         {
-            var url = $"{_url}/Market/products/items/{(int)itemSubType}?limit={limit}&offset={offset}&order={order}&stat={statType.ToString()}";
-            if (itemIds is not null && itemIds.Any())
+            var url = $"{_url}/Market/products/items/{(int)itemSubType}?limit={limit}&offset={offset}&order={order}&stat={statType.ToString()}&isCustom={isCustom}";
+            if (iconIds is not null && iconIds.Any())
             {
-                url = url + "&itemIds=" + string.Join("&itemIds=", itemIds);
+                url = url + "&iconIds=" + string.Join("&iconIds=", iconIds);
             }
 
             string json;
