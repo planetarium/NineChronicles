@@ -243,12 +243,14 @@ namespace Nekoyume.UI
             var firstRecipeId = summonRow.Recipes.First().Item1;
             if (tableSheets.EquipmentItemRecipeSheet.TryGetValue(firstRecipeId, out _))
             {
-                ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
+                //ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
+                ActionManager.Instance.CostumeSummon(50001, 100).Subscribe();
                 StartCoroutine(CoShowAuraSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
             }
             else if (tableSheets.RuneSheet.TryGetValue(firstRecipeId, out _))
             {
-                ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
+                //ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
+                ActionManager.Instance.CostumeSummon(50002, 100).Subscribe();
                 StartCoroutine(CoShowRuneSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
             }
 
