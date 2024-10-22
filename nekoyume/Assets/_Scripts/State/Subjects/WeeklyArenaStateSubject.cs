@@ -1,4 +1,4 @@
-using System.Numerics;
+using System;
 using Nekoyume.Model.State;
 using UniRx;
 using UnityEngine;
@@ -11,8 +11,19 @@ namespace Nekoyume.State.Subjects
     /// </summary>
     public static class WeeklyArenaStateSubject
     {
-        public static readonly Subject<WeeklyArenaState> WeeklyArenaState = new();
-        public static readonly Subject<long> ResetIndex = new();
+        private static readonly Subject<WeeklyArenaState> WeeklyArenaStateInternal;
+        private static readonly Subject<long> ResetIndexInternal;
+        
+        public static readonly IObservable<WeeklyArenaState> WeeklyArenaState;
+        public static readonly IObservable<long> ResetIndex;
+        
+        static WeeklyArenaStateSubject()
+        {
+            WeeklyArenaStateInternal = new Subject<WeeklyArenaState>();
+            ResetIndexInternal = new Subject<long>();
+            WeeklyArenaState = WeeklyArenaStateInternal.ObserveOnMainThread();
+            ResetIndex = ResetIndexInternal.ObserveOnMainThread();
+        }
 
         public static void OnNext(WeeklyArenaState state)
         {
@@ -22,8 +33,8 @@ namespace Nekoyume.State.Subjects
                 return;
             }
 
-            WeeklyArenaState.OnNext(state);
-            ResetIndex.OnNext(state.ResetIndex);
+            WeeklyArenaStateInternal.OnNext(state);
+            ResetIndexInternal.OnNext(state.ResetIndex);
         }
     }
 }

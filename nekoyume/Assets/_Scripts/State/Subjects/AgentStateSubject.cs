@@ -6,13 +6,13 @@ using UniRx;
 namespace Nekoyume.State.Subjects
 {
     /// <summary>
-    /// The change of the value included in `AgentState` is notified to the outside through each Subject<T> field.
+    /// The change of the value included in `AgentState` is notified to the outside through each Subject
     /// </summary>
     public static class AgentStateSubject
     {
-        private static readonly Subject<FungibleAssetValue> _gold;
-        private static readonly Subject<FungibleAssetValue> _crystal;
-        private static readonly Subject<FungibleAssetValue> _garage;
+        private static readonly Subject<FungibleAssetValue> GoldInternal;
+        private static readonly Subject<FungibleAssetValue> CrystalInternal;
+        private static readonly Subject<FungibleAssetValue> GarageInternal;
 
         public static readonly IObservable<FungibleAssetValue> Gold;
         public static readonly IObservable<FungibleAssetValue> Crystal;
@@ -20,19 +20,19 @@ namespace Nekoyume.State.Subjects
 
         static AgentStateSubject()
         {
-            _gold = new Subject<FungibleAssetValue>();
-            _crystal = new Subject<FungibleAssetValue>();
-            _garage = new Subject<FungibleAssetValue>();
-            Gold = _gold.ObserveOnMainThread();
-            Crystal = _crystal.ObserveOnMainThread();
-            Garage = _garage.ObserveOnMainThread();
+            GoldInternal = new Subject<FungibleAssetValue>();
+            CrystalInternal = new Subject<FungibleAssetValue>();
+            GarageInternal = new Subject<FungibleAssetValue>();
+            Gold = GoldInternal.ObserveOnMainThread();
+            Crystal = CrystalInternal.ObserveOnMainThread();
+            Garage = GarageInternal.ObserveOnMainThread();
         }
 
         public static void OnNextGold(FungibleAssetValue gold)
         {
             if (gold.Currency.Equals(States.Instance.GoldBalanceState.Gold.Currency))
             {
-                _gold.OnNext(gold);
+                GoldInternal.OnNext(gold);
             }
         }
 
@@ -40,7 +40,7 @@ namespace Nekoyume.State.Subjects
         {
             if (crystal.Currency.Equals(Currencies.Crystal))
             {
-                _crystal.OnNext(crystal);
+                CrystalInternal.OnNext(crystal);
             }
         }
 
@@ -48,7 +48,7 @@ namespace Nekoyume.State.Subjects
         {
             if (garage.Currency.Equals(Currencies.Garage))
             {
-                _garage.OnNext(garage);
+                GarageInternal.OnNext(garage);
             }
         }
     }
