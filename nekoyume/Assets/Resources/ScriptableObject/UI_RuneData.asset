@@ -20,7 +20,7 @@ MonoBehaviour:
   - id: 20001
     ticker: RUNE_GOLDENLEAF
     icon: {fileID: 21300000, guid: 9ab11e6491b814cf6ab1b509d180e8de, type: 3}
-    sortingOrder: 4000
+    sortingOrder: 3994
   - id: 10001
     ticker: RUNESTONE_FENRIR1
     icon: {fileID: 21300000, guid: d6667769127c0ce46bbc124fcaa6252c, type: 3}
@@ -96,15 +96,15 @@ MonoBehaviour:
   - id: 10033
     ticker: RUNESTONE_HIT
     icon: {fileID: 21300000, guid: f31c57366c62ead4a92b6cbc15b43c1c, type: 3}
-    sortingOrder: 3999
+    sortingOrder: 4000
   - id: 10034
     ticker: RUNESTONE_SPD
     icon: {fileID: 21300000, guid: 3c1e742d22b257b41b8afe2294597a44, type: 3}
-    sortingOrder: 3998
+    sortingOrder: 3999
   - id: 10035
     ticker: RUNESTONE_CRI
     icon: {fileID: 21300000, guid: ade57abf922b60f4da737b83caf9c587, type: 3}
-    sortingOrder: 3997
+    sortingOrder: 3998
   - id: 10004
     ticker: RUNESTONE_FENRIR4
     icon: {fileID: 21300000, guid: 456873e8aee4b084fa72044c6d2715df, type: 3}
@@ -133,4 +133,16 @@ MonoBehaviour:
     ticker: RUNESTONE_GOLDENTHOR
     icon: {fileID: 21300000, guid: 7c7598b8813eb8845b44e83f33fb1bf9, type: 3}
     sortingOrder: 3993
+  - id: 10036
+    ticker: RUNESTONE_HP
+    icon: {fileID: 21300000, guid: fa383a5ba3d8d8045ab763e8cf4dd35e, type: 3}
+    sortingOrder: 3997
+  - id: 10037
+    ticker: RUNESTONE_HP
+    icon: {fileID: 21300000, guid: fa383a5ba3d8d8045ab763e8cf4dd35e, type: 3}
+    sortingOrder: 3996
+  - id: 10038
+    ticker: RUNESTONE_HP
+    icon: {fileID: 21300000, guid: fa383a5ba3d8d8045ab763e8cf4dd35e, type: 3}
+    sortingOrder: 3995
   DefaultRuneIcon: {fileID: 21300000, guid: 474642c630309ed45a9942c6fa07ebb5, type: 3}
