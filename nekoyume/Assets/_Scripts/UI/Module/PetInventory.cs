@@ -96,7 +96,6 @@ namespace Nekoyume.UI.Module
             }
 
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
-                .ObserveOnMainThread()
                 .Subscribe(state => UpdateView(state));
             gameObject.SetActive(true);
             InitScrollPosition();
@@ -119,7 +118,6 @@ namespace Nekoyume.UI.Module
             }
 
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
-                .ObserveOnMainThread()
                 .Subscribe(state => UpdateView(state, craftInfo));
             gameObject.SetActive(true);
             InitScrollPosition();
