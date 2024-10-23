@@ -580,7 +580,7 @@ namespace Nekoyume.State
                 _hammerPointStates = null;
                 await UniTask.RunOnThreadPool(async () => { await InitializeAvatarAndRelatedStates(agent, avatarState.address); });
 
-                Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
+                Widget.Find<PatrolRewardPopup>().PatrolReward.InitializeInformation().AsUniTask().Forget();
                 ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
                 Widget.Find<CombinationSlotsPopup>().ClearSlots();
             }

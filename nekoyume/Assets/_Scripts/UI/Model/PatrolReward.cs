@@ -1,8 +1,8 @@
-using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nekoyume.GraphQL;
+using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
@@ -22,14 +22,21 @@ namespace Nekoyume.ApiClient
         public readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
         public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
+        public readonly ReactiveProperty<bool> Claiming = new(false);
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
-        public bool Initialized;
+        public bool Initialized { get; private set; }
 
-        public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
+        public bool CanClaim => Initialized && !Claiming.Value && PatrolTime.Value >= Interval;
+
+        // Called at CurrentAvatarState isNewlySelected
+        public async Task InitializeInformation()
         {
-            var (avatar, policy) =
-                await PatrolRewardQuery.InitializeInformation(avatarAddress, agentAddress, level);
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            var level = Game.Game.instance.States.CurrentAvatarState.level;
+            var (avatar, policy) = await PatrolRewardQuery.InitializeInformation(
+                avatarAddress.ToHex(), agentAddress.ToHex(), level);
             if (avatar is not null)
             {
                 SetAvatarModel(avatar);
@@ -55,6 +62,9 @@ namespace Nekoyume.ApiClient
                 })
                 .ToReactiveProperty();
             LastRewardTime.ObserveOnMainThread().Subscribe(_ => SetPushNotification());
+
+            // for changed avatar
+            Claiming.Value = false;
         }
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
@@ -75,21 +85,14 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
-        {
-            var claim = await PatrolRewardQuery.ClaimReward(avatarAddress, agentAddress);
-            return claim;
-        }
-
-        private async void ClaimRewardAsync()
+        public async void ClaimReward(System.Action onSuccess)
         {
             Analyzer.Instance.Track("Unity/PatrolReward/Request Claim Reward");
 
             var evt = new AirbridgeEvent("PatrolReward_Request_Claim_Reward");
             AirbridgeUnity.TrackEvent(evt);
 
-            // Claiming.Value = true;
-            // Close();
+            Claiming.Value = true;
 
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
@@ -108,10 +111,11 @@ namespace Nekoyume.ApiClient
                     break;
                 }
 
+                var currentAvatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
                 var txStatus = txResultResponse.transaction.transactionResult.txStatus;
                 if (txStatus == TxResultQuery.TxStatus.SUCCESS)
                 {
-                    if (avatarAddress != Game.Game.instance.States.CurrentAvatarState.address)
+                    if (avatarAddress != currentAvatarAddress)
                     {
                         return;
                     }
@@ -121,13 +125,13 @@ namespace Nekoyume.ApiClient
                         L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
                         NotificationCell.NotificationType.Notification);
 
-                    // Find<Menu>().PatrolRewardMenu.ClaimRewardAnimation();
+                    onSuccess?.Invoke();
                     break;
                 }
 
                 if (txStatus == TxResultQuery.TxStatus.FAILURE)
                 {
-                    if (avatarAddress != Game.Game.instance.States.CurrentAvatarState.address)
+                    if (avatarAddress != currentAvatarAddress)
                     {
                         return;
                     }
@@ -142,7 +146,7 @@ namespace Nekoyume.ApiClient
                 await Task.Delay(3000);
             }
 
-            // Claiming.Value = false;
+            Claiming.Value = false;
             await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
 
