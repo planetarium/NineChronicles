@@ -8,6 +8,10 @@ namespace Nekoyume.Game.Character
     {
         private const string StringHUD = "HUD";
         private const string StringHealBorn = "HealBorn";
+        private const float ColorTweenFrom = 0f;
+        private const float ColorTweenTo = 0.6f;
+        private const float ColorTweenDuration = 0.1f;
+        private static readonly int FillPhase = Shader.PropertyToID("_FillPhase");
 
         private Sequence _colorTweenSequence;
         private static readonly int PrologueSpeed = Animator.StringToHash("PrologueSpeed");
@@ -270,6 +274,7 @@ namespace Nekoyume.Game.Character
             }
 
             Animator.Play(animationType.ToString(), BaseLayerIndex, 0f);
+            ColorTween();
         }
 
         public void TurnOver()
@@ -280,6 +285,7 @@ namespace Nekoyume.Game.Character
             }
 
             Animator.Play(nameof(CharacterAnimation.Type.TurnOver_02), BaseLayerIndex, 0f);
+            ColorTween();
         }
 
         public void Die()
@@ -290,6 +296,7 @@ namespace Nekoyume.Game.Character
             }
 
             Animator.Play(nameof(CharacterAnimation.Type.Die), BaseLayerIndex, 0f);
+            ColorTween();
         }
 
         public void Skill(int animationId = 1)
@@ -304,6 +311,31 @@ namespace Nekoyume.Game.Character
         }
 
 #endregion
+
+        private void ColorTween()
+        {
+            if (MeshRenderer == null)
+            {
+                return;
+            }
+
+            var mat = MeshRenderer.material;
+
+            _colorTweenSequence?.Kill();
+
+            _colorTweenSequence = DOTween.Sequence();
+            _colorTweenSequence.Append(DOTween.To(
+                () => ColorTweenFrom,
+                value => mat.SetFloat(FillPhase, value),
+                ColorTweenTo,
+                ColorTweenDuration));
+            _colorTweenSequence.Append(DOTween.To(
+                () => ColorTweenTo,
+                value => mat.SetFloat(FillPhase, value),
+                ColorTweenFrom,
+                ColorTweenDuration));
+            _colorTweenSequence.Play().OnComplete(() => _colorTweenSequence = null);
+        }
 
         public bool IsIdle()
         {
