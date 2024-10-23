@@ -74,10 +74,17 @@ namespace Nekoyume.UI
                     _rectTransform.localScale = LocalScaleBefore;
                     group.alpha = 1f;
                 })
+                .OnComplete(ClearSequence)
                 .Insert(0, _rectTransform.DOScale(LocalScaleAfter, TweenDuration)
                     .SetEase(Ease.OutCubic))
                 .Join(group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration)
                     .SetEase(Ease.InCirc));
+        }
+        
+        private void ClearSequence()
+        {
+            _sequence?.Kill();
+            _sequence = null;
         }
 
         private IEnumerator CoClose()
