@@ -586,7 +586,7 @@ namespace Nekoyume.UI
         
         private void AttractToMonsterCollection()
         {
-            Lobby.Enter(true);
+            Lobby.Enter();
             Find<StakingPopup>().Show();
         }
         
@@ -625,6 +625,7 @@ namespace Nekoyume.UI
             Find<WorldMap>().Close();
             Find<StageInformation>().Close();
             Find<BattlePreparation>().Close();
+            Find<CombinationSlotsPopup>().Close();
             Find<Craft>().Close(true);
             Find<Grind>().Show();
         }
