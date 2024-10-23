@@ -20,6 +20,11 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
+            if (mail.Memo.Contains("world boss"))
+            {
+                return L10nManager.Localize("UI_WORLDBOSS_MAIL_PRETEXT") + mail.GetCellContentsForException();
+            }
+
             if (mail.Memo != null && mail.Memo.Contains("season_pass"))
             {
                 if (mail.Memo.Contains("\"t\": \"auto\""))
@@ -32,7 +37,6 @@ namespace Nekoyume
                 }
             }
 
-            ;
             var iapServiceManager = ApiClients.Instance.IAPServiceManager;
             if (iapServiceManager is null)
             {
@@ -159,6 +163,11 @@ namespace Nekoyume
             if (mail.Memo is null)
             {
                 return mail.GetCellContentsForException();
+            }
+
+            if (mail.Memo.Contains("world boss"))
+            {
+                return L10nManager.Localize("UI_WORLDBOSS_MAIL_PRETEXT") + mail.GetCellContentsForException();
             }
 
             if (mail.Memo != null && mail.Memo.Contains("season_pass"))
