@@ -144,7 +144,6 @@ namespace Nekoyume.UI.Module
                 .ThenByDescending(x => x.viewData.HasState)
                 .ThenBy(x => x.viewData.Equipped)
                 .ThenBy(x => x.viewData.CombinationSlotIndex)
-                .ThenByDescending(x => x.view.Grade)
                 .ThenByDescending(x => x.viewData.Level)
                 .ThenBy(x => x.viewData.PetId);
 
