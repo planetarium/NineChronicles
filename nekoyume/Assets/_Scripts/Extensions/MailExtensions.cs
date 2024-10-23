@@ -116,7 +116,7 @@ namespace Nekoyume
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
-                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
@@ -127,7 +127,7 @@ namespace Nekoyume
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
-                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
@@ -135,7 +135,7 @@ namespace Nekoyume
                     if (itemRow != null)
                     {
                         var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                        itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(item) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
                 }
@@ -233,7 +233,7 @@ namespace Nekoyume
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
-                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
@@ -242,14 +242,14 @@ namespace Nekoyume
                     if (row != null)
                     {
                         var material = ItemFactory.CreateMaterial(row);
-                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
                     if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
                     {
                         var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
-                        itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
+                        itemNames += LocalizationExtensions.GetLocalizedName(item) + $"({count.ToCurrencyNotation()}), ";
                         continue;
                     }
 
