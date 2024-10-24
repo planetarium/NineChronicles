@@ -52,7 +52,7 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            petInventory.Initialize();
+            petInventory.Initialize(false);
         }
 
         protected override void OnEnable()

@@ -62,13 +62,13 @@ namespace Nekoyume.UI.Module
             _disposableOnDisabled = null;
         }
 
-        public void Initialize()
+        public void Initialize(bool hasSelectButton)
         {
             var petSheet = TableSheets.Instance.PetSheet;
             foreach (var row in petSheet)
             {
                 var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
-                view.Initialize(row, OnSelectedSubject.OnNext);
+                view.Initialize(row, OnSelectedSubject.OnNext, hasSelectButton);
                 _views[row.Id] = view;
             }
         }
