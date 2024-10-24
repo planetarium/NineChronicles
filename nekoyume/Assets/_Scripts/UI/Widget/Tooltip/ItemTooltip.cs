@@ -339,7 +339,7 @@ namespace Nekoyume.UI
                 if (Input.GetMouseButtonDown(0))
                 {
                     UnityEngine.Vector2 mousePos = Input.mousePosition;
-                    _isClickedTooltipArea = RectTransformUtility.RectangleContainsScreenPoint(panel, mousePos, MainCanvas.instance.Canvas.worldCamera);
+                    _isClickedTooltipArea = RectTransformUtility.RectangleContainsScreenPoint(panel, mousePos, MainCanvas.instance.Canvas.worldCamera) || _isPointerOnTooltipArea;
                 }
 
                 var current = TouchHandler.currentSelectedGameObject;
