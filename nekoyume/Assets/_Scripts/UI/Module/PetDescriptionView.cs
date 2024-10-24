@@ -130,7 +130,7 @@ namespace Nekoyume.UI.Module
             levelText.text = $"Lv.{data.Level}";
             dimmedImage.enabled = !data.HasState || !data.IsAppliable;
             equippedObject.SetActive(data.Equipped);
-            if (selectButtonObject && _hasSelectButton)
+            if (_hasSelectButton && selectButtonObject)
             {
                 selectButtonObject.gameObject.SetActive(data.IsAppliable && !data.Equipped);
                 inUseObject.SetActive(data.Equipped);
