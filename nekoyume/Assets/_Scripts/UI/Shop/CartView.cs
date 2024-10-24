@@ -85,6 +85,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
+                    cartItems[i].Set(null, null);
                     cartItems[i].gameObject.SetActive(false);
                 }
             }
