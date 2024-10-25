@@ -75,6 +75,17 @@ namespace Nekoyume.Helper
             return PetUIPalette[key];
         }
 
+        public static string GetPetSoulStoneName(int id)
+        {
+            return L10nManager.LocalizeItemName(PetRenderingData[id].soulStoneId);
+        }
+
+        public static string GetPetSoulStoneDescription(int id)
+        {
+            var dataId = PetRenderingData[id].soulStoneId;
+            return L10nManager.Localize($"ITEM_DESCRIPTION_{dataId}");
+        }
+
         public static bool HasNotification(int id)
         {
             var nextLevel = 1;
