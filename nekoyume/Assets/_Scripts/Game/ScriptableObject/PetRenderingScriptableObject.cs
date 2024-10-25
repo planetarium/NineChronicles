@@ -15,6 +15,7 @@ namespace Nekoyume
         public struct PetRenderingData
         {
             public int id;
+            public int soulStoneId; 
             public Sprite soulStoneSprite;
             public SkeletonDataAsset spineDataAsset;
             public Vector3 localPosition;
