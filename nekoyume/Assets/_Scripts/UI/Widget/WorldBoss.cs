@@ -412,7 +412,7 @@ namespace Nekoyume.UI
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking?.RankingInfo ?? new List<WorldBossRankingRecord>();
             var myRecord =
-                records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+                records.FirstOrDefault(record => new Address(record.Address).Equals(avatarAddress));
             var userCount = response?.WorldBossTotalUsers ?? 0;
             var blockIndex = response?.WorldBossRanking?.BlockIndex ?? -1;
             return (myRecord, blockIndex, userCount);
