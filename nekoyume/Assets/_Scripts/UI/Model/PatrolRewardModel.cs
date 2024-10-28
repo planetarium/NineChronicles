@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using Newtonsoft.Json;
 
-namespace Nekoyume.UI.Model.Patrol
+namespace Nekoyume.UI.Model
 {
     public class InitializeResponse
     {
