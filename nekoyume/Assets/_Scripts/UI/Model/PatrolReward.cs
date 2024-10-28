@@ -153,7 +153,7 @@ namespace Nekoyume.ApiClient
             RewardModels.Value = policy.Rewards;
         }
 
-        private void SetPushNotification()
+        private static void SetPushNotification(TimeSpan completeTime)
         {
             var prevPushIdentifier = PlayerPrefs.GetString(PatrolRewardPushIdentifierKey, string.Empty);
             if (!string.IsNullOrEmpty(prevPushIdentifier))
@@ -162,9 +162,10 @@ namespace Nekoyume.ApiClient
                 PlayerPrefs.DeleteKey(PatrolRewardPushIdentifierKey);
             }
 
-            var completeTime = LastRewardTime.Value + Interval - DateTime.Now;
-
-            var pushIdentifier = PushNotifier.Push(L10nManager.Localize("PUSH_PATROL_REWARD_COMPLETE_CONTENT"), completeTime, PushNotifier.PushType.Reward);
+            var pushIdentifier = PushNotifier.Push(
+                L10nManager.Localize("PUSH_PATROL_REWARD_COMPLETE_CONTENT"),
+                completeTime,
+                PushNotifier.PushType.Reward);
             PlayerPrefs.SetString(PatrolRewardPushIdentifierKey, pushIdentifier);
         }
     }
