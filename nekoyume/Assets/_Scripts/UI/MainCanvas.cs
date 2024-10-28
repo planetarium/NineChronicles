@@ -341,7 +341,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Enhancement>());
             _secondWidgets.Add(Widget.Create<Grind>());
             _secondWidgets.Add(Widget.Create<Rune>());
-            _secondWidgets.Add(Widget.Create<Summon>());
+            _secondWidgets.Add(Widget.Create<NewSummon>());
             _secondWidgets.Add(Widget.Create<DccMain>());
             _secondWidgets.Add(Widget.Create<DccCollection>());
             _secondWidgets.Add(Widget.Create<CustomCraft>());
