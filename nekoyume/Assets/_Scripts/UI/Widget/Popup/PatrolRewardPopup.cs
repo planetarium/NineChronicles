@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using mixpanel;
 using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
-using Nekoyume.GraphQL;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,14 +20,9 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton receiveButton;
 
         public readonly PatrolReward PatrolReward = new();
-        public readonly ReactiveProperty<bool> Claiming = new(false);
         private readonly Dictionary<PatrolRewardType, int> _rewards = new();
 
         private bool _initialized;
-
-        public bool CanClaim =>
-            PatrolReward.Initialized && !Claiming.Value &&
-            PatrolReward.PatrolTime.Value >= PatrolReward.Interval;
 
         protected override void Awake()
         {
@@ -43,28 +34,20 @@ namespace Nekoyume.UI
                 Close();
             });
             CloseWidget = () => Close(true);
+
+            receiveButton.OnSubmitSubject
+                .Subscribe(_ => ClaimReward())
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (Claiming.Value)
+            if (PatrolReward.Claiming.Value)
             {
                 return;
             }
 
             ShowAsync(ignoreShowAnimation);
-        }
-
-        // Called at CurrentAvatarState isNewlySelected
-        public async Task InitializePatrolReward()
-        {
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var agentAddress = Game.Game.instance.States.AgentState.address;
-            var level = Game.Game.instance.States.CurrentAvatarState.level;
-            await PatrolReward.InitializeInformation(avatarAddress.ToHex(), agentAddress.ToHex(), level);
-
-            // for changed avatar
-            Claiming.Value = false;
         }
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
@@ -75,11 +58,6 @@ namespace Nekoyume.UI
                 NcDebug.Log(
                     $"[{nameof(PatrolRewardPopup)}]PatrolRewardServiceClient is not initialized.");
                 return;
-            }
-
-            if (!PatrolReward.Initialized)
-            {
-                await InitializePatrolReward();
             }
 
             Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>
@@ -96,8 +74,15 @@ namespace Nekoyume.UI
                 Init();
             }
 
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
-            if (PatrolReward.NextLevel <= level)
+            if (!PatrolReward.Initialized)
+            {
+                await PatrolReward.InitializeInformation(avatarAddress.ToHex(),
+                    agentAddress.ToHex(), level);
+            }
+            else if (PatrolReward.NextLevel <= level)
             {
                 await PatrolReward.LoadPolicyInfo(level);
             }
@@ -105,6 +90,17 @@ namespace Nekoyume.UI
             SetIntervalText(PatrolReward.Interval);
             OnChangeTime(PatrolReward.PatrolTime.Value);
             base.Show(ignoreShowAnimation);
+        }
+
+        private void ClaimReward()
+        {
+            Analyzer.Instance.Track("Unity/PatrolReward/Request Claim Reward");
+
+            var evt = new AirbridgeEvent("PatrolReward_Request_Claim_Reward");
+            AirbridgeUnity.TrackEvent(evt);
+
+            PatrolReward.ClaimReward(() => Find<LobbyMenu>().PatrolRewardMenu.ClaimRewardAnimation());
+            Close();
         }
 
         // it must be called after PatrolReward.InitializeInformation (called avatar selected)
@@ -119,11 +115,7 @@ namespace Nekoyume.UI
                 .Subscribe(OnChangeTime)
                 .AddTo(gameObject);
 
-            receiveButton.OnSubmitSubject
-                .Subscribe(_ => ClaimRewardAsync())
-                .AddTo(gameObject);
-
-            Claiming.Where(claiming => claiming)
+            PatrolReward.Claiming.Where(claiming => claiming)
                 .Subscribe(_ => receiveButton.Interactable = false)
                 .AddTo(gameObject);
 
@@ -148,7 +140,7 @@ namespace Nekoyume.UI
             var remainTime = PatrolReward.Interval - patrolTimeWithOutSeconds;
             var canReceive = remainTime <= TimeSpan.Zero;
 
-            receiveButton.Interactable = canReceive && !Claiming.Value;
+            receiveButton.Interactable = canReceive && !PatrolReward.Claiming.Value;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
                 : L10nManager.Localize("UI_REMAINING_TIME", GetTimeString(remainTime));
@@ -201,68 +193,6 @@ namespace Nekoyume.UI
                 "CRYSTAL" => PatrolRewardType.Crystal,
                 _ => throw new ArgumentOutOfRangeException()
             };
-        }
-
-        private async void ClaimRewardAsync()
-        {
-            Analyzer.Instance.Track("Unity/PatrolReward/Request Claim Reward");
-
-            var evt = new AirbridgeEvent("PatrolReward_Request_Claim_Reward");
-            AirbridgeUnity.TrackEvent(evt);
-
-            Claiming.Value = true;
-            Close();
-
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var agentAddress = Game.Game.instance.States.AgentState.address;
-            var txId = await PatrolReward.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
-            while (true)
-            {
-                var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
-                if (txResultResponse is null)
-                {
-                    NcDebug.LogError(
-                        $"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
-                    OneLineSystem.Push(
-                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
-                        NotificationCell.NotificationType.Alert);
-                    break;
-                }
-
-                var txStatus = txResultResponse.transaction.transactionResult.txStatus;
-                if (txStatus == TxResultQuery.TxStatus.SUCCESS)
-                {
-                    if (avatarAddress != Game.Game.instance.States.CurrentAvatarState.address)
-                    {
-                        return;
-                    }
-
-                    OneLineSystem.Push(
-                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
-                        NotificationCell.NotificationType.Notification);
-
-                    Find<LobbyMenu>().PatrolRewardMenu.ClaimRewardAnimation();
-                    break;
-                }
-
-                if (txStatus == TxResultQuery.TxStatus.FAILURE)
-                {
-                    if (avatarAddress != Game.Game.instance.States.CurrentAvatarState.address)
-                    {
-                        return;
-                    }
-
-                    OneLineSystem.Push(
-                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
-                        NotificationCell.NotificationType.Alert);
-                    break;
-                }
-
-                await Task.Delay(3000);
-            }
-
-            Claiming.Value = false;
-            await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

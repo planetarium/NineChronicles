@@ -1,8 +1,12 @@
-using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Nekoyume.GraphQL;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.ApiClient
@@ -17,9 +21,12 @@ namespace Nekoyume.ApiClient
         public readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
         public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
+        public readonly ReactiveProperty<bool> Claiming = new(false);
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
         public bool Initialized;
+
+        public bool CanClaim => Initialized && !Claiming.Value && PatrolTime.Value >= Interval;
 
         // Called at CurrentAvatarState isNewlySelected
         public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
@@ -50,6 +57,9 @@ namespace Nekoyume.ApiClient
                 })
                 .ToReactiveProperty();
             LastRewardTime.ObserveOnMainThread().Subscribe(_ => SetPushNotification());
+
+            // for changed avatar
+            // Claiming.Value = false;
         }
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
@@ -70,9 +80,64 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
+        public async void ClaimReward(System.Action onSuccess)
         {
-            return await PatrolRewardQuery.ClaimReward(avatarAddress, agentAddress);
+            Claiming.Value = true;
+
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            var txId = await PatrolRewardQuery.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
+            while (true)
+            {
+                var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
+                if (txResultResponse is null)
+                {
+                    NcDebug.LogError(
+                        $"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                        NotificationCell.NotificationType.Alert);
+                    break;
+                }
+
+                var currentAvatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+                var txStatus = txResultResponse.transaction.transactionResult.txStatus;
+                if (txStatus == TxResultQuery.TxStatus.SUCCESS)
+                {
+                    if (avatarAddress != currentAvatarAddress)
+                    {
+                        return;
+                    }
+
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
+                        NotificationCell.NotificationType.Notification);
+
+                    onSuccess?.Invoke();
+                    break;
+                }
+
+                if (txStatus == TxResultQuery.TxStatus.FAILURE)
+                {
+                    if (avatarAddress != currentAvatarAddress)
+                    {
+                        return;
+                    }
+
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                        NotificationCell.NotificationType.Alert);
+                    break;
+                }
+
+                await Task.Delay(3000);
+            }
+
+            Claiming.Value = false;
+            await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
 
         private void SetAvatarModel(AvatarModel avatar)

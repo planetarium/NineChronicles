@@ -50,19 +50,20 @@ namespace Nekoyume.UI.Module.Lobby
                 return;
             }
 
-            if (!popup.PatrolReward.Initialized)
+            var patrolReward = popup.PatrolReward;
+            if (!patrolReward.Initialized)
             {
                 NcDebug.LogWarning("PatrolReward is not initialized.");
                 return;
             }
 
-            popup.PatrolReward.PatrolTime
-                .Select(time => time < popup.PatrolReward.Interval)
-                .Where(_ => !popup.Claiming.Value)
+            patrolReward.PatrolTime
+                .Select(time => time < patrolReward.Interval)
+                .Where(_ => !patrolReward.Claiming.Value)
                 .Subscribe(patrolling => SetCanClaim(patrolling, false))
                 .AddTo(_disposables);
 
-            popup.Claiming.Where(claiming => claiming)
+            patrolReward.Claiming.Where(claiming => claiming)
                 .Subscribe(value => SetCanClaim(false, true)).AddTo(_disposables);
         }
 
