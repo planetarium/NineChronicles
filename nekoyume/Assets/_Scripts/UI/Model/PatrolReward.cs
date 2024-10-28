@@ -25,11 +25,13 @@ namespace Nekoyume.ApiClient
         public readonly ReactiveProperty<bool> Claiming = new(false);
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
-        // Todo: Initialized는 현 Avatar가 변경되었을 때 마다 초기화해야 함.
         private Address? _currentAvatarAddress = null;
-        public bool Initialized => _currentAvatarAddress.HasValue;
 
-        public bool CanClaim => Initialized && !Claiming.Value && PatrolTime.Value >= Interval;
+        public bool NeedToInitialize(Address avatarAddress) =>
+            !_currentAvatarAddress.HasValue || _currentAvatarAddress != avatarAddress;
+
+        public bool CanClaim =>
+            _currentAvatarAddress.HasValue && !Claiming.Value && PatrolTime.Value >= Interval;
 
         public PatrolReward()
         {
@@ -146,6 +148,7 @@ namespace Nekoyume.ApiClient
         {
             var lastClaimedAt = avatar.LastClaimedAt ?? avatar.CreatedAt;
             LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+            _currentAvatarAddress = new Address(avatar.AvatarAddress);
         }
 
         private void SetPolicyModel(PolicyModel policy)

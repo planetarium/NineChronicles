@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
-            if (!PatrolReward.Initialized)
+            if (PatrolReward.NeedToInitialize(avatarAddress))
             {
                 await PatrolReward.InitializeInformation(avatarAddress.ToHex(),
                     agentAddress.ToHex(), level);

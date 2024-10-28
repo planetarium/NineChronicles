@@ -51,7 +51,8 @@ namespace Nekoyume.UI.Module.Lobby
             }
 
             var patrolReward = popup.PatrolReward;
-            if (!patrolReward.Initialized)
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (patrolReward.NeedToInitialize(avatarAddress))
             {
                 NcDebug.LogWarning("PatrolReward is not initialized.");
                 return;
