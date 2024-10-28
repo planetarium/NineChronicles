@@ -1587,7 +1587,7 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ => { Widget.Find<Summon>().OnActionRender(eval); });
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ => { Widget.Find<NewSummon>().OnActionRender(eval); });
         }
 
         private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
@@ -1601,11 +1601,11 @@ namespace Nekoyume.Blockchain
             {
                 var action = eval.Action;
                 var tableSheets = Game.Game.instance.TableSheets;
-                var summonRow = tableSheets.SummonSheet[action.GroupId];
+                var summonRow = tableSheets.RuneSummonSheet[action.GroupId];
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
-                Widget.Find<Summon>().OnActionRender(eval);
+                Widget.Find<NewSummon>().OnActionRender(eval);
             });
         }
 
@@ -1620,11 +1620,11 @@ namespace Nekoyume.Blockchain
             {
                 var action = eval.Action;
                 var tableSheets = Game.Game.instance.TableSheets;
-                var summonRow = tableSheets.SummonSheet[action.GroupId];
+                var summonRow = tableSheets.CostumeSummonSheet[action.GroupId];
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
-                Widget.Find<Summon>().OnActionRender(eval);
+                Widget.Find<NewSummon>().OnActionRender(eval);
             });
         }
 
