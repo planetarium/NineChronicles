@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Libplanet.Crypto;
 using Nekoyume.GraphQL;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -15,18 +16,34 @@ namespace Nekoyume.ApiClient
 
     public class PatrolReward
     {
-        private readonly ReactiveProperty<DateTime> LastRewardTime = new();
+        public readonly ReactiveProperty<DateTime> LastRewardTime = new();
         public int NextLevel { get; private set; }
         public TimeSpan Interval { get; private set; }
         public readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
-        public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
+        public readonly IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
         public readonly ReactiveProperty<bool> Claiming = new(false);
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
-        public bool Initialized;
+        // Todo: Initialized는 현 Avatar가 변경되었을 때 마다 초기화해야 함.
+        private Address? _currentAvatarAddress = null;
+        public bool Initialized => _currentAvatarAddress.HasValue;
 
         public bool CanClaim => Initialized && !Claiming.Value && PatrolTime.Value >= Interval;
+
+        public PatrolReward()
+        {
+            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
+                .CombineLatest(LastRewardTime, (_, lastReward) =>
+                {
+                    var timeSpan = DateTime.Now - lastReward;
+                    return timeSpan > Interval ? Interval : timeSpan;
+                })
+                .ToReactiveProperty();
+            LastRewardTime.ObserveOnMainThread()
+                .Select(lastRewardTime => lastRewardTime + Interval - DateTime.Now)
+                .Subscribe(SetPushNotification);
+        }
 
         // Called at CurrentAvatarState isNewlySelected
         public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
@@ -43,23 +60,8 @@ namespace Nekoyume.ApiClient
                 SetAvatarModel(avatar);
             }
 
-            if (Initialized)
-            {
-                return;
-            }
-
-            Initialized = true;
-            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
-                .CombineLatest(LastRewardTime, (_, lastReward) =>
-                {
-                    var timeSpan = DateTime.Now - lastReward;
-                    return timeSpan > Interval ? Interval : timeSpan;
-                })
-                .ToReactiveProperty();
-            LastRewardTime.ObserveOnMainThread().Subscribe(_ => SetPushNotification());
-
             // for changed avatar
-            // Claiming.Value = false;
+            Claiming.Value = false;
         }
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
