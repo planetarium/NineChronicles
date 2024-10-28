@@ -11,5 +11,41 @@ namespace Nekoyume.Multiplanetary
         public static readonly PlanetId OdinInternal = new("0x100000000000");
         public static readonly PlanetId HeimdallInternal = new("0x100000000001");
         public static readonly PlanetId ThorInternal = new("0x100000000003");
+
+        public static Planet? GetCurrentPlanet(PlanetId planetId)
+        {
+            if (planetId == Odin)
+            {
+                return Planet.Odin;
+            }
+                
+            if (planetId == Heimdall)
+            {
+                return Planet.Heimdall;
+            }
+                
+            if (planetId == Thor)
+            {
+                return Planet.Thor;
+            }
+                
+            if (planetId == OdinInternal)
+            {
+                return Planet.OdinInternal;
+            }
+                
+            if (planetId == HeimdallInternal)
+            {
+                return Planet.HeimdallInternal;
+            }
+                
+            if (planetId == ThorInternal)
+            {
+                return Planet.ThorInternal;
+            } 
+            
+            // Default to Odin
+            return Planet.Odin;
+        }
     }
 }
