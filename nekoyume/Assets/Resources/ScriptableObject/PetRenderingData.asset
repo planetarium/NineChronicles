@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <PetRenderingDataList>k__BackingField:
   - id: 1001
+    soulStoneId: 1001
     soulStoneSprite: {fileID: 21300000, guid: 613ed7ae70da9f84680582c4f0bb8df9, type: 3}
     spineDataAsset: {fileID: 11400000, guid: b0b86bc6f1b1bba4aa5d2d147b8a981c, type: 2}
     localPosition: {x: 1, y: 28, z: 0}
@@ -23,6 +24,7 @@ MonoBehaviour:
       y: 0
       z: 0
   - id: 1002
+    soulStoneId: 1002
     soulStoneSprite: {fileID: 21300000, guid: d2ae4cc3d199ed1448d6907ac8102d7e, type: 3}
     spineDataAsset: {fileID: 11400000, guid: efc81b03a5bae154b8453f6402baa710, type: 2}
     localPosition: {x: -4, y: 15, z: 0}
@@ -32,6 +34,7 @@ MonoBehaviour:
       y: 0.25
       z: 0
   - id: 1003
+    soulStoneId: 1003
     soulStoneSprite: {fileID: 21300000, guid: d66d3b2c7adc2ed4e9843ae775a6e536, type: 3}
     spineDataAsset: {fileID: 11400000, guid: e7775681158500242a8ca0f59f589f8f, type: 2}
     localPosition: {x: 0, y: -4, z: 0}
@@ -41,8 +44,89 @@ MonoBehaviour:
       y: 0.5
       z: 0.1
   - id: 1004
+    soulStoneId: 1004
     soulStoneSprite: {fileID: 21300000, guid: 804b86abdedeaf542a93f3660caca8da, type: 3}
     spineDataAsset: {fileID: 11400000, guid: 660dd70a92a95e24584f327199ec7e75, type: 2}
+    localPosition: {x: -35, y: 23, z: 0}
+    localScale: {x: 1.5, y: 1.5, z: 1}
+    hsv:
+      x: -0.45
+      y: 0.5
+      z: 0.1
+  - id: 1011
+    soulStoneId: 1001
+    soulStoneSprite: {fileID: 21300000, guid: 613ed7ae70da9f84680582c4f0bb8df9, type: 3}
+    spineDataAsset: {fileID: 11400000, guid: 529e4548dcd18944fbe580ab402a6667, type: 2}
+    localPosition: {x: 1, y: 28, z: 0}
+    localScale: {x: 1.4, y: 1.4, z: 1}
+    hsv:
+      x: 0
+      y: 0
+      z: 0
+  - id: 1012
+    soulStoneId: 1002
+    soulStoneSprite: {fileID: 21300000, guid: d2ae4cc3d199ed1448d6907ac8102d7e, type: 3}
+    spineDataAsset: {fileID: 11400000, guid: e4de82af6cb87a544bbb29091bad3f25, type: 2}
+    localPosition: {x: -4, y: 15, z: 0}
+    localScale: {x: 1.3, y: 1.3, z: 1}
+    hsv:
+      x: 0.3
+      y: 0.25
+      z: 0
+  - id: 1013
+    soulStoneId: 1003
+    soulStoneSprite: {fileID: 21300000, guid: d66d3b2c7adc2ed4e9843ae775a6e536, type: 3}
+    spineDataAsset: {fileID: 11400000, guid: 80a064e442b6add478da318ceba6fb6a, type: 2}
+    localPosition: {x: 0, y: -4, z: 0}
+    localScale: {x: 1.2, y: 1.2, z: 1}
+    hsv:
+      x: -0.45
+      y: 0.5
+      z: 0.1
+  - id: 1014
+    soulStoneId: 1004
+    soulStoneSprite: {fileID: 21300000, guid: 804b86abdedeaf542a93f3660caca8da, type: 3}
+    spineDataAsset: {fileID: 11400000, guid: cbc05a9b8e392eb45b2e3fa3a94be70e, type: 2}
+    localPosition: {x: -35, y: 23, z: 0}
+    localScale: {x: 1.5, y: 1.5, z: 1}
+    hsv:
+      x: -0.45
+      y: 0.5
+      z: 0.1
+  - id: 1021
+    soulStoneId: 1001
+    soulStoneSprite: {fileID: 21300000, guid: 613ed7ae70da9f84680582c4f0bb8df9, type: 3}
+    spineDataAsset: {fileID: 11400000, guid: e237256654a4a35438428d7a1925816f, type: 2}
+    localPosition: {x: 1, y: 28, z: 0}
+    localScale: {x: 1.4, y: 1.4, z: 1}
+    hsv:
+      x: 0
+      y: 0
+      z: 0
+  - id: 1022
+    soulStoneId: 1002
+    soulStoneSprite: {fileID: 21300000, guid: d2ae4cc3d199ed1448d6907ac8102d7e, type: 3}
+    spineDataAsset: {fileID: 11400000, guid: 6cbce312dd693194f8fc1b316a2edd96, type: 2}
+    localPosition: {x: -4, y: 15, z: 0}
+    localScale: {x: 1.3, y: 1.3, z: 1}
+    hsv:
+      x: 0.3
+      y: 0.25
+      z: 0
+  - id: 1023
+    soulStoneId: 1003
+    soulStoneSprite: {fileID: 21300000, guid: d66d3b2c7adc2ed4e9843ae775a6e536, type: 3}
+    spineDataAsset: {fileID: 11400000, guid: 140a398efb6be6c43b2803d59eb60ca0, type: 2}
+    localPosition: {x: 0, y: -4, z: 0}
+    localScale: {x: 1.2, y: 1.2, z: 1}
+    hsv:
+      x: -0.45
+      y: 0.5
+      z: 0.1
+  - id: 1024
+    soulStoneId: 1004
+    soulStoneSprite: {fileID: 21300000, guid: 804b86abdedeaf542a93f3660caca8da, type: 3}
+    spineDataAsset: {fileID: 11400000, guid: 81f1b96f6428cb84eae02d0a9d04f676, type: 2}
     localPosition: {x: -35, y: 23, z: 0}
     localScale: {x: 1.5, y: 1.5, z: 1}
     hsv:

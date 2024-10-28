@@ -5,7 +5,6 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Libplanet.Types.Assets;
 using Nekoyume.Action;
-using Nekoyume.ApiClient;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -93,7 +92,7 @@ namespace Nekoyume
 
                 case MaterialCraftMail materialCraftMail:
                     var materialItemName =
-                        L10nManager.Localize($"ITEM_NAME_{materialCraftMail.ItemId}");
+                        L10nManager.LocalizeItemName(materialCraftMail.ItemId);
                     return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT", materialItemName);
 
                 case ItemEnhanceMail itemEnhanceMail:
@@ -200,11 +199,20 @@ namespace Nekoyume
                         rewardMail.RaidId, rewardMail.CurrencyName, rewardMail.Amount);
 
                 case ProductCancelMail productCancelMail:
-                    var (productName, _, _) =
-                        await ApiClients.Instance.MarketServiceClient.GetProductInfo(
-                            productCancelMail
-                                .ProductId);
-                    return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", productName);
+                    if (productCancelMail.Product is ItemProduct itemPrd &&
+                        States.Instance.CurrentAvatarState.inventory.TryGetTradableItem(itemPrd.TradableItem.TradableId, itemPrd.TradableItem.RequiredBlockIndex, 1, out var canceledItem))
+                    {
+                        return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", canceledItem.item.GetLocalizedName());
+                    }
+
+                    // FAV, 영혼석이나 룬 조각을 구매한 경우
+                    if (productCancelMail.Product is FavProduct favPrd)
+                    {
+                        return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", favPrd.Asset.GetLocalizedName());
+                    }
+
+                    // 상태에서 아이템을 찾을 수 없는 경우, 메일은 이제 네거야! 라는 문장이 나옵니다.
+                    return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", L10nManager.Localize("UI_MAIL"));
                 case ProductBuyerMail productBuyerMail:
                     // 아이템을 구매한 경우
                     if (productBuyerMail.Product is ItemProduct itemProd &&
@@ -504,7 +512,7 @@ namespace Nekoyume
         {
             if (ticker.ToLower() == "crystal" || ticker.ToLower() == "fav_crystal")
             {
-                return L10nManager.Localize($"ITEM_NAME_9999998");
+                return L10nManager.LocalizeItemName(9999998);
             }
 
             var isRune = false;
@@ -804,7 +812,7 @@ namespace Nekoyume
 
         public static string GetLocalizedName(this ItemSheet.Row row, int level)
         {
-            var itemName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
+            var itemName = L10nManager.LocalizeItemName(row.Id);
             if (level > 0)
             {
                 itemName = $"+{level} {itemName}";

@@ -30,6 +30,7 @@ namespace Nekoyume.UI.Module
 
             [Space]
             public GameObject skillRequiredObject;
+            public GameObject skillNotRequiredObject;
 
             public TextMeshProUGUI requiredAmountText;
             public TextMeshProUGUI currentAmountText;
@@ -82,6 +83,7 @@ namespace Nekoyume.UI.Module
             iconArea.gradeAndSubTypeSpacer.color = gradeColor;
 
             iconArea.skillRequiredObject.SetActive(row.SkillContains);
+            iconArea.skillNotRequiredObject.SetActive(!row.SkillContains);
             var isOnRequiredAmount = row.Count > 1 || row.Level > 0;
             iconArea.requiredAmountText.gameObject.SetActive(isOnRequiredAmount);
             iconArea.currentAmountText.gameObject.SetActive(isOnRequiredAmount && collectionMaterial.HasItem);

@@ -92,6 +92,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<ShopItem> _selectedItems = new();
         private readonly List<int> _itemIds = new();
+        private readonly List<int> _customIconIds = new();
         private readonly List<int> _runeIds = new();
         private readonly List<int> _petIds = new();
         private readonly int _hashNormal = Animator.StringToHash("Normal");
@@ -144,6 +145,7 @@ namespace Nekoyume.UI.Module
             _itemIds.AddRange(tableSheets.ConsumableItemSheet.Values.Select(x => x.Id));
             _itemIds.AddRange(tableSheets.CostumeItemSheet.Values.Select(x => x.Id));
             _itemIds.AddRange(tableSheets.MaterialItemSheet.Values.Select(x => x.Id));
+            _customIconIds.AddRange(tableSheets.CustomEquipmentCraftIconSheet.Values.Select(x => x.IconId));
             _runeIds.AddRange(tableSheets.RuneListSheet.Values.Select(x => x.Id));
             _petIds.AddRange(tableSheets.PetSheet.Values.Select(x => x.Id));
 
@@ -290,7 +292,7 @@ namespace Nekoyume.UI.Module
             base.UpdatePage(page);
         }
 
-        private int[] GetFilteredItemIds(ItemSubTypeFilter filter)
+        private (int[], bool) GetFilteredItemIds(ItemSubTypeFilter filter)
         {
             var avatarLevel = Game.Game.instance.States.CurrentAvatarState.level;
             var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
@@ -298,20 +300,51 @@ namespace Nekoyume.UI.Module
             if ((!_useSearch.Value && !_levelLimit.Value) ||
                 filter is ItemSubTypeFilter.RuneStone or ItemSubTypeFilter.PetSoulStone)
             {
-                return Array.Empty<int>();
+                return (Array.Empty<int>(), false);
             }
 
-            bool IsValid(int id)
+            var validItemIds = new List<int>(_itemIds);
+            if (_levelLimit.Value)
             {
-                var inSearch = !_useSearch.Value ||
-                    Regex.IsMatch(L10nManager.LocalizeItemName(id), inputField.text, RegexOptions.IgnoreCase);
-                var inLevelLimit = !_levelLimit.Value ||
-                    (requirementSheet.TryGetValue(id, out var requirementRow) &&
-                        avatarLevel >= requirementRow.Level);
-                return inSearch && inLevelLimit;
+                validItemIds = validItemIds.Where(InLevelLimit).ToList();
             }
 
-            return _itemIds.Where(IsValid).ToArray();
+            if (_useSearch.Value)
+            {
+                validItemIds = validItemIds.Where(IsMatchWithItemId).ToList();
+            }
+
+            var validIconIds = new List<int>(_customIconIds);
+            if (_useSearch.Value)
+            {
+                validIconIds = validIconIds.Where(IsMatchWithCustomId).ToList();
+            }
+
+            var onlyCustom = !validItemIds.Any() && validIconIds.Any();
+            validItemIds = validItemIds.Count == _itemIds.Count
+                ? new List<int>()
+                : validItemIds;
+            validIconIds = validIconIds.Count == _customIconIds.Count
+                ? new List<int>()
+                : validIconIds;
+
+            var filtered = validItemIds.Concat(validIconIds).Distinct().ToArray();
+            return (filtered, onlyCustom);
+
+            bool InLevelLimit(int id)
+            {
+                return requirementSheet.TryGetValue(id, out var requirementRow) && avatarLevel >= requirementRow.Level;
+            }
+
+            bool IsMatchWithItemId(int id)
+            {
+                return Regex.IsMatch(L10nManager.LocalizeItemName(id), inputField.text, RegexOptions.IgnoreCase);
+            }
+
+            bool IsMatchWithCustomId(int id)
+            {
+                return Regex.IsMatch(L10nManager.LocalizeCustomItemName(id), inputField.text, RegexOptions.IgnoreCase);
+            }
         }
 
         private string[] GetFilteredTicker(ItemSubTypeFilter filter)
@@ -363,9 +396,9 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                var filteredItemIds = GetFilteredItemIds(filter);
+                var (filteredIconIds, isCustom) = GetFilteredItemIds(filter);
                 await ReactiveShopState.RequestBuyProductsAsync(
-                    filter, orderType, limit * 15, reset, filteredItemIds);
+                    filter, orderType, limit * 15, reset, filteredIconIds, isCustom);
             }
 
             _loadingCount--;

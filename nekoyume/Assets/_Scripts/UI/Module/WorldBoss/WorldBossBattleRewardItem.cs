@@ -1,24 +1,35 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
     public class WorldBossBattleRewardItem : MonoBehaviour
     {
-        [SerializeField]
-        private TextMeshProUGUI rune;
+        [Serializable]
+        private class RewardItem
+        {
+            public GameObject container;
+            public Image icon;
+            public TextMeshProUGUI text;
+        }
 
         [SerializeField]
-        private TextMeshProUGUI crystal;
+        private RewardItem runeItem;
+
+        [SerializeField]
+        private RewardItem crystalItem;
+
+        [SerializeField]
+        private RewardItem[] materialItems;
 
         [SerializeField]
         private TextMeshProUGUI rankText;
-
-        [SerializeField]
-        private GameObject rankTextContainer;
 
         [SerializeField]
         private GameObject rankingImageContainer;
@@ -35,14 +46,24 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(WorldBossBattleRewardSheet.Row row)
         {
-            rune.text = $"{row.RuneMin:#,0}~{row.RuneMax:#,0}";
-            crystal.text = $"{row.Crystal:#,0}";
+            var materials = new List<(int itemId, int quantity)>();
+            if (row.Circle > 0)
+            {
+                materials.Add((600402, row.Circle));
+            }
+
+            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, materials);
         }
 
         public void Set(WorldBossKillRewardSheet.Row row)
         {
-            rune.text = $"{row.RuneMin:#,0}~{row.RuneMax:#,0}";
-            crystal.text = $"{row.Crystal:#,0}";
+            var materials = new List<(int itemId, int quantity)>();
+            if (row.Circle > 0)
+            {
+                materials.Add((600402, row.Circle));
+            }
+
+            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, materials);
         }
 
         public void Set(WorldBossRankingRewardSheet.Row row, int myRank, int userCount)
@@ -52,43 +73,70 @@ namespace Nekoyume.UI.Module.WorldBoss
                 Destroy(_rankObject);
             }
 
-            rankTextContainer.gameObject.SetActive(false);
+            rankText.gameObject.SetActive(false);
             rankingImageContainer.gameObject.SetActive(false);
-            switch (row.RankingMin)
+            if (row.RankingMin != 0 && row.RankingMax != 0)
             {
-                case 1:
-                case 2:
-                case 3:
+                if (row.RankingMin == row.RankingMax)
+                {
                     rankingImageContainer.gameObject.SetActive(true);
-                    var rankPrefab = WorldBossFrontHelper.GetRankPrefab(row.RankingMin);
-                    _rankObject = Instantiate(rankPrefab, rankingImageContainer.transform);
+                    _rankObject = Instantiate(
+                        WorldBossFrontHelper.GetRankPrefab(row.RankingMin),
+                        rankingImageContainer.transform);
                     selected.SetActive(row.RankingMin == myRank);
-                    break;
-                default:
-                    rankTextContainer.gameObject.SetActive(true);
-                    if (row.RankingMin == 0)
-                    {
-                        rankText.text = row.RateMin > 1
-                            ? $"{row.RateMin}%~{row.RateMax}%"
-                            : $"{row.RateMax}%";
+                }
+                else
+                {
+                    rankText.gameObject.SetActive(true);
+                    rankText.text = $"{row.RankingMin}~{row.RankingMax}";
+                    var value = row.RankingMin <= myRank && myRank <= row.RankingMax;
+                    selected.SetActive(value);
+                }
+            }
+            else
+            {
+                rankText.gameObject.SetActive(true);
+                rankText.text = row.RateMin > 1
+                    ? $"{row.RateMin}%~{row.RateMax}%"
+                    : $"{row.RateMax}%";
 
-                        var rate = userCount > 0 ? (int)((float)myRank / userCount * 100) : 0;
-                        var value = myRank > 100 && row.RateMin <= rate && rate <= row.RateMax;
-                        selected.SetActive(value);
-                    }
-                    else
-                    {
-                        rankText.text = $"{row.RankingMin}~{row.RankingMax}";
-                        var value = row.RankingMin <= myRank && myRank <= row.RankingMax;
-                        selected.SetActive(value);
-                    }
-
-                    break;
+                var rate = userCount > 0 ? (int)((float)myRank / userCount * 100) : 0;
+                var value = myRank > 100 && row.RateMin <= rate && rate <= row.RateMax;
+                selected.SetActive(value);
             }
 
             var runeSum = row.Runes.Sum(x => x.RuneQty);
-            rune.text = $"{runeSum:#,0}";
-            crystal.text = $"{row.Crystal:#,0}";
+            SetRewardItem((runeSum, runeSum), row.Crystal, row.Materials);
+        }
+
+        private void SetRewardItem(
+            (int min, int max) rune,
+            int crystal,
+            List<(int itemId, int quantity)> materials)
+        {
+            runeItem.container.gameObject.SetActive(rune.max > 0);
+            runeItem.text.text = rune.min == rune.max
+                ? $"{rune.max:#,0}"
+                : $"{rune.min:#,0}~{rune.max}";
+
+            crystalItem.container.gameObject.SetActive(crystal > 0);
+            crystalItem.text.text = crystal.ToCurrencyNotation();
+
+            for (var i = 0; i < materialItems.Length; i++)
+            {
+                var material = materialItems[i];
+                if (i < materials.Count)
+                {
+                    var (itemId, quantity) = materials[i];
+                    material.container.gameObject.SetActive(true);
+                    material.icon.sprite = SpriteHelper.GetItemIcon(itemId);
+                    material.text.text = $"{quantity:#,0}";
+                }
+                else
+                {
+                    material.container.gameObject.SetActive(false);
+                }
+            }
         }
     }
 }

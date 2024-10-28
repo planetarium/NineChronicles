@@ -182,6 +182,16 @@ namespace Nekoyume.UI
             UpdateSlots(blockIndex, null);
             UpdateAllOpenCost(blockIndex);
         }
+
+        public void ClearSlot(int index)
+        {
+            if (index < 0 || index >= slots.Count)
+            {
+                return;
+            }
+            
+            slots[index].Clear();
+        }
         
         public void ClearSlots()
         {
@@ -259,7 +269,7 @@ namespace Nekoyume.UI
             var cost = 0;
             foreach (var state in stateList)
             {
-                var diff = state.UnlockBlockIndex - currentBlockIndex;
+                var diff = state.WorkCompleteBlockIndex - currentBlockIndex;
                 if (state.PetId.HasValue && States.Instance.PetStates.TryGetPetState(state.PetId.Value, out var petState))
                 {
                     cost += PetHelper.CalculateDiscountedHourglass(

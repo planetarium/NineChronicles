@@ -671,7 +671,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7645584950675473069}
   - component: {fileID: 8262262199665871028}
-  - component: {fileID: 4757154334935166126}
   - component: {fileID: 8793554886593601801}
   - component: {fileID: 2619439323943052886}
   m_Layer: 5
@@ -710,51 +709,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 692110861783558762}
   m_CullTransparentMesh: 0
---- !u!114 &4757154334935166126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 692110861783558762}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!114 &8793554886593601801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4698,7 +4652,6 @@ GameObject:
   - component: {fileID: 8345192229530743519}
   - component: {fileID: 2201705437051731774}
   - component: {fileID: 3367752127855427622}
-  - component: {fileID: 9979499077861398}
   m_Layer: 5
   m_Name: Detail
   m_TagString: Untagged
@@ -4844,6 +4797,7 @@ MonoBehaviour:
   - {fileID: 0}
   optionSpacer: {fileID: 7037019535128429448}
   optionAreaRoot: {fileID: 0}
+  expText: {fileID: 0}
   tradableText: {fileID: 531005424753566772}
   statRows:
   - StatView: {fileID: 0}
@@ -4868,51 +4822,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   skillTooltip: {fileID: 0}
---- !u!114 &9979499077861398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3367752127855427621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!1 &3551271071411875570
 GameObject:
   m_ObjectHideFlags: 0
@@ -8306,7 +8215,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8367284066540997550}
   - component: {fileID: 2827926424242394535}
-  - component: {fileID: 5054110902290797014}
   - component: {fileID: 6276172081455603403}
   - component: {fileID: 5362591512823284843}
   - component: {fileID: 4205426468413401363}
@@ -8359,51 +8267,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &5054110902290797014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5737363951199161645}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!222 &6276172081455603403
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11623,7 +11486,6 @@ GameObject:
   - component: {fileID: 6782090060627774672}
   - component: {fileID: 744700290196677030}
   - component: {fileID: 5614923272185292822}
-  - component: {fileID: 2375725875152851760}
   - component: {fileID: 344335499290257113}
   m_Layer: 5
   m_Name: ConfirmButton
@@ -11741,51 +11603,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2375725875152851760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7841763921309094563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!114 &344335499290257113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11958,7 +11775,6 @@ GameObject:
   - component: {fileID: 4985880250923736437}
   - component: {fileID: 2803322654250512466}
   - component: {fileID: 4299289840026799393}
-  - component: {fileID: 2953282941287036125}
   - component: {fileID: 8523188292787138101}
   - component: {fileID: 22187803267127462}
   m_Layer: 5
@@ -12077,51 +11893,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2953282941287036125
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8204480603433695048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!114 &8523188292787138101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12576,7 +12347,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8948348993221878338}
   - component: {fileID: 2004217203880246979}
-  - component: {fileID: 1258843436649319408}
   - component: {fileID: 423074168894967273}
   - component: {fileID: 6769183353769228064}
   m_Layer: 5
@@ -12615,51 +12385,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8546367071584618178}
   m_CullTransparentMesh: 0
---- !u!114 &1258843436649319408
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8546367071584618178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 0
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4693993570970967307}
-          m_TargetAssemblyTypeName: Nekoyume.UI.FungibleAssetTooltip, Nekoyume
-          m_MethodName: OnEnterButtonArea
-          m_Mode: 6
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!114 &423074168894967273
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,16 +8,12 @@ using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.ApiClient;
-using Nekoyume.Arena;
-using Nekoyume.Game.LiveAsset;
 using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
-using UnityEngine;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.State
 {
@@ -27,46 +23,38 @@ namespace Nekoyume.State
 
     public static partial class RxProps
     {
+#region RxPropInternal
         // TODO!!!! Remove [`_arenaInfoTuple`] and use [`_playersArenaParticipant`] instead.
         private static readonly
             AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
             _arenaInfoTuple = new(UpdateArenaInfoTupleAsync);
-
-        private static long _arenaInfoTupleUpdatedBlockIndex;
-
-        private static readonly ReactiveProperty<ArenaParticipantModel> _playerArenaInfo =
-            new(null);
-
-        private static readonly ReactiveProperty<int> _purchasedDuringInterval = new();
-
-        public static IReadOnlyReactiveProperty<int> PurchasedDuringInterval => _purchasedDuringInterval;
-        private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
-
-        public static IReadOnlyReactiveProperty<long> LastArenaBattleBlockIndex => _lastArenaBattleBlockIndex;
-        public static IReadOnlyReactiveProperty<ArenaParticipantModel> PlayerArenaInfo => _playerArenaInfo;
-
-        public static
-            IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
-            ArenaInfoTuple =>
-            _arenaInfoTuple;
-
-        private static readonly ReactiveProperty<ArenaTicketProgress>
-            _arenaTicketsProgress = new(new ArenaTicketProgress());
-
-        public static IReadOnlyReactiveProperty<ArenaTicketProgress>
-            ArenaTicketsProgress =>
-            _arenaTicketsProgress;
-
-        private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
-
         private static readonly AsyncUpdatableRxProp<List<ArenaParticipantModel>>
             _arenaInformationOrderedWithScore = new(
                 new List<ArenaParticipantModel>(),
                 UpdateArenaInformationOrderedWithScoreAsync);
+        private static readonly ReactiveProperty<ArenaParticipantModel> _playerArenaInfo =
+            new(null);
+        private static readonly ReactiveProperty<int> _purchasedDuringInterval = new();
+        private static readonly ReactiveProperty<long> _lastArenaBattleBlockIndex = new();
+        private static readonly ReactiveProperty<ArenaTicketProgress>
+            _arenaTicketsProgress = new(new ArenaTicketProgress());
+#endregion RxPropInternal
+
+#region RxPropObservable
+        public static IReadOnlyReactiveProperty<int> PurchasedDuringInterval => _purchasedDuringInterval;
+        public static IReadOnlyReactiveProperty<long> LastArenaBattleBlockIndex => _lastArenaBattleBlockIndex;
+        public static IReadOnlyReactiveProperty<ArenaParticipantModel> PlayerArenaInfo => _playerArenaInfo;
 
         public static IReadOnlyAsyncUpdatableRxProp<List<ArenaParticipantModel>>
-            ArenaInformationOrderedWithScore =>
-            _arenaInformationOrderedWithScore;
+            ArenaInformationOrderedWithScore => _arenaInformationOrderedWithScore;
+        public static IReadOnlyReactiveProperty<ArenaTicketProgress>
+            ArenaTicketsProgress => _arenaTicketsProgress;
+        public static IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
+            ArenaInfoTuple => _arenaInfoTuple;
+#endregion RxPropObservable
+
+        private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
+        private static long _arenaInfoTupleUpdatedBlockIndex;
 
         public static void UpdateArenaInfoToNext()
         {

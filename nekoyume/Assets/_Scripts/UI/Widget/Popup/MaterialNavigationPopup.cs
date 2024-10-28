@@ -1,6 +1,7 @@
 using System;
 using Coffee.UIEffects;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -180,7 +181,7 @@ namespace Nekoyume.UI
             const int itemId = 9999996;
             itemImage.sprite = costIconData.GetIcon(costType);
             itemCountText.text = itemCount;
-            itemNameText.text = L10nManager.Localize($"ITEM_NAME_{itemId}");
+            itemNameText.text = L10nManager.LocalizeItemName(itemId);
             contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
             infoText.container.SetActive(false); // set default
 
@@ -192,7 +193,7 @@ namespace Nekoyume.UI
             subItem.container.SetActive(true);
             subItem.icon.sprite = SpriteHelper.GetItemIcon(subItemId);
             subItem.countText.text =
-                $"{L10nManager.Localize($"ITEM_NAME_{subItemId}")} : {subItemCount}";
+                $"{L10nManager.LocalizeItemName(subItemId)} : {subItemCount}";
 
             const string bonusItemTicker = "RUNE_ADVENTURER";
             const int bonusItemCount = 1;
@@ -246,7 +247,7 @@ namespace Nekoyume.UI
                                 return;
                             }
 
-                            CloseWithOtherWidgets();      
+                            CloseWithOtherWidgets();
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                             Find<ShopSell>().Show();
                         };
@@ -300,8 +301,7 @@ namespace Nekoyume.UI
                                 return;
                             }
 
-                            CloseWithOtherWidgets();
-                            Game.Event.OnRoomEnter.Invoke(true);
+                            Lobby.Enter(true);
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
                             Find<PatrolRewardPopup>().Show();
                         };
@@ -328,7 +328,7 @@ namespace Nekoyume.UI
             }
 
             var icon = costIconData.GetIcon(costType);
-            var itemName = L10nManager.Localize($"ITEM_NAME_{itemId}");
+            var itemName = L10nManager.LocalizeItemName(itemId);
             var content = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
 
             SetInfo(false);
@@ -337,7 +337,7 @@ namespace Nekoyume.UI
 
         public void ShowRuneStone(int runeStoneId)
         {
-            var itemName = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
+            var itemName = L10nManager.LocalizeItemName(runeStoneId);
             var content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
 
             var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;

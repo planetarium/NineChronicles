@@ -2,17 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
-using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus.Arena;
-using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.UI;
@@ -25,9 +22,6 @@ namespace Nekoyume.Game.Battle
     public class Arena : MonoBehaviour, IArena
     {
         [SerializeField]
-        private ObjectPool objectPool;
-
-        [SerializeField]
         private GameObject container;
 
         [SerializeField]
@@ -36,31 +30,16 @@ namespace Nekoyume.Game.Battle
         [SerializeField]
         private Character.ArenaCharacter enemy;
 
-        public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
         public IObservable<Arena> OnArenaEnd => _onArenaEnd;
         private readonly ISubject<Arena> _onArenaEnd = new Subject<Arena>();
         private const float SkillDelay = 0.1f;
-        private const float AnimatorTimeScale = 2.5f;
         private Coroutine _battleCoroutine;
         private int _turnNumber;
         private bool _isPlaying;
 
-        public SkillController SkillController { get; private set; }
-
-        public BuffController BuffController { get; private set; }
-
         // Only Changed on Thread Pool
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int TurnNumber => _turnNumber;
-
-        public async UniTask InitializeAsync()
-        {
-            objectPool.Initialize();
-            SkillController = new SkillController(objectPool);
-            await SkillController.InitializeAsync();
-            BuffController = new BuffController(objectPool);
-            await BuffController.InitializeAsync();
-        }
 
         public IEnumerator CoSkill(ArenaActionParams param)
         {
@@ -102,11 +81,11 @@ namespace Nekoyume.Game.Battle
             {
                 _isPlaying = true;
 
-                if (!(_battleCoroutine is null))
+                if (_battleCoroutine is not null)
                 {
                     StopCoroutine(_battleCoroutine);
                     _battleCoroutine = null;
-                    objectPool.ReleaseAll();
+                    Game.instance.Stage.ObjectPool.ReleaseAll();
                 }
 
                 if (log?.Events.Count > 0)
@@ -191,7 +170,7 @@ namespace Nekoyume.Game.Battle
             container.SetActive(false);
             me.gameObject.SetActive(false);
             enemy.gameObject.SetActive(false);
-            objectPool.ReleaseAll();
+            Game.instance.Stage.ObjectPool.ReleaseAll();
             BattleRenderer.Instance.IsOnBattle = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();

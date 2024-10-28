@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Coffee.UIEffects;
 using Nekoyume.Blockchain;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -98,7 +99,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private SortType currentSortType = SortType.Id;
 
-        private bool _isSortDescending = false;
+        private bool _isSortDescending = true;
 
         private List<CollectionModel> _items;
 
@@ -154,7 +155,7 @@ namespace Nekoyume.UI
             CloseWidget = () =>
             {
                 Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
             };
 
             foreach (var itemType in Enum.GetValues(typeof(ItemType)).OfType<ItemType>())
@@ -574,7 +575,13 @@ namespace Nekoyume.UI
                 return aPartiallyActive ? -1 : 1;
             }
 
-            // 3. 재료 모두 미달성 (나머지)
+            // 3. 재료 모두 미달성 (활성화 되지 않은 것이 먼저 나오도록)
+            if (a.Active != b.Active)
+            {
+                return a.Active ? 1 : -1;
+            }
+            
+            // 4. 활성화 된 것이 나중에 나오도록 정렬
 
             // 설정된 타입별로 정렬
             var sortByTypeValue = SortByType(a, b, currentSortType);
@@ -586,7 +593,7 @@ namespace Nekoyume.UI
             // 다른 조건이 같다면 ID로 비교
             if (a.Row.Id != b.Row.Id)
             {
-                return a.Row.Id < b.Row.Id ? -1 : 1;
+                return a.Row.Id > b.Row.Id ? -1 : 1;
             }
 
             return 0;

@@ -76,8 +76,8 @@ namespace Nekoyume.UI
 
         private System.Action _onClose;
         private System.Action _onRegister;
-        private bool _isPointerOnScrollArea;
-        private bool _isClickedButtonArea;
+        private bool _isPointerOnTooltipArea;
+        private bool _isClickedTooltipArea;
 
         protected override void Awake()
         {
@@ -94,8 +94,8 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _onClose?.Invoke();
-            _isPointerOnScrollArea = false;
-            _isClickedButtonArea = false;
+            _isPointerOnTooltipArea = false;
+            _isClickedTooltipArea = false;
             base.Close(ignoreCloseAnimation);
         }
 
@@ -317,7 +317,8 @@ namespace Nekoyume.UI
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    _isClickedButtonArea = _isPointerOnScrollArea;
+                    UnityEngine.Vector2 mousePos = Input.mousePosition;
+                    _isClickedTooltipArea = RectTransformUtility.RectangleContainsScreenPoint(panel, mousePos, MainCanvas.instance.Canvas.worldCamera) || _isPointerOnTooltipArea;
                 }
 
                 var current = TouchHandler.currentSelectedGameObject;
@@ -330,7 +331,7 @@ namespace Nekoyume.UI
                         continue;
                     }
 
-                    if (!_isClickedButtonArea)
+                    if (!_isClickedTooltipArea)
                     {
                         Close();
                         yield break;
@@ -343,7 +344,7 @@ namespace Nekoyume.UI
                         yield break;
                     }
 
-                    if (!_isClickedButtonArea)
+                    if (!_isClickedTooltipArea)
                     {
                         Close();
                         yield break;
@@ -356,7 +357,7 @@ namespace Nekoyume.UI
 
         public void OnEnterButtonArea(bool value)
         {
-            _isPointerOnScrollArea = value;
+            _isPointerOnTooltipArea = value;
         }
 
         private void SetTradableState(bool isAvailableSell, bool isTradable = false, bool hasItem = false)

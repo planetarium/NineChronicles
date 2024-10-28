@@ -21,11 +21,11 @@ namespace Nekoyume.Game.LiveAsset
             public const int WorldBoss = 49;
             public const int Adventure = 0;
             public const int ChargeAP = 23;
-            public const int ShowPopupRoomEntering = 51;
+            public const int ShowPopupLobbyEntering = 51;
             public const int Sweep = 23;
             public const int SeasonPass = 15;
-            public const int TutorialEnd = 10;
-            public const int CustomCraft = 200;
+            public const int TutorialEnd = 10; // Monster Collection, Patrol Reward, dcc, collection..
+            public const int CustomCraft = 301;
         }
 
         public const string DiscordLink = "https://discord.com/invite/planetarium";

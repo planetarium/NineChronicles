@@ -16,6 +16,7 @@ using System.Net.Http;
 using UnityEngine.Networking;
 using Cysharp.Threading.Tasks;
 using System.Text;
+using System.Linq;
 
 public class SeasonPassServiceClient
 {
@@ -42,6 +43,9 @@ public class SeasonPassServiceClient
 
     public class ActionTypeTypeConverter : JsonConverter<ActionType>
     {
+        public static readonly Dictionary<string, string> InvalidEnumMapping = new Dictionary<string, string>
+        {
+        };
         public override ActionType Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
@@ -50,7 +54,7 @@ public class SeasonPassServiceClient
             return reader.TokenType switch
             {
                 JsonTokenType.Number => (ActionType)reader.GetInt32(),
-                JsonTokenType.String => Enum.Parse<ActionType>(reader.GetString()),
+                JsonTokenType.String => Enum.Parse<ActionType>(InvalidEnumMapping.TryGetValue(reader.GetString(), out var validName) ? validName : reader.GetString()),
                 _ => throw new JsonException(
                     $"Expected token type to be {string.Join(" or ", new[] { JsonTokenType.Number, JsonTokenType.String })} but got {reader.TokenType}")
             };
@@ -60,7 +64,12 @@ public class SeasonPassServiceClient
             ActionType value,
             JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString());
+            var enumString = value.ToString();
+            if (InvalidEnumMapping.ContainsValue(enumString))
+            {
+                enumString = InvalidEnumMapping.First(kvp => kvp.Value == enumString).Key;
+            }
+            writer.WriteStringValue(enumString);
         }
     }
 
@@ -191,6 +200,15 @@ public class SeasonPassServiceClient
 
     public class PlanetIDTypeConverter : JsonConverter<PlanetID>
     {
+        public static readonly Dictionary<string, string> InvalidEnumMapping = new Dictionary<string, string>
+        {
+            { "0x000000000000", "_0x000000000000" },
+            { "0x000000000001", "_0x000000000001" },
+            { "0x000000000002", "_0x000000000002" },
+            { "0x100000000000", "_0x100000000000" },
+            { "0x100000000001", "_0x100000000001" },
+            { "0x100000000002", "_0x100000000002" },
+        };
         public override PlanetID Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
@@ -199,7 +217,7 @@ public class SeasonPassServiceClient
             return reader.TokenType switch
             {
                 JsonTokenType.Number => (PlanetID)reader.GetInt32(),
-                JsonTokenType.String => Enum.Parse<PlanetID>("_"+reader.GetString()),
+                JsonTokenType.String => Enum.Parse<PlanetID>(InvalidEnumMapping.TryGetValue(reader.GetString(), out var validName) ? validName : reader.GetString()),
                 _ => throw new JsonException(
                     $"Expected token type to be {string.Join(" or ", new[] { JsonTokenType.Number, JsonTokenType.String })} but got {reader.TokenType}")
             };
@@ -209,7 +227,12 @@ public class SeasonPassServiceClient
             PlanetID value,
             JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString().Substring(1));
+            var enumString = value.ToString();
+            if (InvalidEnumMapping.ContainsValue(enumString))
+            {
+                enumString = InvalidEnumMapping.First(kvp => kvp.Value == enumString).Key;
+            }
+            writer.WriteStringValue(enumString);
         }
     }
 
@@ -333,9 +356,36 @@ public class SeasonPassServiceClient
         public string Type { get; set; }
     }
 
+    public async Task GetPingAsync(Action<string> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/ping";
+        using (var request = new UnityWebRequest(url, "GET"))
+        {
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                onSuccess?.Invoke(responseBody);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
     public async Task GetSeasonpassCurrentAsync(Action<SeasonPassSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/season-pass/current";
+        string url = $"{Url}/api/season-pass/current";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -363,7 +413,7 @@ public class SeasonPassServiceClient
 
     public async Task GetSeasonpassCurrentNewAsync(Action<NewSeasonPassSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/season-pass/current/new";
+        string url = $"{Url}/api/season-pass/current/new";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -391,7 +441,7 @@ public class SeasonPassServiceClient
 
     public async Task GetSeasonpassLevelAsync(Action<LevelInfoSchema[]> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/season-pass/level";
+        string url = $"{Url}/api/season-pass/level";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -419,7 +469,7 @@ public class SeasonPassServiceClient
 
     public async Task GetSeasonpassExpAsync(Action<ExpInfoSchema[]> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/season-pass/exp";
+        string url = $"{Url}/api/season-pass/exp";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             request.downloadHandler = new DownloadHandlerBuffer();
@@ -447,7 +497,7 @@ public class SeasonPassServiceClient
 
     public async Task GetUserStatusAsync(int season_id, string avatar_addr, string planet_id, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/user/status";
+        string url = $"{Url}/api/user/status";
         using (var request = new UnityWebRequest(url, "GET"))
         {
             url += $"?season_id={season_id}&avatar_addr={avatar_addr}&planet_id={planet_id}";
@@ -477,7 +527,7 @@ public class SeasonPassServiceClient
 
     public async Task PostUserUpgradeAsync(string authorization, UpgradeRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/user/upgrade";
+        string url = $"{Url}/api/user/upgrade";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             request.uri = new Uri(url);
@@ -511,7 +561,7 @@ public class SeasonPassServiceClient
 
     public async Task PostUserClaimAsync(ClaimRequestSchema requestBody, Action<ClaimResultSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/user/claim";
+        string url = $"{Url}/api/user/claim";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -543,7 +593,7 @@ public class SeasonPassServiceClient
 
     public async Task PostUserClaimprevAsync(ClaimRequestSchema requestBody, Action<ClaimResultSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/user/claim-prev";
+        string url = $"{Url}/api/user/claim-prev";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -575,7 +625,7 @@ public class SeasonPassServiceClient
 
     public async Task PostTmpRegisterAsync(RegisterRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/tmp/register";
+        string url = $"{Url}/api/tmp/register";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -607,7 +657,7 @@ public class SeasonPassServiceClient
 
     public async Task PostTmpPremiumAsync(PremiumRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/tmp/premium";
+        string url = $"{Url}/api/tmp/premium";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -639,7 +689,7 @@ public class SeasonPassServiceClient
 
     public async Task PostTmpLevelAsync(LevelRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/tmp/level";
+        string url = $"{Url}/api/tmp/level";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -671,7 +721,7 @@ public class SeasonPassServiceClient
 
     public async Task PostTmpChangeseasonAsync(SeasonChangeRequestSchema requestBody, Action<SeasonPassSchema> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/tmp/change-season";
+        string url = $"{Url}/api/tmp/change-season";
         using (var request = new UnityWebRequest(url, "POST"))
         {
             var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
@@ -703,9 +753,10 @@ public class SeasonPassServiceClient
 
     public async Task GetBlockstatusAsync(Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/block-status";
+        string url = $"{Url}/api/block-status";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
@@ -729,9 +780,38 @@ public class SeasonPassServiceClient
 
     public async Task GetInvalidclaimAsync(Action<string> onSuccess, Action<string> onError)
     {
-        string url = Url + "/api/invalid-claim";
+        string url = $"{Url}/api/invalid-claim";
         using (var request = new UnityWebRequest(url, "GET"))
         {
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                onSuccess?.Invoke(responseBody);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task GetBalanceAsync(string planet, Action<string> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/api/balance/{planet}";
+        using (var request = new UnityWebRequest(url, "GET"))
+        {
+            request.uri = new Uri(url);
+            request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
             request.timeout = 10;
