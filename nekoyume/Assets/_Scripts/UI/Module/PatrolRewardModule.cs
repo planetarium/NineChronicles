@@ -35,8 +35,6 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI gaugeUnitText1;
         [SerializeField] private TextMeshProUGUI gaugeUnitText2;
 
-        public readonly Subject<TimeSpan> RemainTime = new ();
-
         public void Awake()
         {
             PatrolReward.RewardModels
@@ -44,16 +42,9 @@ namespace Nekoyume.UI.Module
                 .Subscribe(SetRewardModels)
                 .AddTo(gameObject);
 
-            // it must be called after Init PatrolReward.PatrolTime (first called avatar selected)
             PatrolReward.PatrolTime
                 .Where(_ => gameObject.activeSelf)
                 .Subscribe(time => SetPatrolTime(time, PatrolReward.Interval))
-                .AddTo(gameObject);
-
-            // Todo: receiveButton을 밖에서 정상적으로 받아서 쓸 수 있도록 방법을 찾아보자
-            PatrolReward.Claiming.Where(claiming => claiming)
-                .Subscribe()
-                // .Subscribe(_ => receiveButton.Interactable = false)
                 .AddTo(gameObject);
         }
 
@@ -73,7 +64,7 @@ namespace Nekoyume.UI.Module
             }
 
             SetIntervalText(PatrolReward.Interval);
-            // SetPatrolTime(PatrolReward.PatrolTime.Value); // 구독하고 있으니 필요 없지 않나?
+            // SetPatrolTime(PatrolReward.PatrolTime.Value, PatrolReward.Interval); // 구독하고 있으니 필요 없지 않나?
         }
 
         #region UI
@@ -107,11 +98,6 @@ namespace Nekoyume.UI.Module
             patrolTimeText.text =
                 L10nManager.Localize("UI_PATROL_TIME_FORMAT", TimeSpanToString(patrolTime));
             patrolTimeGauge.fillAmount = (float)(patrolTime / interval);
-
-            var patrolTimeWithOutSeconds =
-                new TimeSpan(patrolTime.Ticks / TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute);
-            var remainTime = interval - patrolTimeWithOutSeconds;
-            RemainTime.OnNext(remainTime);
         }
 
         private void SetIntervalText(TimeSpan interval)

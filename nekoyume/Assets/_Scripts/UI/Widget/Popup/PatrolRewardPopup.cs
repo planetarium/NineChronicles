@@ -29,6 +29,20 @@ namespace Nekoyume.UI
             });
             CloseWidget = () => Close(true);
 
+            PatrolReward.PatrolTime
+                .Select(patrolTime =>
+                {
+                    var patrolTimeWithOutSeconds = new TimeSpan(patrolTime.Ticks /
+                        TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute);
+                    return PatrolReward.Interval - patrolTimeWithOutSeconds;
+                })
+                .Subscribe(remainTime => SetReceiveButton(remainTime, PatrolReward.Claiming.Value))
+                .AddTo(gameObject);
+
+            PatrolReward.Claiming.Where(claiming => claiming)
+                .Subscribe(_ => receiveButton.Interactable = false)
+                .AddTo(gameObject);
+
             receiveButton.OnSubmitSubject
                 .Subscribe(_ => ClaimReward())
                 .AddTo(gameObject);
