@@ -1,18 +1,22 @@
+using Nekoyume.Helper;
+
 namespace Nekoyume.UI
 {
     public static class SummonUtil
     {
-        public static int GetBackGroundPosition(CostType grade)
+        public static int GetBackGroundPosition(SummonResult result)
         {
-            switch (grade)
+            switch (result)
             {
-                case CostType.SilverDust:
+                case SummonResult.Title:
+                    return 2070;
+                case SummonResult.FullCostume:
                     return 1380;
-                case CostType.GoldDust:
+                case SummonResult.Rune:
                     return 0;
-                case CostType.RubyDust:
+                case SummonResult.Aura:
                     return -690;
-                case CostType.EmeraldDust:
+                case SummonResult.Grimoire:
                     return -1380;
                 default:
                     return 0;
