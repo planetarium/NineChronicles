@@ -67,6 +67,7 @@ namespace Nekoyume.UI.Module
                         break;
                 }
             }).AddTo(disposables);
+            Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", SummonHelper.CalculateSummonCount(summonCount));
         }
     }
 }
