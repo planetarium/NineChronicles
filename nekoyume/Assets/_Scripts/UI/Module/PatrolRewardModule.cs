@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Nekoyume.ApiClient;
 using Nekoyume.L10n;
 using Nekoyume.UI.Model;
@@ -48,7 +49,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        public async void SetData()
+        public async Task SetData()
         {
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;

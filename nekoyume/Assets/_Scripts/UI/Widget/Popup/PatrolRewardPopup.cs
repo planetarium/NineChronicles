@@ -63,7 +63,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // PatrolReward.InitializeInformation() 이후에 호출되어야 함. SetData 안에 넣어야 할수도
+            ShowAsync(ignoreShowAnimation);
+        }
+
+        private async void ShowAsync(bool ignoreShowAnimation = false)
+        {
+            await patrolRewardModule.SetData();
+
             var patrolTime = PatrolReward.PatrolTime.Value;
             Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>
             {
@@ -73,8 +79,6 @@ namespace Nekoyume.UI
             var evt = new AirbridgeEvent("PatrolReward_Show_Popup");
             evt.AddCustomAttribute("patrol-time", patrolTime.ToString());
             AirbridgeUnity.TrackEvent(evt);
-
-            patrolRewardModule.SetData();
 
             base.Show(ignoreShowAnimation);
         }
