@@ -14,26 +14,26 @@ namespace Nekoyume.ApiClient
 {
     using UniRx;
 
-    public class PatrolReward
+    public static class PatrolReward
     {
-        public readonly ReactiveProperty<DateTime> LastRewardTime = new();
-        public int NextLevel { get; private set; }
-        public TimeSpan Interval { get; private set; }
-        public readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
+        public static readonly ReactiveProperty<DateTime> LastRewardTime = new();
+        public static int NextLevel { get; private set; }
+        public static TimeSpan Interval { get; private set; }
+        public static readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
-        public readonly IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
-        public readonly ReactiveProperty<bool> Claiming = new(false);
+        public static readonly IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
+        public static readonly ReactiveProperty<bool> Claiming = new(false);
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
-        private Address? _currentAvatarAddress = null;
+        private static Address? _currentAvatarAddress = null;
 
-        public bool NeedToInitialize(Address avatarAddress) =>
+        public static bool NeedToInitialize(Address avatarAddress) =>
             !_currentAvatarAddress.HasValue || _currentAvatarAddress != avatarAddress;
 
-        public bool CanClaim =>
+        public static bool CanClaim =>
             _currentAvatarAddress.HasValue && !Claiming.Value && PatrolTime.Value >= Interval;
 
-        public PatrolReward()
+        static PatrolReward()
         {
             PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
                 .CombineLatest(LastRewardTime, (_, lastReward) =>
@@ -48,7 +48,7 @@ namespace Nekoyume.ApiClient
         }
 
         // Called at CurrentAvatarState isNewlySelected
-        public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
+        public static async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
         {
             var (avatar, policy) =
                 await PatrolRewardQuery.InitializeInformation(avatarAddress, agentAddress, level);
@@ -66,7 +66,7 @@ namespace Nekoyume.ApiClient
             Claiming.Value = false;
         }
 
-        public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
+        public static async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
         {
             var avatar = await PatrolRewardQuery.LoadAvatarInfo(avatarAddress, agentAddress);
             if (avatar is not null)
@@ -75,7 +75,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async Task LoadPolicyInfo(int level, bool free = true)
+        public static async Task LoadPolicyInfo(int level, bool free = true)
         {
             var policy = await PatrolRewardQuery.LoadPolicyInfo(level, free);
             if (policy is not null)
@@ -84,7 +84,7 @@ namespace Nekoyume.ApiClient
             }
         }
 
-        public async void ClaimReward(System.Action onSuccess)
+        public static async void ClaimReward(System.Action onSuccess)
         {
             Claiming.Value = true;
 
@@ -144,14 +144,14 @@ namespace Nekoyume.ApiClient
             await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
 
-        private void SetAvatarModel(AvatarModel avatar)
+        private static void SetAvatarModel(AvatarModel avatar)
         {
             var lastClaimedAt = avatar.LastClaimedAt ?? avatar.CreatedAt;
             LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
             _currentAvatarAddress = new Address(avatar.AvatarAddress);
         }
 
-        private void SetPolicyModel(PolicyModel policy)
+        private static void SetPolicyModel(PolicyModel policy)
         {
             NextLevel = policy.MaxLevel ?? int.MaxValue;
             Interval = policy.MinimumRequiredInterval;

@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Nekoyume.UI;
 using System.Linq;
 using System.Reactive.Linq;
+using Nekoyume.ApiClient;
 
 namespace Nekoyume.Game.Util
 {
@@ -88,8 +89,7 @@ namespace Nekoyume.Game.Util
             {
                 var avatarAddress = Game.instance.States.CurrentAvatarState.address;
                 var agentAddress = Game.instance.States.AgentState.address;
-                var patrolReward = Widget.Find<PatrolRewardPopup>().PatrolReward;
-                patrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+                PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
             });
 
             DebugLogConsole.AddCommand("adventureboss-info", "Clear Screen", () =>

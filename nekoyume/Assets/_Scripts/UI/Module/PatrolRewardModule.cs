@@ -35,7 +35,6 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI gaugeUnitText1;
         [SerializeField] private TextMeshProUGUI gaugeUnitText2;
 
-        public readonly PatrolReward PatrolReward = new ();
         public readonly Subject<TimeSpan> RemainTime = new ();
 
         public void Awake()

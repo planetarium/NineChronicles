@@ -18,8 +18,6 @@ namespace Nekoyume.UI
         [SerializeField] private PatrolRewardModule patrolRewardModule;
         [SerializeField] private ConditionalButton receiveButton;
 
-        public PatrolReward PatrolReward => patrolRewardModule.PatrolReward;
-
         protected override void Awake()
         {
             base.Awake();
