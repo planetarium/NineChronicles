@@ -107,6 +107,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private GameObject adventureBossUnMark;
 
+        [SerializeField] private GameObject thorSeasonPassObject;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
@@ -724,6 +726,16 @@ namespace Nekoyume.UI
             UpdateButtons();
             stakingLevelIcon.sprite =
                 stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
+
+            var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
+            if (planetId.HasValue && Nekoyume.Multiplanetary.PlanetId.IsThor(planetId.Value))
+            {
+                thorSeasonPassObject.SetActive(true);
+            }
+            else
+            {
+                thorSeasonPassObject.SetActive(false);
+            }
         }
 
         private void SubscribeAtShow()
