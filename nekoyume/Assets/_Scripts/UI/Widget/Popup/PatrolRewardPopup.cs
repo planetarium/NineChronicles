@@ -51,13 +51,15 @@ namespace Nekoyume.UI
                 return;
             }
 
+            // PatrolReward.InitializeInformation() 이후에 호출되어야 함. SetData 안에 넣어야 할수도
+            var patrolTime = PatrolReward.PatrolTime.Value;
             Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>
             {
-                ["PatrolTime"] = PatrolReward.PatrolTime.Value
+                ["PatrolTime"] = patrolTime,
             });
 
             var evt = new AirbridgeEvent("PatrolReward_Show_Popup");
-            evt.AddCustomAttribute("patrol-time", PatrolReward.PatrolTime.Value.ToString());
+            evt.AddCustomAttribute("patrol-time", patrolTime.ToString());
             AirbridgeUnity.TrackEvent(evt);
 
             patrolRewardModule.SetData();
