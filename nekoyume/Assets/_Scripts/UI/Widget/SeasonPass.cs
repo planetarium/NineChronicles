@@ -62,6 +62,16 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI prevSeasonClaimButtonRemainingText;
 
+        [SerializeField]
+        private RectTransform scrollContents;
+
+        [SerializeField]
+        private HorizontalLayoutGroup scrollHorizontalLayout;
+
+        private RectTransform lineImageRectTransform;
+        private float rewardCellWidth;
+        private float lastRewardCellWidth;
+
         private bool isPageEffectComplete;
         public const int SeasonPassMaxLevel = 30;
         public const string MaxLevelString = "30";
@@ -69,6 +79,9 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
+            lineImageRectTransform = lineImage.GetComponent<RectTransform>();
+            rewardCellWidth = rewardCells[0].GetComponent<RectTransform>().rect.width;
+            lastRewardCellWidth = lastRewardCell.GetComponent<RectTransform>().rect.width;
             base.Awake();
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             seasonPassManager.AvatarInfo.Subscribe((seasonPassInfo) =>
@@ -213,51 +226,48 @@ namespace Nekoyume.UI
             isPageEffectComplete = false;
             rewardCellScrollbar.value = 0;
 
-            async UniTaskVoid ShowCellEffect()
-            {
-                var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-                var cellIndex = Mathf.Max(0, seasonPassManager.AvatarInfo.Value.Level - 1);
-
-                var tween = DOTween.To(() => rewardCellScrollbar.value,
-                    value => rewardCellScrollbar.value = value, CalculateScrollerStartPosition(), scrollDuration).SetEase(Ease.OutQuart);
-                tween.Play();
-
-                for (var i = cellIndex; i < rewardCells.Length; i++)
-                {
-                    rewardCells[i].SetTweeningStarting();
-                }
-
-                await UniTask.Delay(scrollWaitDuration);
-
-                var durationCount = 0;
-                for (var i = cellIndex; i < rewardCells.Length; i++)
-                {
-                    rewardCells[i].ShowTweening();
-                    await UniTask.Delay(betweenCellViewDuration);
-                    durationCount += betweenCellViewDuration;
-                    if (durationCount > miniumDurationCount)
-                    {
-                        isPageEffectComplete = true;
-                    }
-                }
-
-                isPageEffectComplete = true;
-            }
-
-            ShowCellEffect().Forget();
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            var cellIndex = Mathf.Max(0, seasonPassManager.AvatarInfo.Value.Level - 1);
+            ShowCellEffect(cellIndex).Forget();
         }
 
-        public float CalculateScrollerStartPosition()
+        private async UniTaskVoid ShowCellEffect(int cellIndex)
         {
-            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            var totalScrollbarLength = 3500f;
-            var paddingLeft = 20f;
+            var tween = DOTween.To(() => rewardCellScrollbar.value,
+                value => rewardCellScrollbar.value = value, CalculateScrollerStartPosition(cellIndex), scrollDuration).SetEase(Ease.OutQuart);
+            tween.Play();
+
+            for (var i = cellIndex; i < rewardCells.Length; i++)
+            {
+                rewardCells[i].SetTweeningStarting();
+            }
+
+            await UniTask.Delay(scrollWaitDuration);
+
+            var durationCount = 0;
+            for (var i = cellIndex; i < rewardCells.Length; i++)
+            {
+                rewardCells[i].ShowTweening();
+                await UniTask.Delay(betweenCellViewDuration);
+                durationCount += betweenCellViewDuration;
+                if (durationCount > miniumDurationCount)
+                {
+                    isPageEffectComplete = true;
+                }
+            }
+
+            isPageEffectComplete = true;
+        }
+
+        public float CalculateScrollerStartPosition(int currentLevel)
+        {
+            var totalScrollbarLength = scrollContents.sizeDelta.x;
+            var paddingLeft = scrollHorizontalLayout.padding.left;
             var viewSize = rewardCellScrollbar.GetComponent<RectTransform>().rect.width;
-            var currentLevel = Mathf.Max(0, seasonPassManager.AvatarInfo.Value.Level - 1);
-            float levelWidth = 110;
             var usableLength = totalScrollbarLength - viewSize;
 
-            var currentPosition = paddingLeft + levelWidth * currentLevel - 10;
+            //현재 레벨의 셀의 위치 계산 (paddingLeft + ((셀의 너비 + 셀간격) * 현재레벨) - 추가 조정 픽셀)
+            var currentPosition = paddingLeft + ((rewardCellWidth + scrollHorizontalLayout.spacing) * currentLevel) - 10;
 
             var value = currentPosition / usableLength;
 
@@ -299,6 +309,53 @@ namespace Nekoyume.UI
                         NotificationCell.NotificationType.Notification);
                     prevSeasonClaimButton.SetConditionalState(true);
                 });
+        }
+
+
+        public int TestCellCount = 20;
+        public int TestCurrentCellLevel = 3;
+        public bool TestLastCell = true;
+        [ContextMenu("TestScrollRefresh")]
+        public void TestScrollRefresh()
+        {
+            for (var i = 0; i < rewardCells.Length; i++)
+            {
+                rewardCells[i].gameObject.SetActive(i < TestCellCount);
+                rewardCells[i].SetLevelText(i + 1);
+            }
+            lastRewardCell.gameObject.SetActive(TestLastCell);
+
+            scrollHorizontalLayout.CalculateLayoutInputHorizontal();
+
+            scrollContents.sizeDelta = new Vector2(scrollHorizontalLayout.preferredWidth, scrollContents.sizeDelta.y);
+            CalculateLineImageWith(TestLastCell);
+
+            // 라인 이미지 채우는 비율 계산 (현재 레벨 - 1) / (총 셀 갯수 - 1) 래벨이 1부터 시작임을 가정.
+            lineImage.fillAmount = (float)(TestCurrentCellLevel - 1) / (float)(TestCellCount - 1);
+
+            ShowCellEffect(TestCurrentCellLevel - 1).Forget();
+        }
+
+        /// <summary>
+        /// 라인 이미지의 너비 계산
+        /// </summary>
+        private void CalculateLineImageWith(bool existLastCell)
+        {
+            // 마지막 셀의 위치 계산 (paddingRight + 셀의 너비 / 2)
+            var lastLineImagePositon = scrollHorizontalLayout.padding.right + (rewardCellWidth / 2);
+
+            // 마지막 셀이 존재하는 경우 마지막 셀의 너비를 더해줌 (셀간격도 더해줌)
+            if (existLastCell)
+            {
+                lastLineImagePositon += lastRewardCellWidth + scrollHorizontalLayout.spacing;
+            }
+
+            // 계산한크기만큼 빼줘야 스크롤뷰 안에 위치함
+            lastLineImagePositon = -lastLineImagePositon;
+
+            var offsetMax = lineImageRectTransform.offsetMax;
+            offsetMax.x = lastLineImagePositon;
+            lineImageRectTransform.offsetMax = offsetMax;
         }
     }
 }
