@@ -194,8 +194,6 @@ namespace Nekoyume.UI.Module
 
         public void Awake()
         {
-            ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) => { RefreshWithAvatarInfo(avatarInfo); });
-
             ReceiveBtn.onClick.AddListener(() =>
             {
                 ReceiveBtn.gameObject.SetActive(false);
@@ -241,7 +239,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var item in levels)
             {
-                item.text = level > SeasonPass.SeasonPassMaxLevel ? SeasonPass.MaxLevelString : level.ToString();
+                item.text = level.ToString();
             }
         }
 

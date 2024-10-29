@@ -30,7 +30,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI expText;
 
         [SerializeField]
-        private SeasonPassRewardCell[] rewardCells;
+        private List<SeasonPassRewardCell> rewardCells;
 
         [SerializeField]
         private Image lineImage;
@@ -120,7 +120,14 @@ namespace Nekoyume.UI
 
             seasonPassManager.RemainingDateTime.Subscribe((endDate) => { remainingText.text = endDate; });
 
-            seasonPassManager.SeasonEndDate.Subscribe((endTime) => { RefreshRewardCells(seasonPassManager); }).AddTo(gameObject);
+            seasonPassManager.SeasonEndDate.Subscribe((endTime) => {
+                if (seasonPassManager.CurrentSeasonPassData == null)
+                {
+                    NcDebug.LogError("[RefreshRewardCells] RefreshFailed");
+                    return;
+                }
+                RefreshRewardCells(seasonPassManager.CurrentSeasonPassData.RewardList);
+            }).AddTo(gameObject);
 
             seasonPassManager.PrevSeasonClaimAvailable.Subscribe(visible => { prevSeasonClaimButton.gameObject.SetActive(visible); }).AddTo(gameObject);
 
@@ -129,24 +136,45 @@ namespace Nekoyume.UI
             rewardCellScrollbar.value = 0;
         }
 
-        private void RefreshRewardCells(SeasonPassServiceManager seasonPassManager)
+        private void RefreshRewardCells(List<SeasonPassServiceClient.RewardSchema> rewardSchemas, bool existLastCell = true)
         {
-            if (seasonPassManager.CurrentSeasonPassData == null)
-            {
-                NcDebug.LogError("[RefreshRewardCells] RefreshFailed");
-                return;
-            }
+            AddRewardCellIfNeeded(rewardSchemas.Count);
 
-            for (var i = 0; i < rewardCells.Length; i++)
+            for (var i = 0; i < rewardCells.Count; i++)
             {
-                if (i < seasonPassManager.CurrentSeasonPassData.RewardList.Count)
+                if (i < rewardSchemas.Count)
                 {
                     rewardCells[i].gameObject.SetActive(true);
-                    rewardCells[i].SetData(seasonPassManager.CurrentSeasonPassData.RewardList[i]);
+                    rewardCells[i].SetData(rewardSchemas[i]);
                 }
                 else
                 {
                     rewardCells[i].gameObject.SetActive(false);
+                }
+            }
+
+            scrollHorizontalLayout.CalculateLayoutInputHorizontal();
+            scrollContents.sizeDelta = new Vector2(scrollHorizontalLayout.preferredWidth, scrollContents.sizeDelta.y);
+            CalculateLineImageWith(existLastCell);
+        }
+
+        /// <summary>
+        /// 필요한 수의 리워드 셀을 확보합니다.
+        /// 리스트에 관리되지 않는 마지막 차일드가 있으므로, 새로운 셀은 앞쪽에 추가됩니다.
+        /// </summary>
+        /// <param name="rewardsCount"></param>
+        private void AddRewardCellIfNeeded(int rewardsCount)
+        {
+            //rewardsCount count 체크 후 부족한 만큼 생성
+            if (rewardsCount > rewardCells.Count)
+            {
+                var startCount = rewardCells.Count;
+                for (var i = startCount; i < rewardsCount; i++)
+                {
+                    var cell = Instantiate(rewardCells[0], rewardCells[0].transform.parent);
+                    cell.name = $"RewardCell_{i}";
+                    cell.transform.SetAsFirstSibling();
+                    rewardCells.Insert(0, cell);
                 }
             }
         }
@@ -182,7 +210,7 @@ namespace Nekoyume.UI
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             seasonPassManager.AvatarStateRefreshAsync().AsUniTask().Forget();
 
-            RefreshRewardCells(seasonPassManager);
+            RefreshRewardCells(seasonPassManager.CurrentSeasonPassData.RewardList);
 
             if (!ignoreShowAnimation)
             {
@@ -235,9 +263,10 @@ namespace Nekoyume.UI
         {
             var tween = DOTween.To(() => rewardCellScrollbar.value,
                 value => rewardCellScrollbar.value = value, CalculateScrollerStartPosition(cellIndex), scrollDuration).SetEase(Ease.OutQuart);
+            rewardCellScrollbar.value = 0;
             tween.Play();
 
-            for (var i = cellIndex; i < rewardCells.Length; i++)
+            for (var i = cellIndex; i < rewardCells.Count; i++)
             {
                 rewardCells[i].SetTweeningStarting();
             }
@@ -245,7 +274,7 @@ namespace Nekoyume.UI
             await UniTask.Delay(scrollWaitDuration);
 
             var durationCount = 0;
-            for (var i = cellIndex; i < rewardCells.Length; i++)
+            for (var i = cellIndex; i < rewardCells.Count; i++)
             {
                 rewardCells[i].ShowTweening();
                 await UniTask.Delay(betweenCellViewDuration);
@@ -322,7 +351,9 @@ namespace Nekoyume.UI
         [ContextMenu("TestScrollRefresh")]
         public void TestScrollRefresh()
         {
-            for (var i = 0; i < rewardCells.Length; i++)
+            AddRewardCellIfNeeded(TestCellCount);
+
+            for (var i = 0; i < rewardCells.Count; i++)
             {
                 rewardCells[i].gameObject.SetActive(i < TestCellCount);
                 rewardCells[i].SetLevelText(i + 1);
@@ -330,7 +361,6 @@ namespace Nekoyume.UI
             lastRewardCell.gameObject.SetActive(TestLastCell);
 
             scrollHorizontalLayout.CalculateLayoutInputHorizontal();
-
             scrollContents.sizeDelta = new Vector2(scrollHorizontalLayout.preferredWidth, scrollContents.sizeDelta.y);
             CalculateLineImageWith(TestLastCell);
 
