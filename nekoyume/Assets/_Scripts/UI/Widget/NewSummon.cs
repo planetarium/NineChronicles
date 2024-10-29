@@ -52,7 +52,7 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
-        private Toggle[] countToggles;
+        private RectTransform catRectTransform;
 
         private SummonObject _selectedSummonObj;
         private readonly List<IDisposable> _disposables = new();
@@ -85,6 +85,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             OnClickSummonTabToggle(summonObjects.First());
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
         }
 
         private void OnClickSummonTabToggle(SummonObject summonObject)
@@ -137,6 +138,9 @@ namespace Nekoyume.UI
             backgroundRect
                 .DOAnchorPosY(SummonUtil.GetBackGroundPosition(resultType), .5f)
                 .SetEase(Ease.InOutCubic);
+            var catPos = catRectTransform.anchoredPosition;
+            catPos.y = rows.Count > 2 ? 0 : -120;
+            catRectTransform.anchoredPosition = catPos;
         }
 
         public void SummonAction(SummonSheet.Row row)

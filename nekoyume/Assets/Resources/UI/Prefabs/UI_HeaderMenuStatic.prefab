@@ -2349,6 +2349,7 @@ MonoBehaviour:
   - {fileID: 7986236049272158601}
   - {fileID: 5966784216197918626}
   - {fileID: 3817455631509597430}
+  - {fileID: 8262080742115748337}
   mileage: {fileID: 4001094176205109151}
   inventoryVFX: {fileID: 3356750011985595016}
   workshopVFX: {fileID: 4132565643212829950}
@@ -13456,6 +13457,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2535231714125802704}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8262080742115748337 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5874450275814753569, guid: 0ff27b8062cb64f4b92fb14b01f26ad0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2535231714125802704}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a007ff8d8e624f78ba6a1406de8cb213, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2853800363355426482
 PrefabInstance:
   m_ObjectHideFlags: 0

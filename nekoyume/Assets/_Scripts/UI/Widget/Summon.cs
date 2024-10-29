@@ -227,15 +227,15 @@ namespace Nekoyume.UI
                 buttonGroup.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
             }
 
-            var state = costType switch
-            {
-                CostType.SilverDust => HeaderMenuStatic.AssetVisibleState.SummonNormal,
-                _ => HeaderMenuStatic.AssetVisibleState.SummonAdvanced
-            };
-            LoadingHelper.Summon
-                .Where(_ => gameObject.activeSelf)
-                .Subscribe(_ => Find<HeaderMenuStatic>().UpdateAssets(state))
-                .AddTo(_disposables);
+            // var state = costType switch
+            // {
+            //     CostType.SilverDust => HeaderMenuStatic.AssetVisibleState.SummonNormal,
+            //     _ => HeaderMenuStatic.AssetVisibleState.SummonAdvanced
+            // };
+            // LoadingHelper.Summon
+            //     .Where(_ => gameObject.activeSelf)
+            //     .Subscribe(_ => Find<HeaderMenuStatic>().UpdateAssets(state))
+            //     .AddTo(_disposables);
         }
 
 #region Action

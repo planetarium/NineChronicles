@@ -2857,10 +2857,11 @@ MonoBehaviour:
   - summonResult: 2
     tabToggle: {fileID: 8417508641502258821}
     enableObj:
-    - {fileID: 5597247345816316038}
+    - {fileID: 3095810823935262297}
     bottomImageColor: {r: 1, g: 1, b: 1, a: 1}
   closeButton: {fileID: 241345997775891456}
   countToggles: []
+  catRectTransform: {fileID: 6939644925556165784}
 --- !u!1 &1889813540128101133
 GameObject:
   m_ObjectHideFlags: 0
