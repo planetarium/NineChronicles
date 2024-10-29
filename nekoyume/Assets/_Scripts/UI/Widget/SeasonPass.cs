@@ -261,13 +261,17 @@ namespace Nekoyume.UI
 
         public float CalculateScrollerStartPosition(int currentLevel)
         {
-            var totalScrollbarLength = scrollContents.sizeDelta.x;
+            // 총 스크롤바 길이 계산 (컨텐츠의 너비 * 컨텐츠의 스케일)
+            var totalScrollbarLength = scrollContents.sizeDelta.x * scrollContents.localScale.x;
             var paddingLeft = scrollHorizontalLayout.padding.left;
             var viewSize = rewardCellScrollbar.GetComponent<RectTransform>().rect.width;
             var usableLength = totalScrollbarLength - viewSize;
 
             //현재 레벨의 셀의 위치 계산 (paddingLeft + ((셀의 너비 + 셀간격) * 현재레벨) - 추가 조정 픽셀)
             var currentPosition = paddingLeft + ((rewardCellWidth + scrollHorizontalLayout.spacing) * currentLevel) - 10;
+
+            // 스케일을 곱해줘야함 scrollContents의 스케일이 1이 아닐 수 있기 때문(레이아웃 변경으로 현재 프리팹의 스케일이 0.9)
+            currentPosition *= scrollContents.localScale.x;
 
             var value = currentPosition / usableLength;
 
