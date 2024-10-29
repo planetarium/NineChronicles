@@ -47,5 +47,10 @@ namespace Nekoyume.Multiplanetary
             // Default to Odin
             return Planet.Odin;
         }
+        
+        public static bool IsThor(PlanetId planetId)
+        {
+            return planetId == Heimdall || planetId == HeimdallInternal;
+        }
     }
 }

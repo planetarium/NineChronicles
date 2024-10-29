@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8521751767205546410}
   - component: {fileID: 8523914425759493214}
-  - component: {fileID: 3006438819010866828}
   - component: {fileID: 969881525366193722}
+  - component: {fileID: 7921596922285196033}
   m_Layer: 5
-  m_Name: UI_ChainIfoPopup
+  m_Name: UI_ChainInfoPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,25 +49,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8455521720735508232}
   m_CullTransparentMesh: 0
---- !u!114 &3006438819010866828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8455521720735508232}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80e54971208044d0b333da5ebb2501cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
-  title: {fileID: 0}
-  content: {fileID: 0}
-  labelOK: {fileID: 0}
-  titleBorder: {fileID: 0}
-  CloseButton: {fileID: 0}
 --- !u!95 &969881525366193722
 Animator:
   serializedVersion: 5
@@ -89,6 +70,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7921596922285196033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8455521720735508232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a6a0e6881f11aa4fba43424131d6431, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  _blockIndexText: {fileID: 0}
+  _closeButton: {fileID: 0}
 --- !u!1 &9156980641155897990
 GameObject:
   m_ObjectHideFlags: 0

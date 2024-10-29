@@ -107,7 +107,7 @@ namespace Nekoyume.UI
 
         [SerializeField] private GameObject adventureBossUnMark;
 
-        [SerializeField] private GameObject thorSeasonPassObject;
+        [SerializeField] private Button thorSeasonPassButton;
 
         private Coroutine _coLazyClose;
 
@@ -730,11 +730,11 @@ namespace Nekoyume.UI
             var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
             if (planetId.HasValue && Nekoyume.Multiplanetary.PlanetId.IsThor(planetId.Value))
             {
-                thorSeasonPassObject.SetActive(true);
+                thorSeasonPassButton.gameObject.SetActive(true);
             }
             else
             {
-                thorSeasonPassObject.SetActive(false);
+                thorSeasonPassButton.gameObject.SetActive(false);
             }
         }
 
