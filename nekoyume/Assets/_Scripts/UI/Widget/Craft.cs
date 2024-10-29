@@ -338,7 +338,7 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
-            HammerPointStatesSubject.HammerPointSubject.Subscribe(_ =>
+            HammerPointStatesSubject.HammerPoint.Subscribe(_ =>
             {
                 if (equipmentSubRecipeView.gameObject.activeSelf)
                 {
