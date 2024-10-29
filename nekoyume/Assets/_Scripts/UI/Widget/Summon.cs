@@ -31,10 +31,19 @@ namespace Nekoyume.UI
 
     public class Summon : Widget
     {
+        public enum SummonResult
+        {
+            Aura,
+            Grimoire,
+            Rune,
+            FullCostume,
+            Title,
+        }
+
         [Serializable]
         private class SummonInfo
         {
-            public int summonSheetId;
+            public SummonResult summonResult;
             public Toggle tabToggle;
             public GameObject[] enableObj;
             public string nameEng;
@@ -81,8 +90,8 @@ namespace Nekoyume.UI
             get
             {
                 var result = false;
-                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
-                foreach (var summonRow in summonSheet)
+                var sheets = Game.Game.instance.TableSheets;
+                foreach (var summonRow in sheets.EquipmentSummonSheet.Values.Concat(sheets.RuneSummonSheet.Values))
                 {
                     var costType = (CostType)summonRow.CostMaterial;
                     var cost = summonRow.CostMaterialCount;
@@ -132,12 +141,23 @@ namespace Nekoyume.UI
             {
                 _isInitialized = true;
 
-                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
-                foreach (var summonInfo in summonInfos)
-                {
-                    summonInfo.SummonSheetRow =
-                        summonSheet.TryGetValue(summonInfo.summonSheetId, out var row) ? row : null;
-                }
+                // var sheets = Game.Game.instance.TableSheets;
+                // foreach (var summonInfo in summonInfos)
+                // {
+                //     summonInfo.SummonSheetRow = summonInfo.summonResult switch
+                //     {
+                //         SummonResult.Aura => sheets.EquipmentSummonSheet[summonInfo],
+                //         SummonResult.Grimoire => expr,
+                //         SummonResult.Rune => expr,
+                //         SummonResult.FullCostume => expr,
+                //         SummonResult.Title => expr,
+                //         _ => throw new ArgumentOutOfRangeException()
+                //     };
+                //     summonInfo.SummonSheetRow =
+                //         sheets.EquipmentSummonSheet.Concat(sheets.RuneSummonSheet)
+                //             .ToDictionary(pair => pair.Key, pair => pair.Value)
+                //             .GetValueOrDefault(summonInfo.summonSheetId);
+                // }
             }
 
             summonInfos[0].tabToggle.isOn = true;
@@ -161,9 +181,9 @@ namespace Nekoyume.UI
 
             var summonRow = currentInfo.SummonSheetRow;
             var costType = (CostType)summonRow.CostMaterial;
-            summonItem.backgroundRect
-                .DOAnchorPosY(SummonUtil.GetBackGroundPosition(costType), .5f)
-                .SetEase(Ease.InOutCubic);
+            // summonItem.backgroundRect
+            //     .DOAnchorPosY(SummonUtil.GetBackGroundPosition(costType), .5f)
+            //     .SetEase(Ease.InOutCubic);
 
             var enablePhrase1 = !string.IsNullOrEmpty(currentInfo.phrase1);
             summonItem.phrase1Obj.SetActive(enablePhrase1);
@@ -223,45 +243,45 @@ namespace Nekoyume.UI
         public void SummonAction(int groupId, int summonCount)
         {
             // Check material enough
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-            var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.SummonSheet[groupId];
-            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-
-            var totalCost = summonRow.CostMaterialCount * summonCount;
-            var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
-                ? items.Sum(x => x.count)
-                : 0;
-
-            if (count < totalCost)
-            {
-                // Not enough
-                NcDebug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
-                return;
-            }
-
-            var firstRecipeId = summonRow.Recipes.First().Item1;
-            if (tableSheets.EquipmentItemRecipeSheet.TryGetValue(firstRecipeId, out _))
-            {
-                //ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
-                ActionManager.Instance.CostumeSummon(50001, 100).Subscribe();
-                StartCoroutine(CoShowAuraSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
-            }
-            else if (tableSheets.RuneSheet.TryGetValue(firstRecipeId, out _))
-            {
-                //ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
-                ActionManager.Instance.CostumeSummon(50002, 100).Subscribe();
-                StartCoroutine(CoShowRuneSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
-            }
-
-            LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
+            // var inventory = States.Instance.CurrentAvatarState.inventory;
+            // var tableSheets = Game.Game.instance.TableSheets;
+            // var summonRow = tableSheets.SummonSheet[groupId];
+            // var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            //
+            // var totalCost = summonRow.CostMaterialCount * summonCount;
+            // var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
+            //     ? items.Sum(x => x.count)
+            //     : 0;
+            //
+            // if (count < totalCost)
+            // {
+            //     // Not enough
+            //     NcDebug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
+            //     return;
+            // }
+            //
+            // var firstRecipeId = summonRow.Recipes.First().Item1;
+            // if (tableSheets.EquipmentItemRecipeSheet.TryGetValue(firstRecipeId, out _))
+            // {
+            //     //ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
+            //     ActionManager.Instance.CostumeSummon(50001, 100).Subscribe();
+            //     StartCoroutine(CoShowAuraSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
+            // }
+            // else if (tableSheets.RuneSheet.TryGetValue(firstRecipeId, out _))
+            // {
+            //     //ActionManager.Instance.RuneSummon(groupId, summonCount).Subscribe();
+            //     ActionManager.Instance.CostumeSummon(50002, 100).Subscribe();
+            //     StartCoroutine(CoShowRuneSummonLoadingScreen(summonRow.Recipes.Select(r => r.Item1).ToList()));
+            // }
+            //
+            // LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
 
-            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
+            var summonRow = Game.Game.instance.TableSheets.EquipmentSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
@@ -272,7 +292,7 @@ namespace Nekoyume.UI
         {
             LoadingHelper.Summon.Value = null;
 
-            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
+            var summonRow = Game.Game.instance.TableSheets.RuneSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateRune(summonRow, summonCount, random);
@@ -283,7 +303,7 @@ namespace Nekoyume.UI
         {
             LoadingHelper.Summon.Value = null;
 
-            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
+            var summonRow = Game.Game.instance.TableSheets.CostumeSummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateCostume(summonRow, summonCount, random);
@@ -449,28 +469,28 @@ namespace Nekoyume.UI
         // Do not use with Aura summon tutorial. this logic is fake.
         public void SetCostUIForTutorial()
         {
-            const int normalAuraId = 10001;
-            var summonInfo = summonInfos.FirstOrDefault(info => info.summonSheetId == normalAuraId);
-            if (summonInfo is null)
-            {
-                NcDebug.LogError($"SummonInfo for tutorial not found. id : {normalAuraId}");
-                return;
-            }
-
-            summonInfo.tabToggle.isOn = true;
-            SetSummonInfo(summonInfo);
-
-            var costButton = summonItem.normalButtonGroup.draw1Button;
-            if (costButton)
-            {
-                costButton.SetFakeUI(CostType.SilverDust, 0);
-            }
+            // const int normalAuraId = 10001;
+            // var summonInfo = summonInfos.FirstOrDefault(info => info.summonSheetId == normalAuraId);
+            // if (summonInfo is null)
+            // {
+            //     NcDebug.LogError($"SummonInfo for tutorial not found. id : {normalAuraId}");
+            //     return;
+            // }
+            //
+            // summonInfo.tabToggle.isOn = true;
+            // SetSummonInfo(summonInfo);
+            //
+            // var costButton = summonItem.normalButtonGroup.draw1Button;
+            // if (costButton)
+            // {
+            //     costButton.SetFakeUI(CostType.SilverDust, 0);
+            // }
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickNormal1SummonButton()
         {
-            var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
+            var summonRow = Game.Game.instance.TableSheets.EquipmentSummonSheet.First;
             var resultEquipment =
                 States.Instance.CurrentAvatarState.inventory.Equipments.FirstOrDefault(e =>
                     e is Aura);
