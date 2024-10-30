@@ -668,7 +668,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<PatrolRewardPopup>().Show();
+            Find<EventRewardPopup>().Show();
         }
 
         public void SeasonPassClick()

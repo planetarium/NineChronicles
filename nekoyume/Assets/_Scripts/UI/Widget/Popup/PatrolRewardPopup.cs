@@ -48,7 +48,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(bool ignoreShowAnimation = false)
         {
             if (PatrolReward.Claiming.Value)
             {

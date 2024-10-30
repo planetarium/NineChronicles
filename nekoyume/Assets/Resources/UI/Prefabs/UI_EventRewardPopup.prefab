@@ -7521,6 +7521,11 @@ PrefabInstance:
       propertyPath: m_ChildScaleHeight
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 847652588895550962, guid: 2062079ab0a7ad3499b02479bba53f49,
+        type: 3}
+      propertyPath: m_Group
+      value: 
+      objectReference: {fileID: 9068388154483131590}
     - target: {fileID: 1096343942018198268, guid: 2062079ab0a7ad3499b02479bba53f49,
         type: 3}
       propertyPath: l10nKey
@@ -8527,6 +8532,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1395012199287188897}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9068388154483131590 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7963902146071144807, guid: ec3c95a861b3330439e701f8a43f3235,
+    type: 3}
+  m_PrefabInstance: {fileID: 1395012199287188897}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2090341892085656170
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8549,6 +8566,11 @@ PrefabInstance:
       propertyPath: m_ChildScaleHeight
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 847652588895550962, guid: 2062079ab0a7ad3499b02479bba53f49,
+        type: 3}
+      propertyPath: m_Group
+      value: 
+      objectReference: {fileID: 9068388154483131590}
     - target: {fileID: 1096343942018198268, guid: 2062079ab0a7ad3499b02479bba53f49,
         type: 3}
       propertyPath: l10nKey
@@ -9118,6 +9140,11 @@ PrefabInstance:
       propertyPath: m_ChildScaleHeight
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 847652588895550962, guid: 2062079ab0a7ad3499b02479bba53f49,
+        type: 3}
+      propertyPath: m_Group
+      value: 
+      objectReference: {fileID: 9068388154483131590}
     - target: {fileID: 867982976131992942, guid: 2062079ab0a7ad3499b02479bba53f49,
         type: 3}
       propertyPath: m_IsActive
@@ -9590,6 +9617,11 @@ PrefabInstance:
       propertyPath: m_ChildScaleHeight
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 847652588895550962, guid: 2062079ab0a7ad3499b02479bba53f49,
+        type: 3}
+      propertyPath: m_Group
+      value: 
+      objectReference: {fileID: 9068388154483131590}
     - target: {fileID: 1096343942018198268, guid: 2062079ab0a7ad3499b02479bba53f49,
         type: 3}
       propertyPath: l10nKey
@@ -10172,6 +10204,11 @@ PrefabInstance:
       propertyPath: m_ChildScaleHeight
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 847652588895550962, guid: 2062079ab0a7ad3499b02479bba53f49,
+        type: 3}
+      propertyPath: m_Group
+      value: 
+      objectReference: {fileID: 9068388154483131590}
     - target: {fileID: 1096343942018198268, guid: 2062079ab0a7ad3499b02479bba53f49,
         type: 3}
       propertyPath: l10nKey
