@@ -47,7 +47,6 @@ namespace Nekoyume.UI.Module
         public void Subscribe(
             SummonSheet.Row summonRow,
             int summonCount,
-            System.Action goToMarget,
             List<IDisposable> disposables)
         {
             var costType = (CostType)summonRow.CostMaterial;

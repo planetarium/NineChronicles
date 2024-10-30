@@ -31,15 +31,6 @@ namespace Nekoyume.UI
 
     public class Summon : Widget
     {
-        public enum SummonResult
-        {
-            Aura,
-            Grimoire,
-            Rune,
-            FullCostume,
-            Title,
-        }
-
         [Serializable]
         private class SummonInfo
         {
@@ -223,8 +214,8 @@ namespace Nekoyume.UI
             if (buttonGroup != null)
             {
                 buttonGroup.container.SetActive(true);
-                buttonGroup.draw1Button.Subscribe(summonRow, 1, GoToMarket, _disposables);
-                buttonGroup.draw10Button.Subscribe(summonRow, 10, GoToMarket, _disposables);
+                buttonGroup.draw1Button.Subscribe(summonRow, 1, _disposables);
+                buttonGroup.draw10Button.Subscribe(summonRow, 10, _disposables);
             }
 
             // var state = costType switch

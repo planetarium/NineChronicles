@@ -63,7 +63,6 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            // TODO: SummonDetailPopup도 새로 만들어야한다. 난 망했다
             infoButton.OnClickAsObservable()
                 .Subscribe(_ => Find<SummoningProbabilityPopup>().Show(_selectedSummonObj.summonResult))
                 .AddTo(gameObject);
@@ -139,12 +138,13 @@ namespace Nekoyume.UI
                 var costButton = costButtons[index++];
                 costButton.SetCost((CostType)costMaterial, materialCount);
                 costButton.gameObject.SetActive(true);
-                costButton.Subscribe(row, _selectedSummonCount, null, _disposables);
+                costButton.Subscribe(row, _selectedSummonCount, _disposables);
             }
 
             backgroundRect
                 .DOAnchorPosY(SummonUtil.GetBackGroundPosition(resultType), .5f)
                 .SetEase(Ease.InOutCubic);
+            // 표시해야할 버튼이 2개 이하인 경우, 고양이 NPC의 위치를 밑으로 조금 내린다.
             var catPos = catRectTransform.anchoredPosition;
             catPos.y = rows.Count > 2 ? 0 : -120;
             catRectTransform.anchoredPosition = catPos;
@@ -152,6 +152,7 @@ namespace Nekoyume.UI
 
         public void SummonAction(SummonSheet.Row row)
         {
+            // 어떤걸 뽑느냐에 따라 LoadingScreen 형태가 바뀐다.
             switch (_selectedSummonObj.summonResult)
             {
                 case SummonResult.Aura:
@@ -170,16 +171,18 @@ namespace Nekoyume.UI
                     break;
             }
 
+            // 액션을 처리하는 동안 LoadingHelper에 사용중인 재화를 할당한다
             LoadingHelper.Summon.Value = new Tuple<int, int>(row.CostMaterial, row.CostMaterialCount * _selectedSummonCount);
         }
 
+        // used in UGUI event
         public void OnCountToggleValueChanged(int count)
         {
             _selectedSummonCount = count;
             SetBySummonResult(_selectedSummonObj.summonResult);
         }
 
-#region duplicated
+#region copy from old Summon.cs
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;

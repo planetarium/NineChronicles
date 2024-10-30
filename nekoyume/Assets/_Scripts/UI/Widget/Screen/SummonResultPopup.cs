@@ -196,7 +196,7 @@ namespace Nekoyume.UI
             }
 
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
-            drawButton.Subscribe(data, summonCount, GoToMarket, _disposables);
+            drawButton.Subscribe(data, summonCount, _disposables);
             drawButton.gameObject.SetActive(true);
         }
 
@@ -297,17 +297,6 @@ namespace Nekoyume.UI
 
             _completeCallback?.Invoke();
             _completeCallback = null;
-        }
-
-        private static void GoToMarket()
-        {
-            Find<SummonResultPopup>().Close(true);
-
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            if (TryFind<MobileShop>(out var mobileShop))
-            {
-                mobileShop.Show();
-            }
         }
     }
 }
