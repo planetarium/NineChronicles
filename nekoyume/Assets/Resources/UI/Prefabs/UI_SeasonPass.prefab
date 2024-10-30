@@ -6433,6 +6433,7 @@ GameObject:
   - component: {fileID: 1331975605935370009}
   - component: {fileID: 153371272252555454}
   - component: {fileID: 8814762166081929352}
+  - component: {fileID: 4509578812626484206}
   m_Layer: 5
   m_Name: TabButton_Sub
   m_TagString: Untagged
@@ -6558,20 +6559,7 @@ MonoBehaviour:
   m_Group: {fileID: 7686649892094819739}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 82320430492465076, guid: e9cba050c7b3a4e4abfe0bafa6b118d9,
-          type: 3}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 1
   offObject: {fileID: 5614556952891971646}
   onObject: {fileID: 842408734903805537}
@@ -6596,6 +6584,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   colorTransitionGraphics: []
+--- !u!114 &4509578812626484206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869225419131356005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &940585474305599689
 GameObject:
   m_ObjectHideFlags: 0
@@ -7882,6 +7883,7 @@ MonoBehaviour:
   iconPremiumPlusImage: {fileID: 727058466928184176}
   backGroundImage: {fileID: 8010349703754759914}
   levelBackGroundImage: {fileID: 1492307879694988212}
+  seasonPassTypeName: {fileID: 33577627469175595}
   betweenCellViewDuration: 60
   scrollDuration: 1
   scrollWaitDuration: 300
@@ -20608,6 +20610,7 @@ GameObject:
   - component: {fileID: 3116140346847974312}
   - component: {fileID: 3859148613074772004}
   - component: {fileID: 6064545429979967825}
+  - component: {fileID: 964003508576989043}
   m_Layer: 5
   m_Name: TabButton_Sub (1)
   m_TagString: Untagged
@@ -20733,20 +20736,7 @@ MonoBehaviour:
   m_Group: {fileID: 7686649892094819739}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 82320430492465076, guid: e9cba050c7b3a4e4abfe0bafa6b118d9,
-          type: 3}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 0
   offObject: {fileID: 2953640525735786259}
   onObject: {fileID: 3877630593123888971}
@@ -20771,6 +20761,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   colorTransitionGraphics: []
+--- !u!114 &964003508576989043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7445133396344237374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &7675012350742444359
 GameObject:
   m_ObjectHideFlags: 0
@@ -21753,6 +21756,7 @@ GameObject:
   - component: {fileID: 9016192360281796932}
   - component: {fileID: 4230142366627928976}
   - component: {fileID: 8841693321498946296}
+  - component: {fileID: 8431917534004445399}
   m_Layer: 5
   m_Name: TabButton_Sub (2)
   m_TagString: Untagged
@@ -21878,20 +21882,7 @@ MonoBehaviour:
   m_Group: {fileID: 7686649892094819739}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 82320430492465076, guid: e9cba050c7b3a4e4abfe0bafa6b118d9,
-          type: 3}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 0
   offObject: {fileID: 1274178951513292351}
   onObject: {fileID: 5833899599813843186}
@@ -21916,6 +21907,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   colorTransitionGraphics: []
+--- !u!114 &8431917534004445399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7958969507038729328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &7979134652527331746
 GameObject:
   m_ObjectHideFlags: 0

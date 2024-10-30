@@ -99,6 +99,8 @@ namespace Nekoyume.UI
         private Image backGroundImage;
         [SerializeField]
         private Image levelBackGroundImage;
+        [SerializeField]
+        private TextMeshProUGUI seasonPassTypeName;
 
         private RectTransform lineImageRectTransform;
         private float rewardCellWidth;
@@ -169,6 +171,7 @@ namespace Nekoyume.UI
                     rewardCells[i].gameObject.SetActive(false);
                 }
             }
+            lastRewardCell.gameObject.SetActive(existLastCell);
 
             scrollHorizontalLayout.CalculateLayoutInputHorizontal();
             scrollContents.sizeDelta = new Vector2(scrollHorizontalLayout.preferredWidth, scrollContents.sizeDelta.y);
@@ -199,7 +202,7 @@ namespace Nekoyume.UI
         public void ShowSeasonPassPremiumPopup()
         {
 #if UNITY_ANDROID || UNITY_IOS
-            Widget.Find<SeasonPassPremiumPopup>().Show();
+            Widget.Find<SeasonPassPremiumPopup>().Show(currentSeasonPassType);
 #else
             var confirm = Find<ConfirmPopup>();
             confirm.CloseCallback = result =>
@@ -275,14 +278,17 @@ namespace Nekoyume.UI
                 case SeasonPassType.Courage:
                     rewardListData = seasonPassManager.CurrentSeasonPassData.RewardList;
                     existLastCell = true;
+                    seasonPassTypeName.text = "COURAGE PASS"; /*L10nManager.Localize("UI_SEASONPASS_COURAGE");*/
                     break;
                 case SeasonPassType.WorldClear:
-                    rewardListData = new List<SeasonPassServiceClient.RewardSchema>(15);
+                    rewardListData = new List<SeasonPassServiceClient.RewardSchema>(new SeasonPassServiceClient.RewardSchema[15]);
                     existLastCell = false;
+                    seasonPassTypeName.text = "WORLD CLEAR PASS"; /* L10nManager.Localize("UI_SEASONPASS_WORLD_CLEAR");*/
                     break;
                 case SeasonPassType.AdventureBoss:
-                    rewardListData = new List<SeasonPassServiceClient.RewardSchema>(40);
+                    rewardListData = new List<SeasonPassServiceClient.RewardSchema>(new SeasonPassServiceClient.RewardSchema[40]);
                     existLastCell = true;
+                    seasonPassTypeName.text = "ADVENTURE BOSS PASS"; /*L10nManager.Localize("UI_SEASONPASS_ADVENTUREBOSS");*/
                     break;
                 default:
                     rewardListData = seasonPassManager.CurrentSeasonPassData.RewardList;

@@ -19938,6 +19938,20 @@ MonoBehaviour:
   - {fileID: 4398469597133637799}
   - {fileID: 4866836881585524437}
   - {fileID: 2891885208191451444}
+  titleText: {fileID: 3789399659293179972}
+  premiumIconImage: {fileID: 2137236542645849284}
+  premiumPlusIconImage: {fileID: 5521463115098623455}
+  premiumIconCourage: {fileID: 21300000, guid: 1a86673f63c6c424dba9f59bdfccdd3f, type: 3}
+  premiumIconWorldClear: {fileID: 21300000, guid: 0d8d9983815cd874789d2436617f3396,
+    type: 3}
+  premiumIconAdventureBoss: {fileID: 21300000, guid: 24edfe4354d2e684ca95ba4993467cdd,
+    type: 3}
+  premiumPlusIconCourage: {fileID: 21300000, guid: 006f2f552fe412a4da629e639882095d,
+    type: 3}
+  premiumPlusIconWorldClear: {fileID: 21300000, guid: 0b4bb9ffd3f805f48bfda990be18a62a,
+    type: 3}
+  premiumPlusIconAdventureBoss: {fileID: 21300000, guid: ff92aea1792bc544db72411515eb6eb9,
+    type: 3}
 --- !u!1 &9024584144462848521
 GameObject:
   m_ObjectHideFlags: 0

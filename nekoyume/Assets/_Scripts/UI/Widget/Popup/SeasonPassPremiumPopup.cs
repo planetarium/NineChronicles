@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UniRx;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -15,9 +14,11 @@ using Nekoyume.State;
 using Nekoyume.Model.Mail;
 using Nekoyume.L10n;
 using Nekoyume.UI.Scroller;
+using System;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class SeasonPassPremiumPopup : PopupWidget
     {
         [SerializeField]
@@ -68,6 +69,26 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject[] premiumPlusInfoList;
 
+        [SerializeField]
+        private TextMeshProUGUI titleText;
+        [SerializeField]
+        private Image premiumIconImage;
+        [SerializeField]
+        private Image premiumPlusIconImage;
+
+        [SerializeField]
+        private Sprite premiumIconCourage;
+        [SerializeField]
+        private Sprite premiumIconWorldClear;
+        [SerializeField]
+        private Sprite premiumIconAdventureBoss;
+        [SerializeField]
+        private Sprite premiumPlusIconCourage;
+        [SerializeField]
+        private Sprite premiumPlusIconWorldClear;
+        [SerializeField]
+        private Sprite premiumPlusIconAdventureBoss;
+
         protected override void Awake()
         {
             base.Awake();
@@ -107,7 +128,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(SeasonPass.SeasonPassType seasonPassType, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
@@ -123,6 +144,25 @@ namespace Nekoyume.UI
 
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             var iapStoreManager = Game.Game.instance.IAPStoreManager;
+
+            switch (seasonPassType)
+            {
+                case SeasonPass.SeasonPassType.Courage:
+                    titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_COURAGE");
+                    premiumIconImage.sprite = premiumIconCourage;
+                    premiumPlusIconImage.sprite = premiumPlusIconCourage;
+                    break;
+                case SeasonPass.SeasonPassType.WorldClear:
+                    titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_WORLDCLEAR");
+                    premiumIconImage.sprite = premiumIconWorldClear;
+                    premiumPlusIconImage.sprite = premiumPlusIconWorldClear;
+                    break;
+                case SeasonPass.SeasonPassType.AdventureBoss:
+                    titleText.text = L10nManager.Localize("SEASONPASS_PREMIUM_TITLE_ADVENTUREBOSS");
+                    premiumIconImage.sprite = premiumIconAdventureBoss;
+                    premiumPlusIconImage.sprite = premiumPlusIconAdventureBoss;
+                    break;
+            }
 
             var premiumProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premium";
             if (iapStoreManager.SeasonPassProduct.TryGetValue(premiumProductKey, out var premiumProduct))
