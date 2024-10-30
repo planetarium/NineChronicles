@@ -6577,7 +6577,19 @@ MonoBehaviour:
   onObject: {fileID: 842408734903805537}
   onClickToggle:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2319532879278382693}
+        m_TargetAssemblyTypeName: Nekoyume.UI.SeasonPass, Nekoyume
+        m_MethodName: OnClickSeasonPassToggle
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   allowSwitchOffWhenIsOn: 1
   obsolete: 0
   onClickObsoletedToggle:
@@ -7436,7 +7448,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2405230519495336861}
   m_Direction: 0
   m_Value: 1
-  m_Size: 0.49174604
+  m_Size: 0.24285714
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7837,12 +7849,45 @@ MonoBehaviour:
   prevSeasonClaimButtonRemainingText: {fileID: 7053704674157856006}
   scrollContents: {fileID: 5872435442453203598}
   scrollHorizontalLayout: {fileID: 5359753210289116158}
+  seasonPassUiInfoByType:
+  - Type: 0
+    BackGroundSprite: {fileID: 21300000, guid: d1cdf3aa3c0932f46b0bcf71f8dbc11d, type: 3}
+    IconNormalSprite: {fileID: 21300000, guid: 73761f1218e503644a58c2034f60d4f1, type: 3}
+    IconPremiumSprite: {fileID: 21300000, guid: 1a86673f63c6c424dba9f59bdfccdd3f,
+      type: 3}
+    IconPremiumPlusSprite: {fileID: 21300000, guid: 006f2f552fe412a4da629e639882095d,
+      type: 3}
+    levelBackGroundSprite: {fileID: 21300000, guid: fbbfc558796b49143ae556d1fed428ac,
+      type: 3}
+  - Type: 1
+    BackGroundSprite: {fileID: 21300000, guid: ff250b1ad8d63c740b13170355c0d5e9, type: 3}
+    IconNormalSprite: {fileID: 21300000, guid: 0d0c1f1b7b6fbd541941d7008d5a3b7e, type: 3}
+    IconPremiumSprite: {fileID: 21300000, guid: 0d8d9983815cd874789d2436617f3396,
+      type: 3}
+    IconPremiumPlusSprite: {fileID: 21300000, guid: 0b4bb9ffd3f805f48bfda990be18a62a,
+      type: 3}
+    levelBackGroundSprite: {fileID: 21300000, guid: ad66c4e8d3f59e54dbb7312129a1e6b4,
+      type: 3}
+  - Type: 2
+    BackGroundSprite: {fileID: 21300000, guid: 4610f9d20b3d33445820757ca00b43f6, type: 3}
+    IconNormalSprite: {fileID: 21300000, guid: 0695e0bf8b1037146b324fb1a43abead, type: 3}
+    IconPremiumSprite: {fileID: 21300000, guid: 24edfe4354d2e684ca95ba4993467cdd,
+      type: 3}
+    IconPremiumPlusSprite: {fileID: 21300000, guid: ff92aea1792bc544db72411515eb6eb9,
+      type: 3}
+    levelBackGroundSprite: {fileID: 21300000, guid: 3bf10a58e8f920447b60b0842c289bd8,
+      type: 3}
+  iconNormalImage: {fileID: 2463003127454700822}
+  iconPremiumImage: {fileID: 5317352986263503089}
+  iconPremiumPlusImage: {fileID: 727058466928184176}
+  backGroundImage: {fileID: 8010349703754759914}
+  levelBackGroundImage: {fileID: 1492307879694988212}
   betweenCellViewDuration: 60
   scrollDuration: 1
   scrollWaitDuration: 300
   miniumDurationCount: 400
   TestCellCount: 20
-  TestCurrentCellIndex: 3
+  TestCurrentCellLevel: 3
   TestLastCell: 1
 --- !u!1 &1768276291492597949
 GameObject:
@@ -20707,7 +20752,19 @@ MonoBehaviour:
   onObject: {fileID: 3877630593123888971}
   onClickToggle:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2319532879278382693}
+        m_TargetAssemblyTypeName: Nekoyume.UI.SeasonPass, Nekoyume
+        m_MethodName: OnClickSeasonPassToggle
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   allowSwitchOffWhenIsOn: 1
   obsolete: 0
   onClickObsoletedToggle:
@@ -21840,7 +21897,19 @@ MonoBehaviour:
   onObject: {fileID: 5833899599813843186}
   onClickToggle:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2319532879278382693}
+        m_TargetAssemblyTypeName: Nekoyume.UI.SeasonPass, Nekoyume
+        m_MethodName: OnClickSeasonPassToggle
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   allowSwitchOffWhenIsOn: 1
   obsolete: 0
   onClickObsoletedToggle:
@@ -22127,7 +22196,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -26, y: 0}
+  m_AnchoredPosition: {x: -810, y: 0}
   m_SizeDelta: {x: 3500, y: 360}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8029291072304469993
