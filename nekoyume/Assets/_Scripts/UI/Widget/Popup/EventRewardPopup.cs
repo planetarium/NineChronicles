@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.ApiClient;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
@@ -11,11 +12,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
-using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class EventRewardPopup : PopupWidget
     {
         [Serializable]
@@ -35,7 +36,7 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton[] actionButtons;
         [SerializeField] private ConditionalButton receiveButton;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new ();
 
         protected override void Awake()
         {
@@ -50,23 +51,29 @@ namespace Nekoyume.UI
 
             for (var i = 0; i < tabToggles.Length; i++)
             {
-                var toggle = tabToggles[i];
                 var index = i;
-                toggle.onClickToggle.AddListener(() => SetData(index));
-                toggle.onClickObsoletedToggle.AddListener(() =>
+                tabToggles[i].onValueChanged.AddListener(value =>
                 {
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("NOTIFICATION_COMING_SOON"),
-                        NotificationCell.NotificationType.Information);
+                    if (value)
+                    {
+                        SetData(index);
+                    }
                 });
             }
-
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+
+            tabToggles.First().isOn = true;
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+
+            _disposables.DisposeAllAndClear();
         }
 
         private void SetData(int index)
@@ -106,11 +113,11 @@ namespace Nekoyume.UI
             eventImage.container.SetActive(true);
 
             receiveButton.gameObject.SetActive(true);
-            receiveButton.Interactable = true;
+            receiveButton.Interactable = true;  // Todo: Check condition
             receiveButton.Text = L10nManager.Localize("UI_GET_REWARD");
 
             receiveButton.OnSubmitSubject
-                .Subscribe(_ => ClaimExtraReward())
+                .Subscribe(_ => ClaimOneTimeGift())
                 .AddTo(_disposables);
         }
 
@@ -141,51 +148,46 @@ namespace Nekoyume.UI
 
         private void SetShopPackage()
         {
+            eventImage.container.SetActive(true);
+
             var button = actionButtons.First();
-
             button.gameObject.SetActive(true);
-            button.Interactable = true; // Todo : Only for mobile
-            button.Text = L10nManager.Localize("UI_SHOP_MOBILE");
+            button.Interactable =
+                ShortcutHelper.CheckConditionOfShortcut(ShortcutHelper.PlaceType.MobileShop);
 
-            button.OnSubmitSubject.Subscribe(_ =>
-            {
-                Close();
-                // TODO: Open Shop
-            }).AddTo(_disposables);
+            var shortcut =
+                ShortcutHelper.GetAcquisitionPlace(this, ShortcutHelper.PlaceType.MobileShop);
+            button.Text = shortcut.GuideText;
+            button.OnSubmitSubject.Subscribe(_ => shortcut.OnClick?.Invoke()).AddTo(_disposables);
         }
 
         private void SetDoubleContentsRewards()
         {
-            for (int i = 0; i < 3; i++)
+            eventImage.container.SetActive(true);
+
+            var shortcutTypes = new[]
+            {
+                ShortcutHelper.PlaceType.Arena,
+                ShortcutHelper.PlaceType.AdventureBoss,
+                ShortcutHelper.PlaceType.WorldBoss,
+            };
+
+            for (var i = 0; i < shortcutTypes.Length; i++)
             {
                 var button = actionButtons[i];
                 button.gameObject.SetActive(true);
-                button.Interactable = true;
-            }
+                button.Interactable = ShortcutHelper.CheckConditionOfShortcut(shortcutTypes[i]);
 
-            actionButtons[0].Text = L10nManager.Localize("UI_MAIN_MENU_RANKING");
-            actionButtons[0].OnSubmitSubject.Subscribe(_ =>
-            {
-                Close();
-                // TODO: Open Ranking
-            }).AddTo(_disposables);
-            actionButtons[1].Text = L10nManager.Localize("UI_ADVENTURE_BODD_BACK_BUTTON");
-            actionButtons[1].OnSubmitSubject.Subscribe(_ =>
-            {
-                Close();
-                // TODO: Open Adventure Boss
-            }).AddTo(_disposables);
-            actionButtons[2].Text = L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS");
-            actionButtons[2].OnSubmitSubject.Subscribe(_ =>
-            {
-                Close();
-                // TODO: Open World Boss
-            }).AddTo(_disposables);
+                var shortcut = ShortcutHelper.GetAcquisitionPlace(this, shortcutTypes[i]);
+                button.Text = shortcut.GuideText;
+                button.OnSubmitSubject
+                    .Subscribe(_ => shortcut.OnClick?.Invoke())
+                    .AddTo(_disposables);
+            }
         }
 
-        private void ClaimExtraReward()
+        private void ClaimOneTimeGift()
         {
-
         }
 
         private void ClaimPatrolReward()
@@ -205,7 +207,8 @@ namespace Nekoyume.UI
             receiveButton.Interactable = canReceive && !claiming;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
-                : L10nManager.Localize("UI_REMAINING_TIME", PatrolRewardModule.TimeSpanToString(remainTime));
+                : L10nManager.Localize("UI_REMAINING_TIME",
+                    PatrolRewardModule.TimeSpanToString(remainTime));
         }
     }
 }
