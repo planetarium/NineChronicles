@@ -61,9 +61,9 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             // TODO: SummonDetailPopup도 새로 만들어야한다. 난 망했다
-            //infoButton.OnClickAsObservable()
-                //.Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
-                //.AddTo(gameObject);
+            infoButton.OnClickAsObservable()
+                .Subscribe(_ => Find<SummoningProbabilityPopup>().Show(_selectedSummonObj.summonResult))
+                .AddTo(gameObject);
             foreach (var summonObject in summonObjects)
             {
                 summonObject.tabToggle.onClickToggle.AddListener(() =>

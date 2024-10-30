@@ -164,9 +164,9 @@ GameObject:
   - component: {fileID: 4903094517796783648}
   - component: {fileID: 8764526706001888454}
   - component: {fileID: 8424625209518538399}
-  - component: {fileID: 8890308534419416894}
+  - component: {fileID: 371256986190920595}
   m_Layer: 0
-  m_Name: RelationshipInfoScroll
+  m_Name: Scroll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -258,7 +258,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 3425573982587077489}
---- !u!114 &8890308534419416894
+--- !u!114 &371256986190920595
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -267,7 +267,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1679641825128558607}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 633888be98b54c9fb6b7fb02bb53bd26, type: 3}
+  m_Script: {fileID: 11500000, guid: 1259a0561b2e4906be442a1273b2d50c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cellInterval: 0.12313433
@@ -275,10 +275,10 @@ MonoBehaviour:
   loop: 0
   cellContainer: {fileID: 2129905501924633697}
   reuseCellMarginCount: 0
-  paddingHead: 15
+  paddingHead: 0
   paddingTail: 15
   spacing: 0
-  cellPrefab: {fileID: 4279953781941882700, guid: c99b7616f3323af428ba60fdcc6e4484,
+  cellPrefab: {fileID: 4754646696405477895, guid: 0e3cde161a3d99c4c835aaadc5357b50,
     type: 3}
   cellSize: 66
   forcedScrollSensitivity: 8
@@ -350,7 +350,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Summon probability by item
+  m_text: UI_SUMMON_DETAIL_LIST_TITLE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -438,7 +438,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_RELATIONSHIP
+  l10nKey: UI_SUMMON_DETAIL_LIST_TITLE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -701,7 +701,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5870640048439273228}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8448254924666976187}
+        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
+        m_MethodName: Close
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!95 &8532686809949666205
 Animator:
   serializedVersion: 5
@@ -823,7 +835,7 @@ GameObject:
   - component: {fileID: 5111690202864294752}
   - component: {fileID: 5113837648014933652}
   - component: {fileID: 4451440061730286832}
-  - component: {fileID: 682603553698334107}
+  - component: {fileID: 8448254924666976187}
   m_Layer: 5
   m_Name: UI_SummoningProbabilityPopup
   m_TagString: Untagged
@@ -882,7 +894,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &682603553698334107
+--- !u!114 &8448254924666976187
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -891,13 +903,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5038132744526247362}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e632e3287f349f8885917f4c28ff5a2, type: 3}
+  m_Script: {fileID: 11500000, guid: de20693e487d42d5a04ca5fcf73bd890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  closeButton: {fileID: 894890114440874520}
-  scroll: {fileID: 8890308534419416894}
+  scroll: {fileID: 371256986190920595}
+  titleText: {fileID: 6279013442042498756}
 --- !u!1 &5131069157079663635
 GameObject:
   m_ObjectHideFlags: 0

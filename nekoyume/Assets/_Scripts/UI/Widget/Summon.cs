@@ -204,9 +204,9 @@ namespace Nekoyume.UI
 
             _disposables.DisposeAllAndClear();
 
-            summonItem.infoButton.OnClickAsObservable()
-                .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
-                .AddTo(_disposables);
+            // summonItem.infoButton.OnClickAsObservable()
+            //     .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
+            //     .AddTo(_disposables);
             summonItem.nameText.text = currentInfo.nameEng;
 
             summonItem.normalButtonGroup.container.SetActive(false);
