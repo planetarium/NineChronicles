@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Lib9c;
 using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Crypto;
@@ -9,12 +11,13 @@ using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData.Summon;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -79,6 +82,10 @@ namespace Nekoyume.UI
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             });
             CloseWidget = closeButton.onClick.Invoke;
+            foreach (var costButton in costButtons)
+            {
+                costButton.Subscribe(gameObject);
+            }
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -150,15 +157,20 @@ namespace Nekoyume.UI
                 case SummonResult.Aura:
                 case SummonResult.Grimoire:
                     ActionManager.Instance.AuraSummon(row.GroupId, _selectedSummonCount);
+                    StartCoroutine(CoShowAuraSummonLoadingScreen(row.Recipes.Select(r => r.Item1).ToList()));
                     break;
                 case SummonResult.Rune:
                     ActionManager.Instance.RuneSummon(row.GroupId, _selectedSummonCount);
+                    StartCoroutine(CoShowRuneSummonLoadingScreen(row.Recipes.Select(r => r.Item1).ToList()));
                     break;
                 case SummonResult.FullCostume:
                 case SummonResult.Title:
                     ActionManager.Instance.CostumeSummon(row.GroupId, _selectedSummonCount);
+                    // TODO: 코스튬 뚱땅창 연출 추가해야함
                     break;
             }
+
+            LoadingHelper.Summon.Value = new Tuple<int, int>(row.CostMaterial, row.CostMaterialCount * _selectedSummonCount);
         }
 
         public void OnCountToggleValueChanged(int count)
@@ -274,6 +286,75 @@ namespace Nekoyume.UI
                         ? runeData.sortingOrder
                         : 0)
                 .ToList();
+        }
+
+
+        private IEnumerator CoShowAuraSummonLoadingScreen(List<int> recipes)
+        {
+            var loadingScreen = Find<CombinationLoadingScreen>();
+
+            IEnumerator CoChangeItem()
+            {
+                var equipmentRecipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+                while (loadingScreen.isActiveAndEnabled)
+                {
+                    foreach (var recipe in recipes)
+                    {
+                        var equipment = ItemFactory.CreateItem(
+                            equipmentRecipeSheet[recipe].GetResultEquipmentItemRow(),
+                            new ActionRenderHandler.LocalRandom(0));
+                        loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(equipment));
+
+                        yield return new WaitForSeconds(.1f);
+                    }
+                }
+            }
+
+            loadingScreen.Show();
+            loadingScreen.SetCloseAction(null);
+            StartCoroutine(CoChangeItem());
+            yield return new WaitForSeconds(.5f);
+
+            loadingScreen.AnimateNPC(
+                CombinationLoadingScreen.SpeechBubbleItemType.Aura,
+                L10nManager.Localize("UI_COST_BLOCK", 1),
+                false);
+        }
+
+        private IEnumerator CoShowRuneSummonLoadingScreen(List<int> recipes)
+        {
+            var loadingScreen = Find<CombinationLoadingScreen>();
+
+            IEnumerator CoChangeItem()
+            {
+                var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+                while (loadingScreen.isActiveAndEnabled)
+                {
+                    foreach (var recipe in recipes)
+                    {
+                        if (!runeSheet.TryGetValue(recipe, out var rune))
+                        {
+                            NcDebug.LogError($"Invalid recipe id: {recipe}");
+                            continue;
+                        }
+
+                        var fav = new FungibleAssetValue(
+                            Currencies.GetRune(rune.Ticker), 1, 0);
+                        loadingScreen.SpeechBubbleWithItem.SetItemMaterial(new Item(fav));
+                        yield return new WaitForSeconds(.1f);
+                    }
+                }
+            }
+
+            loadingScreen.Show();
+            loadingScreen.SetCloseAction(null);
+            StartCoroutine(CoChangeItem());
+            yield return new WaitForSeconds(.5f);
+
+            loadingScreen.AnimateNPC(
+                CombinationLoadingScreen.SpeechBubbleItemType.Rune,
+                L10nManager.Localize("UI_COST_BLOCK", 1),
+                false);
         }
 #endregion
     }
