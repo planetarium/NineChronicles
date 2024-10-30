@@ -182,6 +182,7 @@ namespace Nekoyume.Blockchain
             RedeemCode();
             ChargeActionPoint();
             ClaimStakeReward();
+            ClaimGifts();
 
             // Unlocks
             UnlockEquipmentRecipe();
@@ -568,6 +569,16 @@ namespace Nekoyume.Blockchain
                     eval.Action is IClaimStakeReward)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimStakeReward)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimGifts()
+        {
+            _actionRenderer.EveryRender<ClaimGifts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                // .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimGifts)
                 .AddTo(_disposables);
         }
 
@@ -2801,6 +2812,22 @@ namespace Nekoyume.Blockchain
             });
         }
 
+        private void ResponseClaimGifts(ActionEvaluation<ClaimGifts> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to claim gifts. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(() =>
+            {
+                UpdateCurrentAvatarInventory(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                States.Instance.ClaimedGiftIds.Add(eval.Action.GiftId);
+            });
+        }
 
         internal class LocalRandom : System.Random, IRandom
         {

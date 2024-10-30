@@ -115,6 +115,8 @@ namespace Nekoyume.State
 
         public CollectionState CollectionState { get; private set; }
 
+        public List<int> ClaimedGiftIds { get; private set; }
+
         public States()
         {
             DeselectAvatar();
@@ -613,12 +615,15 @@ namespace Nekoyume.State
             // [1]: CollectionState
             // [2]: ActionPoint
             // [3]: DailyRewardReceivedBlockIndex
+            // [4]: Relationship
+            // [5]: ClaimedGiftIds
             var listStates = await Task.WhenAll(
                 agent.GetStateAsync(ReservedAddresses.LegacyAccount, skillStateAddress),
                 agent.GetStateAsync(Addresses.Collection, avatarAddr),
                 agent.GetStateAsync(Addresses.ActionPoint, avatarAddr),
                 agent.GetStateAsync(Addresses.DailyReward, avatarAddr),
-                agent.GetStateAsync(Addresses.Relationship, avatarAddr));
+                agent.GetStateAsync(Addresses.Relationship, avatarAddr),
+                agent.GetStateAsync(Addresses.ClaimedGiftIds, avatarAddr));
             SetCrystalRandomSkillState(listStates[0] is List serialized
                 ? new CrystalRandomSkillState(skillStateAddress, serialized)
                 : null);
@@ -634,6 +639,9 @@ namespace Nekoyume.State
             ReactiveAvatarState.UpdateRelationship(listStates[4] is Integer proficiency
                 ? proficiency
                 : 0);
+            SetClaimedGiftIds(listStates[5] is List rawIds
+                ? rawIds.ToList(StateExtensions.ToInteger)
+                : new List<int>());
 
             var allCombinationSlotState = await agent.GetAllCombinationSlotStateAsync(curAvatarState.address);
             SetAllCombinationSlotState(avatarAddr, allCombinationSlotState);
@@ -849,6 +857,11 @@ namespace Nekoyume.State
         {
             PatronAddress = patronAddress;
             PledgeApproved = isApproved;
+        }
+
+        private void SetClaimedGiftIds(List<int> claimedGiftIds)
+        {
+            ClaimedGiftIds = claimedGiftIds;
         }
     }
 }
