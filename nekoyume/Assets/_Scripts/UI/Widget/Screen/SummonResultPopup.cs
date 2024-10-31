@@ -38,6 +38,7 @@ namespace Nekoyume.UI
         [SerializeField] private ResultVideoClip rubyVideoClip;
         [SerializeField] private ResultVideoClip emeraldVideoClip;
 
+        [SerializeField] private SummonItemView[] manySummonItemViews;
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
         [SerializeField] private RectTransform background;
@@ -94,29 +95,47 @@ namespace Nekoyume.UI
 
             var bonus = summonCount == 10 ? 1 : 0;
             var great = resultList.First().Grade >= 5;
+            summonItemViews.First().transform.parent.parent.gameObject.SetActive(false);
+            manySummonItemViews.First().transform.parent.gameObject.SetActive(false);
+            singleSummonItemView.Hide();
 
-            var single = summonCount == 1;
-            if (single)
+            if (summonCount == 1)
             {
                 singleSummonItemView.SetData(resultList.First(), true, true);
                 singleSummonItemView.Show();
             }
+            else if (summonCount == 10)
+            {
+                summonItemViews.First().transform.parent.parent.gameObject.SetActive(true);
+                for (var i = 0; i < summonItemViews.Length; i++)
+                {
+                    var view = summonItemViews[i];
+                    if (i < resultList.Count)
+                    {
+                        view.SetData(resultList[i], true);
+                        view.Show();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
+                }
+            }
             else
             {
-                singleSummonItemView.Hide();
-            }
-
-            for (var i = 0; i < summonItemViews.Length; i++)
-            {
-                var view = summonItemViews[i];
-                if (!single && i < resultList.Count)
+                manySummonItemViews.First().transform.parent.gameObject.SetActive(true);
+                for (var i = 0; i < manySummonItemViews.Length; i++)
                 {
-                    view.SetData(resultList[i], true);
-                    view.Show();
-                }
-                else
-                {
-                    view.Hide();
+                    var view = manySummonItemViews[i];
+                    if (i < resultList.Count)
+                    {
+                        view.SetData(resultList[i], true);
+                        view.Show();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
                 }
             }
 
@@ -137,28 +156,47 @@ namespace Nekoyume.UI
             animator.SetTrigger(AnimatorHashHide);
 
             var bonus = summonCount == 10 ? 1 : 0;
-            var single = summonCount == 1;
-            if (single)
+            summonItemViews.First().transform.parent.parent.gameObject.SetActive(false);
+            manySummonItemViews.First().transform.parent.gameObject.SetActive(false);
+            singleSummonItemView.Hide();
+
+            if (summonCount == 1)
             {
                 singleSummonItemView.SetData(resultList.First(), true, true);
                 singleSummonItemView.Show();
             }
+            else if (summonCount == 10)
+            {
+                summonItemViews.First().transform.parent.parent.gameObject.SetActive(true);
+                for (var i = 0; i < summonItemViews.Length; i++)
+                {
+                    var view = summonItemViews[i];
+                    if (i < resultList.Count)
+                    {
+                        view.SetData(resultList[i], true);
+                        view.Show();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
+                }
+            }
             else
             {
-                singleSummonItemView.Hide();
-            }
-
-            for (var i = 0; i < summonItemViews.Length; i++)
-            {
-                var view = summonItemViews[i];
-                if (!single && i < resultList.Count)
+                manySummonItemViews.First().transform.parent.gameObject.SetActive(true);
+                for (var i = 0; i < manySummonItemViews.Length; i++)
                 {
-                    view.SetData(resultList[i], true);
-                    view.Show();
-                }
-                else
-                {
-                    view.Hide();
+                    var view = manySummonItemViews[i];
+                    if (i < resultList.Count)
+                    {
+                        view.SetData(resultList[i], true);
+                        view.Show();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
                 }
             }
 
@@ -277,7 +315,8 @@ namespace Nekoyume.UI
             audioController.PlaySfx(AudioController.SfxCode.Success);
             var viewsToAnimate = summonItemViews
                 .Concat(new[] { singleSummonItemView })
-                .Where(v => v.gameObject.activeSelf);
+                .Concat(manySummonItemViews)
+                .Where(v => v.gameObject.activeInHierarchy);
             foreach (var view in viewsToAnimate)
             {
                 view.ShowWithAnimation();
