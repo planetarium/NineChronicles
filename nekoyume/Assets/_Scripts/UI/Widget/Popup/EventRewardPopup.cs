@@ -37,6 +37,8 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton[] actionButtons;
         [SerializeField] private ConditionalButton receiveButton;
 
+        [SerializeField] private Sprite[] eventBannerSprites;
+
         private readonly List<IDisposable> _disposables = new ();
 
         protected override void Awake()
@@ -84,6 +86,7 @@ namespace Nekoyume.UI
             descriptionText.text = L10nManager.Localize($"UI_EVENT_DESCRIPTION_{index}");
 
             eventImage.container.SetActive(false);
+            eventImage.image.sprite = eventBannerSprites[index];
             patrolRewardModule.gameObject.SetActive(false);
 
             receiveButton.gameObject.SetActive(false);

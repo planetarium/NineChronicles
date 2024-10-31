@@ -3577,6 +3577,11 @@ MonoBehaviour:
   - {fileID: 963486014033959767}
   - {fileID: 465677267244897257}
   receiveButton: {fileID: 2758133402325693816}
+  eventBannerSprites:
+  - {fileID: 21300000, guid: 3a5226fe60a2e9a4ab570c90015cb3b5, type: 3}
+  - {fileID: 21300000, guid: b7ead93b546b8a34dbca4e17c509bb9c, type: 3}
+  - {fileID: 21300000, guid: c552b65d02f8c6f47abaab43b3cd02f0, type: 3}
+  - {fileID: 21300000, guid: 8fe5881b31311e64db77f952fb6662c4, type: 3}
 --- !u!1 &4632851285620862017
 GameObject:
   m_ObjectHideFlags: 0
