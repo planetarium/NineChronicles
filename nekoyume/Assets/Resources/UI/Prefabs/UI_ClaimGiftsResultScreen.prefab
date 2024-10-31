@@ -352,7 +352,7 @@ GameObject:
   - component: {fileID: 5373450360733370537}
   - component: {fileID: 1560832732267386394}
   m_Layer: 5
-  m_Name: Popup
+  m_Name: Bg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2529,7 +2529,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5278295816499627536}
-  - component: {fileID: 3033753693718140802}
+  - component: {fileID: 346755230058579710}
   - component: {fileID: 7808753712202752268}
   - component: {fileID: 4425113301823157363}
   m_Layer: 5
@@ -2564,7 +2564,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3033753693718140802
+--- !u!114 &346755230058579710
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2573,43 +2573,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 4912650872802503488}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 742327c2f8f14ac3ae737c73a0ec7cb6, type: 3}
+  m_Script: {fileID: 11500000, guid: 35b77d22e8734e4cb52abd8ac43789a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  _iconImage: {fileID: 0}
-  _equipmentIconSprite: {fileID: 21300000, guid: 20a41f2d4c2932440a915f244c1acd90,
-    type: 3}
-  _consumableIconSprite: {fileID: 21300000, guid: a9885d1ec8c1dae4294b4bf8a9a9e178,
-    type: 3}
-  _titleSuccessObject: {fileID: 0}
-  _titleGreatSuccessObject: {fileID: 0}
-  _titleFoodSuccessObject: {fileID: 0}
-  _resultItem:
+  resultItem:
     itemNameText: {fileID: 3889158814645128494}
-    itemView: {fileID: 0}
-    mainStatText: {fileID: 3889158814847990235}
     cpText: {fileID: 3889158815766005700}
-  _itemStatOptionViews:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  _itemSkillOptionViews:
-  - {fileID: 0}
-  _itemOptionIconViews:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  _delayTimeOfShowOptions: 0.3
-  _intervalTimeOfDiscoverOptions: 0.3
-  _delayTimeOfIncreaseCPAnimation: 0.5
-  _dueTimeOfIncreaseCPAnimation: 0.15
-  _isGreatSuccess: 0
-  _editorEquipmentOrFood: 0
-  _editorStatOptions: []
-  _editorSkillOptions: []
+    statTexts:
+    - {fileID: 3889158814847990235}
+    - {fileID: 4606186636203564975}
+    - {fileID: 6114089475754805806}
+  fullCostumeBg: {fileID: 8110652940504745005}
+  titleBg: {fileID: 4461703454932455758}
+  closeButton: {fileID: 1179345559651442174}
 --- !u!225 &7808753712202752268
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2679,8 +2657,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 600}
+  m_AnchoredPosition: {x: 0, y: -50}
+  m_SizeDelta: {x: 900, y: 900}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8910394612765359415
 CanvasRenderer:
@@ -2710,7 +2688,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 7f44fdd12f58e5d4b86f57a5de44a4fd, type: 2}
+  m_Texture: {fileID: 8400000, guid: da09cbc07d774ee419ed9cde5baf128d, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: 0
