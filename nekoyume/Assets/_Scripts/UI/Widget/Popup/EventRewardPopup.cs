@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.ApiClient;
+using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -113,11 +114,20 @@ namespace Nekoyume.UI
             eventImage.container.SetActive(true);
 
             receiveButton.gameObject.SetActive(true);
-            receiveButton.Interactable = true;  // Todo: Check condition
             receiveButton.Text = L10nManager.Localize("UI_GET_REWARD");
 
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var sheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
+            if (!sheet.TryFindRowByBlockIndex(blockIndex, out var row) ||
+                Game.Game.instance.States.ClaimedGiftIds.Contains(row.Id))
+            {
+                receiveButton.Interactable = false;
+                return;
+            }
+
+            receiveButton.Interactable = true;
             receiveButton.OnSubmitSubject
-                .Subscribe(_ => ClaimOneTimeGift())
+                .Subscribe(_ => ClaimGifts(row.Id))
                 .AddTo(_disposables);
         }
 
@@ -186,8 +196,12 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ClaimOneTimeGift()
+        private void ClaimGifts(int giftId)
         {
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+
+            ActionManager.Instance.ClaimGifts(avatarAddress, giftId);
+            Debug.LogError($"Claimed one-time gift. {giftId}");
         }
 
         private void ClaimPatrolReward()

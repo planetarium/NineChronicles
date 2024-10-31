@@ -2825,7 +2825,29 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarInventory(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                States.Instance.ClaimedGiftIds.Add(eval.Action.GiftId);
+                var giftId = eval.Action.GiftId;
+                States.Instance.ClaimedGiftIds.Add(giftId);
+
+                var sb = new StringBuilder();
+                foreach (var id in States.Instance.ClaimedGiftIds)
+                {
+                    sb.Append($"{id}, ");
+                }
+
+                Debug.LogError(sb);
+
+                var giftsSheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
+                if (!giftsSheet.TryGetValue(giftId, out var giftRow))
+                {
+                    return;
+                }
+
+                var costumeSheet = Game.Game.instance.TableSheets.CostumeItemSheet;
+                var random = new LocalRandom(eval.RandomSeed);
+                var (itemId, quantity) = giftRow.Items.First();
+
+                var costume = ItemFactory.CreateCostume(costumeSheet[itemId], random.GenerateRandomGuid());
+                Widget.Find<ClaimGiftsResultScreen>().Show(costume);
             });
         }
 
