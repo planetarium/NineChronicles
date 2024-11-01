@@ -1,0 +1,56 @@
+using System;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+namespace Nekoyume.UI
+{
+    using Game;
+    using UniRx;
+    
+    public class ChainInfoItem : MonoBehaviour
+    {
+        [field: SerializeField] public TMP_Text BlockIndexText { get; private set; }
+        [field: SerializeField] public UnityEngine.UI.Button ViewDetailButton { get; private set; }
+        
+        private readonly List<IDisposable> _disposables = new();
+        
+#region MonoBehaviour
+        private void Awake()
+        {
+            ViewDetailButton.onClick.AddListener(OpenDetailWebPage);
+        }
+
+        private void OnEnable()
+        {
+            Game.instance.Agent.BlockIndexSubject
+                .ObserveOnMainThread()
+                .Subscribe(UpdateBlockIndex)
+                .AddTo(_disposables);
+        }
+        
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+        }
+#endregion MonoBehaviour
+        
+        private void UpdateBlockIndex(long currentBlockIndex)
+        {
+            var sheet = Game.instance.TableSheets.ThorScheduleSheet;
+            var row = sheet.GetRowByBlockIndex(currentBlockIndex);
+            
+            var remainBlock = row.EndBlockIndex - currentBlockIndex;
+            BlockIndexText.text = $"{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
+        }
+        
+        public void OpenDetailWebPage()
+        {
+            // TODO: dynamic url
+            var detailUrl = "https://dotnet.microsoft.com/download";
+            var sheet = Game.instance.TableSheets.ThorScheduleSheet;
+            var row = sheet.GetRowByBlockIndex(Game.instance.Agent.BlockIndex);
+            Application.OpenURL(detailUrl);
+        }
+    }
+}
