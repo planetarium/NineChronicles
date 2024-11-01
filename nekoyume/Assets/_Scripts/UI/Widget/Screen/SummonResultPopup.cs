@@ -42,6 +42,7 @@ namespace Nekoyume.UI
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
         [SerializeField] private RectTransform background;
+        [SerializeField] private RectTransform scrollView;
 
         private bool _isGreat;
         private Coroutine _coroutine;
@@ -316,7 +317,13 @@ namespace Nekoyume.UI
             var viewsToAnimate = summonItemViews
                 .Concat(new[] { singleSummonItemView })
                 .Concat(manySummonItemViews)
-                .Where(v => v.gameObject.activeInHierarchy);
+                .Where(v => v.gameObject.activeInHierarchy)
+                .ToList();
+            if (viewsToAnimate.Count == 110)
+            {
+                StartCoroutine(DoMoveScroll());
+            }
+
             foreach (var view in viewsToAnimate)
             {
                 view.ShowWithAnimation();
@@ -336,6 +343,12 @@ namespace Nekoyume.UI
 
             _completeCallback?.Invoke();
             _completeCallback = null;
+        }
+
+        private IEnumerator DoMoveScroll()
+        {
+            yield return new WaitForSeconds(3);
+            scrollView.DoAnchoredMoveY(640, 11);
         }
     }
 }
