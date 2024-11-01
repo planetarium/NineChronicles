@@ -278,17 +278,17 @@ namespace Nekoyume.UI
                 case SeasonPassType.Courage:
                     rewardListData = seasonPassManager.CurrentSeasonPassData.RewardList;
                     existLastCell = true;
-                    seasonPassTypeName.text = "COURAGE PASS"; /*L10nManager.Localize("UI_SEASONPASS_COURAGE");*/
+                    seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_COURAGE");
                     break;
                 case SeasonPassType.WorldClear:
                     rewardListData = new List<SeasonPassServiceClient.RewardSchema>(new SeasonPassServiceClient.RewardSchema[15]);
                     existLastCell = false;
-                    seasonPassTypeName.text = "WORLD CLEAR PASS"; /* L10nManager.Localize("UI_SEASONPASS_WORLD_CLEAR");*/
+                    seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_WORLD_CLEAR");
                     break;
                 case SeasonPassType.AdventureBoss:
                     rewardListData = new List<SeasonPassServiceClient.RewardSchema>(new SeasonPassServiceClient.RewardSchema[40]);
                     existLastCell = true;
-                    seasonPassTypeName.text = "ADVENTURE BOSS PASS"; /*L10nManager.Localize("UI_SEASONPASS_ADVENTUREBOSS");*/
+                    seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_ADVENTUREBOSS");
                     break;
                 default:
                     rewardListData = seasonPassManager.CurrentSeasonPassData.RewardList;

@@ -94,14 +94,17 @@ namespace Nekoyume.UI
             base.Awake();
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             seasonPassManager.AvatarInfo.Subscribe((seasonPassInfo) => { RefreshIcons(seasonPassInfo); }).AddTo(gameObject);
+        }
 
+        private void RefreshInfoText(string l10nPreText)
+        {
             var infoKeyIndex = 1;
             foreach (var item in premiumInfoList)
             {
-                if (L10nManager.ContainsKey($"SEASONPASS_PREMIUM_INFO_{infoKeyIndex}"))
+                if (L10nManager.ContainsKey($"{l10nPreText}_SEASONPASS_PREMIUM_INFO_{infoKeyIndex}"))
                 {
                     item.SetActive(true);
-                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize($"SEASONPASS_PREMIUM_INFO_{infoKeyIndex}");
+                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize($"{l10nPreText}_SEASONPASS_PREMIUM_INFO_{infoKeyIndex}");
                 }
                 else
                 {
@@ -114,10 +117,10 @@ namespace Nekoyume.UI
             infoKeyIndex = 1;
             foreach (var item in premiumPlusInfoList)
             {
-                if (L10nManager.ContainsKey($"SEASONPASS_PREMIUM_PLUS_INFO_{infoKeyIndex}"))
+                if (L10nManager.ContainsKey($"{l10nPreText}_SEASONPASS_PREMIUM_PLUS_INFO_{infoKeyIndex}"))
                 {
                     item.SetActive(true);
-                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize($"SEASONPASS_PREMIUM_PLUS_INFO_{infoKeyIndex}");
+                    item.GetComponentInChildren<TextMeshProUGUI>().text = L10nManager.Localize($"{l10nPreText}_SEASONPASS_PREMIUM_PLUS_INFO_{infoKeyIndex}");
                 }
                 else
                 {
@@ -145,6 +148,7 @@ namespace Nekoyume.UI
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             var iapStoreManager = Game.Game.instance.IAPStoreManager;
 
+            RefreshInfoText(seasonPassType.ToString().ToUpper());
             switch (seasonPassType)
             {
                 case SeasonPass.SeasonPassType.Courage:
