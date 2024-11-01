@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.State;
@@ -12,7 +13,15 @@ namespace Nekoyume.State
 
         private readonly HashSet<int> _lockedPets = new();
 
-        public readonly Subject<PetStates> PetStatesSubject = new();
+        private readonly Subject<PetStates> petStatesInternal;
+        
+        public readonly IObservable<PetStates> PetStatesSubject;
+        
+        public PetStates()
+        {
+            petStatesInternal = new Subject<PetStates>();
+            PetStatesSubject = petStatesInternal.ObserveOnMainThread();
+        }
 
         public bool TryGetPetState(int id, out PetState pet)
         {
@@ -37,13 +46,12 @@ namespace Nekoyume.State
                 _lockedPets.Remove(id);
             }
 
-            PetStatesSubject.OnNext(this);
+            petStatesInternal.OnNext(this);
         }
 
         public void LockPetTemporarily(int? petId)
         {
-            if (petId.HasValue &&
-                !_lockedPets.Contains(petId.Value))
+            if (petId.HasValue)
             {
                 _lockedPets.Add(petId.Value);
             }

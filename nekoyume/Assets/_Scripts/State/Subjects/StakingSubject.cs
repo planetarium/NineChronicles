@@ -8,59 +8,57 @@ namespace Nekoyume.State.Subjects
 {
     public static class StakingSubject
     {
-        private static readonly Subject<StakeStateV2?> _stakeStateV2;
-        private static readonly Subject<FungibleAssetValue> _stakedNCG;
-        private static readonly Subject<int> _level;
-        private static readonly Subject<StakeRegularFixedRewardSheet> _stakeRegularFixedRewardSheet;
-        private static readonly Subject<StakeRegularRewardSheet> _stakeRegularRewardSheet;
+        private static readonly Subject<StakeStateV2?> StakeStateV2Internal;
+        private static readonly Subject<FungibleAssetValue> StakedNCGInternal;
+        private static readonly Subject<int> LevelInternal;
+        private static readonly Subject<StakeRegularFixedRewardSheet> StakeRegularFixedRewardSheetInternal;
+        private static readonly Subject<StakeRegularRewardSheet> StakeRegularRewardSheetInternal;
 
         public static readonly IObservable<StakeStateV2?> StakeStateV2;
         public static readonly IObservable<FungibleAssetValue> StakedNCG;
         public static readonly IObservable<int> Level;
-
         public static readonly IObservable<StakeRegularFixedRewardSheet>
             StakeRegularFixedRewardSheet;
-
         public static readonly IObservable<StakeRegularRewardSheet> StakeRegularRewardSheet;
 
         static StakingSubject()
         {
-            _stakeStateV2 = new Subject<StakeStateV2?>();
-            _stakedNCG = new Subject<FungibleAssetValue>();
-            _level = new Subject<int>();
-            _stakeRegularFixedRewardSheet = new Subject<StakeRegularFixedRewardSheet>();
-            _stakeRegularRewardSheet = new Subject<StakeRegularRewardSheet>();
+            StakeStateV2Internal = new Subject<StakeStateV2?>();
+            StakedNCGInternal = new Subject<FungibleAssetValue>();
+            LevelInternal = new Subject<int>();
+            StakeRegularFixedRewardSheetInternal = new Subject<StakeRegularFixedRewardSheet>();
+            StakeRegularRewardSheetInternal = new Subject<StakeRegularRewardSheet>();
 
-            StakeStateV2 = _stakeStateV2.ObserveOnMainThread();
-            StakedNCG = _stakedNCG.ObserveOnMainThread();
-            Level = _level.ObserveOnMainThread();
-            StakeRegularFixedRewardSheet = _stakeRegularFixedRewardSheet.ObserveOnMainThread();
-            StakeRegularRewardSheet = _stakeRegularRewardSheet.ObserveOnMainThread();
+            StakeStateV2 = StakeStateV2Internal.ObserveOnMainThread();
+            StakedNCG = StakedNCGInternal.ObserveOnMainThread();
+            Level = LevelInternal.ObserveOnMainThread();
+            StakeRegularFixedRewardSheet = StakeRegularFixedRewardSheetInternal.ObserveOnMainThread();
+            StakeRegularRewardSheet = StakeRegularRewardSheetInternal.ObserveOnMainThread();
         }
 
         public static void OnNextStakeStateV2(StakeStateV2? stakeStateV2)
         {
-            _stakeStateV2.OnNext(stakeStateV2);
+            StakeStateV2Internal.OnNext(stakeStateV2);
         }
 
         public static void OnNextStakedNCG(FungibleAssetValue stakedNCG)
         {
-            _stakedNCG.OnNext(stakedNCG);
+            StakedNCGInternal.OnNext(stakedNCG);
         }
 
         public static void OnNextLevel(int level)
         {
-            _level.OnNext(level);
+            LevelInternal.OnNext(level);
         }
 
         public static void OnNextStakeRegularFixedRewardSheet(StakeRegularFixedRewardSheet sheet)
         {
-            _stakeRegularFixedRewardSheet.OnNext(sheet);
+            StakeRegularFixedRewardSheetInternal.OnNext(sheet);
         }
 
         public static void OnNextStakeRegularRewardSheet(StakeRegularRewardSheet sheet)
         {
-            _stakeRegularRewardSheet.OnNext(sheet);
+            StakeRegularRewardSheetInternal.OnNext(sheet);
         }
     }
 }

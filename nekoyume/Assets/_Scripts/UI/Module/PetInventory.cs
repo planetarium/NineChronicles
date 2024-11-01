@@ -62,13 +62,13 @@ namespace Nekoyume.UI.Module
             _disposableOnDisabled = null;
         }
 
-        public void Initialize()
+        public void Initialize(bool hasSelectButton)
         {
             var petSheet = TableSheets.Instance.PetSheet;
             foreach (var row in petSheet)
             {
                 var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
-                view.Initialize(row, OnSelectedSubject.OnNext);
+                view.Initialize(row, OnSelectedSubject.OnNext, hasSelectButton);
                 _views[row.Id] = view;
             }
         }
@@ -96,7 +96,6 @@ namespace Nekoyume.UI.Module
             }
 
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
-                .ObserveOnMainThread()
                 .Subscribe(state => UpdateView(state));
             gameObject.SetActive(true);
             InitScrollPosition();
@@ -119,7 +118,6 @@ namespace Nekoyume.UI.Module
             }
 
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
-                .ObserveOnMainThread()
                 .Subscribe(state => UpdateView(state, craftInfo));
             gameObject.SetActive(true);
             InitScrollPosition();
@@ -146,7 +144,6 @@ namespace Nekoyume.UI.Module
                 .ThenByDescending(x => x.viewData.HasState)
                 .ThenBy(x => x.viewData.Equipped)
                 .ThenBy(x => x.viewData.CombinationSlotIndex)
-                .ThenByDescending(x => x.view.Grade)
                 .ThenByDescending(x => x.viewData.Level)
                 .ThenBy(x => x.viewData.PetId);
 

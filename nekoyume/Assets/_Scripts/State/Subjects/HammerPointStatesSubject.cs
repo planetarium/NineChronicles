@@ -6,14 +6,14 @@ namespace Nekoyume.State.Subjects
 {
     public static class HammerPointStatesSubject
     {
-        private static readonly Subject<(int, HammerPointState)> _hammerPointSubject;
+        private static readonly Subject<(int, HammerPointState)> HammerPointSubjectInternal;
 
-        public static readonly IObservable<(int, HammerPointState)> HammerPointSubject;
+        public static readonly IObservable<(int, HammerPointState)> HammerPoint;
 
         static HammerPointStatesSubject()
         {
-            _hammerPointSubject = new Subject<(int, HammerPointState)>();
-            HammerPointSubject = _hammerPointSubject.ObserveOnMainThread();
+            HammerPointSubjectInternal = new Subject<(int, HammerPointState)>();
+            HammerPoint = HammerPointSubjectInternal.ObserveOnMainThread();
         }
 
         public static void OnReplaceHammerPointState(int recipeId, HammerPointState state)
@@ -22,7 +22,7 @@ namespace Nekoyume.State.Subjects
                     States.Instance.CurrentAvatarState.address,
                     recipeId) == state.Address)
             {
-                _hammerPointSubject.OnNext((recipeId, state));
+                HammerPointSubjectInternal.OnNext((recipeId, state));
             }
         }
     }
