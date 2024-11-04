@@ -184,6 +184,11 @@ namespace Nekoyume.UI
                     adventureBossUnMark.SetActive(!activeMark);
                 })
                 .AddTo(gameObject);
+            
+            thorSeasonPassButton.onClick.AddListener((() =>
+            {
+                Find<ChainInfoPopup>().Show();
+            }));
         }
 
         protected override void OnDestroy()

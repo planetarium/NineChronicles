@@ -48,8 +48,6 @@ namespace Nekoyume.UI
         {
             // TODO: dynamic url
             var detailUrl = "https://dotnet.microsoft.com/download";
-            var sheet = Game.instance.TableSheets.ThorScheduleSheet;
-            var row = sheet.GetRowByBlockIndex(Game.instance.Agent.BlockIndex);
             Application.OpenURL(detailUrl);
         }
     }

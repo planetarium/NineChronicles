@@ -50,7 +50,7 @@ namespace Nekoyume.Multiplanetary
         
         public static bool IsThor(PlanetId planetId)
         {
-            return planetId == Heimdall || planetId == HeimdallInternal;
+            return planetId == Thor || planetId == ThorInternal;
         }
     }
 }
