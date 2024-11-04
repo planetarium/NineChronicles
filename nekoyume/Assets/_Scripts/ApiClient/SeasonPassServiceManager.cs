@@ -52,7 +52,7 @@ namespace Nekoyume.ApiClient
         {
             void GetSeasonPassCurrentRetry(int retry)
             {
-                Client.GetSeasonpassCurrentAsync((result) =>
+                Client.GetSeasonpassCurrentAsync(SeasonPassServiceClient.PassType.CouragePass, (result) =>
                 {
                     CurrentSeasonPassData = result;
                     DateTime.TryParse(CurrentSeasonPassData.EndTimestamp, out var endDateTime);
@@ -87,7 +87,7 @@ namespace Nekoyume.ApiClient
         {
             void GetSeasonPassLevelRetry(int retry)
             {
-                Client.GetSeasonpassLevelAsync((result) => { LevelInfos = result.OrderBy(info => info.Level).ToList(); }, (error) =>
+                Client.GetSeasonpassLevelAsync(SeasonPassServiceClient.PassType.CouragePass, (result) => { LevelInfos = result.OrderBy(info => info.Level).ToList(); }, (error) =>
                 {
                     NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassLevelAsync] error: {error}");
                     if (retry <= 0)
@@ -103,7 +103,7 @@ namespace Nekoyume.ApiClient
 
             void GetSeasonPassExpRetry(int retry)
             {
-                Client.GetSeasonpassExpAsync((result) =>
+                Client.GetSeasonpassExpAsync(SeasonPassServiceClient.PassType.CouragePass, (result) =>
                 {
                     foreach (var item in result)
                     {
@@ -215,7 +215,7 @@ namespace Nekoyume.ApiClient
 
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
 
-            await Client.GetSeasonpassCurrentAsync(
+            await Client.GetSeasonpassCurrentAsync(SeasonPassServiceClient.PassType.CouragePass,
                 (result) =>
                 {
                     if (CurrentSeasonPassData.Id == result.Id)
@@ -231,7 +231,7 @@ namespace Nekoyume.ApiClient
                 },
                 (error) => { NcDebug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] [GetSeasonPassCurrentAsync] error: {error}"); });
 
-            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
+            await Client.GetUserStatusAsync(Game.Game.instance.CurrentPlanetId.ToString(), avatarAddress.ToString(), SeasonPassServiceClient.PassType.CouragePass, CurrentSeasonPassData.Id,
                 (result) => { AvatarInfo.SetValueAndForceNotify(result); },
                 (error) =>
                 {
@@ -240,7 +240,7 @@ namespace Nekoyume.ApiClient
                 });
 
 
-            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id - 1, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
+            await Client.GetUserStatusAsync(avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(), SeasonPassServiceClient.PassType.CouragePass ,CurrentSeasonPassData.Id - 1,
                 (result) =>
                 {
                     _prevSeasonClaimAvailable = result.IsPremium && result.LastPremiumClaim < result.Level;
@@ -267,7 +267,8 @@ namespace Nekoyume.ApiClient
                 {
                     AgentAddr = agentAddress.ToString(),
                     AvatarAddr = avatarAddress.ToString(),
-                    SeasonId = AvatarInfo.Value.SeasonPassId,
+                    SeasonIndex = AvatarInfo.Value.SeasonPassId,
+                    PassType = SeasonPassServiceClient.PassType.CouragePass,
                     PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
                     Force = false,
                     Prev = false
@@ -296,7 +297,8 @@ namespace Nekoyume.ApiClient
                 {
                     AgentAddr = agentAddress.ToString(),
                     AvatarAddr = avatarAddress.ToString(),
-                    SeasonId = AvatarInfo.Value.SeasonPassId - 1,
+                    SeasonIndex = AvatarInfo.Value.SeasonPassId - 1,
+                    PassType = SeasonPassServiceClient.PassType.CouragePass,
                     PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}"),
                     Force = false,
                     Prev = true
