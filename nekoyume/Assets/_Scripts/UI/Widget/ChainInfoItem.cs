@@ -64,7 +64,7 @@ namespace Nekoyume.UI
             }
             
             var remainBlock = thorSchedule.DiffFromEndBlockIndex;
-            BlockIndexText.text = $"Remaining Time <style=G5>{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
+            BlockIndexText.text = $"{Nekoyume.L10n.L10nManager.Localize("UI_REMAINING_TIME_ONLY")} <style=G5>{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
         }
         
         private void OpenDetailWebPage()
