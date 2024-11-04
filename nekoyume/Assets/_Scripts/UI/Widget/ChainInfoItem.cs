@@ -15,6 +15,18 @@ namespace Nekoyume.UI
         
         private readonly List<IDisposable> _disposables = new();
         
+        private System.Action _onOpenDetailWebPage;
+        
+        public event System.Action OnOpenDetailWebPage
+        {
+            add
+            {
+                _onOpenDetailWebPage -= value;
+                _onOpenDetailWebPage += value;
+            }
+            remove => _onOpenDetailWebPage -= value;
+        }
+        
 #region MonoBehaviour
         private void Awake()
         {
@@ -49,6 +61,7 @@ namespace Nekoyume.UI
             // TODO: dynamic url
             var detailUrl = "https://dotnet.microsoft.com/download";
             Application.OpenURL(detailUrl);
+            _onOpenDetailWebPage?.Invoke();
         }
     }
 }
