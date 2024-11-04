@@ -328,7 +328,7 @@ namespace Nekoyume.UI
             {
                 view.ShowWithAnimation();
                 AudioController.PlaySelect();
-                yield return ItemViewAnimInterval;
+                yield return viewsToAnimate.Count != 1 ? new WaitForSeconds(1.1f/viewsToAnimate.Count) : ItemViewAnimInterval;
             }
 
             yield return DefaultAnimInterval;
@@ -347,8 +347,11 @@ namespace Nekoyume.UI
 
         private IEnumerator DoMoveScroll()
         {
-            yield return new WaitForSeconds(3);
-            scrollView.DoAnchoredMoveY(640, 11);
+            var pos = scrollView.anchoredPosition;
+            pos.y = -640;
+            scrollView.anchoredPosition = pos;
+            yield return new WaitForSeconds(.4f);
+            scrollView.DoAnchoredMoveY(640, 2.5f);
         }
     }
 }
