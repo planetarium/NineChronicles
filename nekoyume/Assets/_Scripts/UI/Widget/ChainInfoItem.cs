@@ -49,11 +49,7 @@ namespace Nekoyume.UI
         
         private void UpdateBlockIndex(long currentBlockIndex)
         {
-            var sheet = Game.instance.TableSheets.ThorScheduleSheet;
-            var row = sheet.GetRowByBlockIndex(currentBlockIndex);
-            
-            var remainBlock = row.EndBlockIndex - currentBlockIndex;
-            BlockIndexText.text = $"{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
+            // BlockIndexText.text = $"{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
         }
         
         public void OpenDetailWebPage()
