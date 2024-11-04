@@ -573,7 +573,7 @@ MonoBehaviour:
   m_text: Thor, Seasonal Event Chain
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 4476c7fd06b24477ebfc3d62904481f9, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 0de5ad765f53d464dbc47574cb28982e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -656,7 +656,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 0
+  fontMaterialType: 2
   l10nKey: UI_THOR_INFO_TITLE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
