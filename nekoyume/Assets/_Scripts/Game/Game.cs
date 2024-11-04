@@ -240,10 +240,10 @@ namespace Nekoyume.Game
             Application.targetFrameRate = 30;
         }
 
-        public IEnumerator InitializeLiveAssetManager()
+        public IEnumerator InitializeLiveAssetManager(System.Action onSucceededThor = null)
         {            
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
-            liveAssetManager.InitializeData();
+            liveAssetManager.InitializeData(onSucceededThor);
 #if RUN_ON_MOBILE
             yield return liveAssetManager.InitializeApplicationCLO();
 

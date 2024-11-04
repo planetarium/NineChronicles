@@ -732,14 +732,14 @@ namespace Nekoyume.UI
             stakingLevelIcon.sprite =
                 stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
 
-            var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
-            if (planetId.HasValue && Nekoyume.Multiplanetary.PlanetId.IsThor(planetId.Value))
+            var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            if (thorSchedule is null || !thorSchedule.IsOpened)
             {
-                thorSeasonPassButton.gameObject.SetActive(true);
+                thorSeasonPassButton.gameObject.SetActive(false);
             }
             else
             {
-                thorSeasonPassButton.gameObject.SetActive(false);
+                thorSeasonPassButton.gameObject.SetActive(true);
             }
         }
 
