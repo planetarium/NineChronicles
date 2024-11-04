@@ -10,6 +10,8 @@ namespace Nekoyume.UI
     
     public class ChainInfoItem : MonoBehaviour
     {
+        private const string DefaultUrl = "https://ninechronicles.medium.com/";
+        
         [field: SerializeField] public TMP_Text BlockIndexText { get; private set; }
         [field: SerializeField] public UnityEngine.UI.Button ViewDetailButton { get; private set; }
         
@@ -35,6 +37,7 @@ namespace Nekoyume.UI
 
         private void OnEnable()
         {
+            UpdateUI();
             Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(UpdateBlockIndex)
@@ -47,16 +50,27 @@ namespace Nekoyume.UI
         }
 #endregion MonoBehaviour
         
-        private void UpdateBlockIndex(long currentBlockIndex)
+        private void UpdateBlockIndex(long _)
         {
-            // BlockIndexText.text = $"{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
+            UpdateUI();
+        }
+
+        private void UpdateUI()
+        {
+            var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            if (thorSchedule is null || !thorSchedule.IsOpened)
+            {
+                return;
+            }
+            
+            var remainBlock = thorSchedule.DiffFromEndBlockIndex;
+            BlockIndexText.text = $"Remaining Time <style=G5>{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
         }
         
-        public void OpenDetailWebPage()
+        private void OpenDetailWebPage()
         {
-            // TODO: dynamic url
-            var detailUrl = "https://dotnet.microsoft.com/download";
-            Application.OpenURL(detailUrl);
+            var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            Application.OpenURL(thorSchedule is null ? DefaultUrl : thorSchedule.InformationUrl);
             _onOpenDetailWebPage?.Invoke();
         }
     }
