@@ -234,7 +234,7 @@ namespace Nekoyume.UI
                     tableSheets.SkillSheet,
                     summonRow, summonCount, random, blockIndex)
                 .Select(tuple => tuple.Item2)
-                .OrderByDescending(row => row.Grade)
+                .OrderBy(row => row.Grade)
                 .ToList();
         }
 
@@ -283,7 +283,7 @@ namespace Nekoyume.UI
             }
 
             return result
-                .OrderByDescending(rune => Util.GetTickerGrade(rune.Currency.Ticker))
+                .OrderBy(rune => Util.GetTickerGrade(rune.Currency.Ticker))
                 .ThenBy(rune =>
                     RuneFrontHelper.TryGetRuneData(rune.Currency.Ticker, out var runeData)
                         ? runeData.sortingOrder
