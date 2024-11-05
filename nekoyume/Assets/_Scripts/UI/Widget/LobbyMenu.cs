@@ -184,7 +184,7 @@ namespace Nekoyume.UI
                     adventureBossUnMark.SetActive(!activeMark);
                 })
                 .AddTo(gameObject);
-            
+
             thorSeasonPassButton.onClick.AddListener((() =>
             {
                 Find<ChainInfoPopup>().Show();
@@ -401,7 +401,7 @@ namespace Nekoyume.UI
             combinationExclamationMark.SetActive(
                 (btnCombination.IsUnlocked &&
                     (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                        Craft.SharedModel.HasNotification)) || Summon.HasNotification);
+                        Craft.SharedModel.HasNotification))/* || Summon.HasNotification*/);
             shopExclamationMark.SetActive(
                 btnShop.IsUnlocked
                 && ShopNoti(addressHex));

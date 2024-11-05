@@ -172,7 +172,7 @@ namespace Nekoyume.UI
             }
 
             // summon
-            summonNotificationImage.enabled = Summon.HasNotification;
+            // summonNotificationImage.enabled = Summon.HasNotification;
 
             // custom craft
             customCraftNotificationImage.enabled = CustomCraft.HasNotification;
@@ -182,7 +182,7 @@ namespace Nekoyume.UI
         public void TutorialActionClickSummonEnteringButton()
         {
             summonButton.onClick?.Invoke();
-            Find<Summon>().SetCostUIForTutorial();
+            // Find<Summon>().SetCostUIForTutorial();
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
