@@ -67,17 +67,27 @@ namespace Nekoyume.Game.LiveAsset
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public GameConfig GameConfig { get; private set; }
         public CommandLineOptions CommandLineOptions { get; private set; }
+        public Nekoyume.ApiClient.ThorSchedule ThorSchedule { get; private set; }
         public Sprite StakingLevelSprite { get; private set; }
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
         public bool IsInitialized => _state == InitializingState.Initialized;
 
-        public void InitializeData()
+        public void InitializeData(System.Action onSucceededThor = null)
         {
             _endpoint = Resources.Load<LiveAssetEndpointScriptableObject>("ScriptableObject/LiveAssetEndpoint");
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
+            StartCoroutine(InitializeThorSchedule(onSucceededThor));
             InitializeStakingResource().Forget();
             InitializeEvent();
+        }
+
+        private IEnumerator InitializeThorSchedule(System.Action onSucceeded = null)
+        {
+            yield return StartCoroutine(
+                RequestManager.instance.GetJson(
+                    _endpoint.ThorScheduleUrl,
+                    response => SetThorScheduleUrl(response, onSucceeded)));
         }
 
         public void InitializeEvent()
@@ -164,6 +174,18 @@ namespace Nekoyume.Game.LiveAsset
         private void SetLiveAssetData(string response)
         {
             GameConfig = JsonSerializer.Deserialize<GameConfig>(response);
+        }
+
+        private void SetThorScheduleUrl(string response, System.Action onSucceeded = null)
+        {
+            ThorSchedule = JsonSerializer.Deserialize<Nekoyume.ApiClient.ThorSchedule>(
+                response,
+                CommandLineOptions.JsonOptions);
+
+            if (ThorSchedule != null)
+            {
+                onSucceeded?.Invoke();
+            }
         }
 
         private void SetCommandLineOptions(string response)

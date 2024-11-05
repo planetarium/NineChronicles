@@ -105,7 +105,15 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject debugConsolePrefab;
 
-        public PlanetId? CurrentPlanetId { get; set; }
+        public PlanetId? CurrentPlanetId
+        {
+            get => _currentPlanetId;
+            set
+            {
+                NcDebug.Log($"[{nameof(Game)}] Set CurrentPlanetId: {value}");
+                _currentPlanetId = value;
+            }
+        }
 
         public States States { get; private set; }
 
@@ -178,6 +186,8 @@ namespace Nekoyume.Game
         private const string WorldbossSeasonPushIdentifierKey = "WORLDBOSS_SEASON_PUSH_IDENTIFIER";
         private const string WorldbossTicketPushIdentifierKey = "WORLDBOSS_TICKET_PUSH_IDENTIFIER";
         private const int TicketPushBlockCountThreshold = 300;
+        
+        private PlanetId? _currentPlanetId;
 
 #region Mono & Initialization
 
@@ -230,10 +240,10 @@ namespace Nekoyume.Game
             Application.targetFrameRate = 30;
         }
 
-        public IEnumerator InitializeLiveAssetManager()
+        public IEnumerator InitializeLiveAssetManager(System.Action onSucceededThor = null)
         {            
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
-            liveAssetManager.InitializeData();
+            liveAssetManager.InitializeData(onSucceededThor);
 #if RUN_ON_MOBILE
             yield return liveAssetManager.InitializeApplicationCLO();
 
