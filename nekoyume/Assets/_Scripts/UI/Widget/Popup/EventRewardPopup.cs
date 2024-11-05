@@ -7,6 +7,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -36,6 +37,7 @@ namespace Nekoyume.UI
         [SerializeField] private PatrolRewardModule patrolRewardModule;
         [SerializeField] private ConditionalButton[] actionButtons;
         [SerializeField] private ConditionalButton receiveButton;
+        [SerializeField] private GameObject receiveButtonIndicator;
 
         [SerializeField] private Sprite[] eventBannerSprites;
 
@@ -69,6 +71,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
+            tabToggles.First().isOn = false;
             tabToggles.First().isOn = true;
         }
 
@@ -117,21 +120,18 @@ namespace Nekoyume.UI
             eventImage.container.SetActive(true);
 
             receiveButton.gameObject.SetActive(true);
-            receiveButton.Text = L10nManager.Localize("UI_GET_REWARD");
-
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var sheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
-            if (!sheet.TryFindRowByBlockIndex(blockIndex, out var row) ||
-                Game.Game.instance.States.ClaimedGiftIds.Contains(row.Id))
-            {
-                receiveButton.Interactable = false;
-                return;
-            }
-
-            receiveButton.Interactable = true;
             receiveButton.OnSubmitSubject
-                .Subscribe(_ => ClaimGifts(row.Id))
+                .Subscribe(_ => ClaimGifts())
                 .AddTo(_disposables);
+
+            LoadingHelper.ClaimGifts.Subscribe(value =>
+            {
+                receiveButton.Text = value
+                    ? string.Empty
+                    : L10nManager.Localize("UI_GET_REWARD");
+                receiveButtonIndicator.SetActive(value);
+                receiveButton.Interactable = TryGetClaimableGifts(out _) && !value;
+            }).AddTo(_disposables);
         }
 
         private async void SetPatrolReward()
@@ -152,7 +152,12 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
 
             PatrolReward.Claiming.Where(claiming => claiming)
-                .Subscribe(_ => receiveButton.Interactable = false)
+                .Subscribe(_ =>
+                {
+                    receiveButton.Interactable = false;
+                    receiveButton.Text = string.Empty;
+                    receiveButtonIndicator.SetActive(true);
+                })
                 .AddTo(_disposables);
 
             receiveButton.OnSubmitSubject
@@ -200,12 +205,20 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ClaimGifts(int giftId)
+        private void ClaimGifts()
         {
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (!TryGetClaimableGifts(out var row))
+            {
+                NcDebug.LogError("No claimable gifts.");
+                return;
+            }
 
-            ActionManager.Instance.ClaimGifts(avatarAddress, giftId);
-            Debug.LogError($"Claimed one-time gift. {giftId}");
+            LoadingHelper.ClaimGifts.Value = true;
+
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            ActionManager.Instance.ClaimGifts(avatarAddress, row.Id);
+
+            Debug.LogError($"Claimed one-time gift. {row.Id}");
         }
 
         private void ClaimPatrolReward()
@@ -227,6 +240,21 @@ namespace Nekoyume.UI
                 ? L10nManager.Localize("UI_GET_REWARD")
                 : L10nManager.Localize("UI_REMAINING_TIME",
                     PatrolRewardModule.TimeSpanToString(remainTime));
+            receiveButtonIndicator.SetActive(false);
+        }
+
+        private static bool TryGetClaimableGifts(out ClaimableGiftsSheet.Row row)
+        {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var sheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
+            var claimedGiftIds = Game.Game.instance.States.ClaimedGiftIds;
+            if (claimedGiftIds != null)
+            {
+                return sheet.TryFindRowByBlockIndex(blockIndex, out row) && !claimedGiftIds.Contains(row.Id);
+            }
+
+            row = null;
+            return false;
         }
     }
 }

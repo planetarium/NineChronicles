@@ -2827,14 +2827,7 @@ namespace Nekoyume.Blockchain
             {
                 var giftId = eval.Action.GiftId;
                 States.Instance.ClaimedGiftIds.Add(giftId);
-
-                var sb = new StringBuilder();
-                foreach (var id in States.Instance.ClaimedGiftIds)
-                {
-                    sb.Append($"{id}, ");
-                }
-
-                Debug.LogError(sb);
+                LoadingHelper.ClaimGifts.Value = false;
 
                 var giftsSheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
                 if (!giftsSheet.TryGetValue(giftId, out var giftRow))
