@@ -3716,6 +3716,7 @@ MonoBehaviour:
   titleSocket: {fileID: 2768896114814177233}
   adventureBossMark: {fileID: 4897672548650666897}
   adventureBossUnMark: {fileID: 6537261071705063551}
+  thorSeasonPassButton: {fileID: 4166589216357749698}
 --- !u!95 &2103180334685861810
 Animator:
   serializedVersion: 5
@@ -15307,22 +15308,22 @@ PrefabInstance:
     - target: {fileID: 8273195141794249301, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8273195141794249301, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8273195141794249301, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 29.56
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8273195141794249301, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8316174926513112879, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
