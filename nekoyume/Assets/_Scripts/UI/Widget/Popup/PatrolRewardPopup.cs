@@ -30,13 +30,14 @@ namespace Nekoyume.UI
             CloseWidget = () => Close(true);
 
             PatrolReward.PatrolTime
+                .Where(_ => !PatrolReward.Claiming.Value)
                 .Select(patrolTime =>
                 {
                     var patrolTimeWithOutSeconds = new TimeSpan(patrolTime.Ticks /
                         TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute);
                     return PatrolReward.Interval - patrolTimeWithOutSeconds;
                 })
-                .Subscribe(remainTime => SetReceiveButton(remainTime, PatrolReward.Claiming.Value))
+                .Subscribe(SetReceiveButton)
                 .AddTo(gameObject);
 
             PatrolReward.Claiming.Where(claiming => claiming)
@@ -94,11 +95,11 @@ namespace Nekoyume.UI
             Close();
         }
 
-        // subscribe from PatrolReward.PatrolTime, Claiming
-        private void SetReceiveButton(TimeSpan remainTime, bool claiming)
+        // subscribe from PatrolReward.PatrolTime
+        private void SetReceiveButton(TimeSpan remainTime)
         {
             var canReceive = remainTime <= TimeSpan.Zero;
-            receiveButton.Interactable = canReceive && !claiming;
+            receiveButton.Interactable = canReceive;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
                 : L10nManager.Localize("UI_REMAINING_TIME", PatrolRewardModule.TimeSpanToString(remainTime));
