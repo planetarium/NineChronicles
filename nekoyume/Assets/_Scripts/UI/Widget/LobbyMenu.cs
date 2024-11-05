@@ -680,7 +680,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!seasonPassManager.IsInitialized || seasonPassManager.AvatarInfo.Value == null)
+            if (!seasonPassManager.IsInitialized || seasonPassManager.AvatarInfo == null)
             {
                 OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
                 NcDebug.LogWarning("SeasonPassClick() : SeasonPass Is not Initialized");

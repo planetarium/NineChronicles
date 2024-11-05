@@ -222,7 +222,7 @@ namespace Nekoyume.ApiClient
             RemainingDateTime.SetValueAndForceNotify($"{dayText}{hourText}{minText}");
         }
 
-        private string GetPrevRemainingClaim(SeasonPassServiceClient.PassType passType)
+        public string GetPrevRemainingClaim(SeasonPassServiceClient.PassType passType)
         {
             if (!PrevSeasonClaimEndDates.TryGetValue(passType, out var claimEndDate)|| claimEndDate < DateTime.Now || !HasPrevClaimPassType.Contains(passType))
             {
