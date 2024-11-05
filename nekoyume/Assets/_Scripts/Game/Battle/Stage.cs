@@ -59,7 +59,9 @@ namespace Nekoyume.Game.Battle
         public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
-        public ObjectPool objectPool;
+        
+        [SerializeField] private ObjectPool objectPool;
+        
         public DropItemFactory dropItemFactory;
 
         public MonsterSpawner spawner;
@@ -95,11 +97,10 @@ namespace Nekoyume.Game.Battle
 
         private const string adventureBossBackgroundKey = "AdventureBoss_0";
 
+        public ObjectPool ObjectPool => objectPool;
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
         public List<GameObject> ReleaseWhiteList { get; private set; } = new();
-        public SkillController SkillController { get; private set; }
-        public BuffController BuffController { get; private set; }
         public TutorialController TutorialController { get; private set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
@@ -156,14 +157,9 @@ namespace Nekoyume.Game.Battle
             BattleRenderer.Instance.OnStageStart -= OnStartStage;
         }
 
-        public async UniTask InitializeAsync()
+        public void Initialize()
         {
-            objectPool.Initialize();
             dropItemFactory.Initialize();
-            SkillController = new SkillController(objectPool);
-            await SkillController.InitializeAsync();
-            BuffController = new BuffController(objectPool);
-            await BuffController.InitializeAsync();
             TutorialController = new TutorialController(MainCanvas.instance.Widgets);
         }
 

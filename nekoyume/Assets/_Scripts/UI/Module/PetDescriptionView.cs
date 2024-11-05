@@ -1,7 +1,5 @@
 using Coffee.UIEffects;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
@@ -19,6 +17,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Button button;
+
+        [SerializeField]
+        private GameObject selectButtonObject;
 
         [SerializeField]
         private GameObject inUseObject;
@@ -64,6 +65,8 @@ namespace Nekoyume.UI.Module
         private int? _petId;
 
         private System.Action<int?> _onClick;
+        
+        private bool _hasSelectButton;
 
         public int Grade { get; private set; }
 
@@ -75,11 +78,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Initialize(PetSheet.Row petRow, System.Action<int?> onClick)
+        public void Initialize(PetSheet.Row petRow, System.Action<int?> onClick, bool hasSelectButton)
         {
             _onClick = onClick;
 
             _petId = petRow.Id;
+            _hasSelectButton = hasSelectButton;
             Grade = petRow.Grade;
             titleText.text = L10nManager.Localize($"PET_NAME_{petRow.Id}");
 
@@ -97,6 +101,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
             descriptionObject.SetActive(false);
             emptyObject.SetActive(true);
+            selectButtonObject.SetActive(hasSelectButton);
         }
 
         public void InitializeEmpty(System.Action<int?> onClick)
@@ -125,9 +130,9 @@ namespace Nekoyume.UI.Module
             levelText.text = $"Lv.{data.Level}";
             dimmedImage.enabled = !data.HasState || !data.IsAppliable;
             equippedObject.SetActive(data.Equipped);
-            if (button)
+            if (_hasSelectButton && selectButtonObject)
             {
-                button.gameObject.SetActive(data.IsAppliable && !data.Equipped);
+                selectButtonObject.gameObject.SetActive(data.IsAppliable && !data.Equipped);
                 inUseObject.SetActive(data.Equipped);
             }
 

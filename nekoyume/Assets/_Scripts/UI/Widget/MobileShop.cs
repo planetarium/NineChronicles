@@ -10,7 +10,6 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
@@ -54,7 +53,7 @@ namespace Nekoyume.UI
 
         private string _lastSelectedCategory;
 
-        public static L10NSchema MOBILE_L10N_SCHEMA;
+        public static InAppPurchaseServiceClient.L10NSchema MOBILE_L10N_SCHEMA;
 
         protected override void Awake()
         {
@@ -79,15 +78,15 @@ namespace Nekoyume.UI
             ShowAsync(ignoreShowAnimation);
         }
 
-        public async void ShowAsProduct(ProductSchema product, UnityEngine.Purchasing.Product purchasingData)
+        public async void ShowAsProduct(InAppPurchaseServiceClient.ProductSchema product, UnityEngine.Purchasing.Product purchasingData)
         {
             await ShowAsync();
 
-            Analyzer.Instance.Track("Unity/Shop/IAP/LobbyPopup/Click", ("product-id", product.Sku));
+            Analyzer.Instance.Track("Unity/Shop/IAP/LobbyPopup/Click", ("product-id", product.Sku()));
 
             var evt = new AirbridgeEvent("IAP_LobbyPopup_Click");
-            evt.SetAction(product.Sku);
-            evt.AddCustomAttribute("product-id", product.Sku);
+            evt.SetAction(product.Sku());
+            evt.AddCustomAttribute("product-id", product.Sku());
             AirbridgeUnity.TrackEvent(evt);
 
             Find<ShopListPopup>().Show(product, purchasingData).Forget();
@@ -130,6 +129,8 @@ namespace Nekoyume.UI
 
                     await InitializeObj(categorySchemas);
 
+                    await ApiClients.Instance.IAPServiceManager.RefreshMileageAsync();
+
                     _isInitializedObj = true;
                 }
                 else
@@ -138,7 +139,7 @@ namespace Nekoyume.UI
                     {
                         foreach (var item in category.ProductList)
                         {
-                            if (_allProductObjs.TryGetValue(item.Sku, out var cellView))
+                            if (_allProductObjs.TryGetValue(item.Sku(), out var cellView))
                             {
                                 cellView.SetData(item);
                             }
@@ -189,7 +190,7 @@ namespace Nekoyume.UI
             loading.Close();
         }
 
-        private async Task InitializeObj(IEnumerable<CategorySchema> categorySchemas)
+        private async Task InitializeObj(IEnumerable<InAppPurchaseServiceClient.CategorySchema> categorySchemas)
         {
             var renderCategory = categorySchemas
                 .Where(c => c.Active && c.Name != "NoShow")
@@ -241,7 +242,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                categoryTab.SetData(category.L10n_Key, iconSprite);
+                categoryTab.SetData(category.L10nKey, iconSprite);
 
                 try
                 {
@@ -277,7 +278,7 @@ namespace Nekoyume.UI
                 var iapProductCellObjs = new List<IAPShopProductCellView>();
                 foreach (var product in productList)
                 {
-                    if (!_allProductObjs.TryGetValue(product.Sku, out var productObj))
+                    if (!_allProductObjs.TryGetValue(product.Sku(), out var productObj))
                     {
                         productObj = Instantiate(originProductCellView, iAPShopDynamicGridLayout.transform);
                         productObj.SetData(product, category.Name == RecommendedString);
@@ -288,10 +289,10 @@ namespace Nekoyume.UI
                         catch (Exception e)
                         {
                             NcDebug.LogError(e.Message);
-                            NcDebug.LogError($"Failed to refresh localized: {product.Sku}");
+                            NcDebug.LogError($"Failed to refresh localized: {product.Sku()}");
                         }
 
-                        _allProductObjs.Add(product.Sku, productObj);
+                        _allProductObjs.Add(product.Sku(), productObj);
                     }
 
                     iapProductCellObjs.Add(productObj);
@@ -310,13 +311,13 @@ namespace Nekoyume.UI
 
         public static async Task LoadL10Ns()
         {
-            MOBILE_L10N_SCHEMA = await ApiClients.Instance.IAPServiceManager.L10NAsync();
             await UniTask.SwitchToMainThread();
+            MOBILE_L10N_SCHEMA = await ApiClients.Instance.IAPServiceManager.L10NAsync();
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
         }
 
-        public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
+        public static async Task<IReadOnlyList<InAppPurchaseServiceClient.CategorySchema>> GetCategorySchemas()
         {
             return await ApiClients.Instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());

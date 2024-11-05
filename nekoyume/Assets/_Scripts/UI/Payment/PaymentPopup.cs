@@ -3,6 +3,7 @@ using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Libplanet.Types.Assets;
 using Nekoyume.Game;
+using Nekoyume.Game.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -10,6 +11,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -65,6 +67,8 @@ namespace Nekoyume.UI
         private System.Action YesCallback { get; set; }
         private System.Action YesOnDisableCallback { get; set; }
 
+        private PopupType _type;
+
         protected override void Awake()
         {
             base.Awake();
@@ -80,6 +84,7 @@ namespace Nekoyume.UI
 
         private void SetPopupType(PopupType popupType)
         {
+            _type = popupType;
             switch (popupType)
             {
                 case PopupType.AttractAction:
@@ -581,7 +586,7 @@ namespace Nekoyume.UI
 
         private void AttractToMonsterCollection()
         {
-            Lobby.Enter(true);
+            Lobby.Enter();
             Find<StakingPopup>().Show();
         }
 
@@ -620,6 +625,7 @@ namespace Nekoyume.UI
             Find<WorldMap>().Close();
             Find<StageInformation>().Close();
             Find<BattlePreparation>().Close();
+            Find<CombinationSlotsPopup>().Close();
             Find<Craft>().Close(true);
             Find<Grind>().Show();
         }
@@ -861,7 +867,20 @@ namespace Nekoyume.UI
         private void Yes()
         {
             base.Close();
-            YesCallback?.Invoke();
+
+            if (_type == PopupType.AttractAction && BattleRenderer.Instance.IsOnBattle)
+            {
+                Lobby.Enter(true);
+                
+                Game.Game.instance.Lobby.OnLobbyEnterEnd.First().Subscribe(_ =>
+                {
+                    YesCallback?.Invoke();
+                });
+            }
+            else
+            {
+                YesCallback?.Invoke();
+            }
         }
 
         private void YesOnDisable()
