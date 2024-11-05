@@ -862,13 +862,7 @@ namespace Nekoyume.Game.Scene
         private void OnSucceedThor()
         {
             var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
-            if (thorSchedule is null || !thorSchedule.IsOpened)
-            {
-                thorChainInfoItem.gameObject.SetActive(false);
-                return;
-            }
-            
-            thorChainInfoItem.gameObject.SetActive(true);
+            thorChainInfoItem.gameObject.SetActive(thorSchedule?.IsOpened == true);
         }
     }
 }

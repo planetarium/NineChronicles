@@ -733,14 +733,7 @@ namespace Nekoyume.UI
                 stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
 
             var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
-            if (thorSchedule is null || !thorSchedule.IsOpened)
-            {
-                thorSeasonPassButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                thorSeasonPassButton.gameObject.SetActive(true);
-            }
+            thorSeasonPassButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
         }
 
         private void SubscribeAtShow()
