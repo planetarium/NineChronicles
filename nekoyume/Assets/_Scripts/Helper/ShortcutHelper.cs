@@ -346,7 +346,7 @@ namespace Nekoyume.Helper
                     shortcutAction = () =>
                     {
                         caller.CloseWithOtherWidgets();
-                        Widget.Find<Summon>().Show();
+                        Widget.Find<NewSummon>().Show();
                     };
                     guideText = L10nManager.Localize("UI_SUMMON");
                     break;

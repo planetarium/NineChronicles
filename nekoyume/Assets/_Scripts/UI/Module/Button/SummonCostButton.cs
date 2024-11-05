@@ -60,13 +60,14 @@ namespace Nekoyume.UI.Module
                 switch (state)
                 {
                     case State.Normal:
-                        Widget.Find<Summon>().SummonAction(summonRow.GroupId, summonCount);
+                        Widget.Find<NewSummon>().SummonAction(summonRow);
                         break;
                     case State.Conditional:
                         Widget.Find<PaymentPopup>().ShowLackPaymentDust(costType, cost);
                         break;
                 }
             }).AddTo(disposables);
+            Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", SummonHelper.CalculateSummonCount(summonCount));
         }
     }
 }

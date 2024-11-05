@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData.Summon;
@@ -79,12 +80,12 @@ namespace Nekoyume.UI
             goldenDrawButton.Subscribe(gameObject);
         }
 
-        public void Show(
+        public void Show<T>(
             SummonSheet.Row summonRow,
             int summonCount,
-            List<Equipment> resultList,
+            List<T> resultList,
             System.Action completeCallback = null,
-            bool ignoreShowAnimation = false)
+            bool ignoreShowAnimation = false) where T : ItemBase
         {
             base.Show(ignoreShowAnimation);
             _completeCallback = completeCallback;
@@ -183,7 +184,7 @@ namespace Nekoyume.UI
 
             closeButton.interactable = true;
             skipButton.interactable = true;
-            background.anchoredPosition = Vector2.up * SummonUtil.GetBackGroundPosition((CostType)data.CostMaterial);
+            background.anchoredPosition = Vector2.up * SummonUtil.GetBackGroundPosition(SummonFrontHelper.GetSummonResultByRow(data));
 
             normalDrawButton.gameObject.SetActive(false);
             goldenDrawButton.gameObject.SetActive(false);
