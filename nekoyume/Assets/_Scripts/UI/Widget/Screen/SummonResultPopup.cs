@@ -319,6 +319,7 @@ namespace Nekoyume.UI
                 .Concat(manySummonItemViews)
                 .Where(v => v.gameObject.activeInHierarchy)
                 .ToList();
+            // 110회 소환의 경우 아이템을 스크롤로 내리며 보여줘야합니다. 해당 연출을 하는 호출 코드입니다
             if (viewsToAnimate.Count == 110)
             {
                 StartCoroutine(DoMoveScroll());
@@ -328,6 +329,8 @@ namespace Nekoyume.UI
             {
                 view.ShowWithAnimation();
                 AudioController.PlaySelect();
+                // 보여줄 아이템이 1개인 경우엔 그냥 0.1초 대기 후 연출을 처리합니다.
+                // 그 이외의 경우, 모든 아이템의 대기 시간이 기존 11회 소환의 최종 연출 시간이었던 1.1초를 넘지 않도록 아이템 수로 나눠줍니다.
                 yield return viewsToAnimate.Count != 1 ? new WaitForSeconds(1.1f/viewsToAnimate.Count) : ItemViewAnimInterval;
             }
 
@@ -350,8 +353,8 @@ namespace Nekoyume.UI
             var pos = scrollView.anchoredPosition;
             pos.y = -640;
             scrollView.anchoredPosition = pos;
-            yield return new WaitForSeconds(.4f);
-            scrollView.DoAnchoredMoveY(640, 2.5f);
+            yield return new WaitForSeconds(1.2f);
+            scrollView.DoAnchoredMoveY(640, 2f);
         }
     }
 }
