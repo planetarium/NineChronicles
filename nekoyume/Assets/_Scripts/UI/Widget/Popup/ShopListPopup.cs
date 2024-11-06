@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Nekoyume.UI.Module;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Nekoyume.Helper;
 using Cysharp.Threading.Tasks;
 using System.Numerics;
@@ -15,6 +14,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
+using UnityEngine.Purchasing;
 
 namespace Nekoyume.UI
 {
@@ -65,7 +65,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI[] priceTexts;
 
-        private ProductSchema _data;
+        private InAppPurchaseServiceClient.ProductSchema _data;
         private UnityEngine.Purchasing.Product _puchasingData;
         private bool _isInLobby;
 
@@ -100,11 +100,11 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku()));
 
                 var evt = new AirbridgeEvent("IAP_ShopListPopup_Close");
-                evt.SetAction(_data.Sku);
-                evt.AddCustomAttribute("product-id", _data.Sku);
+                evt.SetAction(_data.Sku());
+                evt.AddCustomAttribute("product-id", _data.Sku());
                 AirbridgeUnity.TrackEvent(evt);
 
                 Close();
@@ -120,32 +120,39 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                NcDebug.Log($"Purchase: {_data.Sku}");
+                NcDebug.Log($"Purchase: {_data.Sku()}");
 
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click", ("product-id", _data.Sku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click", ("product-id", _data.Sku()));
 
                 var evt = new AirbridgeEvent("IAP_ShopListPopup_PurchaseButton_Click");
-                evt.SetAction(_data.Sku);
-                evt.AddCustomAttribute("product-id", _data.Sku);
+                evt.SetAction(_data.Sku());
+                evt.AddCustomAttribute("product-id", _data.Sku());
                 AirbridgeUnity.TrackEvent(evt);
 
-                if (_data.IsFree)
+                switch (_data.ProductType)
                 {
-                    Game.Game.instance.IAPStoreManager.OnPurchaseFreeAsync(_data.Sku).Forget();
-                }
-                else
-                {
-                    ApiClients.Instance.IAPServiceManager.CheckProductAvailable(_data.Sku, States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
-                        //success
-                        () => { Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku); },
-                        //failed
-                        () =>
-                        {
-                            PurchaseButtonLoadingEnd();
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize("ERROR_CODE_SHOPITEM_EXPIRED"),
-                                NotificationCell.NotificationType.Alert);
-                        }).AsUniTask().Forget();
+                    case InAppPurchaseServiceClient.ProductType.IAP:
+                        ApiClients.Instance.IAPServiceManager.CheckProductAvailable(_data.Sku(), States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString(),
+                            //success
+                            () => { Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku()); },
+                            //failed
+                            () =>
+                            {
+                                PurchaseButtonLoadingEnd();
+                                OneLineSystem.Push(MailType.System,
+                                    L10nManager.Localize("ERROR_CODE_SHOPITEM_EXPIRED"),
+                                    NotificationCell.NotificationType.Alert);
+                            }).AsUniTask().Forget();
+                        break;
+                    case InAppPurchaseServiceClient.ProductType.FREE:
+                        Game.Game.instance.IAPStoreManager.OnPurchaseFreeAsync(_data.Sku()).Forget();
+                        break;
+                    case InAppPurchaseServiceClient.ProductType.MILEAGE:
+                        Game.Game.instance.IAPStoreManager.OnPurchaseMileageAsync(_data.Sku()).Forget();
+                        break;
+                    default:
+                        Debug.LogError($"Invalid ProductType: {_data.ProductType}");
+                        break;
                 }
 
                 buyButton.interactable = false;
@@ -176,7 +183,7 @@ namespace Nekoyume.UI
             productBgImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(_data.PopupPathKey)}");
         }
 
-        public async UniTask Show(ProductSchema data, UnityEngine.Purchasing.Product purchasingData, bool ignoreShowAnimation = false)
+        public async UniTask Show(InAppPurchaseServiceClient.ProductSchema data, UnityEngine.Purchasing.Product purchasingData, bool ignoreShowAnimation = false)
         {
             _data = data;
             _puchasingData = purchasingData;
@@ -187,20 +194,27 @@ namespace Nekoyume.UI
 
             var metadata = _puchasingData?.metadata;
 
-            if (!_data.IsFree)
+            switch (_data.ProductType)
             {
-                NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
-                foreach (var item in priceTexts)
-                {
-                    item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
-                }
-            }
-            else
-            {
-                foreach (var item in priceTexts)
-                {
-                    item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
-                }
+                case InAppPurchaseServiceClient.ProductType.IAP:
+                    NcDebug.Log($"{metadata.localizedTitle} : {metadata.isoCurrencyCode} {metadata.localizedPriceString} {metadata.localizedPrice}");
+                    foreach (var item in priceTexts)
+                    {
+                        item.text = MobileShop.GetPrice(metadata.isoCurrencyCode, metadata.localizedPrice);
+                    }
+                    break;
+                case InAppPurchaseServiceClient.ProductType.FREE:
+                    foreach (var item in priceTexts)
+                    {
+                        item.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_IS_FREE");
+                    }
+                    break;
+                case InAppPurchaseServiceClient.ProductType.MILEAGE:
+                    foreach (var item in priceTexts)
+                    {
+                        item.text = L10nManager.Localize("UI_MILEAGE_PRICE", _data.MileagePrice?.ToCurrencyNotation());
+                    }
+                    break;
             }
 
             // Initialize IAP Reward
@@ -259,7 +273,7 @@ namespace Nekoyume.UI
             discountText.gameObject.SetActive(false);
             timeLimitText.gameObject.SetActive(false);
 
-            if (isDiscount && !_data.IsFree)
+            if (isDiscount && _data.ProductType == InAppPurchaseServiceClient.ProductType.IAP)
             {
                 discountText.text = _data.Discount.ToString();
                 foreach (var item in preDiscountPrice)
@@ -350,7 +364,7 @@ namespace Nekoyume.UI
                 .Where(p => p.Active && p.Buyable)
                 .OrderBy(p => p.Order).First();
             var purchasingProduct = Game.Game.instance.IAPStoreManager.IAPProducts
-                .FirstOrDefault(p => p.definition.id == product.Sku);
+                .FirstOrDefault(p => p.definition.id == product.Sku());
             Show(product, purchasingProduct).Forget();
         }
     }

@@ -107,6 +107,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private GameObject adventureBossUnMark;
 
+        [SerializeField] private Button thorSeasonPassButton;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
@@ -182,6 +184,11 @@ namespace Nekoyume.UI
                     adventureBossUnMark.SetActive(!activeMark);
                 })
                 .AddTo(gameObject);
+
+            thorSeasonPassButton.onClick.AddListener((() =>
+            {
+                Find<ChainInfoPopup>().Show();
+            }));
         }
 
         protected override void OnDestroy()
@@ -394,7 +401,7 @@ namespace Nekoyume.UI
             combinationExclamationMark.SetActive(
                 (btnCombination.IsUnlocked &&
                     (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                        Craft.SharedModel.HasNotification)) || Summon.HasNotification);
+                        Craft.SharedModel.HasNotification))/* || Summon.HasNotification*/);
             shopExclamationMark.SetActive(
                 btnShop.IsUnlocked
                 && ShopNoti(addressHex));
@@ -724,6 +731,9 @@ namespace Nekoyume.UI
             UpdateButtons();
             stakingLevelIcon.sprite =
                 stakeIconData.GetIcon(States.Instance.StakingLevel, IconType.Bubble);
+
+            var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            thorSeasonPassButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
         }
 
         private void SubscribeAtShow()

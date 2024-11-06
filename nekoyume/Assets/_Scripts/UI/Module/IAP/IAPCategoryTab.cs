@@ -1,4 +1,3 @@
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UniRx;
@@ -35,6 +34,7 @@ namespace Nekoyume.UI.Module
             foreach (var item in icons)
             {
                 item.sprite = icon;
+                item.SetNativeSize();
             }
         }
 
