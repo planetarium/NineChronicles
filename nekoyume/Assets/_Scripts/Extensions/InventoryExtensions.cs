@@ -114,10 +114,7 @@ namespace Nekoyume
                     foreach (var i in current)
                     {
                         var requirementLevel = i.GetRequirementLevel(
-                            requirementSheet,
-                            recipeSheet,
-                            subRecipeSheet,
-                            itemOptionSheet);
+                            requirementSheet);
 
                         if (level >= requirementLevel && CPHelper.GetCP(i) < cp)
                         {

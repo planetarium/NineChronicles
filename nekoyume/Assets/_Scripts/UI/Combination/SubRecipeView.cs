@@ -523,8 +523,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        var level = isMimisbrunnrSubRecipe ? row.MimisLevel : row.Level;
-                        levelText.text = $"Lv {level}";
+                        levelText.text = $"Lv {row.Level}";
                         levelText.enabled = true;
                     }
 

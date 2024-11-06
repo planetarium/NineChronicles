@@ -157,23 +157,13 @@ namespace Nekoyume.Helper
             switch (itemBase.ItemType)
             {
                 case ItemType.Equipment:
-                    var equipment = (Equipment)itemBase;
-                    if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
+                    if (requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
                     {
-                        NcDebug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
-                        return 0;
+                        return equipmentRow.Level;
                     }
 
-                    var recipeSheet = sheets.EquipmentItemRecipeSheet;
-                    var subRecipeSheet = sheets.EquipmentItemSubRecipeSheetV2;
-                    var itemOptionSheet = sheets.EquipmentItemOptionSheet;
-                    var isMadeWithMimisbrunnrRecipe = equipment.IsMadeWithMimisbrunnrRecipe(
-                        recipeSheet,
-                        subRecipeSheet,
-                        itemOptionSheet
-                    );
-
-                    return isMadeWithMimisbrunnrRecipe ? equipmentRow.MimisLevel : equipmentRow.Level;
+                    NcDebug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                    return 0;
                 default:
                     return requirementSheet.TryGetValue(itemBase.Id, out var row) ? row.Level : 0;
             }
