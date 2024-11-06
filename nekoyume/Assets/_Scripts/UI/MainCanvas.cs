@@ -432,7 +432,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
+            _secondWidgets.Add(Widget.Create<SummoningProbabilityPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonSkillsPopup>());
             yield return null;
