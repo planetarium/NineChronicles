@@ -100,6 +100,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject[] remainingTimeObject;
 
+        [SerializeField]
+        private UI.Module.Toggle[] categoryToggles;
+
         private RectTransform lineImageRectTransform;
         private float rewardCellWidth;
         private float lastRewardCellWidth;
@@ -241,7 +244,8 @@ namespace Nekoyume.UI
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             seasonPassManager.AvatarStateRefreshAsync().AsUniTask().Forget();
 
-            ChangePageByType(seasonPassType);
+            categoryToggles[(int)seasonPassType].isOn = true;
+            categoryToggles[(int)seasonPassType].onClickToggle.Invoke();
 
             if (!PlayerPrefs.HasKey(seasonPassManager.GetSeasonPassPopupViewKey()))
             {
@@ -277,10 +281,28 @@ namespace Nekoyume.UI
             levelBackGroundImage.sprite = info.levelBackGroundSprite;
 
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            SeasonPassServiceClient.UserSeasonPassSchema seasonPassAvatarInfo = seasonPassManager.AvatarInfo[type];
-            List<SeasonPassServiceClient.RewardSchema> rewardListData = seasonPassManager.CurrentSeasonPassData[type].RewardList; ;
-            bool existLastCell = seasonPassManager.CurrentSeasonPassData[type].RepeatLastReward;
-            int currentLevel = seasonPassManager.AvatarInfo[type].Level;
+            int currentLevel = 0;
+            if (seasonPassManager.AvatarInfo.TryGetValue(type, out var seasonPassAvatarInfo))
+            {
+                currentLevel = seasonPassAvatarInfo.Level;
+            }
+            else
+            {
+                NcDebug.LogError($"Not found SeasonPassAvatarInfo: {type}");
+            }
+
+            List<SeasonPassServiceClient.RewardSchema> rewardListData = new List<SeasonPassServiceClient.RewardSchema>();
+            bool existLastCell = false;
+            if (seasonPassManager.CurrentSeasonPassData.TryGetValue(type, out var seasonPassSchema))
+            {
+                rewardListData = seasonPassSchema.RewardList;
+                existLastCell = seasonPassSchema.RepeatLastReward;
+            }
+            else
+            {
+                // todo: 시즌 비활성화 처리
+            }
+
             int minExp;
             int maxExp;
             // 타입별 데이터 분기처리 예정.
@@ -313,17 +335,32 @@ namespace Nekoyume.UI
             }
             seasonPassManager.GetExp(type, currentLevel, out minExp, out maxExp);
 
-            //최대래밸 고정
-            levelText.text = Mathf.Min(seasonPassAvatarInfo.Level, rewardListData.Count).ToString();
-            expText.text = $"{seasonPassAvatarInfo.Exp - minExp} / {maxExp - minExp}";
-            expLineImage.fillAmount = (float)(seasonPassAvatarInfo.Exp - minExp) / (float)(maxExp - minExp);
-            receiveBtn.Interactable = seasonPassAvatarInfo.Level > seasonPassAvatarInfo.LastNormalClaim
-                || (seasonPassAvatarInfo.IsPremium && seasonPassAvatarInfo.Level > seasonPassAvatarInfo.LastPremiumClaim);
+            if(seasonPassAvatarInfo != null)
+            {
+                //최대래밸 고정
+                levelText.text = Mathf.Min(seasonPassAvatarInfo.Level, rewardListData.Count).ToString();
+                expText.text = $"{seasonPassAvatarInfo.Exp - minExp} / {maxExp - minExp}";
+                expLineImage.fillAmount = (float)(seasonPassAvatarInfo.Exp - minExp) / (float)(maxExp - minExp);
+                receiveBtn.Interactable = seasonPassAvatarInfo.Level > seasonPassAvatarInfo.LastNormalClaim
+                    || (seasonPassAvatarInfo.IsPremium && seasonPassAvatarInfo.Level > seasonPassAvatarInfo.LastPremiumClaim);
 
-            premiumIcon.SetActive(!seasonPassAvatarInfo.IsPremiumPlus);
-            premiumUnlockBtn.SetActive(!seasonPassAvatarInfo.IsPremium);
-            premiumPlusUnlockBtn.SetActive(seasonPassAvatarInfo.IsPremium && !seasonPassAvatarInfo.IsPremiumPlus);
-            premiumPlusIcon.SetActive(seasonPassAvatarInfo.IsPremiumPlus);
+                premiumIcon.SetActive(!seasonPassAvatarInfo.IsPremiumPlus);
+                premiumUnlockBtn.SetActive(!seasonPassAvatarInfo.IsPremium);
+                premiumPlusUnlockBtn.SetActive(seasonPassAvatarInfo.IsPremium && !seasonPassAvatarInfo.IsPremiumPlus);
+                premiumPlusIcon.SetActive(seasonPassAvatarInfo.IsPremiumPlus);
+            }
+            else
+            {
+                levelText.text = "0";
+                expText.text = $"0 / {maxExp - minExp}";
+                expLineImage.fillAmount = 0;
+                receiveBtn.Interactable = false;
+
+                premiumIcon.SetActive(true);
+                premiumUnlockBtn.SetActive(true);
+                premiumPlusUnlockBtn.SetActive(false);
+                premiumPlusIcon.SetActive(false);
+            }
 
             // 보상 샐 데이터 갱신
             RefreshRewardCells(rewardListData, existLastCell);

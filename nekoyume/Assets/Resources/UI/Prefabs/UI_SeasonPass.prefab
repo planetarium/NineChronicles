@@ -7887,13 +7887,14 @@ MonoBehaviour:
   remainingTimeObject:
   - {fileID: 4885293388360973771}
   - {fileID: 5353228832770051081}
+  categoryToggles:
+  - {fileID: 8814762166081929352}
+  - {fileID: 8841693321498946296}
+  - {fileID: 6064545429979967825}
   betweenCellViewDuration: 60
   scrollDuration: 1
   scrollWaitDuration: 300
   miniumDurationCount: 400
-  TestCellCount: 20
-  TestCurrentCellLevel: 3
-  TestLastCell: 1
 --- !u!1 &1768276291492597949
 GameObject:
   m_ObjectHideFlags: 0

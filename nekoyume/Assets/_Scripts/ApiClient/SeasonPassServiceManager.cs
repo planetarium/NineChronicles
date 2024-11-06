@@ -267,10 +267,13 @@ namespace Nekoyume.ApiClient
             }
 
             await FetchCurrentSeasonPassDatas();
+            await FetchUserAllStatus();
+        }
 
+        public async Task FetchUserAllStatus()
+        {
             HasClaimPassType.Clear();
             HasPrevClaimPassType.Clear();
-
             foreach (var passType in passTypes)
             {
                 await FetchUserStatus(passType, CurrentSeasonPassData[passType].SeasonIndex);
