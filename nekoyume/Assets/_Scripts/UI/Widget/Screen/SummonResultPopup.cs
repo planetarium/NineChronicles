@@ -351,10 +351,10 @@ namespace Nekoyume.UI
         private IEnumerator DoMoveScroll()
         {
             var pos = scrollView.anchoredPosition;
-            pos.y = -640;
+            pos.y = -(scrollView.sizeDelta.y * .5f);
             scrollView.anchoredPosition = pos;
             yield return new WaitForSeconds(.4f);
-            scrollView.DoAnchoredMoveY(640, 2f);
+            scrollView.DoAnchoredMoveY(scrollView.sizeDelta.y * .5f, 2f);
         }
     }
 }
