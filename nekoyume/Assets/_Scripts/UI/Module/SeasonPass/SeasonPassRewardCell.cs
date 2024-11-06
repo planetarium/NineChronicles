@@ -123,18 +123,17 @@ namespace Nekoyume.UI.Module
                 TooltipButton.onClick.RemoveAllListeners();
                 TooltipButton.onClick.AddListener(() =>
                 {
-                    if (itemBaseForToolTip == null)
-                    {
-                        AudioController.PlayClick();
-                        Widget.Find<FungibleAssetTooltip>().Show(currencyInfo.Ticker, ((BigInteger)currencyInfo.Amount).ToCurrencyNotation(), null);
-                        return;
-                    }
-
                     AudioController.PlayClick();
 
                     if (avatarInfo.IsPremium ||
                         avatarInfo.IsPremiumPlus)
                     {
+                        if (itemBaseForToolTip == null)
+                        {
+                            AudioController.PlayClick();
+                            Widget.Find<FungibleAssetTooltip>().Show(currencyInfo.Ticker, ((BigInteger)currencyInfo.Amount).ToCurrencyNotation(), null);
+                            return;
+                        }
                         var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
                         tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
                         return;
@@ -148,6 +147,12 @@ namespace Nekoyume.UI.Module
                     }
                     else
                     {
+                        if (itemBaseForToolTip == null)
+                        {
+                            AudioController.PlayClick();
+                            Widget.Find<FungibleAssetTooltip>().Show(currencyInfo.Ticker, ((BigInteger)currencyInfo.Amount).ToCurrencyNotation(), null);
+                            return;
+                        }
                         var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
                         tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
                     }
@@ -285,9 +290,11 @@ namespace Nekoyume.UI.Module
 
         public void SetTweeningStarting()
         {
+            normal.Root.transform.DOKill();
             normal.Root.transform.localScale = UnityEngine.Vector3.zero;
             foreach (var item in premiums)
             {
+                item.Root.transform.DOKill();
                 item.Root.transform.localScale = UnityEngine.Vector3.zero;
             }
         }
