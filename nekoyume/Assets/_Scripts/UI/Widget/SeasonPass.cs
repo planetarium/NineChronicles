@@ -14,6 +14,8 @@ using System;
 
 namespace Nekoyume.UI
 {
+    using System.Linq;
+    using System.Threading;
     using UniRx;
     public class SeasonPass : Widget
     {
@@ -95,6 +97,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI seasonPassTypeName;
 
+        [SerializeField]
+        private GameObject[] remainingTimeObject;
+
         private RectTransform lineImageRectTransform;
         private float rewardCellWidth;
         private float lastRewardCellWidth;
@@ -173,6 +178,11 @@ namespace Nekoyume.UI
                 }
             }
             lastRewardCell.gameObject.SetActive(existLastCell);
+            if (existLastCell)
+            {
+                rewardCells[rewardSchemas.Count - 1].gameObject.SetActive(false);
+                lastRewardCell.SetData(rewardSchemas.Last(), currentSeasonPassType);
+            }
 
             scrollHorizontalLayout.CalculateLayoutInputHorizontal();
             scrollContents.sizeDelta = new Vector2(scrollHorizontalLayout.preferredWidth, scrollContents.sizeDelta.y);
@@ -278,12 +288,24 @@ namespace Nekoyume.UI
             {
                 case SeasonPassServiceClient.PassType.CouragePass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_COURAGE");
+                    foreach (var obj in remainingTimeObject)
+                    {
+                        obj.SetActive(true);
+                    }
                     break;
                 case SeasonPassServiceClient.PassType.WorldClearPass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_WORLD_CLEAR");
+                    foreach (var obj in remainingTimeObject)
+                    {
+                        obj.SetActive(false);
+                    }   
                     break;
                 case SeasonPassServiceClient.PassType.AdventureBossPass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_ADVENTUREBOSS");
+                    foreach (var obj in remainingTimeObject)
+                    {
+                        obj.SetActive(true);
+                    }
                     break;
                 default:
                     NcDebug.LogError($"Not found SeasonPassType: {type}");
@@ -334,26 +356,43 @@ namespace Nekoyume.UI
         [SerializeField]
         private int miniumDurationCount = 400;
 
+        private CancellationTokenSource _cts;
+
         private async UniTaskVoid ShowCellEffect(int cellIndex)
         {
+            // 기존 작업이 있다면 취소하고 새 토큰으로 갱신
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+            CancellationToken token = _cts.Token;
+
             var tween = DOTween.To(() => rewardCellScrollbar.value,
                 value => rewardCellScrollbar.value = value, CalculateScrollerStartPosition(cellIndex), scrollDuration).SetEase(Ease.OutQuart);
             rewardCellScrollbar.value = 0;
             tween.Play();
+            // 트윈이 취소될 수 있도록 토큰 감시
+            token.Register(() => tween.Kill());
 
             for (var i = cellIndex; i < rewardCells.Count; i++)
             {
                 rewardCells[i].SetTweeningStarting();
             }
 
-            await UniTask.Delay(scrollWaitDuration);
-
-            var durationCount = 0;
-            for (var i = cellIndex; i < rewardCells.Count; i++)
+            try
             {
-                rewardCells[i].ShowTweening();
-                await UniTask.Delay(betweenCellViewDuration);
-                durationCount += betweenCellViewDuration;
+                await UniTask.Delay(scrollWaitDuration, cancellationToken: token);
+
+                var durationCount = 0;
+                for (var i = cellIndex; i < rewardCells.Count; i++)
+                {
+                    rewardCells[i].ShowTweening();
+                    await UniTask.Delay(betweenCellViewDuration, cancellationToken: token);
+                    durationCount += betweenCellViewDuration;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // 토큰이 취소되면 무시
+                Debug.Log("ShowCellEffect Cancelled");
             }
         }
 
@@ -433,31 +472,6 @@ namespace Nekoyume.UI
             var offsetMax = lineImageRectTransform.offsetMax;
             offsetMax.x = lastLineImagePositon;
             lineImageRectTransform.offsetMax = offsetMax;
-        }
-
-        public int TestCellCount = 20;
-        public int TestCurrentCellLevel = 3;
-        public bool TestLastCell = true;
-        [ContextMenu("TestScrollRefresh")]
-        public void TestScrollRefresh()
-        {
-            AddRewardCellIfNeeded(TestCellCount);
-
-            for (var i = 0; i < rewardCells.Count; i++)
-            {
-                rewardCells[i].gameObject.SetActive(i < TestCellCount);
-                rewardCells[i].SetLevelText(i + 1);
-            }
-            lastRewardCell.gameObject.SetActive(TestLastCell);
-
-            scrollHorizontalLayout.CalculateLayoutInputHorizontal();
-            scrollContents.sizeDelta = new Vector2(scrollHorizontalLayout.preferredWidth, scrollContents.sizeDelta.y);
-            CalculateLineImageWith(TestLastCell);
-
-            // 라인 이미지 채우는 비율 계산 (현재 레벨 - 1) / (총 셀 갯수 - 1) 래벨이 1부터 시작임을 가정.
-            lineImage.fillAmount = (float)(TestCurrentCellLevel - 1) / (float)(TestCellCount - 1);
-
-            ShowCellEffect(TestCurrentCellLevel - 1).Forget();
         }
     }
 }

@@ -7884,6 +7884,9 @@ MonoBehaviour:
   backGroundImage: {fileID: 8010349703754759914}
   levelBackGroundImage: {fileID: 1492307879694988212}
   seasonPassTypeName: {fileID: 33577627469175595}
+  remainingTimeObject:
+  - {fileID: 4885293388360973771}
+  - {fileID: 5353228832770051081}
   betweenCellViewDuration: 60
   scrollDuration: 1
   scrollWaitDuration: 300

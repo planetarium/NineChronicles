@@ -70,10 +70,7 @@ namespace Nekoyume.ApiClient
             // Fetch level info data with retries
             foreach (var passType in passTypes)
             {
-                if (!IsCurrentSeasonPassValid(passType))
-                {
-                    await FetchLevelInfoDataWithRetry(passType);
-                }
+                await FetchLevelInfoDataWithRetry(passType);
             }
         }
 
@@ -121,7 +118,6 @@ namespace Nekoyume.ApiClient
 
                 retryCount++;
             }
-            NcDebug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonPassCurrentAsync] [{passType}] retryCount: {retryCount}");
         }
 
         private async Task FetchLevelInfoDataWithRetry(SeasonPassServiceClient.PassType passType, int maxRetries = 3)
@@ -147,7 +143,6 @@ namespace Nekoyume.ApiClient
 
                 retryCount++;
             }
-            NcDebug.LogError($"SeasonPassServiceManager RefreshSeasonpassExpAmount [GetSeasonpassLevelAsync] [{passType}] retryCount: {retryCount}");
         }
 
         private void Initialize()
@@ -256,6 +251,8 @@ namespace Nekoyume.ApiClient
                 NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] CurrentSeasonPassData or LevelInfos is null");
                 return;
             }
+
+            Game.Game.instance.CurrentPlanetId = Nekoyume.Multiplanetary.PlanetId.OdinInternal;
 
             if (!Game.Game.instance.CurrentPlanetId.HasValue)
             {
@@ -400,7 +397,10 @@ namespace Nekoyume.ApiClient
 
         public void GetExp(SeasonPassServiceClient.PassType passType, int level, out int minExp, out int maxExp)
         {
-            if (LevelInfos == null || !LevelInfos.TryGetValue(passType, out var levelInfoList))
+            if (LevelInfos == null
+                || !LevelInfos.TryGetValue(passType, out var levelInfoList)
+                || levelInfoList.Count - 2 < 0
+                || levelInfoList.Count - 1 < 0)
             {
                 NcDebug.LogError("[SeasonPassServiceManager] LevelInfos Not Set");
                 minExp = 0;
