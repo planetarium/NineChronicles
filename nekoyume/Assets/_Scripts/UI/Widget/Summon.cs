@@ -25,7 +25,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
     using Toggle = Module.Toggle;
-    public class NewSummon : Widget
+    public class Summon : Widget
     {
         [Serializable]
         public class SummonObject
@@ -64,7 +64,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             infoButton.OnClickAsObservable()
-                .Subscribe(_ => Find<SummoningProbabilityPopup>().Show(_selectedSummonObj.summonResult))
+                .Subscribe(_ => Find<SummonProbabilityPopup>().Show(_selectedSummonObj.summonResult))
                 .AddTo(gameObject);
             foreach (var summonObject in summonObjects)
             {
