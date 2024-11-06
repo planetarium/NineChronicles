@@ -79,15 +79,12 @@ namespace Nekoyume.UI.Scroller
                         statTexts[statIndex].SetText(optionRow.StatType.ToString());
                         statIndex++;
                     }
-                    else
+                    else if (TableSheets.Instance.SkillSheet.TryGetValue(optionRow.SkillId,
+                        out var skillRow))
                     {
-                        if (TableSheets.Instance.SkillSheet.TryGetValue(optionRow.SkillId,
-                            out var skillRow))
-                        {
-                            skillObject.SetActive(true);
-                            skillText.gameObject.SetActive(true);
-                            skillText.SetText(skillRow.GetLocalizedName());
-                        }
+                        skillObject.SetActive(true);
+                        skillText.gameObject.SetActive(true);
+                        skillText.SetText(skillRow.GetLocalizedName());
                     }
                 }
             }
@@ -108,15 +105,12 @@ namespace Nekoyume.UI.Scroller
                     }
                 }
 
-                if (itemData.RuneOptionInfo.SkillId != 0)
+                if (TableSheets.Instance.SkillSheet.TryGetValue(itemData.RuneOptionInfo.SkillId,
+                    out var skillRow))
                 {
-                    if (TableSheets.Instance.SkillSheet.TryGetValue(itemData.RuneOptionInfo.SkillId,
-                        out var skillRow))
-                    {
-                        skillObject.SetActive(true);
-                        skillText.gameObject.SetActive(true);
-                        skillText.SetText(skillRow.GetLocalizedName());
-                    }
+                    skillObject.SetActive(true);
+                    skillText.gameObject.SetActive(true);
+                    skillText.SetText(skillRow.GetLocalizedName());
                 }
             }
 
