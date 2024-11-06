@@ -353,7 +353,7 @@ namespace Nekoyume.UI
             var pos = scrollView.anchoredPosition;
             pos.y = -640;
             scrollView.anchoredPosition = pos;
-            yield return new WaitForSeconds(1.2f);
+            yield return new WaitForSeconds(.4f);
             scrollView.DoAnchoredMoveY(640, 2f);
         }
     }
