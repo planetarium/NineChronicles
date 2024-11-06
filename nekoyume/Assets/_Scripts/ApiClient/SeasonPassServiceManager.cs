@@ -21,7 +21,7 @@ namespace Nekoyume.ApiClient
 
         public Dictionary<SeasonPassServiceClient.PassType, SeasonPassServiceClient.SeasonPassSchema> CurrentSeasonPassData { get; private set; } = new Dictionary<SeasonPassServiceClient.PassType, SeasonPassServiceClient.SeasonPassSchema>();
         public Dictionary<SeasonPassServiceClient.PassType, List<SeasonPassServiceClient.LevelInfoSchema>> LevelInfos { get; private set; } = new Dictionary<SeasonPassServiceClient.PassType, List<SeasonPassServiceClient.LevelInfoSchema>>();
-        public Dictionary<SeasonPassServiceClient.PassType, SeasonPassServiceClient.UserSeasonPassSchema> AvatarInfo = new();
+        public Dictionary<SeasonPassServiceClient.PassType, SeasonPassServiceClient.UserSeasonPassSchema> UserSeasonPassDatas = new();
 
         //Courage Season pass의 주기를 공통으로 사용함으로 해당데이터는 분기처리해두지않음.
         public ReactiveProperty<DateTime> SeasonEndDate = new(DateTime.MinValue);
@@ -295,7 +295,7 @@ namespace Nekoyume.ApiClient
                         passType,
                         seasonIndex, (result) =>
                         {
-                            AvatarInfo[passType] = result;
+                            UserSeasonPassDatas[passType] = result;
                             if(result.Level > result.LastNormalClaim || (result.IsPremium && result.Level > result.LastPremiumClaim))
                             {
                                 HasClaimPassType.Add(passType);

@@ -282,13 +282,13 @@ namespace Nekoyume.UI
 
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             int currentLevel = 0;
-            if (seasonPassManager.AvatarInfo.TryGetValue(type, out var seasonPassAvatarInfo))
+            if (seasonPassManager.UserSeasonPassDatas.TryGetValue(type, out var userSeasonPassData))
             {
-                currentLevel = seasonPassAvatarInfo.Level;
+                currentLevel = userSeasonPassData.Level;
             }
             else
             {
-                NcDebug.LogError($"Not found SeasonPassAvatarInfo: {type}");
+                NcDebug.LogError($"Not found UserSeasonPassData: {type}");
             }
 
             List<SeasonPassServiceClient.RewardSchema> rewardListData = new List<SeasonPassServiceClient.RewardSchema>();
@@ -335,19 +335,19 @@ namespace Nekoyume.UI
             }
             seasonPassManager.GetExp(type, currentLevel, out minExp, out maxExp);
 
-            if(seasonPassAvatarInfo != null)
+            if(userSeasonPassData != null)
             {
                 //최대래밸 고정
-                levelText.text = Mathf.Min(seasonPassAvatarInfo.Level, rewardListData.Count).ToString();
-                expText.text = $"{seasonPassAvatarInfo.Exp - minExp} / {maxExp - minExp}";
-                expLineImage.fillAmount = (float)(seasonPassAvatarInfo.Exp - minExp) / (float)(maxExp - minExp);
-                receiveBtn.Interactable = seasonPassAvatarInfo.Level > seasonPassAvatarInfo.LastNormalClaim
-                    || (seasonPassAvatarInfo.IsPremium && seasonPassAvatarInfo.Level > seasonPassAvatarInfo.LastPremiumClaim);
+                levelText.text = Mathf.Min(userSeasonPassData.Level, rewardListData.Count).ToString();
+                expText.text = $"{userSeasonPassData.Exp - minExp} / {maxExp - minExp}";
+                expLineImage.fillAmount = (float)(userSeasonPassData.Exp - minExp) / (float)(maxExp - minExp);
+                receiveBtn.Interactable = userSeasonPassData.Level > userSeasonPassData.LastNormalClaim
+                    || (userSeasonPassData.IsPremium && userSeasonPassData.Level > userSeasonPassData.LastPremiumClaim);
 
-                premiumIcon.SetActive(!seasonPassAvatarInfo.IsPremiumPlus);
-                premiumUnlockBtn.SetActive(!seasonPassAvatarInfo.IsPremium);
-                premiumPlusUnlockBtn.SetActive(seasonPassAvatarInfo.IsPremium && !seasonPassAvatarInfo.IsPremiumPlus);
-                premiumPlusIcon.SetActive(seasonPassAvatarInfo.IsPremiumPlus);
+                premiumIcon.SetActive(!userSeasonPassData.IsPremiumPlus);
+                premiumUnlockBtn.SetActive(!userSeasonPassData.IsPremium);
+                premiumPlusUnlockBtn.SetActive(userSeasonPassData.IsPremium && !userSeasonPassData.IsPremiumPlus);
+                premiumPlusIcon.SetActive(userSeasonPassData.IsPremiumPlus);
             }
             else
             {

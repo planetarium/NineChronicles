@@ -101,22 +101,22 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.TryGetValue(passType, out var avatarInfo);
-                if (avatarInfo == null)
+                ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas.TryGetValue(passType, out var userSeasonPassData);
+                if (userSeasonPassData == null)
                 {
                     return;
                 }
-                var lastClaim = isNormal ? avatarInfo.LastNormalClaim : avatarInfo.LastPremiumClaim;
-                var isUnrReceived = level > lastClaim && level <= avatarInfo.Level;
+                var lastClaim = isNormal ? userSeasonPassData.LastNormalClaim : userSeasonPassData.LastPremiumClaim;
+                var isUnrReceived = level > lastClaim && level <= userSeasonPassData.Level;
                 Light.SetActive(isUnrReceived);
-                if (!avatarInfo.IsPremium && !isNormal)
+                if (!userSeasonPassData.IsPremium && !isNormal)
                 {
                     ItemView.LevelLimitObject.SetActive(true);
                     isNotPremium = true;
                 }
                 else
                 {
-                    ItemView.LevelLimitObject.SetActive(level > avatarInfo.Level);
+                    ItemView.LevelLimitObject.SetActive(level > userSeasonPassData.Level);
                 }
 
                 ItemView.RewardReceived.SetActive(level <= lastClaim);
@@ -125,8 +125,8 @@ namespace Nekoyume.UI.Module
                 {
                     AudioController.PlayClick();
 
-                    if (avatarInfo.IsPremium ||
-                        avatarInfo.IsPremiumPlus)
+                    if (userSeasonPassData.IsPremium ||
+                        userSeasonPassData.IsPremiumPlus)
                     {
                         if (itemBaseForToolTip == null)
                         {
@@ -250,9 +250,9 @@ namespace Nekoyume.UI.Module
 
             SetLevelText(rewardSchema.Level);
 
-            if(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.TryGetValue(passType, out var avatarInfo))
+            if(ApiClients.Instance.SeasonPassServiceManager.UserSeasonPassDatas.TryGetValue(passType, out var userSeasonPassData))
             {
-                RefreshWithAvatarInfo(avatarInfo);
+                RefreshWithAvatarInfo(userSeasonPassData);
             }
             else
             {
