@@ -250,7 +250,14 @@ namespace Nekoyume.UI.Module
 
             SetLevelText(rewardSchema.Level);
 
-            RefreshWithAvatarInfo(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo[passType]);
+            if(ApiClients.Instance.SeasonPassServiceManager.AvatarInfo.TryGetValue(passType, out var avatarInfo))
+            {
+                RefreshWithAvatarInfo(avatarInfo);
+            }
+            else
+            {
+                Debug.LogError("Can't find avatar info");
+            }
 
             normal.SetData(rewardSchema.Normal.Item.Count > 0 ? rewardSchema.Normal.Item.First() : null,
                 rewardSchema.Normal.Currency.Count > 0 ? rewardSchema.Normal.Currency.First() : null,

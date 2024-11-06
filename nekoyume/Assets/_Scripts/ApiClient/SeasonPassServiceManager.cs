@@ -276,7 +276,14 @@ namespace Nekoyume.ApiClient
             HasPrevClaimPassType.Clear();
             foreach (var passType in passTypes)
             {
-                await FetchUserStatus(passType, CurrentSeasonPassData[passType].SeasonIndex);
+                if(CurrentSeasonPassData.TryGetValue(passType, out var seasonPassSchema))
+                {
+                    await FetchUserStatus(passType, seasonPassSchema.SeasonIndex);
+                }
+                else
+                {
+                    Debug.LogError($"SeasonPassServiceManager [FetchUserAllStatus] CurrentSeasonPassData {passType} is null");  
+                }
             }
         }
 
