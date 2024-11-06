@@ -201,7 +201,14 @@ namespace Nekoyume.UI.Module
                     (result) =>
                     {
                         OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
-                        ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                        ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
+                        {
+                            var seassonPassWidget = Widget.Find<SeasonPass>();
+                            if (seassonPassWidget.IsActive())
+                            {
+                                Widget.Find<SeasonPass>().RefreshCurrentPage();
+                            }
+                        }).Forget();
                     },
                     (error) => { OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification); });
             });
@@ -295,14 +302,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetTweeningStarting()
+        public void SetTweeningStarting(bool isVisible)
         {
-            normal.Root.transform.DOKill();
-            normal.Root.transform.localScale = UnityEngine.Vector3.zero;
+            normal.Root.transform.DORewind();
+            normal.Root.transform.localScale = isVisible ? UnityEngine.Vector3.one : UnityEngine.Vector3.zero;
             foreach (var item in premiums)
             {
-                item.Root.transform.DOKill();
-                item.Root.transform.localScale = UnityEngine.Vector3.zero;
+                item.Root.transform.DORewind();
+                item.Root.transform.localScale = isVisible ? UnityEngine.Vector3.one : UnityEngine.Vector3.zero;
             }
         }
 

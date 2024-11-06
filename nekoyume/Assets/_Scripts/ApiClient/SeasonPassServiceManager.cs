@@ -260,8 +260,6 @@ namespace Nekoyume.ApiClient
                 return;
             }
 
-            Game.Game.instance.CurrentPlanetId = Nekoyume.Multiplanetary.PlanetId.OdinInternal;
-
             if (!Game.Game.instance.CurrentPlanetId.HasValue)
             {
                 NcDebug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Game.Game.instance.CurrentPlanetId is null");
@@ -333,7 +331,7 @@ namespace Nekoyume.ApiClient
                         },
                         (error) =>
                         {
-
+                            NcDebug.LogError($"SeasonPassServiceManager Prev [FetchUserStatus] error: {error}");
                         });
         }
 

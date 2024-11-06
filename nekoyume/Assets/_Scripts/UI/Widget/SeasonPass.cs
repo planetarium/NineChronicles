@@ -121,17 +121,7 @@ namespace Nekoyume.UI
             base.Awake();
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
 
-
             seasonPassManager.RemainingDateTime.Subscribe((endDate) => { remainingText.text = endDate; });
-            /*            seasonPassManager.SeasonEndDate.Subscribe((endTime) =>
-                        {
-                            if (seasonPassManager.CurrentSeasonPassData == null)
-                            {
-                                NcDebug.LogError("[RefreshRewardCells] RefreshFailed");
-                                return;
-                            }
-                            RefreshRewardCells(seasonPassManager.CurrentSeasonPassData.RewardList);
-                        }).AddTo(gameObject);*/
 
             rewardCellScrollbar.value = 0;
         }
@@ -240,24 +230,28 @@ namespace Nekoyume.UI
 
         public void Show(SeasonPassServiceClient.PassType seasonPassType = SeasonPassServiceClient.PassType.CouragePass, bool ignoreShowAnimation = false)
         {
-            base.Show(ignoreShowAnimation);
+            Find<LoadingScreen>().Show();
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
-            seasonPassManager.AvatarStateRefreshAsync().AsUniTask().Forget();
-
-            categoryToggles[(int)seasonPassType].isOn = true;
-            categoryToggles[(int)seasonPassType].onClickToggle.Invoke();
-
-            if (!PlayerPrefs.HasKey(seasonPassManager.GetSeasonPassPopupViewKey()))
+            seasonPassManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
             {
-                async UniTaskVoid AwaitSeasonPassPopup()
-                {
-                    await UniTask.Delay(popupViewDelay);
-                    Find<SeasonPassCouragePopup>().Show();
-                    PlayerPrefs.SetInt(seasonPassManager.GetSeasonPassPopupViewKey(), 1);
-                }
+                Find<LoadingScreen>().Close();
+                base.Show(ignoreShowAnimation);
 
-                AwaitSeasonPassPopup().Forget();
-            }
+                categoryToggles[(int)seasonPassType].isOn = true;
+                categoryToggles[(int)seasonPassType].onClickToggle.Invoke();
+
+                if (!PlayerPrefs.HasKey(seasonPassManager.GetSeasonPassPopupViewKey()))
+                {
+                    async UniTaskVoid AwaitSeasonPassPopup()
+                    {
+                        await UniTask.Delay(popupViewDelay);
+                        Find<SeasonPassCouragePopup>().Show();
+                        PlayerPrefs.SetInt(seasonPassManager.GetSeasonPassPopupViewKey(), 1);
+                    }
+
+                    AwaitSeasonPassPopup().Forget();
+                }
+            }).Forget();
         }
 
         public void OnClickSeasonPassToggle(int index)
@@ -366,7 +360,11 @@ namespace Nekoyume.UI
             RefreshRewardCells(rewardListData, existLastCell);
 
             // 라인 이미지 채우는 비율 계산 (현재 레벨 - 1) / (총 셀 갯수 - 1) 래벨이 1부터 시작임을 가정.
-            lineImage.fillAmount = (float)(currentLevel - 1) / (float)(rewardListData.Count - 1);
+            if(rewardListData.Count > 2 )
+            {
+                var lastIndexAdjuster = existLastCell ? 2 : 1;
+                lineImage.fillAmount = (float)(currentLevel - 1) / (float)(rewardListData.Count - lastIndexAdjuster);
+            }
 
             // 현재 래밸까지 스크롤 이동 연출
             rewardCellScrollbar.value = 0;
@@ -409,9 +407,9 @@ namespace Nekoyume.UI
             // 트윈이 취소될 수 있도록 토큰 감시
             token.Register(() => tween.Kill());
 
-            for (var i = cellIndex; i < rewardCells.Count; i++)
+            for (var i = 0; i < rewardCells.Count; i++)
             {
-                rewardCells[i].SetTweeningStarting();
+                rewardCells[i].SetTweeningStarting(i < cellIndex);
             }
 
             try
@@ -459,9 +457,17 @@ namespace Nekoyume.UI
                 (result) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
-                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
+                    {
+                        RefreshCurrentPage();
+                    }).Forget();
                 },
                 (error) => { OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification); });
+        }
+
+        public void RefreshCurrentPage()
+        {
+            ChangePageByType(currentSeasonPassType);
         }
 
         public void PrevSeasonClaim()
