@@ -11,11 +11,7 @@ namespace Nekoyume.ApiClient
 
     public class SeasonPassServiceManager : IDisposable
     {
-        public int AdventureCourageAmount = 10;
-        public int AdventureSweepCourageAmount = 10;
-        public int ArenaCourageAmount = 10;
-        public int WorldBossCourageAmount = 10;
-        public int EventDungeonCourageAmount = 10;
+        public Dictionary<SeasonPassServiceClient.PassType, Dictionary<SeasonPassServiceClient.ActionType, int>> SeasonExpPointAmount { get; private set; } = new Dictionary<SeasonPassServiceClient.PassType, Dictionary<SeasonPassServiceClient.ActionType, int>>();
 
         public SeasonPassServiceClient Client { get; private set; }
 
@@ -77,8 +73,8 @@ namespace Nekoyume.ApiClient
         private bool IsCurrentSeasonPassValid(SeasonPassServiceClient.PassType passType)
         {
             if (CurrentSeasonPassData != null &&
-                CurrentSeasonPassData.TryGetValue(passType, out var courageSeasonPassSchema) &&
-                DateTime.TryParse(courageSeasonPassSchema.EndTimestamp, out var endDateTime) &&
+                CurrentSeasonPassData.TryGetValue(passType, out var SeasonPassSchema) &&
+                DateTime.TryParse(SeasonPassSchema.EndTimestamp, out var endDateTime) &&
                 endDateTime >= DateTime.Now)
             {
                 return true;
@@ -152,54 +148,65 @@ namespace Nekoyume.ApiClient
                 RefreshRemainingTime();
             }).AddTo(Game.Game.instance);
 
-            RefreshSeasonPassExpAmount();
+            InitializeSeasonPassDatasAsync().Forget();
 
             Game.Lobby.OnLobbyEnterEvent += () => AvatarStateRefreshAsync().AsUniTask().Forget();
         }
 
-        private void RefreshSeasonPassExpAmount()
+        private async UniTaskVoid InitializeSeasonPassDatasAsync()
         {
-            void GetSeasonPassExpRetry(int retry)
+            await FetchCurrentSeasonPassDatas();
+            foreach (var passType in passTypes)
             {
-                Client.GetSeasonpassExpAsync(SeasonPassServiceClient.PassType.CouragePass, (result) =>
+                await FetchExpInfoDataWithRetry(passType);
+            }
+        }
+
+        public int ExpPointAmount(SeasonPassServiceClient.PassType passType, SeasonPassServiceClient.ActionType actionType)
+        {
+            if (SeasonExpPointAmount.TryGetValue(passType, out var expPointAmountDic))
+            {
+                if (expPointAmountDic.TryGetValue(actionType, out var expPointAmount))
+                {
+                    return expPointAmount;
+                }
+            }
+            return 0;
+        }
+
+        private async Task FetchExpInfoDataWithRetry(SeasonPassServiceClient.PassType passType, int maxRetries = 3)
+        {
+            int retryCount = 0;
+            while (retryCount < maxRetries)
+            {
+                var tcs = new TaskCompletionSource<bool>();
+
+                await Client.GetSeasonpassExpAsync(passType, 0, (result) =>
                 {
                     foreach (var item in result)
                     {
-                        switch (item.ActionType)
+                        if(!SeasonExpPointAmount.TryGetValue(passType, out var expPointAmountDic))
                         {
-                            case SeasonPassServiceClient.ActionType.hack_and_slash:
-                                AdventureCourageAmount = item.Exp;
-                                break;
-                            case SeasonPassServiceClient.ActionType.hack_and_slash_sweep:
-                                AdventureSweepCourageAmount = item.Exp;
-                                break;
-                            case SeasonPassServiceClient.ActionType.battle_arena:
-                                ArenaCourageAmount = item.Exp;
-                                break;
-                            case SeasonPassServiceClient.ActionType.raid:
-                                WorldBossCourageAmount = item.Exp;
-                                break;
-                            case SeasonPassServiceClient.ActionType.event_dungeon:
-                                EventDungeonCourageAmount = item.Exp;
-                                break;
-                            default:
-                                break;
+                            SeasonExpPointAmount.Add(passType, new Dictionary<SeasonPassServiceClient.ActionType, int>());
                         }
+
+                        SeasonExpPointAmount[passType][item.ActionType] = item.Exp;
                     }
-                }, (error) =>
+                    tcs.SetResult(true);
+                },
+                (error) =>
                 {
-                    NcDebug.LogError($"SeasonPassServiceManager RefreshSeassonpassExpAmount [GetSeasonpassExpAsync] error: {error}");
-                    if (retry <= 0)
-                    {
-                        return;
-                    }
+                    NcDebug.LogError($"SeasonPassServiceManager FetchExpInfoDataWithRetry [GetSeasonpassExpAsync] [{passType}] error: {error}");
+                    tcs.SetResult(false);
+                });
 
-                    GetSeasonPassExpRetry(--retry);
-                }).AsUniTask().Forget();
+                if (await tcs.Task)
+                    break;
+
+                retryCount++;
             }
-
-            GetSeasonPassExpRetry(3);
         }
+
 
         private void RefreshRemainingTime()
         {

@@ -39,6 +39,9 @@ public class SeasonPassServiceClient
         battle_arena,
         raid,
         event_dungeon,
+        wanted,
+        explore_adventure_boss,
+        sweep_adventure_boss,
     }
 
     public class ActionTypeTypeConverter : JsonConverter<ActionType>
@@ -123,6 +126,18 @@ public class SeasonPassServiceClient
     {
         [JsonPropertyName("action_type")]
         public ActionType ActionType { get; set; }
+        [JsonPropertyName("exp")]
+        public int Exp { get; set; }
+    }
+
+    public class ExpRequestSchema
+    {
+        [JsonPropertyName("avatar_addr")]
+        public string AvatarAddr { get; set; }
+        [JsonPropertyName("pass_type")]
+        public PassType PassType { get; set; }
+        [JsonPropertyName("season_index")]
+        public int SeasonIndex { get; set; }
         [JsonPropertyName("exp")]
         public int Exp { get; set; }
     }
@@ -238,6 +253,34 @@ public class SeasonPassServiceClient
         }
     }
 
+    public class PremiumRequestSchema
+    {
+        [JsonPropertyName("avatar_addr")]
+        public string AvatarAddr { get; set; }
+        [JsonPropertyName("pass_type")]
+        public PassType PassType { get; set; }
+        [JsonPropertyName("season_index")]
+        public int SeasonIndex { get; set; }
+        [JsonPropertyName("is_premium")]
+        public bool IsPremium { get; set; }
+        [JsonPropertyName("is_premium_plus")]
+        public bool IsPremiumPlus { get; set; }
+    }
+
+    public class RegisterRequestSchema
+    {
+        [JsonPropertyName("planet_id")]
+        public PlanetID? PlanetId { get; set; }
+        [JsonPropertyName("agent_addr")]
+        public string AgentAddr { get; set; }
+        [JsonPropertyName("avatar_addr")]
+        public string AvatarAddr { get; set; }
+        [JsonPropertyName("pass_type")]
+        public PassType PassType { get; set; }
+        [JsonPropertyName("season_index")]
+        public int SeasonIndex { get; set; }
+    }
+
     public class RewardDetailSchema
     {
         [JsonPropertyName("item")]
@@ -254,6 +297,18 @@ public class SeasonPassServiceClient
         public RewardDetailSchema Normal { get; set; }
         [JsonPropertyName("premium")]
         public RewardDetailSchema Premium { get; set; }
+    }
+
+    public class SeasonChangeRequestSchema
+    {
+        [JsonPropertyName("pass_type")]
+        public PassType PassType { get; set; }
+        [JsonPropertyName("season_index")]
+        public int SeasonIndex { get; set; }
+        [JsonPropertyName("start_timestamp")]
+        public string? StartTimestamp { get; set; }
+        [JsonPropertyName("end_timestamp")]
+        public string? EndTimestamp { get; set; }
     }
 
     public class SeasonPassSchema
@@ -425,12 +480,12 @@ public class SeasonPassServiceClient
         }
     }
 
-    public async Task GetSeasonpassExpAsync(PassType pass_type, Action<ExpInfoSchema[]> onSuccess, Action<string> onError)
+    public async Task GetSeasonpassExpAsync(PassType pass_type, int season_index, Action<ExpInfoSchema[]> onSuccess, Action<string> onError)
     {
         string url = $"{Url}/api/season-pass/exp";
         using (var request = new UnityWebRequest(url, "GET"))
         {
-            url += $"?pass_type={pass_type}";
+            url += $"?pass_type={pass_type}&season_index={season_index}";
             request.uri = new Uri(url);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("accept", "application/json");
@@ -574,6 +629,166 @@ public class SeasonPassServiceClient
                 }
                 string responseBody = request.downloadHandler.text;
                 ClaimResultSchema result = System.Text.Json.JsonSerializer.Deserialize<ClaimResultSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostTmpRegisterAsync(RegisterRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/api/tmp/register";
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostTmpPremiumAsync(PremiumRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/api/tmp/premium";
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostTmpAddexpAsync(ExpRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/api/tmp/add-exp";
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostTmpResetAsync(RegisterRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/api/tmp/reset";
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostTmpChangepasstimeAsync(SeasonChangeRequestSchema requestBody, Action<SeasonPassSchema> onSuccess, Action<string> onError)
+    {
+        string url = $"{Url}/api/tmp/change-pass-time";
+        using (var request = new UnityWebRequest(url, "POST"))
+        {
+            var bodyString = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.uploadHandler.contentType = "application/json";
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 10;
+            try
+            {
+                await request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    onError?.Invoke(request.error);
+                    return;
+                }
+                string responseBody = request.downloadHandler.text;
+                SeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<SeasonPassSchema>(responseBody);
                 onSuccess?.Invoke(result);
             }
             catch (Exception ex)
