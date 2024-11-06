@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class SummoningProbabilityPopup : PopupWidget
+    public class SummonProbabilityPopup : PopupWidget
     {
         [SerializeField]
         private SummonDetailScroll scroll;

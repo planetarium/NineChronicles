@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module
                 switch (state)
                 {
                     case State.Normal:
-                        Widget.Find<NewSummon>().SummonAction(summonRow);
+                        Widget.Find<Summon>().SummonAction(summonRow);
                         break;
                     case State.Conditional:
                         Widget.Find<PaymentPopup>().ShowLackPaymentDust(costType, cost);
