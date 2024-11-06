@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Module.Lobby
         private GameObject premiumPlusIcon;
 
         [SerializeField]
-        private TextMeshProUGUI levelText;
+        private TextMeshProUGUI[] nameText;
 
         [SerializeField]
         private TextMeshProUGUI timeText;
@@ -44,7 +44,10 @@ namespace Nekoyume.UI.Module.Lobby
 
             int claimCount = ApiClients.Instance.SeasonPassServiceManager.HasClaimPassType.Count + ApiClients.Instance.SeasonPassServiceManager.HasPrevClaimPassType.Count;
             notificationObj.SetActive(claimCount > 0);
-            levelText.text = L10nManager.Localize("SEASON_PASS_MENU_NAME");
+            foreach (var text in nameText)
+            {
+                text.text = L10nManager.Localize("SEASON_PASS_MENU_NAME");
+            }
             ApiClients.Instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) => { timeText.text = $"<Style=Clock> {endDate}"; });
         }
     }
