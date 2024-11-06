@@ -979,6 +979,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &1295419127134150510
 GameObject:
@@ -4825,6 +4826,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &4433864642504546165
 GameObject:
@@ -6044,6 +6046,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &5388138953748121935
 GameObject:
@@ -7031,6 +7034,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &5836537544281177319
 GameObject:
@@ -7766,6 +7770,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &6030792124796232458
 GameObject:
@@ -8068,6 +8073,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &6119917391525566249
 GameObject:
@@ -9825,6 +9831,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &7139430840321065431
 GameObject:
@@ -10372,6 +10379,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &7548918236896720238
 GameObject:
@@ -10586,8 +10594,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55039fc6de8a40cdb18cd5223468e252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -2.7142856
-  scrollOffset: -2.7142856
+  cellInterval: 0.1570248
+  scrollOffset: 0.1570248
   loop: 0
   cellContainer: {fileID: 6106559812987383857}
   reuseCellMarginCount: 0
@@ -11256,6 +11264,7 @@ MonoBehaviour:
   runeSelectMove: {fileID: 0}
   selectCollectionObject: {fileID: 0}
   selectArrowObject: {fileID: 0}
+  customCraftArea: {fileID: 0}
   RewardReceived: {fileID: 0}
 --- !u!1 &8173616221203516745
 GameObject:
@@ -12251,6 +12260,7 @@ GameObject:
   - component: {fileID: 8812879119766065744}
   - component: {fileID: 588978158056945295}
   - component: {fileID: 3764643661048952883}
+  - component: {fileID: 8182152527340399729}
   m_Layer: 5
   m_Name: LeftArea
   m_TagString: Untagged
@@ -12274,10 +12284,10 @@ RectTransform:
   m_Father: {fileID: 3327817829482485195}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.378752, y: 1}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 430.26227, y: 640}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &588978158056945295
 CanvasRenderer:
@@ -12299,6 +12309,19 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &8182152527340399729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9066416449444422195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotchType: 2
 --- !u!1 &9095024732879449342
 GameObject:
   m_ObjectHideFlags: 0
@@ -12579,7 +12602,7 @@ PrefabInstance:
     - target: {fileID: 488617205127339955, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 120
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 488617205127339955, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
@@ -13066,6 +13089,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2752236434775052170, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2752236434775052170, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2752236434775052170, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2752236434775052170, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2752236434775052170, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 705.73773
+      objectReference: {fileID: 0}
+    - target: {fileID: 2752236434775052170, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 640
       objectReference: {fileID: 0}
     - target: {fileID: 2788824297782143913, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
@@ -13745,32 +13798,32 @@ PrefabInstance:
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.378752
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 705.73773
       objectReference: {fileID: 0}
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 640
       objectReference: {fileID: 0}
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
@@ -13810,7 +13863,7 @@ PrefabInstance:
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 215.13113
       objectReference: {fileID: 0}
     - target: {fileID: 4958556696359475257, guid: 4c29562a77351bf4f9c8da7bd0ce0a89,
         type: 3}
