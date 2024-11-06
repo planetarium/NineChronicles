@@ -94,6 +94,7 @@ namespace Nekoyume.ApiClient
                     CurrentSeasonPassData[passType] = result;
 
                     // 용기 시즌패스의 경우만 종료일을 설정하고 남은 시간을 갱신한다.
+                    // 현재는 용기시즌패스, 어드벤쳐보스 시즌패스 모두 같은 시즌주기시간을 사용하기때문. 
                     if (passType == SeasonPassServiceClient.PassType.CouragePass)
                     {
                         DateTime.TryParse(result.EndTimestamp, out var endDateTime);

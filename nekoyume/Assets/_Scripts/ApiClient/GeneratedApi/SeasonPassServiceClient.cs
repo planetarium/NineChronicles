@@ -132,6 +132,8 @@ public class SeasonPassServiceClient
 
     public class ExpRequestSchema
     {
+        [JsonPropertyName("planet_id")]
+        public PlanetID? PlanetId { get; set; }
         [JsonPropertyName("avatar_addr")]
         public string AvatarAddr { get; set; }
         [JsonPropertyName("pass_type")]
@@ -255,6 +257,8 @@ public class SeasonPassServiceClient
 
     public class PremiumRequestSchema
     {
+        [JsonPropertyName("planet_id")]
+        public PlanetID? PlanetId { get; set; }
         [JsonPropertyName("avatar_addr")]
         public string AvatarAddr { get; set; }
         [JsonPropertyName("pass_type")]
@@ -301,6 +305,8 @@ public class SeasonPassServiceClient
 
     public class SeasonChangeRequestSchema
     {
+        [JsonPropertyName("planet_id")]
+        public PlanetID? PlanetId { get; set; }
         [JsonPropertyName("pass_type")]
         public PassType PassType { get; set; }
         [JsonPropertyName("season_index")]
