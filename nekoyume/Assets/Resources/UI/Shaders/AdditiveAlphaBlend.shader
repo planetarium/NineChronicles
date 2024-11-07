@@ -49,7 +49,9 @@ Category {
 			
 			fixed4 frag (v2f IN) : SV_Target
 			{
-				return tex2D(_MainTex, IN.texcoord);
+				fixed4 color = tex2D(_MainTex, IN.texcoord);
+				color *= IN.color;
+				return color;
 			}
 			ENDCG 
 		}

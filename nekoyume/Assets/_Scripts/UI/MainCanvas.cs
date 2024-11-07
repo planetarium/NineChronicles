@@ -264,6 +264,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CustomCraftResultScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<ClaimGiftsResultScreen>());
+            yield return null;
 
             // 일반.
             _secondWidgets.Add(Widget.Create<Login>());
@@ -323,6 +325,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Collection>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionItemFilterPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<EventRewardPopup>());
             yield return null;
 
             // loading
