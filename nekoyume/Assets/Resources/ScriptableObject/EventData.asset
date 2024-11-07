@@ -20,6 +20,7 @@ MonoBehaviour:
   - EventSummer
   - EventWinter
   - EventSpring
+  - EventAnniversary
   defaultSettings:
     <EventType>k__BackingField: 0
     <Intro>k__BackingField: {fileID: 21300000, guid: 46a8a229bbe9b432d99a82b73c5c9c27,
@@ -78,4 +79,16 @@ MonoBehaviour:
       gradiantColor: {r: 0.48235294, g: 1, b: 0.3254902, a: 0.5294118}
     <EventRecipeGuidedQuest>k__BackingField:
       icon: {fileID: 21300000, guid: 02657f54c17575b4a92c7af7531834dd, type: 3}
+      gradiantColor: {r: 1, g: 0.3647059, b: 0.3254902, a: 0.5294118}
+  - <EventType>k__BackingField: 6
+    <Intro>k__BackingField: {fileID: 21300000, guid: d66925166185a4c9499ebb9359b58649,
+      type: 3}
+    <MainBGM>k__BackingField: {fileID: 8300000, guid: 09471cca651f74acb8b5223ac301ef79,
+      type: 3}
+    <TargetDungeonIds>k__BackingField: 416b9a00
+    <EventDungeonGuidedQuest>k__BackingField:
+      icon: {fileID: 21300000, guid: 810ef072c8e29b743a492067ed79e535, type: 3}
+      gradiantColor: {r: 1, g: 0.78656876, b: 0.3726415, a: 0.5294118}
+    <EventRecipeGuidedQuest>k__BackingField:
+      icon: {fileID: 0}
       gradiantColor: {r: 1, g: 0.3647059, b: 0.3254902, a: 0.5294118}
