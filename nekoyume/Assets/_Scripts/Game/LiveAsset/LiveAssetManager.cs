@@ -178,10 +178,22 @@ namespace Nekoyume.Game.LiveAsset
 
         private void SetThorScheduleUrl(string response, System.Action onSucceeded = null)
         {
-            ThorSchedule = JsonSerializer.Deserialize<Nekoyume.ApiClient.ThorSchedule>(
+            var thorSchedules  = JsonSerializer.Deserialize<Nekoyume.ApiClient.ThorSchedules>(
                 response,
                 CommandLineOptions.JsonOptions);
-
+            
+            // 로그인 전에 PlanetId를 판단할 수 없기 때문에 항상 메인넷 기준으로 설정
+            ThorSchedule = thorSchedules.MainNet;
+            var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
+            if (planetId.HasValue && Nekoyume.Multiplanetary.PlanetId.IsMainNet(planetId.Value))
+            {
+                ThorSchedule = thorSchedules.MainNet;
+            }
+            else
+            {
+                ThorSchedule = thorSchedules.Others;
+            }
+            
             if (ThorSchedule != null)
             {
                 onSucceeded?.Invoke();
