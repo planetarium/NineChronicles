@@ -79,6 +79,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d7dd09e5fa86e4b13a9c7a7664b8d57f, type: 3}
   - {fileID: 21300000, guid: 8804d0a68f34f4d918c719e22e1b8416, type: 3}
   - {fileID: 21300000, guid: bcf882b6a6a0746ceac1ef610331efc8, type: 3}
+  - {fileID: 21300000, guid: 2652d2472e7a3314a9ee2e5459b3cae6, type: 3}
   - {fileID: 21300000, guid: b1bd7a57aff36408fbfbd9e1334ff60f, type: 3}
   - {fileID: 21300000, guid: 6d101477048784d3aa67997e2ef00082, type: 3}
   - {fileID: 21300000, guid: a482e0a70db811043bf145f3bd8b814d, type: 3}
@@ -93,7 +94,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6ea41e3ad64c9467295f882c5802167a, type: 3}
   - {fileID: 21300000, guid: e78a0f3a63de66b4c930c068f7c04150, type: 3}
   - {fileID: 21300000, guid: 2671acca97db80043ac1877d1dac7b0d, type: 3}
+  - {fileID: 21300000, guid: f71c7d0b480971a488d6f3577a082df7, type: 3}
   - {fileID: 21300000, guid: 9d84056bdc45e480980fd1015f4a671f, type: 3}
+  - {fileID: 21300000, guid: f64aba6b841f29842be539ece55d2a8c, type: 3}
   - {fileID: 21300000, guid: 422257ab05689ed408d38a1f72ecbd0e, type: 3}
   - {fileID: 21300000, guid: 888f99eb2ada04b76b7fe078e4c8f939, type: 3}
   - {fileID: 21300000, guid: 5d04de0cba5e04a97806dcaf509ccfd0, type: 3}
@@ -146,6 +149,7 @@ SpriteAtlas:
   - bg_worldmap_asgard_icon_02
   - bg_worldmap_event_icon_03
   - bg_worldmap_asgard_icon_03
+  - bg_worldmap_anniversaryevent_icon_02
   - bg_worldmap_event_icon_01
   - bg_worldmap_yggdrasil_icon_03
   - battle_UI_icon_boss_02
@@ -160,7 +164,9 @@ SpriteAtlas:
   - bg_worldmap_svartalfaheimr_icon_02
   - button_page_01_reverse
   - UI_bg_worldmap
+  - bg_worldmap_anniversaryevent_icon_01
   - bg_worldmap_hardmode_icon_02
+  - bg_worldmap_anniversaryevent_icon_03
   - bg_worldmap_adventureboss_icon_01
   - bg_worldmap_winterevent_icon_02
   - bg_worldmap_svartalfaheimr_icon_03
