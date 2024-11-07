@@ -58,6 +58,11 @@ namespace Nekoyume.UI.Module
             }
 
             optionIcons?.ForEach(obj => obj.SetActive(false));
+            greatSuccessRateText?.gameObject.SetActive(false);
+            if (optionInfos == null || optionInfos.Count == 0)
+            {
+                return;
+            }
 
             var tableSheets = TableSheets.Instance;
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
@@ -119,6 +124,7 @@ namespace Nekoyume.UI.Module
                     .Select(x => x.Ratio.NormalizeFromTenThousandths())
                     .Aggregate((a, b) => a * b);
 
+                greatSuccessRateText.gameObject.SetActive(true);
                 greatSuccessRateText.text = greatSuccessRate == 0m
                     ? "-"
                     : L10nManager.Localize("UI_COMBINATION_GREAT_SUCCESS_RATE_FORMAT",
