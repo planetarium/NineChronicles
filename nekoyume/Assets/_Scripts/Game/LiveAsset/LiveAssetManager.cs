@@ -73,21 +73,21 @@ namespace Nekoyume.Game.LiveAsset
         public int[] StakingArenaBonusValues { get; private set; }
         public bool IsInitialized => _state == InitializingState.Initialized;
 
-        public void InitializeData(System.Action onSucceededThor = null)
+        public void InitializeData()
         {
             _endpoint = Resources.Load<LiveAssetEndpointScriptableObject>("ScriptableObject/LiveAssetEndpoint");
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
-            StartCoroutine(InitializeThorSchedule(onSucceededThor));
+            StartCoroutine(InitializeThorSchedule());
             InitializeStakingResource().Forget();
             InitializeEvent();
         }
 
-        private IEnumerator InitializeThorSchedule(System.Action onSucceeded = null)
+        private IEnumerator InitializeThorSchedule()
         {
             yield return StartCoroutine(
                 RequestManager.instance.GetJson(
                     _endpoint.ThorScheduleUrl,
-                    response => SetThorScheduleUrl(response, onSucceeded)));
+                    SetThorScheduleUrl));
         }
 
         public void InitializeEvent()
@@ -176,28 +176,27 @@ namespace Nekoyume.Game.LiveAsset
             GameConfig = JsonSerializer.Deserialize<GameConfig>(response);
         }
 
-        private void SetThorScheduleUrl(string response, System.Action onSucceeded = null)
+        private Nekoyume.ApiClient.ThorSchedules _cachedThorSchedules;
+        public System.Action<Nekoyume.ApiClient.ThorSchedule> OnChangedThorSchedule;
+        private void SetThorScheduleUrl(string response)
         {
-            var thorSchedules  = JsonSerializer.Deserialize<Nekoyume.ApiClient.ThorSchedules>(
+            _cachedThorSchedules = JsonSerializer.Deserialize<Nekoyume.ApiClient.ThorSchedules>(
                 response,
                 CommandLineOptions.JsonOptions);
-            
+
             // 로그인 전에 PlanetId를 판단할 수 없기 때문에 항상 메인넷 기준으로 설정
-            ThorSchedule = thorSchedules.MainNet;
+            ThorSchedule = _cachedThorSchedules.MainNet;
             var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
             if (planetId.HasValue && Nekoyume.Multiplanetary.PlanetId.IsMainNet(planetId.Value))
             {
-                ThorSchedule = thorSchedules.MainNet;
+                ThorSchedule = _cachedThorSchedules.MainNet;
             }
             else
             {
-                ThorSchedule = thorSchedules.Others;
+                ThorSchedule = _cachedThorSchedules.Others;
             }
-            
-            if (ThorSchedule != null)
-            {
-                onSucceeded?.Invoke();
-            }
+
+            OnChangedThorSchedule?.Invoke(ThorSchedule);
         }
 
         private void SetCommandLineOptions(string response)

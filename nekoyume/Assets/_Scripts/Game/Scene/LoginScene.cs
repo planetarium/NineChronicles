@@ -48,6 +48,9 @@ namespace Nekoyume.Game.Scene
         {
             var canvas = GetComponent<Canvas>();
             canvas.worldCamera = ActionCamera.instance.Cam;
+
+            Nekoyume.Game.LiveAsset.LiveAssetManager.instance.OnChangedThorSchedule +=
+                OnSucceedThor;
         }
 
         protected override void Start()
@@ -90,7 +93,7 @@ namespace Nekoyume.Game.Scene
             totalSw.Start();
 
             game.AddRequestManager();
-            yield return game.InitializeLiveAssetManager(OnSucceedThor);
+            yield return game.InitializeLiveAssetManager();
             // if Mobile Build, need refresh commandLineOptions
 
             // NOTE: Initialize KeyManager after load CommandLineOptions.
@@ -859,9 +862,10 @@ namespace Nekoyume.Game.Scene
                 agentAddrInPortal?.ToString() ?? "null");
         }
 
-        private void OnSucceedThor()
+        private void OnSucceedThor(ThorSchedule thorSchedule)
         {
-            var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            Nekoyume.Game.LiveAsset.LiveAssetManager.instance.OnChangedThorSchedule -=
+                OnSucceedThor;
             thorChainInfoItem.gameObject.SetActive(thorSchedule?.IsOpened == true);
         }
     }
