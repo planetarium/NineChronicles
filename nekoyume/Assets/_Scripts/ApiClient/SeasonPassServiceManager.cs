@@ -60,14 +60,11 @@ namespace Nekoyume.ApiClient
                 if (!IsCurrentSeasonPassValid(passType))
                 {
                     await FetchSeasonPassDataWithRetry(passType);
+
+                    await FetchLevelInfoDataWithRetry(passType);
                 }
             }
 
-            // Fetch level info data with retries
-            foreach (var passType in passTypes)
-            {
-                await FetchLevelInfoDataWithRetry(passType);
-            }
         }
 
         private bool IsCurrentSeasonPassValid(SeasonPassServiceClient.PassType passType)
@@ -79,12 +76,23 @@ namespace Nekoyume.ApiClient
             {
                 return true;
             }
+
+            //월드패스의경우 종료기간이 없기때문에 리워드가 있으면 유효하다고 판단한다.
+            if (passType == SeasonPassServiceClient.PassType.WorldClearPass &&
+                CurrentSeasonPassData.TryGetValue(passType, out var seasonPassSchema) &&
+                seasonPassSchema.RewardList.Count > 0)
+            {
+                NcDebug.LogWarning($"SeasonPassServiceManager IsCurrentSeasonPassValid [WorldClearPass] is null");
+                return true;
+            }
+
             return false;
         }
 
         private async Task FetchSeasonPassDataWithRetry(SeasonPassServiceClient.PassType passType, int maxRetries = 3)
         {
             int retryCount = 0;
+            
             while (retryCount < maxRetries)
             {
                 var tcs = new TaskCompletionSource<bool>();
