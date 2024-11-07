@@ -87,6 +87,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
+            // init toggle state
             tabToggles.First().isOn = false;
             tabToggles.First().isOn = true;
         }
