@@ -126,8 +126,6 @@ namespace Nekoyume.UI
             repeatPopupButton.OnClickAsObservable()
                 .Subscribe(_ => ShowArenaTicketPopup())
                 .AddTo(gameObject);
-
-            Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
         public void Show(

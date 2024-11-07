@@ -17,13 +17,13 @@ namespace Nekoyume.UI
         [SerializeField] private SoftMask mask;
         [SerializeField] private Image background;
 
-        private Menu _menu;
+        private LobbyMenu lobbyMenu;
         private Coroutine _coroutine;
         private Vector2 _cachedMaskSize;
 
         private void Awake()
         {
-            _menu = Widget.Find<Menu>();
+            lobbyMenu = Widget.Find<LobbyMenu>();
             _cachedMaskSize = mask.rectTransform.sizeDelta;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
@@ -45,12 +46,24 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(WorldBossBattleRewardSheet.Row row)
         {
-            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, new[] { (600402, row.Circle) });
+            var materials = new List<(int itemId, int quantity)>();
+            if (row.Circle > 0)
+            {
+                materials.Add((600402, row.Circle));
+            }
+
+            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, materials);
         }
 
         public void Set(WorldBossKillRewardSheet.Row row)
         {
-            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, new[] { (600402, row.Circle) });
+            var materials = new List<(int itemId, int quantity)>();
+            if (row.Circle > 0)
+            {
+                materials.Add((600402, row.Circle));
+            }
+
+            SetRewardItem((row.RuneMin, row.RuneMax), row.Crystal, materials);
         }
 
         public void Set(WorldBossRankingRewardSheet.Row row, int myRank, int userCount)
@@ -93,13 +106,13 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
 
             var runeSum = row.Runes.Sum(x => x.RuneQty);
-            SetRewardItem((runeSum, runeSum), row.Crystal, row.Materials.ToArray());
+            SetRewardItem((runeSum, runeSum), row.Crystal, row.Materials);
         }
 
         private void SetRewardItem(
             (int min, int max) rune,
             int crystal,
-            (int itemId, int quantity)[] materials)
+            List<(int itemId, int quantity)> materials)
         {
             runeItem.container.gameObject.SetActive(rune.max > 0);
             runeItem.text.text = rune.min == rune.max
@@ -112,7 +125,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             for (var i = 0; i < materialItems.Length; i++)
             {
                 var material = materialItems[i];
-                if (i < materials.Length)
+                if (i < materials.Count)
                 {
                     var (itemId, quantity) = materials[i];
                     material.container.gameObject.SetActive(true);

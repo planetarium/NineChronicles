@@ -168,6 +168,7 @@ namespace Nekoyume.Blockchain
             EventMaterialItemCrafts();
             AuraSummon();
             RuneSummon();
+            CostumeSummon();
             CustomEquipmentCraft();
 
             // Market
@@ -774,6 +775,19 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void CostumeSummon()
+        {
+            _actionRenderer.EveryRender<CostumeSummon>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval =>
+                    eval.Action.AvatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCostumeSummon)
+                .AddTo(_disposables);
+        }
+
         /// <summary>
         /// Process the action rendering of <see cref="ClaimItems"/>.
         /// At now, rendering is only for updating the inventory of the current avatar.
@@ -1142,7 +1156,7 @@ namespace Nekoyume.Blockchain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var menu = Widget.Find<Menu>();
+                            var menu = Widget.Find<LobbyMenu>();
                             if (menu.isActiveAndEnabled)
                             {
                                 menu.UpdateGuideQuest(avatarState);
@@ -1587,7 +1601,26 @@ namespace Nekoyume.Blockchain
             {
                 var action = eval.Action;
                 var tableSheets = Game.Game.instance.TableSheets;
-                var summonRow = tableSheets.SummonSheet[action.GroupId];
+                var summonRow = tableSheets.RuneSummonSheet[action.GroupId];
+                var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+                var count = summonRow.CostMaterialCount * action.SummonCount;
+
+                Widget.Find<Summon>().OnActionRender(eval);
+            });
+        }
+
+        private void ResponseCostumeSummon(ActionEvaluation<CostumeSummon> eval)
+        {
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+                await UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarRuneStoneBalance(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var action = eval.Action;
+                var tableSheets = Game.Game.instance.TableSheets;
+                var summonRow = tableSheets.CostumeSummonSheet[action.GroupId];
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
@@ -3117,7 +3150,7 @@ namespace Nekoyume.Blockchain
                 worldBoss.Close();
                 await WorldBossStates.Set(eval.OutputState, eval.BlockIndex, avatarAddress);
 
-                Game.Event.OnRoomEnter.Invoke(true);
+                Lobby.Enter(true);
                 return;
             }
 
@@ -3151,7 +3184,7 @@ namespace Nekoyume.Blockchain
                 TableSheets.Instance.BuffLinkSheet
             );
             simulator.Simulate();
-            Widget.Find<Menu>().Close();
+            Widget.Find<LobbyMenu>().Close();
 
             var playerDigest = new ArenaPlayerDigest(
                 clonedAvatarState,
@@ -3584,7 +3617,7 @@ namespace Nekoyume.Blockchain
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
                         if (product != null)
                         {
-                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var productName = L10nManager.Localize(product.L10nKey);
                             var format = L10nManager.Localize(
                                 "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
                             OneLineSystem.Push(MailType.System,
@@ -3702,7 +3735,7 @@ namespace Nekoyume.Blockchain
                         var product = MailExtensions.GetProductFromMemo(mail.Memo);
                         if (product != null)
                         {
-                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var productName = L10nManager.Localize(product.L10nKey);
                             var format = L10nManager.Localize(
                                 "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
                             OneLineSystem.Push(MailType.System,

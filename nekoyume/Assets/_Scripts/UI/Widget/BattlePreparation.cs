@@ -180,8 +180,6 @@ namespace Nekoyume.UI
                         L10nManager.Localize("ERROR_ACTION_POINT"),
                         NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
-
-            Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
         public void Show(
@@ -458,7 +456,6 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var balance = States.Instance.GoldBalanceState.Gold;
                     var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
@@ -467,13 +464,10 @@ namespace Nekoyume.UI
 
                     Find<TicketPurchasePopup>().Show(
                         CostType.EventDungeonTicket,
-                        CostType.NCG,
-                        balance,
                         cost,
                         purchasedCount,
                         1,
                         () => StartCoroutine(CoBattleStart(_stageType, CostType.NCG, true)),
-                        () => GoToMarket(TradeType.Sell),
                         true
                     );
                     return;

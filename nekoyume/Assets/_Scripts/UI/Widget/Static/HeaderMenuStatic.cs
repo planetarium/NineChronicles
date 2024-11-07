@@ -56,8 +56,7 @@ namespace Nekoyume.UI.Module
             CurrencyOnly,
             RuneStone,
             Mileage,
-            SummonAdvanced,
-            SummonNormal,
+            Summon,
             AdventureBoss
         }
 
@@ -106,6 +105,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private GameObject mileage;
+
+        [SerializeField]
+        private GameObject iapMileage;
 
         [SerializeField]
         private VFX inventoryVFX;
@@ -399,7 +401,7 @@ namespace Nekoyume.UI.Module
                 }
             });
 
-            Event.OnRoomEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
+            Nekoyume.Game.Lobby.OnLobbyEnterEvent += () => UpdateAssets(AssetVisibleState.Main);
             Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
@@ -501,7 +503,18 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(true, true, isHourglassActive: true);
                     break;
                 case AssetVisibleState.Shop:
+#if UNITY_IOS || UNITY_ANDROID
+                    if (Game.instance.IAPStoreManager.CheckCategoryName("Mileage"))
+                    {
+                        SetActiveAssets(true, true, isIapMileageActive: true, enabledMaterials: new[] { CostType.GoldDust });
+                    }
+                    else
+                    {
+                        SetActiveAssets(true, true, enabledMaterials: new[] { CostType.GoldDust });
+                    }
+#else
                     SetActiveAssets(true, true, enabledMaterials: new[] { CostType.GoldDust });
+#endif
                     break;
                 case AssetVisibleState.Battle:
                     SetActiveAssets(true, true, true);
@@ -524,11 +537,8 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.Mileage:
                     SetActiveAssets(true, true, isMileageActive: true);
                     break;
-                case AssetVisibleState.SummonAdvanced:
-                    SetActiveAssets(enabledMaterials: new[] { CostType.EmeraldDust, CostType.RubyDust, CostType.GoldDust });
-                    break;
-                case AssetVisibleState.SummonNormal:
-                    SetActiveAssets(enabledMaterials: new[] { CostType.SilverDust });
+                case AssetVisibleState.Summon:
+                    SetActiveAssets(enabledMaterials: new[] { CostType.EmeraldDust, CostType.RubyDust, CostType.GoldDust, CostType.SilverDust });
                     break;
                 case AssetVisibleState.AdventureBoss:
                     SetActiveAssets(true, enabledMaterials: new[] { CostType.GoldDust }, isApPotionActive: true);
@@ -547,6 +557,7 @@ namespace Nekoyume.UI.Module
             bool isRuneStoneActive = false,
             bool isMileageActive = false,
             bool isApPotionActive = false,
+            bool isIapMileageActive = false,
             CostType[] enabledMaterials = null)
         {
             ncg.gameObject.SetActive(isNcgActive);
@@ -559,6 +570,7 @@ namespace Nekoyume.UI.Module
             runeStone.gameObject.SetActive(isRuneStoneActive);
             mileage.gameObject.SetActive(isMileageActive);
             apPotion.gameObject.SetActive(isApPotionActive);
+            iapMileage.gameObject.SetActive(isIapMileageActive);
 
             var length = enabledMaterials?.Length ?? 0;
             for (var i = 0; i < MaterialAssets.Length; i++)

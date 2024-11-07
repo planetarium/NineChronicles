@@ -47,7 +47,6 @@ using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.Playables;
 using Currency = Libplanet.Types.Assets.Currency;
-using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
 using UnityEngine.Android;
@@ -106,7 +105,15 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject debugConsolePrefab;
 
-        public PlanetId? CurrentPlanetId { get; set; }
+        public PlanetId? CurrentPlanetId
+        {
+            get => _currentPlanetId;
+            set
+            {
+                NcDebug.Log($"[{nameof(Game)}] Set CurrentPlanetId: {value}");
+                _currentPlanetId = value;
+            }
+        }
 
         public States States { get; private set; }
 
@@ -179,6 +186,8 @@ namespace Nekoyume.Game
         private const string WorldbossSeasonPushIdentifierKey = "WORLDBOSS_SEASON_PUSH_IDENTIFIER";
         private const string WorldbossTicketPushIdentifierKey = "WORLDBOSS_TICKET_PUSH_IDENTIFIER";
         private const int TicketPushBlockCountThreshold = 300;
+        
+        private PlanetId? _currentPlanetId;
 
 #region Mono & Initialization
 
@@ -231,10 +240,10 @@ namespace Nekoyume.Game
             Application.targetFrameRate = 30;
         }
 
-        public IEnumerator InitializeLiveAssetManager()
+        public IEnumerator InitializeLiveAssetManager(System.Action onSucceededThor = null)
         {            
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
-            liveAssetManager.InitializeData();
+            liveAssetManager.InitializeData(onSucceededThor);
 #if RUN_ON_MOBILE
             yield return liveAssetManager.InitializeApplicationCLO();
 
@@ -536,7 +545,7 @@ namespace Nekoyume.Game
                     needToBackToMain = true;
                 }
 
-                widget = Widget.Find<Menu>();
+                widget = Widget.Find<LobbyMenu>();
                 if (widget.IsActive())
                 {
                     widget.Close(true);
@@ -917,11 +926,8 @@ namespace Nekoyume.Game
             NcDebug.LogException(exc);
 
             var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
-            Event.OnRoomEnter.Invoke(showLoadingScreen);
-            instance.Stage.OnRoomEnterEnd
-                .First()
-                .Subscribe(_ => PopupError(key, code, errorMsg));
-            instance.Arena.OnRoomEnterEnd
+            Lobby.Enter(showLoadingScreen);
+            instance.Lobby.OnLobbyEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
             MainCanvas.instance.InitWidgetInMain();
@@ -1494,22 +1500,14 @@ namespace Nekoyume.Game
 
         public async UniTask InitializeStage()
         {
+            Stage.Initialize();
+            
             var sw = new Stopwatch();
             sw.Reset();
             sw.Start();
-            await Stage.InitializeAsync();
+            await BattleRenderer.Instance.InitializeVfxAsync();
             sw.Stop();
-            NcDebug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            sw.Reset();
-            sw.Start();
-            await Arena.InitializeAsync();
-            sw.Stop();
-            NcDebug.Log($"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            sw.Reset();
-            sw.Start();
-            await RaidStage.InitializeAsync();
-            sw.Stop();
-            NcDebug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+            NcDebug.Log($"[Game] Start()... BattleRenderer vfx initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
 #endregion Initialize On Start

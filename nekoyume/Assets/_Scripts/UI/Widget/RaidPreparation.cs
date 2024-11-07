@@ -121,8 +121,6 @@ namespace Nekoyume.UI
             information.Initialize();
 
             startButton.onClick.AddListener(OnClickStartButton);
-
-            Game.Event.OnRoomEnter.AddListener(b => Close());
             toggle.gameObject.SetActive(GameConfig.IsEditor);
         }
 
@@ -372,11 +370,8 @@ namespace Nekoyume.UI
             var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
             var cur = States.Instance.GoldBalanceState.Gold.Currency;
             var cost = WorldBossHelper.CalculateTicketPrice(row, raiderState, cur);
-            var balance = States.Instance.GoldBalanceState;
             Find<TicketPurchasePopup>().Show(
                 CostType.WorldBossTicket,
-                CostType.NCG,
-                balance.Gold,
                 cost,
                 raiderState.PurchaseCount,
                 row.MaxPurchaseCount,
@@ -384,17 +379,8 @@ namespace Nekoyume.UI
                 {
                     coverToBlockClick.SetActive(true);
                     Raid(true);
-                },
-                GoToMarket
+                }
             );
-        }
-
-        private void GoToMarket()
-        {
-            Find<WorldBoss>().ForceClose();
-            Find<RaidPreparation>().Close(true);
-            Find<ShopBuy>().Show();
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
 
         /// <summary>

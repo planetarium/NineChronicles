@@ -56,11 +56,31 @@ namespace Nekoyume.UI
             _disposableOnDisable = petInventory.OnSelectedSubject
                 .Subscribe(petId =>
                 {
+                    if (petId != null)
+                    {
+                        var petStates = States.Instance.PetStates;
+                        var petStateList = petStates.GetPetStatesAll();
+                            
+                        var equippablePet = petStateList.Where(petState => 
+                            petState != null && 
+                            petState.PetId == petId &&
+                            !IsEquippedPet(petStates, petState, petId.Value));
+                        if (!equippablePet.Any())
+                        {
+                            return;
+                        }
+                    }
+                    
                     onSelected?.Invoke(petId);
                     Close();
                 })
                 .AddTo(gameObject);
             _coroutineOnShowanimation = StartCoroutine(CoFixScrollPosition());
+        }
+
+        private bool IsEquippedPet(PetStates petStates, Nekoyume.Model.State.PetState petState, int petId)
+        {
+            return petStates.IsLocked(petId) || petState.UnlockedBlockIndex > Game.Game.instance.Agent.BlockIndex;
         }
 
         protected override void OnCompleteOfShowAnimationInternal()

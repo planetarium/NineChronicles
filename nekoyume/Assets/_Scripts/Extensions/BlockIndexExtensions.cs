@@ -50,7 +50,8 @@ namespace Nekoyume
                 return TimeSpan.Zero;
             }
 
-            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            var secondsPerBlock = LiveAssetManager.instance.GameConfig?.SecondsPerBlock ??
+                UnityEngine.Mathf.Round((float)Nekoyume.Blockchain.Policy.BlockPolicySource.BlockInterval.TotalSeconds);
             return TimeSpan.FromSeconds(block * secondsPerBlock);
         }
 

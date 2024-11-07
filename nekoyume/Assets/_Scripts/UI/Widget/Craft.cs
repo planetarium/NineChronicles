@@ -338,7 +338,7 @@ namespace Nekoyume.UI
                     OnClickConsumableToggle(eventConsumableToggle.isOn);
                 })
                 .AddTo(_disposablesAtShow);
-            HammerPointStatesSubject.HammerPointSubject.Subscribe(_ =>
+            HammerPointStatesSubject.HammerPoint.Subscribe(_ =>
             {
                 if (equipmentSubRecipeView.gameObject.activeSelf)
                 {
@@ -805,7 +805,7 @@ namespace Nekoyume.UI
                 combinationMain.Close(true);
             }
 
-            Game.Event.OnRoomEnter.Invoke(true);
+            Lobby.Enter(true);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

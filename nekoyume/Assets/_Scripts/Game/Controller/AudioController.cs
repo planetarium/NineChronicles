@@ -264,7 +264,7 @@ namespace Nekoyume.Game.Controller
             base.Awake();
 
             CurrentState = State.None;
-            Event.OnRoomEnter.AddListener(_ => { PlayMusic(EventManager.GetEventInfo().MainBGM.name); });
+            Lobby.OnLobbyEnterEvent += OnLobbyEnter;
         }
 
         private void Update()
@@ -722,5 +722,10 @@ namespace Nekoyume.Game.Controller
         }
 
 #endregion
+
+        private void OnLobbyEnter()
+        {
+            PlayMusic(EventManager.GetEventInfo().MainBGM.name);
+        }
     }
 }

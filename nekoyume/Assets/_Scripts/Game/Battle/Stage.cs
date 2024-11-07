@@ -59,7 +59,9 @@ namespace Nekoyume.Game.Battle
         public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
-        public ObjectPool objectPool;
+        
+        [SerializeField] private ObjectPool objectPool;
+        
         public DropItemFactory dropItemFactory;
 
         public MonsterSpawner spawner;
@@ -80,7 +82,6 @@ namespace Nekoyume.Game.Battle
 
         public int foodCount;
         public string zone;
-        public Animator roomAnimator { get; private set; }
 
         private Camera _camera;
         private BattleLog _battleLog;
@@ -96,11 +97,10 @@ namespace Nekoyume.Game.Battle
 
         private const string adventureBossBackgroundKey = "AdventureBoss_0";
 
+        public ObjectPool ObjectPool => objectPool;
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
         public List<GameObject> ReleaseWhiteList { get; private set; } = new();
-        public SkillController SkillController { get; private set; }
-        public BuffController BuffController { get; private set; }
         public TutorialController TutorialController { get; private set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
@@ -120,19 +120,13 @@ namespace Nekoyume.Game.Battle
             return new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
         }
 
-        public bool showLoadingScreen;
-
         public float StageSkipSpeed = 3f;
         public bool StageSkipCritical = false;
 
 #region Events
-
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
         public IObservable<Stage> OnEnterToStageEnd => _onEnterToStageEnd;
-
-        public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
-
-#endregion
+#endregion Events
 
         protected void Awake()
         {
@@ -149,7 +143,7 @@ namespace Nekoyume.Game.Battle
 
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
-            Event.OnRoomEnter.AddListener(OnRoomEnter);
+            Lobby.OnLobbyEnterEvent += OnLobbyEnter;
 
             BattleRenderer.Instance.OnStageStart += OnStartStage;
         }
@@ -158,19 +152,14 @@ namespace Nekoyume.Game.Battle
         {
             Event.OnNestEnter.RemoveListener(OnNestEnter);
             Event.OnLoginDetail.RemoveListener(OnLoginDetail);
-            Event.OnRoomEnter.RemoveListener(OnRoomEnter);
+            Lobby.OnLobbyEnterEvent -= OnLobbyEnter;
 
             BattleRenderer.Instance.OnStageStart -= OnStartStage;
         }
 
-        public async UniTask InitializeAsync()
+        public void Initialize()
         {
-            objectPool.Initialize();
             dropItemFactory.Initialize();
-            SkillController = new SkillController(objectPool);
-            await SkillController.InitializeAsync();
-            BuffController = new BuffController(objectPool);
-            await BuffController.InitializeAsync();
             TutorialController = new TutorialController(MainCanvas.instance.Widgets);
         }
 
@@ -274,18 +263,27 @@ namespace Nekoyume.Game.Battle
             }
         }
 
-        private void OnRoomEnter(bool showScreen)
+        private void OnLobbyEnter()
         {
 #if TEST_LOG
-            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnRoomEnter)}() enter");
+            NcDebug.Log($"[{nameof(Stage)}] {nameof(OnLobbyEnter)}() enter");
 #endif
-            showLoadingScreen = showScreen;
-            gameObject.AddComponent<RoomEntering>();
+            Game.instance.Stage.ReleaseBattleAssets();
+            StartCoroutine(ActLobbyEnter());
             BattleRenderer.Instance.IsOnBattle = false;
+        }
 
-            // Clear Memory
-            Resources.UnloadUnusedAssets();
-            GC.Collect();
+        private IEnumerator ActLobbyEnter()
+        {
+            var stage = Game.instance.Stage;
+            stage.ClearBattle();
+            stage.stageId = 0;
+
+            yield return new WaitForEndOfFrame();
+            if (stage.AvatarState is not null)
+            {
+                ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(stage.AvatarState).Forget();
+            }
         }
 
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)

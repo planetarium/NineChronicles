@@ -32,10 +32,14 @@ namespace Nekoyume.UI.Module
         private Transform descriptionViewParent;
 
         [SerializeField]
-        private PetDescriptionView descriptionViewPrefab;
+        private PetDescriptionView emptyDescriptionView;
 
         [SerializeField]
         private ScrollRect scrollRect;
+        
+        [Header("Prefab")]
+        [SerializeField]
+        private PetDescriptionView descriptionViewPrefab;
 
         private readonly Dictionary<int, PetDescriptionView> _views = new();
 
@@ -43,7 +47,14 @@ namespace Nekoyume.UI.Module
 
         private IDisposable _disposableOnDisabled;
 
-        private int _slotIndex;
+        private void Awake()
+        {
+            if (emptyDescriptionView)
+            {
+                emptyDescriptionView.InitializeEmpty(OnSelectedSubject.OnNext);
+                _views[default] = emptyDescriptionView;
+            }
+        }
 
         private void OnDisable()
         {
@@ -51,21 +62,14 @@ namespace Nekoyume.UI.Module
             _disposableOnDisabled = null;
         }
 
-        public void Initialize(bool addEmptyObject = false)
+        public void Initialize(bool hasSelectButton)
         {
             var petSheet = TableSheets.Instance.PetSheet;
             foreach (var row in petSheet)
             {
                 var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
-                view.Initialize(row, OnSelectedSubject.OnNext);
+                view.Initialize(row, OnSelectedSubject.OnNext, hasSelectButton);
                 _views[row.Id] = view;
-            }
-
-            if (addEmptyObject)
-            {
-                var view = Instantiate(descriptionViewPrefab, descriptionViewParent);
-                view.InitializeEmpty(OnSelectedSubject.OnNext);
-                _views[default] = view;
             }
         }
 
@@ -77,7 +81,6 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                _slotIndex = slotIndex;
                 Show();
             }
         }
@@ -93,7 +96,6 @@ namespace Nekoyume.UI.Module
             }
 
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
-                .ObserveOnMainThread()
                 .Subscribe(state => UpdateView(state));
             gameObject.SetActive(true);
             InitScrollPosition();
@@ -116,7 +118,6 @@ namespace Nekoyume.UI.Module
             }
 
             _disposableOnDisabled = States.Instance.PetStates.PetStatesSubject
-                .ObserveOnMainThread()
                 .Subscribe(state => UpdateView(state, craftInfo));
             gameObject.SetActive(true);
             InitScrollPosition();
@@ -138,12 +139,11 @@ namespace Nekoyume.UI.Module
             var viewDatas = _views.Select(x =>
                 (view: x.Value, viewData: GetViewData(x.Key, petStates, craftInfo)));
             var views = viewDatas
-                .OrderBy(x => x.viewData.Equipped)
+                .OrderBy(x => x.viewData.Empty)
                 .ThenByDescending(x => x.viewData.IsAppliable)
-                .ThenByDescending(x => x.viewData.Empty)
                 .ThenByDescending(x => x.viewData.HasState)
+                .ThenBy(x => x.viewData.Equipped)
                 .ThenBy(x => x.viewData.CombinationSlotIndex)
-                .ThenByDescending(x => x.view.Grade)
                 .ThenByDescending(x => x.viewData.Level)
                 .ThenBy(x => x.viewData.PetId);
 

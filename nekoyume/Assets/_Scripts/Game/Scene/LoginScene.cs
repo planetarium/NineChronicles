@@ -41,6 +41,7 @@ namespace Nekoyume.Game.Scene
 
         [SerializeField] private IntroScreen introScreen;
         [SerializeField] private Synopsis synopsis;
+        [SerializeField] private ChainInfoItem thorChainInfoItem;
 
 #region MonoBehaviour
         private void Awake()
@@ -89,7 +90,7 @@ namespace Nekoyume.Game.Scene
             totalSw.Start();
 
             game.AddRequestManager();
-            yield return game.InitializeLiveAssetManager();
+            yield return game.InitializeLiveAssetManager(OnSucceedThor);
             // if Mobile Build, need refresh commandLineOptions
 
             // NOTE: Initialize KeyManager after load CommandLineOptions.
@@ -392,7 +393,7 @@ namespace Nekoyume.Game.Scene
             await NcSceneManager.Instance.LoadScene(SceneType.Game);
             loadingScreen.Close();
 
-            Event.OnRoomEnter.Invoke(false);
+            Lobby.Enter();
             Event.OnUpdateAddresses.Invoke();
         }
 
@@ -856,6 +857,12 @@ namespace Nekoyume.Game.Scene
                 portalConnect.PortalUrl,
                 email,
                 agentAddrInPortal?.ToString() ?? "null");
+        }
+
+        private void OnSucceedThor()
+        {
+            var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
+            thorChainInfoItem.gameObject.SetActive(thorSchedule?.IsOpened == true);
         }
     }
 }

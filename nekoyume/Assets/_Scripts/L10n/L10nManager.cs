@@ -490,9 +490,9 @@ namespace Nekoyume.L10n
             return Localize(key);
         }
 
-        public static string LocalizeCustomItemName(int itemId)
+        public static string LocalizeCustomItemName(int iconId)
         {
-            var key = $"ITEM_NAME_CUSTOM_{itemId}";
+            var key = $"ITEM_NAME_CUSTOM_{iconId}";
             return Localize(key);
         }
 
@@ -550,6 +550,18 @@ namespace Nekoyume.L10n
                 10001 => Localize("WORLD_NAME_MIMISBRUNNR"),
                 _ => $"Invalid_World_ID_{worldId}"
             };
+        }
+
+        public static string LocalizeWorldBossServiceTicker(string ticker)
+        {
+            var parsedTicker = ticker.Split("_");
+            if (parsedTicker.Length == 3
+                && parsedTicker[0] == "Item"
+                && int.TryParse(parsedTicker[2], out var itemId))
+            {
+                return TryLocalize($"ITEM_NAME_{itemId}", out var itemText) ? itemText : ticker;
+            }
+            return LocalizeCurrencyName(ticker);
         }
 
         public static string LocalizeCurrencyName(string ticker)

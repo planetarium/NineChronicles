@@ -124,7 +124,7 @@ namespace Nekoyume.UI
             }
 
             var results = numbers.Select((t, i) => GetExpectRatio(result, numbers, i + 1)).ToList();
-            NcDebug.Log($"[CS] [{L10nManager.Localize($"ITEM_NAME_{itemId}")}] {itemId} / " +
+            NcDebug.Log($"[CS] [{L10nManager.LocalizeItemName(itemId)}] {itemId} / " +
                 $"[subRecipeId] {result.subRecipeId} / " +
                 $"<color=#5FD900>[1]</color><color=#0078FF>{results[0]:P2}</color> <color=#00A4FF> --> {result.results[0] / (float)count:P2}</color> / " +
                 $"<color=#5FD900>[2]</color><color=#FF1800>{results[1]:P2}</color> <color=#F16558> --> {result.results[1] / (float)count:P2}</color> / " +
