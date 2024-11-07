@@ -14,6 +14,7 @@ using System;
 
 namespace Nekoyume.UI
 {
+    using Coffee.UIEffects;
     using System.Linq;
     using System.Threading;
     using UniRx;
@@ -79,6 +80,9 @@ namespace Nekoyume.UI
             public Sprite IconPremiumSprite;
             public Sprite IconPremiumPlusSprite;
             public Sprite levelBackGroundSprite;
+            public Color LevelTextColor;
+            public Color SlideLeft;
+            public Color SlideRight;
         }
 
         [SerializeField]
@@ -102,6 +106,13 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private UI.Module.Toggle[] categoryToggles;
+
+        [SerializeField]
+        private GameObject courageIcon;
+        [SerializeField]
+        private TextMeshProUGUI levelNameText;
+        [SerializeField]
+        private UIGradient sliderGradient;
 
         private RectTransform lineImageRectTransform;
         private float rewardCellWidth;
@@ -273,6 +284,9 @@ namespace Nekoyume.UI
             iconPremiumPlusImage.sprite = info.IconPremiumPlusSprite;
             iconPremiumPlusImage.SetNativeSize();
             levelBackGroundImage.sprite = info.levelBackGroundSprite;
+            levelNameText.color = info.LevelTextColor;
+            sliderGradient.color1 = info.SlideLeft;
+            sliderGradient.color2 = info.SlideRight;
 
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
             int currentLevel = 0;
@@ -300,6 +314,7 @@ namespace Nekoyume.UI
             int minExp;
             int maxExp;
             // 타입별 데이터 분기처리 예정.
+            string expL10nKey = "UI_SEASONPASS_COURAGE_EXP";
             switch (type)
             {
                 case SeasonPassServiceClient.PassType.CouragePass:
@@ -308,13 +323,17 @@ namespace Nekoyume.UI
                     {
                         obj.SetActive(true);
                     }
+                    courageIcon.SetActive(true);
+                    expL10nKey = "UI_SEASONPASS_COURAGE_EXP";
                     break;
                 case SeasonPassServiceClient.PassType.WorldClearPass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_WORLD_CLEAR");
                     foreach (var obj in remainingTimeObject)
                     {
                         obj.SetActive(false);
-                    }   
+                    }
+                    courageIcon.SetActive(false);
+                    expL10nKey = "UI_SEASONPASS_WORLD_CLEAR_EXP";
                     break;
                 case SeasonPassServiceClient.PassType.AdventureBossPass:
                     seasonPassTypeName.text = L10nManager.Localize("UI_SEASONPASS_ADVENTUREBOSS");
@@ -322,6 +341,8 @@ namespace Nekoyume.UI
                     {
                         obj.SetActive(true);
                     }
+                    courageIcon.SetActive(false);
+                    expL10nKey = "UI_SEASONPASS_ADVENTUREBOSS_EXP";
                     break;
                 default:
                     NcDebug.LogError($"Not found SeasonPassType: {type}");
@@ -333,7 +354,7 @@ namespace Nekoyume.UI
             {
                 //최대래밸 고정
                 levelText.text = Mathf.Min(userSeasonPassData.Level, rewardListData.Count).ToString();
-                expText.text = $"{userSeasonPassData.Exp - minExp} / {maxExp - minExp}";
+                expText.text = L10nManager.Localize(expL10nKey, userSeasonPassData.Exp - minExp, maxExp - minExp);
                 expLineImage.fillAmount = (float)(userSeasonPassData.Exp - minExp) / (float)(maxExp - minExp);
                 receiveBtn.Interactable = userSeasonPassData.Level > userSeasonPassData.LastNormalClaim
                     || (userSeasonPassData.IsPremium && userSeasonPassData.Level > userSeasonPassData.LastPremiumClaim);
@@ -346,7 +367,7 @@ namespace Nekoyume.UI
             else
             {
                 levelText.text = "0";
-                expText.text = $"0 / {maxExp - minExp}";
+                expText.text = L10nManager.Localize(expL10nKey, 0, maxExp - minExp);
                 expLineImage.fillAmount = 0;
                 receiveBtn.Interactable = false;
 
