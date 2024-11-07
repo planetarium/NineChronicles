@@ -62,6 +62,22 @@ namespace Nekoyume.UI
                     if (value)
                     {
                         SetData(index);
+
+                        switch (index)
+                        {
+                            case 0:
+                                SetCustomGift();
+                                break;
+                            case 1:
+                                SetPatrolReward();
+                                break;
+                            case 2:
+                                SetShopPackage();
+                                break;
+                            case 3:
+                                SetDoubleContentsRewards();
+                                break;
+                        }
                     }
                 });
             }
@@ -96,22 +112,6 @@ namespace Nekoyume.UI
             foreach (var actionButton in actionButtons)
             {
                 actionButton.gameObject.SetActive(false);
-            }
-
-            switch (index)
-            {
-                case 0:
-                    SetCustomGift();
-                    break;
-                case 1:
-                    SetPatrolReward();
-                    break;
-                case 2:
-                    SetShopPackage();
-                    break;
-                case 3:
-                    SetDoubleContentsRewards();
-                    break;
             }
         }
 
