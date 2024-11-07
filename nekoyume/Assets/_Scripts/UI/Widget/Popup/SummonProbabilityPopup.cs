@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class SummonProbabilityPopup : PopupWidget
     {
         [SerializeField]
@@ -111,6 +112,8 @@ namespace Nekoyume.UI
 
             _disposables.DisposeAllAndClear();
             scroll.UpdateData(modelDict.Values.OrderByDescending(model => model.Grade), true);
+            scroll.OnClickDetailButton.Subscribe(Find<SummonDetailPopup>().Show)
+                .AddTo(_disposables);
 
             //titleText.text = rowList.FirstOrDefault().GetLocalizedName();
             base.Show();
