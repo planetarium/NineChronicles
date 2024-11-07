@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
-using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -14,19 +12,17 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using UniRx;
-
     public class SummonDetailPopup : PopupWidget
     {
         [SerializeField] private Button closeButton;
-        [SerializeField] private TextMeshProUGUI titleText;
 
         [SerializeField] private TextMeshProUGUI[] mainStatTexts;
         [SerializeField] private RecipeOptionView recipeOptionView;
+        [SerializeField] private TextMeshProUGUI titleText;
+        [SerializeField] private Image iconImage;
 
-        [SerializeField] private SummonDetailScroll scroll;
-
-        private readonly List<IDisposable> _disposables = new();
+        [SerializeField]
+        private Nekoyume.UI.Module.Common.SkillPositionTooltip skillTooltip;
 
         private const string StatTextFormat = "{0} {1}";
 
@@ -44,59 +40,7 @@ namespace Nekoyume.UI
             };
         }
 
-        public void Show(SummonSheet.Row summonRow)
-        {
-            var tableSheets = Game.Game.instance.TableSheets;
-            var equipmentItemSheet = tableSheets.EquipmentItemSheet;
-            var equipmentItemRecipeSheet = tableSheets.EquipmentItemRecipeSheet;
-            var runeSheet = tableSheets.RuneSheet;
-            var equipmentItemSubRecipeSheet = tableSheets.EquipmentItemSubRecipeSheetV2;
-
-            float ratioSum = summonRow.Recipes.Sum(pair => pair.Item2);
-            var models = summonRow.Recipes.Where(pair => pair.Item1 > 0).Select(pair =>
-            {
-                var (recipeId, ratio) = pair;
-
-                EquipmentItemSheet.Row equipmentRow = null;
-                List<EquipmentItemSubRecipeSheetV2.OptionInfo> equipmentOptions = null;
-                if (equipmentItemRecipeSheet.TryGetValue(recipeId, out var recipeRow))
-                {
-                    equipmentRow = equipmentItemSheet[recipeRow.ResultEquipmentId];
-                    equipmentOptions = equipmentItemSubRecipeSheet[recipeRow.SubRecipeIds[0]].Options;
-                }
-
-                string runeTicker = null;
-                RuneOptionSheet.Row.RuneOptionInfo runeOptionInfo = null;
-                if (runeSheet.TryGetValue(recipeId, out var runeRow))
-                {
-                    runeTicker = runeRow.Ticker;
-
-                    var runeOptionSheet = tableSheets.RuneOptionSheet;
-                    if (runeOptionSheet.TryGetValue(runeRow.Id, out var runeOptionRow))
-                    {
-                        runeOptionRow.LevelOptionMap.TryGetValue(1, out runeOptionInfo);
-                    }
-                }
-
-                return new SummonDetailCell.Model
-                {
-                    EquipmentRow = equipmentRow,
-                    EquipmentOptions = equipmentOptions,
-                    RuneTicker = runeTicker,
-                    RuneOptionInfo = runeOptionInfo,
-                    Ratio = ratio / ratioSum
-                };
-            }).OrderBy(model => model.Ratio);
-
-            _disposables.DisposeAllAndClear();
-            scroll.UpdateData(models, true);
-            scroll.Selected.Subscribe(PreviewDetail).AddTo(_disposables);
-
-            titleText.text = summonRow.GetLocalizedName();
-            base.Show();
-        }
-
-        private void PreviewDetail(SummonDetailCell.Model model)
+        public void Show(SummonDetailCell.Model model)
         {
             // CharacterView
             SetCharacter(model.EquipmentRow);
@@ -111,14 +55,49 @@ namespace Nekoyume.UI
                 mainStatText.gameObject.SetActive(true);
 
                 // OptionView
-                recipeOptionView.SetOptions(model.EquipmentOptions, false);
+                recipeOptionView.SetOptions(model.EquipmentOptions, false, false);
+                titleText.SetText(model.EquipmentRow.GetLocalizedName(useElementalIcon: false));
+                iconImage.sprite = SpriteHelper.GetItemIcon(model.EquipmentRow.Id);
+                SkillSheet.Row skillOption = null;
+                var skillOptionRow = model.EquipmentOptions
+                    .Select(info =>
+                        Nekoyume.Game.TableSheets.Instance.EquipmentItemOptionSheet[info.Id])
+                    .FirstOrDefault(optionRow =>
+                        Nekoyume.Game.TableSheets.Instance.SkillSheet.TryGetValue(optionRow.SkillId,
+                            out skillOption));
+
+                if (skillOption != null)
+                {
+                    skillTooltip.Show(skillOption, skillOptionRow);
+                }
+                else
+                {
+                    skillTooltip.gameObject.SetActive(false);
+                }
             }
 
             if (!string.IsNullOrEmpty(model.RuneTicker))
             {
                 mainStatTexts[0].gameObject.SetActive(false);
                 recipeOptionView.SetOptions(model.RuneOptionInfo);
+                if (RuneFrontHelper.TryGetRuneData(model.RuneTicker, out var data))
+                {
+                    titleText.SetText(LocalizationExtensions.GetLocalizedFavName(data.ticker));
+                    iconImage.sprite = data.icon;
+                }
+
+                if (Nekoyume.Game.TableSheets.Instance.SkillSheet.TryGetValue(model.RuneOptionInfo.SkillId,
+                    out var skillOption))
+                {
+                    skillTooltip.Show(skillOption, model.RuneOptionInfo);
+                }
+                else
+                {
+                    skillTooltip.gameObject.SetActive(false);
+                }
             }
+
+            base.Show();
         }
 
         private static void SetCharacter(EquipmentItemSheet.Row equipmentRow)

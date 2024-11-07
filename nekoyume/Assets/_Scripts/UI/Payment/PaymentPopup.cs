@@ -676,7 +676,7 @@ namespace Nekoyume.UI
         private void AttractToSummon()
         {
             CloseWithOtherWidgets();
-            Find<NewSummon>().Show();
+            Find<Summon>().Show();
         }
 #endregion Attract
 

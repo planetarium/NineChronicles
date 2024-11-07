@@ -1759,6 +1759,25 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e => { });
         }
 
+        public IObservable<ActionEvaluation<ClaimGifts>> ClaimGifts(
+            Address avatarAddress,
+            int giftId)
+        {
+            var action = new ClaimGifts
+            {
+                AvatarAddress = avatarAddress,
+                GiftId = giftId,
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimGifts>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
         public IObservable<ActionEvaluation<Wanted>> Wanted(long season, FungibleAssetValue amount)
         {
             var action = new Wanted

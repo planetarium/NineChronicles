@@ -182,6 +182,7 @@ namespace Nekoyume.Blockchain
             RedeemCode();
             ChargeActionPoint();
             ClaimStakeReward();
+            ClaimGifts();
 
             // Unlocks
             UnlockEquipmentRecipe();
@@ -568,6 +569,16 @@ namespace Nekoyume.Blockchain
                     eval.Action is IClaimStakeReward)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimStakeReward)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimGifts()
+        {
+            _actionRenderer.EveryRender<ClaimGifts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                // .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimGifts)
                 .AddTo(_disposables);
         }
 
@@ -1587,7 +1598,7 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ => { Widget.Find<NewSummon>().OnActionRender(eval); });
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ => { Widget.Find<Summon>().OnActionRender(eval); });
         }
 
         private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
@@ -1605,7 +1616,7 @@ namespace Nekoyume.Blockchain
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
-                Widget.Find<NewSummon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval);
             });
         }
 
@@ -1624,7 +1635,7 @@ namespace Nekoyume.Blockchain
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
-                Widget.Find<NewSummon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval);
             });
         }
 
@@ -2801,6 +2812,37 @@ namespace Nekoyume.Blockchain
             });
         }
 
+        private void ResponseClaimGifts(ActionEvaluation<ClaimGifts> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.LogError($"Failed to claim gifts. {eval.Exception}");
+                return;
+            }
+
+            UniTask.RunOnThreadPool(() =>
+            {
+                UpdateCurrentAvatarInventory(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var giftId = eval.Action.GiftId;
+                States.Instance.ClaimedGiftIds.Add(giftId);
+                LoadingHelper.ClaimGifts.Value = false;
+
+                var giftsSheet = Game.Game.instance.TableSheets.ClaimableGiftsSheet;
+                if (!giftsSheet.TryGetValue(giftId, out var giftRow))
+                {
+                    return;
+                }
+
+                var costumeSheet = Game.Game.instance.TableSheets.CostumeItemSheet;
+                var random = new LocalRandom(eval.RandomSeed);
+                var (itemId, quantity) = giftRow.Items.First();
+
+                var costume = ItemFactory.CreateCostume(costumeSheet[itemId], random.GenerateRandomGuid());
+                Widget.Find<ClaimGiftsResultScreen>().Show(costume);
+            });
+        }
 
         internal class LocalRandom : System.Random, IRandom
         {

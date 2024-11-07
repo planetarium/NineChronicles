@@ -38,9 +38,13 @@ namespace Nekoyume.UI
         [SerializeField] private ResultVideoClip rubyVideoClip;
         [SerializeField] private ResultVideoClip emeraldVideoClip;
 
+        [SerializeField] private SummonItemView[] manySummonItemViews;
         [SerializeField] private SummonItemView[] summonItemViews;
         [SerializeField] private SummonItemView singleSummonItemView;
         [SerializeField] private RectTransform background;
+        [SerializeField] private RectTransform scrollView;
+        [SerializeField] private GameObject summonItemViewParentObject;
+        [SerializeField] private GameObject manySummonItemViewParentObject;
 
         private bool _isGreat;
         private Coroutine _coroutine;
@@ -94,29 +98,47 @@ namespace Nekoyume.UI
 
             var bonus = summonCount == 10 ? 1 : 0;
             var great = resultList.First().Grade >= 5;
+            summonItemViewParentObject.SetActive(false);
+            manySummonItemViewParentObject.SetActive(false);
+            singleSummonItemView.Hide();
 
-            var single = summonCount == 1;
-            if (single)
+            if (summonCount == 1)
             {
                 singleSummonItemView.SetData(resultList.First(), true, true);
                 singleSummonItemView.Show();
             }
+            else if (summonCount == 10)
+            {
+                summonItemViewParentObject.SetActive(true);
+                for (var i = 0; i < summonItemViews.Length; i++)
+                {
+                    var view = summonItemViews[i];
+                    if (i < resultList.Count)
+                    {
+                        view.SetData(resultList[i], true);
+                        view.Show();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
+                }
+            }
             else
             {
-                singleSummonItemView.Hide();
-            }
-
-            for (var i = 0; i < summonItemViews.Length; i++)
-            {
-                var view = summonItemViews[i];
-                if (!single && i < resultList.Count)
+                manySummonItemViewParentObject.SetActive(true);
+                for (var i = 0; i < manySummonItemViews.Length; i++)
                 {
-                    view.SetData(resultList[i], true);
-                    view.Show();
-                }
-                else
-                {
-                    view.Hide();
+                    var view = manySummonItemViews[i];
+                    if (i < resultList.Count)
+                    {
+                        view.SetData(resultList[i], true);
+                        view.Show();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
                 }
             }
 
@@ -137,28 +159,47 @@ namespace Nekoyume.UI
             animator.SetTrigger(AnimatorHashHide);
 
             var bonus = summonCount == 10 ? 1 : 0;
-            var single = summonCount == 1;
-            if (single)
+            summonItemViews.First().transform.parent.parent.gameObject.SetActive(false);
+            manySummonItemViews.First().transform.parent.gameObject.SetActive(false);
+            singleSummonItemView.Hide();
+
+            if (summonCount == 1)
             {
                 singleSummonItemView.SetData(resultList.First(), true, true);
                 singleSummonItemView.Show();
             }
+            else if (summonCount == 10)
+            {
+                summonItemViews.First().transform.parent.parent.gameObject.SetActive(true);
+                for (var i = 0; i < summonItemViews.Length; i++)
+                {
+                    var view = summonItemViews[i];
+                    if (i < resultList.Count)
+                    {
+                        view.SetData(resultList[i], true);
+                        view.Show();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
+                }
+            }
             else
             {
-                singleSummonItemView.Hide();
-            }
-
-            for (var i = 0; i < summonItemViews.Length; i++)
-            {
-                var view = summonItemViews[i];
-                if (!single && i < resultList.Count)
+                manySummonItemViews.First().transform.parent.gameObject.SetActive(true);
+                for (var i = 0; i < manySummonItemViews.Length; i++)
                 {
-                    view.SetData(resultList[i], true);
-                    view.Show();
-                }
-                else
-                {
-                    view.Hide();
+                    var view = manySummonItemViews[i];
+                    if (i < resultList.Count)
+                    {
+                        view.SetData(resultList[i], true);
+                        view.Show();
+                    }
+                    else
+                    {
+                        view.Hide();
+                    }
                 }
             }
 
@@ -196,7 +237,7 @@ namespace Nekoyume.UI
             }
 
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
-            drawButton.Subscribe(data, summonCount, GoToMarket, _disposables);
+            drawButton.Subscribe(data, summonCount, _disposables);
             drawButton.gameObject.SetActive(true);
         }
 
@@ -277,12 +318,22 @@ namespace Nekoyume.UI
             audioController.PlaySfx(AudioController.SfxCode.Success);
             var viewsToAnimate = summonItemViews
                 .Concat(new[] { singleSummonItemView })
-                .Where(v => v.gameObject.activeSelf);
+                .Concat(manySummonItemViews)
+                .Where(v => v.gameObject.activeInHierarchy)
+                .ToList();
+            // 110회 소환의 경우 아이템을 스크롤로 내리며 보여줘야합니다. 해당 연출을 하는 호출 코드입니다
+            if (viewsToAnimate.Count == 110)
+            {
+                StartCoroutine(DoMoveScroll());
+            }
+
             foreach (var view in viewsToAnimate)
             {
                 view.ShowWithAnimation();
                 AudioController.PlaySelect();
-                yield return ItemViewAnimInterval;
+                // 보여줄 아이템이 1개인 경우엔 그냥 0.1초 대기 후 연출을 처리합니다.
+                // 그 이외의 경우, 모든 아이템의 대기 시간이 기존 11회 소환의 최종 연출 시간이었던 1.1초를 넘지 않도록 아이템 수로 나눠줍니다.
+                yield return viewsToAnimate.Count != 1 ? new WaitForSeconds(1.1f/viewsToAnimate.Count) : ItemViewAnimInterval;
             }
 
             yield return DefaultAnimInterval;
@@ -299,15 +350,13 @@ namespace Nekoyume.UI
             _completeCallback = null;
         }
 
-        private static void GoToMarket()
+        private IEnumerator DoMoveScroll()
         {
-            Find<SummonResultPopup>().Close(true);
-
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-            if (TryFind<MobileShop>(out var mobileShop))
-            {
-                mobileShop.Show();
-            }
+            var pos = scrollView.anchoredPosition;
+            pos.y = -(scrollView.sizeDelta.y * .5f);
+            scrollView.anchoredPosition = pos;
+            yield return new WaitForSeconds(.4f);
+            scrollView.DoAnchoredMoveY(scrollView.sizeDelta.y * .5f, 2f);
         }
     }
 }

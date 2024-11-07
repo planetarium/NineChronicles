@@ -264,6 +264,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CustomCraftResultScreen>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<ClaimGiftsResultScreen>());
+            yield return null;
 
             // 일반.
             _secondWidgets.Add(Widget.Create<Login>());
@@ -324,6 +326,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CollectionItemFilterPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<EventRewardPopup>());
+            yield return null;
 
             // loading
             _secondWidgets.Add(Widget.Create<StageLoadingEffect>());
@@ -336,7 +340,7 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Enhancement>());
             _secondWidgets.Add(Widget.Create<Grind>());
             _secondWidgets.Add(Widget.Create<Rune>());
-            _secondWidgets.Add(Widget.Create<NewSummon>());
+            _secondWidgets.Add(Widget.Create<Summon>());
             _secondWidgets.Add(Widget.Create<DccMain>());
             _secondWidgets.Add(Widget.Create<DccCollection>());
             _secondWidgets.Add(Widget.Create<CustomCraft>());
@@ -432,7 +436,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
+            _secondWidgets.Add(Widget.Create<SummonProbabilityPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonSkillsPopup>());
             yield return null;
@@ -465,6 +469,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<CustomCraftResultPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CraftResultPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ChainInfoPopup>());
             yield return null;

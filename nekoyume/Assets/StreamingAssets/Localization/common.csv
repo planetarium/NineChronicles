@@ -1,6 +1,7 @@
 Key,English,Korean,Portuguese,Japanese,Spanish,Thai,Indonesian,Russian,ChineseSimplified,ChineseTraditional,Tagalog,Vietnam
 TITLE,Nine Chronicles,나인 크로니클,Nine Chronicles,Nine Chronicles M,Nine Chronicles,Nine Chronicles,Nine Chronicles,,Nine Chronicles,九个編年史,Nine Chronicles,Nine Chronicles
 ALL,All,전체,Todos,全体,Todos,ทั้งหมด,Semua,,全部,全部,Lahat,Toàn bộ
+NONE,None,없음,Nenhum,なし,Ninguno,ไม่มี,Tidak,,没有,沒有,Wala,Không
 ADVENTURE,Adventure,모험,Aventura,冒険,Aventura,ผจญภัย,Petualangan,,冒险,冒險,Pakikipagsapalaran,Cuộc phiêu lưu
 ACTION_HANDLE,Action Handling…,액션 처리,Manipulação de ação,アクション処理,Manejo de Acciones,การจัดการการดำเนินการ,Penanganan Aksi,,动作处理,動作處理中,Action Handling,Đang xử lý hành động…
 BLOCK_DOWNLOAD,Block Downloading…,블록 다운로드 중...,Download de Bloco,ブロックダウンロード中···,Descarga de información de bloques,บล็อกกำลังดาวน์โหลด,Mengunduh Block,,块下载,區塊下載中,Block Downloading,Đang tải Khối…
@@ -2080,3 +2081,15 @@ UI_THOR_INFO_DESC,At the end of the season. you can receive huge rewards based o
 MIGRATE_NOTICE,"A new contract with different rewards from the current one has been added. Would you like to migrate?",현재와 보상이 다른 신규 계약이 추가되었습니다. 이전하시겠습니까?,,,,,,,,,,,
 UI_MILEAGE_PRICE,<size=18><Style=Mileage><size=22>{0},,,,,,,,,,,,
 UI_SKILL_NOT_CONTAINS,Skill not contains,,,,,,,,,,,
+UI_EVENT_REWARD_POPUP_TITLE,1st Anniversary Event,1주년 이벤트,,,,,,,,,,
+UI_EVENT_TOGGLE_0,Custom Gift,코스튬 선물,,,,,,,,,,
+UI_EVENT_TOGGLE_1,Patrol Reward,정찰 보상,,,,,,,,,,
+UI_EVENT_TOGGLE_2,Shop Package,기념 패키지,,,,,,,,,,
+UI_EVENT_TOGGLE_3,Double Contents Rewards,컨텐츠 보상 2배,,,,,,,,,,
+UI_EVENT_TOGGLE_4,Growth Boost,성장 지원,,,,,,,,,,
+UI_EVENT_DESCRIPTION_0,Custom Gift Description,코스튬 선물 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_1,Patrol Reward Description,정찰 보상 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_2,Shop Package Description,기념 패키지 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_3,Double Contents Rewards Description,컨텐츠 보상 2배 관련 설명,,,,,,,,,,
+UI_EVENT_DESCRIPTION_4,Growth Boost Description,성장 지원 관련 설명,,,,,,,,,,
+UI_MAIN_MENU_EVENT_REWARD,1st Anniversary,1주년 기념,,,,,,,,,,
