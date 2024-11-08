@@ -576,9 +576,16 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<ClaimGifts>()
                 .Where(ValidateEvaluationForCurrentAgent)
-                // .Where(ValidateEvaluationIsSuccess)
+                .Where(ValidateEvaluationIsSuccess)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimGifts)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<ClaimGifts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionClaimGifts)
                 .AddTo(_disposables);
         }
 
@@ -2843,6 +2850,16 @@ namespace Nekoyume.Blockchain
                 Widget.Find<ClaimGiftsResultScreen>().Show(costume);
             });
         }
+
+        private void ExceptionClaimGifts(ActionEvaluation<ClaimGifts> eval)
+        {
+            NcDebug.LogError(eval.Exception);
+            OneLineSystem.Push(
+                MailType.System,
+                eval.Exception.InnerException.Message,
+                NotificationCell.NotificationType.Alert);
+        }
+
 
         internal class LocalRandom : System.Random, IRandom
         {
