@@ -1472,6 +1472,8 @@ namespace Nekoyume.Game
             NcDebug.Log("[Game] Start()... ResourcesHelper initialized");
             await AudioController.instance.InitializeAsync();
             NcDebug.Log("[Game] Start()... AudioController initialized");
+            
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
 
         public void OnAgentInitializeSucceed()

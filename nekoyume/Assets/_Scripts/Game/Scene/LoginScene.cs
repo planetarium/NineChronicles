@@ -196,8 +196,11 @@ namespace Nekoyume.Game.Scene
             }
 
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
+#if UNITY_EDITOR
+            game.InitializeFirstResourcesAsync().Forget();
+#else
             yield return game.InitializeFirstResourcesAsync().ToCoroutine();
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
+#endif
 
             // NOTE: Initialize IAgent.
             var agentInitialized = false;

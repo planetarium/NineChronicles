@@ -421,7 +421,7 @@ namespace Nekoyume.Game.Controller
 
             if (CurrentState != State.Idle)
             {
-                NcDebug.LogError("Not initialized.");
+                NcDebug.LogWarning("Not initialized.");
                 return;
             }
 
