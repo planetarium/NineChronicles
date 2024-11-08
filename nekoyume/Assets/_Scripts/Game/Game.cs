@@ -1459,7 +1459,7 @@ namespace Nekoyume.Game
             return true;
         }
 
-        public async UniTask InitializeFirstResourcesAsync()
+        public void InitializeFirstResources()
         {
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
@@ -1470,6 +1470,10 @@ namespace Nekoyume.Game
             // Initialize TableSheets. This should be done before initialize the Agent.
             ResourcesHelper.Initialize();
             NcDebug.Log("[Game] Start()... ResourcesHelper initialized");
+        }
+
+        public async UniTask InitializeAudioControllerAsync()
+        {
             await AudioController.instance.InitializeAsync();
             NcDebug.Log("[Game] Start()... AudioController initialized");
             
