@@ -112,7 +112,7 @@ namespace Nekoyume.Game
             {
                 NcDebug.Log($"[{nameof(Game)}] Set CurrentPlanetId: {value}");
                 _currentPlanetId = value;
-                // TODO: Set Thor Schedules
+                LiveAssetManager.instance.SetThorSchedule(value);
             }
         }
 

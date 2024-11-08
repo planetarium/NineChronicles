@@ -50,13 +50,19 @@ namespace Nekoyume.Game.Scene
             canvas.worldCamera = ActionCamera.instance.Cam;
 
             Nekoyume.Game.LiveAsset.LiveAssetManager.instance.OnChangedThorSchedule +=
-                OnSucceedThor;
+                OnSetThorScheduleUrl;
         }
 
         protected override void Start()
         {
             base.Start();
             StartCoroutine(LoginStart());
+        }
+
+        private void OnDestroy()
+        {
+            Nekoyume.Game.LiveAsset.LiveAssetManager.instance.OnChangedThorSchedule -=
+                OnSetThorScheduleUrl;
         }
 #endregion MonoBehaviour
 
@@ -862,10 +868,8 @@ namespace Nekoyume.Game.Scene
                 agentAddrInPortal?.ToString() ?? "null");
         }
 
-        private void OnSucceedThor(ThorSchedule thorSchedule)
+        private void OnSetThorScheduleUrl(ThorSchedule thorSchedule)
         {
-            Nekoyume.Game.LiveAsset.LiveAssetManager.instance.OnChangedThorSchedule -=
-                OnSucceedThor;
             thorChainInfoItem.gameObject.SetActive(thorSchedule?.IsOpened == true);
         }
     }

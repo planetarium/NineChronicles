@@ -41,6 +41,7 @@ namespace Nekoyume.Game.LiveAsset
         private InitializingState _state = InitializingState.NeedInitialize;
         private Notices _notices;
         private LiveAssetEndpointScriptableObject _endpoint;
+        private Nekoyume.ApiClient.ThorSchedules _cachedThorSchedules;
 
         public bool HasUnreadEvent => _bannerData.Any(d => !_alreadyReadNotices.Contains(d.Description));
 
@@ -72,6 +73,8 @@ namespace Nekoyume.Game.LiveAsset
         public Sprite StakingRewardSprite { get; private set; }
         public int[] StakingArenaBonusValues { get; private set; }
         public bool IsInitialized => _state == InitializingState.Initialized;
+        
+        public System.Action<Nekoyume.ApiClient.ThorSchedule> OnChangedThorSchedule;
 
         public void InitializeData()
         {
@@ -176,28 +179,34 @@ namespace Nekoyume.Game.LiveAsset
             GameConfig = JsonSerializer.Deserialize<GameConfig>(response);
         }
 
-        private Nekoyume.ApiClient.ThorSchedules _cachedThorSchedules;
-        public System.Action<Nekoyume.ApiClient.ThorSchedule> OnChangedThorSchedule;
+#region ThorSchedule
         private void SetThorScheduleUrl(string response)
         {
             _cachedThorSchedules = JsonSerializer.Deserialize<Nekoyume.ApiClient.ThorSchedules>(
                 response,
                 CommandLineOptions.JsonOptions);
 
-            // 로그인 전에 PlanetId를 판단할 수 없기 때문에 항상 메인넷 기준으로 설정
-            ThorSchedule = _cachedThorSchedules.MainNet;
             var planetId = Nekoyume.Game.Game.instance.CurrentPlanetId;
-            if (planetId.HasValue && Nekoyume.Multiplanetary.PlanetId.IsMainNet(planetId.Value))
+            SetThorSchedule(planetId);
+        }
+        
+        public void SetThorSchedule(Nekoyume.Multiplanetary.PlanetId? planetId)
+        {
+            if (planetId == null)
             {
+                // PlanetId 초기화 전에는 항상 메인넷 기준으로 설정
                 ThorSchedule = _cachedThorSchedules.MainNet;
+                return;
             }
-            else
-            {
-                ThorSchedule = _cachedThorSchedules.Others;
-            }
-
+            
+            var isMainNet = Nekoyume.Multiplanetary.PlanetId.IsMainNet(planetId.Value);
+            ThorSchedule = isMainNet ?
+                _cachedThorSchedules.MainNet :
+                _cachedThorSchedules.Others;
+            
             OnChangedThorSchedule?.Invoke(ThorSchedule);
         }
+#endregion ThorSchedule
 
         private void SetCommandLineOptions(string response)
         {
