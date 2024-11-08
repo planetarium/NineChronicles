@@ -196,6 +196,7 @@ namespace Nekoyume.Game.LiveAsset
             {
                 // PlanetId 초기화 전에는 항상 메인넷 기준으로 설정
                 ThorSchedule = _cachedThorSchedules.MainNet;
+                OnChangedThorSchedule?.Invoke(ThorSchedule);
                 return;
             }
             
