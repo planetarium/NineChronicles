@@ -13,5 +13,6 @@ namespace Nekoyume.Helper
         public static readonly ReactiveProperty<bool> ClaimStakeReward = new();
         public static readonly ReactiveProperty<int> ActivateCollection = new(0);
         public static readonly ReactiveProperty<bool> CustomEquipmentCraft = new();
+        public static readonly ReactiveProperty<bool> ClaimGifts = new();
     }
 }
