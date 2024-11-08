@@ -416,7 +416,7 @@ namespace Nekoyume.UI.Scroller
                 row.StartBlockIndex,
                 row.RecipeEndBlockIndex,
                 Game.Game.instance.Agent.BlockIndex,
-                LiveAssetManager.instance.GameConfig.SecondsPerBlock,
+                Util.BlockInterval,
                 DateTime.UtcNow);
         }
 

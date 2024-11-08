@@ -41,6 +41,8 @@ namespace Nekoyume.Helper
 
         public const float GridScrollerAdjustCellCount = 20;
 
+        public static double BlockInterval => Blockchain.Policy.BlockPolicySource.BlockInterval.TotalSeconds;
+
         public static async Task<Order> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);
