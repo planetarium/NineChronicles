@@ -73,6 +73,9 @@ namespace Nekoyume.UI
         private MainMenu btnCollection;
 
         [SerializeField]
+        private MainMenu btnEventReward;
+
+        [SerializeField]
         private SpeechBubble[] speechBubbles;
 
         [SerializeField] private GameObject shopExclamationMark;
@@ -152,7 +155,8 @@ namespace Nekoyume.UI
                     btnDcc.GetComponent<Button>(),
                     btnPatrolReward.GetComponent<Button>(),
                     btnSeasonPass.GetComponent<Button>(),
-                    btnCollection.GetComponent<Button>()
+                    btnCollection.GetComponent<Button>(),
+                    btnEventReward.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -671,6 +675,16 @@ namespace Nekoyume.UI
             Find<PatrolRewardPopup>().Show();
         }
 
+        public void EventRewardClick()
+        {
+            if (!btnEventReward.IsUnlocked)
+            {
+                return;
+            }
+
+            Find<EventRewardPopup>().Show();
+        }
+
         public void SeasonPassClick()
         {
             var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
@@ -734,6 +748,10 @@ namespace Nekoyume.UI
 
             var thorSchedule = Nekoyume.Game.LiveAsset.LiveAssetManager.instance.ThorSchedule;
             thorSeasonPassButton.gameObject.SetActive(thorSchedule?.IsOpened == true);
+
+            var isInEventDate = true;
+            btnPatrolReward.gameObject.SetActive(!isInEventDate);
+            btnEventReward.gameObject.SetActive(isInEventDate);
         }
 
         private void SubscribeAtShow()
