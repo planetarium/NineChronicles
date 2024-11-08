@@ -114,6 +114,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private UIGradient sliderGradient;
 
+        [SerializeField]
+        private GameObject CourageRedDot;
+        [SerializeField]
+        private GameObject WorldClearRedDot;
+        [SerializeField]
+        private GameObject AdventureBossRedDot;
+
         private RectTransform lineImageRectTransform;
         private float rewardCellWidth;
         private float lastRewardCellWidth;
@@ -247,7 +254,7 @@ namespace Nekoyume.UI
             {
                 Find<LoadingScreen>().Close();
                 base.Show(ignoreShowAnimation);
-
+                RefreshRedDotObj();
                 categoryToggles[(int)seasonPassType].isOn = true;
                 categoryToggles[(int)seasonPassType].onClickToggle.Invoke();
 
@@ -489,6 +496,16 @@ namespace Nekoyume.UI
         public void RefreshCurrentPage()
         {
             ChangePageByType(currentSeasonPassType);
+            RefreshRedDotObj();
+        }
+
+        public void RefreshRedDotObj()
+        {
+            //레드닷 갱신
+            var seasonPassManager = ApiClients.Instance.SeasonPassServiceManager;
+            CourageRedDot.SetActive(seasonPassManager.HasClaimPassType.Contains(SeasonPassServiceClient.PassType.CouragePass) || seasonPassManager.HasPrevClaimPassType.Contains(SeasonPassServiceClient.PassType.CouragePass));
+            WorldClearRedDot.SetActive(seasonPassManager.HasClaimPassType.Contains(SeasonPassServiceClient.PassType.WorldClearPass) || seasonPassManager.HasPrevClaimPassType.Contains(SeasonPassServiceClient.PassType.WorldClearPass));
+            AdventureBossRedDot.SetActive(seasonPassManager.HasClaimPassType.Contains(SeasonPassServiceClient.PassType.AdventureBossPass) || seasonPassManager.HasPrevClaimPassType.Contains(SeasonPassServiceClient.PassType.AdventureBossPass));
         }
 
         public void PrevSeasonClaim()
@@ -502,7 +519,10 @@ namespace Nekoyume.UI
                         MailType.System,
                         L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"),
                         NotificationCell.NotificationType.Notification);
-                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
+                    ApiClients.Instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().ContinueWith(() =>
+                    {
+                        RefreshCurrentPage();
+                    }).Forget();
                     prevSeasonClaimButton.SetConditionalState(true);
                     prevSeasonClaimButton.gameObject.SetActive(false);
                 },

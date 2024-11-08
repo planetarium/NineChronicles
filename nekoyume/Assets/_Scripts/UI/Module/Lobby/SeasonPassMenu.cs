@@ -32,6 +32,8 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject iconRoot;
 
+        public System.Action OnUserValueChanged;
+
         protected override void Awake()
         {
             base.Awake();
@@ -42,13 +44,23 @@ namespace Nekoyume.UI.Module.Lobby
             premiumIcon.SetActive(false);
             premiumPlusIcon.SetActive(false);
 
-            int claimCount = ApiClients.Instance.SeasonPassServiceManager.HasClaimPassType.Count + ApiClients.Instance.SeasonPassServiceManager.HasPrevClaimPassType.Count;
-            notificationObj.SetActive(claimCount > 0);
+            OnUserValueChanged = () =>
+            {
+                int claimCount = ApiClients.Instance.SeasonPassServiceManager.HasClaimPassType.Count + ApiClients.Instance.SeasonPassServiceManager.HasPrevClaimPassType.Count;
+                notificationObj.SetActive(claimCount > 0);
+            };
+            ApiClients.Instance.SeasonPassServiceManager.UpdatedUserDatas += OnUserValueChanged;
+
             foreach (var text in nameText)
             {
                 text.text = L10nManager.Localize("SEASON_PASS_MENU_NAME");
             }
             ApiClients.Instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) => { timeText.text = $"<Style=Clock> {endDate}"; });
+        }
+
+        protected void OnDestroy()
+        {
+            ApiClients.Instance.SeasonPassServiceManager.UpdatedUserDatas -= OnUserValueChanged;
         }
     }
 }
