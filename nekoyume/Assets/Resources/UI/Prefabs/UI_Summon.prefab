@@ -3239,8 +3239,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac14ccd1b440434790e723e058db915b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
+  tutorialTargets:
+  - type: 50001
+    rectTransform: {fileID: 4178221099000877507}
+  tutorialActions: 52c30000
   infoButton: {fileID: 8231604600151179750}
   backgroundRect: {fileID: 1513654427148664911}
   bottomImage: {fileID: 1404002152874212377}
