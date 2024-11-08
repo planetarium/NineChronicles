@@ -66,7 +66,7 @@ namespace Nekoyume.UI
             summonButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Find<NewSummon>().Show();
+                Find<Summon>().Show();
                 AudioController.PlayClick();
             });
 

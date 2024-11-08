@@ -520,5 +520,10 @@ namespace Nekoyume.UI
                     return ItemType.All;
             }
         }
+        
+        public static WithSkill ItemSubTypeToWithSkill(bool skillContains)
+        {
+            return skillContains ? WithSkill.With : WithSkill.None;
+        }
     }
 }

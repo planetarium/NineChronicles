@@ -1605,7 +1605,7 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }).ToObservable().ObserveOnMainThread().Subscribe(_ => { Widget.Find<NewSummon>().OnActionRender(eval); });
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ => { Widget.Find<Summon>().OnActionRender(eval); });
         }
 
         private void ResponseRuneSummon(ActionEvaluation<RuneSummon> eval)
@@ -1623,7 +1623,7 @@ namespace Nekoyume.Blockchain
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
-                Widget.Find<NewSummon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval);
             });
         }
 
@@ -1642,7 +1642,7 @@ namespace Nekoyume.Blockchain
                 var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
                 var count = summonRow.CostMaterialCount * action.SummonCount;
 
-                Widget.Find<NewSummon>().OnActionRender(eval);
+                Widget.Find<Summon>().OnActionRender(eval);
             });
         }
 

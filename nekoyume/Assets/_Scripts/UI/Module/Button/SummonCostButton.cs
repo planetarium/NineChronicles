@@ -47,7 +47,6 @@ namespace Nekoyume.UI.Module
         public void Subscribe(
             SummonSheet.Row summonRow,
             int summonCount,
-            System.Action goToMarget,
             List<IDisposable> disposables)
         {
             var costType = (CostType)summonRow.CostMaterial;
@@ -60,7 +59,7 @@ namespace Nekoyume.UI.Module
                 switch (state)
                 {
                     case State.Normal:
-                        Widget.Find<NewSummon>().SummonAction(summonRow);
+                        Widget.Find<Summon>().SummonAction(summonRow);
                         break;
                     case State.Conditional:
                         Widget.Find<PaymentPopup>().ShowLackPaymentDust(costType, cost);
