@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Module.Common
             long beginningBlockIndex,
             long endBlockIndex,
             long currentBlockIndex,
-            int secondsPerBlock,
+            double secondsPerBlock,
             DateTime now)
         {
             blocksText.text = $"{beginningBlockIndex:N0} - {endBlockIndex:N0}";
